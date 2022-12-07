@@ -8,7 +8,7 @@ pageextension 5018 "SD Sales Cr. Memo Subform" extends "Sales Cr. Memo Subform"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the code for a service transaction type.';
-                Visible = UseServDeclaration;
+                Visible = EnableServTransType;
                 ShowMandatory = Rec."Applicable For Serv. Decl.";
             }
             field("Applicable For Serv. Decl."; Rec."Applicable For Serv. Decl.")
@@ -22,11 +22,13 @@ pageextension 5018 "SD Sales Cr. Memo Subform" extends "Sales Cr. Memo Subform"
 
     var
         UseServDeclaration: Boolean;
+        EnableServTransType: Boolean;
 
     trigger OnOpenPage()
     var
         ServiceDeclarationMgt: Codeunit "Service Declaration Mgt.";
     begin
         UseServDeclaration := ServiceDeclarationMgt.IsFeatureEnabled();
+        EnableServTransType := ServiceDeclarationMgt.IsServTransTypeEnabled();
     end;
 }

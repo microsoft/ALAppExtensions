@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Helper functions for RecordLinks",
     "description":  "Record links features allows user to add notes and links to almost any record into the system. The current module provides APIs for developer to deal with records, for example to transfer/copy link from one record to another, transform text input into BLOB format expected by platform, clean up orphaned links.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,13 +15,13 @@
                              "id":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
                              "name":  "Confirm Management",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "publisher":  "Microsoft",
                              "name":  "DotNet Aliases",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "screenshots":  [

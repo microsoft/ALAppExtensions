@@ -10,9 +10,7 @@ codeunit 139565 "Shpfy Create Customer Test"
     var
         LibraryAssert: Codeunit "Library Assert";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-#pragma warning disable AA0072
         This: Codeunit "Shpfy Create Customer Test";
-#pragma warning restore AA0072
         ShpfyCustomerInitTest: Codeunit "Shpfy Customer Init Test";
         OnCreateCustomerEventMsg: Label 'OnCreateCustomer', Locked = true;
 

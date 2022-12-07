@@ -468,8 +468,8 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
 
     local procedure IsCreditMemo(PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"): Boolean
     begin
-        exit(((PurchAdvLetterEntryCZZ.Amount < 0) and (PurchAdvLetterEntryCZZ."Entry Type" = PurchAdvLetterEntryCZZ."Entry Type"::"VAT Payment")) or
-             ((PurchAdvLetterEntryCZZ.Amount > 0) and (PurchAdvLetterEntryCZZ."Entry Type" = PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage")) or
+        exit(((PurchAdvLetterEntryCZZ.CalcDocumentAmount() < 0) and (PurchAdvLetterEntryCZZ."Entry Type" = PurchAdvLetterEntryCZZ."Entry Type"::"VAT Payment")) or
+             ((PurchAdvLetterEntryCZZ.CalcDocumentAmount() > 0) and (PurchAdvLetterEntryCZZ."Entry Type" = PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage")) or
              (PurchAdvLetterEntryCZZ."Entry Type" = PurchAdvLetterEntryCZZ."Entry Type"::"VAT Close"));
     end;
 }

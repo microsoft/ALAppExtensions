@@ -60,13 +60,11 @@ table 10019 "IRS 1096 Form Line"
     var
         IRS1096FormHeader: Record "IRS 1096 Form Header";
     begin
-        if CurrFieldNo <> 0 then begin
-            "Manually Changed" := true;
-            IRS1096FormHeader.Get("Form No.");
-            IRS1096FormHeader."Changed By" := CopyStr(UserId(), 1, MaxStrLen(IRS1096FormHeader."Changed By"));
-            IRS1096FormHeader."Changed Date-Time" := CurrentDateTime();
-            IRS1096FormHeader.Modify();
-        end;
+        "Manually Changed" := true;
+        IRS1096FormHeader.Get("Form No.");
+        IRS1096FormHeader."Changed By" := CopyStr(UserId(), 1, MaxStrLen(IRS1096FormHeader."Changed By"));
+        IRS1096FormHeader."Changed Date-Time" := CurrentDateTime();
+        IRS1096FormHeader.Modify();
     end;
 
     trigger OnDelete()

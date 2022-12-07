@@ -477,7 +477,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         NoOfLoops: Integer;
         OriginalAdvanceVATDocumentNo: Code[20];
         ExchangeRateTxt: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1=calculatedexchrate;%2=general ledger setup.LCY Code;%3=currexchrate.exchange rate amount;%4=currency code';
-        DocumentLbl: Label 'VAT Document to Recieved Payment';
+        DocumentLbl: Label 'VAT Document to Received Payment';
         CrMemoDocumentLbl: Label 'VAT Credit Memo to Received Payment';
         PageLbl: Label 'Page';
         CopyLbl: Label 'Copy';
@@ -501,8 +501,8 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
 
     local procedure IsCreditMemo(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"): Boolean
     begin
-        exit(((SalesAdvLetterEntryCZZ.Amount > 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment")) or
-             ((SalesAdvLetterEntryCZZ.Amount < 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage")) or
+        exit(((SalesAdvLetterEntryCZZ.CalcDocumentAmount() > 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment")) or
+             ((SalesAdvLetterEntryCZZ.CalcDocumentAmount() < 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage")) or
              (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Close"));
     end;
 }

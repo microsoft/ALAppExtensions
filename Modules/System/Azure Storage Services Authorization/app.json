@@ -2,7 +2,7 @@
     "id":  "e409d343-14fa-42a4-a1be-fec499383e59",
     "name":  "Azure Storage Services Authorization",
     "publisher":  "Microsoft",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "brief":  "Provides means for authorizing HTTP requests to Azure Storage Services",
     "description":  "Provides interfaces and authorization logic for HTTP requests to Azure Storage Services",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,19 +15,19 @@
                              "id":  "a3964a53-9345-458a-af20-d13f7eab7bd7",
                              "name":  "Cryptography Management",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "1b2efb4b-8c44-4d74-a56f-60646645bb21",
                              "name":  "URI",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "screenshots":  [

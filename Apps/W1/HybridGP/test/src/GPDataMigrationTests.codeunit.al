@@ -3357,7 +3357,7 @@ codeunit 139664 "GP Data Migration Tests"
     local procedure CreateOpenPOData()
     begin
         Clear(GPPOPPOHeader);
-        GPPOPPOHeader.PONUMBER := PONumberTxt;
+        GPPOPPOHeader.PONUMBER := CopyStr(PONumberTxt, 1, MaxStrLen(GPPOPPOLine.PONUMBER));
         GPPOPPOHeader.VENDORID := 'DUFFY';
         GPPOPPOHeader.DOCDATE := Today();
         GPPOPPOHeader.PRMDATE := Today();

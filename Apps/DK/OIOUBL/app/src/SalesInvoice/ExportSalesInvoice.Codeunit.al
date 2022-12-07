@@ -325,6 +325,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
           SalesInvoiceHeader."Bill-to Name",
           BillToAddress,
           SellToContact);
+        OnCreateXMLOnAfterInsertAccountingCustomerParty(XMLCurrNode, SalesInvoiceHeader);
 
         // Invoice->Delivery
         DeliveryAddress.Address := SalesInvoiceHeader."Ship-to Address";
@@ -449,6 +450,11 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; SalesInvoiceHeader: Record "Sales Invoice Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnAfterInsertAccountingCustomerParty(var XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
     begin
     end;
 

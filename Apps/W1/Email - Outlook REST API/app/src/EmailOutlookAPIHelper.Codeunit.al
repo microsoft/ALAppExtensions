@@ -282,4 +282,9 @@ codeunit 4509 "Email - Outlook API Helper"
     begin
         exit(3145728); // 3 mb
     end;
+
+    procedure DefaultEmailRateLimit(): Integer
+    begin
+        exit(30);
+    end;
 }

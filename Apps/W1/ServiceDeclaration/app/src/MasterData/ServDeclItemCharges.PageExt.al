@@ -8,7 +8,7 @@ pageextension 5013 "Serv. Decl. Item Charges" extends "Item Charges"
             {
                 ApplicationArea = ItemCharges;
                 ToolTip = 'Specifies the code for a service transaction type.';
-                Visible = UseServDeclaration;
+                Visible = EnableServTransType;
             }
             field("Exclude From Service Decl."; Rec."Exclude From Service Decl.")
             {
@@ -21,11 +21,13 @@ pageextension 5013 "Serv. Decl. Item Charges" extends "Item Charges"
 
     var
         UseServDeclaration: Boolean;
+        EnableServTransType: Boolean;
 
     trigger OnOpenPage()
     var
         ServiceDeclarationMgt: Codeunit "Service Declaration Mgt.";
     begin
         UseServDeclaration := ServiceDeclarationMgt.IsFeatureEnabled();
+        EnableServTransType := ServiceDeclarationMgt.IsServTransTypeEnabled();
     end;
 }

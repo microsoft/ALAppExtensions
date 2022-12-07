@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 4500 "Current User Connector" implements "Email Connector"
+codeunit 4500 "Current User Connector" implements "Email Connector", "Default Email Rate Limit"
 {
     Access = Internal;
     Permissions = tabledata "Email - Outlook Account" = rimd;
@@ -119,5 +119,12 @@ codeunit 4500 "Current User Connector" implements "Email Connector"
     procedure GetCurrentUserAccountName(): Text[250]
     begin
         exit(CurrentUserTok)
+    end;
+
+    procedure GetDefaultEmailRateLimit(): Integer
+    var
+        EmailOutlookAPIHelper: Codeunit "Email - Outlook API Helper";
+    begin
+        exit(EmailOutlookAPIHelper.DefaultEmailRateLimit());
     end;
 }

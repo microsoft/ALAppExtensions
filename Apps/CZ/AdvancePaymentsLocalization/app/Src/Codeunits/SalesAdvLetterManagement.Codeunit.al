@@ -231,7 +231,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         PostedGenJournalLine: Record "Gen. Journal Line";
     begin
         PostedGenJournalLine."Advance Letter No. CZZ" := AdvanceLetterNo;
-        PostAdvancePayment(CustLedgerEntry, PostedGenJournalLine, LinkAmount, GenJnlPostLine);
+        InsertedEntryNo := PostAdvancePayment(CustLedgerEntry, PostedGenJournalLine, LinkAmount, GenJnlPostLine);
     end;
 
     procedure PostAdvancePayment(var CustLedgerEntry: Record "Cust. Ledger Entry"; PostedGenJournalLine: Record "Gen. Journal Line"; LinkAmount: Decimal; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line") InsertedEntryNo: Integer

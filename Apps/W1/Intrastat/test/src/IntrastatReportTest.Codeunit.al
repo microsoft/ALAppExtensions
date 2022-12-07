@@ -14,11 +14,11 @@ codeunit 139550 "Intrastat Report Test"
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryIntrastat: Codeunit "Library - Intrastat";
         LibraryInventory: Codeunit "Library - Inventory";
-        LibraryFixedAsset: Codeunit "Library - Fixed Asset";
         LibraryERM: Codeunit "Library - ERM";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySales: Codeunit "Library - Sales";
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryPatterns: Codeunit "Library - Patterns";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryRandom: Codeunit "Library - Random";
         LibraryMarketing: Codeunit "Library - Marketing";
@@ -30,9 +30,11 @@ codeunit 139550 "Intrastat Report Test"
         InternetURLTxt: Label 'www.microsoft.com';
         InvalidURLTxt: Label 'URL must be prefix with http.';
         PackageTrackingNoErr: Label 'Package Tracking No does not exist.';
+        TariffItemInfoDifferentErr: Label '%1 on %2 and %3 is different.', Comment = '%1 - field name, %2 - Item Table Caption, %3 - Tariff Number Table Caption';
         HttpTxt: Label 'http://';
         OnDelIntrastatContactErr: Label 'You cannot delete contact number %1 because it is set up as an Intrastat contact in the Intrastat Setup window.', Comment = '%1 - Contact No';
         OnDelVendorIntrastatContactErr: Label 'You cannot delete vendor number %1 because it is set up as an Intrastat contact in the Intrastat Setup window.', Comment = '%1 - Vendor No';
+        ShptMethodCodeErr: Label 'Wrong Shipment Method Code';
         StatPeriodFormatErr: Label '%1 must be 4 characters, for example, 9410 for October, 1994.', Comment = '%1 - field caption';
         StatPeriodMonthErr: Label 'Please check the month number.';
 
@@ -49,10 +51,10 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Posted Purchase Order
         Initialize();
-        DocumentNo := CreateAndPostPurchaseOrder(PurchaseLine, WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, WorkDate());
 
         // [THEN] Verify Item Ledger Entry
-        VerifyItemLedgerEntry(ItemLedgerEntry."Document Type"::"Purchase Receipt", DocumentNo, GetCountryRegionCode(), PurchaseLine.Quantity);
+        VerifyItemLedgerEntry(ItemLedgerEntry."Document Type"::"Purchase Receipt", DocumentNo, LibraryIntrastat.GetCountryRegionCode(), PurchaseLine.Quantity);
     end;
 
     [Test]
@@ -69,7 +71,7 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Posted Purchase Order
         Initialize();
-        DocumentNo := CreateAndPostPurchaseOrder(PurchaseLine, WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, WorkDate());
 
         // [WHEN] Get Intrastat Report Line for Purchase Order
         // [THEN] Verify Intrastat Report Line
@@ -89,10 +91,10 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Create and Post Purchase Order
         Initialize();
-        DocumentNo := CreateAndPostPurchaseOrder(PurchaseLine, WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, WorkDate());
 
         // [WHEN] Undo Purchase Receipt Line
-        UndoPurchaseReceiptLine(DocumentNo, PurchaseLine."No.");
+        LibraryIntrastat.UndoPurchaseReceiptLine(DocumentNo, PurchaseLine."No.");
 
         // [WHEN] Create Intrastat Report and Get Entries for Intrastat Report Line
         // [THEN] Verify no entry exists for posted Item.
@@ -112,10 +114,10 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Create and Post Sales Order
         Initialize();
-        DocumentNo := CreateAndPostSalesOrder(SalesLine, WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, WorkDate());
 
         // [THEN] Verify Item Ledger Entry
-        VerifyItemLedgerEntry(ItemLedgerEntry."Document Type"::"Sales Shipment", DocumentNo, GetCountryRegionCode(), -SalesLine.Quantity);
+        VerifyItemLedgerEntry(ItemLedgerEntry."Document Type"::"Sales Shipment", DocumentNo, LibraryIntrastat.GetCountryRegionCode(), -SalesLine.Quantity);
     end;
 
     [Test]
@@ -132,7 +134,7 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Create and Post Sales Order
         Initialize();
-        DocumentNo := CreateAndPostSalesOrder(SalesLine, WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, WorkDate());
 
         // [WHEN] Get Intrastat Report Lines for Sales Order
         // [THEN] Verify Intrastat Report Line
@@ -151,7 +153,7 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Take Starting Date as WORKDATE.
         Initialize();
-        CreateAndPostSalesOrder(SalesLine, WorkDate());
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, WorkDate());
 
         // [WHEN] Intrastat Report Lines, Delete them
         // [THEN] Verify that no lines exist for Posted Sales Order.
@@ -172,10 +174,10 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Posted Sales Order
         Initialize();
-        DocumentNo := CreateAndPostSalesOrder(SalesLine, WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, WorkDate());
 
         // [WHEN] Undo Sales Shipment Line
-        UndoSalesShipmentLine(DocumentNo, SalesLine."No.");
+        LibraryIntrastat.UndoSalesShipmentLine(DocumentNo, SalesLine."No.");
 
         // [THEN] Verify Undone Quantity on Sales Shipment Line.
         SalesShipmentLine.SetRange("Document No.", DocumentNo);
@@ -199,8 +201,8 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Create and Post Sales Order and undo Sales Shipment Line.
         Initialize();
-        DocumentNo := CreateAndPostSalesOrder(SalesLine, WorkDate());
-        UndoSalesShipmentLine(DocumentNo, SalesLine."No.");
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, WorkDate());
+        LibraryIntrastat.UndoSalesShipmentLine(DocumentNo, SalesLine."No.");
 
         // [WHEN] Create Intrastat Journal Template, Batch and Get Entries for Intrastat Report Line
         // [THEN] Verify no entry exists for posted Item.
@@ -225,7 +227,7 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] Create Purchase Order with New Posting Date and Create New Intratsat Report with difference with 1 Year.
         Initialize();
         NewPostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
-        DocumentNo := CreateAndPostPurchaseOrder(PurchaseLine, NewPostingDate);
+        DocumentNo := LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, NewPostingDate);
 
         // [GIVEN] Two Intrastat Reports for the same period
         Commit();  // Commit is required to commit the posted entries.
@@ -238,7 +240,7 @@ codeunit 139550 "Intrastat Report Test"
         // [WHEN] Get Entries from Intrastat Report pages for two Reports with the same period with "Show item charge entries" options set to TRUE
         // [THEN] Verify that Entry values on Intrastat Report Page match Purchase Line values
         VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo1, IntrastatReportLine.Type::Receipt,
-            GetCountryRegionCode(), PurchaseLine."No.", PurchaseLine.Quantity);
+            LibraryIntrastat.GetCountryRegionCode(), PurchaseLine."No.", PurchaseLine.Quantity);
 
         // [THEN] No Entries suggested in a second Intrastat Journal
         VerifyIntrastatReportLineExist(IntrastatReportNo2, PurchaseLine."No.", false);
@@ -268,17 +270,17 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Create and Post Purchase Order on January with Amount = "X" and location code "Y"
         NewPostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
-        DocumentNo := CreateAndPostPurchaseOrder(PurchaseLine, NewPostingDate);
+        DocumentNo := LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, NewPostingDate);
 
         // [GIVEN] Create and Post Purchase Credit Memo with Item Charge Assignment on February.
-        CreatePurchaseHeader(
+        LibraryIntrastat.CreatePurchaseHeader(
           PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo",
-          CalcDate('<1M>', NewPostingDate), CreateVendor(GetCountryRegionCode()));
+          CalcDate('<1M>', NewPostingDate), LibraryIntrastat.CreateVendor(LibraryIntrastat.GetCountryRegionCode()));
         PurchaseHeader.Validate("Vendor Cr. Memo No.", PurchaseHeader."No.");
         PurchaseHeader.Modify(true);
-        CreatePurchaseLine(
+        LibraryIntrastat.CreatePurchaseLine(
           PurchaseHeader, ChargePurchaseLine, ChargePurchaseLine.Type::"Charge (Item)", LibraryInventory.CreateItemChargeNo());
-        CreateItemChargeAssignmentForPurchaseCreditMemo(ChargePurchaseLine, DocumentNo);
+        LibraryIntrastat.CreateItemChargeAssignmentForPurchaseCreditMemo(ChargePurchaseLine, DocumentNo);
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
         // [GIVEN] Two Reports for January and February with "Show item charge entries" options set to TRUE
@@ -292,9 +294,9 @@ codeunit 139550 "Intrastat Report Test"
 
         // [THEN] Item Charge Entry suggested for February, "Intrastat Report Line" has Amount = "X" for January
         VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo1, ChargeIntrastatReportLine.Type::Receipt,
-           GetCountryRegionCode(), PurchaseLine."No.", PurchaseLine.Quantity);
+           LibraryIntrastat.GetCountryRegionCode(), PurchaseLine."No.", PurchaseLine.Quantity);
 
-        GetIntrastatReportLine(DocumentNo, IntrastatReportNo1, ChargeIntrastatReportLine);
+        LibraryIntrastat.GetIntrastatReportLine(DocumentNo, IntrastatReportNo1, ChargeIntrastatReportLine);
         Assert.AreEqual(PurchaseLine.Amount, ChargeIntrastatReportLine.Amount, '');
 
         // [THEN] "Location Code" is "Y" in the Intrastat Report Line
@@ -303,6 +305,41 @@ codeunit 139550 "Intrastat Report Test"
 
         LibraryIntrastat.DeleteIntrastatReport(IntrastatReportNo1);
         LibraryIntrastat.DeleteIntrastatReport(IntrastatReportNo2);
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [Scope('OnPrem')]
+    procedure IntrastatReportWithItemChargeAssignmentAfterSalesCreditMemo()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        NewPostingDate: Date;
+        DocumentNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Sales] [Item Charge] 
+        // [SCENARIO] Check Intrastat Report Lines after Posting Sales Order, Sales Credit Memo with Item Charge Assignment and Get Entries with New Posting Date.
+
+        // [GIVEN] Create and Post Sales Order with New Posting Date with different 1 Year.
+        Initialize();
+        NewPostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, NewPostingDate);
+
+        // [GIVEN] Create and post Sales Credit Memo with Item Charge Assignment with different Posting Date. 1M is required for Sales Credit Memo.
+        LibraryIntrastat.CreateSalesDocument(
+            SalesHeader, SalesLine, LibraryIntrastat.CreateCustomer(), CalcDate('<1M>', NewPostingDate), SalesLine."Document Type"::"Credit Memo",
+            SalesLine.Type::"Charge (Item)", LibraryInventory.CreateItemChargeNo(), 1);
+        LibraryIntrastat.CreateItemChargeAssignmentForSalesCreditMemo(SalesLine, DocumentNo);
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
+        CreateIntrastatReportAndSuggestLines(SalesHeader."Posting Date", IntrastatReportNo);
+
+        // [WHEN] Open Intrastat Report Line Page and Get Entries and "Show item charge entries" options set to TRUE
+        // [THEN] Verify Intrastat Report Line exists
+        VerifyIntrastatReportLineExist(IntrastatReportNo, DocumentNo, true);
+
+        LibraryIntrastat.DeleteIntrastatReport(IntrastatReportNo);
     end;
 
     [Test]
@@ -321,7 +358,7 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] Create Sales Order with New Posting Date and Create Intrastat Report.
         Initialize();
         NewPostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
-        CreateAndPostSalesOrder(SalesLine, NewPostingDate);
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, NewPostingDate);
 
         Commit();  // Commit is required to commit the posted entries.
 
@@ -355,7 +392,7 @@ codeunit 139550 "Intrastat Report Test"
         LibraryIntrastat.CreateIntrastatReportLine(IntrastatReportLine);
 
         // [WHEN] Create and Update Quantity on Intrastat Report Line.
-        NetWeight := UseItemNonZeroNetWeight(IntrastatReportLine);
+        NetWeight := LibraryIntrastat.UseItemNonZeroNetWeight(IntrastatReportLine);
 
         // [THEN] Verify Total Weight correctly calculated on Intrastat Report Line.
         IntrastatReportLine.TestField("Total Weight", IntrastatReportLine.Quantity * NetWeight);
@@ -369,7 +406,7 @@ codeunit 139550 "Intrastat Report Test"
         ShippingAgent: Record "Shipping Agent";
     begin
         Initialize();
-        CreateSalesShipmentHeader(SalesShipmentHeader, '%1');
+        LibraryIntrastat.CreateSalesShipmentHeader(SalesShipmentHeader, '%1');
         ShippingAgent.Get(SalesShipmentHeader."Shipping Agent Code");
         Assert.AreEqual(
           SalesShipmentHeader."Package Tracking No.",
@@ -385,7 +422,7 @@ codeunit 139550 "Intrastat Report Test"
         ShippingAgent: Record "Shipping Agent";
     begin
         Initialize();
-        CreateSalesShipmentHeader(SalesShipmentHeader, InternetURLTxt);
+        LibraryIntrastat.CreateSalesShipmentHeader(SalesShipmentHeader, InternetURLTxt);
         ShippingAgent.Get(SalesShipmentHeader."Shipping Agent Code");
         Assert.AreEqual(HttpTxt + InternetURLTxt, ShippingAgent.GetTrackingInternetAddr(SalesShipmentHeader."Package Tracking No."), InvalidURLTxt);
     end;
@@ -398,7 +435,7 @@ codeunit 139550 "Intrastat Report Test"
         ShippingAgent: Record "Shipping Agent";
     begin
         Initialize();
-        CreateSalesShipmentHeader(SalesShipmentHeader, HttpTxt + InternetURLTxt);
+        LibraryIntrastat.CreateSalesShipmentHeader(SalesShipmentHeader, HttpTxt + InternetURLTxt);
         ShippingAgent.Get(SalesShipmentHeader."Shipping Agent Code");
         Assert.AreEqual(HttpTxt + InternetURLTxt, ShippingAgent.GetTrackingInternetAddr(SalesShipmentHeader."Package Tracking No."), InvalidURLTxt);
     end;
@@ -411,10 +448,54 @@ codeunit 139550 "Intrastat Report Test"
         ShippingAgent: Record "Shipping Agent";
     begin
         Initialize();
-        CreateSalesShipmentHeader(SalesShipmentHeader, InternetURLTxt);
+        LibraryIntrastat.CreateSalesShipmentHeader(SalesShipmentHeader, InternetURLTxt);
         ShippingAgent.Get(SalesShipmentHeader."Shipping Agent Code");
         Assert.IsTrue(
           StrPos(ShippingAgent.GetTrackingInternetAddr(SalesShipmentHeader."Package Tracking No."), SalesShipmentHeader."Package Tracking No.") = 0, PackageTrackingNoErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [Scope('OnPrem')]
+    procedure VerifyNoIntraLinesCreatedForCrossedBoardItemChargeInNextPeriod()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentNo1: Code[20];
+        DocumentNo2: Code[20];
+        InvoicePostingDate: Date;
+        IntrastatNo1: Code[20];
+        IntrastatNo2: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Item Charge]
+        // [SCENARIO 376161] Invoice and Item Charge suggested for Intrastat Report in different Periods - Cross-Border
+        Initialize();
+
+        // [GIVEN] Posted Purchase Invoice in "Y" period - Cross-border
+        InvoicePostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
+        DocumentNo1 := LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, InvoicePostingDate);
+
+        // [GIVEN] Posted Item Charge in "F" period
+        LibraryIntrastat.CreatePurchaseHeader(
+          PurchaseHeader, PurchaseHeader."Document Type"::Invoice,
+          CalcDate('<1M>', InvoicePostingDate), LibraryIntrastat.CreateVendor(LibraryIntrastat.GetCountryRegionCode()));
+        LibraryIntrastat.CreatePurchaseLine(
+          PurchaseHeader, PurchaseLine, PurchaseLine.Type::"Charge (Item)", LibraryInventory.CreateItemChargeNo());
+        LibraryIntrastat.CreateItemChargeAssignmentForPurchaseCreditMemo(PurchaseLine, DocumentNo1);
+        DocumentNo2 := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
+
+        // [GIVEN] Intrastat Batches for "Y" and "F" period
+        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
+        CreateIntrastatReportAndSuggestLines(InvoicePostingDate, IntrastatNo1);
+
+        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
+        CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", IntrastatNo2);
+
+        // [WHEN] Entries suggested to Intrastat Report "J" and "F" with "Show item charge entries" options set to TRUE
+        // [THEN] Intrastat Report "J" contains 1 line for Posted Invoice
+        // [THEN] Intrastat Report "F" contains 1 line for Posted Item Charge
+        VerifyIntrastatReportLineExist(IntrastatNo1, DocumentNo1, true);
+        VerifyIntrastatReportLineExist(IntrastatNo2, DocumentNo2, true);
     end;
 
     [Test]
@@ -439,19 +520,19 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Posted Purchase Invoice in "Y" period - Not Cross-border
         CompanyInformation.Get();
-        CreatePurchaseHeader(
+        LibraryIntrastat.CreatePurchaseHeader(
           PurchaseHeader, PurchaseHeader."Document Type"::Order, InvoicePostingDate,
-          CreateVendor(CompanyInformation."Country/Region Code"));
-        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, CreateItem());
+          LibraryIntrastat.CreateVendor(CompanyInformation."Country/Region Code"));
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
         DocumentNo1 := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
         // [GIVEN] Posted Item Charge in "F" period
-        CreatePurchaseHeader(
+        LibraryIntrastat.CreatePurchaseHeader(
           PurchaseHeader, PurchaseHeader."Document Type"::Invoice, CalcDate('<1M>', InvoicePostingDate),
           PurchaseHeader."Buy-from Vendor No.");
         LibraryInventory.CreateItemCharge(ItemCharge);
-        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::"Charge (Item)", ItemCharge."No.");
-        CreateItemChargeAssignmentForPurchaseCreditMemo(PurchaseLine, DocumentNo1);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::"Charge (Item)", ItemCharge."No.");
+        LibraryIntrastat.CreateItemChargeAssignmentForPurchaseCreditMemo(PurchaseLine, DocumentNo1);
         DocumentNo2 := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
         // [GIVEN] Intrastat Batches for "Y" and "F" period
@@ -486,11 +567,11 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] Posted(Receipt) Purchase Order with lines for the same Item
         NoOfPurchaseLines := LibraryRandom.RandIntInRange(2, 10);
         DocumentNo :=
-          CreateAndPostPurchaseDocumentMultiLine(
-            PurchaseLine, PurchaseHeader."Document Type"::Order, WorkDate(), PurchaseLine.Type::Item, CreateItem(), NoOfPurchaseLines);
+          LibraryIntrastat.CreateAndPostPurchaseDocumentMultiLine(
+            PurchaseLine, PurchaseHeader."Document Type"::Order, WorkDate(), PurchaseLine.Type::Item, LibraryIntrastat.CreateItem(), NoOfPurchaseLines);
 
         // [GIVEN] Undo Receipt for one of the lines (random) and finally post Purchase Order
-        UndoPurchaseReceiptLineByLineNo(DocumentNo, LibraryRandom.RandInt(NoOfPurchaseLines));
+        LibraryIntrastat.UndoPurchaseReceiptLineByLineNo(DocumentNo, LibraryRandom.RandInt(NoOfPurchaseLines));
         PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
 
@@ -519,11 +600,11 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Posted(Shipment) Sales Order with lines for the same Item
         DocumentNo :=
-          CreateAndPostSalesDocumentMultiLine(
-            SalesLine, SalesLine."Document Type"::Order, WorkDate(), SalesLine.Type::Item, CreateItem(), NoOfSalesLines);
+          LibraryIntrastat.CreateAndPostSalesDocumentMultiLine(
+            SalesLine, SalesLine."Document Type"::Order, WorkDate(), SalesLine.Type::Item, LibraryIntrastat.CreateItem(), NoOfSalesLines);
 
         // [GIVEN] Undo Receipt for one of the lines (random) and finally post Sales Order
-        UndoSalesShipmentLineByLineNo(DocumentNo, LibraryRandom.RandInt(NoOfSalesLines));
+        LibraryIntrastat.UndoSalesShipmentLineByLineNo(DocumentNo, LibraryRandom.RandInt(NoOfSalesLines));
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
         LibrarySales.PostSalesDocument(SalesHeader, false, true);
 
@@ -552,11 +633,11 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] Posted(Shipment) Purchase Order with lines for the same Item
         NoOfPurchaseLines := LibraryRandom.RandIntInRange(2, 10);
         DocumentNo :=
-          CreateAndPostPurchaseDocumentMultiLine(
-            PurchaseLine, PurchaseHeader."Document Type"::"Return Order", WorkDate(), PurchaseLine.Type::Item, CreateItem(), NoOfPurchaseLines);
+          LibraryIntrastat.CreateAndPostPurchaseDocumentMultiLine(
+            PurchaseLine, PurchaseHeader."Document Type"::"Return Order", WorkDate(), PurchaseLine.Type::Item, LibraryIntrastat.CreateItem(), NoOfPurchaseLines);
 
         // [GIVEN] Undo Receipt for one of the lines (random) and finally post Return Order
-        UndoReturnShipmentLineByLineNo(DocumentNo, LibraryRandom.RandInt(NoOfPurchaseLines));
+        LibraryIntrastat.UndoReturnShipmentLineByLineNo(DocumentNo, LibraryRandom.RandInt(NoOfPurchaseLines));
         PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
         PurchaseHeader.Validate("Vendor Cr. Memo No.", PurchaseHeader."No.");
         PurchaseHeader.Modify(true);
@@ -586,11 +667,11 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] Posted(Receipt) Sales Return Order with lines for the same Item
         NoOfSalesLines := LibraryRandom.RandIntInRange(2, 10);
         DocumentNo :=
-          CreateAndPostSalesDocumentMultiLine(
-            SalesLine, SalesLine."Document Type"::"Return Order", WorkDate(), SalesLine.Type::Item, CreateItem(), NoOfSalesLines);
+          LibraryIntrastat.CreateAndPostSalesDocumentMultiLine(
+            SalesLine, SalesLine."Document Type"::"Return Order", WorkDate(), SalesLine.Type::Item, LibraryIntrastat.CreateItem(), NoOfSalesLines);
 
         // [GIVEN] Undo Receipt for one of the lines (random) and finally post Return Order
-        UndoReturnReceiptLineByLineNo(DocumentNo, LibraryRandom.RandInt(NoOfSalesLines));
+        LibraryIntrastat.UndoReturnReceiptLineByLineNo(DocumentNo, LibraryRandom.RandInt(NoOfSalesLines));
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
         LibrarySales.PostSalesDocument(SalesHeader, false, true);
 
@@ -599,6 +680,44 @@ codeunit 139550 "Intrastat Report Test"
 
         // [THEN] Only lines for which Undo Receipt was not done are suggested
         VerifyNoOfIntrastatLinesForDocumentNo(IntrastatReportNo, DocumentNo, NoOfSalesLines - 1);
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [Scope('OnPrem')]
+    procedure IntrastatReportWithItemChargeOnStartDate()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportNo: Code[20];
+        DocumentNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Item Charge]
+        // [SCENARIO] GetEntries for Intrastat should not create line for National Purchase order with Item Charge posted on StartDate of Period
+        Initialize();
+
+        // [GIVEN] Purchase Order with empty Country/Region Code on 01.Jan with Item "X"
+        LibraryPurchase.CreatePurchHeader(
+          PurchaseHeader, PurchaseHeader."Document Type"::Order, LibraryIntrastat.CreateVendor(LibraryIntrastat.GetCountryRegionCode()));
+        with PurchaseHeader do begin
+            Validate("Posting Date", CalcDate('<+1Y-CM>', WorkDate()));
+            Validate("Buy-from Country/Region Code", '');
+            Modify(true);
+        end;
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
+
+        // [GIVEN] Item Charge Purchase Line
+        LibraryPatterns.ASSIGNPurchChargeToPurchaseLine(PurchaseHeader, PurchaseLine, 1, LibraryRandom.RandDecInRange(100, 200, 2));
+
+        // [GIVEN] Purchase Order is Received and Invoiced on 01.Jan
+        DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Run Get Entries on Intrastat Report with "Show item charge entries" options set to TRUE
+        // [THEN] No Intrastat Report Lines should be created for Item "X"
+        //OpenAndVerifyIntrastatReportLine(PurchaseLine."No.", false);
+        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
+        CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", IntrastatReportNo);
+        VerifyIntrastatLineForItemExist(DocumentNo, IntrastatReportNo);
     end;
 
     [Test]
@@ -621,15 +740,15 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Posted Purchase Invoice in "Y" period
         InvoicePostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
-        DocumentNo := CreateAndPostPurchaseOrder(PurchaseLine, InvoicePostingDate);
+        DocumentNo := LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, InvoicePostingDate);
 
         // [GIVEN] Posted Item Charge in "F" period
-        CreatePurchaseHeader(
+        LibraryIntrastat.CreatePurchaseHeader(
           PurchaseHeader, PurchaseHeader."Document Type"::Invoice, CalcDate('<1M>', InvoicePostingDate),
-          CreateVendor(GetCountryRegionCode()));
+          LibraryIntrastat.CreateVendor(LibraryIntrastat.GetCountryRegionCode()));
         LibraryInventory.CreateItemCharge(ItemCharge);
-        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::"Charge (Item)", ItemCharge."No.");
-        CreateItemChargeAssignmentForPurchaseCreditMemo(PurchaseLine, DocumentNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::"Charge (Item)", ItemCharge."No.");
+        LibraryIntrastat.CreateItemChargeAssignmentForPurchaseCreditMemo(PurchaseLine, DocumentNo);
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
         // [GIVEN] Intrastat Reports for "Y" and "F" period
@@ -721,28 +840,27 @@ codeunit 139550 "Intrastat Report Test"
     begin
         // [FEATURE] [Intrastat Report Setup] [UT] [UI]
         // [SCENARIO 255730] Set "Intrastat Contact Type" and "Intrastat Contact No." fields via "Intrastat Report Setup" page
-        // TODO - Failing - The field Intrastat Contact No. of table Intrastat Report Setup contains a value (GL00000289) that cannot be found in the related table 
         Initialize();
 
         // Set "Intrastat Contact Type" = "Contact"
         IntrastatContactNo := LibraryIntrastat.CreateIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Contact);
-        SetIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Contact, IntrastatContactNo);
+        LibraryIntrastat.SetIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Contact, IntrastatContactNo);
         VerifyIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Contact, IntrastatContactNo);
 
         // Set "Intrastat Contact Type" = "Vendor"
         IntrastatContactNo := LibraryIntrastat.CreateIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Vendor);
-        SetIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Vendor, IntrastatContactNo);
+        LibraryIntrastat.SetIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Vendor, IntrastatContactNo);
         VerifyIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Vendor, IntrastatContactNo);
 
         // Trying to set "Intrastat Contact Type" = "Contact" with vendor
         Vendor.Get(LibraryPurchase.CreateIntrastatContact(''));
-        asserterror SetIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Contact, Vendor."No.");
+        asserterror LibraryIntrastat.SetIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Contact, Vendor."No.");
         Assert.ExpectedErrorCode('DB:PrimRecordNotFound');
         Assert.ExpectedError(Contact.TableCaption());
 
         // Trying to set "Intrastat Contact Type" = "Vendor" with contact
         Contact.Get(LibraryMarketing.CreateIntrastatContact(''));
-        asserterror SetIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Vendor, Contact."No.");
+        asserterror LibraryIntrastat.SetIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Vendor, Contact."No.");
         Assert.ExpectedErrorCode('DB:PrimRecordNotFound');
         Assert.ExpectedError(Vendor.TableCaption());
     end;
@@ -786,7 +904,6 @@ codeunit 139550 "Intrastat Report Test"
     begin
         // [FEATURE] [Intrastat Report Setup] [UT]
         // [SCENARIO 255730] An error has been shown trying to delete contact specified in the Intrastat Report Setup as an intrastat contact
-        // TO DO - Missing IntrastatSetup.CheckDeleteIntrastatContact(IntrastatSetup."Intrastat Contact Type"::Contact, "No.");
         Initialize();
 
         // Empty setup record
@@ -796,7 +913,7 @@ codeunit 139550 "Intrastat Report Test"
         Contact[1].Delete(true);
 
         // Existing setup with other contact
-        IntrastatSetupEnableReportReceipts();
+        LibraryIntrastat.IntrastatSetupEnableReportReceipts();
         LibraryMarketing.CreateCompanyContact(Contact[1]);
         LibraryMarketing.CreateCompanyContact(Contact[2]);
         ValidateIntrastatContact(IntrastatReportSetup."Intrastat Contact Type"::Contact, Contact[1]."No.");
@@ -817,7 +934,6 @@ codeunit 139550 "Intrastat Report Test"
     begin
         // [FEATURE] [Intrastat Report Setup] [UT]
         // [SCENARIO 255730] An error has been shown trying to delete vendor specified in the Intrastat Report Setup as an intrastat contact
-        // TO DO - Missing IntrastatSetup.CheckDeleteIntrastatVendor(IntrastatSetup."Intrastat Contact Type"::Contact, "No.");
         Initialize();
 
         // Empty setup record
@@ -826,7 +942,7 @@ codeunit 139550 "Intrastat Report Test"
         Vendor[1].Delete(true);
 
         // Existing setup with other contact
-        IntrastatSetupEnableReportReceipts();
+        LibraryIntrastat.IntrastatSetupEnableReportReceipts();
         LibraryPurchase.CreateVendor(Vendor[1]);
         LibraryPurchase.CreateVendor(Vendor[2]);
         IntrastatReportSetup.Get();
@@ -839,11 +955,650 @@ codeunit 139550 "Intrastat Report Test"
         Assert.ExpectedError(StrSubstNo(OnDelVendorIntrastatContactErr, Vendor[1]."No."));
     end;
 
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestEmptyTariffNoIsBlocking()
+    var
+        SalesLine: Record "Sales Line";
+        Item: Record Item;
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of empty "Tariff No."
+        // [GIVEN] Posted Sales Order for intrastat without "Tariff No."
+        // [GIVEN] Intrastat Report
+        Initialize();
+
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        Item.Get(SalesLine."No.");
+        Item.Validate("Tariff No.", '');
+        Item.Modify(true);
+
+        // [GIVEN] A Intrastat Report with empty "Tariff No."
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        Commit();
+
+        // [WHEN] Running Checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got an error on Tariff no.
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Tariff No."));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName("Tariff No."));
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestEmptyCountryCodeIsBlocking()
+    var
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of empty "Country/Region Code"
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Intrastat Report
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        Commit();
+
+        // [GIVEN] A Intrastat Report with empty "Country/Region Code" line
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.ModifyAll("Country/Region Code", '');
+
+        // [WHEN] Running Checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Country/Region Code"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName("Country/Region Code"));
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestEmptyTransactionTypeIsBlocking()
+    var
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of empty "Transaction Type"
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Intrastat Report
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        Commit();
+
+        // [GIVEN] A Intrastat Report with empty "Transaction Type" line
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.ModifyAll("Transaction Type", '');
+
+        // [WHEN] Running Checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldCaption("Transaction Type"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldCaption("Transaction Type"));
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestEmptyQtyIsBlocking()
+    var
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of empty "Quantity" and "Supplementary Units" = true
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Intrastat Report
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        Commit();
+
+        // [GIVEN] A Intrastat Report with empty Quantity and "Supplementary Units" = false
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.ModifyAll(Quantity, 0);
+        IntrastatReportLine.ModifyAll("Supplementary Units", false);
+
+        // [WHEN] Running checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] Check no error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName(Quantity));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [GIVEN] A Intrastat Report with empty Quantity and "Supplementary Units" = true
+        IntrastatReportLine.ModifyAll("Supplementary Units", true);
+        // [WHEN] Running Create File
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName(Quantity));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName(Quantity));
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestEmptyTotalWeightIsBlocking()
+    var
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of empty "Total Weight" and "Supplementary Units" = false
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Intrastat Report
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        Commit();
+
+        // [GIVEN] A Intrastat Report with empty "Total Weight" and "Supplementary Units" = true
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.ModifyAll("Total Weight", 0);
+        IntrastatReportLine.ModifyAll("Supplementary Units", true);
+
+        // [WHEN] Running checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] Check no error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Total Weight"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [GIVEN] A Intrastat Report with empty "Total Weight" and "Supplementary Units" = false
+        IntrastatReportLine.ModifyAll("Supplementary Units", false);
+        // [WHEN] Running Create File
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Total Weight"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName("Total Weight"));
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestEmptyCountryOfOriginIsBlocking()
+    var
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of empty "Country/Region of Origin Code" and Type = Shipment
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Intrastat Report
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        Commit();
+
+        // [GIVEN] A Intrastat Report with empty "Country/Region of Origin Code" and Type = Receipt
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.ModifyAll("Country/Region of Origin Code", '');
+        IntrastatReportLine.ModifyAll(Type, IntrastatReportLine.Type::Receipt);
+
+        // [WHEN] Running checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] Check no error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Country/Region of Origin Code"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [GIVEN] A Intrastat Report with empty "Country/Region of Origin Code" and Type = Shipment
+        IntrastatReportLine.ModifyAll(Type, IntrastatReportLine.Type::Shipment);
+        // [WHEN] Running Create File
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Country/Region of Origin Code"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName("Country/Region of Origin Code"));
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestEmptyPartnerVATIDIsBlocking()
+    var
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of empty "Partner VAT ID" and Type = Shipment
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Intrastat Report
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        Commit();
+
+        // [GIVEN] A Intrastat Report with empty "Partner VAT ID" and Type = Receipt
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.ModifyAll("Partner VAT ID", '');
+        IntrastatReportLine.ModifyAll(Type, IntrastatReportLine.Type::Receipt);
+
+        // [WHEN] Running checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] Check no error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Partner VAT ID"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [GIVEN] A Intrastat Report with empty "Total Weight" and "Supplementary Units" = false
+        IntrastatReportLine.ModifyAll(Type, IntrastatReportLine.Type::Shipment);
+        // [WHEN] Running Create File
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Partner VAT ID"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName("Partner VAT ID"));
+        IntrastatReportPage.Close();
+    end;
+
     [MessageHandler]
     [Scope('OnPrem')]
     procedure CreateFileMessageHandler(Message: Text)
     begin
         Assert.AreEqual('One or more errors were found. You must resolve all the errors before you can proceed.', Message, '');
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure E2EErrorHandlingOfIntrastatReport()
+    var
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        ShipmentMethod: Record "Shipment Method";
+        TransactionType: Record "Transaction Type";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - End to end error handling
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Report Template and Batch 
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        Commit();
+
+        // [GIVEN] A Intrastat Report
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+
+        // [WHEN] Running Checklist
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Transaction Type"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName("Transaction Type"));
+
+        // [WHEN] Fixing the error
+        TransactionType.Code := CopyStr(LibraryUtility.GenerateGUID(), 1, 2);
+        TransactionType.Insert();
+        IntrastatReportPage.IntrastatLines."Transaction Type".Value(TransactionType.Code);
+
+        // [WHEN] Running Checklist
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        IntrastatReportPage.IntrastatLines."Total Weight".Value('1');
+        // [WHEN] Fixing the error
+        ShipmentMethod.FindFirst();
+        IntrastatReportPage.IntrastatLines."Shpt. Method Code".Value(ShipmentMethod.Code);
+        IntrastatReportPage.IntrastatLines."Partner VAT ID".Value('111111111');
+        // [WHEN] Running Checklist
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You no more errors
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [WHEN] Running Create File
+        // [THEN] You do not get any errors
+        IntrastatReportPage.CreateFile.Invoke();
+
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure E2EIntrastatReportFileCreation()
+    var
+        SalesLine: Record "Sales Line";
+        ShipmentMethod: Record "Shipment Method";
+        TransactionType: Record "Transaction Type";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - End to end file creation
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Report Template and Batch 
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        Commit();
+
+        // [GIVEN] A Intrastat Report
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+
+        TransactionType.Code := CopyStr(LibraryUtility.GenerateGUID(), 3, 2);
+        TransactionType.Insert();
+        IntrastatReportPage.IntrastatLines."Transaction Type".Value(TransactionType.Code);
+        IntrastatReportPage.IntrastatLines.Quantity.Value('5');
+        IntrastatReportPage.IntrastatLines."Total Weight".Value('10');
+        IntrastatReportPage.IntrastatLines."Statistical Value".Value('25');
+
+        ShipmentMethod.FindFirst();
+        IntrastatReportPage.IntrastatLines."Shpt. Method Code".Value(ShipmentMethod.Code);
+        IntrastatReportPage.IntrastatLines."Partner VAT ID".Value('111111111');
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You no more errors
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [WHEN] Running Create File
+        IntrastatReportPage.CreateFile.Invoke();
+
+        // [THEN] Check file content
+        CheckFileContent(IntrastatReportPage);
+
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestSellToCountry()
+    var
+        SellToCountryRegion: Record "Country/Region";
+        ShipToCountryRegion: Record "Country/Region";
+        BillToCountryRegion: Record "Country/Region";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210: Test Shipment Based on "Sell-to Country"
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Report Template and Batch 
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Shipments Based On" := IntrastatReportSetup."Shipments Based On"::"Sell-to Country";
+        IntrastatReportSetup.Modify();
+
+        InvoiceDate := CalcDate('<5Y>');
+
+        LibraryIntrastat.CreateCountryRegion(SellToCountryRegion, true);
+        LibraryIntrastat.CreateCountryRegion(ShipToCountryRegion, true);
+        LibraryIntrastat.CreateCountryRegion(BillToCountryRegion, true);
+        LibraryIntrastat.CreateAndPostSalesOrderWithDiferrentCountries(SellToCountryRegion.Code, ShipToCountryRegion.Code, BillToCountryRegion.Code, InvoiceDate);
+
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        Commit();
+
+        // [WHEN] Running checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+
+        // [THEN] Check no error in error part
+        IntrastatReportPage.IntrastatLines."Country/Region Code".AssertEquals(SellToCountryRegion.Code);
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestBillToCountry()
+    var
+        SellToCountryRegion: Record "Country/Region";
+        ShipToCountryRegion: Record "Country/Region";
+        BillToCountryRegion: Record "Country/Region";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210: Test Shipment Based on "Bill-to Country"
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Report Template and Batch 
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Shipments Based On" := IntrastatReportSetup."Shipments Based On"::"Bill-to Country";
+        IntrastatReportSetup.Modify();
+
+        InvoiceDate := CalcDate('<5Y>');
+
+        LibraryIntrastat.CreateCountryRegion(SellToCountryRegion, true);
+        LibraryIntrastat.CreateCountryRegion(ShipToCountryRegion, true);
+        LibraryIntrastat.CreateCountryRegion(BillToCountryRegion, true);
+        LibraryIntrastat.CreateAndPostSalesOrderWithDiferrentCountries(SellToCountryRegion.Code, ShipToCountryRegion.Code, BillToCountryRegion.Code, InvoiceDate);
+
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        Commit();
+
+        // [WHEN] Running checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+
+        // [THEN] Check no error in error part
+        IntrastatReportPage.IntrastatLines."Country/Region Code".AssertEquals(BillToCountryRegion.Code);
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestShipToCountry()
+    var
+        SellToCountryRegion: Record "Country/Region";
+        ShipToCountryRegion: Record "Country/Region";
+        BillToCountryRegion: Record "Country/Region";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210: Test Shipment Based on "Ship-to Country"
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Report Template and Batch 
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Shipments Based On" := IntrastatReportSetup."Shipments Based On"::"Ship-to Country";
+        IntrastatReportSetup.Modify();
+
+        InvoiceDate := CalcDate('<5Y>');
+
+        LibraryIntrastat.CreateCountryRegion(SellToCountryRegion, true);
+        LibraryIntrastat.CreateCountryRegion(ShipToCountryRegion, true);
+        LibraryIntrastat.CreateCountryRegion(BillToCountryRegion, true);
+        LibraryIntrastat.CreateAndPostSalesOrderWithDiferrentCountries(SellToCountryRegion.Code, ShipToCountryRegion.Code, BillToCountryRegion.Code, InvoiceDate);
+
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        Commit();
+
+        // [WHEN] Running checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+
+        // [THEN] Check no error in error part
+        IntrastatReportPage.IntrastatLines."Country/Region Code".AssertEquals(ShipToCountryRegion.Code);
+        IntrastatReportPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    [Scope('OnPrem')]
+    procedure TestSupplementaryInfoFromTariffNo()
+    var
+        TariffNumber: Record "Tariff Number";
+        Item: Record Item;
+        UnitOfMeasure: Record "Unit of Measure";
+        ItemOUM: Record "Item Unit of Measure";
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 451276] Deliverable 451276: Test supplementary info validation between Tariff number and item 
+
+        // Create Unit of Measure
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+        // Create Tariff Number 
+        TariffNumber.Get(LibraryUtility.CreateCodeRecord(DATABASE::"Tariff Number"));
+        // Validate Supplementary Info fields
+        TariffNumber.Validate("Supplementary Units", true);
+        TariffNumber.Validate("Suppl. Unit of Measure", UnitOfMeasure.Code);
+        TariffNumber.Validate("Suppl. Conversion Factor", 3);
+        TariffNumber.Modify(true);
+
+        // Create Item with Tariff number
+        LibraryInventory.CreateItemWithTariffNo(Item, TariffNumber."No.");
+        // Get created Item Unit Of Measure 
+        ItemOUM.Get(Item."No.", UnitOfMeasure.Code);
+
+        // Compare Values
+        Assert.AreEqual(Item."Supplementary Unit of Measure", TariffNumber."Suppl. Unit of Measure", StrSubstNo(TariffItemInfoDifferentErr, Item.FieldCaption("Supplementary Unit of Measure"), Item.TableCaption, TariffNumber.TableCaption));
+        Assert.AreEqual(ItemOUM."Qty. per Unit of Measure", 0.33333, StrSubstNo(TariffItemInfoDifferentErr, ItemOUM.FieldCaption("Qty. per Unit of Measure"), ItemOUM.TableCaption, TariffNumber.TableCaption));
+
+        // Update Supplementary Info on Tariff number
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+        TariffNumber.Validate("Suppl. Unit of Measure", UnitOfMeasure.Code);
+        TariffNumber.Validate("Suppl. Conversion Factor", 0.5);
+        TariffNumber.Modify(true);
+
+        // Get Item and Item Unit Of Measure
+        Item.Get(Item."No.");
+        ItemOUM.Get(Item."No.", UnitOfMeasure.Code);
+
+        // Compare Values
+        Assert.AreEqual(Item."Supplementary Unit of Measure", TariffNumber."Suppl. Unit of Measure", StrSubstNo(TariffItemInfoDifferentErr, Item.FieldCaption("Supplementary Unit of Measure"), Item.TableCaption, TariffNumber.TableCaption));
+        Assert.AreEqual(ItemOUM."Qty. per Unit of Measure", 2, StrSubstNo(TariffItemInfoDifferentErr, ItemOUM.FieldCaption("Qty. per Unit of Measure"), ItemOUM.TableCaption, TariffNumber.TableCaption));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure ShptMethodCodeJobJournal()
+    var
+        IntrastatReportLine: Record "Intrastat Report Line";
+        ShipmentMethod: Record "Shipment Method";
+        Location: Record Location;
+        IntrastatReportNo: Code[20];
+        ItemNo: Code[20];
+    begin
+        // [FEATURE] [Job]
+        // [SCENARIO] User creates and posts job journal and fills Intrastat Report
+        Initialize();
+        // [GIVEN] Shipment Method "SMC"
+        ShipmentMethod.FindFirst();
+        // [GIVEN] Location "X"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(Location);
+        // [GIVEN] Job Journal Line (posted) with item, "X" and "SMC"
+        ItemNo := LibraryIntrastat.CreateAndPostJobJournalLine(ShipmentMethod.Code, Location.Code);
+        // [WHEN] Run Intrastat Report, then Get Entries 
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+
+        // [THEN] "Shpt. Method Code" in the Intrastat Report Line = "SMC"
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.SetRange("Item No.", ItemNo);
+        IntrastatReportLine.FindFirst();
+        Assert.IsTrue(1 = 1, ShptMethodCodeErr);
+        Assert.AreEqual(ShipmentMethod.Code, IntrastatReportLine."Shpt. Method Code", ShptMethodCodeErr);
+        // [THEN] "Location Code" is "X" in the Intrastat Report Line = "SMC"
+        // BUG 384736: "Location Code" copies to the Intrastat Report Line from the source documents
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandlerEmpty,IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [Scope('OnPrem')]
+    procedure IntrastatReportWithItemChargeInvoiceRevoked()
+    var
+        IntrastatReportLine: Record "Intrastat Report Line";
+        PostingDate: Date;
+        DocumentNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Corrective Credit Memo] [Item Charge]
+        // [SCENARIO 286107] Item Charge entry posted by Credit Memo must be reported as Receipt in Intrastat Report
+        Initialize();
+
+        // [GIVEN] Sales Invoice with Item and Item Charge posted on 'X'
+        PostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesInvoiceWithItemAndItemCharge(PostingDate);
+        // [GIVEN] Sales Credit Memo with Item Charge posted on 'Y'='X'+<1M>
+        PostingDate := CalcDate('<1M>', PostingDate);
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesCrMemoForItemCharge(DocumentNo, PostingDate);
+
+        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
+        // [WHEN] Get Intrastat Entries to include only Sales Credit Memo
+        CreateIntrastatReportAndSuggestLines(PostingDate, IntrastatReportNo);
+
+        // [THEN] Intrastat line for Item Charge from Sales Credit Memo has type Receipt
+        IntrastatReportLine.SetRange("Document No.", DocumentNo);
+        IntrastatReportLine.FindFirst();
+        IntrastatReportLine.TestField(Type, IntrastatReportLine.Type::Receipt);
     end;
 
     [Test]
@@ -862,7 +1617,7 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Item Ledger Entry with Quantity < 0
         PostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
-        CreateItemLedgerEntry(
+        LibraryIntrastat.CreateItemLedgerEntry(
           ItemLedgerEntry,
           PostingDate,
           LibraryInventory.CreateItemNo(),
@@ -871,7 +1626,7 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] Value Entry with "Document Type" != "Sales Credit Memo" and "Item Charge No" posted in <1M>
         PostingDate := CalcDate('<1M>', PostingDate);
 
-        CreateValueEntry(ValueEntry, ItemLedgerEntry, ValueEntry."Document Type"::"Sales Invoice", PostingDate);
+        LibraryIntrastat.CreateValueEntry(ValueEntry, ItemLedgerEntry, ValueEntry."Document Type"::"Sales Invoice", PostingDate);
 
         // [WHEN] Get Intrastat Entries on second posting date
         LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
@@ -898,7 +1653,7 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Item Ledger Entry with Service Type Item
         LibraryInventory.CreateServiceTypeItem(Item);
-        CreateItemLedgerEntry(
+        LibraryIntrastat.CreateItemLedgerEntry(
           ItemLedgerEntry,
           WorkDate(),
           Item."No.",
@@ -930,13 +1685,13 @@ codeunit 139550 "Intrastat Report Test"
         Initialize();
 
         // [GIVEN] Posted sales order with "Location Code" = "X"
-        CreateCountryRegion(CountryRegion, true);
-        ItemNo := CreateItem();
-        CreateFromToLocations(Location, LocationEU, CountryRegion.Code);
-        CreateAndPostPurchaseItemJournalLine(Location.Code, ItemNo);
-        CreateAndPostSalesOrderWithCountryAndLocation(CountryRegion.Code, Location.Code, ItemNo);
+        LibraryIntrastat.CreateCountryRegion(CountryRegion, true);
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateFromToLocations(Location, LocationEU, CountryRegion.Code);
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(Location.Code, ItemNo);
+        LibraryIntrastat.CreateAndPostSalesOrderWithCountryAndLocation(CountryRegion.Code, Location.Code, ItemNo);
         // [GIVEN] Posted transfer order with blank transit location.
-        CreateAndPostTransferOrder(TransferLine, Location.Code, LocationEU.Code, ItemNo);
+        LibraryIntrastat.CreateAndPostTransferOrder(TransferLine, Location.Code, LocationEU.Code, ItemNo);
 
         // [WHEN] Open "Intrastat Report" page.
         CreateIntrastatReportAndSuggestLines(CalcDate('<CM>', WorkDate()), IntrastatReportNo);
@@ -991,16 +1746,16 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] G/L Setup "Bill-to/Sell-to VAT Calc." = "Bill-to/Pay-to No."
         // [GIVEN] Shipment on Sales Invoice = false
-        UpdateShipmentOnInvoiceSalesSetup(false);
+        LibraryIntrastat.UpdateShipmentOnInvoiceSalesSetup(false);
 
         // [GIVEN] Sell-to Customer with VAT Registration No = 'AT0123456'
         // [GIVEN] Bill-to Customer with VAT Registration No = 'DE1234567'
         // [GIVEN] Sales Invoice with different Sell-to and Bill-To customers
-        SellToCustomer.Get(CreateCustomerWithVATRegNo(true));
-        BillToCustomer.Get(CreateCustomerWithVATRegNo(true));
-        CreateSalesDocument(
+        SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        LibraryIntrastat.CreateSalesDocument(
             SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::Invoice,
-            SalesLine.Type::Item, CreateItem(), 1);
+            SalesLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
         SalesHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
         SalesHeader.Modify(true);
 
@@ -1037,16 +1792,16 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] G/L Setup "Bill-to/Sell-to VAT Calc." = "Bill-to/Pay-to No."
         // [GIVEN] Shipment on Sales Invoice = true
-        UpdateShipmentOnInvoiceSalesSetup(true);
+        LibraryIntrastat.UpdateShipmentOnInvoiceSalesSetup(true);
 
         // [GIVEN] Sell-to Customer with VAT Registration No = 'AT0123456'
         // [GIVEN] Bill-to Customer with VAT Registration No = 'DE1234567'
         // [GIVEN] Sales Invoice with different Sell-to and Bill-To customers
-        SellToCustomer.Get(CreateCustomerWithVATRegNo(true));
-        BillToCustomer.Get(CreateCustomerWithVATRegNo(true));
-        CreateSalesDocument(
+        SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        LibraryIntrastat.CreateSalesDocument(
              SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::Invoice,
-             SalesLine.Type::Item, CreateItem(), 1);
+             SalesLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
         SalesHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
         SalesHeader.Modify(true);
 
@@ -1082,12 +1837,12 @@ codeunit 139550 "Intrastat Report Test"
         Initialize();
 
         // [GIVEN] Return Shipment on Credit Memo = false
-        UpdateRetShpmtOnCrMemoPurchSetup(false);
+        LibraryIntrastat.UpdateRetShpmtOnCrMemoPurchSetup(false);
 
         // [GIVEN] Pay-to Vendor with VAT Registration No = 'AT0123456'
-        Vendor.Get(CreateVendorWithVATRegNo(true));
-        CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", WorkDate(), Vendor."No.");
-        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, CreateItem());
+        Vendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", WorkDate(), Vendor."No.");
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
 
         // [WHEN] Intrastat Report Line is created
@@ -1118,12 +1873,12 @@ codeunit 139550 "Intrastat Report Test"
         Initialize();
 
         // [GIVEN] Return Shipment on Credit Memo = true
-        UpdateRetShpmtOnCrMemoPurchSetup(true);
+        LibraryIntrastat.UpdateRetShpmtOnCrMemoPurchSetup(true);
 
         // [GIVEN] Pay-to Vendor with VAT Registration No = 'AT0123456'
-        Vendor.Get(CreateVendorWithVATRegNo(true));
-        CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", WorkDate(), Vendor."No.");
-        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, CreateItem());
+        Vendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", WorkDate(), Vendor."No.");
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
 
         // [WHEN] Intrastat Report Line is created
@@ -1145,7 +1900,6 @@ codeunit 139550 "Intrastat Report Test"
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         IntrastatReportHeader: Record "Intrastat Report Header";
-        PurchRcptHeader: Record "Purch. Rcpt. Header";
         VendorNo: Code[20];
         IntrastatReportNo: Code[20];
     begin
@@ -1154,9 +1908,9 @@ codeunit 139550 "Intrastat Report Test"
         Initialize();
 
         // [GIVEN] Posted purchase order with Pay-to Vendor with VAT Registration No = 'AT0123456'
-        VendorNo := CreateVendorWithVATRegNo(true);
-        CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
-        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, CreateItem());
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
 
         // [WHEN] Intrastat Report Line is created
@@ -1164,8 +1918,6 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportHeader.Get(IntrastatReportNo);
 
         // [THEN] Partner VAT ID  = '' in Intrastat Report Line
-        PurchRcptHeader.SetRange("Buy-from Vendor No.", VendorNo);
-        PurchRcptHeader.FindFirst();
         VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", '');
     end;
 
@@ -1178,7 +1930,7 @@ codeunit 139550 "Intrastat Report Test"
     begin
         // [FEATURE] [UT]
         // [SCENARIO 402692] Intrastat Report batch "Reported" should be False on Modify the journal line
-
+        Initialize();
         // Positive
         LibraryIntrastat.CreateIntrastatReportLine(IntrastatReportLine);
         IntrastatReportLine.Modify(true);
@@ -1204,7 +1956,7 @@ codeunit 139550 "Intrastat Report Test"
     begin
         // [FEATURE] [UT]
         // [SCENARIO 402692] Intrastat Report batch "Reported" should be False on Rename the journal line
-
+        Initialize();
         // Positive
         LibraryIntrastat.CreateIntrastatReportLine(IntrastatReportLine);
         IntrastatReportLine.Rename(
@@ -1232,7 +1984,7 @@ codeunit 139550 "Intrastat Report Test"
     begin
         // [FEATURE] [UT]
         // [SCENARIO 402692] Intrastat Report batch "Reported" should be False on Delete the journal line
-
+        Initialize();
         // Positive        
         LibraryIntrastat.CreateIntrastatReport(WorkDate(), IntrastatReportNo);
         LibraryIntrastat.CreateIntrastatReportLineinIntrastatReport(IntrastatReportLine, IntrastatReportNo);
@@ -1284,7 +2036,7 @@ codeunit 139550 "Intrastat Report Test"
 
         // [GIVEN] Posted Purchase Order
         Initialize();
-        DocumentNo := CreateAndPostFixedAssetPurchaseOrder(PurchaseLine, WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostFixedAssetPurchaseOrder(PurchaseLine, WorkDate());
         // [WHEN] Get Intrastat Report Line for Fixed Asset Purchase Order
         // [THEN] Verify Intrastat Report Line
         CreateAndVerifyIntrastatLine(DocumentNo, PurchaseLine."No.", PurchaseLine.Quantity, IntrastatReportLine.Type::Receipt);
@@ -1306,9 +2058,9 @@ codeunit 139550 "Intrastat Report Test"
 
         Initialize();
         // [GIVEN] Create and post Aquisition Purchase Order
-        DocumentNo := CreateAndPostFixedAssetPurchaseOrder(PurchaseLine, WorkDate());
+        DocumentNo := LibraryIntrastat.CreateAndPostFixedAssetPurchaseOrder(PurchaseLine, WorkDate());
         // [GIVEN] Create and Post Disposal Sales Order
-        DocumentNo := CreateAndPostSalesDocumentMultiLine(
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesDocumentMultiLine(
             SalesLine, SalesHeader."Document Type"::Order, WorkDate(), SalesLine.Type::"Fixed Asset", PurchaseLine."No.", 1);
 
         // [WHEN] Get Intrastat Report Lines for Sales Order
@@ -1327,7 +2079,7 @@ codeunit 139550 "Intrastat Report Test"
         if IsInitialized then
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(CODEUNIT::"Intrastat Report Test");
-        UpdateIntrastatCodeInCountryRegion();
+        LibraryIntrastat.UpdateIntrastatCodeInCountryRegion();
         LibraryERMCountryData.CreateVATData();
         LibraryERMCountryData.CreateGeneralPostingSetupData();
         LibraryERMCountryData.UpdateSalesReceivablesSetup();
@@ -1335,10 +2087,23 @@ codeunit 139550 "Intrastat Report Test"
         LibraryERMCountryData.UpdateGeneralPostingSetup();
         LibraryERM.SetBillToSellToVATCalc(GLSetupVATCalculation::"Bill-to/Pay-to No.");
         LibraryIntrastat.CreateIntrastatReportSetup();
+        LibraryIntrastat.CreateIntrastatDataExchangeDefinition();
+        CreateIntrastatReportChecklist();
 
         IsInitialized := true;
         Commit();
         LibraryTestInitialize.OnAfterTestSuiteInitialize(CODEUNIT::"Intrastat Report Test");
+    end;
+
+    procedure CreateAndVerifyIntrastatLine(DocumentNo: Code[20]; ItemNo: Code[20]; Quantity: Decimal; IntrastatReportLineType: Enum "Intrastat Report Line Type")
+    var
+        IntrastatReportNo: Code[20];
+    begin
+        // Exercise: Run Get Item Entries. Take Report Date as WORKDATE
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+
+        // Verify.
+        VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLineType, LibraryIntrastat.GetCountryRegionCode(), ItemNo, Quantity);
     end;
 
     local procedure VerifyIntrastatReportLineExist(IntrastatReportNo: Code[20]; DocumentNo: Code[20]; MustExist: Boolean)
@@ -1350,344 +2115,6 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportLine.SetFilter("Intrastat No.", IntrastatReportNo);
         IntrastatReportLine.SetFilter("Document No.", DocumentNo);
         Assert.AreEqual(MustExist, IntrastatReportLine.FindFirst(), LineNotExistErr);
-    end;
-
-    local procedure CreateCountryRegion(var CountryRegion: Record "Country/Region"; IsEUCountry: Boolean)
-    begin
-        CountryRegion.Code := LibraryUtility.GenerateRandomCodeWithLength(CountryRegion.FieldNo(Code), Database::"Country/Region", 3);
-        CountryRegion.Validate("Intrastat Code", CopyStr(LibraryUtility.GenerateRandomAlphabeticText(3, 0), 1, 3));
-        if IsEUCountry then
-            CountryRegion.Validate("EU Country/Region Code", CopyStr(LibraryUtility.GenerateRandomAlphabeticText(3, 0), 1, 3));
-        CountryRegion.Insert(true);
-    end;
-
-    local procedure CreateCountryRegionWithIntrastatCode(IsEUIntrastat: Boolean): Code[10]
-    var
-        CountryRegion: Record "Country/Region";
-    begin
-        CreateCountryRegion(CountryRegion, IsEUIntrastat);
-        exit(CountryRegion.Code);
-    end;
-
-    local procedure CreateCustomer(): Code[20]
-    var
-        Customer: Record Customer;
-    begin
-        LibrarySales.CreateCustomer(Customer);
-        Customer.Validate("Country/Region Code", GetCountryRegionCode());
-        Customer.Modify(true);
-        exit(Customer."No.");
-    end;
-
-    local procedure CreateFromToLocations(var LocationFrom: Record Location; var LocationTo: Record Location; CountryRegionCode: Code[10])
-    begin
-        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(LocationFrom);
-        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(LocationTo);
-        LocationTo.Validate("Country/Region Code", CountryRegionCode);
-        LocationTo.Modify(true);
-    end;
-
-    local procedure CreateItem(): Code[20]
-    var
-        Item: Record Item;
-    begin
-        LibraryInventory.CreateItemWithTariffNo(Item, LibraryUtility.CreateCodeRecord(DATABASE::"Tariff Number"));
-        exit(Item."No.");
-    end;
-
-    local procedure CreateFixedAsset(): Code[20]
-    var
-        FixedAsset: Record "Fixed Asset";
-    begin
-        LibraryFixedAsset.CreateFixedAsset(FixedAsset);
-        exit(FixedAsset."No.");
-    end;
-
-    local procedure CreateItemChargeAssignmentForPurchaseCreditMemo(PurchaseLine: Record "Purchase Line"; DocumentNo: Code[20])
-    var
-        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
-        PurchRcptLine: Record "Purch. Rcpt. Line";
-        ItemChargeAssgntPurch: Codeunit "Item Charge Assgnt. (Purch.)";
-    begin
-        ItemChargeAssignmentPurch.Init();
-        ItemChargeAssignmentPurch.Validate("Document Type", PurchaseLine."Document Type");
-        ItemChargeAssignmentPurch.Validate("Document No.", PurchaseLine."Document No.");
-        ItemChargeAssignmentPurch.Validate("Document Line No.", PurchaseLine."Line No.");
-        ItemChargeAssignmentPurch.Validate("Item Charge No.", PurchaseLine."No.");
-        ItemChargeAssignmentPurch.Validate("Unit Cost", PurchaseLine."Direct Unit Cost");
-        PurchRcptLine.SetRange("Document No.", DocumentNo);
-        PurchRcptLine.FindFirst();
-        ItemChargeAssgntPurch.CreateRcptChargeAssgnt(PurchRcptLine, ItemChargeAssignmentPurch);
-        UpdatePurchaseItemChargeQtyToAssign(PurchaseLine);
-    end;
-
-    local procedure CreatePurchaseHeader(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type"; PostingDate: Date;
-                                                                                                         VendorNo: Code[20])
-    var
-        Location: Record Location;
-    begin
-        // Create Purchase Order With Random Quantity and Direct Unit Cost.
-        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
-        with PurchaseHeader do begin
-            Validate("Posting Date", PostingDate);
-            LibraryWarehouse.CreateLocationWithInventoryPostingSetup(Location);
-            Validate("Location Code", Location.Code);
-            Modify(true);
-        end;
-    end;
-
-    local procedure CreatePurchaseLine(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; Type: Enum "Purchase Line Type"; No: Code[20])
-    var
-        DepreciationBook: Record "Depreciation Book";
-        FADepreciationBook: Record "FA Depreciation Book";
-        FAPostingGroup: Record "FA Posting Group";
-    begin
-        // Take Random Values for Purchase Line.
-        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, Type, No, LibraryRandom.RandDec(10, 2));
-        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDec(100, 2));
-
-        if PurchaseLine.Type = PurchaseLine.Type::"Fixed Asset" then begin
-            LibraryFixedAsset.CreateDepreciationBook(DepreciationBook);
-            DepreciationBook.Validate("G/L Integration - Acq. Cost", true);
-            DepreciationBook.Validate("G/L Integration - Disposal", true);
-            DepreciationBook.Modify(true);
-
-            LibraryFixedAsset.CreateFADepreciationBook(FADepreciationBook, No, DepreciationBook.Code);
-            LibraryFixedAsset.CreateFAPostingGroup(FAPostingGroup);
-            FADepreciationBook.Validate("FA Posting Group", FAPostingGroup.Code);
-            FADepreciationBook.Modify(true);
-
-            PurchaseLine.Validate("Depreciation Book Code", DepreciationBook.Code);
-            PurchaseLine.Validate(Quantity, 1);
-        end;
-
-        PurchaseLine.Modify(true);
-    end;
-
-    local procedure CreateAndPostPurchaseItemJournalLine(LocationCode: Code[10]; ItemNo: Code[20])
-    var
-        ItemJournalTemplate: Record "Item Journal Template";
-        ItemJournalBatch: Record "Item Journal Batch";
-        ItemJournalLine: Record "Item Journal Line";
-    begin
-        LibraryInventory.CreateItemJournalTemplate(ItemJournalTemplate);
-        LibraryInventory.CreateItemJournalBatch(ItemJournalBatch, ItemJournalTemplate.Name);
-        LibraryInventory.CreateItemJournalLine(
-          ItemJournalLine,
-          ItemJournalTemplate.Name,
-          ItemJournalBatch.Name,
-          ItemJournalLine."Entry Type"::Purchase,
-          ItemNo,
-          LibraryRandom.RandIntInRange(10, 1000));
-        ItemJournalLine.Validate("Location Code", LocationCode);
-        ItemJournalLine.Modify(true);
-        LibraryInventory.PostItemJournalLine(ItemJournalTemplate.Name, ItemJournalBatch.Name);
-    end;
-
-    local procedure CreateAndPostPurchaseOrder(var PurchaseLine: Record "Purchase Line"; PostingDate: Date): Code[20]
-    var
-        PurchaseHeader: Record "Purchase Header";
-    begin
-        exit(
-          CreateAndPostPurchaseDocumentMultiLine(
-            PurchaseLine, PurchaseHeader."Document Type"::Order, PostingDate, PurchaseLine.Type::Item, CreateItem(), 1));
-    end;
-
-    local procedure CreateAndPostPurchaseDocumentMultiLine(var PurchaseLine: Record "Purchase Line"; DocumentType: Enum "Purchase Document Type"; PostingDate: Date; LineType: Enum "Purchase Line Type";
-                                                                                                                       ItemNo: Code[20];
-                                                                                                                       NoOfLines: Integer): Code[20]
-    var
-        PurchaseHeader: Record "Purchase Header";
-        i: Integer;
-    begin
-        CreatePurchaseHeader(PurchaseHeader, DocumentType, PostingDate, CreateVendor(GetCountryRegionCode()));
-        for i := 1 to NoOfLines do
-            CreatePurchaseLine(PurchaseHeader, PurchaseLine, LineType, ItemNo);
-        if LineType = LineType::"Fixed Asset" then
-            exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true))
-        else
-            exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false));
-    end;
-
-    local procedure CreateAndPostSalesOrder(var SalesLine: Record "Sales Line"; PostingDate: Date): Code[20]
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        exit(
-          CreateAndPostSalesDocumentMultiLine(
-            SalesLine, SalesHeader."Document Type"::Order, PostingDate, SalesLine.Type::Item, CreateItem(), 1));
-    end;
-
-    local procedure CreateAndPostSalesOrderWithCountryAndLocation(CountryRegionCode: Code[10]; LocationCode: Code[10]; ItemNo: Code[20])
-    var
-        Customer: Record Customer;
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-    begin
-        LibrarySales.CreateCustomerWithLocationCode(Customer, LocationCode);
-        Customer.Validate("Country/Region Code", CountryRegionCode);
-        Customer.Modify(true);
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
-        SalesHeader.Validate("Location Code", LocationCode);
-        SalesHeader.Validate("VAT Country/Region Code", CountryRegionCode);
-        SalesHeader.Modify(true);
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, ItemNo, 1);
-        LibrarySales.PostSalesDocument(SalesHeader, true, true);
-    end;
-
-    local procedure CreateAndPostSalesDocumentMultiLine(var SalesLine: Record "Sales Line"; DocumentType: Enum "Sales Document Type"; PostingDate: Date; LineType: Enum "Sales Line Type";
-                                                                                                              ItemNo: Code[20];
-                                                                                                              NoOfSalesLines: Integer): Code[20]
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        CreateSalesDocument(SalesHeader, SalesLine, CreateCustomer(), PostingDate, DocumentType, LineType, ItemNo, NoOfSalesLines);
-        if LineType = LineType::"Fixed Asset" then
-            exit(LibrarySales.PostSalesDocument(SalesHeader, true, true))
-        else
-            exit(LibrarySales.PostSalesDocument(SalesHeader, true, false));
-    end;
-
-    local procedure CreateAndPostTransferOrder(var TransferLine: Record "Transfer Line"; FromLocation: Code[10]; ToLocation: Code[10]; ItemNo: Code[20])
-    var
-        TransferHeader: Record "Transfer Header";
-    begin
-        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation, ToLocation, '');
-        TransferHeader.Validate("Direct Transfer", true);
-        TransferHeader.Modify(true);
-        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
-        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
-    end;
-
-    local procedure CreateShippingAgent(ShippingInternetAddress: Text[250]): Code[10]
-    var
-        ShippingAgent: Record "Shipping Agent";
-    begin
-        LibraryInventory.CreateShippingAgent(ShippingAgent);
-        ShippingAgent."Internet Address" := ShippingInternetAddress;
-        ShippingAgent.Modify();
-        exit(ShippingAgent.Code);
-    end;
-
-    local procedure UseItemNonZeroNetWeight(var IntrastatReportLine: Record "Intrastat Report Line"): Decimal
-    var
-        Item: Record Item;
-    begin
-        Item.Get(CreateItem());
-        IntrastatReportLine.Validate("Item No.", Item."No.");
-        IntrastatReportLine.Validate(Quantity, LibraryRandom.RandDecInRange(10, 20, 2));
-        IntrastatReportLine.Modify(true);
-        exit(Item."Net Weight");
-    end;
-
-    local procedure CreateVendor(CountryRegionCode: Code[10]): Code[20]
-    var
-        Vendor: Record Vendor;
-    begin
-        LibraryPurchase.CreateVendor(Vendor);
-        Vendor.Validate("Country/Region Code", CountryRegionCode);
-        Vendor.Modify(true);
-        exit(Vendor."No.");
-    end;
-
-    local procedure CreateAndVerifyIntrastatLine(DocumentNo: Code[20]; ItemNo: Code[20]; Quantity: Decimal; IntrastatReportLineType: Enum "Intrastat Report Line Type")
-    var
-        IntrastatReportNo: Code[20];
-    begin
-        // Exercise: Run Get Item Entries. Take Report Date as WORKDATE
-        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
-
-        // Verify.
-        VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLineType, GetCountryRegionCode(), ItemNo, Quantity);
-    end;
-
-    local procedure CreateSalesDocument(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; CustomerNo: Code[20]; PostingDate: Date; DocumentType: Enum "Sales Document Type"; Type: Enum "Sales Line Type"; No: Code[20];
-                                                                                                                                                                               NoOfLines: Integer)
-    var
-        FADepreciationBook: Record "FA Depreciation Book";
-        i: Integer;
-    begin
-        // Create Sales Order with Random Quantity and Unit Price.
-        CreateSalesHeader(SalesHeader, CustomerNo, PostingDate, DocumentType);
-        for i := 1 to NoOfLines do begin
-            LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Type, No, LibraryRandom.RandDec(10, 2));
-            SalesLine.Validate("Unit Price", LibraryRandom.RandDec(100, 2));
-            if SalesLine.Type = SalesLine.Type::"Fixed Asset" then begin
-                FADepreciationBook.SetRange("FA No.", No);
-                FADepreciationBook.FindFirst();
-                SalesLine.Validate("Depreciation Book Code", FADepreciationBook."Depreciation Book Code");
-                SalesLine.Validate(Quantity, 1);
-            end;
-            SalesLine.Modify(true);
-        end;
-    end;
-
-    local procedure CreateSalesShipmentHeader(var SalesShipmentHeader: Record "Sales Shipment Header"; ShippingInternetAddress: Text[250])
-    begin
-        SalesShipmentHeader.Init();
-        SalesShipmentHeader."Package Tracking No." := LibraryUtility.GenerateGUID();
-        SalesShipmentHeader."Shipping Agent Code" := CreateShippingAgent(ShippingInternetAddress);
-    end;
-
-    local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; CustomerNo: Code[20]; PostingDate: Date; DocumentType: Enum "Sales Document Type")
-    begin
-        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
-        SalesHeader.Validate("Posting Date", PostingDate);
-        SalesHeader.Modify(true);
-    end;
-
-    local procedure CreateItemLedgerEntry(var ItemLedgerEntry: Record "Item Ledger Entry"; PostingDate: Date; ItemNo: Code[20]; Quantity: Decimal; ILEEntryType: Enum "Item Ledger Entry Type")
-    var
-        ItemLedgerEntryNo: Integer;
-    begin
-        ItemLedgerEntryNo := LibraryUtility.GetNewRecNo(ItemLedgerEntry, ItemLedgerEntry.FieldNo("Entry No."));
-        Clear(ItemLedgerEntry);
-        ItemLedgerEntry."Entry No." := ItemLedgerEntryNo;
-        ItemLedgerEntry."Item No." := ItemNo;
-        ItemLedgerEntry."Posting Date" := PostingDate;
-        ItemLedgerEntry."Entry Type" := ILEEntryType;
-        ItemLedgerEntry.Quantity := Quantity;
-        ItemLedgerEntry."Country/Region Code" := GetCountryRegionCode();
-        ItemLedgerEntry.Insert();
-    end;
-
-    local procedure CreateValueEntry(var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry"; DocumentType: Enum "Item Ledger Document Type"; PostingDate: Date)
-    var
-        ValueEntryNo: Integer;
-    begin
-        ValueEntryNo := LibraryUtility.GetNewRecNo(ValueEntry, ValueEntry.FieldNo("Entry No."));
-        Clear(ValueEntry);
-        ValueEntry."Entry No." := ValueEntryNo;
-        ValueEntry."Item No." := ItemLedgerEntry."Item No.";
-        ValueEntry."Posting Date" := PostingDate;
-        ValueEntry."Entry Type" := ValueEntry."Entry Type"::"Direct Cost";
-        ValueEntry."Item Ledger Entry Type" := ItemLedgerEntry."Entry Type";
-        ValueEntry."Item Ledger Entry No." := ItemLedgerEntry."Entry No.";
-        ValueEntry."Item Charge No." := LibraryInventory.CreateItemChargeNo();
-        ValueEntry."Document Type" := DocumentType;
-        ValueEntry.Insert();
-    end;
-
-    local procedure CreateCustomerWithVATRegNo(IsEUCountry: Boolean): Code[20]
-    var
-        Customer: Record Customer;
-    begin
-        LibrarySales.CreateCustomer(Customer);
-        Customer.Validate("Country/Region Code", CreateCountryRegionWithIntrastatCode(IsEUCountry));
-        Customer.Validate("VAT Registration No.", LibraryERM.GenerateVATRegistrationNo(Customer."Country/Region Code"));
-        Customer.Modify(true);
-        exit(Customer."No.");
-    end;
-
-    local procedure CreateVendorWithVATRegNo(IsEUCountry: Boolean): Code[20]
-    var
-        Vendor: Record Vendor;
-    begin
-        LibraryPurchase.CreateVendor(Vendor);
-        Vendor.Validate("Country/Region Code", CreateCountryRegionWithIntrastatCode(IsEUCountry));
-        Vendor.Validate("VAT Registration No.", LibraryERM.GenerateVATRegistrationNo(Vendor."Country/Region Code"));
-        Vendor.Modify(true);
-        exit(Vendor."No.");
     end;
 
     local procedure DeleteAndVerifyNoIntrastatLine(DocumentNo: Code[20])
@@ -1705,18 +2132,6 @@ codeunit 139550 "Intrastat Report Test"
 
         // Verify.
         VerifyIntrastatLineForItemExist(DocumentNo, IntrastatReportNo);
-    end;
-
-    local procedure GetCountryRegionCode(): Code[10]
-    var
-        CountryRegion: Record "Country/Region";
-        CompanyInformation: Record "Company Information";
-    begin
-        CompanyInformation.Get();
-        CountryRegion.SetFilter(Code, '<>%1', CompanyInformation."Country/Region Code");
-        CountryRegion.SetFilter("Intrastat Code", '<>''''');
-        CountryRegion.FindFirst();
-        exit(CountryRegion.Code);
     end;
 
     local procedure GetEntriesAndVerifyNoItemLine(DocumentNo: Code[20])
@@ -1742,16 +2157,6 @@ codeunit 139550 "Intrastat Report Test"
         end;
     end;
 
-    local procedure SetIntrastatContact(ContactType: Enum "Intrastat Report Contact Type"; ContactNo: Code[20])
-    var
-        IntrastatReportSetup: Record "Intrastat Report Setup";
-    begin
-        IntrastatReportSetup.Get();
-        IntrastatReportSetup.Validate("Intrastat Contact Type", ContactType);
-        IntrastatReportSetup.Validate("Intrastat Contact No.", ContactNo);
-        IntrastatReportSetup.Modify();
-    end;
-
     local procedure LookupIntrastatContactViaPage(ContactType: Enum "Intrastat Report Contact Type")
     var
         IntrastatReportSetup: TestPage "Intrastat Report Setup";
@@ -1764,147 +2169,15 @@ codeunit 139550 "Intrastat Report Test"
         UnbindSubscription(LibraryIntrastat);
     end;
 
-    local procedure UpdateIntrastatCodeInCountryRegion()
-    var
-        CompanyInformation: Record "Company Information";
-        CountryRegion: Record "Country/Region";
-    begin
-        CompanyInformation.Get();
-        CompanyInformation."Bank Account No." := '';
-        CompanyInformation.Modify();
-        CountryRegion.Get(CompanyInformation."Country/Region Code");
-        if CountryRegion."Intrastat Code" = '' then begin
-            CountryRegion.Validate("Intrastat Code", CountryRegion.Code);
-            CountryRegion.Modify(true);
-        end;
-    end;
 
-    local procedure UpdatePurchaseItemChargeQtyToAssign(PurchaseLine: Record "Purchase Line")
-    var
-        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
-    begin
-        ItemChargeAssignmentPurch.Get(
-          PurchaseLine."Document Type", PurchaseLine."Document No.", PurchaseLine."Line No.", PurchaseLine."Line No.");
-        ItemChargeAssignmentPurch.Validate("Qty. to Assign", PurchaseLine.Quantity);
-        ItemChargeAssignmentPurch.Modify(true);
-    end;
 
-    local procedure UndoPurchaseReceiptLine(DocumentNo: Code[20]; No: Code[20])
-    var
-        PurchRcptLine: Record "Purch. Rcpt. Line";
-    begin
-        PurchRcptLine.SetRange("Document No.", DocumentNo);
-        PurchRcptLine.SetRange("No.", No);
-        PurchRcptLine.FindFirst();
-        LibraryPurchase.UndoPurchaseReceiptLine(PurchRcptLine);
-    end;
-
-    local procedure UndoPurchaseReceiptLineByLineNo(DocumentNo: Code[20]; LineNo: Integer)
-    var
-        PurchRcptLine: Record "Purch. Rcpt. Line";
-    begin
-        with PurchRcptLine do begin
-            SetRange("Document No.", DocumentNo);
-            FindSet();
-            Next(LineNo - 1);
-            SetRecFilter();
-        end;
-        LibraryPurchase.UndoPurchaseReceiptLine(PurchRcptLine);
-    end;
-
-    local procedure UndoReturnShipmentLineByLineNo(DocumentNo: Code[20]; LineNo: Integer)
-    var
-        ReturnShipmentLine: Record "Return Shipment Line";
-    begin
-        with ReturnShipmentLine do begin
-            SetRange("Document No.", DocumentNo);
-            FindSet();
-            Next(LineNo - 1);
-            SetRecFilter();
-        end;
-        LibraryPurchase.UndoReturnShipmentLine(ReturnShipmentLine);
-    end;
-
-    local procedure UndoSalesShipmentLine(DocumentNo: Code[20]; No: Code[20])
-    var
-        SalesShipmentLine: Record "Sales Shipment Line";
-    begin
-        SalesShipmentLine.SetRange("Document No.", DocumentNo);
-        SalesShipmentLine.SetRange("No.", No);
-        SalesShipmentLine.FindFirst();
-        LibrarySales.UndoSalesShipmentLine(SalesShipmentLine);
-    end;
-
-    local procedure UndoSalesShipmentLineByLineNo(DocumentNo: Code[20]; LineNo: Integer)
-    var
-        SalesShipmentLine: Record "Sales Shipment Line";
-    begin
-        with SalesShipmentLine do begin
-            SetRange("Document No.", DocumentNo);
-            FindSet();
-            Next(LineNo - 1);
-            SetRecFilter();
-        end;
-        LibrarySales.UndoSalesShipmentLine(SalesShipmentLine);
-    end;
-
-    local procedure UndoReturnReceiptLineByLineNo(DocumentNo: Code[20]; LineNo: Integer)
-    var
-        ReturnReceiptLine: Record "Return Receipt Line";
-    begin
-        with ReturnReceiptLine do begin
-            SetRange("Document No.", DocumentNo);
-            FindSet();
-            Next(LineNo - 1);
-            SetRecFilter();
-        end;
-        LibrarySales.UndoReturnReceiptLine(ReturnReceiptLine);
-    end;
-
-    local procedure UpdateShipmentOnInvoiceSalesSetup(ShipmentOnInvoice: Boolean)
-    var
-        SalesReceivablesSetup: Record "Sales & Receivables Setup";
-    begin
-        SalesReceivablesSetup.Get();
-        SalesReceivablesSetup.Validate("Shipment on Invoice", ShipmentOnInvoice);
-        SalesReceivablesSetup.Modify(true);
-    end;
-
-    local procedure UpdateRetShpmtOnCrMemoPurchSetup(RetShpmtOnCrMemo: Boolean)
-    var
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
-    begin
-        PurchasesPayablesSetup.Get();
-        PurchasesPayablesSetup.Validate("Return Shipment on Credit Memo", RetShpmtOnCrMemo);
-        PurchasesPayablesSetup.Modify(true);
-    end;
-
-    local procedure GetIntrastatReportLine(DocumentNo: Code[20]; IntrastatReportNo: Code[20]; var IntrastatReportLine: Record "Intrastat Report Line")
-    begin
-        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
-        IntrastatReportLine.SetRange("Document No.", DocumentNo);
-        DocumentNo := IntrastatReportNo;
-        IntrastatReportLine.FindFirst();
-    end;
-
-    local procedure IntrastatSetupEnableReportReceipts()
-    var
-        IntrastatReportSetup: Record "Intrastat Report Setup";
-    begin
-        with IntrastatReportSetup do begin
-            if not Get() then
-                LibraryIntrastat.CreateIntrastatReportSetup();
-            get();
-            "Report Receipts" := true;
-            Modify();
-        end;
-    end;
-
-    local procedure VerifyIntrastatReportLine(DocumentNo: Code[20]; IntrastatReportNo: Code[20]; Type: Enum "Intrastat Report Line Type"; CountryRegionCode: Code[10]; ItemNo: Code[20]; Quantity: Decimal)
+    local procedure VerifyIntrastatReportLine(DocumentNo: Code[20]; IntrastatReportNo: Code[20]; Type: Enum "Intrastat Report Line Type"; CountryRegionCode: Code[10];
+                                                                                                           ItemNo: Code[20];
+                                                                                                           Quantity: Decimal)
     var
         IntrastatReportLine: Record "Intrastat Report Line";
     begin
-        GetIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLine);
+        LibraryIntrastat.GetIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLine);
 
         Assert.AreEqual(
           Type, IntrastatReportLine.Type,
@@ -1993,15 +2266,6 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportLine.TestField("Partner VAT ID", PartnerID);
     end;
 
-    local procedure CreateAndPostFixedAssetPurchaseOrder(var PurchaseLine: Record "Purchase Line"; PostingDate: Date): Code[20]
-    var
-        PurchaseHeader: Record "Purchase Header";
-    begin
-        exit(
-          CreateAndPostPurchaseDocumentMultiLine(
-            PurchaseLine, PurchaseHeader."Document Type"::Order, PostingDate, PurchaseLine.Type::"Fixed Asset", CreateFixedAsset(), 1));
-    end;
-
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure IntrastatReportListPageHandler(var IntrastatReportList: TestPage "Intrastat Report List")
@@ -2045,6 +2309,58 @@ codeunit 139550 "Intrastat Report Test"
         VendorLookup.OK().Invoke();
     end;
 
+    local procedure CreateIntrastatReportChecklist()
+    var
+        IntrastatReportChecklist: Record "Intrastat Report Checklist";
+        IntrastatReportLine: Record "Intrastat Report Line";
+    begin
+        IntrastatReportChecklist.DeleteAll();
+
+        LibraryIntrastat.CreateIntrastatReportChecklistRecord(IntrastatReportLine.FieldNo("Tariff No."), '');
+        LibraryIntrastat.CreateIntrastatReportChecklistRecord(IntrastatReportLine.FieldNo("Country/Region Code"), '');
+        LibraryIntrastat.CreateIntrastatReportChecklistRecord(IntrastatReportLine.FieldNo("Transaction Type"), '');
+        LibraryIntrastat.CreateIntrastatReportChecklistRecord(IntrastatReportLine.FieldNo(Quantity), 'Supplementary Units: True');
+        LibraryIntrastat.CreateIntrastatReportChecklistRecord(IntrastatReportLine.FieldNo("Total Weight"), 'Supplementary Units: False');
+        LibraryIntrastat.CreateIntrastatReportChecklistRecord(IntrastatReportLine.FieldNo("Country/Region of Origin Code"), 'Type: Shipment');
+        LibraryIntrastat.CreateIntrastatReportChecklistRecord(IntrastatReportLine.FieldNo("Partner VAT ID"), 'Type: Shipment');
+    end;
+
+    local procedure CheckFileContent(var IntrastatReportPage: TestPage "Intrastat Report")
+    var
+        DataExch: Record "Data Exch.";
+        FileMgt: Codeunit "File Management";
+        LibraryTextFileValidation: Codeunit "Library - Text File Validation";
+        TempBlob: Codeunit "Temp Blob";
+        FileName: Text;
+        Line: Text;
+        TabChar: Char;
+        DecVar: Decimal;
+    begin
+        DataExch.FindLast();
+        if DataExch."File Content".HasValue then begin
+            DataExch.CalcFields("File Content");
+            TempBlob.FromRecord(DataExch, DataExch.FieldNo("File Content"));
+
+            FileName := FileMgt.ServerTempFileName('txt');
+            FileMgt.BLOBExportToServerFile(TempBlob, FileName);
+
+            TabChar := 9;
+            Line := LibraryTextFileValidation.ReadLine(FileName, 1);
+
+            IntrastatReportPage.IntrastatLines."Tariff No.".AssertEquals(LibraryTextFileValidation.ReadField(Line, 1, TabChar).Trim());
+            IntrastatReportPage.IntrastatLines."Country/Region Code".AssertEquals(LibraryTextFileValidation.ReadField(Line, 2, TabChar).Trim());
+            IntrastatReportPage.IntrastatLines."Transaction Type".AssertEquals(LibraryTextFileValidation.ReadField(Line, 3, TabChar).Trim());
+            Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 4, TabChar).Trim());
+            IntrastatReportPage.IntrastatLines.Quantity.AssertEquals(Format(DecVar));
+            Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 5, TabChar).Trim());
+            IntrastatReportPage.IntrastatLines."Total Weight".AssertEquals(Format(DecVar));
+            Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 6, TabChar).Trim());
+            IntrastatReportPage.IntrastatLines."Statistical Value".AssertEquals(Format(DecVar));
+            IntrastatReportPage.IntrastatLines."Partner VAT ID".AssertEquals(LibraryTextFileValidation.ReadField(Line, 8, TabChar).Trim());
+            IntrastatReportPage.IntrastatLines."Country/Region of Origin Code".AssertEquals(LibraryTextFileValidation.ReadField(Line, 9, TabChar).Trim());
+        end;
+    end;
+
     [ConfirmHandler]
     [Scope('OnPrem')]
     procedure ConfirmHandler(Message: Text[1024]; var Reply: Boolean)
@@ -2072,7 +2388,6 @@ codeunit 139550 "Intrastat Report Test"
         LibraryIntrastat.CreateIntrastatReport(ReportDate, IntrastatReportNo);
         InvokeSuggestLinesOnIntrastatReport(IntrastatReportNo);
     end;
-
 
     procedure InvokeSuggestLinesOnIntrastatReport(IntrastatReportNo: Code[20])
     var

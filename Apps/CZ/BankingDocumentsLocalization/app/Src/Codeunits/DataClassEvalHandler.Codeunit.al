@@ -73,6 +73,9 @@ codeunit 31331 "Data Class. Eval. Handler CZB"
         DataClassificationMgt.SetFieldToNormal(Database::"Employee Ledger Entry", EmployeeLedgerEntry.FieldNo("Amount on Pmt. Order (LCY) CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("Search Rule Code CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("Search Rule Line No. CZB"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("Variable S. to Description CZB"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("Variable S. to Variable S. CZB"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("Variable S. to Ext.Doc.No. CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Payment Export Data", PaymentExportData.FieldNo("Specific Symbol CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Payment Export Data", PaymentExportData.FieldNo("Variable Symbol CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Payment Export Data", PaymentExportData.FieldNo("Constant Symbol CZB"));

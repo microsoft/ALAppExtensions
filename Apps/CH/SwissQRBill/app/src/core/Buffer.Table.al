@@ -44,7 +44,7 @@ table 11510 "Swiss QR-Bill Buffer"
                         TestField("IBAN Type", "IBAN Type"::"QR-IBAN");
                 end;
                 if not "Source Record Printed" then
-                    Validate("Payment Reference", SwissQRBillMgt.GetNextReferenceNo("Payment Reference Type", false));
+                    Validate("Payment Reference", GetReferenceNo(false));
             end;
         }
         field(6; "Payment Reference"; Code[50])
@@ -652,7 +652,7 @@ table 11510 "Swiss QR-Bill Buffer"
     begin
         CheckAppendFileNameExt();
         if not "Source Record Printed" then begin
-            Validate("Payment Reference", SwissQRBillMgt.GetNextReferenceNo("Payment Reference Type", true));
+            Validate("Payment Reference", GetReferenceNo(true));
             UpdateSourceRecordReferenceNo();
         end;
         Modify();
@@ -693,14 +693,31 @@ table 11510 "Swiss QR-Bill Buffer"
             end;
     end;
 
+    local procedure GetReferenceNo(UpdateLastUsed: Boolean) Result: Code[50]
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGetReferenceNo(Rec, UpdateLastUsed, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
+        Result := SwissQRBillMgt.GetNextReferenceNo("Payment Reference Type", UpdateLastUsed);
+    end;
+
     internal procedure EnableEditingOfAlreadyPrinted()
     begin
         "Source Record Printed" := false;
-        Validate("Payment Reference", SwissQRBillMgt.GetNextReferenceNo("Payment Reference Type", false));
+        Validate("Payment Reference", GetReferenceNo(false));
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateIBAN(var IBAN: Code[50])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetReferenceNo(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; UpdateLastUsed: Boolean; var Result: Code[50]; var IsHandled: Boolean)
     begin
     end;
 
