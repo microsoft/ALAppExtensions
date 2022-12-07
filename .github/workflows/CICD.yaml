@@ -259,8 +259,9 @@ jobs:
     strategy:
       matrix:
         project: ${{ fromJson(needs.Initialization.outputs.projects) }}
+        buildMode: [Standard, CLEAN]
       fail-fast: false
-    name: Build ${{ matrix.project }}
+    name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
       AppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.AppsArtifactsName }}
       TestAppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestAppsArtifactsName }}
@@ -411,19 +412,20 @@ jobs:
 
       - name: Run pipeline
         id: RunPipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@preview
+        uses: aholstrup1/AL-Go-Actions/RunPipeline@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
           ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
           settingsJson: ${{ env.Settings }}
           SecretsJson: ${{ env.RepoSecrets }}
-
+          buildMode: ${{ matrix.buildMode }}
+      
       - name: Upload thisbuild artifacts - apps
         if: env.WorkflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-Apps'
+          name: 'thisbuild-${{ matrix.project }}-Apps-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -432,7 +434,7 @@ jobs:
         if: env.WorkflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-TestApps'
+          name: 'thisbuild-${{ matrix.project }}-TestApps-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -444,6 +446,7 @@ jobs:
           $ErrorActionPreference = "STOP"
           $settings = '${{ env.Settings }}' | ConvertFrom-Json
           $project = '${{ matrix.project }}'
+          $buildMode = '${{ matrix.buildMode }}'
           if ("$ENV:GITHUB_EVENT_NAME" -eq 'workflow_run') {
             $event = Get-Content $ENV:GITHUB_EVENT_PATH -Encoding UTF8 | ConvertFrom-Json
             $ref = "PR$($event.workflow_run.pull_requests[0].number)"
@@ -455,13 +458,16 @@ jobs:
           'Apps','Dependencies','TestApps','TestResults','BcptTestResults','BuildOutput','ContainerEventLog' | ForEach-Object {
             $name = "$($_)ArtifactsName"
             $value = "$($project.Replace('\','_'))-$($ref)-$_-$($settings.repoVersion).$($settings.appBuild).$($settings.appRevision)"
+            if ($buildMode -ne 'Standard') {
+              $value += "-$($buildMode)"
+            }
             Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
             Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
           }
 
       - name: Publish artifacts - apps
         uses: actions/upload-artifact@v3
-        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
+        #if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
         with:
           name: ${{ env.appsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
@@ -469,7 +475,7 @@ jobs:
 
       - name: Publish artifacts - dependencies
         uses: actions/upload-artifact@v3
-        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
+        #if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
         with:
           name: ${{ env.dependenciesArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Dependencies/'
@@ -477,7 +483,7 @@ jobs:
 
       - name: Publish artifacts - test apps
         uses: actions/upload-artifact@v3
-        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
+        #if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
         with:
           name: ${{ env.testAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
