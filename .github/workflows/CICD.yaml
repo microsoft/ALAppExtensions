@@ -150,7 +150,7 @@ jobs:
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: aholstrup1/AL-Go-Actions/ReadSettings@main
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getProjects: 'Y'
@@ -584,7 +584,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
       - name: Read settings
-        uses: aholstrup1/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
 
       - name: Read secrets
         uses: microsoft/AL-Go-Actions/ReadSecrets@preview
