@@ -46,7 +46,7 @@ jobs:
       projectDependenciesJson: ${{ steps.ReadSettings.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
       buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-      buildMode: ${{ steps.ReadSettings.outputs.buildModes }}
+      buildModes: ${{ steps.ReadSettings.outputs.buildModes }}
     steps:
       - name: Create CI/CD Workflow Check Run
         id: CreateCheckRun
@@ -260,7 +260,7 @@ jobs:
     strategy:
       matrix:
         project: ${{ fromJson(needs.Initialization.outputs.projects) }}
-        buildMode: ${{ fromJson(needs.Initialization.outputs.buildMode) }}
+        buildMode: ${{ fromJson(needs.Initialization.outputs.buildModes) }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
@@ -426,7 +426,7 @@ jobs:
         if: env.WorkflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-Apps-${{ matrix.buildMode }}'
+          name: '${{ matrix.buildMode }}-thisbuild-${{ matrix.project }}-Apps'
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -435,7 +435,7 @@ jobs:
         if: env.WorkflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-TestApps-${{ matrix.buildMode }}'
+          name: '${{ matrix.buildMode }}-thisbuild-${{ matrix.project }}-TestApps'
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -460,7 +460,7 @@ jobs:
             $name = "$($_)ArtifactsName"
             $value = "$($project.Replace('\','_'))-$($ref)-$_-$($settings.repoVersion).$($settings.appBuild).$($settings.appRevision)"
             if ($buildMode -ne 'Standard') {
-              $value += "-$($buildMode)"
+              $value = "$($buildMode)-" + $value
             }
             Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
             Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
