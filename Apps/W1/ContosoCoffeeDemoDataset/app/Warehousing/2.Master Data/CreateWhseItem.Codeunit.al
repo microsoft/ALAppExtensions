@@ -83,6 +83,8 @@ codeunit 4793 "Create Whse Item"
         ItemCategory: Record "Item Category";
         ObjInStream: InStream;
     begin
+        if Item.Get("No.") then
+            exit;
         Item.Init();
         Item.Validate("No.", "No.");
         Item.Validate(Description, Description);
