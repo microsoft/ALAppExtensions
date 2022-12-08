@@ -1,4 +1,4 @@
-permissionset 132979 TimeZoneMgtObjects
+permissionset 8720 TimeZoneMgtObjects
 {
     Caption = 'Time Zone Management - Objects';
     Assignable = false;
