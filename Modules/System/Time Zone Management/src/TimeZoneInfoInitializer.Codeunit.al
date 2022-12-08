@@ -1,4 +1,4 @@
-codeunit 50114 "TimeZoneInfo Initializer"
+codeunit 8724 "TimeZoneInfo Initializer"
 {
     Access = Internal;
 

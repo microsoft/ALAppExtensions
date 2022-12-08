@@ -1,4 +1,4 @@
-codeunit 50113 "Daylight Saving Time Info Impl"
+codeunit 8723 "Daylight Saving Time Info Impl"
 {
     Access = Internal;
 

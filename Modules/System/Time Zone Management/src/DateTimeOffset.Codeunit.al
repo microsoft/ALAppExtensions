@@ -1,4 +1,4 @@
-codeunit 50110 "DateTime Offset"
+codeunit 8720 "DateTime Offset"
 {
     /// <summary>
     /// Retrieves the offset from the requested time zone at the time of the requested datetime. This takes into account any daylight saving time conditions that may apply.

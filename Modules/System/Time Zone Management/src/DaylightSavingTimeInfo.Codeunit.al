@@ -1,4 +1,4 @@
-codeunit 50112 "Daylight Saving Time Info"
+codeunit 8722 "Daylight Saving Time Info"
 {
     /// <summary>
     /// Checks whether the indicated time zone supports daylight saving time.

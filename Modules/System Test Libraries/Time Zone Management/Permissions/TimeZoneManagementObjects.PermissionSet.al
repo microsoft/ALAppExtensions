@@ -1,4 +1,4 @@
-permissionset 50111 "TimeZoneMgt-Objects"
+permissionset 132979 "TimeZoneMgt-Objects"
 {
     Assignable = true;
     IncludedPermissionSets = TimeZoneMgtObjects;

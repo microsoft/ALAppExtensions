@@ -1,4 +1,4 @@
-codeunit 50140 "Time Zone Management Test"
+codeunit 132979 "Time Zone Management Test"
 {
     Subtype = Test;
 
