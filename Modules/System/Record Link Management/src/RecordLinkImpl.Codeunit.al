@@ -68,7 +68,11 @@ codeunit 4470 "Record Link Impl."
     procedure RemoveLinks(RecVariant: Variant)
     var
         RecRef: RecordRef;
+        NotARecordErr: Label 'Internal server error. Please contact your system administrator.';
     begin
+        if not RecVariant.IsRecord() then
+            Error(NotARecordErr);
+
         RecRef.GetTable(RecVariant);
         if RecRef.FindSet() then
             repeat

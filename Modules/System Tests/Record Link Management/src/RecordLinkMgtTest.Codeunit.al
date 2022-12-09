@@ -23,7 +23,6 @@ codeunit 132508 "Record Link Mgt. Test"
     procedure TestWriteNote();
     var
         RecordLink: Record "Record Link";
-        Any: Codeunit Any;
         Instream: InStream;
         LongText: Text;
         Text: Text;
@@ -187,6 +186,18 @@ codeunit 132508 "Record Link Mgt. Test"
         repeat
             Assert.IsTrue(RecordLinkRecTest.HasLinks(), 'Record must have a record link.');
         until RecordLinkRecTest.Next() = 0;
+    end;
+
+    [Test]
+    procedure RemoveRecordLinksErrorOnNotRecordArgument()
+    var
+        DummyText: Text;
+        NotARecordErr: Label 'Internal server error. Please contact your system administrator.';
+    begin
+        // [SCENARIO] Error is thrown if the argument passed to the RemoveLinks procedure is not a Record
+
+        asserterror RecordLinkManagement.RemoveLinks(DummyText);
+        Assert.ExpectedError(NotARecordErr);
     end;
 
     local procedure CreateRecordLinkRecTest(var RecordLinkRecTest: Record "Record Link Record Test")
