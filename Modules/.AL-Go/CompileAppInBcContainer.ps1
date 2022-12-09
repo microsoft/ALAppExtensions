@@ -19,7 +19,7 @@ $branchName = $ENV:GITHUB_REF_NAME
 Write-Host "BuildMode - $ENV:BuildMode"
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
-if(($branchName.EndsWith('main')) -or $branchName.StartsWith('release/')) {
+if((($branchName.EndsWith('main')) -or $branchName.StartsWith('release/')) -and ($ENV:BuildMode -eq 'Translated')) {
     $appProjectFolder = $parameters.appProjectFolder
 
     # Extract app name from app.json
