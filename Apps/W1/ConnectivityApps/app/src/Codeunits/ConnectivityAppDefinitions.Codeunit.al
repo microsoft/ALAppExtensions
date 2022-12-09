@@ -22,6 +22,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterContiniaPaymentManagement365NL();
         RegisterContiniaPaymentManagement365DK();
         RegisterContiniaPaymentManagement365NO();
+        RegisterWiseBanking();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -79,6 +80,34 @@ codeunit 20352 "Connectivity App Definitions"
         AddDescriptionTranslation(AppId, 'Mit dieser App können Sie Zahlungen für eine verarbeitete Lohnabrechnung erstellen, ohne Ihr E-Banking zu öffnen. Gewähren Sie der App Zugang zu einem oder mehreren Ihrer Bankkonten eines unterstützten Finanzinstituts und bezahlen Sie die Lohnabrechnung mit wenigen Klicks.', 1031);
         AddDescriptionTranslation(AppId, 'Cette application vous permet d''effectuer des paiements pour une fiche de salaire traitée sans avoir à ouvrir votre e-banking. Donnez à l''app l''accès à un ou plusieurs de vos comptes bancaires d''un établissement financier supporté et payez la fiche de salaire en quelques clics.', 1036);
         AddDescriptionTranslation(AppId, 'Con quest’app potrete creare i pagamenti per un conteggio di salario rielaborato senza dover aprire il vostro E-Banking. Concedete all’app di accedere a uno o più conti bancari di un istituto finanziario supportato e pagherete il conteggio di salario con meno clic.', 1040);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+local procedure RegisterWiseBanking()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Wise Banking' to IS
+        ***************************************************/
+
+        AppId := '6a580fed-3f05-40d3-bd61-652c7af0622f';
+        AppName := 'Wise Banking';
+        AppPublisher := 'Wise';
+        AppDescription := 'Wise Banking provides the user with secure communication with all commercial banks of Iceland. It does this by using the banking standards of the Icelandic banks (IOBS). With Wise Banking the user can therefore safely manage bank accounts, automatic bank reconciliation, outgoing payments and currency and exchange rates directly from Business Central.';
+        AppProviderSupportURL := 'https://wise.is/en/solutions/wisebusiness/wise-banking/';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wiselausnirehf1587117975659%7CAID.wisebanking%7CPAPPID.6a580fed-3f05-40d3-bd61-652c7af0622f?tab=Overview';
+        AppApprovedFor := 'IS';
+        AppWorksOn := 'IS';
+
+        AddDescriptionTranslation(AppId, 'Með Bankasamskiptakerfi Wise  eru fyrirtæki í öruggum samskiptum við sína viðskiptabanka. Bankasamskiptakerfi Wise fylgir samræmdum bankastaðli íslensku bankanna (IOBS) og uppfyllir ströngustu öryggisstaðla. Með kerfinu getur notandinn haldið utan um bankareikninga, sjálfvirkar afstemmingar, útgreiðslur og gengi gjaldmiðla beint úr Business Central á öruggan hátt.', 1039);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
