@@ -1,0 +1,1 @@
+Write-Host "Restoring translations for app!!!"

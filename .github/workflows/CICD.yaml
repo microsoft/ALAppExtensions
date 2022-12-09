@@ -414,6 +414,8 @@ jobs:
       - name: Run pipeline
         id: RunPipeline
         uses: aholstrup1/AL-Go-Actions/RunPipeline@main
+        env:
+          BuildMode: ${{ matrix.buildMode }}
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
