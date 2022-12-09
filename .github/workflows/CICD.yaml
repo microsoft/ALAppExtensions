@@ -459,7 +459,8 @@ jobs:
           'Apps','Dependencies','TestApps','TestResults','BcptTestResults','BuildOutput','ContainerEventLog' | ForEach-Object {
             $name = "$($_)ArtifactsName"
             $value = "$($project.Replace('\','_'))-$($ref)-$_-$($settings.repoVersion).$($settings.appBuild).$($settings.appRevision)"
-            if ($buildMode -ne 'Standard') {
+            # Translated is the default build mode, so we don't need to add it to the artifact name
+            if ($buildMode -ne 'Translated') {
               $value = "$($buildMode)-" + $value
             }
             Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
