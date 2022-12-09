@@ -16,7 +16,7 @@ $appFile = Compile-AppInBcContainer @parameters
 
 $branchName = $ENV:GITHUB_REF_NAME
 
-Write-Host "BuildMode - $ENV:BuildeMode"
+Write-Host "BuildMode - $ENV:BuildMode"
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
 if(($branchName.EndsWith('main')) -or $branchName.StartsWith('release/')) {
