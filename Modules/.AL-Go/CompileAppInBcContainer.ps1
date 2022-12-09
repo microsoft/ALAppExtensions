@@ -44,6 +44,7 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
     if ($ENV:BuildMode -eq 'Translated') {
         # Add the source code and the app file for every built app to a folder
         Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
+        Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
     } elseif ($ENV:BuildMode -eq 'LCGTranslated') {
         # Add the generated Translations folder to the artifacts folder
         $TranslationsFolder = "$appProjectFolder/Translations"
