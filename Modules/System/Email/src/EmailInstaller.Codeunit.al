@@ -20,23 +20,37 @@ codeunit 1596 "Email Installer"
     end;
 
     procedure AddRetentionPolicyAllowedTables()
+    begin
+        AddRetentionPolicyAllowedTables(false);
+    end;
+
+    procedure AddRetentionPolicyAllowedTables(ForceUpdate: Boolean)
     var
         Field: Record Field;
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         UpgradeTag: Codeunit "Upgrade Tag";
+        IsInitialSetup: Boolean;
     begin
-        if UpgradeTag.HasUpgradeTag(GetEmailTablesAddedToAllowedListUpgradeTag()) then
+        IsInitialSetup := not UpgradeTag.HasUpgradeTag(GetEmailTablesAddedToAllowedListUpgradeTag());
+        if not (IsInitialSetup or ForceUpdate) then
             exit;
 
         RetenPolAllowedTables.AddAllowedTable(Database::"Email Outbox", Field.FieldNo(SystemCreatedAt), 7);
         RetenPolAllowedTables.AddAllowedTable(Database::"Sent Email", Field.FieldNo(SystemCreatedAt), 7);
 
-        UpgradeTag.SetUpgradeTag(GetEmailTablesAddedToAllowedListUpgradeTag());
+        if IsInitialSetup then
+            UpgradeTag.SetUpgradeTag(GetEmailTablesAddedToAllowedListUpgradeTag());
     end;
 
     local procedure GetEmailTablesAddedToAllowedListUpgradeTag(): Code[250]
     begin
         exit('MS-373161-EmailLogEntryAdded-20201005');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", 'OnRefreshAllowedTables', '', false, false)]
+    local procedure AddAllowedTablesOnRefreshAllowedTables()
+    begin
+        AddRetentionPolicyAllowedTables(true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterInitialization', '', false, false)]

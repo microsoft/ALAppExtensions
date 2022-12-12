@@ -163,6 +163,7 @@ codeunit 149005 "BCPT Line"
         BCPTLine.Testfield("BCPT Code");
         BCPTRoleWrapperImpl.GetBCPTHeader(BCPTHeader);
         Clear(BCPTLogEntry);
+        BCPTLogEntry.RunID := BCPTHeader.RunID;
         BCPTLogEntry."BCPT Code" := BCPTLine."BCPT Code";
         BCPTLogEntry."BCPT Line No." := BCPTLine."Line No.";
         BCPTLogEntry.Version := BCPTHeader.Version;
@@ -170,6 +171,7 @@ codeunit 149005 "BCPT Line"
         BCPTLogEntry.Operation := copystr(Operation, 1, MaxStrLen(BCPTLogEntry.Operation));
         BCPTLogEntry.Tag := BCPTRoleWrapperImpl.GetBCPTHeaderTag();
         BCPTLogEntry."Entry No." := 0;
+        BCPTLogEntry."Test Company Name" := BCPTHeader."Test Company Name";
         if ExecutionSuccess then
             BCPTLogEntry.Status := BCPTLogEntry.Status::Success
         else begin
@@ -197,6 +199,7 @@ codeunit 149005 "BCPT Line"
         Dimensions: Dictionary of [Text, Text];
         TelemetryLogLbl: Label 'Performance Toolkit - %1 - %2 - %3', Locked = true;
     begin
+        Dimensions.Add('RunID', BCPTLogEntry.RunID);
         Dimensions.Add('Code', BCPTLogEntry."BCPT Code");
         Dimensions.Add('LineNo', Format(BCPTLogEntry."BCPT Line No."));
         Dimensions.Add('Version', Format(BCPTLogEntry.Version));

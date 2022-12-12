@@ -16,6 +16,12 @@ page 149003 "BCPT Log Entries"
         {
             repeater(Control1)
             {
+                field(RunID; Rec.RunID)
+                {
+                    ToolTip = 'Specifies the BCPT RunID Guid';
+                    Visible = false;
+                    ApplicationArea = All;
+                }
                 field("Code"; Rec."BCPT Code")
                 {
                     ToolTip = 'Specifies the BCPT Code of the BCPT.';

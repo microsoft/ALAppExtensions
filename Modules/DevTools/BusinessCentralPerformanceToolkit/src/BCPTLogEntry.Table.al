@@ -85,6 +85,16 @@ table 149002 "BCPT Log Entry"
             DataClassification = CustomerContent;
             Caption = 'Error Call Stack';
         }
+        field(17; "Test Company Name"; Text[30])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Test Company Name';
+        }
+        field(18; RunID; Guid)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'RunID';
+        }
     }
 
     keys
