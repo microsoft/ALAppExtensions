@@ -25,6 +25,7 @@ codeunit 149000 "BCPT Start Tests"
         s: Integer;
     begin
         ValidateLines(BCPTHeader);
+        BCPTHeader.RunID := CreateGuid();
         BCPTHeader.Validate("Started at", CurrentDateTime);
         BCPTHeaderCU.SetRunStatus(BCPTHeader, BCPTHeader.Status::Running);
 

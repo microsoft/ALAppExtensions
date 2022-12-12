@@ -256,6 +256,14 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
         exit(RetenPolAllowedTblImpl.CalcMinimumExpirationDate(TableId))
     end;
 
+    /// <summary>
+    /// This event is called when the user chooses to refresh the allowed tables.
+    /// </summary>
+    [IntegrationEvent(false, false)]
+    internal procedure OnRefreshAllowedTables()
+    begin
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Allowed Table", 'OnBeforeInsertEvent', '', false, false)]
     local procedure VerifyInsertAllowed(var Rec: Record "Retention Policy Allowed Table")
     var
