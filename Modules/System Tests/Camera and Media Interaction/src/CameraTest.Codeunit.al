@@ -61,7 +61,6 @@ codeunit 135011 "Camera Test"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('CameraPageHandler')]
     procedure GetPictureWithQualityErrorTest()
     var
         Camera: Codeunit Camera;
