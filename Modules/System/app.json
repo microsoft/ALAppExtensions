@@ -37,8 +37,7 @@
                      }
                  ],
     "features":  [
-                     "TranslationFile",
-                     "GenerateCaptions"
+                     "ExcludeGeneratedTranslations"
                  ],
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
