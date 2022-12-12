@@ -55,6 +55,9 @@ table 9064 "SAS Parameters"
         /// Indicates the encryption scope to use to encrypt the request contents.
         /// This field is supported with version 2020-12-06 and later.
         /// See also: https://learn.microsoft.com/en-us/rest/api/storageservices/create-account-sas#specify-the-encryption-scope
+        /// The name of the encryption scope within the specified storage account. Encryption scope names must be between 3 and 63 characters in length and use numbers, lower-case letters and dash (-) only
+        /// Every dash (-) character must be immediately preceded and followed by a letter or number.
+        /// See also: https://learn.microsoft.com/en-us/rest/api/storagerp/encryption-scopes/put?tabs=HTTP#uri-parameters
         /// </summary>
         field(5; SignedEncryptionScope; Text[63])
         {
