@@ -21,9 +21,9 @@ Write-Host "BuildMode - $ENV:BuildMode"
 $appBuildMode = $ENV:BuildMode
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
-if(($branchName.EndsWith('main')) -or $branchName.StartsWith('release/')) {
+if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
     $appProjectFolder = $parameters.appProjectFolder
-
+    
     # Extract app name from app.json
     $appName = (Get-ChildItem -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
 
@@ -43,9 +43,20 @@ if(($branchName.EndsWith('main')) -or $branchName.StartsWith('release/')) {
 
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
-    # Add the source code and the app file for every built app to a folder
-    Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
-    Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
+    if ($ENV:BuildMode -eq 'Translated') {
+        # Add the source code and the app file for every built app to a folder
+        Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
+        Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
+    } elseif ($ENV:BuildMode -eq 'LCGTranslated') {
+        # Add the generated Translations folder to the artifacts folder
+        $TranslationsFolder = "$appProjectFolder/Translations"
+        if (Test-Path $TranslationsFolder) {
+            Write-Host "Translations folder exists"
+            Copy-Item -Path $TranslationsFolder -Destination "$packageArtifactsFolder/BuildArtifacts" -Recurse -Force | Out-Null
+        } else {
+            Write-Host "Translations folder does not exist"
+        }
+    }
 }
 
 $appFile
