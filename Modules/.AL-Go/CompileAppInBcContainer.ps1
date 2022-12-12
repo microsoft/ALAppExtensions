@@ -18,6 +18,8 @@ $branchName = $ENV:GITHUB_REF_NAME
 
 Write-Host "BuildMode - $ENV:BuildMode"
 
+$appBuildMode = $ENV:BuildMode
+
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
 if(($branchName.EndsWith('main')) -or $branchName.StartsWith('release/')) {
     $appProjectFolder = $parameters.appProjectFolder
@@ -32,11 +34,11 @@ if(($branchName.EndsWith('main')) -or $branchName.StartsWith('release/')) {
         $holderFolder = 'TestApps'
     }
 
-    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # manually construct the artifacts folder
+    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$buildMode/$appName" # manually construct the artifacts folder
 
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
-        New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName" -ItemType Directory | Out-Null
+        New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$buildMode/$appName" -ItemType Directory | Out-Null
     }
 
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
