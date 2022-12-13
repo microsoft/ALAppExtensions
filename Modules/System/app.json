@@ -36,9 +36,7 @@
                          "to":  9999
                      }
                  ],
-    "features":  [
-                     "AllTranslationItems"
-                 ],
+    "preprocessorSymbols": ["TEST20"],
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
