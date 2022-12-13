@@ -22,6 +22,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterContiniaPaymentManagement365NL();
         RegisterContiniaPaymentManagement365DK();
         RegisterContiniaPaymentManagement365NO();
+        RegisterDirectBankingNL();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -163,6 +164,34 @@ codeunit 20352 "Connectivity App Definitions"
         AppWorksOn := 'NO';
 
         AddDescriptionTranslation(AppId, 'Nettbanken din kan kobles til Business Central. Med Continia Payment Management kan du betale dine leverandører, matche kundebetalinger og avstemme kontoutskrifter direkte fra Business Central – fullt integrert og sikkert uten å måtte logge på nettbanken din. Payment Management har integrasjon til følgende banker i Norge: DNB, Handelsbanken, Nordea, SpareBank 1, Sparebanken Vest, Danske Bank. Last ned appen og start din gratis prøveversjon, eller besøk nettsiden vår for mer informasjon.', 1044);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+    
+    local procedure RegisterDirectBankingNL()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Direct Banking' to NL
+        ***************************************************/
+
+        AppId := '7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
+        AppName := 'Direct Banking NL';
+        AppPublisher := 'IDYN B.V.';
+        AppDescription := 'Integrate ABN, Rabo, ING, Triodos, Knab, ASN, SNS, etc. with Microsoft Dynamics 365 Business Central.';
+        AppProviderSupportURL := 'https://help.idyn.nl/directbanking';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking_nl%7CPAPPID.7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
+        AppApprovedFor := 'NL';
+        AppWorksOn := 'NL';
+
+        AddDescriptionTranslation(AppId, 'Integreer ABN, Rabo, ING, Triodos, Knab, ASN, SNS etc. met Microsoft Dynamics 365 Business Central.', 1043);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
