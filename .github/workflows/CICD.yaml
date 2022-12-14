@@ -700,7 +700,7 @@ jobs:
           Write-Host "deliveryContext=$deliveryContext"
 
       - name: Deliver
-        uses: microsoft/AL-Go-Actions/Deliver@preview
+        uses: aholstrup1/AL-Go-Actions/Deliver@preview
         env:
           deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
         with:
