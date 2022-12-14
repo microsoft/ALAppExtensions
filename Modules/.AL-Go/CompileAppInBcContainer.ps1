@@ -31,6 +31,7 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
     }
 
     $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # manually construct the artifacts folder
+    $buildArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/BuildArtifacts"
 
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
@@ -48,7 +49,7 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
         $TranslationsFolder = "$appProjectFolder/Translations"
         if (Test-Path $TranslationsFolder) {
             Write-Host "Translations folder exists"
-            Copy-Item -Path $TranslationsFolder -Destination "$packageArtifactsFolder/BuildArtifacts" -Recurse -Force | Out-Null
+            Copy-Item -Path $TranslationsFolder -Destination $buildArtifactsFolder -Recurse -Force | Out-Null
         } else {
             Write-Host "Translations folder does not exist"
         }
