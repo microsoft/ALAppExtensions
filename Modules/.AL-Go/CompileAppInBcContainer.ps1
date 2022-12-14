@@ -43,18 +43,28 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
 
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
-    if ($appBuildMode -eq 'Translated') {
-        # Add the source code and the app file for every built app to a folder
-        Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
-        Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
-    } elseif ($appBuildMode -eq 'LCGTranslated') {
-        # Add the generated Translations folder to the artifacts folder
-        $TranslationsFolder = "$appProjectFolder/Translations"
-        if (Test-Path $TranslationsFolder) {
-            Write-Host "Translations folder exists"
-            Copy-Item -Path $TranslationsFolder -Destination "$packageArtifactsFolder/BuildArtifacts" -Recurse -Force | Out-Null
-        } else {
-            Write-Host "Translations folder does not exist"
+
+    switch ( $appBuildMode )
+    {
+        'Translated' { 
+            # Add the source code and the app file for every built app to a folder
+            Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
+            Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
+         }
+        'LCGTranslated' { 
+            # Add the generated Translations folder to the artifacts folder
+            $TranslationsFolder = "$appProjectFolder/Translations"
+            if (Test-Path $TranslationsFolder) {
+                Write-Host "Translations were generated for app $appName"
+                Copy-Item -Path $TranslationsFolder -Destination "$packageArtifactsFolder/BuildArtifacts" -Recurse -Force | Out-Null
+            } else {
+                Write-Host "Translations were not generated for app $appName"
+            }
+        }
+
+        'CLEAN' {
+              # Add  the app file for every built app to a folder
+              Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
         }
     }
 }
