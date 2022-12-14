@@ -95,6 +95,8 @@ try
         }
     }
 
+    Write-Host "appsfolder: $appsFolder" -ForegroundColor Magenta
+
     # Copy over the license file
     Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
     
@@ -125,7 +127,7 @@ try
     }
 
     Write-Host "Push package $($packageFile.FullName) to $deliverServerUrl" -ForegroundColor Magenta
-    $deliverOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($packageFile.FullName) -ApiKey $deliverAcountToken -Source $deliverServerUrl"
+    #$deliverOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($packageFile.FullName) -ApiKey $deliverAcountToken -Source $deliverServerUrl"
 
     if ($LASTEXITCODE -or $null -eq $deliverOutput)
     {

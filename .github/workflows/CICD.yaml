@@ -663,7 +663,7 @@ jobs:
 
   Deliver:
     needs: [ Initialization, Build ]
-    if: always() && needs.Build.result == 'Success' && github.event_name != 'workflow_run' && github.ref_name == 'main' && needs.Initialization.outputs.deliveryTargetCount > 0
+    if: always() && needs.Build.result == 'Success' && github.event_name != 'workflow_run' && needs.Initialization.outputs.deliveryTargetCount > 0
     strategy:
       matrix:
         deliveryTarget: ${{ fromJson(needs.Initialization.outputs.deliveryTargets) }}
@@ -700,7 +700,7 @@ jobs:
           Write-Host "deliveryContext=$deliveryContext"
 
       - name: Deliver
-        uses: microsoft/AL-Go-Actions/Deliver@preview
+        uses: aholstrup1/AL-Go-Actions/Deliver@preview
         env:
           deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
         with:
