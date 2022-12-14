@@ -31,7 +31,7 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
     }
 
     $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # manually construct the artifacts folder
-    $buildArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/BuildArtifacts"
+    $buildArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/BuildArtifacts"
 
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
