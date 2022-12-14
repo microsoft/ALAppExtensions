@@ -5,6 +5,11 @@ codeunit 4787 "Create Whse Locations"
     var
         WhseDemoDataSetup: Record "Whse Demo Data Setup";
         DoInsertTriggers: Boolean;
+        XBASICLOCNAMETok: Label 'Silver Warehouse';
+        XSIMPLELOCNAMETok: Label 'Yellow Warehouse';
+        XADVLOCNAMETok: Label 'White Warehouse';
+        XTRANSITLOCNAMETok: Label 'Own Logistics';
+
 
     trigger OnRun()
     var
@@ -19,18 +24,12 @@ codeunit 4787 "Create Whse Locations"
             AddUserAsWarehouseEmployee(CopyStr(UserId, 1, 50));
     end;
 
-    local procedure TextAsDateFormula(InputText: Text) OutputDateFormula: DateFormula
-    begin
-        Evaluate(OutputDateFormula, InputText);
-    end;
-
     local procedure CreateLocation(
         Code: Code[10];
         Name: Text[100];
         UseAsInTransit: Boolean;
         RequirePutaway: Boolean;
         RequirePick: Boolean;
-        CrossDockDueDateCalc: DateFormula;
         UseCrossDocking: Boolean;
         RequireReceive: Boolean;
         RequireShipment: Boolean;
@@ -60,7 +59,6 @@ codeunit 4787 "Create Whse Locations"
         Location."Use As In-Transit" := UseAsInTransit;
         Location."Require Put-away" := RequirePutaway;
         Location."Require Pick" := RequirePick;
-        Location."Cross-Dock Due Date Calc." := CrossDockDueDateCalc;
         Location."Use Cross-Docking" := UseCrossDocking;
         Location."Require Receive" := RequireReceive;
         Location."Require Shipment" := RequireShipment;
@@ -68,12 +66,15 @@ codeunit 4787 "Create Whse Locations"
         Location."Directed Put-away and Pick" := DirectedPutawayandPick;
         Location."Default Bin Selection" := DefaultBinSelection;
         Location."Put-away Template Code" := PutawayTemplateCode;
+        Location."Always Create Put-away Line" := DirectedPutawayandPick;
         Location."Allow Breakbulk" := AllowBreakbulk;
         Location."Bin Capacity Policy" := BinCapacityPolicy;
         Location."Adjustment Bin Code" := AdjustmentBinCode;
         Location."Receipt Bin Code" := ReceiptBinCode;
         Location."Shipment Bin Code" := ShipmentBinCode;
         Location."Cross-Dock Bin Code" := CrossDockBinCode;
+        if CrossDockBinCode <> '' then
+            Evaluate(Location."Cross-Dock Due Date Calc.", '<1W>');
         Location."To-Assembly Bin Code" := ToAssemblyBinCode;
         Location."From-Assembly Bin Code" := FromAssemblyBinCode;
         Location."Asm.-to-Order Shpt. Bin Code" := AsmtoOrderShptBinCode;
@@ -85,9 +86,10 @@ codeunit 4787 "Create Whse Locations"
     local procedure CreateLocations(ShouldRunInsertTriggers: Boolean)
     begin
         DoInsertTriggers := ShouldRunInsertTriggers;
-        CreateLocation(WhseDemoDataSetup."Location Basic", 'Silver Warehouse', false, true, true, TextAsDateFormula(''), true, false, false, true, false, Enum::"Location Default Bin Selection"::"Fixed Bin", '', false, 0, '', '', '', '', '', '', '', false);
-        CreateLocation(WhseDemoDataSetup."Location Simple Logistics", 'Yellow Warehouse', false, true, true, TextAsDateFormula(''), false, true, true, false, false, Enum::"Location Default Bin Selection"::" ", '', false, 0, '', '', '', '', '', '', '', false);
-        CreateLocation(WhseDemoDataSetup."Location Advanced Logistics", 'White Warehouse', false, true, true, TextAsDateFormula(''), true, true, true, true, true, Enum::"Location Default Bin Selection"::" ", 'STD', true, 2, 'W-11-0001', 'W-08-0001', 'W-09-0001', 'W-14-0001', 'W-07-0002', 'W-07-0003', '', true);
+        CreateLocation(WhseDemoDataSetup."Location Basic", XBASICLOCNAMETok, false, true, true, true, false, false, true, false, Enum::"Location Default Bin Selection"::"Fixed Bin", '', false, 0, '', '', '', '', '', '', '', false);
+        CreateLocation(WhseDemoDataSetup."Location Simple Logistics", XSIMPLELOCNAMETok, false, true, true, false, true, true, false, false, Enum::"Location Default Bin Selection"::" ", '', false, 0, '', '', '', '', '', '', '', false);
+        CreateLocation(WhseDemoDataSetup."Location Advanced Logistics", XADVLOCNAMETok, false, true, true, true, true, true, true, true, Enum::"Location Default Bin Selection"::" ", 'STD', true, 2, 'W-11-0001', 'W-08-0001', 'W-09-0001', 'W-14-0001', 'W-07-0002', 'W-07-0003', '', true);
+        CreateLocation(WhseDemoDataSetup."Location In-Transit", XTRANSITLOCNAMETok, true, false, false, false, false, false, false, false, Enum::"Location Default Bin Selection"::" ", '', false, 0, '', '', '', '', '', '', '', false);
     end;
 
     local procedure AddUserAsWarehouseEmployee(UserId: Text[50])
@@ -98,7 +100,6 @@ codeunit 4787 "Create Whse Locations"
             WarehouseEmployee.Init();
             WarehouseEmployee."User ID" := UserId;
             WarehouseEmployee."Location Code" := WhseDemoDataSetup."Location Basic";
-            WarehouseEmployee.Default := true;
             WarehouseEmployee.Insert(true);
         end;
         if not WarehouseEmployee.Get(UserId, WhseDemoDataSetup."Location Simple Logistics") then begin
@@ -111,6 +112,7 @@ codeunit 4787 "Create Whse Locations"
             WarehouseEmployee.Init();
             WarehouseEmployee."User ID" := UserId;
             WarehouseEmployee."Location Code" := WhseDemoDataSetup."Location Advanced Logistics";
+            WarehouseEmployee.Default := true;
             WarehouseEmployee.Insert(true);
         end;
     end;

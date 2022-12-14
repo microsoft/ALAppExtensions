@@ -213,9 +213,9 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-03-0001', '', XPICKTok, XPUTPICKTok, '', 0, 100, 2500, 15000, true, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-03-0002', '', XPICKTok, XPUTPICKTok, '', 0, 90, 280, 200, true, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-03-0003', '', XPICKTok, XPUTPICKTok, '', 0, 90, 280, 200, true, false, false);
-        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-04-0001', '', XPICKTok, XPUTPICKTok, '', 0, 100, 250, 150, true, false, false);
+        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-04-0001', '', XPICKTok, XPUTPICKTok, '', 0, 100, 500000, 500000, true, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-04-0002', '', XPICKTok, XPUTPICKTok, '', 0, 90, 250, 150, true, false, false);
-        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-04-0003', '', XPICKTok, XPUTPICKTok, '', 0, 90, 15000, 15000, true, false, false);
+        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-04-0003', '', XPICKTok, XPUTPICKTok, '', 0, 90, 1500000, 1500000, true, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-04-0004', '', XPICKTok, XPUTPICKTok, '', 0, 90, 15000, 15000, true, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-04-0005', '', XPICKTok, XPUTPICKTok, '', 0, 90, 15000, 15000, true, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-04-0006', '', XPICKTok, XPUTPICKTok, '', 0, 90, 250, 150, true, false, false);
@@ -255,10 +255,10 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-07-0002', '', 'PRODUCTION', XQCTok, '', 0, 0, 20000, 30000, true, false, true);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-07-0003', '', 'PRODUCTION', XQCTok, '', 0, 0, 20000, 30000, true, false, true);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-07-0004', '', 'PRODUCTION', XQCTok, '', 0, 0, 20000, 30000, true, false, true);
-        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-08-0001', '', XRECEIVETok, XRECEIVETok, '', 0, 0, 100000, 100000, true, false, false);
-        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-08-0002', '', XRECEIVETok, XRECEIVETok, '', 0, 0, 100000, 100000, true, false, false);
-        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-08-0003', '', XRECEIVETok, XRECEIVETok, '', 0, 0, 100000, 100000, true, false, false);
-        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-08-0004', '', XRECEIVETok, XRECEIVETok, '', 0, 0, 100000, 100000, true, false, false);
+        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-08-0001', '', XRECEIVETok, XRECEIVETok, '', 0, 0, 5000000, 5000000, true, false, false);
+        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-08-0002', '', XRECEIVETok, XRECEIVETok, '', 0, 0, 5000000, 5000000, true, false, false);
+        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-08-0003', '', XRECEIVETok, XRECEIVETok, '', 0, 0, 5000000, 5000000, true, false, false);
+        CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-08-0004', '', XRECEIVETok, XRECEIVETok, '', 0, 0, 5000000, 5000000, true, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-09-0001', '', XSHIPTok, XSHIPTok, '', 0, 200, 20000, 30000, false, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-09-0002', '', XSHIPTok, XSHIPTok, '', 0, 200, 20000, 30000, false, false, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-09-0003', '', XSHIPTok, XSHIPTok, '', 0, 200, 20000, 30000, true, false, false);

@@ -11,41 +11,52 @@ codeunit 4796 "Create Whse Orders"
     begin
         WhseDemoDataSetup.Get();
 
-        CreateOrdersScenario1(); // Receiving Items with Inventory Put-Away
-        CreateOrdersScenario2(); // Shipping Items with Inventory Picks
+        CreateOrdersScenario1(); // Basic Location Scenario - Receiving Items with Inventory Put-Away
+        CreateOrdersScenario2(); // Basic Location Scenario - Shipping Items with Inventory Picks
 
-        CreateOrdersScenario3(); // Receiving a Single Order with Whse. Receipt
-        CreateOrdersScenario4(); // Receiving Multiple Orders with Whse. Receipt
+        CreateOrdersScenario3(); // Simple Logistics Scenario - Receiving a Single Order with Whse. Receipt
+        CreateOrdersScenario4(); // Simple Logistics Scenario - Receiving Multiple Orders with Whse. Receipt
 
-        CreateOrdersScenario5(); // Shipping a Single Order with Whse. Shipment
-        CreateOrdersScenario6(); // Shipping Multiple Orders with Whse. Shipment
+        CreateOrdersScenario5(); // Simple Logistics Scenario - Shipping a Single Order with Whse. Shipment
+        CreateOrdersScenario6(); // Simple Logistics Scenario - Shipping Multiple Orders with Whse. Shipment
 
 
-        CreateOrdersScenario7(); // Receiving & Put-Away with Bin Defaults
-        CreateOrdersScenario8(); // Receiving & Put-Away with Breakbulk
-        CreateOrdersScenario9(); // Receiving & Put-Away with Bin Capacity Limits
+        CreateOrdersScenario7(); // Advanced Logistics Scenario - Receiving & Put-Away with Bin Defaults
+        CreateOrdersScenario8(); // Advanced Logistics Scenario - Receiving & Put-Away with Breakbulk
+        CreateOrdersScenario9(); // Advanced Logistics Scenario - Receiving & Put-Away with Bin Capacity Limits
 
-        CreateOrdersScenario10(); // Picking and Shipping with Advanced Warehousing
+        CreateOrdersScenario10(); // Advanced Logistics Scenario - Picking and Shipping with Advanced Warehousing
 
-        CreateOrdersScenario11(); // Crossdocking with Advanced Warehousing
+        CreateOrdersScenario11(); // Advanced Logistics Scenario - Crossdocking with Advanced Warehousing
     end;
 
-    // Receiving Items with Inventory Put-Away
+    /// <summary>
+    /// Basic Location Scenario - Receiving Items with Inventory Put-Away 
+    /// </summary>
     procedure CreateOrdersScenario1()
     begin
         CreatePurchaseOrder('107000', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic", WhseDemoDataSetup."Main Item No.", 100);
     end;
 
+    /// <summary>
+    /// Basic Location Scenario - Shipping Items with Inventory Picks
+    /// </summary>
     procedure CreateOrdersScenario2()
     begin
         CreateSalesOrder('105000', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic", WhseDemoDataSetup."Main Item No.", 10);
     end;
 
+    /// <summary>
+    /// Simple Logistics Scenario - Receiving a Single Order with Whse. Receipt
+    /// </summary>
     procedure CreateOrdersScenario3()
     begin
         CreatePurchaseOrder('107001', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 20);
     end;
 
+    /// <summary>
+    /// Simple Logistics Scenario - Receiving Multiple Orders with Whse. Receipt
+    /// </summary>
     procedure CreateOrdersScenario4()
     begin
         CreatePurchaseOrder('107002', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 10);
@@ -54,11 +65,17 @@ codeunit 4796 "Create Whse Orders"
         CreatePurchaseOrder('107005', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 40);
     end;
 
+    /// <summary>
+    /// Simple Logistics Scenario - Shipping a Single Order with Whse. Shipment
+    /// </summary>
     procedure CreateOrdersScenario5()
     begin
         CreateSalesOrder('105001', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 10);
     end;
 
+    /// <summary>
+    /// Simple Logistics Scenario - Shipping Multiple Orders with Whse. Shipment
+    /// </summary>
     procedure CreateOrdersScenario6()
     begin
         CreateSalesOrder('105002', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 10);
@@ -67,34 +84,50 @@ codeunit 4796 "Create Whse Orders"
         CreateSalesOrder('105005', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 20);
     end;
 
+    /// <summary>
+    /// Advanced Logistics Scenario - Receiving and Put-Away with Bin Defaults
+    /// </summary>
     procedure CreateOrdersScenario7()
     begin
-        CreatePurchaseOrder('107006', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, XBAGTok);
-        CreatePurchaseOrder('107007', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 15, XBAGTok);
+        CreatePurchaseOrder('107006', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 1);
+        CreatePurchaseOrder('107007', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 1);
     end;
 
+    /// <summary>
+    /// Advanced Logistics Scenario - Receiving and Put-Away with Breakbulk
+    /// </summary>
     procedure CreateOrdersScenario8()
     begin
-        CreatePurchaseOrder('107008', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20, XBAGTok);
-        CreatePurchaseOrder('107009', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, XPALLETTok);
+        CreatePurchaseOrder('107008', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 1, XBAGTok);
+        CreatePurchaseOrder('107009', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 1, XPALLETTok);
+        CreateSalesOrder('105006', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20);
     end;
 
+    /// <summary>
+    /// Advanced Logistics Scenario - Receiving and Put-Away with Bin Capacity Limits
+    /// </summary>
     procedure CreateOrdersScenario9()
     begin
         CreatePurchaseOrder('107010', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, XPALLETTok);
     end;
 
+    /// <summary>
+    /// Advanced Logistics Scenario - Picking and Shipping with Advanced Warehousing
+    /// </summary>
     procedure CreateOrdersScenario10()
     begin
-        CreateSalesOrder('105006', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20);
         CreateSalesOrder('105007', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20);
     end;
 
+    /// <summary>
+    /// Advanced Logistics Scenario - Crossdocking with Advanced Warehousing
+    /// </summary>
     procedure CreateOrdersScenario11()
     begin
-        CreatePurchaseOrder('107011', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20, XBAGTok);
-        CreateSalesOrder('105008', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20);
+        CreatePurchaseOrder('107011', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."CrossDock Item No.", 100);
+        CreateSalesOrder('105008', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."CrossDock Item No.", 20);
     end;
+
 
     local procedure CreatePurchaseOrder(OrderNo: Code[20]; VendorNo: Code[20]; LocationCode: Code[10]; ItemNo: Code[20]; Quantity: Decimal)
     var
@@ -117,6 +150,7 @@ codeunit 4796 "Create Whse Orders"
         PurchaseHeader.Insert(true);
         PurchaseHeader.Validate("Posting Date", AdjustWhseDemoData.AdjustDate(19020601D));
         PurchaseHeader.Validate("Location Code", LocationCode);
+        PurchaseHeader."Vendor Invoice No." := OrderNo;
         OnBeforeModifyPurchaseHeader(PurchaseHeader);
         PurchaseHeader.Modify(true);
 

@@ -6,8 +6,8 @@ codeunit 4794 "Create Whse Cust/Vend"
 
         InsertVendorData(WhseDemoDataSetup."Vendor No.", XBeansSupplierLbl, WhseDemoDataSetup."Vendor Posting Group", WhseDemoDataSetup."Vend. Gen. Bus. Posting Group");
         OnAfterCreatedVendors();
-        InsertCustomerData(WhseDemoDataSetup."S. Customer No.", XSmallCustomerLbl, WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoDataSetup."SCust. Gen. Bus. Posting Group");
-        InsertCustomerData(WhseDemoDataSetup."L. Customer No.", XLargeCustomerLbl, WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoDataSetup."LCust. Gen. Bus. Posting Group");
+        InsertCustomerData(WhseDemoDataSetup."S. Customer No.", XSmallCustomerLbl, WhseDemoDataSetup."Cust. Posting Group", WhseDemoDataSetup."Cust. Gen. Bus. Posting Group");
+        InsertCustomerData(WhseDemoDataSetup."L. Customer No.", XLargeCustomerLbl, WhseDemoDataSetup."Cust. Posting Group", WhseDemoDataSetup."Cust. Gen. Bus. Posting Group");
         OnAfterCreatedCustomers();
     end;
 

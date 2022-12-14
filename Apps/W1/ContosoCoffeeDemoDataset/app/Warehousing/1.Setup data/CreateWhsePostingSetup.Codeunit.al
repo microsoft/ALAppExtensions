@@ -142,16 +142,16 @@ codeunit 4788 "Create Whse Posting Setup"
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::VAT then
             InsertVATBusPostingGroup(WhseDemoDataSetup."Domestic Code", XDomesticTxt);
 
-        InsertGenBusPostingGroup(WhseDemoDataSetup."SCust. Gen. Bus. Posting Group", XSmallGBGTxt, WhseDemoDataSetup."Domestic Code");
-        InsertGenBusPostingGroup(WhseDemoDataSetup."LCust. Gen. Bus. Posting Group", XLargeGBGTxt, WhseDemoDataSetup."Domestic Code");
+        InsertGenBusPostingGroup(WhseDemoDataSetup."Cust. Gen. Bus. Posting Group", XSmallGBGTxt, WhseDemoDataSetup."Domestic Code");
+        InsertGenBusPostingGroup(WhseDemoDataSetup."Cust. Gen. Bus. Posting Group", XLargeGBGTxt, WhseDemoDataSetup."Domestic Code");
         InsertGenBusPostingGroup(WhseDemoDataSetup."Vend. Gen. Bus. Posting Group", XDomesticTxt, WhseDemoDataSetup."Domestic Code");
 
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::VAT then
             InsertVATProdPostingGroup(WhseDemoDataSetup."VAT Prod. Posting Group Code", XVATIdentifierDescTok);
         InsertGenProdPostingGroup(WhseDemoDataSetup."Retail Code", XRetailTxt, WhseDemoDataSetup."VAT Prod. Posting Group Code");
 
-        InsertCustomerPostingGroup(WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoAccount.CustDomestic());
-        InsertCustomerPostingGroup(WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoAccount.CustDomestic());
+        InsertCustomerPostingGroup(WhseDemoDataSetup."Cust. Posting Group", WhseDemoAccount.CustDomestic());
+        InsertCustomerPostingGroup(WhseDemoDataSetup."Cust. Posting Group", WhseDemoAccount.CustDomestic());
 
         InsertVendorPostingGroup(WhseDemoDataSetup."Vendor Posting Group", WhseDemoAccount.VendDomestic());
     end;
@@ -160,8 +160,8 @@ codeunit 4788 "Create Whse Posting Setup"
     begin
         InsertGeneralPostingSetup('', WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
 
-        InsertGeneralPostingSetup(WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
-        InsertGeneralPostingSetup(WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
+        InsertGeneralPostingSetup(WhseDemoDataSetup."Cust. Posting Group", WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
+        InsertGeneralPostingSetup(WhseDemoDataSetup."Cust. Posting Group", WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
 
         InsertGeneralPostingSetup(WhseDemoDataSetup."Domestic Code", WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
 
@@ -381,6 +381,7 @@ codeunit 4788 "Create Whse Posting Setup"
         CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
         CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
         CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location In-Transit", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
 
         CreateWarehouseSetup(XSeriesWhseReceiptNosTok, XSeriesWhsePostedReceiptNosTok, XSeriesWhseShipNosTok, XSeriesWhsePostedShipNosTok,
             XSeriesWhsePutAwayNosTok, XSeriesWhseRegPutAwayNosTok, XSeriesWhsePickNosTok, XSeriesWhseRegPickNosTok, XSeriesWhseMovementNosTok, XSeriesWhseRegMovementNosTok);

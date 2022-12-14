@@ -58,19 +58,19 @@ codeunit 4799 "Create Warehousing Demo Data"
         WhseDemoDataSetup."Domestic Code" := XDOMESTICTok;
         WhseDemoDataSetup."VAT Prod. Posting Group Code" := XVATPRODUCTTok;
         WhseDemoDataSetup."S. Customer No." := XSMALLCUSTTok;
-        WhseDemoDataSetup."S. Cust. Posting Group" := XSMALLCUSTPGTok;
-        WhseDemoDataSetup."SCust. Gen. Bus. Posting Group" := XSMALLCUSTGBPGTok;
+        WhseDemoDataSetup."Cust. Posting Group" := XCUSTPOSTINGGROUPTok;
+        WhseDemoDataSetup."Cust. Gen. Bus. Posting Group" := XCUSTGENBUSPGTok;
         WhseDemoDataSetup."L. Customer No." := XLARGECUSTTok;
-        WhseDemoDataSetup."L. Cust. Posting Group" := XLARGECUSTPGTok;
-        WhseDemoDataSetup."LCust. Gen. Bus. Posting Group" := XLARGECUSTGBPGTok;
         WhseDemoDataSetup."Vendor No." := XVENDORTok;
         WhseDemoDataSetup."Vendor Posting Group" := XVENDORPGTok;
         WhseDemoDataSetup."Vend. Gen. Bus. Posting Group" := XVENDORGBPGTok;
         WhseDemoDataSetup."Main Item No." := XMAINITEMTok;
         WhseDemoDataSetup."Complex Item No." := XCOMPLEXITEMTok;
+        WhseDemoDataSetup."CrossDock Item No." := XCROSSDOCKITEMTok;
         WhseDemoDataSetup."Location Basic" := XLOCBASICTok;
         WhseDemoDataSetup."Location Simple Logistics" := XLOCSIMPLETok;
         WhseDemoDataSetup."Location Advanced Logistics" := XLOCADVANCEDTok;
+        WhseDemoDataSetup."Location In-Transit" := XLOCTRANSITTok;
 
         WhseDemoDataSetup.Insert();
 
@@ -122,19 +122,19 @@ codeunit 4799 "Create Warehousing Demo Data"
         XDOMESTICTok: Label 'DOMESTIC', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XVATPRODUCTTok: Label 'VAT25', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XSMALLCUSTTok: Label '71000', MaxLength = 20;
-        XSMALLCUSTPGTok: Label 'SMALL', MaxLength = 10;
-        XSMALLCUSTGBPGTok: Label 'SMALL', MaxLength = 10;
+        XCUSTPOSTINGGROUPTok: Label 'DOMESTIC', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
+        XCUSTGENBUSPGTok: Label 'DOMESTIC', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XLARGECUSTTok: Label '72000', MaxLength = 20;
-        XLARGECUSTPGTok: Label 'LARGE', MaxLength = 10;
-        XLARGECUSTGBPGTok: Label 'LARGE', MaxLength = 10;
         XVENDORTok: Label '83000', MaxLength = 20;
         XVENDORPGTok: Label 'DOMESTIC', MaxLength = 10;
         XVENDORGBPGTok: Label 'DOMESTIC', MaxLength = 10;
         XMAINITEMTok: Label 'WRB-1000', MaxLength = 20;
         XCOMPLEXITEMTok: Label 'WRB-1001', MaxLength = 20;
+        XCROSSDOCKITEMTok: Label 'WRB-1002', MaxLength = 20;
         XLOCBASICTok: Label 'SILVER', MaxLength = 10;
         XLOCSIMPLETok: Label 'YELLOW', MaxLength = 10;
         XLOCADVANCEDTok: Label 'WHITE', MaxLength = 10;
+        XLOCTRANSITTok: Label 'OWN. LOG', MaxLength = 10;
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreateSetupData()

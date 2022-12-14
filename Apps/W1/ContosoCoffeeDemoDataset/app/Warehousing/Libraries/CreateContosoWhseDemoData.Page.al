@@ -31,95 +31,95 @@ page 4761 "Create Contoso Whse Demo Data"
                 field("Location Basic"; Rec."Location Basic")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Code of the Location for the Basic Location scenarios.';
+                    ToolTip = 'Specifies the code of the location for the Basic Location scenarios.';
                 }
                 field("Location Simple Logistics"; Rec."Location Simple Logistics")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Code of the Location for the Simple Logistics scenarios.';
+                    ToolTip = 'Specifies the code of the location for the Simple Logistics scenarios.';
                 }
                 field("Location Advanced Logistics"; Rec."Location Advanced Logistics")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Code of the Location for the Advanced Logistics scenarios.';
+                    ToolTip = 'Specifies the code of the location for the Advanced Logistics scenarios.';
                 }
             }
 
-            group(MasterData)
+            group("Master Data")
             {
                 field("S. Customer No."; Rec."S. Customer No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Customer No. to use for the Basic Location and Simple Logistics scenarios.';
+                    ToolTip = 'Specifies the customer number to use for the Basic Location and Simple Logistics scenarios.';
                 }
                 field("L. Customer No."; Rec."L. Customer No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Customer No. to use for the Advanced Logistics scenarios.';
+                    ToolTip = 'Specifies the customer number to use for the Advanced Logistics scenarios.';
                 }
                 field("Vendor No."; Rec."Vendor No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies Vendor No. to use for the scenarios.';
+                    ToolTip = 'Specifies vendor number to use for the scenarios.';
                 }
                 field("Main Item No."; Rec."Main Item No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Item No. to use for the Basic Location and Simple Logistics scenarios.';
+                    ToolTip = 'Specifies the item number to use for the Basic Location and Simple Logistics scenarios.';
                 }
                 field("Complex Item No."; Rec."Complex Item No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Item No. to use for some of the Advanced Logistics scenarios.';
+                    ToolTip = 'Specifies the item number to use for some of the Advanced Logistics scenarios.';
+                }
+                field("CrossDock Item No."; Rec."CrossDock Item No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the item number to use for the Cross-Dock Advanced Logistics scenario.';
                 }
             }
             group("Posting Setup")
             {
                 Caption = 'Posting Setup';
-                field("S. Cust. Posting Group"; Rec."S. Cust. Posting Group")
+                field("Cust. Posting Group"; Rec."Cust. Posting Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Cust. Posting Group for the Customer for the Basic Location and Simple Logistics scenarios.';
+                    ToolTip = 'Specifies the customer posting group for the customer for the all scenarios.';
                 }
-                field("SCust. Gen. Bus. Posting Group"; Rec."SCust. Gen. Bus. Posting Group")
+                field("Cust. Gen. Bus. Posting Group"; Rec."Cust. Gen. Bus. Posting Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Gen. Bus. Posting Group for the Customer for the Basic Location and Simple Logistics scenarios.';
-                }
-                field("L. Cust. Posting Group"; Rec."L. Cust. Posting Group")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the Cust. Posting Group for the Customer for the Advanced Logistics scenarios.';
-                }
-                field("LCust. Gen. Bus. Posting Group"; Rec."LCust. Gen. Bus. Posting Group")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the Gen. Bus. Posting Group for the Customer for the Advanced Logistics scenarios.';
+                    ToolTip = 'Specifies the general business posting group for the customer for all scenarios.';
                 }
                 field("Vendor Posting Group"; Rec."Vendor Posting Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Vendor Posting Group for the Vendor for all scenarios.';
+                    ToolTip = 'Specifies the vendor posting group for the vendor for all scenarios.';
                 }
                 field("Vend. Gen. Bus. Posting Group"; Rec."Vend. Gen. Bus. Posting Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Gen. Bus. Posting Group for the Vendor for all scenarios.';
+                    ToolTip = 'Specifies the general business posting group for the vendor for all scenarios.';
                 }
                 field("Domestic Code"; Rec."Domestic Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Domestic - VAT Bus. Posting Group field.';
+                    ToolTip = 'Specifies the value of the VAT business posting group field used by customers and vendors for all scenarios.';
                 }
                 field("Resale Code"; Rec."Resale Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Inventory Posting Group used for Items.';
+                    ToolTip = 'Specifies the inventory posting group used for items for all scenarios.';
                 }
                 field("Retail Code"; Rec."Retail Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Retail - Gen. Prod. Posting Group field, which is also the VAT Prod. Posting Group used.';
+                    ToolTip = 'Specifies the value of the general product posting group for items for all scenarios.';
+                }
+                field("VAT Prod. Posting Group Code"; Rec."VAT Prod. Posting Group Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the VAT product posting group code used on items if VAT is used.';
                 }
             }
 

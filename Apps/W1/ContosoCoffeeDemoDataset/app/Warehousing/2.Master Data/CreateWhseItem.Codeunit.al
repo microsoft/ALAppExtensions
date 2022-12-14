@@ -14,6 +14,8 @@ codeunit 4793 "Create Whse Item"
         XPALLETDescTok: Label 'Pallet', MaxLength = 10;
         XBAGDescTok: Label 'Bag', MaxLength = 10;
         XBEANSTok: Label 'BEANS', MaxLength = 10;
+
+        XSTDTok: Label 'STD', Locked = true, Comment = 'Should be the same as the Put Away Template code.';
         XBeansDesc1Tok: Label 'Whole Roasted Beans, Arabica, Columbia', MaxLength = 100;
         XBeansDesc2Tok: Label 'Whole Roasted Beans, Arabica, Brazil', MaxLength = 100;
         XBeansDesc3Tok: Label 'Whole Roasted Beans, Arabica, Indonesia', MaxLength = 100;
@@ -122,6 +124,7 @@ codeunit 4793 "Create Whse Item"
         Item."Unit Cost" := Item."Last Direct Cost";
 
         Item.Validate("Unit Price", UnitPrice);
+        Item."Put-away Template Code" := XSTDTok;
 
         if ItempPicTempBlob.HasValue() then begin
             ItempPicTempBlob.CreateInStream(ObjInStream);
@@ -145,9 +148,9 @@ codeunit 4793 "Create Whse Item"
 
         InsertItem(WhseDemoDataSetup."Main Item No.", XBeansDesc1Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
         InsertItem(WhseDemoDataSetup."Complex Item No.", XBeansDesc2Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1010', XBeansDesc3Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1011', XBeansDesc4Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1012', XBeansDesc5Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem(WhseDemoDataSetup."CrossDock Item No.", XBeansDesc3Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem('WRB-1010', XBeansDesc4Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem('WRB-1011', XBeansDesc5Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
 
         CreateItemUnitofMeasure(WhseDemoDataSetup."Main Item No.", XBAGTok, 176, 0, 16, 24, 24, 9216, 132);
         CreateItemUnitofMeasure(WhseDemoDataSetup."Main Item No.", XPALLETTok, 1763, 0, 48, 48, 40, 92160, 1323);
@@ -155,15 +158,15 @@ codeunit 4793 "Create Whse Item"
         CreateItemUnitofMeasure(WhseDemoDataSetup."Complex Item No.", XBAGTok, 176, 0, 16, 24, 24, 9216, 132);
         CreateItemUnitofMeasure(WhseDemoDataSetup."Complex Item No.", XPALLETTok, 1763, 0, 48, 48, 40, 92160, 1323);
         CreateItemUnitofMeasure(WhseDemoDataSetup."Complex Item No.", XPCSTok, 1, 0, 8, 4, 5, 160, 0.75);
+        CreateItemUnitofMeasure(WhseDemoDataSetup."CrossDock Item No.", XBAGTok, 176, 0, 16, 24, 24, 9216, 132);
+        CreateItemUnitofMeasure(WhseDemoDataSetup."CrossDock Item No.", XPALLETTok, 1763, 0, 48, 48, 40, 92160, 1323);
+        CreateItemUnitofMeasure(WhseDemoDataSetup."CrossDock Item No.", XPCSTok, 1, 0, 8, 4, 5, 160, 0.75);
         CreateItemUnitofMeasure('WRB-1010', XBAGTok, 176, 0, 16, 24, 24, 9216, 132);
         CreateItemUnitofMeasure('WRB-1010', XPALLETTok, 1763, 0, 48, 48, 40, 92160, 1323);
         CreateItemUnitofMeasure('WRB-1010', XPCSTok, 1, 0, 8, 4, 5, 160, 0.75);
         CreateItemUnitofMeasure('WRB-1011', XBAGTok, 176, 0, 16, 24, 24, 9216, 132);
         CreateItemUnitofMeasure('WRB-1011', XPALLETTok, 1763, 0, 48, 48, 40, 92160, 1323);
         CreateItemUnitofMeasure('WRB-1011', XPCSTok, 1, 0, 8, 4, 5, 160, 0.75);
-        CreateItemUnitofMeasure('WRB-1012', XBAGTok, 176, 0, 16, 24, 24, 9216, 132);
-        CreateItemUnitofMeasure('WRB-1012', XPALLETTok, 1763, 0, 48, 48, 40, 92160, 1323);
-        CreateItemUnitofMeasure('WRB-1012', XPCSTok, 1, 0, 8, 4, 5, 160, 0.75);
     end;
 
     [IntegrationEvent(false, false)]

@@ -85,16 +85,16 @@ table 4763 "Whse Demo Data Setup"
             TableRelation = Customer;
             ValidateTableRelation = false;
         }
-        field(41; "S. Cust. Posting Group"; Code[20])
+        field(41; "Cust. Posting Group"; Code[20])
         {
-            Caption = 'Small Cust. Posting Group';
+            Caption = 'Cust. Posting Group';
             DataClassification = CustomerContent;
             TableRelation = "Customer Posting Group";
             ValidateTableRelation = false;
         }
-        field(42; "SCust. Gen. Bus. Posting Group"; Code[20])
+        field(42; "Cust. Gen. Bus. Posting Group"; Code[20])
         {
-            Caption = 'Small Cust. Gen. Bus. Posting Group';
+            Caption = 'Cust. Gen. Bus. Posting Group';
             DataClassification = CustomerContent;
             TableRelation = "Gen. Business Posting Group";
             ValidateTableRelation = false;
@@ -104,20 +104,6 @@ table 4763 "Whse Demo Data Setup"
             Caption = 'Large Customer No.';
             DataClassification = CustomerContent;
             TableRelation = Customer;
-            ValidateTableRelation = false;
-        }
-        field(44; "L. Cust. Posting Group"; Code[20])
-        {
-            Caption = 'Large Cust. Posting Group';
-            DataClassification = CustomerContent;
-            TableRelation = "Customer Posting Group";
-            ValidateTableRelation = false;
-        }
-        field(45; "LCust. Gen. Bus. Posting Group"; Code[20])
-        {
-            Caption = 'Large Cust. Gen. Bus. Posting Group';
-            DataClassification = CustomerContent;
-            TableRelation = "Gen. Business Posting Group";
             ValidateTableRelation = false;
         }
         field(50; "Vendor No."; Code[20])
@@ -155,25 +141,39 @@ table 4763 "Whse Demo Data Setup"
             TableRelation = Item;
             ValidateTableRelation = false;
         }
+        field(62; "CrossDock Item No."; Code[20])
+        {
+            Caption = 'CrossDock Item No.';
+            DataClassification = CustomerContent;
+            TableRelation = Item;
+            ValidateTableRelation = false;
+        }
         field(70; "Location Basic"; Code[10])
         {
             Caption = 'Location Basic';
             DataClassification = CustomerContent;
-            TableRelation = Location;
+            TableRelation = Location where("Use As In-Transit" = const(false));
             ValidateTableRelation = false;
         }
         field(80; "Location Simple Logistics"; Code[10])
         {
             Caption = 'Location Simple Logistics';
             DataClassification = CustomerContent;
-            TableRelation = Location;
+            TableRelation = Location where("Use As In-Transit" = const(false));
             ValidateTableRelation = false;
         }
         field(90; "Location Advanced Logistics"; Code[10])
         {
             Caption = 'Location Advanced Logistics';
             DataClassification = CustomerContent;
-            TableRelation = Location;
+            TableRelation = Location where("Use As In-Transit" = const(false));
+            ValidateTableRelation = false;
+        }
+        field(100; "Location In-Transit"; Code[10])
+        {
+            Caption = 'Location In-Transit';
+            DataClassification = CustomerContent;
+            TableRelation = Location where("Use As In-Transit" = const(true));
             ValidateTableRelation = false;
         }
     }
