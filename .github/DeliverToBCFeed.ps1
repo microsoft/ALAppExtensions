@@ -51,10 +51,10 @@ $project = $parameters.project
 $projectName = $parameters.projectName
 $appsFolder = $parameters.appsFolder
 $testAppsFolder = $parameters.testAppsFolder
-$s = $parameters.type
+$type = $parameters.type
 
-Write-Host "App folder(s): $appsFolder" -ForegroundColor Magenta
-Write-Host "Test app folder(s): $testAppsFolder" -ForegroundColor Magenta
+Write-Host "App folder(s): + $($appsFolder -join ', ')" -ForegroundColor Magenta
+Write-Host "Test app folder(s): + $($testAppsFolder -join ',')" -ForegroundColor Magenta
 
 # Construct package ID
 $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)"
@@ -70,7 +70,7 @@ if ($type -eq 'CD')
 }
 
 # Extract version from the published folders (naming convention)
-$packageVersion = $appsFolder -replace ".*-Apps-","" | Select-Object -First 1 #version is right after '-Apps-'
+$packageVersion = ($appsFolder -replace ".*-Apps-","" | Select-Object -First 1).ToString() #version is right after '-Apps-'
 
 $manifest = GenerateManifest `
             -PackageId $packageId `
