@@ -51,7 +51,10 @@ $project = $parameters.project
 $projectName = $parameters.projectName
 $appsFolder = $parameters.appsFolder
 $testAppsFolder = $parameters.testAppsFolder
-$type = $parameters.type
+$s = $parameters.type
+
+Write-Host "App folder(s): $appsFolder" -ForegroundColor Magenta
+Write-Host "Test app folder(s): $testAppsFolder" -ForegroundColor Magenta
 
 # Construct package ID
 $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)"
@@ -67,7 +70,7 @@ if ($type -eq 'CD')
 }
 
 # Extract version from the published folders (naming convention)
-$packageVersion = $appsFolder -replace ".*-Apps-","" #version is right after '-Apps-'
+$packageVersion = $appsFolder -replace ".*-Apps-","" | Select-Object -First 1 #version is right after '-Apps-'
 
 $manifest = GenerateManifest `
             -PackageId $packageId `
@@ -94,8 +97,6 @@ try
             Copy-Item -Path "$appsToPackage/*" -Destination "$packageFolder/Apps" -Recurse -Force
         }
     }
-
-    Write-Host "appsfolder: $appsFolder" -ForegroundColor Magenta
 
     # Copy over the license file
     Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
