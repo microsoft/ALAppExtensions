@@ -83,34 +83,6 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
-local procedure RegisterWiseBanking()
-    var
-        AppId: Text[250];
-        AppName: Text[1024];
-        AppPublisher: Text[250];
-        AppDescription: Text[2048];
-        AppProviderSupportURL: Text[250];
-        AppSourceURL: Text[250];
-        AppWorksOn: Text;
-        AppApprovedFor: Text;
-    begin
-        /***************************************************
-            Add app 'Wise Banking' to IS
-        ***************************************************/
-
-        AppId := '6a580fed-3f05-40d3-bd61-652c7af0622f';
-        AppName := 'Wise Banking';
-        AppPublisher := 'Wise';
-        AppDescription := 'Wise Banking provides the user with secure communication with all commercial banks of Iceland. It does this by using the banking standards of the Icelandic banks (IOBS). With Wise Banking the user can therefore safely manage bank accounts, automatic bank reconciliation, outgoing payments and currency and exchange rates directly from Business Central.';
-        AppProviderSupportURL := 'https://wise.is/en/solutions/wisebusiness/wise-banking/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wiselausnirehf1587117975659%7CAID.wisebanking%7CPAPPID.6a580fed-3f05-40d3-bd61-652c7af0622f?tab=Overview';
-        AppApprovedFor := 'IS';
-        AppWorksOn := 'IS';
-
-        AddDescriptionTranslation(AppId, 'Með Bankasamskiptakerfi Wise  eru fyrirtæki í öruggum samskiptum við sína viðskiptabanka. Bankasamskiptakerfi Wise fylgir samræmdum bankastaðli íslensku bankanna (IOBS) og uppfyllir ströngustu öryggisstaðla. Með kerfinu getur notandinn haldið utan um bankareikninga, sjálfvirkar afstemmingar, útgreiðslur og gengi gjaldmiðla beint úr Business Central á öruggan hátt.', 1039);
-        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
-    end;
-
     local procedure RegisterContiniaPaymentManagement365NL()
     var
         AppId: Text[250];
@@ -192,6 +164,34 @@ local procedure RegisterWiseBanking()
         AppWorksOn := 'NO';
 
         AddDescriptionTranslation(AppId, 'Nettbanken din kan kobles til Business Central. Med Continia Payment Management kan du betale dine leverandører, matche kundebetalinger og avstemme kontoutskrifter direkte fra Business Central – fullt integrert og sikkert uten å måtte logge på nettbanken din. Payment Management har integrasjon til følgende banker i Norge: DNB, Handelsbanken, Nordea, SpareBank 1, Sparebanken Vest, Danske Bank. Last ned appen og start din gratis prøveversjon, eller besøk nettsiden vår for mer informasjon.', 1044);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+    
+    local procedure RegisterWiseBanking()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Wise Banking' to IS
+        ***************************************************/
+
+        AppId := '6a580fed-3f05-40d3-bd61-652c7af0622f';
+        AppName := 'Wise Banking';
+        AppPublisher := 'Wise';
+        AppDescription := 'Wise Banking provides the user with secure communication with all commercial banks of Iceland. It does this by using the banking standards of the Icelandic banks (IOBS). With Wise Banking the user can therefore safely manage bank accounts, automatic bank reconciliation, outgoing payments and currency and exchange rates directly from Business Central.';
+        AppProviderSupportURL := 'https://wise.is/en/solutions/wisebusiness/wise-banking/';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wiselausnirehf1587117975659%7CAID.wisebanking%7CPAPPID.6a580fed-3f05-40d3-bd61-652c7af0622f?tab=Overview';
+        AppApprovedFor := 'IS';
+        AppWorksOn := 'IS';
+
+        AddDescriptionTranslation(AppId, 'Með Bankasamskiptakerfi Wise  eru fyrirtæki í öruggum samskiptum við sína viðskiptabanka. Bankasamskiptakerfi Wise fylgir samræmdum bankastaðli íslensku bankanna (IOBS) og uppfyllir ströngustu öryggisstaðla. Með kerfinu getur notandinn haldið utan um bankareikninga, sjálfvirkar afstemmingar, útgreiðslur og gengi gjaldmiðla beint úr Business Central á öruggan hátt.', 1039);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
