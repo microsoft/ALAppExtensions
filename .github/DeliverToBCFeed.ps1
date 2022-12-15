@@ -49,12 +49,12 @@ Write-Host "Successfully retrieved information from the deliver context" -Foregr
 
 $project = $parameters.project
 $projectName = $parameters.projectName
-$appsFolder = $parameters.appsFolder
-$testAppsFolder = $parameters.testAppsFolder
+$appsFolders = $parameters.appsFolders
+$testAppsFolders = $parameters.testAppsFolders
 $type = $parameters.type
 
-Write-Host "App folder(s): $($appsFolder -join ', ')" -ForegroundColor Magenta
-Write-Host "Test app folder(s): $($testAppsFolder -join ',')" -ForegroundColor Magenta
+Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
+Write-Host "Test app folder(s): $($testAppsFolders -join ',')" -ForegroundColor Magenta
 
 # Construct package ID
 $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)"
@@ -72,7 +72,7 @@ if ($type -eq 'CD')
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta
 
 # Extract version from the published folders (naming convention)
-$packageVersion = ($appsFolder -replace ".*-Apps-","" | Select-Object -First 1).ToString() #version is right after '-Apps-'
+$packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() #version is right after '-Apps-'
 
 Write-Host "Package version: $packageVersion" -ForegroundColor Magenta
 
@@ -93,7 +93,7 @@ try
     # Create folder to hold the apps
     New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
     
-    @($appsFolder) + @($testAppsFolder) | ForEach-Object { 
+    @($appsFolders) + @($testAppsFolders) | ForEach-Object { 
         $appsToPackage = Join-Path $_ 'Package'
         
         if(Test-Path -Path $appsToPackage) 
