@@ -1,5 +1,8 @@
 codeunit 18471 "Update Subcontract Details"
 {
+    var
+        DeliveryChallanLineExistsErr: Label 'Line cannot be deleted. Delivery Challan exist for Subcontracting Order no. %1, Line No. %2', Comment = '%1 = Subcontracting Order No., %2 = and Line No.';
+
     procedure InsertSubComponentsDetails(PurchLine: Record "Purchase Line")
     var
         SubOrderComponents: Record "Sub Order Component List";
@@ -122,6 +125,39 @@ codeunit 18471 "Update Subcontract Details"
                     ProdOrdComp.Modify();
                 until ProdOrdComp.Next() = 0;
         end;
+    end;
+
+    procedure ValidateOrUpdateBeforeSubConOrderLineDelete(PurchaseLine: Record "Purchase Line")
+    var
+        DeliveryChallanLine: Record "Delivery Challan Line";
+    begin
+        if not PurchaseLine.Subcontracting then
+            exit;
+
+        DeliveryChallanLine.LoadFields("Document No.", "Production Order No.", "Production Order Line No.", "Parent Item No.");
+        DeliveryChallanLine.SetRange("Document No.", PurchaseLine."Document No.");
+        DeliveryChallanLine.SetRange("Production Order No.", PurchaseLine."Prod. Order No.");
+        DeliveryChallanLine.SetRange("Production Order Line No.", PurchaseLine."Prod. Order Line No.");
+        DeliveryChallanLine.SetRange("Parent Item No.", PurchaseLine."No.");
+        if not DeliveryChallanLine.IsEmpty() then
+            Error(DeliveryChallanLineExistsErr, PurchaseLine."Document No.", PurchaseLine."Line No.");
+
+        if PurchaseLine.Type = PurchaseLine.Type::Item then
+            UpdateProductionOrderLineOnDeleteSubconOrderLine(PurchaseLine);
+    end;
+
+    local procedure UpdateProductionOrderLineOnDeleteSubconOrderLine(PurchaseLine: Record "Purchase Line")
+    var
+        ProdOrderLine: Record "Prod. Order Line";
+    begin
+        if not ProdOrderLine.Get(ProdOrderLine.Status::Released, PurchaseLine."Prod. Order No.", PurchaseLine."Prod. Order Line No.") then
+            exit;
+
+        ProdOrderLine.TestField("Subcontracting Order No.", PurchaseLine."Document No.");
+        ProdOrderLine.TestField("Item No.", PurchaseLine."No.");
+        ProdOrderLine."Subcontractor Code" := '';
+        ProdOrderLine."Subcontracting Order No." := '';
+        ProdOrderLine.Modify();
     end;
 
     local procedure UpdateSubCompLocation(Item: Record Item): Code[10]

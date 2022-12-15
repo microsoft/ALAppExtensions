@@ -5815,6 +5815,9 @@ End Function
         <Field Name="InterestAmount_IssuedReminderLineFormat">
           <DataField>InterestAmount_IssuedReminderLineFormat</DataField>
         </Field>
+        <Field Name="Description_IssuedReminderLineCaption">
+          <DataField>Description_IssuedReminderLineCaption</DataField>
+        </Field>
         <Field Name="Description_IssuedReminderLine">
           <DataField>Description_IssuedReminderLine</DataField>
         </Field>
@@ -5827,17 +5830,23 @@ End Function
         <Field Name="LineNo_IssuedReminderLine">
           <DataField>LineNo_IssuedReminderLine</DataField>
         </Field>
-        <Field Name="InterestAmountInclVAT">
-          <DataField>InterestAmountInclVAT</DataField>
-        </Field>
-        <Field Name="InterestAmountInclVATFormat">
-          <DataField>InterestAmountInclVATFormat</DataField>
-        </Field>
         <Field Name="AmountInclVAT">
           <DataField>AmountInclVAT</DataField>
         </Field>
         <Field Name="AmountInclVATFormat">
           <DataField>AmountInclVATFormat</DataField>
+        </Field>
+        <Field Name="LineAmountText">
+          <DataField>LineAmountText</DataField>
+        </Field>
+        <Field Name="InterestAmountLbl">
+          <DataField>InterestAmountLbl</DataField>
+        </Field>
+        <Field Name="InterestAmountInclVAT">
+          <DataField>InterestAmountInclVAT</DataField>
+        </Field>
+        <Field Name="InterestAmountInclVATFormat">
+          <DataField>InterestAmountInclVATFormat</DataField>
         </Field>
         <Field Name="DocumentDate_NotDueLine">
           <DataField>DocumentDate_NotDueLine</DataField>
@@ -5874,6 +5883,24 @@ End Function
         </Field>
         <Field Name="LineNo_NotDueLine">
           <DataField>LineNo_NotDueLine</DataField>
+        </Field>
+        <Field Name="GreetingLbl">
+          <DataField>GreetingLbl</DataField>
+        </Field>
+        <Field Name="AmtDueLbl">
+          <DataField>AmtDueLbl</DataField>
+        </Field>
+        <Field Name="BodyLbl">
+          <DataField>BodyLbl</DataField>
+        </Field>
+        <Field Name="ClosingLbl">
+          <DataField>ClosingLbl</DataField>
+        </Field>
+        <Field Name="TotalLineAmount">
+          <DataField>TotalLineAmount</DataField>
+        </Field>
+        <Field Name="TotalLineAmountFormat">
+          <DataField>TotalLineAmountFormat</DataField>
         </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>

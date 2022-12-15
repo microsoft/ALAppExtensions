@@ -174,19 +174,40 @@ codeunit 20352 "Connectivity App Definitions"
         WorksOnConnectivityAppCountry.Copy(TempWorksOnConnectivityAppCountry, true);
     end;
 
-    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ConnectivityAppCountry: Enum "Conn. Apps Supported Country") Exists: Boolean
+    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ApprovedConnectivityAppCountry: Enum "Conn. Apps Supported Country"; WorksOnConnectivityAppCountry: Enum "Conn. Apps Supported Country") Exists: Boolean
+    var
+        IdFilter: Text;
     begin
         LoadData();
-        TempApprovedConnectivityAppCountry.SetRange(Country, ConnectivityAppCountry);
+        TempWorksOnConnectivityAppCountry.SetRange(Country, WorksOnConnectivityAppCountry);
+        TempWorksOnConnectivityAppCountry.FindSet();
+        repeat
+            IdFilter += TempWorksOnConnectivityAppCountry."App Id" + '|';
+        until TempWorksOnConnectivityAppCountry.Next() = 0;
+        IdFilter := IdFilter.TrimEnd('|');
+
+        TempApprovedConnectivityAppCountry.SetRange(Country, ApprovedConnectivityAppCountry);
+        TempApprovedConnectivityAppCountry.SetFilter("App Id", IdFilter);
         Exists := not TempApprovedConnectivityAppCountry.IsEmpty();
         TempApprovedConnectivityAppCountry.Reset();
     end;
 
-    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ConnectivityAppCountry: Enum "Conn. Apps Supported Country"; ConnectivityAppCategory: Enum "Connectivity Apps Category") Exists: Boolean
+    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ApprovedConnectivityAppCountry: Enum "Conn. Apps Supported Country"; WorksOnConnectivityAppCountry: Enum "Conn. Apps Supported Country"; ConnectivityAppCategory: Enum "Connectivity Apps Category") Exists: Boolean
+    var
+        IdFilter: Text;
     begin
         LoadData();
-        TempApprovedConnectivityAppCountry.SetRange(Country, ConnectivityAppCountry);
+        TempWorksOnConnectivityAppCountry.SetRange(Country, WorksOnConnectivityAppCountry);
+        TempWorksOnConnectivityAppCountry.SetRange(Category, ConnectivityAppCategory);
+        TempWorksOnConnectivityAppCountry.FindSet();
+        repeat
+            IdFilter += TempWorksOnConnectivityAppCountry."App Id" + '|';
+        until TempWorksOnConnectivityAppCountry.Next() = 0;
+        IdFilter := IdFilter.TrimEnd('|');
+
+        TempApprovedConnectivityAppCountry.SetRange(Country, ApprovedConnectivityAppCountry);
         TempApprovedConnectivityAppCountry.SetRange(Category, ConnectivityAppCategory);
+        TempApprovedConnectivityAppCountry.SetFilter("App Id", IdFilter);
         Exists := not TempApprovedConnectivityAppCountry.IsEmpty();
         TempApprovedConnectivityAppCountry.Reset();
     end;
@@ -272,10 +293,11 @@ codeunit 20352 "Connectivity App Definitions"
     local procedure GetAppDescription(AppId: Guid; AppDescription: Text[2048]): Text[2048]
     begin
         if UserPersonalization."Language ID" = 0 then
-            UserPersonalization.Get(UserSecurityId());
+            if not UserPersonalization.Get(UserSecurityId()) then
+                exit(AppDescription);
 
         if TempConnectivityAppDescription.Get(AppId, UserPersonalization."Language ID") then
-            exit(TempConnectivityAppDescription.Description);
+                    exit(TempConnectivityAppDescription.Description);
 
         exit(AppDescription);
     end;

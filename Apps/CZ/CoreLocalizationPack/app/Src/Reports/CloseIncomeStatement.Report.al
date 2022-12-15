@@ -413,7 +413,7 @@ report 11753 "Close Income Statement CZL"
         OnPreReportOnBeforeCheckDimPostingRules(IsHandled);
         if not IsHandled then begin
             CheckDimResultText := CheckDimPostingRules(TempSelectedDimension);
-            if (CheckDimResultText <> '') and not GeneralLedgerSetup."Do Not Check Dimensions CZL" then
+            if (CheckDimResultText <> '') and GeneralLedgerSetup."Do Not Check Dimensions CZL" then
                 if not ConfirmManagement.GetResponse(CheckDimResultText + ShouldContinueQst, false) then
                     Error('');
         end;
