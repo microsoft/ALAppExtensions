@@ -60,6 +60,9 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
             } else {
                 Write-Host "Translations were not generated for app $appName"
             }
+
+            # Add  the app file for every built app to a folder
+            Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
         }
 
         'CLEAN' {
