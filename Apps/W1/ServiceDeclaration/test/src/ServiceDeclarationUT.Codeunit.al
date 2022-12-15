@@ -17,9 +17,11 @@ codeunit 139903 "Service Declaration UT"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryResource: Codeunit "Library - Resource";
+        LibraryUtility: Codeunit "Library - Utility";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         DoYouWantToChangeQst: Label 'Do you want to change';
+        CannotEnterNumbersManuallyErr: Label 'You may not enter numbers manually';
 
     [Test]
     [HandlerFunctions('ConfirmHandler')]
@@ -738,6 +740,55 @@ codeunit 139903 "Service Declaration UT"
         PurchLine.Validate(Type, PurchLine.Type::"Charge (Item)");
         PurchLine.Validate("No.", ItemCharge."No.");
         PurchLine.TestField("Applicable For Serv. Decl.", false);
+    end;
+
+    [Test]
+    procedure SetServDeclNoManuallyIfAllowedByNoSeries()
+    var
+        NoSeries: Record "No. Series";
+        ServDeclSetup: Record "Service Declaration Setup";
+        ServDeclHeader: Record "Service Declaration Header";
+    begin
+        // [SCENARIO 457814] Stan can set service declaration number manually if it is allowed by the "No. Series" setup
+
+        Initialize();
+        // [GIVEN] No. Series "X" with the "Manual Nos." option is enabled
+        LibraryUtility.CreateNoSeries(NoSeries, true, true, false);
+        NoSeries.Validate("Manual Nos.", true);
+        NoSeries.Modify(true);
+        LibraryVariableStorage.Enqueue(NoSeries.Code);
+        // [GIVEN] "Declaration No. Series" is "X" in "Service Declaration Setup"
+        ServDeclSetup.Get();
+        ServDeclSetup.Validate("Declaration No. Series", NoSeries.Code);
+        ServDeclSetup.Modify(true);
+        // [WHEN] Set "Y" to the number of the service declaration header 
+        ServDeclHeader.Validate("No.", LibraryUtility.GenerateGUID());
+        ServDeclHeader.Insert(true);
+        // [THE] The number of the service declaration header is "Y"
+        ServDeclHeader.TestField("No.");
+    end;
+
+    [Test]
+    procedure CannotSetServDeclNoManuallyIfNotAllowedByNoSeries()
+    var
+        NoSeries: Record "No. Series";
+        ServDeclSetup: Record "Service Declaration Setup";
+        ServDeclHeader: Record "Service Declaration Header";
+    begin
+        // [SCENARIO 457814] Stan cannot set service declaration number manually if it is not allowed by the "No. Series" setup
+        Initialize();
+        // [GIVEN] No. Series "X" with the "Manual Nos." option is disabled
+        LibraryUtility.CreateNoSeries(NoSeries, true, false, false);
+        LibraryVariableStorage.Enqueue(NoSeries.Code);
+        // [GIVEN] "Declaration No. Series" is "X" in "Service Declaration Setup"
+        ServDeclSetup.Get();
+        ServDeclSetup.Validate("Declaration No. Series", NoSeries.Code);
+        ServDeclSetup.Modify(true);
+        // [WHEN] Set "Y" to the number of the service declaration header 
+        Asserterror ServDeclHeader.Validate("No.", LibraryUtility.GenerateGUID());
+        // [THE] The error message "You cannot enter numbers manually" is thrown
+        Assert.ExpectedErrorCode('Dialog');
+        Assert.ExpectedError(CannotEnterNumbersManuallyErr);
     end;
 
     local procedure Initialize()

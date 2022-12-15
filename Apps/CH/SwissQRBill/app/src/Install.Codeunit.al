@@ -161,6 +161,7 @@ codeunit 11517 "Swiss QR-Bill Install"
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Amount"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Bill Info"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Currency"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Has Zero Amount"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill IBAN"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Unstr. Message"));
 

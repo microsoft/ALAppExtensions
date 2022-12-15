@@ -11,7 +11,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         ShpfyCommunicationEvents: Codeunit "Shpfy Communication Events";
         ShpfyGraphQLQueries: Codeunit "Shpfy GraphQL Queries";
         NextExecutionTime: DateTime;
-        VersionTok: Label '2022-01', Locked = true;
+        VersionTok: Label '2022-04', Locked = true;
         OutgoingRequestsNotEnabledConfirmLbl: Label 'Importing data to your Shopify shop is not enabled, do you want to go to shop card to enable?';
         OutgoingRequestsNotEnabledErr: Label 'Importing data to your Shopify shop is not enabled, navigate to shop card to enable.';
         IsTestInProgress: Boolean;

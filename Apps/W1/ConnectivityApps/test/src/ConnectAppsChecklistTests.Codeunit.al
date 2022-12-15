@@ -24,6 +24,7 @@ codeunit 139533 "Connect. Apps Checklist Tests"
         ChecklistSetupTestLibrary: Codeunit "Checklist Setup Test Library";
         TestClientTypeSubscriber: Codeunit "Test Client Type Subscriber";
         CompanyTriggers: Codeunit "Company Triggers";
+        ConnectivityAppsLocationMock: Codeunit "Connectivity Apps Loc. Mock";
     begin
         // [GIVEN] The client type is set to Web
         TestClientTypeSubscriber.SetClientType(ClientType::Web);
@@ -46,6 +47,8 @@ codeunit 139533 "Connect. Apps Checklist Tests"
         // [GIVEN] The Guided Experience Item and Checklist Item tables are empty
         GuidedExperienceTestLibrary.DeleteAll();
         ChecklistTestLibrary.DeleteAll();
+
+        BindSubscription(ConnectivityAppsLocationMock);
 
         // [WHEN] Calling OnCompanyOpen
 #if not CLEAN20

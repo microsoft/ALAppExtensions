@@ -29,6 +29,7 @@ pageextension 11516 "Swiss QR-Bill Purchase Invoice" extends "Purchase Invoice"
                 field("Swiss QR-Bill Amount"; "Swiss QR-Bill Amount")
                 {
                     ApplicationArea = All;
+                    Editable = Rec."Swiss QR-Bill Has Zero Amount";
                     Importance = Promoted;
                     ToolTip = 'Specifies the total amount including VAT of the QR-Bill.';
                 }

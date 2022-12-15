@@ -58,7 +58,6 @@ codeunit 135011 "Camera Test"
         Assert.AreEqual(CameraTestLibrary.GetSmallJpeg(), Base64Convert.ToBase64(PictureInStream), 'The mock picture was expected.');
     end;
 
-
     [Test]
     [Scope('OnPrem')]
     procedure GetPictureWithQualityErrorTest()
@@ -376,4 +375,3 @@ codeunit 135011 "Camera Test"
         // Do nothing
     end;
 }
-

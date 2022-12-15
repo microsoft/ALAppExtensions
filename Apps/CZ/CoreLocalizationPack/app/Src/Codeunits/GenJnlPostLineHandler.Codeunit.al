@@ -198,4 +198,20 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
                         VATAmount := 0;
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCheckDimValueForDisposal', '', false, false)]
+    local procedure IsCheckDimensionsEnabledOnBeforeCheckDimValueForDisposal(var GenJnlLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        IsHandled := not GenJnlLine.IsCheckDimensionsEnabledCZL();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCheckGLAccDimError', '', false, false)]
+    local procedure IsCheckDimensionsEnabledOnBeforeCheckGLAccDimError(var GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        IsHandled := not GenJournalLine.IsCheckDimensionsEnabledCZL();
+    end;
 }
