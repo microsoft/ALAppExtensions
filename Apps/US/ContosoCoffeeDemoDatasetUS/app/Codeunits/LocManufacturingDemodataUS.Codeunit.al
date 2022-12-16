@@ -46,6 +46,12 @@ codeunit 10499 "Loc. Manufacturing Demodata-US"
         Rec."Company Type" := Rec."Company Type"::"Sales Tax";
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Warehouse Demo Data Setup", 'OnBeforeInsertEvent', '', false, false)]
+    local procedure ModifyWhseTaxSetting(var Rec: Record "Warehouse Demo Data Setup")
+    begin
+        Rec."Company Type" := Rec."Company Type"::"Sales Tax";
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
         WhseDemoAccount: Record "Whse. Demo Account";
