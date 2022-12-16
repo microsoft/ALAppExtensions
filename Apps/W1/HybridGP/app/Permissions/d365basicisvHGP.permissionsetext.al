@@ -91,5 +91,8 @@ permissionsetextension 4026 "D365 BASIC ISV - HGP" extends "D365 BASIC ISV"
                   tabledata "GP SY00300" = RIMD,
                   tabledata "GP SY01100" = RIMD,
                   tabledata "GP SY01200" = RIMD,
-                  tabledata "GP SY03300" = RIMD;
+                  tabledata "GP SY03300" = RIMD,
+                  tabledata "GP GL00105" = RIMD,
+                  tabledata "GP GL20000" = RIMD,
+                  tabledata "GP GL30000" = RIMD;
 }

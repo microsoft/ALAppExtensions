@@ -1,10 +1,14 @@
 codeunit 4033 "Install GP SmartLists"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by extension Dynamics GP Historical Transactions';
+    ObsoleteTag = '22.0';
+
     trigger OnRun();
     begin
-        InstallGPSmartListsExtension();
     end;
 
+    [Obsolete('Replaced by extension Dynamics GP Historical Transactions', '22.0')]
     procedure InstallGPSmartListsExtension()
     var
         ExtensionManagement: Codeunit 2504;

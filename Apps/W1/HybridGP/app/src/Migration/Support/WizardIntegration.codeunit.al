@@ -49,6 +49,8 @@ codeunit 4035 "Wizard Integration"
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
     var
         GPConfiguration: Record "GP Configuration";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         DataSyncStatus: Page "Data Sync Status";
         Flag: Boolean;
     begin
@@ -74,6 +76,9 @@ codeunit 4035 "Wizard Integration"
         DataSyncStatus.ParsePosting();
         HelperFunctions.PostGLTransactions();
         HelperFunctions.SetProcessesRunning(false);
+
+        if GPCompanyAdditionalSettings.GetMigrateHistory() then
+            HybridCloudManagement.CreateAndScheduleBackgroundJob(Codeunit::"GP Populate Hist. Tables", 'Migrate GP Historical Snapshot');
     end;
 
     local procedure SendTelemetryForSelectedEntities(var DataMigrationEntity: Record "Data Migration Entity")
