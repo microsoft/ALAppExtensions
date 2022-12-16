@@ -22,8 +22,8 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterContiniaPaymentManagement365NL();
         RegisterContiniaPaymentManagement365DK();
         RegisterContiniaPaymentManagement365NO();
-        RegisterWiseBanking();
         RegisterIQBanking();
+        RegisterWiseBanking();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -167,7 +167,7 @@ codeunit 20352 "Connectivity App Definitions"
         AddDescriptionTranslation(AppId, 'Nettbanken din kan kobles til Business Central. Med Continia Payment Management kan du betale dine leverandører, matche kundebetalinger og avstemme kontoutskrifter direkte fra Business Central – fullt integrert og sikkert uten å måtte logge på nettbanken din. Payment Management har integrasjon til følgende banker i Norge: DNB, Handelsbanken, Nordea, SpareBank 1, Sparebanken Vest, Danske Bank. Last ned appen og start din gratis prøveversjon, eller besøk nettsiden vår for mer informasjon.', 1044);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
-    
+
     local procedure RegisterIQBanking()
     var
         AppId: Text[250];
@@ -195,7 +195,7 @@ codeunit 20352 "Connectivity App Definitions"
         AddDescriptionTranslation(AppId, 'Gestiona tus bancos directamente desde Business Central. Con la finalidad de facilitar la gestión financiera, esta app te permite importar transacciones bancarias y ejecutar pagos de una forma sencilla y segura, sin salir de tu entorno de Business Central.', 1034);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
-    
+
     local procedure RegisterWiseBanking()
     var
         AppId: Text[250];
@@ -355,7 +355,7 @@ codeunit 20352 "Connectivity App Definitions"
                 exit(AppDescription);
 
         if TempConnectivityAppDescription.Get(AppId, UserPersonalization."Language ID") then
-                    exit(TempConnectivityAppDescription.Description);
+            exit(TempConnectivityAppDescription.Description);
 
         exit(AppDescription);
     end;
