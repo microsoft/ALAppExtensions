@@ -156,7 +156,7 @@ codeunit 8906 "Email Editor"
         AttachamentSize: Integer;
     begin
         if not UploadIntoStream('', '', '', FileName, Instream) then
-            exit;
+            Error(GetLastErrorText());
 
         AttachmentName := CopyStr(FileName, 1, 250);
         ContentType := EmailMessageImpl.GetContentTypeFromFilename(Filename);
@@ -349,41 +349,11 @@ codeunit 8906 "Email Editor"
         end;
     end;
 
-
-    local procedure InsertRelatedAttachments(TableID: Integer; SystemID: Guid; var EmailRelatedAttachment2: Record "Email Related Attachment"; var EmailRelatedAttachment: Record "Email Related Attachment")
-    var
-        RecordRef: RecordRef;
-    begin
-        RecordRef.Open(TableID);
-        if not RecordRef.GetBySystemId(SystemID) then begin
-            Session.LogMessage('0000CTZ', StrSubstNo(RecordNotFoundMsg, TableID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            exit;
-        end;
-
-        repeat
-            EmailRelatedAttachment.Copy(EmailRelatedAttachment2);
-            EmailRelatedAttachment."Attachment Source" := CopyStr(Format(RecordRef.RecordId(), 0, 1), 1, MaxStrLen(EmailRelatedAttachment."Attachment Source"));
-            EmailRelatedAttachment.Insert();
-        until EmailRelatedAttachment2.Next() = 0;
-    end;
-
     procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachmentOut: Record "Email Related Attachment")
     var
-        EmailRelatedAttachment: Record "Email Related Attachment";
-        EmailRelatedRecord: Record "Email Related Record";
-        Email: Codeunit "Email";
-        EmailImpl: Codeunit "Email Impl";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
     begin
-        EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
-        EmailImpl.FilterRemovedSourceRecords(EmailRelatedRecord);
-        if EmailRelatedRecord.FindSet() then
-            repeat
-                Email.OnFindRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedAttachment);
-                if EmailRelatedAttachment.FindSet() then
-                    InsertRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedAttachment, EmailRelatedAttachmentOut);
-                EmailRelatedAttachment.DeleteAll();
-            until EmailRelatedRecord.Next() = 0
-        else
+        if not EmailMessageImpl.GetRelatedAttachments(EmailMessageId, EmailRelatedAttachmentOut) then
             Message(NoRelatedAttachmentsErr);
     end;
 
@@ -525,7 +495,6 @@ codeunit 8906 "Email Editor"
         LoadingTemplateMsg: Label 'Applied word template to email body with size: %1.', Comment = '%1 - File size', Locked = true;
         UploadingAttachmentMsg: Label 'Attached file with size: %1, Content type: %2', Comment = '%1 - File size, %2 - Content type', Locked = true;
         UploadingTemplateAttachmentMsg: Label 'Attached word template with size: %1, Content type: %2', Comment = '%1 - File size, %2 - Content type', Locked = true;
-        RecordNotFoundMsg: Label 'Record not found in table: %1', Comment = '%1 - File size, %2 - Content type', Locked = true;
         EmailCategoryLbl: Label 'Email', Locked = true;
         SendingFailedErr: Label 'The email was not sent because of the following error: "%1" \\Depending on the error, you might need to contact your administrator.', Comment = '%1 - the error that occurred.';
         NoRelatedAttachmentsErr: Label 'Did not find any attachments related to this email.';

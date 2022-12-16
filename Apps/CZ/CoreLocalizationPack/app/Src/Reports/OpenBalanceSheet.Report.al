@@ -360,7 +360,7 @@ report 11755 "Open Balance Sheet CZL"
         GeneralLedgerSetup.Get();
         SelectedDimension.GetSelectedDim(CopyStr(UserId(), 1, 50), 3, Report::"Open Balance Sheet CZL", '', TempSelectedDimension);
         CheckDimResultText := CheckDimPostingRules(TempSelectedDimension);
-        if (CheckDimResultText <> '') and not GeneralLedgerSetup."Do Not Check Dimensions CZL" then
+        if (CheckDimResultText <> '') and GeneralLedgerSetup."Do Not Check Dimensions CZL" then
             if not ConfirmManagement.GetResponse(CheckDimResultText + CreateJournalQst, false) then
                 Error('');
 
