@@ -290,6 +290,7 @@ codeunit 4810 IntrastatReportManagement
     begin
         ChecklistClearBatchErrors(IntrastatReportHeader);
         IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
+        OnBeforeValidateReportWithAdvancedChecklist(IntrastatReportLine, IntrastatReportHeader);
         if IntrastatReportLine.FindSet() then
             repeat
                 ValidateReportLineWithAdvancedChecklist(IntrastatReportLine, ThrowError);
@@ -589,6 +590,7 @@ codeunit 4810 IntrastatReportManagement
                 IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Receipt);
             if ExportType = 2 then // Shipment
                 IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Shipment);
+            OnBeforeExportIntrastatReportLines(IntrastatReportLine, IntrastatReportHeader);
 
             if not IntrastatReportLine.IsEmpty then begin
                 DataExchFieldGrouping.SetRange("Data Exch. Def Code", DataExchMapping."Data Exch. Def Code");
@@ -603,6 +605,7 @@ codeunit 4810 IntrastatReportManagement
                 OutStreamFilters.WriteText(IntrastatReportLine.GetView());
                 if DataExch.Insert(true) then
                     DataExch.ExportFromDataExch(DataExchMapping);
+                DataExch.Modify(true);
             end;
         end;
     end;
@@ -1045,4 +1048,15 @@ codeunit 4810 IntrastatReportManagement
     local procedure OnBeforeExportOneDataExchangeDef(var IntrastatReportHeader: Record "Intrastat Report Header"; DataExchDefCode: Code[20]; ExportType: Integer; var DataExch: Record "Data Exch."; var IsHandled: Boolean)
     begin
     end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeValidateReportWithAdvancedChecklist(var IntrastatReportLine: Record "Intrastat Report Line"; IntrastatReportHeader: Record "Intrastat Report Header");
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeExportIntrastatReportLines(var IntrastatReportLine: Record "Intrastat Report Line"; IntrastatReportHeader: Record "Intrastat Report Header");
+    begin
+    end;
+
 }

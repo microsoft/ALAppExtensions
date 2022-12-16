@@ -41,7 +41,7 @@ codeunit 20351 "Connectivity Apps Impl."
                     Clear(ConnectivityApp);
                     ConnectivityApp.Copy(TempConnectivityApps);
                     ConnectivityApp."App Id" := TempConnectivityApps."App Id";
-                    ConnectivityApp.Country := TempApprovedForConnectivityAppCountry.Country;
+                    Evaluate(ConnectivityApp.Country, "Conn. Apps Supported Country".Names().Get(TempApprovedForConnectivityAppCountry.Country.Ordinals.IndexOf(TempApprovedForConnectivityAppCountry.Country.AsInteger())));
                     ConnectivityApp.Category := TempApprovedForConnectivityAppCountry.Category;
                     ConnectivityApp.Insert();
                 until TempApprovedForConnectivityAppCountry.Next() = 0;
@@ -123,32 +123,44 @@ codeunit 20351 "Connectivity Apps Impl."
     var
         CompanyInformation: Record "Company Information";
         ConnectivityAppDefinitions: Codeunit "Connectivity App Definitions";
-        SupportedCtry: Enum "Conn. Apps Supported Country";
+        ApprovedCtry: Enum "Conn. Apps Supported Country";
+        WorksOnCtry: Enum "Conn. Apps Supported Country";
+        ApprovedConnectivityAppsForCurrentCountryExists: Boolean;
+        WorksOnConnectivityAppForCurrentCountryExists: Boolean;
     begin
+        if TryGetCurrentCountry(WorksOnCtry) then
+            WorksOnConnectivityAppForCurrentCountryExists := ConnectivityAppDefinitions.WorksOnConnectivityAppForCurrentCountryExists(WorksOnCtry);
+
+        if not WorksOnConnectivityAppForCurrentCountryExists then
+            exit(false);
+
         CompanyInformation.Get();
-        if Evaluate(SupportedCtry, CompanyInformation."Country/Region Code") then
-            exit(ConnectivityAppDefinitions.ApprovedConnectivityAppsForCurrentCountryExists(SupportedCtry))
-        else begin
-            if not TryGetCurrentCountry(SupportedCtry) then
-                exit(false);
-            exit(ConnectivityAppDefinitions.WorksOnConnectivityAppForCurrentCountryExists(SupportedCtry));
-        end;
+        if Evaluate(ApprovedCtry, CompanyInformation."Country/Region Code") then
+            ApprovedConnectivityAppsForCurrentCountryExists := ConnectivityAppDefinitions.ApprovedConnectivityAppsForCurrentCountryExists(ApprovedCtry, WorksOnCtry);
+
+        exit(ApprovedConnectivityAppsForCurrentCountryExists and WorksOnConnectivityAppForCurrentCountryExists);
     end;
 
     procedure IsConnectivityAppsAvailableForGeo(ConnectivityAppCategory: Enum "Connectivity Apps Category"): Boolean
     var
         CompanyInformation: Record "Company Information";
         ConnectivityAppDefinitions: Codeunit "Connectivity App Definitions";
-        SupportedCtry: Enum "Conn. Apps Supported Country";
+        ApprovedCtry: Enum "Conn. Apps Supported Country";
+        WorksOnCtry: Enum "Conn. Apps Supported Country";
+        ApprovedConnectivityAppsForCurrentCountryExists: Boolean;
+        WorksOnConnectivityAppForCurrentCountryExists: Boolean;
     begin
+        if TryGetCurrentCountry(WorksOnCtry) then
+            WorksOnConnectivityAppForCurrentCountryExists := ConnectivityAppDefinitions.WorksOnConnectivityAppForCurrentCountryExists(WorksOnCtry, ConnectivityAppCategory);
+
+        if not WorksOnConnectivityAppForCurrentCountryExists then
+            exit(false);
+
         CompanyInformation.Get();
-        if Evaluate(SupportedCtry, CompanyInformation."Country/Region Code") then
-            exit(ConnectivityAppDefinitions.ApprovedConnectivityAppsForCurrentCountryExists(SupportedCtry, ConnectivityAppCategory))
-        else begin
-            if not TryGetCurrentCountry(SupportedCtry) then
-                exit(false);
-            exit(ConnectivityAppDefinitions.WorksOnConnectivityAppForCurrentCountryExists(SupportedCtry, ConnectivityAppCategory));
-        end;
+        if Evaluate(ApprovedCtry, CompanyInformation."Country/Region Code") then
+            ApprovedConnectivityAppsForCurrentCountryExists := ConnectivityAppDefinitions.ApprovedConnectivityAppsForCurrentCountryExists(ApprovedCtry, WorksOnCtry, ConnectivityAppCategory);
+
+        exit(ApprovedConnectivityAppsForCurrentCountryExists and WorksOnConnectivityAppForCurrentCountryExists);
     end;
 
     procedure LogFeatureTelemetry(AppId: Guid; AppName: Text; AppPublisher: Text)

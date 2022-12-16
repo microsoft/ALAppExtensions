@@ -120,7 +120,7 @@ codeunit 8902 "Email Scenario Attach Impl."
             exit;
 
         if not UploadIntoStream(AddeFileToScenariosMsg, '', '', FileName, Instream) then
-            exit;
+            Error(GetLastErrorText());
 
         repeat
             EmailScenario := SelectedScenarios.Scenario;
@@ -144,7 +144,8 @@ codeunit 8902 "Email Scenario Attach Impl."
         Instream: Instream;
     begin
         if not UploadIntoStream(AddFileToCurrentScenarioMsg, '', '', FileName, Instream) then
-            exit;
+            Error(GetLastErrorText());
+
         EmailScenarioAttachments."Attachment Name" := CopyStr(FileName, 1, 250);
         EmailScenarioAttachments."Email Attachment".ImportStream(Instream, FileName);
         EmailScenarioAttachments.Scenario := Enum::"Email Scenario".FromInteger(EmailScenario);

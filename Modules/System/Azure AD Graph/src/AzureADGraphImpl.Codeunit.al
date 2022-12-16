@@ -187,6 +187,16 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
+    [TryFunction]
+    procedure IsGraphUserAccountEnabled(UserPrincipalName: Text; var IsEnabled: Boolean)
+    var
+        UserInfo: DotNet UserInfo;
+    begin
+        GetUser(UserPrincipalName, UserInfo);
+        IsEnabled := UserInfo.AccountEnabled();
+    end;
+
+    [NonDebuggable]
     local procedure CanQueryGraph(): Boolean
     begin
         if not IsGraphInitialized then
