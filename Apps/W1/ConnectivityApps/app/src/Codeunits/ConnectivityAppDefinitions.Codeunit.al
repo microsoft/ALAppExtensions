@@ -23,6 +23,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterContiniaPaymentManagement365DK();
         RegisterContiniaPaymentManagement365NO();
         RegisterWiseBanking();
+        RegisterIQBanking();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -167,6 +168,34 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
     
+    local procedure RegisterIQBanking()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'IQ Banking' to ES
+        ***************************************************/
+
+        AppId := '80d82476-426c-4812-be05-bfcbaf777868';
+        AppName := 'IQ Banking';
+        AppPublisher := 'InnoQubit Software';
+        AppDescription := 'Manage your banks directly from Business Central. In order to make financial management easier, this app allows you import bank transactions and execute payments in an easy and secure way, without leaving your Business Central environment.';
+        AppProviderSupportURL := 'https://innovaonline.es/banking/bank';
+        AppSourceUrl := 'https://appsource.microsoft.com/es-es/product/dynamics-365-business-central/PUBID.innoqubitsoftwaresl1638027829374%7CAID.iq-banking%7CPAPPID.80d82476-426c-4812-be05-bfcbaf777868';
+        AppApprovedFor := 'ES';
+        AppWorksOn := 'ES';
+
+        AddDescriptionTranslation(AppId, 'Gestiona tus bancos directamente desde Business Central. Con la finalidad de facilitar la gestión financiera, esta app te permite importar transacciones bancarias y ejecutar pagos de una forma sencilla y segura, sin salir de tu entorno de Business Central.', 1034);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+    
     local procedure RegisterWiseBanking()
     var
         AppId: Text[250];
@@ -203,19 +232,40 @@ codeunit 20352 "Connectivity App Definitions"
         WorksOnConnectivityAppCountry.Copy(TempWorksOnConnectivityAppCountry, true);
     end;
 
-    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ConnectivityAppCountry: Enum "Conn. Apps Supported Country") Exists: Boolean
+    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ApprovedConnectivityAppCountry: Enum "Conn. Apps Supported Country"; WorksOnConnectivityAppCountry: Enum "Conn. Apps Supported Country") Exists: Boolean
+    var
+        IdFilter: Text;
     begin
         LoadData();
-        TempApprovedConnectivityAppCountry.SetRange(Country, ConnectivityAppCountry);
+        TempWorksOnConnectivityAppCountry.SetRange(Country, WorksOnConnectivityAppCountry);
+        TempWorksOnConnectivityAppCountry.FindSet();
+        repeat
+            IdFilter += TempWorksOnConnectivityAppCountry."App Id" + '|';
+        until TempWorksOnConnectivityAppCountry.Next() = 0;
+        IdFilter := IdFilter.TrimEnd('|');
+
+        TempApprovedConnectivityAppCountry.SetRange(Country, ApprovedConnectivityAppCountry);
+        TempApprovedConnectivityAppCountry.SetFilter("App Id", IdFilter);
         Exists := not TempApprovedConnectivityAppCountry.IsEmpty();
         TempApprovedConnectivityAppCountry.Reset();
     end;
 
-    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ConnectivityAppCountry: Enum "Conn. Apps Supported Country"; ConnectivityAppCategory: Enum "Connectivity Apps Category") Exists: Boolean
+    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ApprovedConnectivityAppCountry: Enum "Conn. Apps Supported Country"; WorksOnConnectivityAppCountry: Enum "Conn. Apps Supported Country"; ConnectivityAppCategory: Enum "Connectivity Apps Category") Exists: Boolean
+    var
+        IdFilter: Text;
     begin
         LoadData();
-        TempApprovedConnectivityAppCountry.SetRange(Country, ConnectivityAppCountry);
+        TempWorksOnConnectivityAppCountry.SetRange(Country, WorksOnConnectivityAppCountry);
+        TempWorksOnConnectivityAppCountry.SetRange(Category, ConnectivityAppCategory);
+        TempWorksOnConnectivityAppCountry.FindSet();
+        repeat
+            IdFilter += TempWorksOnConnectivityAppCountry."App Id" + '|';
+        until TempWorksOnConnectivityAppCountry.Next() = 0;
+        IdFilter := IdFilter.TrimEnd('|');
+
+        TempApprovedConnectivityAppCountry.SetRange(Country, ApprovedConnectivityAppCountry);
         TempApprovedConnectivityAppCountry.SetRange(Category, ConnectivityAppCategory);
+        TempApprovedConnectivityAppCountry.SetFilter("App Id", IdFilter);
         Exists := not TempApprovedConnectivityAppCountry.IsEmpty();
         TempApprovedConnectivityAppCountry.Reset();
     end;
@@ -301,10 +351,11 @@ codeunit 20352 "Connectivity App Definitions"
     local procedure GetAppDescription(AppId: Guid; AppDescription: Text[2048]): Text[2048]
     begin
         if UserPersonalization."Language ID" = 0 then
-            UserPersonalization.Get(UserSecurityId());
+            if not UserPersonalization.Get(UserSecurityId()) then
+                exit(AppDescription);
 
         if TempConnectivityAppDescription.Get(AppId, UserPersonalization."Language ID") then
-            exit(TempConnectivityAppDescription.Description);
+                    exit(TempConnectivityAppDescription.Description);
 
         exit(AppDescription);
     end;

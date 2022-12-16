@@ -812,7 +812,7 @@ page 18493 "Subcontracting Order Subform"
                         trigger OnAction()
                         begin
                             ShowSubOrderDetailsReceiptForm();
-                             LineAmount := Rec."Line Amount";
+                            LineAmount := Rec."Line Amount";
                         end;
                     }
                 }
@@ -832,6 +832,7 @@ page 18493 "Subcontracting Order Subform"
     trigger OnDeleteRecord(): Boolean
     var
         ReservePurchLine: Codeunit "Purch. Line-Reserve";
+        UpdateSubcontractDetails: Codeunit "Update Subcontract Details";
     begin
         if (Rec.Quantity <> 0) and Rec.ItemExists(Rec."No.") then begin
             Commit();
@@ -841,6 +842,8 @@ page 18493 "Subcontracting Order Subform"
 
             ReservePurchLine.DeleteLine(Rec);
         end;
+
+        UpdateSubcontractDetails.ValidateOrUpdateBeforeSubConOrderLineDelete(Rec);
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)

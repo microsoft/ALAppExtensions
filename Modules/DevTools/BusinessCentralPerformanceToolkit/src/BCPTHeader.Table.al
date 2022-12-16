@@ -136,6 +136,17 @@ table 149000 "BCPT Header"
             Editable = false;
             DataClassification = SystemMetadata;
         }
+        field(18; "Test Company Name"; Text[30])
+        {
+            Caption = 'Test Company Name';
+            TableRelation = Company."Display Name";
+        }
+        field(19; RunID; Guid)
+        {
+            Caption = 'Unique RunID';
+            Editable = false;
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

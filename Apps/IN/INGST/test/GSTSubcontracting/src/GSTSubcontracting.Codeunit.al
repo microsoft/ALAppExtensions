@@ -1,6 +1,7 @@
 codeunit 18479 "GST Subcontracting"
 {
     Subtype = Test;
+    TestPermissions = NonRestrictive;
 
     var
         SourceCode: Record "Source Code";
@@ -16,6 +17,7 @@ codeunit 18479 "GST Subcontracting"
         LibraryAssert: Codeunit "Library Assert";
         LibraryGST: Codeunit "Library GST";
         Assert: Codeunit Assert;
+        UpdateSubcontractDetails: Codeunit "Update Subcontract Details";
         ComponentPerArray: array[20] of Decimal;
         Storage: Dictionary of [Text, Text];
         StorageBoolean: Dictionary of [Text, Boolean];
@@ -264,7 +266,7 @@ codeunit 18479 "GST Subcontracting"
         Initialize();
 
         // [WHEN] Create Subcontracting Order with Dimension from Released Purchase Order, Send Subcon Components, Receive Item, Post Purchase Order
-        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrder, PurchaseLine);
+        CreateSubcontractingOrderFromReleasedProdOrderWithDimension(ProductionOrder, PurchaseLine);
         DeliverSubconComponents(PurchaseLine, 0);
         OutputQty := ReceiptSubconItem(PurchaseLine, false, false, false, WorkDate());
         PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
@@ -746,6 +748,58 @@ codeunit 18479 "GST Subcontracting"
                 Error('Notfound');
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure SubconOrderToRegVendIntraStateItemAndDelete()
+    var
+        ProductionOrder: Record "Production Order";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseLine2: Record "Purchase Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] [456861] Subcontracting order no. and subcontractor Code are not being deleted in the released production order if users delete the subcontracting order without doing any process of send and receive
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, true);
+
+        // [GIVEN] Create Subcontracting Order from Released Purchase Order
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrder, PurchaseLine);
+
+        // [WHEN] Validate Subcontracting Order Line befor delete
+        UpdateSubcontractDetails.ValidateOrUpdateBeforeSubConOrderLineDelete(PurchaseLine);
+
+        // [THEN] Delete Subcontracting Order Line
+        PurchaseLine.Delete(true);
+
+        // [VERIFY] Verify it no longer exists
+        Assert.IsFalse(PurchaseLine2.Get(PurchaseLine."Document Type", PurchaseLine."Document No.", PurchaseLine."Line No."), 'Subcontracting Order Line still exists after deletion');
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,CreditMemoCreateMsgHandler')]
+    procedure SubconOrderLineDeleteNotAllowedAfterDeliverSubConItem()
+    var
+        ProductionOrder: Record "Production Order";
+        PurchaseLine: Record "Purchase Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DeliveryChallanLineExistsErr: Label 'Line cannot be deleted. Delivery Challan exist for Subcontracting Order no. %1, Line No. %2', Comment = '%1 = Subcontracting Order No., %2 = and Line No.';
+    begin
+        // [SCENARIO] [456858] System is allowing to delete Subcontracting orders or Lines if a delivery challan is already created against the subcontracting order but didn’t receive finished goods from the subcontractor location
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, true);
+
+        // [WHEN] Create Subcontracting Order from Released Purchase Order
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrder, PurchaseLine);
+
+        // [THEN] Deliver Subcontracting Component
+        DeliverSubconComponents(PurchaseLine, 0);
+
+        // [VERIFY] Assert Error Verified to Validate Purchase Order Delete Subcontracting Order Line
+        asserterror UpdateSubcontractDetails.ValidateOrUpdateBeforeSubConOrderLineDelete(PurchaseLine);
+        Assert.ExpectedError(StrSubstNo(DeliveryChallanLineExistsErr, PurchaseLine."Document No.", PurchaseLine."Line No."));
+    end;
+
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
                            GSTGroupType: Enum "GST Group Type";
@@ -1158,10 +1212,7 @@ codeunit 18479 "GST Subcontracting"
     begin
         MainItemNo := (Storage.Get(XMainItemNoTok));
         CompanyLocationCode := (Storage.Get(XCompanyLocationCodeTok));
-        if StorageBoolean.Get(WithDimensionLbl) then
-            CreateAndRefreshProductionOrderWithDimension(ProductionOrder, ProdOrderStatus::Released, ProdOrderSourceType::Item, MainItemNo, 10, CompanyLocationCode)
-        else
-            CreateAndRefreshProductionOrder(ProductionOrder, ProdOrderStatus::Released, ProdOrderSourceType::Item, MainItemNo, 10, CompanyLocationCode);
+        CreateAndRefreshProductionOrder(ProductionOrder, ProdOrderStatus::Released, ProdOrderSourceType::Item, MainItemNo, 10, CompanyLocationCode);
 
         ProdOrderLine.Reset();
         ProdOrderLine.SetRange(Status, ProdOrderStatus::Released);
@@ -1209,10 +1260,10 @@ codeunit 18479 "GST Subcontracting"
     procedure CreateAndRefreshProductionOrder(
         var ProductionOrder: Record "Production Order";
         ProdOrderStatus: Enum "Production Order Status";
-        SourceType: Enum "Prod. Order Source Type";
-        SourceNo: Code[20];
-        Quantity: Decimal;
-        CompanyLocationCode: Code[10])
+                             SourceType: Enum "Prod. Order Source Type";
+                             SourceNo: Code[20];
+                             Quantity: Decimal;
+                             CompanyLocationCode: Code[10])
     begin
         LibraryMfg.CreateProductionOrder(ProductionOrder, ProdOrderStatus, SourceType, SourceNo, Quantity);
         ProductionOrder.Validate("Location Code", CompanyLocationCode);
@@ -1220,13 +1271,38 @@ codeunit 18479 "GST Subcontracting"
         LibraryMfg.RefreshProdOrder(ProductionOrder, false, true, true, true, false);
     end;
 
+    local procedure CreateSubcontractingOrderFromReleasedProdOrderWithDimension(var ProductionOrder: Record "Production Order"; var PurchaseLine: Record "Purchase Line")
+    var
+        RequisitionLine: Record "Requisition Line";
+
+        SubOrderComponentList: Record "Sub Order Component List";
+        ProdOrderStatus: Enum "Production order Status";
+        ProdOrderSourceType: Enum "Prod. Order Source Type";
+        MainItemNo: Code[20];
+        CompanyLocationCode: Code[10];
+    begin
+        MainItemNo := (Storage.Get(XMainItemNoTok));
+        CompanyLocationCode := (Storage.Get(XCompanyLocationCodeTok));
+        CreateAndRefreshProductionOrderWithDimension(ProductionOrder, ProdOrderStatus::Released, ProdOrderSourceType::Item, MainItemNo, 10, CompanyLocationCode);
+        CreateAndValidateProdOrderComponent(ProductionOrder);
+
+        FindRequisitionLineForProductionOrder(RequisitionLine, ProductionOrder);
+        LibraryPlanning.CarryOutAMSubcontractWksh(RequisitionLine);
+        CreateAndInsertPurchaseLineForSubContractingOrder(ProductionOrder, PurchaseLine, MainItemNo);
+
+        SubOrderComponentList.Reset();
+        SubOrderComponentList.SetRange("Document No.", PurchaseLine."Document No.");
+        SubOrderComponentList.SetRange("Document Line No.", PurchaseLine."Line No.");
+        SubOrderComponentList.ModifyAll("Company Location", CompanyLocationCode);
+    end;
+
     procedure CreateAndRefreshProductionOrderWithDimension(
         var ProductionOrder: Record "Production Order";
         ProdOrderStatus: Enum "Production Order Status";
-        SourceType: Enum "Prod. Order Source Type";
-        SourceNo: Code[20];
-        Quantity: Decimal;
-        CompanyLocationCode: Code[10])
+                             SourceType: Enum "Prod. Order Source Type";
+                             SourceNo: Code[20];
+                             Quantity: Decimal;
+                             CompanyLocationCode: Code[10])
     var
         DimensionValue: Record "Dimension Value";
     begin
@@ -1671,6 +1747,53 @@ codeunit 18479 "GST Subcontracting"
         PurchaseHeader.SetRange("Subcon. Order Line No.", PurchaseLine."Line No.");
         PurchaseHeader.FindFirst();
         PurchaseHeader.TestField("Buy-from Vendor No.", PurchaseLine."Buy-from Vendor No.");
+    end;
+
+    local procedure CreateAndInsertPurchaseLineForSubContractingOrder(ProductionOrder: Record "Production Order"; var PurchaseLine: Record "Purchase Line"; MainItemNo: Code[20])
+    var
+        Item: Record Item;
+    begin
+        Item.Get(MainItemNo);
+        PurchaseLine.SetRange("No.", MainItemNo);
+        PurchaseLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        PurchaseLine.FindFirst();
+        PurchaseLine.Validate("Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group");
+        PurchaseLine.Validate("VAT Prod. Posting Group", Item."VAT Prod. Posting Group");
+        PurchaseLine.Validate("Qty. per Unit of Measure", 1);
+        PurchaseLine.Validate(Quantity, PurchaseLine.Quantity);
+        PurchaseLine.Validate(PurchaseLine."Qty. to Receive", PurchaseLine.Quantity);
+        PurchaseLine.Validate(PurchaseLine."Qty. to Invoice", PurchaseLine.Quantity);
+        PurchaseLine.Modify();
+        Storage.Set(DeliveryChallanNoLbl, PurchaseLine."Document No.");
+    end;
+
+    local procedure CreateAndValidateProdOrderComponent(ProductionOrder: Record "Production Order")
+    var
+        ProdOrderLine: Record "Prod. Order Line";
+        ProdOrderRoutingLine: Record "Prod. Order Routing Line";
+        ProdOrderComponent: Record "Prod. Order Component";
+        ProdOrderStatus: Enum "Production order Status";
+    begin
+        ProdOrderLine.Reset();
+        ProdOrderLine.SetRange(Status, ProdOrderStatus::Released);
+        ProdOrderLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        if ProdOrderLine.FindFirst() then begin
+            ProdOrderComponent.SetRange(Status, ProdOrderLine.Status);
+            ProdOrderComponent.SetRange("Prod. Order No.", ProdOrderLine."Prod. Order No.");
+            ProdOrderComponent.SetRange("Prod. Order Line No.", ProdOrderLine."Line No.");
+            if ProdOrderComponent.FindSet() then
+                repeat
+                    ProdOrderComponent.Validate("Unit Cost", LibraryRandom.RandInt(100));
+                    ProdOrderComponent.Modify();
+                until ProdOrderComponent.Next() = 0;
+
+            ProdOrderRoutingLine.SetRange(Status, ProdOrderLine.Status);
+            ProdOrderRoutingLine.SetRange("Prod. Order No.", ProdOrderLine."Prod. Order No.");
+            ProdOrderRoutingLine.SetRange("Routing Reference No.", ProdOrderLine."Routing Reference No.");
+            ProdOrderRoutingLine.SetRange("Routing No.", ProdOrderLine."Routing No.");
+            if ProdOrderRoutingLine.FindSet() then
+                LibraryMfg.CalculateSubcontractOrderWithProdOrderRoutingLine(ProdOrderRoutingLine);
+        end;
     end;
 
     local procedure Initialize()

@@ -279,7 +279,7 @@ codeunit 18143 "GST Sales Validation"
     begin
         BilltoCustinfo(SalesHeader);
 
-        if SalesHeader."Ship-to Code" <> '' then begin
+        if (SalesHeader."Ship-to Code" <> '') and not (SalesHeader."GST Customer Type" = SalesHeader."GST Customer Type"::Unregistered) then begin
             if ShiptoAddress.Get(SalesHeader."Bill-to Customer No.", SalesHeader."Ship-to Code") then
                 SalesHeader."GST-Ship to Customer Type" := ShiptoAddress."Ship-to GST Customer Type";
         end
@@ -555,7 +555,7 @@ codeunit 18143 "GST Sales Validation"
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Ship-To Code', false, false)]
     local procedure OnAfterUpdateShipToAddress(var Rec: Record "Sales Header")
     begin
-        if Rec."Ship-to Code" = '' then
+        if (Rec."Ship-to Code" = '') or (Rec."GST Customer Type" = Rec."GST Customer Type"::Unregistered) then
             Rec."GST-Ship to Customer Type" := Rec."GST Customer Type";
 
         AssignInvoiceType(Rec);

@@ -31,7 +31,7 @@ codeunit 139528 "Connectivity Apps Tests"
         ConnectivityApps.OpenView();
 
         // [THEN] The filter on the country on page is set to CH
-        Assert.AreEqual(Format("Conn. Apps Supported Country"::CH.AsInteger()), ConnectivityApps.Filter.GetFilter(Country), 'Filter is not set');
+        Assert.AreEqual(Format("Conn. Apps Supported Country".Names().Get("Conn. Apps Supported Country".Ordinals().IndexOf(("Conn. Apps Supported Country"::CH.AsInteger())))), ConnectivityApps.Filter.GetFilter(Country), 'Filter is not set');
 
         // [THEN] The page is empty
         Assert.IsFalse(ConnectivityApps.First(), '');
@@ -61,7 +61,7 @@ codeunit 139528 "Connectivity Apps Tests"
         // [THEN] The unfiltered buffer contains 4 entries
         Assert.RecordCount(TempConnectivityApp, 4);
         // [THEN] The filter on country NL returns 3 entries
-        TempConnectivityApp.SetRange(Country, "Conn. Apps Supported Country"::NL);
+        TempConnectivityApp.SetRange(Country, "Conn. Apps Supported Country".Names().Get("Conn. Apps Supported Country".Ordinals().IndexOf(("Conn. Apps Supported Country"::NL.AsInteger()))));
         Assert.RecordCount(TempConnectivityApp, 3);
     end;
 
@@ -87,7 +87,7 @@ codeunit 139528 "Connectivity Apps Tests"
 
         // [THEN] The filter on the country on page is set to CH
         Assert.RecordCount(TempConnectivityApp, 2);
-        TempConnectivityApp.SetRange(Country, "Conn. Apps Supported Country"::CH);
+        TempConnectivityApp.SetRange(Country, "Conn. Apps Supported Country".Names().Get("Conn. Apps Supported Country".Ordinals().IndexOf(("Conn. Apps Supported Country"::CH.AsInteger()))));
         Assert.RecordCount(TempConnectivityApp, 0);
     end;
 

@@ -67,7 +67,7 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
         OnBeforeGetToken(IsHandled, IsSuccess, ErrorText, AccessToken);
 
         if not IsHandled then begin
-            OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(AuthorityTxt, AadTenantId), '', Scopes, "Prompt Interaction"::Login, AccessToken, AuthCodeErr);
+            IsSuccess := OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(AuthorityTxt, AadTenantId), '', Scopes, "Prompt Interaction"::None, AccessToken, AuthCodeErr);
 
             if not IsSuccess then
                 if AuthCodeErr <> '' then

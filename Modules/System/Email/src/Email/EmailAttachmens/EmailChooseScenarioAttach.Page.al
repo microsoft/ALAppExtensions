@@ -17,6 +17,8 @@ page 8896 "Email Choose Scenario Attach"
     InsertAllowed = false;
     ModifyAllowed = false;
     SourceTable = "Email Scenario Attachments";
+    SourceTableView = sorting(Scenario, "Attachment Name")
+                      order(ascending);
     InstructionalText = 'Add the attachments from the scenario to the email.';
     Permissions = tabledata "Email Attachments" = rimd,
                     tabledata "Email Scenario Attachments" = rimd;
@@ -84,7 +86,7 @@ page 8896 "Email Choose Scenario Attach"
         if not (EmailScenario = Enum::"Email Scenario"::Default) then
             Rec.SetFilter(Scenario, '=%1', EmailScenario);
 
-        Rec.SetCurrentKey(Scenario);
+        Rec.SetCurrentKey(Scenario, "Attachment Name");
         Rec.SetFilter(AttachmentDefaultStatus, '=%1', false);
     end;
 

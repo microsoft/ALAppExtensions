@@ -336,6 +336,7 @@ codeunit 148040 "MS - ECSL Export Test"
         VATEntry."Entry No." := LastId + 1;
         VATEntry.Base := -LibraryRandom.RandDecInRange(10, 200, 2);
         VATEntry."Posting Date" := PostingDate;
+        VATEntry."VAT Reporting Date" := PostingDate;
         VATEntry.Type := VATEntry.Type::Sale;
         VATEntry."EU 3-Party Trade" := false;
         VATEntry."EU Service" := false;

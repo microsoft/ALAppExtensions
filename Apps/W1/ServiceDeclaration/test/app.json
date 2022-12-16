@@ -7,7 +7,7 @@
     "description":  "Tests for the Microsoft Service Declaration extension.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2179727",
+    "help":  "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "ExtensionLogo.png",
     "platform":  "21.0.0.0",
