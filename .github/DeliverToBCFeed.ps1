@@ -47,11 +47,16 @@ if (-not $deliverAcountToken)
 
 Write-Host "Successfully retrieved information from the deliver context" -ForegroundColor Green
 
+Write-Host $parameters -ForegroundColor Magenta
+
 $project = $parameters.project
 $projectName = $parameters.projectName
 $appsFolder = $parameters.appsFolder
 $testAppsFolder = $parameters.testAppsFolder
 $type = $parameters.type
+
+$allAppsFolders = $parameters.appsfolderAllBuildModes
+Write-Host $allAppsFolders -ForegroundColor Magenta
 
 # Construct package ID
 $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)"

@@ -34,25 +34,27 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
         $holderFolder = 'TestApps'
     }
 
-    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appBuildMode/$appName" # manually construct the artifacts folder
+    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
+    $buildArtifactsFolder = "$packageArtifactsFolder/BuildArtifacts"
+    $sourceCodeFolder = "$packageArtifactsFolder/SourceCode"
 
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
-        New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appBuildMode/$appName" -ItemType Directory | Out-Null
+        New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
     }
 
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
     if ($appBuildMode -eq 'Translated') {
         # Add the source code and the app file for every built app to a folder
-        Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
+        Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
         Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
     } elseif ($appBuildMode -eq 'LCGTranslated') {
         # Add the generated Translations folder to the artifacts folder
         $TranslationsFolder = "$appProjectFolder/Translations"
         if (Test-Path $TranslationsFolder) {
             Write-Host "Translations folder exists"
-            Copy-Item -Path $TranslationsFolder -Destination "$packageArtifactsFolder/BuildArtifacts" -Recurse -Force | Out-Null
+            Copy-Item -Path $TranslationsFolder -Destination "$buildArtifactsFolder" -Recurse -Force | Out-Null
         } else {
             Write-Host "Translations folder does not exist"
         }
