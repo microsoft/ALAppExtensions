@@ -306,6 +306,16 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Gets the related attachments.
+    /// </summary>
+    /// <param name="EmailRelatedAttachments">Out parameter with the related attachments.</param>
+    /// <returns>True if any related attachments were found; otherwise - false</returns>
+    procedure GetRelatedAttachments(var EmailRelatedAttachments: Record "Email Related Attachment"): Boolean
+    begin
+        exit(EmailMessageImpl.GetRelatedAttachments(EmailRelatedAttachments));
+    end;
+
+    /// <summary>
     /// Gets number of modifies on the message.
     /// </summary>
     /// <returns>The number of modifies.</returns>

@@ -46,6 +46,9 @@ table 8911 "Email Scenario Attachments"
         {
             Clustered = true;
         }
+        key(Scenario; Scenario, "Attachment Name")
+        {
+        }
     }
     fieldgroups
     {

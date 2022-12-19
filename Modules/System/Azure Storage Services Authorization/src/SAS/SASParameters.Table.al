@@ -63,6 +63,5 @@ table 9064 "SAS Parameters"
         {
             DataClassification = SystemMetadata;
         }
-
     }
 }

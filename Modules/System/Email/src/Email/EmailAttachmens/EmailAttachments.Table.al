@@ -53,7 +53,7 @@ table 8913 "Email Attachments"
         {
             Clustered = true;
         }
-        key(Scenario; Scenario)
+        key(Scenario; Scenario, "Attachment Name")
         {
         }
     }

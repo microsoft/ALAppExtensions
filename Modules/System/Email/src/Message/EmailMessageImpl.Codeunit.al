@@ -499,6 +499,34 @@ codeunit 8905 "Email Message Impl."
         exit(GlobalEmailMessageAttachment.Length);
     end;
 
+    procedure GetRelatedAttachments(var EmailRelatedAttachments: Record "Email Related Attachment"): Boolean
+    begin
+        exit(GetRelatedAttachments(GlobalEmailMessage.Id, EmailRelatedAttachments));
+    end;
+
+    procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachmentOut: Record "Email Related Attachment"): Boolean
+    var
+        EmailRelatedAttachment: Record "Email Related Attachment";
+        EmailRelatedRecord: Record "Email Related Record";
+        Email: Codeunit "Email";
+        EmailImpl: Codeunit "Email Impl";
+    begin
+        EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
+        EmailImpl.FilterRemovedSourceRecords(EmailRelatedRecord);
+
+        if not EmailRelatedRecord.FindSet() then
+            exit(false);
+
+        repeat
+            Email.OnFindRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedAttachment);
+            if EmailRelatedAttachment.FindSet() then
+                InsertRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedAttachment, EmailRelatedAttachmentOut);
+            EmailRelatedAttachment.DeleteAll();
+        until EmailRelatedRecord.Next() = 0;
+
+        exit(true);
+    end;
+
     procedure GetId(): Guid
     begin
         exit(GlobalEmailMessage.Id);
@@ -529,6 +557,23 @@ codeunit 8905 "Email Message Impl."
     procedure GetNoOfModifies(): Integer
     begin
         exit(GlobalEmailMessage."No. of Modifies");
+    end;
+
+    local procedure InsertRelatedAttachments(TableID: Integer; SystemID: Guid; var EmailRelatedAttachment2: Record "Email Related Attachment"; var EmailRelatedAttachment: Record "Email Related Attachment")
+    var
+        RecordRef: RecordRef;
+    begin
+        RecordRef.Open(TableID);
+        if not RecordRef.GetBySystemId(SystemID) then begin
+            Session.LogMessage('0000CTZ', StrSubstNo(RecordNotFoundMsg, TableID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            exit;
+        end;
+
+        repeat
+            EmailRelatedAttachment.Copy(EmailRelatedAttachment2);
+            EmailRelatedAttachment."Attachment Source" := CopyStr(Format(RecordRef.RecordId(), 0, 1), 1, MaxStrLen(EmailRelatedAttachment."Attachment Source"));
+            EmailRelatedAttachment.Insert();
+        until EmailRelatedAttachment2.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sent Email", 'OnAfterDeleteEvent', '', false, false)]
@@ -713,6 +758,7 @@ codeunit 8905 "Email Message Impl."
         GlobalEmailMessage: Record "Email Message";
         GlobalEmailMessageAttachment: Record "Email Message Attachment";
         TenantMedia: Record "Tenant Media";
+        EmailCategoryLbl: Label 'Email', Locked = true;
         EmailMessageQueuedCannotModifyErr: Label 'Cannot edit the email because it has been queued to be sent.';
         EmailMessageSentCannotModifyErr: Label 'Cannot edit the message because it has already been sent.';
         EmailMessageQueuedCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has been queued to be sent.';
@@ -725,6 +771,7 @@ codeunit 8905 "Email Message Impl."
         EmailMessageSentCannotInsertRecipientErr: Label 'Cannot add the recipient because the email has already been sent.';
         EmailMessageGetAttachmentContentErr: Label 'The attachment content was not found.';
         NoAccountErr: Label 'You must specify a valid email account to send the message to.';
+        RecordNotFoundMsg: Label 'Record not found in table: %1', Comment = '%1 - File size', Locked = true;
         RgbReplacementTok: Label 'rgb($1, $2, $3)', Locked = true;
         RbgaPatternTok: Label 'rgba\((\d+), ?(\d+), ?(\d+), ?\d+\)', Locked = true;
 }

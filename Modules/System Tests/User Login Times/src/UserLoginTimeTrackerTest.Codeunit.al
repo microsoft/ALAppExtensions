@@ -274,4 +274,30 @@ codeunit 130044 "User Login Time Tracker Test"
         LibraryAssert.AreEqual(1, UserEnvironmentLogin.Count(), 'The User Environment Login table should contain a single entry');
         LibraryAssert.IsTrue(UserLogin.Get(UserSecurityId()), 'There should be a User Enviroment Login entry for the current user');
     end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestDoNotUpdateUserWithNullDateTime()
+    var
+        UserLogin: Record "User Login";
+    begin
+        // [GIVEN] The User Login table contains a single entry no login dates yet
+        if not UserLogin.Get(UserSecurityId()) then begin
+            UserLogin."User SID" := UserSecurityId();
+            UserLogin."Last Login Date" := 0DT;
+            UserLogin.Insert();
+        end else begin
+            UserLogin."Last Login Date" := 0DT;
+            UserLogin.Modify();
+        end;
+
+        PermissionsMock.Set('User Login View');
+
+        // [WHEN] Calling CreateOrUpdateLoginInfo
+        UserLoginTimeTracker.CreateOrUpdateLoginInfo();
+
+        // [THEN] No error is thrown and last login date is updated
+        UserLogin.Get(UserSecurityId());
+        LibraryAssert.AreNotEqual(0DT, UserLogin."Last Login Date", 'The login date was not set correctly.');
+    end;
 }
