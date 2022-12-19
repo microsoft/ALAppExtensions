@@ -50,7 +50,7 @@ codeunit 4035 "Wizard Integration"
     var
         GPConfiguration: Record "GP Configuration";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        GPPopulateHistTables: Codeunit "GP Populate Hist. Tables";
         DataSyncStatus: Page "Data Sync Status";
         Flag: Boolean;
     begin
@@ -78,7 +78,7 @@ codeunit 4035 "Wizard Integration"
         HelperFunctions.SetProcessesRunning(false);
 
         if GPCompanyAdditionalSettings.GetMigrateHistory() then
-            HybridCloudManagement.CreateAndScheduleBackgroundJob(Codeunit::"GP Populate Hist. Tables", 'Migrate GP Historical Snapshot');
+            GPPopulateHistTables.ScheduleGPHistoricalSnapshotMigration();
     end;
 
     local procedure SendTelemetryForSelectedEntities(var DataMigrationEntity: Record "Data Migration Entity")

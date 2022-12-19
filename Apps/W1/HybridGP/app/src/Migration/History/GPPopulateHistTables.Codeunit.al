@@ -954,4 +954,26 @@ codeunit 40900 "GP Populate Hist. Tables"
 
         exit(true);
     end;
+
+    procedure ScheduleGPHistoricalSnapshotMigration()
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        JobQueueEntryBuffer: Record "Job Queue Entry Buffer";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        JobQueueEntry.Init();
+        JobQueueEntry."Object Type to Run" := JobQueueEntry."Object Type to Run"::Codeunit;
+        JobQueueEntry."Object ID to Run" := Codeunit::"GP Populate Hist. Tables";
+        JobQueueEntry."Maximum No. of Attempts to Run" := 1;
+        JobQueueEntry."Job Queue Category Code" := HybridCloudManagement.GetJobQueueCategory();
+        JobQueueEntry.Description := 'Migrate GP Historical Snapshot';
+        JobQueueEntry."Job Timeout" := 3600000 * 60; // 60 hours
+        Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry);
+
+        JobQueueEntryBuffer.Init();
+        JobQueueEntryBuffer.TransferFields(JobQueueEntry);
+        JobQueueEntryBuffer."Job Queue Entry ID" := JobQueueEntry.SystemId;
+        JobQueueEntryBuffer."Start Date/Time" := CurrentDateTime();
+        JobQueueEntryBuffer.Insert();
+    end;
 }

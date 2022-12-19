@@ -52,8 +52,8 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 trigger OnAction()
                 var
                     GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                     HistMigrationStatusMgmt: Codeunit "Hist. Migration Status Mgmt.";
+                    GPPopulateHistTables: Codeunit "GP Populate Hist. Tables";
                 begin
                     if not GPCompanyAdditionalSettings.GetMigrateHistory() then begin
                         Message(DetailSnapshotNotConfiguredMsg);
@@ -64,7 +64,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                             if Confirm(RerunAllQst) then
                                 HistMigrationStatusMgmt.ResetAll();
 
-                        HybridCloudManagement.CreateAndScheduleBackgroundJob(Codeunit::"GP Populate Hist. Tables", 'Migrate GP Historical Snapshot');
+                        GPPopulateHistTables.ScheduleGPHistoricalSnapshotMigration();
                         Message(SnapshotJobRunningMsg);
                     end;
                 end;
