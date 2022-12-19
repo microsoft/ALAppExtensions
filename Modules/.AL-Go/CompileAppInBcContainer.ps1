@@ -36,6 +36,9 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
 
     $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
 
+    $buildArtifactsFolder = "$packageArtifactsFolder/BuildArtifacts"
+    $sourceCodeFolder = "$packageArtifactsFolder/SourceCode"
+
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
         New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
@@ -43,12 +46,11 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
 
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
-
     switch ( $appBuildMode )
     {
         'Translated' { 
             # Add the source code and the app file for every built app to a folder
-            Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
+            Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
          }
         'LCGTranslated' { 
@@ -56,7 +58,7 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
             $TranslationsFolder = "$appProjectFolder/Translations"
             if (Test-Path $TranslationsFolder) {
                 Write-Host "Translations were generated for app $appName"
-                Copy-Item -Path $TranslationsFolder -Destination "$packageArtifactsFolder/BuildArtifacts" -Recurse -Force | Out-Null
+                Copy-Item -Path $TranslationsFolder -Destination "$buildArtifactsFolder" -Recurse -Force | Out-Null
             } else {
                 Write-Host "Translations were not generated for app $appName"
             }
