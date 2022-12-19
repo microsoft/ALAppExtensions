@@ -428,7 +428,7 @@ jobs:
         if: env.WorkflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: '${{ matrix.buildMode }}-thisbuild-${{ matrix.project }}-Apps'
+          name: 'thisbuild-${{ matrix.project }}-${{ matrix.buildMode }}Apps'
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -437,7 +437,7 @@ jobs:
         if: env.WorkflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: '${{ matrix.buildMode }}-thisbuild-${{ matrix.project }}-TestApps'
+          name: 'thisbuild-${{ matrix.project }}-${{ matrix.buildMode }}TestApps'
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -458,13 +458,16 @@ jobs:
             $ref = "$ENV:GITHUB_REF_NAME".Replace('/','_')
           }
           if ($project -eq ".") { $project = $settings.RepoName }
+
           'Apps','Dependencies','TestApps','TestResults','BcptTestResults','BuildOutput','ContainerEventLog' | ForEach-Object {
             $name = "$($_)ArtifactsName"
-            $value = "$($project.Replace('\','_'))-$($ref)-$_-$($settings.repoVersion).$($settings.appBuild).$($settings.appRevision)"
-            # Translated is the default build mode, so we don't need to add it to the artifact name
-            if ($buildMode -ne 'Translated') {
-              $value = "$($buildMode)-" + $value
+
+            if ($buildMode -eq 'Default') {
+              $buildMode = ''
             }
+
+            $value = "$($project.Replace('\','_')).Replace('/','_'))-$($ref)-$buildMode$_-$($settings.repoVersion).$($settings.appBuild).$($settings.appRevision)"
+
             Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
             Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
           }

@@ -2,6 +2,9 @@ Param(
     [Hashtable] $parameters
 )
 
+Write-Host "BuildMode - $ENV:BuildMode"
+$appBuildMode = $ENV:BuildMode
+
 # $app is a variable that determine whether the current app is a normal app (not test app, for instance)
 if($app)
 {
@@ -10,15 +13,15 @@ if($app)
         $parameters["Features"] = @()
     }
     $parameters["Features"] += @("generateCaptions")
+
+    if($appBuildMode -eq 'Default') {
+        $parameters["Features"] += @("TranslationFile") # TODO why isn't this in the app.json?
+    }
 }
 
 $appFile = Compile-AppInBcContainer @parameters
 
 $branchName = $ENV:GITHUB_REF_NAME
-
-Write-Host "BuildMode - $ENV:BuildMode"
-
-$appBuildMode = $ENV:BuildMode
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
 if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
@@ -29,6 +32,7 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
 
     Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
+    # Determine the folder where the artifacts for the package will be stored
     $holderFolder = 'Apps'
     if(-not $app) {
         $holderFolder = 'TestApps'
@@ -48,7 +52,7 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
 
     switch ( $appBuildMode )
     {
-        'Translated' { 
+        'Default' { 
             # Add the source code and the app file for every built app to a folder
             Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
