@@ -14,8 +14,6 @@ codeunit 139561 "Shpfy Initialize Test"
         LibraryAssert: Codeunit "Library Assert";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         _AccessToken: Text;
-        DummyCustomer: Record Customer;
-        DummyItem: Record Item;
 
     trigger OnRun()
     begin
@@ -54,7 +52,7 @@ codeunit 139561 "Shpfy Initialize Test"
         exit(ShpfyShop);
     end;
 
-    local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
+local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
     var
         ConfigTemplateHeader: Record "Config. Template Header";
         ConfigConfigTemplateLine: Record "Config. Template Line";
@@ -130,7 +128,7 @@ codeunit 139561 "Shpfy Initialize Test"
         Item: Record Item;
         NoSeries: Record "No. Series";
     begin
-        Code := Any.AlphabeticText(10);
+        Code := Any.AlphabeticText(MaxStrLen(Code));
         ConfigTemplateHeader.Init();
         ConfigTemplateHeader.Code := Code;
         ConfigTemplateHeader.Validate("Table ID", Database::Item);
@@ -218,7 +216,7 @@ codeunit 139561 "Shpfy Initialize Test"
         VatPostingSetup: Record "VAT Posting Setup";
         Customer: Record Customer;
     begin
-        Code := Any.AlphabeticText(10);
+        Code := Any.AlphabeticText(MaxStrLen(Code));
         ConfigTemplateHeader.Init();
         ConfigTemplateHeader.Code := Code;
         ConfigTemplateHeader."Table ID" := Database::Customer;

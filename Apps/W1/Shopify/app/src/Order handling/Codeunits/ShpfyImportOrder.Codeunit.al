@@ -140,7 +140,7 @@ codeunit 30161 "Shpfy Import Order"
     var
         SalesLine: Record "Sales Line";
     begin
-        if ((OrderHeader."Sales Order No." <> '') AND (OrderHeader."Fulfillment Status" = OrderHeader."Fulfillment Status"::Fulfilled)) AND (OrderHeader."Fully Paid") then begin
+        if ((OrderHeader."Sales Order No." <> '') AND (OrderHeader."Fulfillment Status" = OrderHeader."Fulfillment Status"::Fulfilled)) then begin
             SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
             SalesLine.SetRange("Document No.", OrderHeader."Sales Order No.");
             SalesLine.SetFilter("Outstanding Quantity", '<>%1', 0);

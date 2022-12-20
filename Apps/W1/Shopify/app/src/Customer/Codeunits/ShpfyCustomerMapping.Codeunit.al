@@ -57,7 +57,7 @@ codeunit 30118 "Shpfy Customer Mapping"
         if IsNullGuid(ShopifyCustomer."Customer SystemId") then
             if DoFindMapping(Direction, ShopifyCustomer, Customer) then begin
                 CustomerEvents.OnAfterFindMapping(Direction, ShopifyCustomer, Customer);
-                if Customer.Find() then begin
+                if Customer.Get() then begin
                     ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                     ShopifyCustomer.Modify();
                     exit(true);

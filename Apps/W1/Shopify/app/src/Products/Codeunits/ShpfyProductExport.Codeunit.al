@@ -60,8 +60,6 @@ codeunit 30178 "Shpfy Product Export"
         ShpfyTranslator: Report "Shpfy Translator";
         IsHandled: Boolean;
         Result: TextBuilder;
-        Language: codeunit Language;
-        LanguageId: Integer;
     begin
         Events.OnBeforeCreateProductBodyHtml(ItemNo, Shop, ProductBodyHtml, IsHandled);
         if not IsHandled then begin
