@@ -14,8 +14,9 @@ if($app)
     }
     $parameters["Features"] += @("generateCaptions")
 
+    # Setup compiler features to generate LCGs for the default build mode
     if($appBuildMode -eq 'Default') {
-        $parameters["Features"] += @("TranslationFile") # TODO why isn't this in the app.json?
+        $parameters["Features"] += @("lcgtranslationfile")
     }
 }
 
@@ -53,11 +54,6 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
     switch ( $appBuildMode )
     {
         'Default' { 
-            # Add the source code and the app file for every built app to a folder
-            Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
-            Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
-         }
-        'LCGTranslated' { 
             # Add the generated Translations folder to the artifacts folder
             $TranslationsFolder = "$appProjectFolder/Translations"
             if (Test-Path $TranslationsFolder) {
@@ -68,6 +64,11 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
             }
 
             # Add  the app file for every built app to a folder
+            Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
+         }
+        'Translated' { 
+            # Add the source code and the app file for every built app to a folder
+            Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
         }
 
