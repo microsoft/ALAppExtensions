@@ -33,6 +33,7 @@ codeunit 9063 "Stor. Serv. Auth. Impl."
         StorServAuthSAS.SetSignedStart(CurrentDateTime());
         StorServAuthSAS.SetIPrange(OptionalParams.SignedIp);
         StorServAuthSAS.SetProtocol(OptionalParams.SignedProtocol);
+		StorServAuthSAS.SetSignedEncryptionScope(OptionalParams.SignedEncryptionScope);
 
         exit(StorServAuthSAS);
     end;

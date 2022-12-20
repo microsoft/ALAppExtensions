@@ -53,10 +53,10 @@ codeunit 30161 "Shpfy Import Order"
         end;
     end;
 
-    /// <summary>
-    /// SetTestInProgress.
-    /// </summary>
-    /// <param name="TestInProgress">Boolean.</param>
+    /// <summary>	
+    /// SetTestInProgress.	
+    /// </summary>	
+    /// <param name="TestInProgress">Boolean.</param>	
     [NonDebuggable]
     internal procedure SetTestInProgress(TestInProgress: Boolean)
     begin

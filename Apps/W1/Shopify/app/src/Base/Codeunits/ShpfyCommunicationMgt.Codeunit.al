@@ -11,7 +11,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         ShpfyCommunicationEvents: Codeunit "Shpfy Communication Events";
         ShpfyGraphQLQueries: Codeunit "Shpfy GraphQL Queries";
         NextExecutionTime: DateTime;
-        VersionTok: Label '2022-01', Locked = true;
+        VersionTok: Label '2022-04', Locked = true;
         OutgoingRequestsNotEnabledConfirmLbl: Label 'Importing data to your Shopify shop is not enabled, do you want to go to shop card to enable?';
         OutgoingRequestsNotEnabledErr: Label 'Importing data to your Shopify shop is not enabled, navigate to shop card to enable.';
         IsTestInProgress: Boolean;
@@ -467,9 +467,12 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// </summary>
     /// <param name="ShopCode">Parameter of type Code[20].</param>
     internal procedure SetShop(ShopCode: Code[20])
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         Clear(ShpfyShop);
         ShpfyShop.Get(ShopCode);
+        FeatureTelemetry.LogUsage('0000IU1', 'Shopify', ShpfyShop."Shopify URL");
     end;
 
     /// <summary>
@@ -485,9 +488,8 @@ codeunit 30103 "Shpfy Communication Mgt."
     [NonDebuggable]
     internal procedure GetTestInProgress(): Boolean
     begin
-        Exit(IsTestInProgress);
+        exit(IsTestInProgress);
     end;
-
 
     [NonDebuggable]
     internal procedure GetVersion(): Text

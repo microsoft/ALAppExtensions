@@ -1498,7 +1498,13 @@ table 31004 "Sales Adv. Letter Header CZZ"
     local procedure DoPrintToDocumentAttachment(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     var
         ReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeDoPrintToDocumentAttachment(SalesAdvLetterHeaderCZZ, IsHandled);
+        if IsHandled then
+            exit;
+
         SalesAdvLetterHeaderCZZ.SetRecFilter();
         ReportSelections.SaveAsDocumentAttachment(
             ReportSelections.Usage::"Sales Advance Letter CZZ".AsInteger(), SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ."No.", SalesAdvLetterHeaderCZZ."Bill-to Customer No.", true);
@@ -1772,6 +1778,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateLinesByFieldNo(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; xSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; ChangedFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeDoPrintToDocumentAttachment(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
     begin
     end;
 }

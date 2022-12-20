@@ -19,7 +19,7 @@ Contains functionality that retrieves data about the geographical location of a 
 procedure RequestGeolocation(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the geographical location data was retrieved and is available, and the user agreed to share it, otherwise false.
 ### GetGeolocation (Method) <a name="GetGeolocation"></a> 
@@ -32,11 +32,11 @@ True if the geographical location data was retrieved and is available, and the u
 procedure GetGeolocation(var Latitude: Decimal; var Longitude: Decimal)
 ```
 #### Parameters
-*Latitude ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*Latitude ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The latitude value of the geographical location.
 
-*Longitude ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*Longitude ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The longitude value of the geographical location.
 
@@ -50,7 +50,7 @@ The longitude value of the geographical location.
 procedure IsAvailable(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the location is available; false otherwise.
 ### HasGeolocation (Method) <a name="HasGeolocation"></a> 
@@ -63,7 +63,7 @@ True if the location is available; false otherwise.
 procedure HasGeolocation(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if geographical location data is retrieved and is available, otherwise false.
 ### GetGeolocationStatus (Method) <a name="GetGeolocationStatus"></a> 
@@ -89,7 +89,7 @@ The status of the geographical location data.
 procedure SetHighAccuracy(Enable: Boolean)
 ```
 #### Parameters
-*Enable ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Enable ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Instructs the device that the geographical location data for this request must have the highest level of accuracy.
 
@@ -103,7 +103,7 @@ Instructs the device that the geographical location data for this request must h
 procedure SetTimeout(Timeout: Integer)
 ```
 #### Parameters
-*Timeout ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Timeout ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum length of time (milliseconds) that is allowed to pass to a location request.
 
@@ -117,7 +117,7 @@ The maximum length of time (milliseconds) that is allowed to pass to a location 
 procedure SetMaximumAge(Age: Integer)
 ```
 #### Parameters
-*Age ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Age ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum length of time (milliseconds) of cached geographical location data.
 
@@ -131,7 +131,7 @@ The maximum length of time (milliseconds) of cached geographical location data.
 procedure GetHighAccuracy(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Whether high accuracy is set. A value to provide a hint to the device that this request must have the best possible location accuracy.
 ### GetTimeout (Method) <a name="GetTimeout"></a> 
@@ -144,7 +144,7 @@ Whether high accuracy is set. A value to provide a hint to the device that this 
 procedure GetTimeout(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The maximum length of time (milliseconds) that is allowed to pass to a location request.
 ### GetMaximumAge (Method) <a name="GetMaximumAge"></a> 
@@ -157,7 +157,7 @@ The maximum length of time (milliseconds) that is allowed to pass to a location 
 procedure GetMaximumAge(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The maximum length of time (milliseconds) of geographical location data.
 

@@ -175,7 +175,6 @@ codeunit 30165 "Shpfy Orders API"
     internal procedure ExtractShopifyOrdersToImport(var ShopifyShop: Record "Shpfy Shop"; JResponse: JsonObject; var Cursor: Text): Boolean
     var
         OrderToImport: Record "Shpfy Orders to Import";
-        LastSyncTime: DateTime;
         Orders: Record "Shpfy Order Header";
         RecRef: RecordRef;
         Id: BigInteger;

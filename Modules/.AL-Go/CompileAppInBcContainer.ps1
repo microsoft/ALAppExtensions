@@ -2,35 +2,46 @@ Param(
     [Hashtable] $parameters
 )
 
+# $app is a variable that determine whether the current app is a normal app (not test app, for instance)
+if($app)
+{
+    # Setup compiler features to generate captions and LCGs
+    if (!$parameters.ContainsKey("Features")) {
+        $parameters["Features"] = @()
+    }
+    $parameters["Features"] += @("lcgtranslationfile", "generateCaptions")    
+}
+
 $appFile = Compile-AppInBcContainer @parameters
 
-if ($appFile) {
-    $filename = [System.IO.Path]::GetFileName($appFile)
-    if ($filename -like "Microsoft_System Application_*.*.*.*.app") {
-        # System application compiled - add BaseApp and Application app from container to output
-        Invoke-ScriptInBcContainer -containerName $parameters.ContainerName -scriptblock { Param([string]$packagesFolder)
-            function CopyApp {
-                Param(
-                    [string] $localAppPath,
-                    [string] $w1AppPath
-                )
+$branchName = $ENV:GITHUB_REF_NAME
 
-                $name = [System.IO.Path]::GetFileName($w1AppPath)
-                Write-Host "Copying $name to packages path"
-                if (Test-Path $localAppPath) {
-                    $appPath = $localAppPath
-                }
-                else {
-                    $appPath = $w1AppPath
-                }
-                Copy-Item -Path $appPath -Destination (Join-Path $packagesFolder $name)
-                Copy-Item -Path $appPath -Destination (Join-Path "c:\run\my" $name)
-            }
+# Only add the source code to the build artifacts if the delivering is allowed on the branch 
+if(($branchName -eq 'main') -or $branchName.StartsWith('release/')) {
+    $appProjectFolder = $parameters.appProjectFolder
 
-            CopyApp -localAppPath "C:\Applications.*\Microsoft_Base Application_*.*.*.*.app"    -w1AppPath "C:\Applications\BaseApp\Source\Microsoft_Base Application.app"
-            CopyApp -localAppPath "C:\Applications.*\Microsoft_Application_*.*.*.*.app"         -w1AppPath "C:\Applications\Application\Source\Microsoft_Application.app" 
-        } -argumentList (Get-BcContainerPath -ContainerName $parameters.ContainerName -path $Parameters.appSymbolsFolder)
+    # Extract app name from app.json
+    $appName = (Get-ChildItem -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
+
+    Write-Host "Current app name: $appName; app folder: $appProjectFolder"
+
+    $holderFolder = 'Apps'
+    if(-not $app) {
+        $holderFolder = 'TestApps'
     }
+
+    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # manually construct the artifacts folder
+
+    if(-not (Test-Path $packageArtifactsFolder)) {
+        Write-Host "Creating $packageArtifactsFolder"
+        New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName" -ItemType Directory | Out-Null
+    }
+
+    Write-Host "Package artifacts folder: $packageArtifactsFolder"
+
+    # Add the source code and the app file for every built app to a folder
+    Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
+    Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
 }
 
 $appFile

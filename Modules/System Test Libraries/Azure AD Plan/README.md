@@ -10,11 +10,11 @@
 procedure AssignUserToPlan(UserID: Guid; PlanID: Guid)
 ```
 #### Parameters
-*UserID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user ID.
 
-*PlanID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*PlanID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The plan to assign to the user.
 
@@ -28,15 +28,15 @@ The plan to assign to the user.
 procedure AssignUserToPlan(UserID: Guid; PlanID: Guid; Validate: Boolean)
 ```
 #### Parameters
-*UserID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user ID.
 
-*PlanID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*PlanID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The plan to assign to the user.
 
-*Validate ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Validate ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Flag to indicate whether to run the validate trigger.
 
@@ -50,11 +50,11 @@ Flag to indicate whether to run the validate trigger.
 procedure ReassignPlanToUser(UserID: Guid; PlanID: Guid)
 ```
 #### Parameters
-*UserID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user ID.
 
-*PlanID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*PlanID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The plan to reassign to the user.
 
@@ -68,12 +68,12 @@ The plan to reassign to the user.
 procedure CreatePlan(PlanName: Text[50])PlanID: Guid
 ```
 #### Parameters
-*PlanName ([Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*PlanName ([Text[50]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the new plan.
 
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 The new plan ID.
 ### CreatePlan (Method) <a name="CreatePlan"></a> 
@@ -86,19 +86,19 @@ The new plan ID.
 procedure CreatePlan(PlanGuid: Guid; PlanName: Text[50]; RoleCenterID: Integer; SystemId: Guid)
 ```
 #### Parameters
-*PlanGuid ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*PlanGuid ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 
 
-*PlanName ([Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*PlanName ([Text[50]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the new plan.
 
-*RoleCenterID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*RoleCenterID ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The RoleCenterID of the new plan.
 
-*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*SystemId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The SystemId of the new plan.
 
@@ -112,11 +112,11 @@ The SystemId of the new plan.
 procedure ChangePlanRoleCenterID(PlanID: Guid; RoleCenterID: Integer)
 ```
 #### Parameters
-*PlanID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*PlanID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The plan ID.
 
-*RoleCenterID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*RoleCenterID ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The new RoleCenterID.
 
@@ -130,7 +130,7 @@ The new RoleCenterID.
 procedure DeletePlan(PlanName: Text[50])
 ```
 #### Parameters
-*PlanName ([Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*PlanName ([Text[50]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 
 
@@ -162,11 +162,11 @@ procedure DeleteAllUserPlan()
 procedure RemoveUserFromPlan(UserID: Guid; PlanID: Guid)
 ```
 #### Parameters
-*UserID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user to delete.
 
-*PlanID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*PlanID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The plan to delete.
 

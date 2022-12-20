@@ -10,7 +10,7 @@
 procedure ModifyLastFieldsSyncStatusDate(LastFieldsSyncStatusDate: DateTime)
 ```
 #### Parameters
-*LastFieldsSyncStatusDate ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*LastFieldsSyncStatusDate ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The value that the Last Sync Date Time will take.
 

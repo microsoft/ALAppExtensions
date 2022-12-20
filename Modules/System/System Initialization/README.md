@@ -20,7 +20,7 @@ Use this module to do the following:
 procedure IsInProgress(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True, if the system initialization is in progress; false, otherwise
 ### OnAfterInitialization (Event) <a name="OnAfterInitialization"></a> 

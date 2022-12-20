@@ -8,11 +8,12 @@ codeunit 4109 "Temp Blob List Impl."
     Access = Internal;
 
     var
-    #pragma warning disable AA0073
+#pragma warning disable AA0073
         TempBlobRec: Record "Temp Blob" temporary;
-    #pragma warning restore AA0073
+#pragma warning restore AA0073
         ObjectDoesNotExistErr: Label 'Object with index %1 does not exist.', Comment = '%1=Index of the object';
         InvalidNoObjectsRequestedErr: Label 'There are not enough objects available to fulfill the request.';
+        ElementCountMustBePositiveErr: Label 'Element count must be positive.';
 
     procedure Exists(Index: Integer): Boolean
     begin
@@ -44,13 +45,23 @@ codeunit 4109 "Temp Blob List Impl."
     end;
 
     procedure RemoveAt(Index: Integer): Boolean
+    begin
+        exit(RemoveRange(Index, 1));
+    end;
+
+    procedure RemoveRange(Index: Integer; ElementCount: Integer): Boolean
     var
         TempBlobList: Codeunit "Temp Blob List";
     begin
         if not TempBlobRec.Get(Index) then
             Error(ObjectDoesNotExistErr, Index);
-        if TempBlobRec.Get(Index + 1) then
-            GetRange(Index + 1, Count() - Index, TempBlobList);
+
+        if ElementCount < 1 then
+            Error(ElementCountMustBePositiveErr);
+
+        if TempBlobRec.Get(Index + ElementCount) then
+            GetRange(Index + ElementCount, Count() - Index - ElementCount + 1, TempBlobList);
+
         TempBlobRec.SetFilter("Primary Key", '>=%1', Index);
         TempBlobRec.DeleteAll();
         TempBlobRec.Reset();
@@ -118,4 +129,3 @@ codeunit 4109 "Temp Blob List Impl."
         RecordRef.SetTable(TempBlobRec);
     end;
 }
-

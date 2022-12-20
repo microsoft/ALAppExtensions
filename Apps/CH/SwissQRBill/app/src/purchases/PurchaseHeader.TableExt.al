@@ -29,11 +29,16 @@ tableextension 11513 "Swiss QR-Bill Purchase Header" extends "Purchase Header"
         {
             Caption = 'Amount';
             DataClassification = CustomerContent;
-            Editable = false;
         }
         field(11505; "Swiss QR-Bill Currency"; Code[10])
         {
             Caption = 'Currency';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(11506; "Swiss QR-Bill Has Zero Amount"; Boolean)
+        {
+            Caption = 'QR-Bill Has Zero Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }

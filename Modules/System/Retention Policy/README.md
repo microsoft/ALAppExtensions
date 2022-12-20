@@ -64,7 +64,7 @@ procedure SetTableFilter()
 procedure GetTableFilterView(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The filter in the view format. 
 ### GetTableFilterText (Method) <a name="GetTableFilterText"></a> 
@@ -77,7 +77,7 @@ The filter in the view format.
 procedure GetTableFilterText(): Text[2048]
 ```
 #### Return Value
-*[Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[2048]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The Filter in text format.
 ### IsLocked (Method) <a name="IsLocked"></a> 
@@ -90,7 +90,7 @@ The Filter in text format.
 procedure IsLocked(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the line is locked.
 
@@ -109,7 +109,7 @@ True if the line is locked.
 procedure DeleteRecords(var RecRef: RecordRef; var RetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary)
 ```
 #### Parameters
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 The record reference with expired records for the retention policy.
 
@@ -137,7 +137,7 @@ procedure ApplyRetentionPolicyAllRecordFilters(RetentionPolicySetup: Record "Ret
 
 The retention policy for which filters are applied.
 
-*FilterRecordRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*FilterRecordRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 A RecordRef of the table on which the filters are applied.
 
@@ -146,7 +146,7 @@ A RecordRef of the table on which the filters are applied.
 The parameter table for this run of apply retention policy.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Returns true when there are expired records in the filters
 ### ApplyRetentionPolicySubSetFilters (Method) <a name="ApplyRetentionPolicySubSetFilters"></a> 
@@ -163,7 +163,7 @@ procedure ApplyRetentionPolicySubSetFilters(RetentionPolicySetup: Record "Retent
 
 The retention policy for which filters are applied.
 
-*FilterRecordRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*FilterRecordRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 A RecordRef of the table on which the filters are applied.
 
@@ -172,7 +172,7 @@ A RecordRef of the table on which the filters are applied.
 The parameter table for this run of apply retention policy.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Returns true when there are expired records in the filters
 ### HasReadPermission (Method) <a name="HasReadPermission"></a> 
@@ -198,12 +198,12 @@ Returns true when there are expired records in the filters
 procedure HasReadPermission(TableId: Integer): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table for a retention policy is defined
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Returns true if the records in the table can be read.
 ### Count (Method) <a name="Count"></a> 
@@ -224,12 +224,12 @@ Returns true if the records in the table can be read.
 procedure Count(RecRef: RecordRef): Integer
 ```
 #### Parameters
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 A record reference.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The number of records.
 
@@ -251,7 +251,7 @@ procedure RetentionPeriodDateFormula(RetentionPeriod: Record "Retention Period")
 The record that has the retention period for which you want the date formula.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The date formula as a string in a language-independent format.
 ### RetentionPeriodDateFormula (Method) <a name="RetentionPeriodDateFormula"></a> 
@@ -266,12 +266,12 @@ procedure RetentionPeriodDateFormula(RetentionPeriod: Record "Retention Period";
 
 The record that has the retention period for which you want the date formula.
 
-*Translated ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Translated ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954
 
 Indicates whether to return the date formula in a language-independent format or in the current language format.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The date formula as a string.
 ### CalculateExpirationDate (Method) <a name="CalculateExpirationDate"></a> 
@@ -287,7 +287,7 @@ procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"): D
 The record that has the retention period for which you want the expiration date. By default, the current date is used.
 
 #### Return Value
-*[Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type)*
+*[Date](https://go.microsoft.com/fwlink/?linkid=2210124)*
 
 The expiration date.
 ### CalculateExpirationDate (Method) <a name="CalculateExpirationDate"></a> 
@@ -302,12 +302,12 @@ procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"; Us
 
 The record that has the retention period for which you want the expiration date.
 
-*UseDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*UseDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The expiration date is calculated based on this date.
 
 #### Return Value
-*[Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type)*
+*[Date](https://go.microsoft.com/fwlink/?linkid=2210124)*
 
 The expiration date.
 ### CalculateExpirationDate (Method) <a name="CalculateExpirationDate"></a> 
@@ -322,12 +322,12 @@ procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"; Us
 
 The record that has the retention period for which you want the expiration date and time.
 
-*UseDateTime ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*UseDateTime ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The expiration date and time are calculated based on this date and time.
 
 #### Return Value
-*[DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type)*
+*[DateTime](https://go.microsoft.com/fwlink/?linkid=2210239)*
 
 The expiration date and time.
 
@@ -346,7 +346,7 @@ The expiration date and time.
 procedure ApplyRetentionPolicy(UserInvokedRun: Boolean)
 ```
 #### Parameters
-*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*UserInvokedRun ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Use this value to indicate whether the user initiated the function call or an automated process did. This value is later passed in the event OnApplyRetentionPolicyRecordLimitExceeded.
 
@@ -364,7 +364,7 @@ procedure ApplyRetentionPolicy(RetentionPolicySetup: Record "Retention Policy Se
 
 This is the setup record which defines the retention policy to apply.
 
-*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*UserInvokedRun ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Use this value to indicate whether the user initiated the functioncall or an automated process did. This value is later passed in the event OnApplyRetentionPolicyRecordLimitExceeded.
 
@@ -383,7 +383,7 @@ procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy S
 This is the setup record which defines the retention policy for which the expired records will be counted.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The number of records which are expired.
 ### SetWhereOlderExpirationDateFilter (Method) <a name="SetWhereOlderExpirationDateFilter"></a> 
@@ -396,23 +396,23 @@ The number of records which are expired.
 procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
 ```
 #### Parameters
-*DateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DateFieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The date or datetime field the filter will be placed on.
 
-*ExpirationDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*ExpirationDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The expiration date used in the filter.
 
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 The record reference on which the filter will be placed.
 
-*FilterGroup ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FilterGroup ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The filtergroup in which the filter will be placed.
 
-*NullDateReplacementValue ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*NullDateReplacementValue ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.
 
@@ -426,23 +426,23 @@ The date to be used to determine whether a record has expired when the date or d
 procedure SetWhereNewerExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
 ```
 #### Parameters
-*DateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DateFieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The date or datetime field the filter will be placed on.
 
-*ExpirationDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*ExpirationDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The expiration date used in the filter.
 
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 The record reference on whic the filter will be placed.
 
-*FilterGroup ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FilterGroup ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The filtergroup in which the filter will be placed.
 
-*NullDateReplacementValue ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*NullDateReplacementValue ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.
 
@@ -457,23 +457,23 @@ The date to be used to determine whether a record has expired when the date or d
 internal procedure OnApplyRetentionPolicyRecordLimitExceeded(CurrTableId: Integer; NumberOfRecordsRemainingToBeDeleted: Integer; ApplyAllRetentionPolicies: Boolean; UserInvokedRun: Boolean; var Handled: Boolean)
 ```
 #### Parameters
-*CurrTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*CurrTableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Specifies the Id of the table on which the limit was reached.
 
-*NumberOfRecordsRemainingToBeDeleted ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*NumberOfRecordsRemainingToBeDeleted ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Show the number of records remaining to be deleted for the table specified in CurrTableId.
 
-*ApplyAllRetentionPolicies ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*ApplyAllRetentionPolicies ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies where the interupted run was for all retention policies or only one retention policy.
 
-*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*UserInvokedRun ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies whether the run was initiated by a user or not.
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 
 
@@ -489,11 +489,11 @@ Specifies whether the run was initiated by a user or not.
 internal procedure OnApplyRetentionPolicyIndirectPermissionRequired(var RecRef: RecordRef; var Handled: Boolean)
 ```
 #### Parameters
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 The record reference which contains the expired records to be deleted.
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Indicates whether the event has been handled.
 
@@ -514,12 +514,12 @@ Indicates whether the event has been handled.
 procedure AddAllowedTable(TableId: Integer): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table to add.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the table is in the list of allowed tables. False if the table is not in the list of allowed tables.
 ### AddAllowedTable (Method) <a name="AddAllowedTable"></a> 
@@ -532,16 +532,16 @@ True if the table is in the list of allowed tables. False if the table is not in
 procedure AddAllowedTable(TableId: Integer; DefaultDateFieldNo: Integer): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table to add.
 
-*DefaultDateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DefaultDateFieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of the date or datetime field used as default to determine the age of records in the table.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the table is in the list of allowed tables. False if the table is not in the list of allowed tables.
 ### AddAllowedTable (Method) <a name="AddAllowedTable"></a> 
@@ -554,20 +554,20 @@ True if the table is in the list of allowed tables. False if the table is not in
 procedure AddAllowedTable(TableId: Integer; DefaultDateFieldNo: Integer; MandatoryMinRetenDays: Integer): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table to add.
 
-*DefaultDateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DefaultDateFieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of the date or datetime field used as default to determine the age of records in the table.
 
-*MandatoryMinRetenDays ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MandatoryMinRetenDays ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The minimum number of days records must be kept in the table. 
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the table is in the list of allowed tables. False if the table is not in the list of allowed tables.
 ### AddAllowedTable (Method) <a name="AddAllowedTable"></a> 
@@ -580,11 +580,11 @@ True if the table is in the list of allowed tables. False if the table is not in
 procedure AddAllowedTable(TableId: Integer; DefaultDateFieldNo: Integer; TableFilters: JsonArray): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table to add.
 
-*DefaultDateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DefaultDateFieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of the date or datetime field used as default to determine the age of records in the table.
 
@@ -593,7 +593,7 @@ The number of the date or datetime field used as default to determine the age of
 A JsonArray which contains the default table filters for the retention policy
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the table is in the list of allowed tables. False if the table is not in the list of allowed tables.
 ### AddAllowedTable (Method) <a name="AddAllowedTable"></a> 
@@ -606,7 +606,7 @@ True if the table is in the list of allowed tables. False if the table is not in
 procedure AddAllowedTable(TableId: Integer; TableFilters: JsonArray): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table to add.
 
@@ -615,7 +615,7 @@ The ID of the table to add.
 A JsonArray which contains the default table filters for the retention policy
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the table is in the list of allowed tables. False if the table is not in the list of allowed tables.
 ### AddAllowedTable (Method) <a name="AddAllowedTable"></a> 
@@ -628,15 +628,15 @@ True if the table is in the list of allowed tables. False if the table is not in
 procedure AddAllowedTable(TableId: Integer; DefaultDateFieldNo: Integer; MandatoryMinRetenDays: Integer; RetenPolFiltering: Enum "Reten. Pol. Filtering"; RetenPolDeleting: Enum "Reten. Pol. Deleting"; TableFilters: JsonArray): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table to add.
 
-*DefaultDateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DefaultDateFieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of the date or datetime field used as default to determine the age of records in the table.
 
-*MandatoryMinRetenDays ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MandatoryMinRetenDays ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The minimum number of days records must be kept in the table.
 
@@ -653,7 +653,7 @@ Determines the implementation used to delete records when applying retention pol
 A JsonArray which contains the default table filters for the retention policy
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the table is in the list of allowed tables. False if the table is not in the list of allowed tables.
 ### AddTableFilterToJsonArray (Method) <a name="AddTableFilterToJsonArray"></a> 
@@ -675,19 +675,19 @@ The JsonArray to which the table filter information will be added.
 
 Identifies the retention period for the retention policy table filter.
 
-*DateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DateFieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of the date or datetime field used as to determine the age of records in the table.
 
-*Enabled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Enabled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Indicates whether the retention policy line will be enabled.
 
-*Locked ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Locked ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Indicates whether the retention policy line will be locked. If this parameter is true, the line will also be enabled.
 
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 A record reference containing the filters to be added to the retention policy setup line.
 
@@ -710,19 +710,19 @@ The JsonArray to which the table filter information will be added.
 
 Identifies the retention period dateformula for the retention policy table filter.
 
-*DateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DateFieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of the date or datetime field used as to determine the age of records in the table.
 
-*Enabled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Enabled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Indicates whether the retention policy line will be enabled.
 
-*Locked ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Locked ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Indicates whether the retention policy line will be locked. If this parameter is true, the line will also be enabled.
 
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 A record reference containing the filters to be added to the retention policy setup line.
 
@@ -736,12 +736,12 @@ A record reference containing the filters to be added to the retention policy se
 procedure RemoveAllowedTable(TableId: Integer): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table to remove.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the table is not in the list of allowed tables. False if the table is in the list of allowed tables.
 ### IsAllowedTable (Method) <a name="IsAllowedTable"></a> 
@@ -754,7 +754,7 @@ True if the table is not in the list of allowed tables. False if the table is in
 procedure IsAllowedTable(TableId: Integer): boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID to check.
 
@@ -786,7 +786,7 @@ The allowed tables as a List.
 procedure GetAllowedTables(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The allowed tables as a filter string.
 ### GetRetenPolFiltering (Method) <a name="GetRetenPolFiltering"></a> 
@@ -799,7 +799,7 @@ The allowed tables as a filter string.
 procedure GetRetenPolFiltering(TableId: Integer): enum "Reten. Pol. Filtering"
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the allowed table.
 
@@ -817,7 +817,7 @@ The retention policy filtering enum value.
 procedure GetRetenPolDeleting(TableId: Integer): enum "Reten. Pol. Deleting"
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the allowed table.
 
@@ -835,12 +835,12 @@ The retention policy deleting enum value.
 procedure GetDefaultDateFieldNo(TableId: Integer): Integer
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the allowed table.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The field number of the date or datetime field in the allowed table.
 ### GetMandatoryMinimumRetentionDays (Method) <a name="GetMandatoryMinimumRetentionDays"></a> 
@@ -853,12 +853,12 @@ The field number of the date or datetime field in the allowed table.
 procedure GetMandatoryMinimumRetentionDays(TableId: Integer): Integer
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the allowed table.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The mandatory minimum number of retention days for the allowed table.
 ### CalcMinimumExpirationDate (Method) <a name="CalcMinimumExpirationDate"></a> 
@@ -871,12 +871,12 @@ The mandatory minimum number of retention days for the allowed table.
 procedure CalcMinimumExpirationDate(TableId: Integer): Date
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the allowed table.
 
 #### Return Value
-*[Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type)*
+*[Date](https://go.microsoft.com/fwlink/?linkid=2210124)*
 
 The minimum expiration date.
 
@@ -900,7 +900,7 @@ procedure LogError(Category: Enum "Retention Policy Log Category"; Message: Text
 
 The category for which to log the message.
 
-*Message ([Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Message ([Text[2048]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to log.
 
@@ -920,11 +920,11 @@ procedure LogError(Category: Enum "Retention Policy Log Category"; Message: Text
 
 The category for which to log the message.
 
-*Message ([Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Message ([Text[2048]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to log.
 
-*DisplayError ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*DisplayError ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies whether the error is displayed.
 
@@ -942,7 +942,7 @@ procedure LogWarning(Category: Enum "Retention Policy Log Category"; Message: Te
 
 The category for which to log the message.
 
-*Message ([Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Message ([Text[2048]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to log.
 
@@ -960,7 +960,7 @@ procedure LogInfo(Category: Enum "Retention Policy Log Category"; Message: Text[
 
 The category for which to log the message.
 
-*Message ([Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Message ([Text[2048]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to log.
 
@@ -985,7 +985,7 @@ procedure SetTableFilterView(var RetentionPolicySetupLine: record "Retention Pol
 The record where the filter is stored.
 
 #### Return Value
-*[Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[2048]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The filter in Text format.
 ### GetTableFilterView (Method) <a name="GetTableFilterView"></a> 
@@ -1003,7 +1003,7 @@ procedure GetTableFilterView(RetentionPolicySetupLine: record "Retention Policy 
 The record where the filter is stored.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The filter in View format.
 ### GetTableFilterText (Method) <a name="GetTableFilterText"></a> 
@@ -1021,7 +1021,7 @@ procedure GetTableFilterText(RetentionPolicySetupLine: Record "Retention Policy 
 The record where the filter is stored.
 
 #### Return Value
-*[Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[2048]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The Filter in text format.
 ### TableIdLookup (Method) <a name="TableIdLookup"></a> 
@@ -1034,12 +1034,12 @@ The Filter in text format.
 procedure TableIdLookup(TableId: Integer): Integer
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The currently stored Table ID. This value will be selected when you open the lookup.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The new selected table id.
 ### DateFieldNoLookup (Method) <a name="DateFieldNoLookup"></a> 
@@ -1052,16 +1052,16 @@ The new selected table id.
 procedure DateFieldNoLookup(TableId: Integer; FieldNo: Integer): Integer
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID for which you want to select a field number.
 
-*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The currently selected field number.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The new selected field number.
 ### IsRetentionPolicyEnabled (Method) <a name="IsRetentionPolicyEnabled"></a> 
@@ -1074,7 +1074,7 @@ The new selected field number.
 procedure IsRetentionPolicyEnabled(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if a retention policy is enabled. False if no retention policies are enabled.
 ### IsRetentionPolicyEnabled (Method) <a name="IsRetentionPolicyEnabled"></a> 
@@ -1087,12 +1087,12 @@ True if a retention policy is enabled. False if no retention policies are enable
 procedure IsRetentionPolicyEnabled(TableId: Integer): Boolean
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table that will be checked for an enabled retention policy.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if a retention policy is enabled for the table ID. False if no retention policy is enabled for the table ID.
 

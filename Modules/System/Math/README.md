@@ -17,7 +17,7 @@ Provides constants and static methods for trigonometric, logarithmic, and other 
 procedure Pi(): Decimal
 ```
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 Value of pi.
 ### E (Method) <a name="E"></a> 
@@ -30,7 +30,7 @@ Value of pi.
 procedure E(): Decimal
 ```
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 Value of E.
 ### Abs (Method) <a name="Abs"></a> 
@@ -43,12 +43,12 @@ Value of E.
 procedure Abs(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A decimal.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 A decimal number, x, such that 0 ≤ x ≤MaxValue
 ### Acos (Method) <a name="Acos"></a> 
@@ -61,12 +61,12 @@ A decimal number, x, such that 0 ≤ x ≤MaxValue
 procedure Acos(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A number representing a cosine.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 An angle, θ, measured in radians, such that 0 ≤θ≤π
 ### Asin (Method) <a name="Asin"></a> 
@@ -79,12 +79,12 @@ An angle, θ, measured in radians, such that 0 ≤θ≤π
 procedure Asin(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A number representing a sine, where decimalValue must be greater than or equal to -1, but less than or equal to 1.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 An angle, θ, measured in radians, such that -π/2 ≤θ≤π/2
 ### Atan (Method) <a name="Atan"></a> 
@@ -97,12 +97,12 @@ An angle, θ, measured in radians, such that -π/2 ≤θ≤π/2
 procedure Atan(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A number representing a tangent.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 An angle, θ, measured in radians, such that -π/2 ≤θ≤π/2.
 ### Atan2 (Method) <a name="Atan2"></a> 
@@ -115,16 +115,16 @@ An angle, θ, measured in radians, such that -π/2 ≤θ≤π/2.
 procedure Atan2(y: Decimal; x: Decimal): Decimal
 ```
 #### Parameters
-*y ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*y ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The y coordinate of a point.
 
-*x ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*x ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The x coordinate of a point.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 An angle, θ, measured in radians, such that -π≤θ≤π, and tan(θ) = y / x, where (x, y) is a point in the Cartesian plane. 
 ### BigMul (Method) <a name="BigMul"></a> 
@@ -137,16 +137,16 @@ An angle, θ, measured in radians, such that -π≤θ≤π, and tan(θ) = y / x,
 procedure BigMul(a: Integer; b: Integer): BigInteger
 ```
 #### Parameters
-*a ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*a ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The first number to multiply.
 
-*b ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*b ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The second number to multiply.
 
 #### Return Value
-*[BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type)*
+*[BigInteger](https://go.microsoft.com/fwlink/?linkid=2210125)*
 
 The number containing the product of the specified numbers.
 ### Ceiling (Method) <a name="Ceiling"></a> 
@@ -159,12 +159,12 @@ The number containing the product of the specified numbers.
 procedure Ceiling(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A decimal number.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The smallest integral value that is greater than or equal to decimalValue.
 ### Cos (Method) <a name="Cos"></a> 
@@ -177,12 +177,12 @@ The smallest integral value that is greater than or equal to decimalValue.
 procedure Cos(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 An angle, measured in radians.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The cosine of decimalValue. 
 ### Cosh (Method) <a name="Cosh"></a> 
@@ -195,12 +195,12 @@ The cosine of decimalValue.
 procedure Cosh(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 An angle, measured in radians.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The hyperbolic cosine of value.
 ### Exp (Method) <a name="Exp"></a> 
@@ -213,12 +213,12 @@ The hyperbolic cosine of value.
 procedure Exp(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A number specifying a power.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The number e raised to the power decimalValue.
 ### Floor (Method) <a name="Floor"></a> 
@@ -231,12 +231,12 @@ The number e raised to the power decimalValue.
 procedure Floor(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A decimal number.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The largest integral value less than or equal to decimalValue.
 ### IEEERemainder (Method) <a name="IEEERemainder"></a> 
@@ -249,16 +249,16 @@ The largest integral value less than or equal to decimalValue.
 procedure IEEERemainder(x: Decimal; y: Decimal): Decimal
 ```
 #### Parameters
-*x ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*x ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A dividend.
 
-*y ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*y ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A divisor.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer (if x / y falls halfway between two integers, the even integer is returned).
 ### Log (Method) <a name="Log"></a> 
@@ -271,12 +271,12 @@ A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nea
 procedure Log(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The number whose logarithm is to be found.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The natural logarithm of decimalValue; that is, ln decimalValue, or log e decimalValue
 ### Log (Method) <a name="Log"></a> 
@@ -289,16 +289,16 @@ The natural logarithm of decimalValue; that is, ln decimalValue, or log e decima
 procedure Log(a: Decimal; newBase: Decimal): Decimal
 ```
 #### Parameters
-*a ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*a ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The number whose logarithm is to be found.
 
-*newBase ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*newBase ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The base of the logarithm.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The logarithm of a specified number in a specified base.
 ### Log10 (Method) <a name="Log10"></a> 
@@ -311,12 +311,12 @@ The logarithm of a specified number in a specified base.
 procedure Log10(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A number whose logarithm is to be found.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The base 10 logarithm of the specified number
 ### Max (Method) <a name="Max"></a> 
@@ -329,16 +329,16 @@ The base 10 logarithm of the specified number
 procedure Max(decimalValue1: Decimal; decimalValue2: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue1 ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue1 ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The first of two decimal numbers to compare.
 
-*decimalValue2 ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue2 ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The second of two decimal numbers to compare.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 Parameter decimalValue1 or decimalValue2, whichever is larger.
 ### Min (Method) <a name="Min"></a> 
@@ -351,16 +351,16 @@ Parameter decimalValue1 or decimalValue2, whichever is larger.
 procedure Min(decimalValue1: Decimal; decimalValue2: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue1 ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue1 ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The first of two decimal numbers to compare.
 
-*decimalValue2 ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue2 ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The second of two decimal numbers to compare.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 Parameter decimalValue1 or decimalValue2, whichever is smaller.
 ### Pow (Method) <a name="Pow"></a> 
@@ -373,16 +373,16 @@ Parameter decimalValue1 or decimalValue2, whichever is smaller.
 procedure Pow(x: Decimal; y: Decimal): Decimal
 ```
 #### Parameters
-*x ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*x ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A double-precision floating-point number to be raised to a power.
 
-*y ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*y ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A double-precision floating-point number that specifies a power.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The number x raised to the power y.
 ### Sign (Method) <a name="Sign"></a> 
@@ -395,12 +395,12 @@ The number x raised to the power y.
 procedure Sign(decimalValue: Decimal): Integer
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A signed decimal number.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 A number that indicates the sign of value.
 ### Sinh (Method) <a name="Sinh"></a> 
@@ -413,12 +413,12 @@ A number that indicates the sign of value.
 procedure Sinh(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 An angle, measured in radians.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The hyperbolic sine of value.
 ### Sin (Method) <a name="Sin"></a> 
@@ -431,12 +431,12 @@ The hyperbolic sine of value.
 procedure Sin(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 An angle, measured in radians.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The sine of a.
 ### Sqrt (Method) <a name="Sqrt"></a> 
@@ -449,12 +449,12 @@ The sine of a.
 procedure Sqrt(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The number whose square root is to be found.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The positive square root of decimalValue.
 ### Tan (Method) <a name="Tan"></a> 
@@ -467,12 +467,12 @@ The positive square root of decimalValue.
 procedure Tan(a: Decimal): Decimal
 ```
 #### Parameters
-*a ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*a ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 An angle, measured in radians.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The tangent of a.
 ### Tanh (Method) <a name="Tanh"></a> 
@@ -485,12 +485,12 @@ The tangent of a.
 procedure Tanh(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 An angle, measured in radians.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The hyperbolic tangent of value.
 ### Truncate (Method) <a name="Truncate"></a> 
@@ -503,11 +503,11 @@ The hyperbolic tangent of value.
 procedure Truncate(decimalValue: Decimal): Decimal
 ```
 #### Parameters
-*decimalValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*decimalValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 A number to truncate.
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 The integral part of decimalValue.

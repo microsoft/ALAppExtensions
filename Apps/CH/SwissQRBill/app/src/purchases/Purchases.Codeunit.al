@@ -418,6 +418,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         NewGenJournalLine.Copy(GenJournalLine);
         PreparePurchaseJournalLine(NewGenJournalLine, GenJournalTemplate, GenJournalBatch, LastLineNo, NewDocumentNo);
         repeat
+            Clear(TempIncomingDocument);
             if SwissQRBillIncomingDoc.QRBillImportDecodeToPurchase(TempIncomingDocument, FromFile) then begin
                 InitPurchaseJournalLine(NewGenJournalLine, GenJournalTemplate, GenJournalBatch, NewDocumentNo);
                 finish := not ImportToPurchaseJournal(NewGenJournalLine, TempIncomingDocument, FromFile, MessageResult);

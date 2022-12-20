@@ -173,9 +173,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
             "Swiss QR-Bill IBAN" := IncomingDocument."Vendor IBAN";
             "Swiss QR-Bill Currency" := IncomingDocument."Currency Code";
             "Swiss QR-Bill Amount" := IncomingDocument."Amount Incl. VAT";
+            "Swiss QR-Bill Has Zero Amount" := ("Swiss QR-Bill Amount" = 0);
             "Swiss QR-Bill Unstr. Message" := IncomingDocument."Swiss QR-Bill Unstr. Message";
             "Swiss QR-Bill Bill Info" := IncomingDocument."Swiss QR-Bill Bill Info";
             "Swiss QR-Bill" := true;
+            OnUpdatePurchDocFromIncDocOnBeforeModify(PurchaseHeader, IncomingDocument);
             Modify(true);
         end;
     end;
@@ -619,5 +621,10 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
         else
             sender.Status := sender.Status::Failed;
         sender.Modify();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdatePurchDocFromIncDocOnBeforeModify(var PurchaseHeader: Record "Purchase Header"; var IncomingDocument: Record "Incoming Document")
+    begin
     end;
 }

@@ -2,7 +2,7 @@
     "id":  "ca744f73-dfb4-4702-b72f-e095cac5526e",
     "name":  "Geolocation Test Library",
     "publisher":  "Microsoft",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "brief":  "Library functions to initialize test data for the Geolocation module.",
     "description":  "Library functions to initialize test data for the Geolocation module.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,13 +15,13 @@
                              "id":  "7f03f010-1703-47eb-a3cd-c6d28b8a806c",
                              "name":  "Geolocation",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "platform":  "21.0.0.0",

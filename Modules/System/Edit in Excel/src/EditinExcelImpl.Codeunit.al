@@ -35,7 +35,6 @@ codeunit 1482 "Edit in Excel Impl."
         TypeNotFoundTxt: Label 'The %1 json token was not found.', Locked = true;
         NodeTypeNotRecognizedTxt: Label 'Node type %1 was not recognized.', Locked = true;
         FilterContainsMultipleOperatorsTxt: Label 'The page filter contains multiple operators, the latter was removed.', Locked = true;
-        FieldNotOnThePageTxt: Label 'Ignoring filter since it does not exist on the page.', Locked = true;
 
     procedure EditPageInExcel(PageCaption: Text[240]; PageId: Text; Filter: Text; FileName: Text)
     var
@@ -85,7 +84,6 @@ codeunit 1482 "Edit in Excel Impl."
     procedure CreateDataEntityExportInfoStructuredFilter(var TenantWebService: Record "Tenant Web Service"; var DataEntityExportInfo: DotNet DataEntityExportInfo; SearchText: Text; ODataJsonFilter: JsonObject; ODataJsonPayload: JsonObject)
     var
         DataEntityInfo: DotNet DataEntityInfo;
-        FieldFilterGroupingOperator: Dictionary of [Text, Text];
         EntityFilterCollectionNode: DotNet FilterCollectionNode;
         ServiceName: Text;
         PageNumber: Integer;
@@ -103,10 +101,8 @@ codeunit 1482 "Edit in Excel Impl."
         PageNumber := TenantWebService."Object ID";
 
         EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();  // One filter collection node for entire entity
-        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-        ConvertStructuredFiltersToEntityFilterCollection(ODataJsonFilter, ODataJsonPayload, EntityFilterCollectionNode, FieldFilterGroupingOperator, PageNumber);
+        AssembleFilter(EntityFilterCollectionNode, ODataJsonFilter, ODataJsonPayload, PageNumber);
 
-        ReduceRedundantFilterCollectionNodes(EntityFilterCollectionNode);
         DataEntityInfo.Filter(EntityFilterCollectionNode);
     end;
 
@@ -180,9 +176,30 @@ codeunit 1482 "Edit in Excel Impl."
                 BindingInfo.Fields.RemoveAt(BindingInfo.Fields.Count() - 1); // If we use excel online, only include supported number of columns
     end;
 
-    procedure ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject: JsonObject; var ODataJsonPayload: JsonObject; var EntityFilterCollectionNode: DotNet FilterCollectionNode; var FieldFilterGroupingOperator: Dictionary of [Text, Text]; PageNumber: Integer)
+    procedure AssembleFilter(var EntityFilterCollectionNode: DotNet FilterCollectionNode; ODataJsonFilter: JsonObject; ODataJsonPayload: JsonObject; PageNumber: Integer)
     var
-        ChildEntityFilterCollectionNode: DotNet FilterCollectionNode;
+        ChildFilterCollectionNode: DotNet FilterCollectionNode;
+        FieldFilterGroupingOperator: Dictionary of [Text, Text];
+        FilterNodes: DotNet GenericDictionary2;
+    begin
+        FilterNodes := FilterNodes.Dictionary();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
+        ConvertStructuredFiltersToEntityFilterCollection(ODataJsonFilter, ODataJsonPayload, FieldFilterGroupingOperator, PageNumber, "Excel Filter Node Type"::"and", FilterNodes);
+
+        if not IsNull(FilterNodes) then
+            foreach ChildFilterCollectionNode in FilterNodes.Values do
+                if ChildFilterCollectionNode.Collection.Count() > 0 then
+                    if ChildFilterCollectionNode.Collection.Count() = 1 then
+                        // When we only have 1 value in the filter we should not wrap it in a collection
+                        EntityFilterCollectionNode.Collection.Add(ChildFilterCollectionNode.Collection.Item(0))
+                    else
+                        EntityFilterCollectionNode.Collection.Add(ChildFilterCollectionNode);
+        ReduceRedundantFilterCollectionNodes(EntityFilterCollectionNode);
+    end;
+
+    procedure ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject: JsonObject; var ODataJsonPayload: JsonObject; var FieldFilterGroupingOperator: Dictionary of [Text, Text]; PageNumber: Integer; ParentGroupingOperator: Enum "Excel Filter Node Type"; var FilterNodes: DotNet GenericDictionary2)
+    var
+        FieldFilterCollectionNode: DotNet FilterCollectionNode;
         FilterLeftOperand: DotNet FilterLeftOperand;
         FilterBinaryNode: DotNet FilterBinaryNode;
         ChildNodesJsonFilterArray: JsonArray;
@@ -214,39 +231,38 @@ codeunit 1482 "Edit in Excel Impl."
                     end;
 
                     ChildNodesJsonFilterArray := ChildNodesJsonToken.AsArray();
-
-                    ChildEntityFilterCollectionNode := ChildEntityFilterCollectionNode.FilterCollectionNode();  // One filter collection node for entire entity
-                    ChildEntityFilterCollectionNode.Operator := NodeType;
                     foreach ChildNodesJsonToken in ChildNodesJsonFilterArray do
-                        ConvertStructuredFiltersToEntityFilterCollection(ChildNodesJsonToken.AsObject(), ODataJsonPayload, ChildEntityFilterCollectionNode, FieldFilterGroupingOperator, PageNumber);
-                    if ChildEntityFilterCollectionNode.Collection.Count() > 0 then
-                        EntityFilterCollectionNode.Collection.Add(ChildEntityFilterCollectionNode)
+                        ConvertStructuredFiltersToEntityFilterCollection(ChildNodesJsonToken.AsObject(), ODataJsonPayload, FieldFilterGroupingOperator, PageNumber, ExcelFilterNodeType, FilterNodes);
                 end;
             "Excel Filter Node Type"::lt, "Excel Filter Node Type"::le, "Excel Filter Node Type"::eq, "Excel Filter Node Type"::ge, "Excel Filter Node Type"::gt, "Excel Filter Node Type"::ne:
                 begin
                     FilterBinaryNode := FilterBinaryNode.FilterBinaryNode();
                     FilterBinaryNode.Operator := NodeType;
-                    if not GetLeftNodeValue(StructuredFilterObject, ODataJsonPayload, FilterLeftOperand, PageNumber) and GetRightNodeValue(StructuredFilterObject, RightNodeName) then
+                    if not GetLeftNodeValue(StructuredFilterObject, ODataJsonPayload, FilterLeftOperand) and GetRightNodeValue(StructuredFilterObject, RightNodeName) then
                         exit;
                     FilterBinaryNode.Left := FilterLeftOperand;
                     FilterBinaryNode.Right := RightNodeName;
-                    //todo check if is in pagecontrol
 
                     if not FieldFilterGroupingOperator.Get(FilterLeftOperand.Field, FieldGroupingOperator) then
-                        FieldFilterGroupingOperator.Add(FilterLeftOperand.Field, EntityFilterCollectionNode.Operator)
+                        FieldFilterGroupingOperator.Add(FilterLeftOperand.Field, format(ParentGroupingOperator))
                     else
-                        if FieldGroupingOperator <> EntityFilterCollectionNode.Operator then begin
+                        if FieldGroupingOperator <> format(ParentGroupingOperator) then begin
                             Session.LogMessage('0000I3X', FilterContainsMultipleOperatorsTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
                             exit; // OData does not support filtering on a field with both 'and' and 'or' hence if we see both, ignore the second type
                         end;
-                    EntityFilterCollectionNode.Collection.Add(FilterBinaryNode);
+                    if not FilterNodes.ContainsKey(FilterLeftOperand.Field) then begin // If that field doesnt have a collection node yet, create it
+                        FieldFilterCollectionNode := FieldFilterCollectionNode.FilterCollectionNode();
+                        FieldFilterCollectionNode.Operator := format(ParentGroupingOperator);
+                        FilterNodes.Add(FilterLeftOperand.Field, FieldFilterCollectionNode)
+                    end;
+                    FieldFilterCollectionNode := FilterNodes.Item(FilterLeftOperand.Field);
+                    FieldFilterCollectionNode.Collection.Add(FilterBinaryNode);
                 end;
         end;
     end;
 
-    local procedure GetLeftNodeValue(JsonFilterObject: JsonObject; ODataJsonPayload: JsonObject; var FilterLeftOperand: DotNet FilterLeftOperand; PageNumber: Integer): Boolean
+    local procedure GetLeftNodeValue(JsonFilterObject: JsonObject; ODataJsonPayload: JsonObject; var FilterLeftOperand: DotNet FilterLeftOperand): Boolean
     var
-        PageControlField: Record "Page Control Field";
         NodeJsonToken: JsonToken;
         NameJsonToken: JsonToken;
         TypeJsonToken: JsonToken;
@@ -275,15 +291,6 @@ codeunit 1482 "Edit in Excel Impl."
             Session.LogMessage('0000I5T', StrSubstNo(TypeNotFoundTxt, AlNameJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
             exit(false);
         end;
-
-        PageControlField.SetRange(PageNo, PageNumber);
-        PageControlField.SetRange(ControlName, AlNameJsonToken.AsValue().AsText());
-
-        if PageControlField.IsEmpty() then begin
-            Session.LogMessage('0000I5U', FieldNotOnThePageTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
-            exit(false); // Currently only adding fields that are on a page, mitigating problems with some table fields.
-        end;
-
         exit(true);
     end;
 

@@ -1,8 +1,8 @@
 ﻿{
     "type":  "PTE",
     "templateUrl":  "https://github.com/microsoft/AL-Go-PTE@preview",
-    "bcContainerHelperVersion":  "dev",
-    "runs-on":  "self-hosted,1ES.Pool=ALAppExt",
+    "bcContainerHelperVersion":  "preview",
+    "runs-on":  "windows-latest",
     "cacheImageName":  "",
     "UsePsSession":  false
 }

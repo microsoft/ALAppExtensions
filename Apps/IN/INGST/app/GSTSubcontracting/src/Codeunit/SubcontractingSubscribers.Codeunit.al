@@ -233,6 +233,43 @@ codeunit 18469 "Subcontracting Subscribers"
         UpdateSubcontractingPostingDate(PurchOrderLine, PurchOrderHeader);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"PostPurch-Delete", 'OnBeforeInitDeleteHeader', '', false, false)]
+    local procedure OnBeforeInitDeleteHeader(var PurchHeader: Record "Purchase Header"; var PurchRcptHeader: Record "Purch. Rcpt. Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var ReturnShptHeader: Record "Return Shipment Header"; var PurchInvHeaderPrepmt: Record "Purch. Inv. Header"; var PurchCrMemoHdrPrepmt: Record "Purch. Cr. Memo Hdr."; var SourceCode: Code[10])
+    begin
+        ValidateDeliveryChallanCreatedForOrder(PurchHeader);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"PostPurch-Delete", 'OnAfterInitDeleteHeader', '', false, false)]
+    local procedure OnAfterInitDeleteHeader(var PurchHeader: Record "Purchase Header"; var PurchRcptHeader: Record "Purch. Rcpt. Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var ReturnShptHeader: Record "Return Shipment Header"; var PurchInvHeaderPrepmt: Record "Purch. Inv. Header"; var PurchCrMemoHdrPrepmt: Record "Purch. Cr. Memo Hdr.")
+    begin
+        RemoveSubcontractingLinkFromProdOrderLine(PurchHeader);
+    end;
+
+    local procedure ValidateDeliveryChallanCreatedForOrder(PurchHeader: Record "Purchase Header")
+    var
+        DeliveryChallanLine: Record "Delivery Challan Line";
+        DeliveryChallanExistsErr: Label 'You cannot delete this document. Delivery Challan exist for Subcontractin Order no. %1.', Comment = '%1 = Subcontracting Order No.';
+    begin
+        if not PurchHeader.Subcontracting then
+            exit;
+
+        DeliveryChallanLine.SetRange("Document No.", PurchHeader."No.");
+        if not DeliveryChallanLine.IsEmpty() then
+            Error(DeliveryChallanExistsErr, PurchHeader."No.");
+    end;
+
+    local procedure RemoveSubcontractingLinkFromProdOrderLine(PurchHeader: Record "Purchase Header")
+    var
+        ProdOrderLine: Record "Prod. Order Line";
+    begin
+        if not PurchHeader.Subcontracting then
+            exit;
+
+        ProdOrderLine.SetRange("Subcontracting Order No.", PurchHeader."No.");
+        ProdOrderLine.ModifyAll("Subcontractor Code", '');
+        ProdOrderLine.ModifyAll("Subcontracting Order No.", '');
+    end;
+
     local procedure UpdateSubcontractingPostingDate(var PurchaseLine: Record "Purchase Line"; PurchaseHeader: Record "Purchase Header")
     begin
         if not PurchaseHeader.Subcontracting then

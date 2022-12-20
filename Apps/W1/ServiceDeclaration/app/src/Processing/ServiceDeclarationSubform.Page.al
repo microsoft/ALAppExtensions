@@ -38,13 +38,25 @@ page 5024 "Service Declaration Subform"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the service transaction code of the source entry.';
+                    Visible = EnableServTransType;
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the country/region code of the source entry.';
                 }
+#if not CLEAN22                
                 field("VAT Registration No."; Rec."VAT Registration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the VAT registration No. of the customer or vendor associated with a source entry.';
+                    ObsoleteReason = 'This relation is now stored in the field Financial Report Column Group of the table Financial Reports';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    Visible = false;
+                }
+#endif
+                field("VAT Reg. No."; Rec."VAT Reg. No.")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the VAT registration No. of the customer or vendor associated with a source entry.';
@@ -76,11 +88,15 @@ page 5024 "Service Declaration Subform"
     var
         ServDeclSetup: Record "Service Declaration Setup";
         EnableVATRegNo: Boolean;
+        EnableServTransType: Boolean;
 
     trigger OnOpenPage()
+    var
+        ServDeclMgt: Codeunit "Service Declaration Mgt.";
     begin
         ServDeclSetup.Get();
         EnableVATRegNo := ServDeclSetup."Enable VAT Registration No.";
+        EnableServTransType := ServDeclMgt.IsServTransTypeEnabled();
     end;
 }
 

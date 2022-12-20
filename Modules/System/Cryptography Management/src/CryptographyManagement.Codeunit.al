@@ -26,7 +26,7 @@ codeunit 1266 "Cryptography Management"
     [Obsolete('Replaced by EncryptText', '21.0')]
     procedure Encrypt(InputString: Text): Text
     begin
-        exit(CryptographyManagementImpl.Encrypt(CopyStr(InputString,1,215)));
+        exit(CryptographyManagementImpl.Encrypt(CopyStr(InputString, 1, 215)));
     end;
 #endif
 
@@ -329,6 +329,33 @@ codeunit 1266 "Cryptography Management"
     begin
         exit(CryptographyManagementImpl.VerifyData(DataInStream, XmlString, HashAlgorithm, SignatureInStream));
     end;
+
+    /// <summary>
+    /// Verifies that a digital signature is valid.
+    /// </summary>
+    /// <param name="InputString">Input string.</param>
+    /// <param name="SignatureKey">The private key to use in the hash algorithm.</param>    
+    /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureInStream">The stream of signature.</param>
+    /// <returns>True if the signature is valid; otherwise, false.</returns>
+    procedure VerifyData(InputString: Text; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    begin
+        exit(CryptographyManagementImpl.VerifyData(InputString, SignatureKey, HashAlgorithm, SignatureInStream));
+    end;
+
+    /// <summary>
+    /// Verifies that a digital signature is valid.
+    /// </summary>
+    /// <param name="DataInStream">The stream of input data.</param>
+    /// <param name="SignatureKey">The private key to use in the hash algorithm.</param>    
+    /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureInStream">The stream of signature.</param>
+    /// <returns>True if the signature is valid; otherwise, false.</returns>
+    procedure VerifyData(DataInStream: InStream; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    begin
+        exit(CryptographyManagementImpl.VerifyData(DataInStream, SignatureKey, HashAlgorithm, SignatureInStream));
+    end;
+
 
 #if not CLEAN19
 #pragma warning disable AL0432

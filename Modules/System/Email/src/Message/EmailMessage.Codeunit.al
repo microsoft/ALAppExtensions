@@ -206,6 +206,15 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Adds attachments from scenario to the email message.
+    /// </summary>
+    /// <param name="EmailAttachments">The reference to the email attachments </param>
+    procedure AddAttachmentFromScenario(var EmailAttachments: Record "Email Attachments")
+    begin
+        EmailMessageImpl.AddAttachmentsFromScenario(EmailAttachments);
+    end;
+
+    /// <summary>
     /// Deletes the contents of the currently selected attachment.
     /// </summary>
     /// <returns>Returns true if contents was successfully deleted, otherwise false.</returns>
@@ -294,6 +303,16 @@ codeunit 8904 "Email Message"
     procedure Attachments_IsInline(): Boolean
     begin
         exit(EmailMessageImpl.Attachments_IsInline());
+    end;
+
+    /// <summary>
+    /// Gets the related attachments.
+    /// </summary>
+    /// <param name="EmailRelatedAttachments">Out parameter with the related attachments.</param>
+    /// <returns>True if any related attachments were found; otherwise - false</returns>
+    procedure GetRelatedAttachments(var EmailRelatedAttachments: Record "Email Related Attachment"): Boolean
+    begin
+        exit(EmailMessageImpl.GetRelatedAttachments(EmailRelatedAttachments));
     end;
 
     /// <summary>

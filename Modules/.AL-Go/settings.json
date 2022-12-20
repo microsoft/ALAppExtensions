@@ -12,7 +12,8 @@
                         "System Test Libraries",
                         "System Tests"
                     ],
-    "artifact":  "//21.1/base/first",
+    "artifact":  "bcinsider//21.3/base/latest/{INSIDERSASTOKEN}",
     "enablePerTenantExtensionCop":  false,
-    "repoVersion":  "21.1"
+    "repoVersion":  "21.3",
+    "doNotRunTests": true
 }

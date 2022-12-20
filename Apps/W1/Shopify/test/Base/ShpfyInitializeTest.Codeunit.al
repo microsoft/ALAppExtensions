@@ -7,6 +7,9 @@ codeunit 139561 "Shpfy Initialize Test"
     SingleInstance = true;
 
     var
+        DummyCustomer: Record Customer;
+        DummyItem: Record Item;
+        ShpfyShop: Record "Shpfy Shop";
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
@@ -16,7 +19,7 @@ codeunit 139561 "Shpfy Initialize Test"
 
     trigger OnRun()
     begin
-        if ShpfyCommunicationMgt.GetShopRecord()."Shopify URL" = '' then
+        if ShpfyShop.IsEmpty() then
             CreateShop();
         Commit();
     end;
@@ -93,7 +96,7 @@ codeunit 139561 "Shpfy Initialize Test"
             Clear(DummyItem);
             ConfigConfigTemplateLine.SetRange("Data Template Code", ConfigTemplateHeader.Code);
             ConfigConfigTemplateLine.SetRange(Type, ConfigConfigTemplateLine.Type::Field);
-            ConfigConfigTemplateLine.SetRange("Table ID", Database::Customer);
+            ConfigConfigTemplateLine.SetRange("Table ID", Database::Item);
             ConfigConfigTemplateLine.SetRange("Field ID", DummyItem.FieldNo("No. Series"));
             if ConfigConfigTemplateLine.FindFirst() and (ConfigConfigTemplateLine."Default Value" <> '') then
                 NoSeriesMgt.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, DummyItem."No.", DummyItem."No. Series");
@@ -125,6 +128,7 @@ codeunit 139561 "Shpfy Initialize Test"
         GenProductPostingGroup: Record "Gen. Product Posting Group";
         VatProductPostingGroup: Record "VAT Product Posting Group";
         Item: Record Item;
+        NoSeries: Record "No. Series";
     begin
         Code := Any.AlphabeticText(10);
         ConfigTemplateHeader.Init();
@@ -139,6 +143,8 @@ codeunit 139561 "Shpfy Initialize Test"
         AddFieldTemplate(ConfigTemplateHeader.Code, 20000, Database::Item, Item.FieldNo("Gen. Prod. Posting Group"), GenProductPostingGroup.Code);
         VatProductPostingGroup := CreateVatProdPostingGroup(Code);
         AddFieldTemplate(ConfigTemplateHeader.Code, 30000, Database::Item, Item.FieldNo("VAT Prod. Posting Group"), VatProductPostingGroup.Code);
+        NoSeries := CreateNoSeries('SHPFY');
+        AddFieldTemplate(ConfigTemplateHeader.Code, 40000, Database::Item, Item.FieldNo("No. Series"), NoSeries.Code);
     end;
 
     local procedure AddFieldTemplate(Code: code[10]; LineNo: Integer; TableId: Integer; FieldId: Integer; Value: Text)
@@ -182,6 +188,23 @@ codeunit 139561 "Shpfy Initialize Test"
             Clear(VatProdPostingGroup);
             VatProdPostingGroup.Code := Code;
             VatProdPostingGroup.Insert();
+        end;
+    end;
+
+    local procedure CreateNoSeries(Code: Code[20]) NoSeries: Record "No. Series"
+    var
+        NoSeriesLine: Record "No. Series Line";
+    begin
+        if not NoSeries.Get(Code) then begin
+            NoSeries.Code := Code;
+            NoSeries."Default Nos." := true;
+            NoSeries.Insert();
+            NoSeriesLine."Series Code" := Code;
+            NoSeriesLine."Starting No." := '90000';
+            NoSeriesLine."Increment-by No." := 1;
+            NoSeriesLine."Ending No." := '100000';
+            NoSeriesLine.Open := true;
+            NoSeriesLine.Insert();
         end;
     end;
 

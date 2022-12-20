@@ -576,6 +576,49 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
+    procedure IsUserExternal(): Boolean
+    begin
+        exit(IsUserDelegatedAdminWithoutLicenses() or IsUserDelegatedHelpdeskWithoutLicenses() or IsUserExternalAccountant())
+    end;
+
+    [NonDebuggable]
+    local procedure IsUserDelegatedAdminWithoutLicenses(): Boolean
+    var
+        UserPlan: Record "User Plan";
+    begin
+        UserPlan.SetRange("User Security ID", UserSecurityId());
+        exit(AzureADGraphUser.IsUserDelegatedAdmin() and UserPlan.IsEmpty());
+    end;
+
+    [NonDebuggable]
+    local procedure IsUserDelegatedHelpdeskWithoutLicenses(): Boolean
+    var
+        UserPlan: Record "User Plan";
+    begin
+        UserPlan.SetRange("User Security ID", UserSecurityId());
+        exit(AzureADGraphUser.IsUserDelegatedHelpdesk() and UserPlan.IsEmpty());
+    end;
+
+    /* 
+    Currently, this is the best way to determine if a user is an external accountant.
+    This procedure should be replaced by a platform check, like AzureADGraphUser.IsUserDelegatedAdmin, when possible.
+    This procedure can be moved to app AzureADGraphUser when usage of UserPlans is no longer needed.
+    */
+    [NonDebuggable]
+    local procedure IsUserExternalAccountant(): Boolean
+    var
+        UserPlan: Record "User Plan";
+        PlanIds: Codeunit "Plan Ids";
+    begin
+        UserPlan.SetRange("User Security ID", UserSecurityId());
+        if UserPlan.IsEmpty() then
+            exit(false);
+
+        UserPlan.SetFilter("Plan ID", '<>%1', PlanIds.GetExternalAccountantPlanId());
+        exit(UserPlan.IsEmpty());
+    end;
+
+    [NonDebuggable]
     local procedure GetAzureUserPlanRoleCenterId(UserSecurityID: Guid): Integer
     var
         TempPlan: Record "Plan" temporary;

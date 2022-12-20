@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// See https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry#expiryoption
+/// See https://go.microsoft.com/fwlink/?linkid=2211406
 /// </summary>
 enum 9045 "ABS Blob Expiry Option"
 {

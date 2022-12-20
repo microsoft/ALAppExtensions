@@ -104,7 +104,6 @@ page 20350 "Connectivity Apps"
     var
         CompanyInformation: Record "Company Information";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        SupportedCtry: Enum "Conn. Apps Supported Country";
     begin
         if Rec.IsEmpty() then
             ConnectivityApps.Load(Rec);
@@ -112,8 +111,7 @@ page 20350 "Connectivity Apps"
         ConnectivityApps.LoadImages(Rec);
 
         CompanyInformation.Get();
-        if Evaluate(SupportedCtry, CompanyInformation."Country/Region Code") then
-            Rec.SetRange(Country, SupportedCtry);
+        Rec.SetRange(Country, CompanyInformation."Country/Region Code");
 
         FeatureTelemetry.LogUptake('0000I4R', 'Connectivity Apps', Enum::"Feature Uptake Status"::Discovered);
     end;

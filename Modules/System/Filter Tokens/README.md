@@ -29,7 +29,7 @@ You can add more filter tokens by subscribing to the following events:
 procedure MakeDateFilter(var DateFilterText: Text)
 ```
 #### Parameters
-*DateFilterText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*DateFilterText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text from which the date filter should be extracted passed as VAR. For example: "YESTERDAY", or " 01-01-2012 ".
 
@@ -44,7 +44,7 @@ The text from which the date filter should be extracted passed as VAR. For examp
 procedure MakeTimeFilter(var TimeFilterText: Text)
 ```
 #### Parameters
-*TimeFilterText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TimeFilterText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text from which the time filter should be extracted, passed as VAR. For example: "NOW".
 
@@ -59,7 +59,7 @@ The text from which the time filter should be extracted, passed as VAR. For exam
 procedure MakeTextFilter(var TextFilter: Text)
 ```
 #### Parameters
-*TextFilter ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TextFilter ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The expression from which the text filter should be extracted, passed as VAR. For example: "ME".
 
@@ -74,7 +74,7 @@ The expression from which the text filter should be extracted, passed as VAR. Fo
 procedure MakeDateTimeFilter(var DateTimeFilterText: Text)
 ```
 #### Parameters
-*DateTimeFilterText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*DateTimeFilterText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text from which the date and time should be extracted, passed as VAR. For example: "NOW" or "01-01-2012 11:11:11..NOW".
 
@@ -90,19 +90,19 @@ The text from which the date and time should be extracted, passed as VAR. For ex
 internal procedure OnResolveDateFilterToken(DateToken: Text; var FromDate: Date; var ToDate: Date; var Handled: Boolean)
 ```
 #### Parameters
-*DateToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*DateToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The date token to resolve, for example: "Summer".
 
-*FromDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*FromDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The start date to resolve from DateToken that the filter will use, for example: "01/06/2019". Passed by reference by using VAR keywords.
 
-*ToDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*ToDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The end date to resolve from DateToken that the filter will use, for example: "31/08/2019". Passed by reference by using VAR keywords.
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Stores whether the operation was successful.
 
@@ -118,15 +118,15 @@ Stores whether the operation was successful.
 internal procedure OnResolveTextFilterToken(TextToken: Text; var TextFilter: Text; var Handled: Boolean)
 ```
 #### Parameters
-*TextToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TextToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text token to resolve.
 
-*TextFilter ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TextFilter ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to translate into a properly formatted text filter.
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Stores whether the operation was successful.
 
@@ -142,15 +142,15 @@ Stores whether the operation was successful.
 internal procedure OnResolveTimeFilterToken(TimeToken: Text; var TimeFilter: Time; var Handled: Boolean)
 ```
 #### Parameters
-*TimeToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TimeToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The time token to resolve, for example: "Lunch".
 
-*TimeFilter ([Time](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/time/time-data-type))* 
+*TimeFilter ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
 The text to translate into a properly formatted time filter, for example: "12:00:00".
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Stores whether the operation was successful.
 
@@ -166,15 +166,15 @@ Stores whether the operation was successful.
 internal procedure OnResolveDateTokenFromDateTimeFilter(DateToken: Text; var DateFilter: Date; var Handled: Boolean)
 ```
 #### Parameters
-*DateToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*DateToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The date token to resolve, for example: "Christmas".
 
-*DateFilter ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*DateFilter ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The text to translate into a properly formatted date filter, for example: "25/12/2019".
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Stores whether the operation was successful.
 
@@ -190,15 +190,15 @@ Stores whether the operation was successful.
 internal procedure OnResolveTimeTokenFromDateTimeFilter(TimeToken: Text; var TimeFilter: Time; var Handled: Boolean)
 ```
 #### Parameters
-*TimeToken ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TimeToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The time token to resolve, for example: "Lunch".
 
-*TimeFilter ([Time](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/time/time-data-type))* 
+*TimeFilter ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
 The text to translate into a properly formatted time filter, for example:"12:00:00".
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Stores whether the operation was successful.
 

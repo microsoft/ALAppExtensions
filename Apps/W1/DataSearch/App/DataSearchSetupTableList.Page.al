@@ -5,6 +5,7 @@ page 2683 "Data Search Setup (Table) List"
     InsertAllowed = false;
     LinksAllowed = true;
     PageType = List;
+    UsageCategory = Administration;
     SourceTable = AllObjWithCaption;
 
     layout

@@ -37,7 +37,7 @@ defaults:
 
 jobs:
   CreateTestApp:
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3

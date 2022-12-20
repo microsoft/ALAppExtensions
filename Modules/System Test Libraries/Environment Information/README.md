@@ -15,7 +15,7 @@
 procedure SetTestabilitySandbox(EnableSandboxForTest: Boolean)
 ```
 #### Parameters
-*EnableSandboxForTest ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*EnableSandboxForTest ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 The value to be set to the testability sandbox flag.
 
@@ -34,7 +34,7 @@ The value to be set to the testability sandbox flag.
 procedure SetTestabilitySoftwareAsAService(EnableSoftwareAsAServiceForTest: Boolean)
 ```
 #### Parameters
-*EnableSoftwareAsAServiceForTest ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*EnableSoftwareAsAServiceForTest ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 The value to be set to the testability SaaS flag.
 
@@ -50,7 +50,7 @@ The value to be set to the testability SaaS flag.
 procedure SetAppId(NewAppId: Text)
 ```
 #### Parameters
-*NewAppId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*NewAppId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The desired ne App ID.
 

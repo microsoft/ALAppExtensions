@@ -92,7 +92,7 @@ codeunit 9046 "ABS URI Helper"
     var
         ABSFormatHelper: Codeunit "ABS Format Helper";
         RestType: Text;
-        RestTypeLbl: Label 'restype';
+        RestTypeLbl: Label 'restype', Locked = true;
         ContainerRestTypeLbl: Label 'container', Locked = true;
         ServiceRestTypeLbl: Label 'service', Locked = true;
         AccountRestTypeLbl: Label 'account', Locked = true;

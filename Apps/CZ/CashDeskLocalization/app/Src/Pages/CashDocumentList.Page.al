@@ -6,7 +6,6 @@ page 31162 "Cash Document List CZP"
     DataCaptionFields = "Cash Desk No.";
     Editable = false;
     PageType = List;
-    PromotedActionCategories = 'New,Process,Report,Approve,Request Approval';
     SourceTable = "Cash Document Header CZP";
     UsageCategory = Tasks;
 
@@ -171,12 +170,9 @@ page 31162 "Cash Document List CZP"
                     trigger OnAction()
                     var
                         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
-                        CashDocumentReleaseCZP: Codeunit "Cash Document-Release CZP";
                     begin
-                        CashDocumentHeaderCZP := Rec;
-                        CashDocumentHeaderCZP.SetRecFilter();
-                        CashDocumentReleaseCZP.PerformManualRelease(CashDocumentHeaderCZP);
-                        CurrPage.Update(false);
+                        CurrPage.SetSelectionFilter(CashDocumentHeaderCZP);
+                        Rec.PerformManualRelease(CashDocumentHeaderCZP);
                     end;
                 }
                 action("Release and &Print")
@@ -195,6 +191,21 @@ page 31162 "Cash Document List CZP"
                         CashDocumentHeaderCZP.SetRecFilter();
                         CashDocumentReleasePrintCZP.PerformManualRelease(CashDocumentHeaderCZP);
                         CurrPage.Update(false);
+                    end;
+                }
+                action("Re&open")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Re&open';
+                    Image = ReOpen;
+                    ToolTip = 'Reopen the document to change it after it has been approved. Approved documents have the Released status and must be opened before they can be changed.';
+
+                    trigger OnAction()
+                    var
+                        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
+                    begin
+                        CurrPage.SetSelectionFilter(CashDocumentHeaderCZP);
+                        Rec.PerformManualReopen(CashDocumentHeaderCZP);
                     end;
                 }
             }
@@ -254,9 +265,6 @@ page 31162 "Cash Document List CZP"
                     Caption = 'Send A&pproval Request';
                     Enabled = NOT OpenApprovalEntriesExist;
                     Image = SendApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -273,8 +281,6 @@ page 31162 "Cash Document List CZP"
                     Caption = 'Cancel Approval Re&quest';
                     Enabled = OpenApprovalEntriesExist;
                     Image = CancelApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -310,15 +316,75 @@ page 31162 "Cash Document List CZP"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
                 begin
                     Rec.PrintToDocumentAttachment();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Category4)
+            {
+                Caption = 'Release';
+                ShowAs = SplitButton;
+
+                actionref(ReleasePromoted; "&Release")
+                {
+                }
+                actionref(ReleaseAndPrintPromoted; "Release and &Print")
+                {
+                }
+                actionref(ReopenPromoted; "Re&open")
+                {
+                }
+            }
+            group(Category_Category5)
+            {
+                Caption = 'Posting';
+                ShowAs = SplitButton;
+
+                actionref(PostPromoted; "P&ost")
+                {
+                }
+                actionref(PostAndPrintPromoted; "Post and &Print")
+                {
+                }
+                actionref(PreviePostingPromoted; PreviewPosting)
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Request Approval';
+
+                actionref(SendApprovalRequestPromoted; SendApprovalRequest)
+                {
+                }
+                actionref(CancelApprovalRequestPromoted; CancelApprovalRequest)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Cash Document';
+
+                actionref(DimensionsPromoted; Dimensions)
+                {
+                }
+                actionref(ApprovalsPromoted; "A&pprovals")
+                {
+                }
+            }
+            group(Category_Report)
+            {
+                Caption = 'Report';
+
+                actionref(PrintToAttachmentPromoted; PrintToAttachment)
+                {
+                }
             }
         }
     }

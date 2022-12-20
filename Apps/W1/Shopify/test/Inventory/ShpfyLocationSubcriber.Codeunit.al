@@ -25,8 +25,6 @@ codeunit 139587 "Shpfy Location Subcriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnGetContent', '', true, false)]
     local procedure OnGetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
-    var
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
     begin
         HttpResponseMsg.Content.ReadAs(Response);
     end;

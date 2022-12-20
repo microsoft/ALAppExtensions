@@ -13,6 +13,12 @@ page 5023 "Service Declaration"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code of the service declaration.';
+
+                    trigger OnAssistEdit()
+                    begin
+                        if Rec.AssistEdit(xRec) then
+                            CurrPage.Update();
+                    end;
                 }
                 field("Config. Code"; Rec."Config. Code")
                 {
@@ -53,7 +59,7 @@ page 5023 "Service Declaration"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                ToolTip = 'Suggests Intrastat transactions to be reported and fills in the journal.';
+                ToolTip = 'Suggests transactions to be reported and fills in the journal.';
 
                 trigger OnAction()
                 begin
@@ -70,6 +76,7 @@ page 5023 "Service Declaration"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
+                Visible = ShowOverview;
                 ToolTip = 'Opens the overview with the service declaration lines grouped and summarized as in the exported file. ';
 
                 trigger OnAction()
@@ -104,6 +111,15 @@ page 5023 "Service Declaration"
 
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        ShowOverview: Boolean;
         ServDeclFormTok: Label 'Service Declaration', Locked = true;
+
+    trigger OnOpenPage()
+    var
+        ServDeclSetup: Record "Service Declaration Setup";
+    begin
+        if ServDeclSetup.Get() then;
+        ShowOverview := ServDeclSetup."Show Serv. Decl. Overview";
+    end;
 }
 
