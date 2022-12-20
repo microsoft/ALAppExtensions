@@ -63,16 +63,25 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
                 Write-Host "Translations were not generated for app $appName"
             }
 
+            # Add the source code for test apps to the artifacts folder
+            if(-not $app) {
+                Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+            }
+
             # Add  the app file for every built app to a folder
             Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
          }
         'Translated' { 
-            # Add the source code and the app file for every built app to a folder
-            Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+            # Add the source code for non-test apps to the artifacts folder
+            if($app) {
+                Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+            }
+
+            # Add the app file for every built app to a folder
             Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
         }
 
-        'CLEAN' {
+        'Clean' {
               # Add  the app file for every built app to a folder
               Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
         }
