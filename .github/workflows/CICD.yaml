@@ -466,7 +466,7 @@ jobs:
               $buildMode = ''
             }
 
-            $value = "$($project.Replace('\','_')).Replace('/','_'))-$($ref)-$buildMode$_-$($settings.repoVersion).$($settings.appBuild).$($settings.appRevision)"
+            $value = "$($project.Replace('\','_').Replace('/','_'))-$($ref)-$buildMode$_-$($settings.repoVersion).$($settings.appBuild).$($settings.appRevision)"
 
             Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
             Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
