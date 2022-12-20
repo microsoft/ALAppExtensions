@@ -60,11 +60,6 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         IPRange := NewIPRange;
     end;
 
-    procedure SetSignedEncryptionScope(NewSignedEncryptionScope: Text)
-    begin
-        SignedEncryptionScope := NewSignedEncryptionScope;
-    end;
-
     procedure SetVersion(NewAPIVersion: Enum "Storage Service API Version")
     begin
         ApiVersion := NewAPIVersion;
@@ -103,7 +98,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
     begin
         StringToSign := CreateSharedAccessSignatureStringToSign();
         Signature := AuthFormatHelper.GetAccessKeyHashCode(StringToSign, SigningKey);
-        SharedAccessSignature := CreateSasUrlString(ApiVersion, StartDate, EndDate, Services, Resources, Permissions, Protocols, IPRange, Signature, SignedEncryptionScope);
+        SharedAccessSignature := CreateSasUrlString(ApiVersion, StartDate, EndDate, Services, Resources, Permissions, Protocols, IPRange, Signature);
 
         exit(SharedAccessSignature);
     end;
@@ -122,8 +117,6 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         StringToSign.Append(IPRange + NewLine());
         StringToSign.Append(ProtocolsToString(Protocols) + NewLine());
         StringToSign.Append(VersionToString(ApiVersion) + NewLine());
-        if SignedEncryptionScope <> '' then
-            StringToSign.Append(SignedEncryptionScope + NewLine());
         exit(StringToSign.ToText());
     end;
 
@@ -165,7 +158,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
     end;
 
     [NonDebuggable]
-    procedure CreateSasUrlString(StorageServiceApiVersion: Enum "Storage Service API Version"; StartDateTime: DateTime; EndDateTime: DateTime; SasServiceTypes: List of [Enum "SAS Service Type"]; SasResourceTypes: List of [Enum "SAS Resource Type"]; SasPermissions: List of [Enum "SAS Permission"]; ProtocolStrings: List of [Text]; IPRangeString: Text; Signature: Text; SignedEncryptionScopeString: Text): Text
+    procedure CreateSasUrlString(StorageServiceApiVersion: Enum "Storage Service API Version"; StartDateTime: DateTime; EndDateTime: DateTime; SasServiceTypes: List of [Enum "SAS Service Type"]; SasResourceTypes: List of [Enum "SAS Resource Type"]; SasPermissions: List of [Enum "SAS Permission"]; ProtocolStrings: List of [Text]; IPRangeString: Text; Signature: Text): Text
     var
         Uri: Codeunit Uri;
         Builder: TextBuilder;
@@ -188,11 +181,6 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 
         if IPRangeString <> '' then begin
             Builder.Append(StrSubstNo(KeyValueLbl, 'sip', IPRangeString));
-            Builder.Append('&');
-        end;
-
-        if SignedEncryptionScopeString <> '' then begin
-            Builder.Append(StrSubstNo(KeyValueLbl, 'ses', SignedEncryptionScopeString));
             Builder.Append('&');
         end;
 
@@ -234,7 +222,6 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         StorageAccountName: Text;
         [NonDebuggable]
         SigningKey: Text;
-        SignedEncryptionScope: Text;
         StartDate: DateTime;
         EndDate: DateTime;
         ApiVersion: Enum "Storage Service API Version";

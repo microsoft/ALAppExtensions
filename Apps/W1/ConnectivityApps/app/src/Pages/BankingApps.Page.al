@@ -104,6 +104,7 @@ page 20353 "Banking Apps"
     var
         CompanyInformation: Record "Company Information";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        SupportedCtry: Enum "Conn. Apps Supported Country";
         ConnectivityAppsCategory: Enum "Connectivity Apps Category";
     begin
         if Rec.IsEmpty() then
@@ -112,7 +113,8 @@ page 20353 "Banking Apps"
         ConnectivityApps.LoadImages(Rec);
 
         CompanyInformation.Get();
-        Rec.SetRange(Country, CompanyInformation."Country/Region Code");
+        if Evaluate(SupportedCtry, CompanyInformation."Country/Region Code") then
+            Rec.SetRange(Country, SupportedCtry);
 
         FeatureTelemetry.LogUptake('0000I4N', 'Connectivity Apps', Enum::"Feature Uptake Status"::Discovered);
     end;

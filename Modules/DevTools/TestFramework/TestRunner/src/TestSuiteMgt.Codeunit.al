@@ -401,14 +401,14 @@ codeunit 130456 "Test Suite Mgt."
         TestMethodLine.SetRange("Test Codeunit", BackupTestMethodLine."Test Codeunit");
         TestMethodLine.SetRange(Name, BackupTestMethodLine.Name);
         if TestMethodLine.FindFirst() then begin
-            TestMethodLine.CopyFilters(BackupTestMethodLine);
+            TestMethodLine.SetView(BackupTestMethodLine.GetView());
             exit;
         end;
 
         TestMethodLine.SetRange(Name);
         if TestMethodLine.FindFirst() then;
 
-        TestMethodLine.CopyFilters(BackupTestMethodLine);
+        TestMethodLine.SetView(BackupTestMethodLine.GetView());
     end;
 
     local procedure PromptUserToSelectTestsToRun(TestMethodLine: Record "Test Method Line"): Integer

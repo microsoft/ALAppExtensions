@@ -9,7 +9,6 @@
 page 8897 "Email Scenario Attach Setup"
 {
     Caption = 'Email Scenario Attachments';
-    DataCaptionExpression = Format(Enum::"Email Scenario".FromInteger(CurrentEmailScenario));
     PageType = List;
     UsageCategory = Administration;
     ApplicationArea = All;
@@ -17,8 +16,6 @@ page 8897 "Email Scenario Attach Setup"
     DeleteAllowed = false;
     ShowFilter = false;
     SourceTable = "Email Attachments";
-    SourceTableView = sorting(Scenario, "Attachment Name")
-                      order(ascending);
     InstructionalText = 'Assign email attachments for email scenario';
 
     Permissions = tabledata "Email Attachments" = rimd,
@@ -51,7 +48,7 @@ page 8897 "Email Scenario Attach Setup"
                     Caption = 'Email Scenario';
                     ToolTip = 'The email scenario that the attachment came from. Attachments set as default for email scenarios are automatically attached to emails that are sent from processes related to the scenario.';
                     Editable = false;
-                    Visible = not (IsVisible);
+                    Visible = not (IsVisbile);
                 }
             }
         }
@@ -65,13 +62,13 @@ page 8897 "Email Scenario Attach Setup"
             {
                 ApplicationArea = All;
                 Promoted = true;
-                PromotedCategory = New;
+                PromotedCategory = Process;
                 PromotedOnly = true;
                 Image = Add;
                 Caption = 'Add File';
                 ToolTip = 'Add files, such as documents or images, to the email.';
                 Scope = Page;
-                Visible = IsVisible;
+                Visible = IsVisbile;
                 Enabled = IsUserEmailAdmin;
 
                 trigger OnAction()
@@ -80,7 +77,7 @@ page 8897 "Email Scenario Attach Setup"
                     FeatureTelemetry: Codeunit "Feature Telemetry";
                 begin
                     FeatureTelemetry.LogUptake('0000I8U', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Set up");
-                    EmailScenarioAttachmentsImpl.AddAttachment(EmailScenarioAttachments, Rec, CurrentEmailScenario);
+                    EmailScenarioAttachmentsImpl.AddAttachment(EmailScenarioAttachments, Rec, EmailScenario);
                     FeatureTelemetry.LogUptake('0000I8V', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Used");
                     FeatureTelemetry.LogUsage('0000CTF', 'Email Default Attachments', 'Set up attachments for scenarios');
                 end;
@@ -90,13 +87,13 @@ page 8897 "Email Scenario Attach Setup"
             {
                 ApplicationArea = All;
                 Promoted = true;
-                PromotedCategory = New;
+                PromotedCategory = Process;
                 PromotedOnly = true;
                 Image = Add;
                 Caption = 'Add File to Scenario';
-                ToolTip = 'Choose an email scenario and add files, such as documents or images, to the email.';
+                ToolTip = 'Choose a email scenario and add files, such as documents or images, to the email.';
                 Scope = Page;
-                Visible = not (IsVisible);
+                Visible = not (IsVisbile);
                 Enabled = IsUserEmailAdmin;
 
                 trigger OnAction()
@@ -113,7 +110,7 @@ page 8897 "Email Scenario Attach Setup"
                         EmailScenarioAttachmentsImpl.AddAttachmentToScenarios(EmailScenarioAttachments, Rec, SelectedScenarios);
                         FeatureTelemetry.LogUptake('0000IQS', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Used");
                         FeatureTelemetry.LogUsage('0000IQT', 'Email Default Attachments', 'Set up attachments for scenarios');
-                        Rec.SetCurrentKey(Scenario, "Attachment Name");
+                        Rec.SetCurrentKey(Scenario);
                     end;
                 end;
             }
@@ -157,7 +154,7 @@ page 8897 "Email Scenario Attach Setup"
                     if Confirm(DeleteQst) then begin
                         CurrPage.SetSelectionFilter(Rec);
                         EmailScenarioAttachmentsImpl.DeleteScenarioAttachments(Rec, EmailScenarioAttachments);
-                        EmailScenarioAttachmentsImpl.GetEmailAttachmentsByEmailScenarios(Rec, CurrentEmailScenario);
+                        EmailScenarioAttachmentsImpl.GetEmailAttachmentsByEmailScenarios(Rec, EmailScenario);
                     end
                 end;
             }
@@ -172,9 +169,9 @@ page 8897 "Email Scenario Attach Setup"
         FeatureTelemetry.LogUptake('0000I8W', 'Email Default Attachments', Enum::"Feature Uptake Status"::Discovered);
 
         IsUserEmailAdmin := EmailAccountImpl.IsUserEmailAdmin();
-        EmailScenarioAttachmentsImpl.GetEmailAttachmentsByEmailScenarios(Rec, CurrentEmailScenario);
-        if (CurrentEmailScenario = 0) then
-            Rec.SetCurrentKey(Scenario, "Email Attachment");
+        EmailScenarioAttachmentsImpl.GetEmailAttachmentsByEmailScenarios(Rec, EmailScenario);
+        if (EmailScenario = 0) then
+            Rec.SetCurrentKey(Scenario);
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -184,21 +181,21 @@ page 8897 "Email Scenario Attach Setup"
 
     internal procedure SetEmailScenario(CurrentScenario: Integer)
     begin
-        CurrentEmailScenario := CurrentScenario;
+        EmailScenario := CurrentScenario;
         SetIsVisible();
     end;
 
     local procedure SetIsVisible()
     begin
-        if CurrentEmailScenario = 0 then
-            IsVisible := false;
-        IsVisible := true;
+        if EmailScenario = 0 then
+            IsVisbile := false;
+        IsVisbile := true;
     end;
 
     var
         EmailScenarioAttachmentsImpl: Codeunit "Email Scenario Attach Impl.";
-        CurrentEmailScenario: Integer;
-        IsVisible: Boolean;
+        EmailScenario: Integer;
+        IsVisbile: Boolean;
         DownloadActionEnabled: Boolean;
         IsUserEmailAdmin: Boolean;
         DeleteQst: Label 'Go ahead and delete?';

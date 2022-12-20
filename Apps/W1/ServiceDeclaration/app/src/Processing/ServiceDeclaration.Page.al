@@ -13,12 +13,6 @@ page 5023 "Service Declaration"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code of the service declaration.';
-
-                    trigger OnAssistEdit()
-                    begin
-                        if Rec.AssistEdit(xRec) then
-                            CurrPage.Update();
-                    end;
                 }
                 field("Config. Code"; Rec."Config. Code")
                 {

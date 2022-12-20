@@ -23,21 +23,14 @@ codeunit 3907 "Retention Policy Installer"
     end;
 
     procedure AddAllowedTables()
-    begin
-        AddAllowedTables(false);
-    end;
-
-    procedure AddAllowedTables(ForceUpdate: Boolean)
     var
         RetentionPolicyLogEntry: Record "Retention Policy Log Entry";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         UpgradeTag: Codeunit "Upgrade Tag";
-        IsInitialSetup: Boolean;
     begin
         // if you add a new table here, also update codeunit 3913 "System Application Logs Delete"
-        IsInitialSetup := not UpgradeTag.HasUpgradeTag(GetRetenPolLogEntryAddedUpgradeTag());
-        if not (IsInitialSetup or ForceUpdate) then
+        if UpgradeTag.HasUpgradeTag(GetRetenPolLogEntryAddedUpgradeTag()) then
             exit;
 
         if not RetenPolAllowedTables.IsAllowedTable(Database::"Retention Policy Log Entry") then
@@ -46,10 +39,9 @@ codeunit 3907 "Retention Policy Installer"
                 exit;
             end;
 
-        if IsInitialSetup then begin
-            CreateRetentionPolicySetup(Database::"Retention Policy Log Entry", CreateSixMonthRetentionPeriod());
-            UpgradeTag.SetUpgradeTag(GetRetenPolLogEntryAddedUpgradeTag());
-        end;
+        CreateRetentionPolicySetup(Database::"Retention Policy Log Entry", CreateSixMonthRetentionPeriod());
+
+        UpgradeTag.SetUpgradeTag(GetRetenPolLogEntryAddedUpgradeTag());
     end;
 
     local procedure CreateSixMonthRetentionPeriod(): Code[20]
@@ -93,12 +85,6 @@ codeunit 3907 "Retention Policy Installer"
         RetentionPolicyLogCategory: Enum "Retention Policy Log Category";
     begin
         exit(RetentionPolicyLogCategory::"Retention Policy - Setup");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", 'OnRefreshAllowedTables', '', false, false)]
-    local procedure AddAllowedTablesOnRefreshAllowedTables()
-    begin
-        AddAllowedTables(true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]

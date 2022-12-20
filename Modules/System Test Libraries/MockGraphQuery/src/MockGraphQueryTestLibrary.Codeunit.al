@@ -87,15 +87,10 @@ codeunit 132927 "MockGraphQuery Test Library"
     end;
 
     procedure AddGraphUser(UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
-    begin
-        AddGraphUser(UserId, UserGivenName, UserSurname, UserEmail, true);
-    end;
-
-    procedure AddGraphUser(UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text; AccountEnabled: Boolean)
     var
         GraphUserInfo: DotNet UserInfo;
     begin
-        CreateGraphUser(GraphUserInfo, UserId, UserGivenName, UserSurname, UserEmail, AccountEnabled);
+        CreateGraphUser(GraphUserInfo, UserId, UserGivenName, UserSurname, UserEmail);
         MockGraphQuery.AddUser(GraphUserInfo);
     end;
 
@@ -202,18 +197,13 @@ codeunit 132927 "MockGraphQuery Test Library"
 
     procedure CreateGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
     begin
-        CreateGraphUser(GraphUserInfo, UserId, UserGivenName, UserSurname, UserEmail, true);
-    end;
-
-    procedure CreateGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text; AccountEnabled: Boolean)
-    begin
         GraphUserInfo := GraphUserInfo.UserInfo();
         GraphUserInfo.ObjectId := UserId;
         GraphUserInfo.UserPrincipalName := UserEmail;
         GraphUserInfo.Mail := UserEmail;
         GraphUserInfo.GivenName := UserGivenName;
         GraphUserInfo.Surname := UserSurname;
-        GraphUserInfo.AccountEnabled := AccountEnabled;
+        GraphUserInfo.AccountEnabled := true;
         GraphUserInfo.DisplayName := StrSubstNo(UserNameTxt, UserGivenName, UserSurname);
     end;
 

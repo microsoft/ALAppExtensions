@@ -15,7 +15,6 @@ page 9061 "Plan Configuration List"
     UsageCategory = Administration;
     Extensible = false;
     Permissions = tabledata "Plan Configuration" = rimd;
-    ContextSensitiveHelpPage = 'ui-how-users-permissions#licensespermissions';
     InsertAllowed = false;
     ModifyAllowed = false;
 
