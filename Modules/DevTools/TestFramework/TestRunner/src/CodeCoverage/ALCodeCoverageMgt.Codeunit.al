@@ -148,18 +148,18 @@ codeunit 130470 "AL Code Coverage Mgt."
     procedure GetCoveCoverageMap(var CSVCodeCoverageMap: Text): Boolean
     var
         ALCodeCoverageMap: Record "AL Code Coverage Map";
-        DummyTestCodeCoverageResult: Record "Test Code Coverage Result" temporary;
+        TempDummyTestCodeCoverageResult: Record "Test Code Coverage Result" temporary;
         CCMapOutStream: OutStream;
         CCMapInstream: InStream;
     begin
         if ALCodeCoverageMap.IsEmpty() then
             exit(false);
 
-        DummyTestCodeCoverageResult."CC Result".CreateOutStream(CCMapOutStream);
+        TempDummyTestCodeCoverageResult."CC Result".CreateOutStream(CCMapOutStream);
         Xmlport.Export(Xmlport::"AL Code Coverage Map", CCMapOutStream, ALCodeCoverageMap);
-        DummyTestCodeCoverageResult.Insert();
-        DummyTestCodeCoverageResult.CalcFields("CC Result");
-        DummyTestCodeCoverageResult."CC Result".CreateInStream(CCMapInstream, TextEncoding::UTF16);
+        TempDummyTestCodeCoverageResult.Insert();
+        TempDummyTestCodeCoverageResult.CalcFields("CC Result");
+        TempDummyTestCodeCoverageResult."CC Result".CreateInStream(CCMapInstream, TextEncoding::UTF16);
 
         CCMapInstream.Read(CSVCodeCoverageMap);
         ALCodeCoverageMap.DeleteAll();

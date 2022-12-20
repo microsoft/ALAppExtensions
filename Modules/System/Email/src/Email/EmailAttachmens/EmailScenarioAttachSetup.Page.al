@@ -79,10 +79,8 @@ page 8897 "Email Scenario Attach Setup"
                     EmailScenarioAttachments: Record "Email Scenario Attachments";
                     FeatureTelemetry: Codeunit "Feature Telemetry";
                 begin
-                    FeatureTelemetry.LogUptake('0000I8U', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Set up");
                     EmailScenarioAttachmentsImpl.AddAttachment(EmailScenarioAttachments, Rec, CurrentEmailScenario);
-                    FeatureTelemetry.LogUptake('0000I8V', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Used");
-                    FeatureTelemetry.LogUsage('0000CTF', 'Email Default Attachments', 'Set up attachments for scenarios');
+                    FeatureTelemetry.LogUptake('0000I8U', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Set up");
                 end;
             }
 
@@ -108,12 +106,10 @@ page 8897 "Email Scenario Attach Setup"
                 begin
                     ScenariosForAccount.LookupMode(true);
                     if ScenariosForAccount.RunModal() = Action::LookupOK then begin
-                        FeatureTelemetry.LogUptake('0000IQR', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Set up");
                         ScenariosForAccount.GetSelectedScenarios(SelectedScenarios);
                         EmailScenarioAttachmentsImpl.AddAttachmentToScenarios(EmailScenarioAttachments, Rec, SelectedScenarios);
-                        FeatureTelemetry.LogUptake('0000IQS', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Used");
-                        FeatureTelemetry.LogUsage('0000IQT', 'Email Default Attachments', 'Set up attachments for scenarios');
                         Rec.SetCurrentKey(Scenario, "Attachment Name");
+                        FeatureTelemetry.LogUptake('0000IQR', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Set up");
                     end;
                 end;
             }
