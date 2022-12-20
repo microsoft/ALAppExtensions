@@ -5,5 +5,5 @@
     "runs-on":  "windows-latest",
     "cacheImageName":  "",
     "UsePsSession":  false,
-    "buildModes": ["Default", "CLEAN", "Translated"]
+    "buildModes": ["Default", "Clean", "Translated"]
 }
