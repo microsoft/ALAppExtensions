@@ -13,6 +13,7 @@ pageextension 41004 "Chart of Accounts Ext." extends "Chart of Accounts"
                     Image = Archive;
                     RunObject = Page "Hist. Gen. Journal Lines";
                     ToolTip = 'View all GP GL detail transactions.';
+                    Visible = GPHistGLDetailDataAvailable;
                 }
                 action("GP Accounts")
                 {
@@ -21,6 +22,7 @@ pageextension 41004 "Chart of Accounts Ext." extends "Chart of Accounts"
                     Image = Archive;
                     RunObject = Page "Hist. G/L Account List";
                     ToolTip = 'View GP GL detail by account.';
+                    Visible = GPHistAccountDataAvailable;
                 }
             }
         }
@@ -32,7 +34,7 @@ pageextension 41004 "Chart of Accounts Ext." extends "Chart of Accounts"
                 Caption = 'GP Detail Snapshot';
                 ShowAs = Standard;
                 Image = Archive;
-                Visible = GPGLDetailDataExists;
+                Visible = GPHistDataAvailable;
 
                 actionref("GP Historical Trx._Promoted"; "GP Historical Trx.")
                 {
@@ -46,12 +48,20 @@ pageextension 41004 "Chart of Accounts Ext." extends "Chart of Accounts"
 
     trigger OnOpenPage()
     var
+        HistGLAccount: Record "Hist. G/L Account";
         HistGenJournalLine: Record "Hist. Gen. Journal Line";
     begin
+        if HistGLAccount.ReadPermission() then
+            GPHistAccountDataAvailable := not HistGLAccount.IsEmpty();
+
         if HistGenJournalLine.ReadPermission() then
-            GPGLDetailDataExists := not HistGenJournalLine.IsEmpty();
+            GPHistGLDetailDataAvailable := not HistGenJournalLine.IsEmpty();
+
+        GPHistDataAvailable := (GPHistAccountDataAvailable or GPHistGLDetailDataAvailable);
     end;
 
     var
-        GPGLDetailDataExists: Boolean;
+        GPHistDataAvailable: Boolean;
+        GPHistAccountDataAvailable: Boolean;
+        GPHistGLDetailDataAvailable: Boolean;
 }

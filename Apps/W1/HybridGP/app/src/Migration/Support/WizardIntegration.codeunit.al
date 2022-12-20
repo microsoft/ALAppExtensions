@@ -78,7 +78,7 @@ codeunit 4035 "Wizard Integration"
         HelperFunctions.SetProcessesRunning(false);
 
         if GPCompanyAdditionalSettings.GetMigrateHistory() then
-            GPPopulateHistTables.ScheduleGPHistoricalSnapshotMigration();
+            ScheduleGPHistoricalSnapshotMigration();
     end;
 
     local procedure SendTelemetryForSelectedEntities(var DataMigrationEntity: Record "Data Migration Entity")
@@ -113,4 +113,48 @@ codeunit 4035 "Wizard Integration"
     begin
         exit(codeunit::"Wizard Integration");
     end;
+
+    procedure ScheduleGPHistoricalSnapshotMigration()
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        TimeoutDuration: Duration;
+        MaxAttempts: Integer;
+        QueueCategory: Code[10];
+    begin
+        TimeoutDuration := 3600000 * 60; // 60 hours
+        MaxAttempts := 1;
+        QueueCategory := HybridCloudManagement.GetJobQueueCategory();
+
+        CreateAndScheduleBackgroundJob(Codeunit::"GP Populate Hist. Tables",
+                TimeoutDuration,
+                MaxAttempts,
+                QueueCategory,
+                GPSnapshotJobDescriptionTxt);
+    end;
+
+    procedure CreateAndScheduleBackgroundJob(ObjectIdToRun: Integer; TimeoutDuration: Duration; MaxAttempts: Integer; CategoryCode: Code[10]; Description: Text[250]): Guid
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        JobQueueEntryBuffer: Record "Job Queue Entry Buffer";
+    begin
+        JobQueueEntry.Init();
+        JobQueueEntry."Object Type to Run" := JobQueueEntry."Object Type to Run"::Codeunit;
+        JobQueueEntry."Object ID to Run" := ObjectIdToRun;
+        JobQueueEntry."Maximum No. of Attempts to Run" := MaxAttempts;
+        JobQueueEntry."Job Queue Category Code" := CategoryCode;
+        JobQueueEntry.Description := Description;
+        JobQueueEntry."Job Timeout" := TimeoutDuration;
+        Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry);
+
+        JobQueueEntryBuffer.Init();
+        JobQueueEntryBuffer.TransferFields(JobQueueEntry);
+        JobQueueEntryBuffer."Job Queue Entry ID" := JobQueueEntry.SystemId;
+        JobQueueEntryBuffer."Start Date/Time" := CurrentDateTime();
+        JobQueueEntryBuffer.Insert();
+
+        exit(JobQueueEntryBuffer.SystemId);
+    end;
+
+    var
+        GPSnapshotJobDescriptionTxt: Label 'Migrate GP Historical Snapshot';
 }

@@ -4,7 +4,7 @@ table 40912 "Hist. Migration Current Status"
 
     fields
     {
-        field(1; Dummy; Code[10])
+        field(1; "Primary Key"; Code[10])
         {
             DataClassification = SystemMetadata;
         }
@@ -29,7 +29,7 @@ table 40912 "Hist. Migration Current Status"
 
     keys
     {
-        key(PK; Dummy)
+        key(PK; "Primary Key")
         {
             Clustered = true;
         }

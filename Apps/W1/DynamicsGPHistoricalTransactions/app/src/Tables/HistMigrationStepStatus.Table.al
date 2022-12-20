@@ -4,24 +4,29 @@ table 40910 "Hist. Migration Step Status"
 
     fields
     {
-        field(1; Step; enum "Hist. Migration Step Type")
+        field(1; "Primary Key"; Integer)
+        {
+            DataClassification = SystemMetadata;
+            AutoIncrement = true;
+        }
+        field(2; Step; enum "Hist. Migration Step Type")
         {
             Caption = 'Step';
             DataClassification = SystemMetadata;
             NotBlank = true;
         }
-        field(2; "Start Date"; DateTime)
+        field(3; "Start Date"; DateTime)
         {
             Caption = 'Start Date';
             DataClassification = SystemMetadata;
             NotBlank = true;
         }
-        field(3; "End Date"; DateTime)
+        field(4; "End Date"; DateTime)
         {
             Caption = 'End Date';
             DataClassification = SystemMetadata;
         }
-        field(4; Completed; Boolean)
+        field(5; Completed; Boolean)
         {
             Caption = 'Completed';
             DataClassification = SystemMetadata;
@@ -30,9 +35,13 @@ table 40910 "Hist. Migration Step Status"
 
     keys
     {
-        key(Key1; Step)
+        key(PK; "Primary Key")
         {
             Clustered = true;
+        }
+
+        key(Key2; Step)
+        {
         }
     }
 }

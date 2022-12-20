@@ -13,6 +13,7 @@ pageextension 41020 "Item List Ext." extends "Item List"
                     Image = Archive;
                     RunObject = Page "Hist. Inventory Trx. Headers";
                     ToolTip = 'View the GP inventory transactions.';
+                    Visible = GPHistDataAvailable;
                 }
             }
         }
@@ -24,7 +25,7 @@ pageextension 41020 "Item List Ext." extends "Item List"
                 Caption = 'GP Detail Snapshot';
                 ShowAs = Standard;
                 Image = Archive;
-                Visible = GPGLDetailDataExists;
+                Visible = GPHistDataAvailable;
 
                 actionref("GP Inventory Trx._Promoted"; "GP Inventory Trx.")
                 {
@@ -38,9 +39,9 @@ pageextension 41020 "Item List Ext." extends "Item List"
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
     begin
         if HistInventoryTrxHeader.ReadPermission() then
-            GPGLDetailDataExists := not HistInventoryTrxHeader.IsEmpty();
+            GPHistDataAvailable := not HistInventoryTrxHeader.IsEmpty();
     end;
 
     var
-        GPGLDetailDataExists: Boolean;
+        GPHistDataAvailable: Boolean;
 }

@@ -13,6 +13,7 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                     Image = Archive;
                     RunObject = Page "Hist. Receivables Documents";
                     ToolTip = 'View the GP receivables transactions.';
+                    Visible = GPRecvDataAvailable;
                 }
                 action("GP Sales Trx.")
                 {
@@ -21,6 +22,7 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                     Image = Archive;
                     RunObject = Page "Hist. Sales Trx. Headers";
                     ToolTip = 'View the GP sales transactions.';
+                    Visible = GPSalesTrxDataAvailable;
                 }
             }
         }
@@ -32,7 +34,7 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                 Caption = 'GP Detail Snapshot';
                 ShowAs = Standard;
                 Image = Archive;
-                Visible = GPGLDetailDataExists;
+                Visible = GPHistDataAvailable;
 
                 actionref("GP Rec. Docs_Promoted"; "GP Rec. Docs")
                 {
@@ -49,11 +51,17 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
         HistSalesTrxHeader: Record "Hist. Sales Trx. Header";
         HistReceivablesDocument: Record "Hist. Receivables Document";
     begin
-        if HistSalesTrxHeader.ReadPermission() and HistReceivablesDocument.ReadPermission() then
-            GPGLDetailDataExists := (not HistSalesTrxHeader.IsEmpty() or
-                                    not HistReceivablesDocument.IsEmpty());
+        if HistSalesTrxHeader.ReadPermission() then
+            GPSalesTrxDataAvailable := not HistSalesTrxHeader.IsEmpty();
+
+        if HistReceivablesDocument.ReadPermission() then
+            GPRecvDataAvailable := not HistReceivablesDocument.IsEmpty();
+
+        GPHistDataAvailable := (GPSalesTrxDataAvailable or GPRecvDataAvailable);
     end;
 
     var
-        GPGLDetailDataExists: Boolean;
+        GPHistDataAvailable: Boolean;
+        GPSalesTrxDataAvailable: Boolean;
+        GPRecvDataAvailable: Boolean;
 }

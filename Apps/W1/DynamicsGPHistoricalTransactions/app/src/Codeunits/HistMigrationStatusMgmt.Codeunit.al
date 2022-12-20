@@ -1,34 +1,33 @@
 codeunit 40902 "Hist. Migration Status Mgmt."
 {
-    procedure UpdateStepStatus(Step: enum "Hist. Migration Step Type"; Completed: Boolean)
+    procedure UpdateStepStatus(StepType: enum "Hist. Migration Step Type"; Completed: Boolean)
     var
         HistMigrationStepStatus: Record "Hist. Migration Step Status";
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
-        NowDate: DateTime;
     begin
-        NowDate := System.CurrentDateTime();
+        HistMigrationStepStatus.SetRange(Step, StepType);
 
         // Step status
-        if not HistMigrationStepStatus.Get(Step) then begin
-            HistMigrationStepStatus.Step := Step;
-            HistMigrationStepStatus."Start Date" := NowDate;
+        if not HistMigrationStepStatus.FindFirst() then begin
+            HistMigrationStepStatus.Step := StepType;
+            HistMigrationStepStatus."Start Date" := System.CurrentDateTime();
             HistMigrationStepStatus.Insert();
         end;
 
         if Completed then begin
-            HistMigrationStepStatus."End Date" := NowDate;
+            HistMigrationStepStatus."End Date" := System.CurrentDateTime();
             HistMigrationStepStatus.Completed := true;
             HistMigrationStepStatus.Modify();
         end;
 
         // Current status
         if not HistMigrationCurrentStatus.Get() then begin
-            HistMigrationCurrentStatus."Current Step" := Step;
+            HistMigrationCurrentStatus."Current Step" := StepType;
             HistMigrationCurrentStatus.Insert();
         end;
 
-        if HistMigrationCurrentStatus."Current Step" <> Step then begin
-            HistMigrationCurrentStatus."Current Step" := Step;
+        if HistMigrationCurrentStatus."Current Step" <> StepType then begin
+            HistMigrationCurrentStatus."Current Step" := StepType;
             HistMigrationCurrentStatus.Modify();
         end;
     end;
@@ -38,18 +37,15 @@ codeunit 40902 "Hist. Migration Status Mgmt."
         HistMigrationStepStatus: Record "Hist. Migration Step Status";
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
         StartedDate: DateTime;
-        NowDate: DateTime;
     begin
-        NowDate := System.CurrentDateTime();
-
         // Step status
         if HistMigrationStepStatus.FindFirst() then
             StartedDate := HistMigrationStepStatus."Start Date";
 
-        HistMigrationStepStatus.Init();
+        Clear(HistMigrationStepStatus);
         HistMigrationStepStatus.Step := "Hist. Migration Step Type"::Finished;
         HistMigrationStepStatus."Start Date" := StartedDate;
-        HistMigrationStepStatus."End Date" := NowDate;
+        HistMigrationStepStatus."End Date" := System.CurrentDateTime();
         HistMigrationStepStatus.Completed := true;
         HistMigrationStepStatus.Insert();
 
@@ -59,16 +55,19 @@ codeunit 40902 "Hist. Migration Status Mgmt."
         HistMigrationCurrentStatus.Modify();
     end;
 
-    procedure ReportError(Step: enum "Hist. Migration Step Type"; Reference: Text[150]; ErrorCode: Text; ErrorMsg: Text)
+    procedure ReportLastError(Step: enum "Hist. Migration Step Type"; Reference: Text[150]; ShouldClearLastError: Boolean)
     var
         HistMigrationStepError: Record "Hist. Migration Step Error";
     begin
         HistMigrationStepError.Step := Step;
         HistMigrationStepError.Reference := Reference;
-        HistMigrationStepError."Error Code" := CopyStr(ErrorCode, 1, MaxStrLen(HistMigrationStepError."Error Code"));
-        HistMigrationStepError."Error Message" := CopyStr(ErrorMsg, 1, MaxStrLen(HistMigrationStepError."Error Message"));
+        HistMigrationStepError."Error Code" := CopyStr(GetLastErrorCode(), 1, MaxStrLen(HistMigrationStepError."Error Code"));
         HistMigrationStepError."Error Date" := System.CurrentDateTime();
+        HistMigrationStepError.SetErrorMessage(GetLastErrorCallStack());
         HistMigrationStepError.Insert();
+
+        if ShouldClearLastError then
+            ClearLastError();
     end;
 
     procedure HasNotRanStep(Step: enum "Hist. Migration Step Type"): Boolean

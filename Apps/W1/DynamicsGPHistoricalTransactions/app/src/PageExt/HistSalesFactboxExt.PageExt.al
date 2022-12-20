@@ -4,20 +4,54 @@ pageextension 41021 "Hist. Sales Factbox Ext." extends "Sales Hist. Sell-to Fact
     {
         addlast(Control2)
         {
-            field(NoOfHistSalesTrxTile; Rec."No. of Hist. Sales Trx.")
+            field(NoOfHistSalesTrxTile; NumberOfHistSalesTrx)
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = All;
                 Caption = 'GP Sales transactions';
                 DrillDownPageID = "Hist. Sales Trx. Headers";
                 ToolTip = 'Specifies the number of historical sales transactions that have been posted by the customer.';
+
+                trigger OnDrillDown()
+                var
+                    HistSalesTrxHeaders: Page "Hist. Sales Trx. Headers";
+                begin
+                    HistSalesTrxHeaders.SetFilterCustomerNo(Rec."No.");
+                    HistSalesTrxHeaders.Run();
+                end;
             }
-            field(NoOfHistRecvTrxTile; Rec."No. of Hist. Recv. Trx.")
+            field(NoOfHistRecvTrxTile; NumberOfHistRecvTrx)
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = All;
                 Caption = 'GP Receivables transactions';
                 DrillDownPageID = "Hist. Receivables Documents";
                 ToolTip = 'Specifies the number of historical receivables transactions that have been posted by the customer.';
+
+                trigger OnDrillDown()
+                var
+                    HistReceivablesDocuments: Page "Hist. Receivables Documents";
+                begin
+                    HistReceivablesDocuments.SetFilterCustomerNo(Rec."No.");
+                    HistReceivablesDocuments.Run();
+                end;
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    var
+        HistSalesTrxHeader: Record "Hist. Sales Trx. Header";
+        HistReceivablesDocument: Record "Hist. Receivables Document";
+    begin
+        // Number of GP Sales Transactions
+        HistSalesTrxHeader.SetRange("Customer No.", Rec."No.");
+        NumberOfHistSalesTrx := HistSalesTrxHeader.Count();
+
+        // Number of GP Receivables Transactions
+        HistReceivablesDocument.SetRange("Customer No.", Rec."No.");
+        NumberOfHistRecvTrx := HistReceivablesDocument.Count();
+    end;
+
+    var
+        NumberOfHistSalesTrx: Integer;
+        NumberOfHistRecvTrx: Integer;
 }

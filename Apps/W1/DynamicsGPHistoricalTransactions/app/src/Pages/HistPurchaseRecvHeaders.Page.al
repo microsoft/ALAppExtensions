@@ -166,4 +166,18 @@ page 41014 "Hist. Purchase Recv. Headers"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        if FilterVendorNo <> '' then
+            Rec.SetFilter("Vendor No.", FilterVendorNo);
+    end;
+
+    procedure SetFilterVendorNo(VendorNo: Code[35])
+    begin
+        FilterVendorNo := VendorNo;
+    end;
+
+    var
+        FilterVendorNo: Code[35];
 }

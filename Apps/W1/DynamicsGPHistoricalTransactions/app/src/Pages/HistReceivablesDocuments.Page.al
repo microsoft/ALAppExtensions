@@ -171,4 +171,18 @@ page 41016 "Hist. Receivables Documents"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        if FilterCustomerNo <> '' then
+            Rec.SetFilter("Customer No.", FilterCustomerNo);
+    end;
+
+    procedure SetFilterCustomerNo(CustomerNo: Code[35])
+    begin
+        FilterCustomerNo := CustomerNo;
+    end;
+
+    var
+        FilterCustomerNo: Code[35];
 }

@@ -12,5 +12,5 @@ enum 40003 "Hist. Receivables Doc. Type"
     value(7; "Credit Memo") { Caption = 'Credit Memo'; }
     value(8; Return) { Caption = 'Return'; }
     value(9; Payment) { Caption = 'Payment'; }
-    value(99; "Unknown") { Caption = 'Unknown'; }
+    value(99; "Blank") { Caption = ''; }
 }

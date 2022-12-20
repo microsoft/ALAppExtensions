@@ -4,7 +4,7 @@ table 40911 "Hist. Migration Step Error"
 
     fields
     {
-        field(1; Id; Integer)
+        field(1; "Primary Key"; Integer)
         {
             DataClassification = SystemMetadata;
             AutoIncrement = true;
@@ -25,7 +25,7 @@ table 40911 "Hist. Migration Step Error"
             Caption = 'Error Code';
             DataClassification = SystemMetadata;
         }
-        field(5; "Error Message"; Text[2048])
+        field(5; "Error Message"; Blob)
         {
             Caption = 'Error Message';
             DataClassification = SystemMetadata;
@@ -39,9 +39,31 @@ table 40911 "Hist. Migration Step Error"
 
     keys
     {
-        key(Key1; Id)
+        key(Key1; "Primary Key")
         {
             Clustered = true;
         }
     }
+
+    procedure SetErrorMessage(ErrorMessageText: Text)
+    var
+        ErrorMessageOutStream: OutStream;
+    begin
+        Rec."Error Message".CreateOutStream(ErrorMessageOutStream);
+        ErrorMessageOutStream.WriteText(ErrorMessageText);
+    end;
+
+    procedure GetErrorMessage(): Text
+    var
+        ErrorMessageInStream: InStream;
+        ReturnText: Text;
+    begin
+        CalcFields(Rec."Error Message");
+        if Rec."Error Message".HasValue() then begin
+            Rec."Error Message".CreateInStream(ErrorMessageInStream);
+            ErrorMessageInStream.ReadText(ReturnText);
+        end;
+
+        exit(ReturnText)
+    end;
 }

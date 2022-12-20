@@ -1,3 +1,4 @@
+#if not CLEAN22
 codeunit 4033 "Install GP SmartLists"
 {
     ObsoleteState = Pending;
@@ -38,3 +39,4 @@ codeunit 4033 "Install GP SmartLists"
         ExtensionManagement.InstallExtension(PackageID, GlobalLanguage(), FALSE)
     end;
 }
+#endif

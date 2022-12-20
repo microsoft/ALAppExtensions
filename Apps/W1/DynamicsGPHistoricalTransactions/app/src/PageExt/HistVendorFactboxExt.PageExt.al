@@ -4,20 +4,52 @@ pageextension 41022 "Hist. Vendor Factbox Ext." extends "Vendor Hist. Buy-from F
     {
         addlast(Control1)
         {
-            field(NoOfHistPayablesTrxTile; Rec."No. of Hist. Payables Trx.")
+            field(NoOfHistPayablesTrxTile; NumberOfHistPayablesTrx)
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = All;
                 Caption = 'GP Payables transactions';
-                DrillDownPageID = "Hist. Payables Documents";
                 ToolTip = 'Specifies the number of historical payables transactions that have been posted by the vendor.';
+
+                trigger OnDrillDown()
+                var
+                    HistPayablesDocuments: Page "Hist. Payables Documents";
+                begin
+                    HistPayablesDocuments.SetFilterVendorNo(Rec."No.");
+                    HistPayablesDocuments.Run();
+                end;
             }
-            field(NoOfHistReceivingsTrxTile; Rec."No. of Hist. Receivings Trx.")
+            field(NoOfHistReceivingsTrxTile; NumberOfHistReceivingsTrx)
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = All;
                 Caption = 'GP Receivings transactions';
-                DrillDownPageID = "Hist. Purchase Recv. Headers";
                 ToolTip = 'Specifies the number of historical purchase receivings transactions that have been posted by the vendor.';
+
+                trigger OnDrillDown()
+                var
+                    HistPurchaseRecvHeaders: Page "Hist. Purchase Recv. Headers";
+                begin
+                    HistPurchaseRecvHeaders.SetFilterVendorNo(Rec."No.");
+                    HistPurchaseRecvHeaders.Run();
+                end;
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    var
+        HistPayablesDocument: Record "Hist. Payables Document";
+        HistPurchaseRecvHeader: Record "Hist. Purchase Recv. Header";
+    begin
+        // Number of GP Payables Transactions
+        HistPayablesDocument.SetRange("Vendor No.", Rec."No.");
+        NumberOfHistPayablesTrx := HistPayablesDocument.Count();
+
+        // Number of GP Receivings Transactions
+        HistPurchaseRecvHeader.SetRange("Vendor No.", Rec."No.");
+        NumberOfHistReceivingsTrx := HistPurchaseRecvHeader.Count();
+    end;
+
+    var
+        NumberOfHistPayablesTrx: Integer;
+        NumberOfHistReceivingsTrx: Integer;
 }

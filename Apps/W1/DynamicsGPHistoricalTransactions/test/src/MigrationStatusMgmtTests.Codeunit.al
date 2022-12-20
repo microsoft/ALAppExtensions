@@ -1,4 +1,4 @@
-codeunit 139701 "Migration Status Mgmt. Tests"
+codeunit 139700 "Migration Status Mgmt. Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
@@ -8,7 +8,6 @@ codeunit 139701 "Migration Status Mgmt. Tests"
         Assert: Codeunit Assert;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestUpdateStepStatus()
     var
         HistMigrationStepStatus: Record "Hist. Migration Step Status";
@@ -30,8 +29,8 @@ codeunit 139701 "Migration Status Mgmt. Tests"
         Assert.RecordCount(HistMigrationStepStatus, 1);
         HistMigrationStepStatus.FindFirst();
         Assert.AreEqual(TestingStepType, HistMigrationStepStatus.Step, 'Step is incorrect.');
-        Assert.IsTrue(HistMigrationStepStatus."Start Date" <> 0DT, 'Start date should not be null.');
-        Assert.IsTrue(HistMigrationStepStatus."End Date" = 0DT, 'End date should be null.');
+        Assert.AreNotEqual(0DT, HistMigrationStepStatus."Start Date", 'Start date should not be null.');
+        Assert.AreEqual(0DT, HistMigrationStepStatus."End Date", 'End date should be null.');
         Assert.IsFalse(HistMigrationStepStatus.Completed, 'Should not be completed yet.');
 
         // [WHEN] Step completed
@@ -44,8 +43,8 @@ codeunit 139701 "Migration Status Mgmt. Tests"
         Assert.RecordCount(HistMigrationStepStatus, 1);
         HistMigrationStepStatus.FindFirst();
         Assert.AreEqual(TestingStepType, HistMigrationStepStatus.Step, 'Step is incorrect.');
-        Assert.IsTrue(HistMigrationStepStatus."Start Date" <> 0DT, 'Start date should not be null.');
-        Assert.IsTrue(HistMigrationStepStatus."End Date" <> 0DT, 'End date should not be null.');
+        Assert.AreNotEqual(0DT, HistMigrationStepStatus."Start Date", 'Start date should not be null.');
+        Assert.AreNotEqual(0DT, HistMigrationStepStatus."End Date", 'End date should not be null.');
         Assert.IsTrue(HistMigrationStepStatus.Completed, 'Should be completed.');
 
         // [WHEN] Step started: GP Inventory Trx.
@@ -61,8 +60,8 @@ codeunit 139701 "Migration Status Mgmt. Tests"
         HistMigrationStepStatus.SetRange(Step, TestingStepType);
         HistMigrationStepStatus.FindFirst();
         Assert.AreEqual(TestingStepType, HistMigrationStepStatus.Step, 'Step is incorrect.');
-        Assert.IsTrue(HistMigrationStepStatus."Start Date" <> 0DT, 'Start date should not be null.');
-        Assert.IsTrue(HistMigrationStepStatus."End Date" = 0DT, 'End date should be null.');
+        Assert.AreNotEqual(0DT, HistMigrationStepStatus."Start Date", 'Start date should not be null.');
+        Assert.AreEqual(0DT, HistMigrationStepStatus."End Date", 'End date should be null.');
         Assert.IsFalse(HistMigrationStepStatus.Completed, 'Should not be completed yet.');
 
         // [WHEN] Step completed
@@ -77,8 +76,8 @@ codeunit 139701 "Migration Status Mgmt. Tests"
         HistMigrationStepStatus.SetRange(Step, TestingStepType);
         HistMigrationStepStatus.FindFirst();
         Assert.AreEqual(TestingStepType, HistMigrationStepStatus.Step, 'Step is incorrect.');
-        Assert.IsTrue(HistMigrationStepStatus."Start Date" <> 0DT, 'Start date should not be null.');
-        Assert.IsTrue(HistMigrationStepStatus."End Date" <> 0DT, 'End date should not be null.');
+        Assert.AreNotEqual(0DT, HistMigrationStepStatus."Start Date", 'Start date should not be null.');
+        Assert.AreNotEqual(0DT, HistMigrationStepStatus."End Date", 'End date should not be null.');
         Assert.IsTrue(HistMigrationStepStatus.Completed, 'Should be completed.');
 
         // [WHEN] GP Historical Transactions migration is completed
@@ -95,38 +94,18 @@ codeunit 139701 "Migration Status Mgmt. Tests"
         HistMigrationStepStatus.SetRange(Step, TestingStepType);
         HistMigrationStepStatus.FindFirst();
         Assert.AreEqual(TestingStepType, HistMigrationStepStatus.Step, 'Step is incorrect.');
-        Assert.IsTrue(HistMigrationStepStatus."Start Date" <> 0DT, 'Start date should not be null.');
-        Assert.IsTrue(HistMigrationStepStatus."End Date" <> 0DT, 'End date should not be null.');
+        Assert.AreNotEqual(0DT, HistMigrationStepStatus."Start Date", 'Start date should not be null.');
+        Assert.AreNotEqual(0DT, HistMigrationStepStatus."End Date", 'End date should not be null.');
         Assert.IsTrue(HistMigrationStepStatus.Completed, 'Should be completed.');
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestReportError()
-    var
-        HistMigrationStepError: Record "Hist. Migration Step Error";
-        HistMigrationStatusMgmt: Codeunit "Hist. Migration Status Mgmt.";
-    begin
-        // [GIVEN] The GP Historical Transactions migration has started
-
-        // [WHEN] An error is reported
-        HistMigrationStatusMgmt.ReportError("Hist. Migration Step Type"::"GP GL Accounts", '123456', 'ERROR01', 'Test error');
-
-        // [THEN] The error will be logged with the correct data
-        Assert.RecordCount(HistMigrationStepError, 1);
-        HistMigrationStepError.FindFirst();
-        Assert.AreEqual("Hist. Migration Step Type"::"GP GL Accounts", HistMigrationStepError.Step, 'Incorrect step.');
-        Assert.AreEqual('123456', HistMigrationStepError.Reference, 'Incorrect Reference');
-        Assert.AreEqual('ERROR01', HistMigrationStepError."Error Code", 'Incorrect Error Code');
-        Assert.AreEqual('Test error', HistMigrationStepError."Error Message", 'Incorrect Error Message');
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestHasNotRanStep()
     var
         HistMigrationStatusMgmt: Codeunit "Hist. Migration Status Mgmt.";
     begin
+        HistMigrationStatusMgmt.ResetAll();
+
         // [GIVEN] The GP Historical Transactions migration has started
 
         // [WHEN] The step is updated

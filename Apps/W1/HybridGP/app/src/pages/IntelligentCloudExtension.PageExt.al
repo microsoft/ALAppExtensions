@@ -24,7 +24,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             action(ConfigureGPMigration)
             {
                 Enabled = HasCompletedSetupWizard;
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = All;
                 Caption = 'Configure GP Migration';
                 ToolTip = 'Configure migration settings for GP.';
                 Promoted = true;
@@ -44,7 +44,8 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
 
             action(ReRunHistoricalMigration)
             {
-                ApplicationArea = Basic, Suite;
+                Enabled = HasCompletedSetupWizard;
+                ApplicationArea = All;
                 Caption = 'Rerun GP Detail Snapshot';
                 ToolTip = 'Rerun the migration of GP historical transactions based on your company settings.';
                 Image = Process;
@@ -53,7 +54,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 var
                     GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
                     HistMigrationStatusMgmt: Codeunit "Hist. Migration Status Mgmt.";
-                    GPPopulateHistTables: Codeunit "GP Populate Hist. Tables";
+                    WizardIntegration: Codeunit "Wizard Integration";
                 begin
                     if not GPCompanyAdditionalSettings.GetMigrateHistory() then begin
                         Message(DetailSnapshotNotConfiguredMsg);
@@ -64,7 +65,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                             if Confirm(RerunAllQst) then
                                 HistMigrationStatusMgmt.ResetAll();
 
-                        GPPopulateHistTables.ScheduleGPHistoricalSnapshotMigration();
+                        WizardIntegration.ScheduleGPHistoricalSnapshotMigration();
                         Message(SnapshotJobRunningMsg);
                     end;
                 end;

@@ -186,6 +186,9 @@ page 41017 "Hist. Payables Documents"
     begin
         if FilterAuditCode <> '' then
             Rec.SetFilter("Audit Code", FilterAuditCode);
+
+        if FilterVendorNo <> '' then
+            Rec.SetFilter("Vendor No.", FilterVendorNo);
     end;
 
     procedure SetFilterAuditCode(AuditCode: Code[35])
@@ -193,6 +196,12 @@ page 41017 "Hist. Payables Documents"
         FilterAuditCode := AuditCode;
     end;
 
+    procedure SetFilterVendorNo(VendorNo: Code[35])
+    begin
+        FilterVendorNo := VendorNo;
+    end;
+
     var
         FilterAuditCode: Code[35];
+        FilterVendorNo: Code[35];
 }

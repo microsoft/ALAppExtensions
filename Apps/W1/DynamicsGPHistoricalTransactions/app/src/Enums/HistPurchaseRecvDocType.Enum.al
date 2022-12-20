@@ -2,7 +2,7 @@ enum 40006 "Hist. Purchase Recv. Doc. Type"
 {
     Extensible = true;
 
-    value(0; "Unknown") { Caption = 'Unknown'; }
+    value(0; "Blank") { Caption = ''; }
     value(1; Shipment) { Caption = 'Shipment'; }
     value(2; Invoice) { Caption = 'Invoice'; }
     value(3; "Shipment/Invoice") { Caption = 'Shipment/Invoice'; }

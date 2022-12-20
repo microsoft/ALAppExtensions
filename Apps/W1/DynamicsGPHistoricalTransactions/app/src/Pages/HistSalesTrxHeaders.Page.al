@@ -181,4 +181,18 @@ page 41002 "Hist. Sales Trx. Headers"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        if FilterCustomerNo <> '' then
+            Rec.SetFilter("Customer No.", FilterCustomerNo);
+    end;
+
+    procedure SetFilterCustomerNo(CustomerNo: Code[35])
+    begin
+        FilterCustomerNo := CustomerNo;
+    end;
+
+    var
+        FilterCustomerNo: Code[35];
 }

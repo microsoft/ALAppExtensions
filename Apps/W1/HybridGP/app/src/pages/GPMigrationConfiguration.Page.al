@@ -16,27 +16,32 @@ page 4050 "GP Migration Configuration"
         {
             label(DescriptionHeader)
             {
+                ApplicationArea = All;
                 Caption = 'Description';
                 Style = Strong;
             }
             label(Intro)
             {
+                ApplicationArea = All;
                 Caption = 'Use this page to configure the migration for all companies, and/or use the bottom table to configure for individual companies.';
             }
 
             label(DimensionHeader)
             {
+                ApplicationArea = All;
                 Caption = 'GP Segments and BC Dimensions';
                 Style = Strong;
             }
 
             label(DimensionActionIntro)
             {
+                ApplicationArea = All;
                 Caption = 'Use the Set All Dimensions button above to quickly assign dimensions for all companies, or the Per Company section below to set the dimensions on individual companies.';
             }
 
             label(SegmentExplanation)
             {
+                ApplicationArea = All;
                 Caption = 'When setting dimensions, you will select the two segments from Dynamics GP you would like as the global dimensions. The remaining segments will automatically be set up as shortcut dimensions.';
             }
 
@@ -49,75 +54,75 @@ page 4050 "GP Migration Configuration"
                 {
                     Caption = 'Bank';
                     ToolTip = 'Specifies whether to migrate the Bank module.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Payables Module"; Rec."Migrate Payables Module")
                 {
                     Caption = 'Payables';
                     ToolTip = 'Specifies whether to migrate the Payables module.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Receivables Module"; Rec."Migrate Receivables Module")
                 {
                     Caption = 'Receivables';
                     ToolTip = 'Specifies whether to migrate the Receivables module.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Open POs"; Rec."Migrate Open POs")
                 {
                     Caption = 'Open Purchase Orders';
                     ToolTip = 'Specifies whether to migrate the open Purchase Orders.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Open POs", Rec."Migrate Open POs");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Open POs", Rec."Migrate Open POs");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Inventory Module"; Rec."Migrate Inventory Module")
                 {
                     Caption = 'Inventory';
                     ToolTip = 'Specifies whether to migrate the Inventory module.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
             }
@@ -131,75 +136,75 @@ page 4050 "GP Migration Configuration"
                 {
                     Caption = 'General Ledger';
                     ToolTip = 'Specifies whether to migrate GL master data only.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Only GL Master", Rec."Migrate Only GL Master");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Only GL Master", Rec."Migrate Only GL Master");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Only Bank Master"; Rec."Migrate Only Bank Master")
                 {
                     Caption = 'Bank';
                     ToolTip = 'Specifies whether to migrate Bank master data only.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Only Bank Master", Rec."Migrate Only Bank Master");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Only Bank Master", Rec."Migrate Only Bank Master");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Only Payables Master"; Rec."Migrate Only Payables Master")
                 {
                     Caption = 'Payables';
                     ToolTip = 'Specifies whether to migrate Payables master data only.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", Rec."Migrate Only Payables Master");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", Rec."Migrate Only Payables Master");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Only Rec. Master"; Rec."Migrate Only Rec. Master")
                 {
                     Caption = 'Receivables';
                     ToolTip = 'Specifies whether to migrate Receivables master data only.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Only Rec. Master", Rec."Migrate Only Rec. Master");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Only Rec. Master", Rec."Migrate Only Rec. Master");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Only Inventory Master"; Rec."Migrate Only Inventory Master")
                 {
                     Caption = 'Inventory';
                     ToolTip = 'Specifies whether to migrate Inventory master data only.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Only Inventory Master", Rec."Migrate Only Inventory Master");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Only Inventory Master", Rec."Migrate Only Inventory Master");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
             }
@@ -213,45 +218,45 @@ page 4050 "GP Migration Configuration"
                 {
                     Caption = 'Inactive Customers';
                     ToolTip = 'Specifies whether to migrate inactive customers.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Inactive Vendors"; Rec."Migrate Inactive Vendors")
                 {
                     Caption = 'Inactive Vendors';
                     ToolTip = 'Specifies whether to migrate inactive vendors.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Inactive Checkbooks"; Rec."Migrate Inactive Checkbooks")
                 {
                     Caption = 'Inactive Checkbooks';
                     ToolTip = 'Specifies whether to migrate inactive checkbooks.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
 
@@ -259,15 +264,15 @@ page 4050 "GP Migration Configuration"
                 {
                     Caption = 'Inactive Items';
                     ToolTip = 'Specifies whether to migrate inactive items.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", Rec."Migrate Inactive Items");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", Rec."Migrate Inactive Items");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
 
@@ -275,15 +280,15 @@ page 4050 "GP Migration Configuration"
                 {
                     Caption = 'Discontinued Items';
                     ToolTip = 'Specifies whether to migrate discontinued items.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", Rec."Migrate Discontinued Items");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", Rec."Migrate Discontinued Items");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
             }
@@ -297,45 +302,45 @@ page 4050 "GP Migration Configuration"
                 {
                     Caption = 'Customer Classes';
                     ToolTip = 'Specifies whether to migrate customer classes.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Vendor Classes"; Rec."Migrate Vendor Classes")
                 {
                     Caption = 'Vendor Classes';
                     ToolTip = 'Specifies whether to migrate vendor classes.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
                 field("Migrate Item Classes"; Rec."Migrate Item Classes")
                 {
                     Caption = 'Item Classes';
                     ToolTip = 'Specifies whether to migrate item classes.';
+                    ApplicationArea = All;
 
                     trigger OnValidate()
                     begin
-                        PrepSettingsForFieldUpdate();
-
-                        repeat
-                            GPCompanyAdditionalSettings.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
-                            GPCompanyAdditionalSettings.Modify();
-                        until GPCompanyAdditionalSettings.Next() = 0;
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
             }
@@ -353,25 +358,26 @@ page 4050 "GP Migration Configuration"
                     {
                         Caption = 'Enable/Disable All Transactions';
                         ToolTip = 'Specifies whether to migrate historical transactions.';
+                        ApplicationArea = All;
 
                         trigger OnValidate()
                         begin
-                            PrepSettingsForFieldUpdate();
+                            if PrepSettingsForFieldUpdate() then begin
+                                Rec.Validate("Migrate Hist. GL Trx.", EnableDisableAllHistTrx);
+                                Rec.Validate("Migrate Hist. AR Trx.", EnableDisableAllHistTrx);
+                                Rec.Validate("Migrate Hist. AP Trx.", EnableDisableAllHistTrx);
+                                Rec.Validate("Migrate Hist. Inv. Trx.", EnableDisableAllHistTrx);
+                                Rec.Validate("Migrate Hist. Purch. Trx.", EnableDisableAllHistTrx);
 
-                            Rec.Validate("Migrate Hist. GL Trx.", EnableDisableAllHistTrx);
-                            Rec.Validate("Migrate Hist. AR Trx.", EnableDisableAllHistTrx);
-                            Rec.Validate("Migrate Hist. AP Trx.", EnableDisableAllHistTrx);
-                            Rec.Validate("Migrate Hist. Inv. Trx.", EnableDisableAllHistTrx);
-                            Rec.Validate("Migrate Hist. Purch. Trx.", EnableDisableAllHistTrx);
-
-                            repeat
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. GL Trx.", EnableDisableAllHistTrx);
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. AR Trx.", EnableDisableAllHistTrx);
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. AP Trx.", EnableDisableAllHistTrx);
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. Inv. Trx.", EnableDisableAllHistTrx);
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. Purch. Trx.", EnableDisableAllHistTrx);
-                                GPCompanyAdditionalSettings.Modify();
-                            until GPCompanyAdditionalSettings.Next() = 0;
+                                repeat
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. GL Trx.", EnableDisableAllHistTrx);
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. AR Trx.", EnableDisableAllHistTrx);
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. AP Trx.", EnableDisableAllHistTrx);
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. Inv. Trx.", EnableDisableAllHistTrx);
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. Purch. Trx.", EnableDisableAllHistTrx);
+                                    GPCompanyAdditionalSettings.Modify();
+                                until GPCompanyAdditionalSettings.Next() = 0;
+                            end;
                         end;
                     }
                 }
@@ -384,75 +390,75 @@ page 4050 "GP Migration Configuration"
                     {
                         Caption = 'GL Transactions';
                         ToolTip = 'Specifies whether to migrate Historical GL transactions.';
+                        ApplicationArea = All;
 
                         trigger OnValidate()
                         begin
-                            PrepSettingsForFieldUpdate();
-
-                            repeat
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. GL Trx.", Rec."Migrate Hist. GL Trx.");
-                                GPCompanyAdditionalSettings.Modify();
-                            until GPCompanyAdditionalSettings.Next() = 0;
+                            if PrepSettingsForFieldUpdate() then
+                                repeat
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. GL Trx.", Rec."Migrate Hist. GL Trx.");
+                                    GPCompanyAdditionalSettings.Modify();
+                                until GPCompanyAdditionalSettings.Next() = 0;
                         end;
                     }
                     field("Migrate Hist. AR Trx."; Rec."Migrate Hist. AR Trx.")
                     {
                         Caption = 'AR Transactions';
                         ToolTip = 'Specifies whether to migrate Historical AR transactions.';
+                        ApplicationArea = All;
 
                         trigger OnValidate()
                         begin
-                            PrepSettingsForFieldUpdate();
-
-                            repeat
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. AR Trx.", Rec."Migrate Hist. AR Trx.");
-                                GPCompanyAdditionalSettings.Modify();
-                            until GPCompanyAdditionalSettings.Next() = 0;
+                            if PrepSettingsForFieldUpdate() then
+                                repeat
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. AR Trx.", Rec."Migrate Hist. AR Trx.");
+                                    GPCompanyAdditionalSettings.Modify();
+                                until GPCompanyAdditionalSettings.Next() = 0;
                         end;
                     }
                     field("Migrate Hist. AP Trx."; Rec."Migrate Hist. AP Trx.")
                     {
                         Caption = 'AP Transactions';
                         ToolTip = 'Specifies whether to migrate Historical AP transactions.';
+                        ApplicationArea = All;
 
                         trigger OnValidate()
                         begin
-                            PrepSettingsForFieldUpdate();
-
-                            repeat
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. AP Trx.", Rec."Migrate Hist. AP Trx.");
-                                GPCompanyAdditionalSettings.Modify();
-                            until GPCompanyAdditionalSettings.Next() = 0;
+                            if PrepSettingsForFieldUpdate() then
+                                repeat
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. AP Trx.", Rec."Migrate Hist. AP Trx.");
+                                    GPCompanyAdditionalSettings.Modify();
+                                until GPCompanyAdditionalSettings.Next() = 0;
                         end;
                     }
                     field("Migrate Hist. Inv. Trx."; Rec."Migrate Hist. Inv. Trx.")
                     {
                         Caption = 'Inventory Transactions';
                         ToolTip = 'Specifies whether to migrate Historical Inv. transactions.';
+                        ApplicationArea = All;
 
                         trigger OnValidate()
                         begin
-                            PrepSettingsForFieldUpdate();
-
-                            repeat
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. Inv. Trx.", Rec."Migrate Hist. Inv. Trx.");
-                                GPCompanyAdditionalSettings.Modify();
-                            until GPCompanyAdditionalSettings.Next() = 0;
+                            if PrepSettingsForFieldUpdate() then
+                                repeat
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. Inv. Trx.", Rec."Migrate Hist. Inv. Trx.");
+                                    GPCompanyAdditionalSettings.Modify();
+                                until GPCompanyAdditionalSettings.Next() = 0;
                         end;
                     }
                     field("Migrate Hist. Purch. Trx."; Rec."Migrate Hist. Purch. Trx.")
                     {
                         Caption = 'PO Receipt Transactions';
                         ToolTip = 'Specifies whether to migrate Historical PO transactions.';
+                        ApplicationArea = All;
 
                         trigger OnValidate()
                         begin
-                            PrepSettingsForFieldUpdate();
-
-                            repeat
-                                GPCompanyAdditionalSettings.Validate("Migrate Hist. Purch. Trx.", Rec."Migrate Hist. Purch. Trx.");
-                                GPCompanyAdditionalSettings.Modify();
-                            until GPCompanyAdditionalSettings.Next() = 0;
+                            if PrepSettingsForFieldUpdate() then
+                                repeat
+                                    GPCompanyAdditionalSettings.Validate("Migrate Hist. Purch. Trx.", Rec."Migrate Hist. Purch. Trx.");
+                                    GPCompanyAdditionalSettings.Modify();
+                                until GPCompanyAdditionalSettings.Next() = 0;
                         end;
                     }
                 }
@@ -479,7 +485,7 @@ page 4050 "GP Migration Configuration"
         {
             action(ResetAllAction)
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = All;
                 Caption = 'Reset Defaults';
                 ToolTip = 'Reset all companies to the default settings.';
                 Promoted = true;
@@ -496,7 +502,7 @@ page 4050 "GP Migration Configuration"
 
             action(SetDimensions)
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = All;
                 Caption = 'Set All Dimensions';
                 ToolTip = 'Attempt to set the Dimensions for all Companies.';
                 Promoted = true;
@@ -594,10 +600,10 @@ page 4050 "GP Migration Configuration"
         CurrPage.Update();
     end;
 
-    local procedure PrepSettingsForFieldUpdate()
+    local procedure PrepSettingsForFieldUpdate(): Boolean
     begin
         GPCompanyAdditionalSettings.SetFilter("Name", '<>%1', '');
-        GPCompanyAdditionalSettings.FindSet();
+        exit(GPCompanyAdditionalSettings.FindSet());
     end;
 
     local procedure DeleteCurrentSettings()

@@ -1,10 +1,10 @@
 {
   "id": "b199fc6d-1967-40c7-8d1c-ecdfa54009ed",
-  "name": "Dynamics GP Historical Transactions Tests",
+  "name": "Dynamics GP to BC Companion Tests",
   "publisher": "Microsoft",
   "version": "21.3.0.0",
-  "brief": "Tests for the Dynamics GP Historical Transactions extension.",
-  "description": "Tests for the Dynamics GP Historical Transactions extension.",
+  "brief": "Tests for the Dynamics GP to BC Companion extension.",
+  "description": "Tests for the Dynamics GP to BC Companion extension.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2005800",
@@ -14,7 +14,7 @@
   "dependencies": [
     {
       "id": "7c7d97ca-3598-40f5-b263-f713f49bd2a5",
-      "name": "Dynamics GP Historical Transactions",
+      "name": "Dynamics GP to BC Companion",
       "publisher": "Microsoft",
       "version": "21.3.0.0"
     },
