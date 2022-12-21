@@ -8,8 +8,6 @@ page 41003 "Hist. Sales Trx. Lines"
     LinksAllowed = false;
     ModifyAllowed = false;
     SourceTable = "Hist. Sales Trx. Line";
-    SourceTableView = sorting("Sales Header No.", "Line Item Sequence No.", "Component Sequence")
-        order(ascending);
 
     layout
     {

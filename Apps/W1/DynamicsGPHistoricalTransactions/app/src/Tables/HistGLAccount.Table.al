@@ -4,12 +4,17 @@ table 40900 "Hist. G/L Account"
 
     fields
     {
-        field(1; "No."; Code[130])
+        field(1; "Primary Key"; Integer)
+        {
+            Caption = 'Primary Key';
+            AutoIncrement = true;
+        }
+        field(2; "No."; Code[130])
         {
             Caption = 'No.';
             NotBlank = true;
         }
-        field(2; Name; Text[100])
+        field(3; Name; Text[100])
         {
             Caption = 'Name';
         }
@@ -17,12 +22,13 @@ table 40900 "Hist. G/L Account"
 
     keys
     {
-        key(Key1; "No.")
+        key(PK; "Primary Key")
         {
             Clustered = true;
         }
-        key(Key2; "Name")
+        key(Key2; "No.")
         {
+            IncludedFields = "Name";
         }
     }
 }

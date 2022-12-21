@@ -4,9 +4,10 @@ table 40901 "Hist. Gen. Journal Line"
 
     fields
     {
-        field(1; "No."; Code[35])
+        field(1; "Primary Key"; Integer)
         {
-            NotBlank = true;
+            Caption = 'Primary Key';
+            AutoIncrement = true;
         }
         field(2; "Journal Entry No."; Code[35])
         {
@@ -127,21 +128,13 @@ table 40901 "Hist. Gen. Journal Line"
 
     keys
     {
-        key(Key1; "No.")
+        key(PK; "Primary Key")
         {
             Clustered = true;
         }
-        key(Key2; "Journal Entry No.", "Source Type", "Account No.", "Sequence No.", Closed)
+        key(Key2; "Account No.", "Year", Closed)
         {
-        }
-        key(Key3; "Account No.", "Year", Closed)
-        {
-        }
-        key(Key4; "Year", "Account No.", "Journal Entry No.", "Sequence No.")
-        {
-        }
-        key(Key5; "Audit Code")
-        {
+            IncludedFields = "Source Type", "Journal Entry No.", "Audit Code";
         }
     }
 }

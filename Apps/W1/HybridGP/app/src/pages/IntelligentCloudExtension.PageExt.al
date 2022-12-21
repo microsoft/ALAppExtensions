@@ -53,17 +53,19 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 trigger OnAction()
                 var
                     GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-                    HistMigrationStatusMgmt: Codeunit "Hist. Migration Status Mgmt.";
+                    HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
+                    HistMigrationStepStatus: Record "Hist. Migration Step Status";
                     WizardIntegration: Codeunit "Wizard Integration";
                 begin
                     if not GPCompanyAdditionalSettings.GetMigrateHistory() then begin
                         Message(DetailSnapshotNotConfiguredMsg);
                         exit;
                     end;
+
                     if Confirm(ConfirmRerunQst) then begin
-                        if not (HistMigrationStatusMgmt.GetCurrentStatus() = "Hist. Migration Step Type"::"Not Started") then
+                        if not HistMigrationStepStatus.IsEmpty() then
                             if Confirm(RerunAllQst) then
-                                HistMigrationStatusMgmt.ResetAll();
+                                HistMigrationCurrentStatus.SetDeleteAllOnNextRun(true);
 
                         WizardIntegration.ScheduleGPHistoricalSnapshotMigration();
                         Message(SnapshotJobRunningMsg);

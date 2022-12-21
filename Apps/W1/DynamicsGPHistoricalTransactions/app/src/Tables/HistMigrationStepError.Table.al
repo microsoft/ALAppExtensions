@@ -39,7 +39,7 @@ table 40911 "Hist. Migration Step Error"
 
     keys
     {
-        key(Key1; "Primary Key")
+        key(PK; "Primary Key")
         {
             Clustered = true;
         }

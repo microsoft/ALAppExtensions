@@ -6,7 +6,7 @@ table 40912 "Hist. Migration Current Status"
     {
         field(1; "Primary Key"; Code[10])
         {
-            DataClassification = SystemMetadata;
+            Caption = 'Primary Key';
         }
         field(2; "Current Step"; enum "Hist. Migration Step Type")
         {
@@ -25,6 +25,10 @@ table 40912 "Hist. Migration Current Status"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(5; "Delete All On Next Run"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys
@@ -34,4 +38,38 @@ table 40912 "Hist. Migration Current Status"
             Clustered = true;
         }
     }
+
+    procedure EnsureInit()
+    begin
+        if not Rec.Get() then begin
+            Rec."Current Step" := "Hist. Migration Step Type"::"Not Started";
+            Rec.Insert();
+        end;
+    end;
+
+    procedure GetCurrentStep(): enum "Hist. Migration Step Type"
+    begin
+        EnsureInit();
+        exit(Rec."Current Step");
+    end;
+
+    procedure SetCurrentStep(Step: enum "Hist. Migration Step Type")
+    begin
+        EnsureInit();
+        Rec."Current Step" := Step;
+        Rec.Modify();
+    end;
+
+    procedure GetDeleteAllOnNextRun(): Boolean
+    begin
+        EnsureInit();
+        exit(Rec."Delete All On Next Run");
+    end;
+
+    procedure SetDeleteAllOnNextRun(DeleteOnNextRun: Boolean)
+    begin
+        EnsureInit();
+        Rec."Delete All On Next Run" := DeleteOnNextRun;
+        Rec.Modify();
+    end;
 }

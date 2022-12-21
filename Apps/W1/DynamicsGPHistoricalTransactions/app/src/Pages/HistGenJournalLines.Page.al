@@ -11,8 +11,6 @@ page 41001 "Hist. Gen. Journal Lines"
     SourceTable = "Hist. Gen. Journal Line";
     UsageCategory = History;
     MultipleNewLines = false;
-    SourceTableView = sorting("Year", "Account No.", "Journal Entry No.", "Sequence No.")
-                      order(ascending);
 
     layout
     {

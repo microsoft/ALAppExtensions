@@ -8,8 +8,6 @@ page 41011 "Hist. Inventory Trx. Lines"
     LinksAllowed = false;
     ModifyAllowed = false;
     SourceTable = "Hist. Inventory Trx. Line";
-    SourceTableView = sorting("Audit Code", "Line Item Sequence")
-        order(ascending);
 
     layout
     {

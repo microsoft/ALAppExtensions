@@ -8,8 +8,6 @@ page 41015 "Hist. Purchase Recv. Lines"
     LinksAllowed = false;
     ModifyAllowed = false;
     SourceTable = "Hist. Purchase Recv. Line";
-    SourceTableView = sorting("Receipt No.", "Line No.")
-        order(ascending);
 
     layout
     {

@@ -4,136 +4,141 @@ table 40905 "Hist. Payables Document"
 
     fields
     {
-        field(1; "Voucher No."; Code[35])
+        field(1; "Primary Key"; Integer)
+        {
+            Caption = 'Primary Key';
+            AutoIncrement = true;
+        }
+        field(2; "Voucher No."; Code[35])
         {
             Caption = 'Voucher No.';
             NotBlank = true;
         }
-        field(2; "Vendor No."; Code[35])
+        field(3; "Vendor No."; Code[35])
         {
             Caption = 'Vendor No.';
             NotBlank = true;
         }
-        field(3; "Vendor Name"; Text[100])
+        field(4; "Vendor Name"; Text[100])
         {
             Caption = 'Vendor Name';
         }
-        field(4; "Document Type"; enum "Hist. Payables Doc. Type")
+        field(5; "Document Type"; enum "Hist. Payables Doc. Type")
         {
             Caption = 'Document Type';
             NotBlank = true;
         }
-        field(5; "Document No."; Code[35])
+        field(6; "Document No."; Code[35])
         {
             Caption = 'Document No.';
             NotBlank = true;
         }
-        field(6; "Document Date"; Date)
+        field(7; "Document Date"; Date)
         {
             Caption = 'Document Date';
         }
-        field(7; "Document Amount"; Decimal)
+        field(8; "Document Amount"; Decimal)
         {
             Caption = 'Document Amount';
         }
-        field(8; "Currency Code"; Code[10])
+        field(9; "Currency Code"; Code[10])
         {
             Caption = 'Currency';
         }
-        field(9; "Current Trx. Amount"; Decimal)
+        field(10; "Current Trx. Amount"; Decimal)
         {
             Caption = 'Current Trx. Amount';
         }
-        field(10; "Disc. Taken Amount"; Decimal)
+        field(11; "Disc. Taken Amount"; Decimal)
         {
             Caption = 'Disc. Taken Amount';
         }
-        field(11; "Batch No."; Code[35])
+        field(12; "Batch No."; Code[35])
         {
             Caption = 'Batch No.';
         }
-        field(12; "Batch Source"; Text[50])
+        field(13; "Batch Source"; Text[50])
         {
             Caption = 'Batch Source';
         }
-        field(13; "Due Date"; Date)
+        field(14; "Due Date"; Date)
         {
             Caption = 'Due Date';
         }
-        field(14; "Purchase No."; Code[35])
+        field(15; "Purchase No."; Code[35])
         {
             Caption = 'Purchase No.';
         }
-        field(15; "Audit Code"; Code[35])
+        field(16; "Audit Code"; Code[35])
         {
             Caption = 'Audit Code';
         }
-        field(16; "Trx. Description"; Text[50])
+        field(17; "Trx. Description"; Text[50])
         {
             Caption = 'Trx. Description';
         }
-        field(17; "Post Date"; Date)
+        field(18; "Post Date"; Date)
         {
             Caption = 'Post Date';
         }
-        field(18; User; Text[50])
+        field(19; User; Text[50])
         {
             Caption = 'User';
         }
-        field(19; "Misc. Amount"; Decimal)
+        field(20; "Misc. Amount"; Decimal)
         {
             Caption = 'Misc. Amount';
         }
-        field(20; "Freight Amount"; Decimal)
+        field(21; "Freight Amount"; Decimal)
         {
             Caption = 'Freight Amount';
         }
-        field(21; "Tax Amount"; Decimal)
+        field(22; "Tax Amount"; Decimal)
         {
             Caption = 'Tax Amount';
         }
-        field(22; "Total Payments"; Decimal)
+        field(23; "Total Payments"; Decimal)
         {
             Caption = 'Total Payments';
         }
-        field(23; Voided; Boolean)
+        field(24; Voided; Boolean)
         {
             Caption = 'Voided';
             InitValue = false;
         }
-        field(24; "Invoice Paid Off Date"; Date)
+        field(25; "Invoice Paid Off Date"; Date)
         {
             Caption = 'Invoice Paid Off Date';
         }
-        field(25; "Ship Method"; Text[50])
+        field(26; "Ship Method"; Text[50])
         {
             Caption = 'Ship Method';
         }
-        field(26; "1099 Amount"; Decimal)
+        field(27; "1099 Amount"; Decimal)
         {
             Caption = '1099 Amount';
         }
-        field(27; "Write Off Amount"; Decimal)
+        field(28; "Write Off Amount"; Decimal)
         {
             Caption = 'Write Off Amount';
         }
-        field(28; "Trade Discount Amount"; Decimal)
+        field(29; "Trade Discount Amount"; Decimal)
         {
             Caption = 'Trade Discount Amount';
         }
-        field(29; "Payment Terms ID"; Text[50])
+        field(30; "Payment Terms ID"; Text[50])
         {
             Caption = 'Payment Terms ID';
         }
-        field(30; "1099 Type"; Text[50])
+        field(31; "1099 Type"; Text[50])
         {
             Caption = '1099 Type';
         }
-        field(31; "1099 Box Number"; Text[50])
+        field(32; "1099 Box Number"; Text[50])
         {
             Caption = '1099 Box Number';
         }
-        field(32; "PO Number"; Code[35])
+        field(33; "PO Number"; Code[35])
         {
             Caption = 'PO Number';
         }
@@ -141,15 +146,13 @@ table 40905 "Hist. Payables Document"
 
     keys
     {
-        key(Key1; "Voucher No.", "Document Type", "Document No.")
+        key(PK; "Primary Key")
         {
             Clustered = true;
         }
-        key(Key2; "Audit Code")
+        key(Key2; "Voucher No.", "Document Type", "Document No.")
         {
-        }
-        key(Key3; "Vendor No.")
-        {
+            IncludedFields = "Audit Code", "Vendor No.";
         }
     }
 }

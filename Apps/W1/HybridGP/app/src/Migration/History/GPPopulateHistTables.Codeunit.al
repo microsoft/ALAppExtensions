@@ -9,6 +9,7 @@ codeunit 40900 "GP Populate Hist. Tables"
     trigger OnRun()
     begin
         CommitAfterXRecordCount := 1000;
+        HistMigrationStatusMgmt.PrepareHistoryMigration();
         PopulateHistoricalTables();
     end;
 
@@ -60,7 +61,10 @@ codeunit 40900 "GP Populate Hist. Tables"
             repeat
                 Clear(HistGLAccount);
                 if GPGL00100.Get(GPGL00105.ACTINDX) then begin
-                    HistGLAccount."No." := CopyStr(Format(GPGL00105.ACTNUMST), 1, MaxStrLen(HistGLAccount."No."));
+
+#pragma warning disable AA0139
+                    HistGLAccount."No." := GPGL00105.ACTNUMST.TrimEnd();
+#pragma warning restore AA0139
                     HistGLAccount.Name := GPGL00100.ACTDESCR;
 
                     if not HistGLAccount.Insert() then
@@ -87,8 +91,6 @@ codeunit 40900 "GP Populate Hist. Tables"
             repeat
                 if GPGL00105.Get(GPGL20000.ACTINDX) then begin
                     Clear(HistGenJournalLine);
-
-                    HistGenJournalLine."No." := 'OpenYear-' + Format(GPGL20000.DEX_ROW_ID);
 
 #pragma warning disable AA0139
                     HistGenJournalLine."Source Type" := ConvertSeriesToSourceType(GPGL20000.SERIES, GPGL20000.SOURCDOC.TrimEnd());
@@ -146,8 +148,6 @@ codeunit 40900 "GP Populate Hist. Tables"
             repeat
                 if GPGL00105.Get(GPGL30000.ACTINDX) then begin
                     Clear(HistGenJournalLine);
-
-                    HistGenJournalLine."No." := 'HistYear-' + Format(GPGL30000.DEX_ROW_ID);
 
 #pragma warning disable AA0139
                     HistGenJournalLine."Source Type" := ConvertSeriesToSourceType(GPGL30000.SERIES, GPGL30000.SOURCDOC.TrimEnd());
@@ -254,9 +254,9 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistSalesTrxHeader."Original No." := GPSOPTrxHist.ORIGNUMB;
             HistSalesTrxHeader."Audit Code" := GPSOPTrxHist.TRXSORCE;
 
-            if HistSalesTrxHeader.Insert() then begin
-                PopulateSalesTransactionLines(GPSOPTrxHist, DocumentNo);
-            end else
+            if HistSalesTrxHeader.Insert() then
+                PopulateSalesTransactionLines(GPSOPTrxHist, DocumentNo)
+            else
                 HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Receivables Trx.", GPSOPTrxHist.SOPNUMBE, true);
 
             AfterProcessedNextRecord();
