@@ -10,7 +10,7 @@ pageextension 41020 "Item List Ext." extends "Item List"
                 {
                     ApplicationArea = All;
                     Caption = 'Inventory Transactions';
-                    Image = Archive;
+                    Image = InventoryJournal;
                     RunObject = Page "Hist. Inventory Trx. Headers";
                     ToolTip = 'View the GP inventory transactions.';
                     Visible = GPHistDataAvailable;

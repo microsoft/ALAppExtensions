@@ -10,7 +10,7 @@ pageextension 41019 "Vendor List Ext." extends "Vendor List"
                 {
                     ApplicationArea = All;
                     Caption = 'GP Payables Transactions';
-                    Image = Archive;
+                    Image = Documents;
                     RunObject = Page "Hist. Payables Documents";
                     ToolTip = 'View the GP payables transactions.';
                     Visible = GPPayablesDataAvailable;
@@ -19,7 +19,7 @@ pageextension 41019 "Vendor List Ext." extends "Vendor List"
                 {
                     ApplicationArea = All;
                     Caption = 'Receivings Transactions';
-                    Image = Archive;
+                    Image = ReceivablesPayables;
                     RunObject = Page "Hist. Purchase Recv. Headers";
                     ToolTip = 'View the GP purchase receivings transactions.';
                     Visible = GPPurchaseRecvDataAvailable;

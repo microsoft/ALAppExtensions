@@ -10,7 +10,7 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                 {
                     ApplicationArea = All;
                     Caption = 'Receivables Transactions';
-                    Image = Archive;
+                    Image = Documents;
                     RunObject = Page "Hist. Receivables Documents";
                     ToolTip = 'View the GP receivables transactions.';
                     Visible = GPRecvDataAvailable;
@@ -19,7 +19,7 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Transactions';
-                    Image = Archive;
+                    Image = Sales;
                     RunObject = Page "Hist. Sales Trx. Headers";
                     ToolTip = 'View the GP sales transactions.';
                     Visible = GPSalesTrxDataAvailable;

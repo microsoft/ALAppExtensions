@@ -10,7 +10,7 @@ pageextension 41004 "Chart of Accounts Ext." extends "Chart of Accounts"
                 {
                     ApplicationArea = All;
                     Caption = 'All Detail Transactions';
-                    Image = Archive;
+                    Image = Transactions;
                     RunObject = Page "Hist. Gen. Journal Lines";
                     ToolTip = 'View all GP GL detail transactions.';
                     Visible = GPHistGLDetailDataAvailable;
@@ -19,7 +19,7 @@ pageextension 41004 "Chart of Accounts Ext." extends "Chart of Accounts"
                 {
                     ApplicationArea = All;
                     Caption = 'Detail by Account';
-                    Image = Archive;
+                    Image = Accounts;
                     RunObject = Page "Hist. G/L Account List";
                     ToolTip = 'View GP GL detail by account.';
                     Visible = GPHistAccountDataAvailable;
