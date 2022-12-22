@@ -73,9 +73,7 @@ if ($branchName.EndsWith('main') -or $branchName.StartsWith('release/')) {
          }
         'Translated' { 
             # Add the source code for non-test apps to the artifacts folder
-            if($app) {
-                Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
-            }
+            Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
 
             # Add the app file for every built app to a folder
             Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
