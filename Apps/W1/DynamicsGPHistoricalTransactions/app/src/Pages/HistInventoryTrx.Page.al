@@ -7,6 +7,7 @@ page 41010 "Hist. Inventory Trx."
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = false;
+    DataCaptionExpression = DataCaptionExpressionTxt;
 
     layout
     {
@@ -75,4 +76,12 @@ page 41010 "Hist. Inventory Trx."
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        DataCaptionExpressionTxt := Format(Rec."Document Type") + ' - ' + Rec."Document No.";
+    end;
+
+    var
+        DataCaptionExpressionTxt: Text;
 }

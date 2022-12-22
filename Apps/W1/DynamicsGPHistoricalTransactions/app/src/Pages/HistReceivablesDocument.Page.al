@@ -7,6 +7,7 @@ page 41006 "Hist. Receivables Document"
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = false;
+    DataCaptionExpression = DataCaptionExpressionTxt;
 
     layout
     {
@@ -167,4 +168,12 @@ page 41006 "Hist. Receivables Document"
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        DataCaptionExpressionTxt := Format(Rec."Document Type") + ' - ' + Rec."Document No.";
+    end;
+
+    var
+        DataCaptionExpressionTxt: Text;
 }

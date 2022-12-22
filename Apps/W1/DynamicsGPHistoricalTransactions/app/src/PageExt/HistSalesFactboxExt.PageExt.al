@@ -13,10 +13,9 @@ pageextension 41021 "Hist. Sales Factbox Ext." extends "Sales Hist. Sell-to Fact
 
                 trigger OnDrillDown()
                 var
-                    HistSalesTrxHeaders: Page "Hist. Sales Trx. Headers";
+                    HistPageNavigationHandler: Codeunit "Hist. Page Navigation Handler";
                 begin
-                    HistSalesTrxHeaders.SetFilterCustomerNo(Rec."No.");
-                    HistSalesTrxHeaders.Run();
+                    HistPageNavigationHandler.NavigateToCustomerSalesTransactions(Rec."No.");
                 end;
             }
             field(NoOfHistRecvTrxTile; NumberOfHistRecvTrx)
@@ -28,10 +27,9 @@ pageextension 41021 "Hist. Sales Factbox Ext." extends "Sales Hist. Sell-to Fact
 
                 trigger OnDrillDown()
                 var
-                    HistReceivablesDocuments: Page "Hist. Receivables Documents";
+                    HistPageNavigationHandler: Codeunit "Hist. Page Navigation Handler";
                 begin
-                    HistReceivablesDocuments.SetFilterCustomerNo(Rec."No.");
-                    HistReceivablesDocuments.Run();
+                    HistPageNavigationHandler.NavigateToCustomerReceivablesDocuments(Rec."No.");
                 end;
             }
         }

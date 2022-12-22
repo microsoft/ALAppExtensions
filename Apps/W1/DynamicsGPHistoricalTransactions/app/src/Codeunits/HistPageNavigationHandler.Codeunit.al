@@ -22,6 +22,58 @@ codeunit 40901 "Hist. Page Navigation Handler"
         end;
     end;
 
+    procedure NavigateToCustomerSalesTransactions(CustomerNo: Code[20])
+    var
+        HistSalesTrxHeaders: Page "Hist. Sales Trx. Headers";
+        Handled: Boolean;
+    begin
+        OnHistoricalNavigateToCustomerSalesTransactions(CustomerNo, Handled);
+        if Handled then
+            exit;
+
+        HistSalesTrxHeaders.SetFilterCustomerNo(CustomerNo);
+        HistSalesTrxHeaders.Run();
+    end;
+
+    procedure NavigateToCustomerReceivablesDocuments(CustomerNo: Code[20])
+    var
+        HistReceivablesDocuments: Page "Hist. Receivables Documents";
+        Handled: Boolean;
+    begin
+        OnHistoricalNavigateToCustomerReceivablesDocuments(CustomerNo, Handled);
+        if Handled then
+            exit;
+
+        HistReceivablesDocuments.SetFilterCustomerNo(CustomerNo);
+        HistReceivablesDocuments.Run();
+    end;
+
+    procedure NavigateToVendorPayablesDocuments(VendorNo: Code[20])
+    var
+        HistPayablesDocuments: Page "Hist. Payables Documents";
+        Handled: Boolean;
+    begin
+        OnHistoricalNavigateToVendorPayablesDocuments(VendorNo, Handled);
+        if Handled then
+            exit;
+
+        HistPayablesDocuments.SetFilterVendorNo(VendorNo);
+        HistPayablesDocuments.Run();
+    end;
+
+    procedure NavigateToVendorPurchaseRecvTransactions(VendorNo: Code[20])
+    var
+        HistPurchaseRecvHeaders: Page "Hist. Purchase Recv. Headers";
+        Handled: Boolean;
+    begin
+        OnHistoricalNavigateToVendorPurchaseRecvTransactions(VendorNo, Handled);
+        if Handled then
+            exit;
+
+        HistPurchaseRecvHeaders.SetFilterVendorNo(VendorNo);
+        HistPurchaseRecvHeaders.Run();
+    end;
+
     local procedure OpenSalesTrxPage(HistGenJournalLine: Record "Hist. Gen. Journal Line")
     var
         HistSalesTrxHeader: Record "Hist. Sales Trx. Header";
@@ -102,6 +154,27 @@ codeunit 40901 "Hist. Page Navigation Handler"
 
     [IntegrationEvent(false, false)]
     local procedure OnHistoricalNavigateToTransactionDetail(HistGenJournalLine: Record "Hist. Gen. Journal Line"; var Handled: Boolean)
+    begin
+    end;
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnHistoricalNavigateToCustomerSalesTransactions(CustomerNo: Code[20]; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnHistoricalNavigateToCustomerReceivablesDocuments(CustomerNo: Code[20]; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnHistoricalNavigateToVendorPayablesDocuments(VendorNo: Code[20]; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnHistoricalNavigateToVendorPurchaseRecvTransactions(VendorNo: Code[20]; var Handled: Boolean)
     begin
     end;
 

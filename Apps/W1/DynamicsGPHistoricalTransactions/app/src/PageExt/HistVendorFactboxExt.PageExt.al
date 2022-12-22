@@ -12,10 +12,9 @@ pageextension 41022 "Hist. Vendor Factbox Ext." extends "Vendor Hist. Buy-from F
 
                 trigger OnDrillDown()
                 var
-                    HistPayablesDocuments: Page "Hist. Payables Documents";
+                    HistPageNavigationHandler: Codeunit "Hist. Page Navigation Handler";
                 begin
-                    HistPayablesDocuments.SetFilterVendorNo(Rec."No.");
-                    HistPayablesDocuments.Run();
+                    HistPageNavigationHandler.NavigateToVendorPayablesDocuments(Rec."No.");
                 end;
             }
             field(NoOfHistReceivingsTrxTile; NumberOfHistReceivingsTrx)
@@ -26,10 +25,9 @@ pageextension 41022 "Hist. Vendor Factbox Ext." extends "Vendor Hist. Buy-from F
 
                 trigger OnDrillDown()
                 var
-                    HistPurchaseRecvHeaders: Page "Hist. Purchase Recv. Headers";
+                    HistPageNavigationHandler: Codeunit "Hist. Page Navigation Handler";
                 begin
-                    HistPurchaseRecvHeaders.SetFilterVendorNo(Rec."No.");
-                    HistPurchaseRecvHeaders.Run();
+                    HistPageNavigationHandler.NavigateToVendorPurchaseRecvTransactions(Rec."No.");
                 end;
             }
         }

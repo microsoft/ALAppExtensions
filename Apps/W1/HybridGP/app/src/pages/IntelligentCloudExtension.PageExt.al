@@ -53,8 +53,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 trigger OnAction()
                 var
                     GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-                    HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
-                    HistMigrationStepStatus: Record "Hist. Migration Step Status";
                     WizardIntegration: Codeunit "Wizard Integration";
                 begin
                     if not GPCompanyAdditionalSettings.GetMigrateHistory() then begin
@@ -63,10 +61,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                     end;
 
                     if Confirm(ConfirmRerunQst) then begin
-                        if not HistMigrationStepStatus.IsEmpty() then
-                            if Confirm(RerunAllQst) then
-                                HistMigrationCurrentStatus.SetDeleteAllOnNextRun(true);
-
                         WizardIntegration.ScheduleGPHistoricalSnapshotMigration();
                         Message(SnapshotJobRunningMsg);
                     end;
@@ -92,7 +86,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         FactBoxesVisible: Boolean;
         HasCompletedSetupWizard: Boolean;
         DetailSnapshotNotConfiguredMsg: Label 'GP Detail Snapshot is not configured to migrate.';
-        ConfirmRerunQst: Label 'Are you sure you want to rerun the GP Detail Snapshot migration?';
-        RerunAllQst: Label 'Do you want to rerun the GP Detail Snapshot for all transaction types? This will clear any previous run attempts.';
+        ConfirmRerunQst: Label 'Are you sure you want to rerun the GP Detail Snapshot migration? This will clear any previous run attempts.';
         SnapshotJobRunningMsg: Label 'The GP Detail Snapshot job is running.';
 }

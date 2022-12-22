@@ -7,6 +7,7 @@ page 41007 "Hist. Sales Trx."
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = false;
+    DataCaptionExpression = DataCaptionExpressionTxt;
 
     layout
     {
@@ -189,4 +190,12 @@ page 41007 "Hist. Sales Trx."
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        DataCaptionExpressionTxt := Rec."No.";
+    end;
+
+    var
+        DataCaptionExpressionTxt: Text;
 }

@@ -27,11 +27,23 @@ table 41000 "GP GL00105"
         {
             DataClassification = CustomerContent;
         }
-        field(7; ACTNUMST; Text[129])
+        field(7; ACTNUMBR_6; Text[9])
         {
             DataClassification = CustomerContent;
         }
-        field(8; DEX_ROW_ID; Integer)
+        field(8; ACTNUMBR_7; Text[9])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(9; ACTNUMBR_8; Text[9])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(10; ACTNUMST; Text[129])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(11; DEX_ROW_ID; Integer)
         {
             DataClassification = CustomerContent;
         }

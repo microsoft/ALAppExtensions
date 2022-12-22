@@ -7,6 +7,7 @@ page 41013 "Hist. Purchase Recv."
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = false;
+    DataCaptionExpression = DataCaptionExpressionTxt;
 
     layout
     {
@@ -175,4 +176,12 @@ page 41013 "Hist. Purchase Recv."
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        DataCaptionExpressionTxt := Format(Rec."Document Type") + ' - ' + Rec."Receipt No.";
+    end;
+
+    var
+        DataCaptionExpressionTxt: Text;
 }

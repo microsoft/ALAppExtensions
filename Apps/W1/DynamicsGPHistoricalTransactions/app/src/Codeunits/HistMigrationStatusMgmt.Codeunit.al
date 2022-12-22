@@ -3,17 +3,9 @@ codeunit 40902 "Hist. Migration Status Mgmt."
     var
         DeleteBatchSize: integer;
 
-    trigger OnRun()
-    begin
-        DeleteBatchSize := 500000;
-    end;
-
     procedure PrepareHistoryMigration()
-    var
-        HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
     begin
-        if HistMigrationCurrentStatus.GetDeleteAllOnNextRun() then
-            ResetAll();
+        ResetAll();
     end;
 
     procedure UpdateStepStatus(StepType: enum "Hist. Migration Step Type"; Completed: Boolean)
@@ -22,9 +14,10 @@ codeunit 40902 "Hist. Migration Status Mgmt."
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
     begin
         HistMigrationStepStatus.SetRange(Step, StepType);
+        HistMigrationStepStatus.SetRange(Completed, false);
 
         // Step status
-        if not HistMigrationStepStatus.FindFirst() then begin
+        if not HistMigrationStepStatus.FindLast() then begin
             HistMigrationStepStatus.Step := StepType;
             HistMigrationStepStatus."Start Date" := System.CurrentDateTime();
             HistMigrationStepStatus.Insert();
@@ -41,15 +34,26 @@ codeunit 40902 "Hist. Migration Status Mgmt."
             HistMigrationCurrentStatus.SetCurrentStep(StepType);
     end;
 
+    procedure SetStatusStarted()
+    begin
+        UpdateStepStatus("Hist. Migration Step Type"::Started, false);
+    end;
+
     procedure SetStatusFinished()
     var
         HistMigrationStepStatus: Record "Hist. Migration Step Status";
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
         StartedDate: DateTime;
     begin
-        // Step status
-        if HistMigrationStepStatus.FindFirst() then
+        // Status log
+        HistMigrationStepStatus.SetRange(Step, "Hist. Migration Step Type"::Started);
+        if HistMigrationStepStatus.FindLast() then begin
             StartedDate := HistMigrationStepStatus."Start Date";
+
+            HistMigrationStepStatus.Completed := true;
+            HistMigrationStepStatus."End Date" := System.CurrentDateTime();
+            HistMigrationStepStatus.Modify();
+        end;
 
         Clear(HistMigrationStepStatus);
         HistMigrationStepStatus.Step := "Hist. Migration Step Type"::Finished;
@@ -77,14 +81,6 @@ codeunit 40902 "Hist. Migration Status Mgmt."
             ClearLastError();
     end;
 
-    procedure HasNotRanStep(Step: enum "Hist. Migration Step Type"): Boolean
-    var
-        HistMigrationStepStatus: Record "Hist. Migration Step Status";
-    begin
-        HistMigrationStepStatus.SetRange("Step", Step);
-        exit(HistMigrationStepStatus.IsEmpty());
-    end;
-
     procedure GetCurrentStatus(): enum "Hist. Migration Step Type";
     var
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
@@ -95,7 +91,6 @@ codeunit 40902 "Hist. Migration Status Mgmt."
     procedure ResetAll()
     var
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
-        HistMigrationStepStatus: Record "Hist. Migration Step Status";
         HistMigrationStepError: Record "Hist. Migration Step Error";
         HistGLAccount: Record "Hist. G/L Account";
         HistGenJournalLine: Record "Hist. Gen. Journal Line";
@@ -108,19 +103,45 @@ codeunit 40902 "Hist. Migration Status Mgmt."
         HistPurchaseRecvHeader: Record "Hist. Purchase Recv. Header";
         HistPurchaseRecvLine: Record "Hist. Purchase Recv. Line";
     begin
-        BatchDeleteAll(Database::"Hist. Purchase Recv. Line", HistPurchaseRecvLine.FieldNo(HistPurchaseRecvLine."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Purchase Recv. Header", HistPurchaseRecvHeader.FieldNo(HistPurchaseRecvHeader."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Inventory Trx. Line", HistInventoryTrxLine.FieldNo(HistInventoryTrxLine."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Inventory Trx. Header", HistInventoryTrxHeader.FieldNo(HistInventoryTrxHeader."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Payables Document", HistPayablesDocument.FieldNo(HistPayablesDocument."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Receivables Document", HistReceivablesDocument.FieldNo(HistReceivablesDocument."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Sales Trx. Line", HistSalesTrxLine.FieldNo(HistSalesTrxLine."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Sales Trx. Header", HistSalesTrxHeader.FieldNo(HistSalesTrxHeader."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Gen. Journal Line", HistGenJournalLine.FieldNo(HistGenJournalLine."Primary Key"));
-        BatchDeleteAll(Database::"Hist. G/L Account", HistGLAccount.FieldNo(HistGLAccount."Primary Key"));
-        BatchDeleteAll(Database::"Hist. Migration Step Error", HistMigrationStepError.FieldNo(HistMigrationStepError."Primary Key"));
+        DeleteBatchSize := 500000;
 
-        HistMigrationStepStatus.DeleteAll();
+        UpdateStepStatus("Hist. Migration Step Type"::"Resetting Data", false);
+
+        if not HistPurchaseRecvLine.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Purchase Recv. Line", HistPurchaseRecvLine.FieldNo(HistPurchaseRecvLine."Primary Key"));
+
+        if not HistPurchaseRecvHeader.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Purchase Recv. Header", HistPurchaseRecvHeader.FieldNo(HistPurchaseRecvHeader."Primary Key"));
+
+        if not HistInventoryTrxLine.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Inventory Trx. Line", HistInventoryTrxLine.FieldNo(HistInventoryTrxLine."Primary Key"));
+
+        if not HistInventoryTrxHeader.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Inventory Trx. Header", HistInventoryTrxHeader.FieldNo(HistInventoryTrxHeader."Primary Key"));
+
+        if not HistPayablesDocument.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Payables Document", HistPayablesDocument.FieldNo(HistPayablesDocument."Primary Key"));
+
+        if not HistReceivablesDocument.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Receivables Document", HistReceivablesDocument.FieldNo(HistReceivablesDocument."Primary Key"));
+
+        if not HistSalesTrxLine.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Sales Trx. Line", HistSalesTrxLine.FieldNo(HistSalesTrxLine."Primary Key"));
+
+        if not HistSalesTrxHeader.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Sales Trx. Header", HistSalesTrxHeader.FieldNo(HistSalesTrxHeader."Primary Key"));
+
+        if not HistGenJournalLine.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Gen. Journal Line", HistGenJournalLine.FieldNo(HistGenJournalLine."Primary Key"));
+
+        if not HistGLAccount.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. G/L Account", HistGLAccount.FieldNo(HistGLAccount."Primary Key"));
+
+        if not HistMigrationStepError.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Migration Step Error", HistMigrationStepError.FieldNo(HistMigrationStepError."Primary Key"));
+
+        UpdateStepStatus("Hist. Migration Step Type"::"Resetting Data", true);
+
         HistMigrationCurrentStatus.DeleteAll();
         HistMigrationCurrentStatus.EnsureInit();
     end;
