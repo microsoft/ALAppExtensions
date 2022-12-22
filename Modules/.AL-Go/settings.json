@@ -1,15 +1,15 @@
 {
     "country":  "base",
     "appFolders":  [
-                       "System"
+                       "System",
+                       "DevTools\\TestFramework\\TestLibraries\\Any",
+                       "DevTools\\TestFramework\\TestLibraries\\Assert",
+                       "DevTools\\TestFramework\\TestLibraries\\Permissions Mock",
+                       "DevTools\\TestFramework\\TestLibraries\\Variable Storage",
+                       "DevTools\\TestFramework\\TestRunner",
+                       "DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
                    ],
     "testFolders":  [
-                        "DevTools\\TestFramework\\TestLibraries\\Any",
-                        "DevTools\\TestFramework\\TestLibraries\\Assert",
-                        "DevTools\\TestFramework\\TestLibraries\\Permissions Mock",
-                        "DevTools\\TestFramework\\TestLibraries\\Variable Storage",
-                        "DevTools\\TestFramework\\TestRunner",
-                        "DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates", 
                         "System Test Libraries",
                         "System Tests"
                     ],
