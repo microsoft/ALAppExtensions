@@ -99,9 +99,10 @@ codeunit 18466 "Subcontracting Post"
         TrackingQtyToHandle: Decimal;
         QuantitySent: Decimal;
     begin
-        OnBeforeSubcontractComponentSendPost(ItemJnlLine, DeliveryChallanHeader, SubOrderCompList);
-
         ItemJnlLine.Init();
+         
+        OnBeforeSubcontractComponentSendPost(ItemJnlLine, DeliveryChallanHeader, SubOrderCompList);
+        
         ItemJnlLine."Posting Date" := DeliveryChallanHeader."Challan Date";
         ItemJnlLine."Document Date" := DeliveryChallanHeader."Challan Date";
         ItemJnlLine."Source Type" := ItemJnlLine."Source Type"::Item;
