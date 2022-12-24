@@ -1,7 +1,7 @@
 # Extensibility examples
 
 ## Stock calculation
-Various companies has different rules on how and what to expose to Shopify as available stock, you can see various product suggestions about that, for example: [Shopify Inventory on hand to reflect sellable inventory in WMS controlled locations](https://experience.dynamics.com/ideas/idea/?ideaid=88be9f2e-e81c-ed11-b5d0-0003ff4597e7).
+Various companies has different rules on how and what to expose to Shopify as available stock, you can see various product suggestions about that, for example: [Shopify Inventory on hand to reflect sellable inventory in WMS controlled locations](https://experience.dynamics.com/ideas/idea/?ideaid=88be9f2e-e81c-ed11-b5d0-0003ff4597e7) or [[Exposure Request] Codeunit 30195 Shopify Inventory API](https://github.com/microsoft/ALAppExtensions/issues/18694)
 
 Starting with version 21.3 you can extend the **Shpfy Stock Calculation** enum adding you own options in additon to standard *Disabled* and *Projected Available Balance at Today*. You also will need to add your own implementation of **Shpfy Stock Calculation** interface.
 
