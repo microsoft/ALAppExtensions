@@ -199,3 +199,5 @@ Availability date: starting with version 21.3
 
 Extensible = true;
 
+[Example](extensibility_examples.md#stock-calculation)
+
