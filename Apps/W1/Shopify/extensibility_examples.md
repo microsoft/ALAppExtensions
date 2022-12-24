@@ -3,7 +3,9 @@
 ## Stock calculation
 Various companies has different rules on how and what to expose to Shopify as available stock, you can see various product suggestions about that, for example: [Shopify Inventory on hand to reflect sellable inventory in WMS controlled locations](https://experience.dynamics.com/ideas/idea/?ideaid=88be9f2e-e81c-ed11-b5d0-0003ff4597e7).
 
-Starting with version 21.3 you can extend the **Shpfy Stock Calculation** enum adding you own options in additon to standard *Disabled* and *Projected Available Balance at Today*. For more infomrations, see [Sync inventory to Shopify](https://learn.microsoft.com/dynamics365/business-central/shopify/synchronize-items#sync-inventory-to-shopify). You also will need to add your own implementation of **Shpfy Stock Calculation** interface.
+Starting with version 21.3 you can extend the **Shpfy Stock Calculation** enum adding you own options in additon to standard *Disabled* and *Projected Available Balance at Today*. You also will need to add your own implementation of **Shpfy Stock Calculation** interface.
+
+For more information about standard inventory calculation, see [Sync inventory to Shopify](https://learn.microsoft.com/dynamics365/business-central/shopify/synchronize-items#sync-inventory-to-shopify).
 
 ### Stock on hand
 
