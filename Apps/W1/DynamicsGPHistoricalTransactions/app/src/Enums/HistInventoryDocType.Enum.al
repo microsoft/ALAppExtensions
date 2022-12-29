@@ -3,7 +3,7 @@ enum 40005 "Hist. Inventory Doc. Type"
     Extensible = true;
 
     value(0; "Blank") { Caption = ''; }
-    value(1; "Inventory Adjustment") { Caption = 'Inventory Adjustment"'; }
+    value(1; "Inventory Adjustment") { Caption = 'Inventory Adjustment'; }
     value(2; Variance) { Caption = 'Variance'; }
     value(3; "Inventory Transfer") { Caption = 'Inventory Transfer'; }
     value(4; "Purchase Receipt") { Caption = 'Purchase Receipt'; }
