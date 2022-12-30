@@ -17,7 +17,7 @@ permissions:
 
 defaults:
   run:
-    shell: PowerShell
+    shell: powershell
 
 jobs:
   Initialization:
@@ -35,12 +35,14 @@ jobs:
         id: init
         uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
+          shell: powershell
           eventId: "DO0097"
 
       - name: Read settings
         id: ReadSettings
         uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getEnvironments: ${{ github.event.inputs.environmentName }}
           includeProduction: 'Y'
@@ -61,24 +63,29 @@ jobs:
         id: envName
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $envName = '${{ matrix.environment }}'.split(' ')[0]
           Add-Content -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
       - name: Read settings
         uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        with:
+          shell: powershell
 
       - name: Read secrets
         uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
+          shell: powershell
           settingsJson: ${{ env.Settings }}
-          secrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext,${{ steps.envName.outputs.envName }}-EnvironmentName,${{ steps.envName.outputs.envName }}_EnvironmentName,EnvironmentName,Projects'
+          secrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext,${{ steps.envName.outputs.envName }}-EnvironmentName,${{ steps.envName.outputs.envName }}_EnvironmentName,EnvironmentName,projects'
 
       - name: AuthContext
         id: authContext
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $envName = '${{ steps.envName.outputs.envName }}'
           $authContext = $null
           "$($envName)-AuthContext", "$($envName)_AuthContext", "AuthContext" | ForEach-Object {
@@ -107,7 +114,7 @@ jobs:
           }
           $environmentName = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($environmentName + '${{ matrix.environment }}'.SubString($envName.Length)).ToUpperInvariant()))
 
-          $projects = [System.Environment]::GetEnvironmentVariable("$($envName)-Projects")
+          $projects = [System.Environment]::GetEnvironmentVariable("$($envName)-projects")
           if (-not $projects) {
             $projects = [System.Environment]::GetEnvironmentVariable("$($envName)_Projects")
             if (-not $projects) {
@@ -128,8 +135,9 @@ jobs:
       - name: Deploy
         uses: microsoft/AL-Go-Actions/Deploy@preview
         env:
-          authContext: ${{ steps.authContext.outputs.authContext }}
+          AuthContext: ${{ steps.authContext.outputs.authContext }}
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           type: 'Publish'
           projects: ${{ steps.authContext.outputs.projects }}
@@ -148,5 +156,6 @@ jobs:
         id: PostProcess
         uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
+          shell: powershell
           eventId: "DO0097"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

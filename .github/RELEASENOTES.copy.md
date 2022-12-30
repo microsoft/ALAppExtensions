@@ -2,6 +2,48 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+### Issues
+- Issue #312 Branching enhancements
+- Issue #229 Create Release action tags wrong commit
+- Issue #283 Create Release workflow uses deprecated actions
+
+### Build modes support
+AL-Go projects can now be built in different modes, by specifying the _buildModes_ setting in AL-Go-Settings.json. Read more about build modes in the [Basic Repository settings](https://github.com/microsoft/AL-Go/blob/main/Scenarios/settings.md#basic-repository-settings).
+
+### Continuous Delivery
+
+Continuous Delivery can now run from other branches than main. By specifying a property called branches, containing an array of branches in the deliveryContext json construct, the artifacts generated from this branch are also delivered. The branch specification can include wildcards (like release/*). Default is main, i.e. no changes to functionality.
+
+### Continuous Deployment
+
+Continuous Deployment can now run from other branches than main. By creating a repo setting (.github/AL-Go-Settings.json) called **`<environmentname>-Branches`**, which is an array of branches, which will deploy the generated artifacts to this environment. The branch specification can include wildcards (like release/*), although this probably won't be used a lot in continuous deployment. Default is main, i.e. no changes to functionality.
+
+### Create Release
+When locating artifacts for the various projects, the SHA used to build the artifact is used for the release tag
+If all projects are not available with the same SHA, this error is thrown: **The build selected for release doesn't contain all projects. Please rebuild all projects by manually running the CI/CD workflow and recreate the release.**
+There is no longer a hard dependency on the main branch name from Create Release.
+
+### Experimental Support
+Setting the repo setting "shell" to "pwsh", followed by running Update AL-Go System Files, will cause all PowerShell code to be run using PowerShell 7 instead of PowerShell 5. This functionality is experimental. Please report any issues at https://github.com/microsoft/AL-Go/issues
+Setting the repo setting "runs-on" to "Ubuntu-Latest", followed by running Update AL-Go System Files, will cause all non-build jobs to run using Linux. This functionality is experimental. Please report any issues at https://github.com/microsoft/AL-Go/issues
+
+## v2.2
+
+### Enhancements
+- Container Event log is added as a build artifact if builds or tests are failing
+
+### Issues
+- Issue #280 Overflow error when test result summary was too big
+- Issue #282, 292 AL-Go for GitHub causes GitHub to issue warnings
+- Issue #273 Potential security issue in Pull Request Handler in Open Source repositories
+- Issue #303 PullRequestHandler fails on added files
+- Issue #299 Multi-project repositories build all projects on Pull Requests
+- Issue #291 Issues with new Pull Request Handler 
+- Issue #287 AL-Go pipeline fails in ReadSettings step
+
+### Changes
+- VersioningStrategy 1 is no longer supported. GITHUB_ID has changed behavior (Issue #277)
+
 ## v2.1
 
 ### Issues

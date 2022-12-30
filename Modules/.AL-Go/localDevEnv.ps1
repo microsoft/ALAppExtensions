@@ -91,7 +91,7 @@ if (!($dockerProcess)) {
 }
 if ($settings.keyVaultName) {
     if (-not (Get-Module -ListAvailable -Name 'Az.KeyVault')) {
-        Write-Host -ForegroundColor Red "A keyvault name is defined in Settings, you need to have the Az.KeyVault PowerShell module installed (use Install-Module az) or you can set the keyVaultName to an empty string in the user settings file ($($ENV:UserName).Settings.json)."
+        Write-Host -ForegroundColor Red "A keyvault name is defined in Settings, you need to have the Az.KeyVault PowerShell module installed (use Install-Module az) or you can set the keyVaultName to an empty string in the user settings file ($($ENV:UserName).settings.json)."
     }
 }
 
@@ -154,8 +154,8 @@ CreateDevEnv `
     -baseFolder $baseFolder `
     -auth $auth `
     -credential $credential `
-    -LicenseFileUrl $licenseFileUrl `
-    -InsiderSasToken $insiderSasToken
+    -licenseFileUrl $licenseFileUrl `
+    -insiderSasToken $insiderSasToken
 }
 catch {
     Write-Host -ForegroundColor Red "Error: $($_.Exception.Message)`nStacktrace: $($_.scriptStackTrace)"
