@@ -23,10 +23,6 @@ When locating artifacts for the various projects, the SHA used to build the arti
 If all projects are not available with the same SHA, this error is thrown: **The build selected for release doesn't contain all projects. Please rebuild all projects by manually running the CI/CD workflow and recreate the release.**
 There is no longer a hard dependency on the main branch name from Create Release.
 
-### Experimental Support
-Setting the repo setting "shell" to "pwsh", followed by running Update AL-Go System Files, will cause all PowerShell code to be run using PowerShell 7 instead of PowerShell 5. This functionality is experimental. Please report any issues at https://github.com/microsoft/AL-Go/issues
-Setting the repo setting "runs-on" to "Ubuntu-Latest", followed by running Update AL-Go System Files, will cause all non-build jobs to run using Linux. This functionality is experimental. Please report any issues at https://github.com/microsoft/AL-Go/issues
-
 ## v2.2
 
 ### Enhancements

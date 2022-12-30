@@ -48,13 +48,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@main
         with:
           shell: powershell
           eventId: "DO0102"
 
       - name: Creating a new test app
-        uses: microsoft/AL-Go-Actions/CreateApp@preview
+        uses: microsoft/AL-Go-Actions/CreateApp@main
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -69,7 +69,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@main
         with:
           shell: powershell
           eventId: "DO0102"
