@@ -19,9 +19,6 @@ Examples of delegated API Permissions on the **SharePoint** resource:
 | SharePoint | AllSites.Write | Reading and writing files on a regular SharePoint site |
 | SharePoint | MyFiles.Write | Reading and writing files on the SharePoint My Site (The Personal OneDrive site) |
 
-
-
-
 ### CreateAuthorizationCode
 
 Creates an authorization mechanism with authentication code. 
