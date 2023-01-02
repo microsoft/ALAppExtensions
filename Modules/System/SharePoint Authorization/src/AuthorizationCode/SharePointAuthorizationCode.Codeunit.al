@@ -63,14 +63,12 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
             if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, '', StrSubstNo(AuthorityTxt, AadTenantId), Scopes, AccessToken)) or (AccessToken = '') then
                 OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(AuthorityTxt, AadTenantId), '', Scopes, "Prompt Interaction"::None, AccessToken, AuthCodeErr);
 
-            if (AccessToken = '') then begin
-                IsSuccess := false;
-                if AuthCodeErr <> '' then
-                    ErrorText := AuthCodeErr
-                else
-                    ErrorText := GetLastErrorText();
-            end else
-                IsSuccess := true;
+            IsSuccess := AccessToken <> '';
+
+            if AuthCodeErr <> '' then
+                ErrorText := AuthCodeErr
+            else
+                ErrorText := GetLastErrorText();
 
         end;
 
