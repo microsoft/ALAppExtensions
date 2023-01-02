@@ -21,7 +21,7 @@ permissions:
 
 defaults:
   run:
-    shell: PowerShell
+    shell: powershell
 
 jobs:
   AddExistingAppOrTestApp:
@@ -34,11 +34,13 @@ jobs:
         id: init
         uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
+          shell: powershell
           eventId: "DO0090"
 
       - name: Add existing app
         uses: microsoft/AL-Go-Actions/AddExistingApp@preview
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           project: ${{ github.event.inputs.project }}
           url: ${{ github.event.inputs.url }}
@@ -48,5 +50,6 @@ jobs:
         if: always()
         uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
+          shell: powershell
           eventId: "DO0090"
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}

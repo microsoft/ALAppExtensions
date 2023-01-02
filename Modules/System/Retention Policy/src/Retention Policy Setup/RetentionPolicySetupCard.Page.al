@@ -174,6 +174,20 @@ page 3901 "Retention Policy Setup Card"
                     ApplyRetentionPolicy.ApplyRetentionPolicy(Rec, true);
                 end;
             }
+            action(RestoreAllowedTables)
+            {
+                Caption = 'Refresh allowed tables';
+                ApplicationArea = All;
+                Image = Refresh;
+                ToolTip = 'Refreshes the list of tables that can be selected.';
+
+                trigger OnAction()
+                var
+                    RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
+                begin
+                    RetenPolAllowedTables.OnRefreshAllowedTables();
+                end;
+            }
         }
     }
 

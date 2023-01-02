@@ -376,8 +376,6 @@ report 31182 "Reminder CZL"
             trigger OnPreDataItem()
             begin
                 AmtDueTxt := '';
-                if Format("Issued Reminder Header"."Due Date") <> '' then
-                    AmtDueTxt := StrSubstNo(AmtDueLbl, "Issued Reminder Header"."Due Date");
             end;
 
             trigger OnAfterGetRecord()
@@ -393,6 +391,9 @@ report 31182 "Reminder CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
+
+                if Format("Due Date") <> '' then
+                    AmtDueTxt := StrSubstNo(AmtDueLbl, "Due Date");
             end;
         }
     }

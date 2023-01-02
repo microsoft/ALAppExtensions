@@ -56,4 +56,28 @@ enum 9064 "SAS Permission"
     {
         Caption = 'p', Locked = true;
     }
+
+    /// <summary>
+    /// Valid for the following Object resource type only: blobs. Permits blob tag operations.
+    /// </summary>
+    value(9; Tag)
+    {
+        Caption = 't', Locked = true;
+    }
+
+    /// <summary>
+    /// Valid for the following Object resource type only: blob. Permits filtering by blob tag.
+    /// </summary>
+    value(10; Filter)
+    {
+        Caption = 'f', Locked = true;
+    }
+
+    /// <summary>
+    /// Valid for the following Object resource type only: blob. Permits set/delete immutability policy and legal hold on a blob.
+    /// </summary>
+    value(11; "Set Immutability Policy")
+    {
+        Caption = 'i', Locked = true;
+    }	
 }

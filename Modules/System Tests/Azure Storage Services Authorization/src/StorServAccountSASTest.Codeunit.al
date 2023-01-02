@@ -35,6 +35,7 @@ codeunit 132918 "Stor. Serv. Account SAS Test"
         Resources.Add(Enum::"SAS Resource Type"::Container);
         Permissions.Add(Enum::"SAS Permission"::Read);
         Permissions.Add(Enum::"SAS Permission"::Write);
+        Permissions.Add(Enum::"SAS Permission"::Tag);
 
         SASAuthorization := StorageServiceAuthorization.CreateAccountSAS(AccountKey, Enum::"Storage Service API Version"::"2020-10-02", Services, Resources, Permissions, ExpiryDate);
         SASAuthorization.Authorize(HttpRequest, StorageAccount);
@@ -48,7 +49,7 @@ codeunit 132918 "Stor. Serv. Account SAS Test"
 
         Assert.IsTrue(StrPos(NewUri, 'ss=b') > 0, 'SignedServices parameter is missing or is incorrect');
         Assert.IsTrue(StrPos(NewUri, 'srt=c') > 0, 'SignedResources parameter is missing or is incorrect');
-        Assert.IsTrue(StrPos(NewUri, 'sp=rw') > 0, 'SignedServices parameter is missing or is incorrect');
+        Assert.IsTrue(StrPos(NewUri, 'sp=rwt') > 0, 'SignedServices parameter is missing or is incorrect');
 
     end;
 

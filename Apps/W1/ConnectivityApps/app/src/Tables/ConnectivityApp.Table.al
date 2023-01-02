@@ -60,10 +60,11 @@ table 20350 "Connectivity App"
             Caption = 'Logo';
             DataClassification = SystemMetadata;
         }
-        field(10; Country; Enum "Conn. Apps Supported Country")
+        field(10; Country; Code[20])
         {
             Caption = 'Country';
             DataClassification = SystemMetadata;
+            TableRelation = "Country/Region";
         }
     }
 

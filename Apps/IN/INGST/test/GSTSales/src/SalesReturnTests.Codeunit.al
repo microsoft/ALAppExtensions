@@ -11,6 +11,7 @@ codeunit 18193 "Sales Return Tests"
         Storage: Dictionary of [Text, Text[20]];
         StorageBoolean: Dictionary of [Text, Boolean];
         LocationCodeLbl: Label 'LocationCode';
+        NoSeriesLbl: Label 'No Series';
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
         LocationStateCodeLbl: Label 'LocationStateCode';
         ReverseDocumentNoLbl: Label 'ReverseDocumentNo';
@@ -642,6 +643,135 @@ codeunit 18193 "Sales Return Tests"
 
         // [THEN] Verify GST ledger Entries
         LibraryGST.GSTLedgerEntryCount(Storage.Get(ReverseDocumentNoLbl), 2);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,CustomerLedgerEntries')]
+    procedure PostFromIntraStateSalesCreditMemoGoodsForRegCustWithPostingNoseries()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTCustomerType: Enum "GST Customer Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedInvoiceNo: Code[20];
+    begin
+        //[SCENARIO] [456480] Credit Memo Posting No. Series is not fetching as per the location when we do copy document.
+        // [GIVEN] Created GST Setup
+        InitializeShareStep(false, false);
+        CreateGSTSetup(GSTCustomerType::Registered, GSTGroupType::Goods, true, false);
+
+        // [WHEN] Create and Post Sales Journal
+        PostedInvoiceNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+        Storage.Set(PostedDocumentNoLbl, PostedInvoiceNo);
+        CreateAndPostSalesDocumentFromCopyDocumentWithPostingNoSeries(
+            SalesHeader,
+            Storage.Get(CustomerNoLbl),
+            DocumentType::"Credit Memo",
+            CopyStr(Storage.Get(LocationCodeLbl), 1, 10));
+
+        // [THEN] Verify Posting No series in Posted Credit Memo
+        VerifyPostingNoSeriesInPostedDoucment();
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,CustomerLedgerEntries')]
+    procedure PostFromInterStateSalesCreditMemoOfGoodsForRegCustomerToCheckRefernceNoValidation()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTCustomerType: Enum "GST Customer Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO] [455069] Field reference invoice no. of table Sales Header contains a value that cannot be found in related table
+        // [GIVEN] Created GST Setup
+        InitializeShareStep(false, false);
+        CreateGSTSetup(GSTCustomerType::Registered, GSTGroupType::Goods, false, false);
+
+        // [WHEN] Create and Post Sales Journal
+        PostedInvoiceNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+        Storage.Set(PostedDocumentNoLbl, PostedInvoiceNo);
+        CreateAndPostSalesDocumentFromCopyDocument(
+            SalesHeader,
+            Storage.Get(CustomerNoLbl),
+            DocumentType::"Credit Memo",
+            CopyStr(Storage.Get(LocationCodeLbl), 1, 10));
+
+        // [THEN] Verify Posted Document No in Reference Invoice No Table
+        VerifyPostedNoInReferenceInvoiceNoTable(PostedInvoiceNo);
+    end;
+
+    local procedure VerifyPostedNoInReferenceInvoiceNoTable(PostedInvoiceNo: Code[20])
+    var
+        ReferenceInvNo: Record "Reference Invoice No.";
+        Assert: Codeunit Assert;
+    begin
+        ReferenceInvNo.SetRange("Document Type", ReferenceInvNo."Document Type"::"Credit Memo");
+        ReferenceInvNo.SetRange("Document No.", Storage.Get(ReverseDocumentNoLbl));
+        ReferenceInvNo.FindFirst();
+        Assert.Compare(ReferenceInvNo."Reference Invoice Nos.", PostedInvoiceNo);
+    end;
+
+
+    local procedure VerifyPostingNoSeriesInPostedDoucment()
+    var
+        SaleCreditMemo: Record "Sales Cr.Memo Header";
+        Assert: Codeunit Assert;
+    begin
+        SaleCreditMemo.SetRange("No.", Storage.Get(ReverseDocumentNoLbl));
+        SaleCreditMemo.FindFirst();
+        Assert.Compare(SaleCreditMemo."No. Series", Storage.Get(NoSeriesLbl));
+    end;
+
+    local procedure CreateAndPostSalesDocumentFromCopyDocumentWithPostingNoSeries(
+        var SalesHeader: Record "Sales Header";
+        CustomerNo: Code[20];
+        DocumentType: Enum "Sales Document Type";
+        LocationCode: Code[10])
+    var
+        CopyDocumentMgt: Codeunit "Copy Document Mgt.";
+        ReverseDocumentNo: Code[20];
+    begin
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
+        SalesHeader.Validate("Posting Date", WorkDate());
+        SalesHeader.Validate("Location Code", LocationCode);
+        SalesHeader.Modify(true);
+        CreatePostingNoSeries();
+        CopyDocumentMgt.SetProperties(true, false, false, false, true, false, false);
+        CopyDocumentMgt.CopySalesDocForInvoiceCancelling(Storage.Get(PostedDocumentNoLbl), SalesHeader);
+        UpdateReferenceInvoiceNoAndVerify(SalesHeader);
+        ReverseDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Storage.Set(ReverseDocumentNoLbl, ReverseDocumentNo);
+    end;
+
+    local procedure CreatePostingNoSeries()
+    var
+        PostingNoSeries: Record "Posting No. Series";
+        LibraryERM: Codeunit "Library - ERM";
+        NoSeriesCode: Code[20];
+    begin
+        NoSeriesCode := LibraryERM.CreateNoSeriesCode();
+        PostingNoSeries.SetRange("Document Type", PostingNoSeries."Document Type"::"Sales Cr.Memo Header");
+        PostingNoSeries.SetFilter("Posting No. Series", '<>%1', '');
+        if not PostingNoSeries.FindFirst() then begin
+            PostingNoSeries.Init();
+            PostingNoSeries.Validate("Document Type", PostingNoSeries."Document Type"::"GST Distribution");
+            PostingNoSeries.Validate("Posting No. Series", NoSeriesCode);
+            PostingNoSeries.Insert(true);
+        end;
+        Storage.Set(NoSeriesLbl, NoSeriesCode);
     end;
 
     local procedure CreateAndPostSalesDocumentFromCopyDocument(

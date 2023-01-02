@@ -8,7 +8,7 @@ permissions:
 
 defaults:
   run:
-    shell: PowerShell
+    shell: powershell
 
 env:
   workflowDepth: 1
@@ -22,6 +22,7 @@ jobs:
       projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
       projectCount: ${{ steps.ReadSettings.outputs.ProjectCount }}
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
+      githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
       projectDependenciesJson: ${{ steps.ReadSettings.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
       buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
@@ -33,24 +34,27 @@ jobs:
         id: init
         uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
+          shell: powershell
           eventId: "DO0099"
 
       - name: Read settings
         id: ReadSettings
         uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getProjects: 'Y'
 
       - name: Determine Build Order
-        if: env.WorkflowDepth > 1
+        if: env.workflowDepth > 1
         id: BuildOrder
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $projects = '${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json
           $buildOrder = '${{ steps.ReadSettings.outputs.BuildOrderJson }}' | ConvertFrom-Json
           $depth = ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-          $workflowDepth = ${{ steps.ReadSettings.outputs.WorkflowDepth }}
+          $workflowDepth = ${{ env.workflowDepth }}
           if ($depth -lt $workflowDepth) {
             Write-Host "::Error::Project Dependencies depth is $depth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
             $host.SetShouldExit(1)
@@ -65,18 +69,18 @@ jobs:
               $projectsJSon = $ps | ConvertTo-Json -compress
             }
             if ($ps.Count -gt 0) {
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "Projects$($step)Json=$projectsJson"
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "Projects$($step)Count=$($ps.count)"
-              Write-Host "Projects$($step)Json=$projectsJson"
-              Write-Host "Projects$($step)Count=$($ps.count)"
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json=$projectsJson"
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=$($ps.count)"
+              Write-Host "projects$($step)Json=$projectsJson"
+              Write-Host "projects$($step)Count=$($ps.count)"
               $step--
             }
           }
           while ($step -ge 1) {
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "Projects$($step)Json="
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "Projects$($step)Count=0"
-              Write-Host "Projects$($step)Json="
-              Write-Host "Projects$($step)Count=0"
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json="
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=0"
+              Write-Host "projects$($step)Json="
+              Write-Host "projects$($step)Count=0"
               $step--
           }
 
@@ -84,6 +88,9 @@ jobs:
     needs: [ Initialization ]
     if: ${{ needs.Initialization.outputs.projectCount > 0 }}
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
+    defaults:
+      run:
+        shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
         project: ${{ fromJson(needs.Initialization.outputs.projects) }}
@@ -98,7 +105,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download thisbuild artifacts
-        if: env.WorkflowDepth > 1
+        if: env.workflowDepth > 1
         uses: actions/download-artifact@v3
         with:
           path: '${{ github.workspace }}\.dependencies'
@@ -106,6 +113,7 @@ jobs:
       - name: Read settings
         uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
@@ -114,13 +122,15 @@ jobs:
         env:
           secrets: ${{ toJson(secrets) }}
         with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
-          secrets: 'licenseFileUrl,insiderSasToken,CodeSignCertificateUrl,CodeSignCertificatePassword,KeyVaultCertificateUrl,KeyVaultCertificatePassword,KeyVaultClientId,GitHubPackagesContext'
+          secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
 
       - name: Run pipeline
         uses: microsoft/AL-Go-Actions/RunPipeline@preview
         with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
           ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
@@ -128,7 +138,7 @@ jobs:
           SecretsJson: ${{ env.RepoSecrets }}
 
       - name: Upload thisbuild artifacts - apps
-        if: env.WorkflowDepth > 1
+        if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
           name: 'thisbuild-${{ matrix.project }}-Apps'
@@ -137,7 +147,7 @@ jobs:
           retention-days: 1
 
       - name: Upload thisbuild artifacts - test apps
-        if: env.WorkflowDepth > 1
+        if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
           name: 'thisbuild-${{ matrix.project }}-TestApps'
@@ -150,9 +160,10 @@ jobs:
         if: success() || failure()
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $settings = '${{ env.Settings }}' | ConvertFrom-Json
           $project = '${{ matrix.project }}'
-          if ($project -eq ".") { $project = $settings.RepoName }
+          if ($project -eq ".") { $project = $settings.repoName }
           'TestResults','BcptTestResults','BuildOutput','ContainerEventLog' | ForEach-Object {
             $name = "$($_)ArtifactsName"
             $value = "$($project.Replace('\','_'))-$_-NextMajor-$([DateTime]::UtcNow.ToString('yyyyMMdd'))"
@@ -197,6 +208,7 @@ jobs:
         if: success() || failure()
         uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
         with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
 
@@ -204,6 +216,7 @@ jobs:
         if: always()
         uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
         with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
 
@@ -219,5 +232,6 @@ jobs:
         id: PostProcess
         uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
+          shell: powershell
           eventId: "DO0099"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

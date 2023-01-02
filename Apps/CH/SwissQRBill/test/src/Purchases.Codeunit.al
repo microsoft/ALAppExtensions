@@ -13,6 +13,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         LibraryERM: Codeunit "Library - ERM";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryInventory: Codeunit "Library - Inventory";
         Assert: Codeunit Assert;
         SwissQRBillTestLibrary: Codeunit "Swiss QR-Bill Test Library";
         DocumentType: Enum "Purchase Document Type";
@@ -1047,6 +1048,257 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(StrSubstNo(CurrencyErr, '', PurchaseHeader."Currency Code"));
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure OrderScanQRBillZeroAmount()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchaseOrder: TestPage "Purchase Order";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        PostedDocNo: Code[20];
+        QRCodeText: Text;
+        BillInfo: Text;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 457372] Scan QR-Bill into Purchase Order in case of Amount in QR-Bill is zero.
+        Initialize();
+
+        // [GIVEN] Purchase Order with Purchase Line with Amount Including VAT = 1000.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Order, VendorNo, false, '');
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(), 543.21, 1);
+
+        // [GIVEN] QR-Bill text where Amount = 0.
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123';
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 0, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+
+        // [WHEN] Run scan QR-Bill on the given text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToOrder(PurchaseHeader);
+
+        // [THEN] QR-Bill text was scanned. Swiss QR-Bill Amount is 0.
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 0, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+
+        // [THEN] Swiss QR-Bill Amount field is editable on page Purchase Order.
+        PurchaseOrder.OpenEdit();
+        PurchaseOrder.Filter.SetFilter("No.", PurchaseHeader."No.");
+        Assert.IsTrue(PurchaseOrder."Swiss QR-Bill Amount".Editable(), '');
+
+        // [WHEN] Set Swiss QR-Bill Amount = 1000 and post Purchase Order.
+        PurchaseOrder."Swiss QR-Bill Amount".SetValue(PurchaseLine."Amount Including VAT");
+        PurchaseOrder.Close();
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        PostedDocNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Purchase Order was posted.
+        PurchInvHeader.Get(PostedDocNo);
+
+        LibraryVariableStorage.AssertEmpty();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure InvoiceScanQRBillZeroAmount()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchaseInvoice: TestPage "Purchase Invoice";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        PostedDocNo: Code[20];
+        QRCodeText: Text;
+        BillInfo: Text;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 457372] Scan QR-Bill into Purchase Invoice in case of Amount in QR-Bill is zero.
+        Initialize();
+
+        // [GIVEN] Purchase Invoice with Purchase Line with Amount Including VAT = 1000.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, VendorNo, false, '');
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(), 543.21, 1);
+
+        // [GIVEN] QR-Bill text where Amount = 0.
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123';
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 0, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+
+        // [WHEN] Run scan QR-Bill on the given text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] QR-Bill text was scanned. Swiss QR-Bill Amount is 0.
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 0, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+
+        // [THEN] Swiss QR-Bill Amount field is editable on page Purchase Invoice.
+        PurchaseInvoice.OpenEdit();
+        PurchaseInvoice.Filter.SetFilter("No.", PurchaseHeader."No.");
+        Assert.IsTrue(PurchaseInvoice."Swiss QR-Bill Amount".Editable(), '');
+
+        // [WHEN] Set Swiss QR-Bill Amount = 1000 and post Purchase Invoice.
+        PurchaseInvoice."Swiss QR-Bill Amount".SetValue(PurchaseLine."Amount Including VAT");
+        PurchaseInvoice.Close();
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        PostedDocNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
+
+        // [THEN] Purchase Invoice was posted.
+        PurchInvHeader.Get(PostedDocNo);
+
+        LibraryVariableStorage.AssertEmpty();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure OrderScanQRBillZeroAmountUpdateAmount()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseOrder: TestPage "Purchase Order";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        QRCodeText: Text;
+        BillInfo: Text;
+        QRBillAmount: Decimal;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 457372] Update Swiss QR-Bill Amount after scan QR-Bill with zero Amount into Purchase Order.
+        Initialize();
+
+        // [GIVEN] Purchase Order after QR-Bill with zero Amount was scanned.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Order, VendorNo, false, '');
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123';
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 0, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToOrder(PurchaseHeader);
+
+        // [GIVEN] Swiss QR-Bill Amount was set manually on Purchase Order page.
+        PurchaseOrder.OpenEdit();
+        PurchaseOrder.Filter.SetFilter("No.", PurchaseHeader."No.");
+        PurchaseOrder."Swiss QR-Bill Amount".SetValue(543.21);
+        PurchaseOrder.Close();
+
+        // [WHEN] Update Swiss QR-Bill Amount.
+        QRBillAmount := 987.65;
+        PurchaseOrder.OpenEdit();
+        PurchaseOrder.Filter.SetFilter("No.", PurchaseHeader."No.");
+        PurchaseOrder."Swiss QR-Bill Amount".SetValue(QRBillAmount);
+        PurchaseOrder.Close();
+
+        // [THEN] Swiss QR-Bill Amount was updated.
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        Assert.AreEqual(QRBillAmount, PurchaseHeader."Swiss QR-Bill Amount", '');
+
+        LibraryVariableStorage.DequeueText();   // message text
+        LibraryVariableStorage.AssertEmpty();
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure OrderScanQRBillNonZeroAmount()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseOrder: TestPage "Purchase Order";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        QRCodeText: Text;
+        BillInfo: Text;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 457372] Swiss QR-Bill Amount field after scan QR-Bill with non-zero Amount into Purchase Order.
+        Initialize();
+
+        // [GIVEN] Purchase Order after QR-Bill with non-zero Amount was scanned.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Order, VendorNo, false, '');
+
+        // [GIVEN] QR-Bill text where Amount = 123.45.
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123';
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+
+        // [WHEN] Run scan QR-Bill on the given text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToOrder(PurchaseHeader);
+
+        // [THEN] Swiss QR-Bill Amount field is not editable on Purchase Order page.
+        PurchaseOrder.OpenEdit();
+        PurchaseOrder.Filter.SetFilter("No.", PurchaseHeader."No.");
+        Assert.IsFalse(PurchaseOrder."Swiss QR-Bill Amount".Editable(), '');
+        PurchaseOrder.Close();
+
+        LibraryVariableStorage.DequeueText();   // message text
+        LibraryVariableStorage.AssertEmpty();
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure InvoiceScanQRBillNonZeroAmount()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseInvoice: TestPage "Purchase Invoice";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        QRCodeText: Text;
+        BillInfo: Text;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 457372] Swiss QR-Bill Amount field after scan QR-Bill with non-zero Amount into Purchase Invoice.
+        Initialize();
+
+        // [GIVEN] Purchase Invoice after QR-Bill with non-zero Amount was scanned.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, VendorNo, false, '');
+
+        // [GIVEN] QR-Bill text where Amount = 123.45.
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123';
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+
+        // [WHEN] Run scan QR-Bill on the given text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] Swiss QR-Bill Amount field is not editable on Purchase Invoice page.
+        PurchaseInvoice.OpenEdit();
+        PurchaseInvoice.Filter.SetFilter("No.", PurchaseHeader."No.");
+        Assert.IsFalse(PurchaseInvoice."Swiss QR-Bill Amount".Editable(), '');
+        PurchaseInvoice.Close();
+
+        LibraryVariableStorage.DequeueText();   // message text
+        LibraryVariableStorage.AssertEmpty();
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
     end;
 
     local procedure Initialize()

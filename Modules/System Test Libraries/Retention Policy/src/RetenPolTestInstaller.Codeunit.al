@@ -10,6 +10,11 @@ codeunit 138704 "Reten. Pol. Test Installer"
     Subtype = Install;
 
     trigger OnInstallAppPerCompany()
+    begin
+        AddAllowedTables();
+    end;
+
+    local procedure AddAllowedTables()
     var
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         RetentionPolicyTestData3: Record "Retention Policy Test Data 3";
@@ -38,5 +43,11 @@ codeunit 138704 "Reten. Pol. Test Installer"
         Evaluate(RetPeriodCalc, '<-14D>');
         RetenPolAllowedTables.AddTableFilterToJsonArray(TableFilters, RetPeriodCalc, RetentionPolicyTestData4.FieldNo("DateTime Field"), false, false, RecordRef);
         RetenPolAllowedTables.AddAllowedTable(Database::"Retention Policy Test Data 4", TableFilters);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", 'OnRefreshAllowedTables', '', false, false)]
+    local procedure AddAllowedTablesOnRefreshAllowedTables()
+    begin
+        AddAllowedTables();
     end;
 }
