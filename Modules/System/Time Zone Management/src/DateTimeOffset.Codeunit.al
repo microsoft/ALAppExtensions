@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Codeunit that calculates the offset for a datetime from either UTC or another time zone
+/// </summary>
 codeunit 8720 "DateTime Offset"
 {
     /// <summary>

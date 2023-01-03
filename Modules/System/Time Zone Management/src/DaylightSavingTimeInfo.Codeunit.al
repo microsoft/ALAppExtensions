@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Codeunit that provides information regarding daylight saving time for a time zone.
+/// </summary>
 codeunit 8722 "Daylight Saving Time Info"
 {
     /// <summary>
