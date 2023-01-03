@@ -205,22 +205,14 @@ codeunit 132979 "Time Zone Management Test"
     end;
 
     local procedure Initialize()
-    var
-        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
-        LibraryTestInitialize.OnTestInitialize(Codeunit::"Time Zone Management Test");
-
         if IsInitialized then
             exit;
-
-        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Time Zone Management Test");
 
         PermissionsMock.Set('TimeZoneMgt-Objects');
 
         IsInitialized := true;
         Commit();
-
-        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Time Zone Management Test");
     end;
 
     local procedure CreateTimeZoneThatHasDaylightSavingTime(): Text
