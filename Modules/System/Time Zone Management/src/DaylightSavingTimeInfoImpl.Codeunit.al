@@ -20,6 +20,6 @@ codeunit 8723 "Daylight Saving Time Info Impl"
     end;
 
     var
-        TimeZoneInfoInitializer: Codeunit "TimeZoneInfo Initializer";
+        TimeZoneInfoInitializer: Codeunit "Time Zone Info Initializer";
         TimeZoneInfoDotNet: DotNet TimeZoneInfo;
 }

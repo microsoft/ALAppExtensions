@@ -9,7 +9,7 @@ codeunit 8721 "DateTime Offset Impl."
 
     procedure GetUtcOffset(SourceDateTime: DateTime; TimeZoneId: Text): Duration
     var
-        TimeZoneInfoInitializer: Codeunit "TimeZoneInfo Initializer";
+        TimeZoneInfoInitializer: Codeunit "Time Zone Info Initializer";
         Offset: Duration;
         TimeZoneInfoDotNet: DotNet TimeZoneInfo;
     begin

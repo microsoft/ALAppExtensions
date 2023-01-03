@@ -11,5 +11,5 @@ permissionset 8720 TimeZoneMgtObjects
         codeunit "DateTime Offset Impl." = X,
         codeunit "Daylight Saving Time Info" = X,
         codeunit "Daylight Saving Time Info Impl" = X,
-        codeunit "TimeZoneInfo Initializer" = X;
+        codeunit "Time Zone Info Initializer" = X;
 }
