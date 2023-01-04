@@ -19,7 +19,7 @@ codeunit 710 Math
     /// <returns>Value of pi.</returns>
     procedure Pi(): Decimal
     begin
-        exit(3.1415926535897931);
+        exit(3.1415926535897932);
     end;
 
     /// <summary>
