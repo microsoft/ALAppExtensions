@@ -2,7 +2,7 @@
     "id":  "c4cf59d0-e2fe-4bf8-b7ce-084aa91ba487",
     "name":  "Image Tests",
     "publisher":  "Microsoft",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "brief":  "",
     "description":  "Tests for Image module.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,25 +15,25 @@
                              "id":  "b185fd4a-677b-48d3-a324-768de7563df0",
                              "name":  "Image",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
                              "name":  "Base64 Convert",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "platform":  "21.0.0.0",

@@ -1,8 +1,8 @@
-pageextension 2687 "Data Search Whse. Bas. RC Ext" extends"Whse. Basic Role Center"
+pageextension 2687 "Data Search Whse. Bas. RC Ext" extends "Whse. Basic Role Center"
 {
     actions
     {
-        addafter("Navi&gate")
+        addafter(PlanningWorksheets)
         {
             action(DataSearch)
             {

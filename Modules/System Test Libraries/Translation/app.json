@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library with Test objects for the Translation module",
     "description":  "Library with Test objects for the Translation module",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "3ade8173-2cc2-4727-8c57-eb0754f70cdc",
                              "name":  "Translation",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "screenshots":  [

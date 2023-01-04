@@ -13,7 +13,12 @@ tableextension 11700 "Contact CZL" extends Contact
                 RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
                 ResultRecordRef: RecordRef;
                 LogNotVerified: Boolean;
+                IsHandled: Boolean;
             begin
+                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
                 if not RegistrationNoMgtCZL.CheckRegistrationNo("Registration No. CZL", "No.", Database::Contact) then
                     exit;
 
@@ -43,4 +48,9 @@ tableextension 11700 "Contact CZL" extends Contact
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
         RegistrationNoMgtCZL: Codeunit "Registration No. Mgt. CZL";
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeOnValidateRegistrationNoCZL(Contact: Record "Contact"; xContact: Record "Contact"; var IsHandled: Boolean)
+    begin
+    end;
 }

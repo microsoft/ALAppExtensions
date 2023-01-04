@@ -35,11 +35,35 @@ page 30117 "Shpfy Shop Locations Mapping"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the location(s) for which the inventory must be counted.';
+                    trigger OnLookup(var Text: Text): Boolean
+                    var
+                        LocationList: Page "Location List";
+                        OldText: Text;
+                    begin
+                        OldText := Text;
+                        LocationList.LookupMode(true);
+                        if not (LocationList.RunModal() = ACTION::LookupOK) then
+                            exit(false);
+
+                        Text := OldText + LocationList.GetSelectionFilter();
+                        exit(true);
+                    end;
                 }
+#if not CLEAN22
                 field(Disabled; Rec.Disabled)
                 {
                     ApplicationArea = All;
+                    Visible = false;
+                    ObsoleteReason = 'Replaced by Stock Calculation field.';
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
                     ToolTip = 'Specifies if the location is enabled/disabled for send stock information to Shopify.';
+                }
+#endif
+                field("Stock Calculation"; Rec."Stock Calculation")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Select the stock calculation used for this location.';
                 }
             }
         }
@@ -92,7 +116,7 @@ page 30117 "Shpfy Shop Locations Mapping"
     begin
         ShpfyShopLocation.SetRange("Shop Code", Rec.GetFilter("Shop Code"));
         ShpfyShopLocation.SetFilter("Location Filter", '<>%1', '');
-        ShpfyShopLocation.SetRange(Disabled, true);
+        ShpfyShopLocation.SetRange("Stock Calculation", ShpfyShopLocation."Stock Calculation"::Disabled);
         if ShpfyShopLocation.IsEmpty() then
             exit(true);
         if not Confirm(StrSubstNo(DisableQst, Rec.FieldCaption("Location Filter"))) then

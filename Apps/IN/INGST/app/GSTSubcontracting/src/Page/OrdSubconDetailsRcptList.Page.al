@@ -119,4 +119,11 @@ page 18483 "Ord. Subcon Details Rcpt.List"
             }
         }
     }
+
+    trigger OnDeleteRecord(): Boolean
+    var
+        UpdateSubcontractDetails: Codeunit "Update Subcontract Details";
+    begin
+        UpdateSubcontractDetails.ValidateOrUpdateBeforeSubConOrderLineDelete(Rec);
+    end;
 }

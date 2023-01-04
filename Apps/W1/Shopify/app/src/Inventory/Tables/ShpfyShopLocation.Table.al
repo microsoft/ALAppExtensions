@@ -79,6 +79,15 @@ table 30113 "Shpfy Shop Location"
         {
             Caption = 'Disabled';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteReason = 'Replaced by Stock Calculation field.';
+            ObsoleteTag = '22.0';
+            ObsoleteState = Pending;
+#else
+            ObsoleteReason = 'Replaced by Stock Calculation field.';
+            ObsoleteTag = '25.0';
+            ObsoleteState = Removed;
+#endif
             Description = 'This disabled the synchronisation of the stock to Shopify.';
             InitValue = true;
         }
@@ -89,6 +98,13 @@ table 30113 "Shpfy Shop Location"
             DataClassification = SystemMetadata;
             Description = 'Active in Shopfy';
             Editable = false;
+        }
+        field(10; "Stock Calculation"; Enum "Shpfy Stock Calculation")
+        {
+            Caption = 'Stock calculation';
+            DataClassification = SystemMetadata;
+            InitValue = Disabled;
+            Description = 'Select the stock calculation used for this location.';
         }
     }
 
