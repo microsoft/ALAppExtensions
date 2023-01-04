@@ -1,6 +1,6 @@
 {
   "id": "4c315253-b024-4fdc-9c3d-794036768af5",
-  "name": "Time Zone Management",
+  "name": "Date & Time",
   "publisher": "Microsoft",
   "version": "21.0.0.0",
   "brief": "Provides time zone offsets and DST information",
