@@ -10,7 +10,14 @@
   "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
   "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
   "logo": "",
-  "dependencies": [],
+  "dependencies": [
+    {
+      "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+      "name":  "DotNet Aliases",
+      "publisher":  "Microsoft",
+      "version":  "21.3.0.0"
+    }
+  ],
   "screenshots": [],
   "platform": "21.0.0.0",
   "application": "21.0.0.0",
