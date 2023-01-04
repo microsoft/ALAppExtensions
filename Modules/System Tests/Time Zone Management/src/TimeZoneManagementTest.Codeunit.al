@@ -4,8 +4,7 @@ codeunit 132979 "Time Zone Management Test"
 
     var
         PermissionsMock: Codeunit "Permissions Mock";
-        DateTimeOffset: Codeunit "DateTime Offset";
-        DaylightSavingTimeInfo: Codeunit "Daylight Saving Time Info";
+        TimeZone: Codeunit "Time Zone";
         LibraryAssert: Codeunit "Library Assert";
         IsInitialized: Boolean;
 
@@ -237,7 +236,7 @@ codeunit 132979 "Time Zone Management Test"
 
     local procedure RequestUTCOffset(DateTimeToTest: DateTime; TimeZoneId: Text): Duration
     begin
-        exit(DateTimeOffset.GetUtcOffset(DateTimeToTest, TimeZoneId));
+        exit(TimeZone.GetUtcOffset(DateTimeToTest, TimeZoneId));
     end;
 
     local procedure VerifyOffsetIsCorrectForSelectedTimeZone(Offset: Duration; ExpectedOffsetInHours: Decimal)
@@ -260,7 +259,7 @@ codeunit 132979 "Time Zone Management Test"
 
     local procedure CheckWhetherTimeZoneSupportsDaylightSavingTime(TimeZoneId: Text): Boolean
     begin
-        exit(DaylightSavingTimeInfo.TimeZoneSupportsDaylightSavingTime(TimeZoneId));
+        exit(TimeZone.TimeZoneSupportsDaylightSavingTime(TimeZoneId));
     end;
 
     local procedure VerifyDaylightSavingTimeIsNotSupported(SupportsDST: Boolean)
@@ -279,7 +278,7 @@ codeunit 132979 "Time Zone Management Test"
 
     local procedure CheckWhetherDateTimeFallsWithinDSTForTheTimeZone(DateTimeToTest: DateTime; TimeZoneId: Text): Boolean
     begin
-        exit(DaylightSavingTimeInfo.IsDaylightSavingTime(DateTimeToTest, TimeZoneId));
+        exit(TimeZone.IsDaylightSavingTime(DateTimeToTest, TimeZoneId));
     end;
 
     local procedure VerifyDateTimeShowsAsBeingInDST(DateTimeIsInDST: Boolean)
@@ -327,6 +326,6 @@ codeunit 132979 "Time Zone Management Test"
 
     local procedure RequestOffsetBetweenTimeZones(DateTimeToTest: DateTime; SourceTimeZoneId: Text; DestinationTimeZoneId: Text): Duration
     begin
-        exit(DateTimeOffset.GetTimeZoneOffset(DateTimeToTest, SourceTimeZoneId, DestinationTimeZoneId));
+        exit(TimeZone.GetTimeZoneOffset(DateTimeToTest, SourceTimeZoneId, DestinationTimeZoneId));
     end;
 }

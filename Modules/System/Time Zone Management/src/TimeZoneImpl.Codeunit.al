@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 8721 "DateTime Offset Impl."
+codeunit 8721 "Time Zone Impl."
 {
     Access = Internal;
 
@@ -38,5 +38,17 @@ codeunit 8721 "DateTime Offset Impl."
 
         TotalOffset := DestinationUtcOffset - SourceUtcOffset;
         exit(TotalOffset);
+    end;
+
+    procedure TimeZoneSupportsDaylightSavingTime(TimeZoneId: Text): Boolean
+    begin
+        TimeZoneInfoInitializer.InitializeTimeZoneInfo(TimeZoneId, TimeZoneInfoDotNet);
+        exit(TimeZoneInfoDotNet.SupportsDaylightSavingTime);
+    end;
+
+    procedure IsDaylightSavingTime(DateTimeToCheck: DateTime; TimeZoneId: Text): Boolean
+    begin
+        TimeZoneInfoInitializer.InitializeTimeZoneInfo(TimeZoneId, TimeZoneInfoDotNet);
+        exit(TimeZoneInfoDotNet.IsDaylightSavingTime(DateTimeToCheck))
     end;
 }

@@ -3,13 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-permissionset 8720 "Time Zone Mgt. - Objects"
+permissionset 8721 "Time Zone Mgt. - Execute"
 {
     Caption = 'Time Zone Management - Objects';
-    Assignable = false;
-    Access = Internal;
+    Assignable = true;
 
-    Permissions = codeunit "Time Zone" = X,
-        codeunit "Time Zone Impl." = X,
-        codeunit "Time Zone Info Initializer" = X;
+    IncludedPermissionSets = "Time Zone Mgt. - Objects";
 }

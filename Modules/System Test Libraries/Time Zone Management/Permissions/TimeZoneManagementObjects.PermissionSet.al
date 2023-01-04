@@ -1,5 +1,5 @@
 permissionset 132979 "TimeZoneMgt-Objects"
 {
     Assignable = true;
-    IncludedPermissionSets = TimeZoneMgtObjects;
+    IncludedPermissionSets = "Time Zone Mgt. - Objects";
 }

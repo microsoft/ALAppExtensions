@@ -4,9 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Codeunit that calculates the offset for a datetime from either UTC or another time zone
+/// Codeunit that provides data on offsets and daylight saving time for a time zone.
 /// </summary>
-codeunit 8720 "DateTime Offset"
+
+codeunit 8720 "Time Zone"
 {
     /// <summary>
     /// Retrieves the offset from the requested time zone at the time of the requested datetime. This takes into account any daylight saving time conditions that may apply.
@@ -16,7 +17,7 @@ codeunit 8720 "DateTime Offset"
     /// <returns>A duration that indicates the offset between UTC and the requested time zone for the provided datetime.</returns>
     procedure GetUtcOffset(SourceDateTime: DateTime; TimeZoneId: Text): Duration
     begin
-        exit(DateTimeOffsetImpl.GetUtcOffset(SourceDateTime, TimeZoneId));
+        exit(TimeZoneImpl.GetUtcOffset(SourceDateTime, TimeZoneId));
     end;
 
     /// <summary>
@@ -26,7 +27,7 @@ codeunit 8720 "DateTime Offset"
     /// <returns>A duration that indicates the offset between UTC and the user time zone for the provided datetime.</returns>
     procedure GetUtcOffsetForUserTimeZone(SourceDateTime: DateTime): Duration
     begin
-        exit(DateTimeOffsetImpl.GetUtcOffsetForUserTimeZone(SourceDateTime));
+        exit(TimeZoneImpl.GetUtcOffsetForUserTimeZone(SourceDateTime));
     end;
 
     /// <summary>
@@ -38,9 +39,30 @@ codeunit 8720 "DateTime Offset"
     /// <returns>A duration that indicates the offset between the two time zones at the indicated datetime.</returns>
     procedure GetTimeZoneOffset(SourceDateTime: DateTime; SourceTimeZoneId: Text; DestinationTimeZoneId: Text): Duration
     begin
-        exit(DateTimeOffsetImpl.GetTimeZoneOffset(SourceDateTime, SourceTimeZoneId, DestinationTimeZoneId));
+        exit(TimeZoneImpl.GetTimeZoneOffset(SourceDateTime, SourceTimeZoneId, DestinationTimeZoneId));
+    end;
+
+    /// <summary>
+    /// Checks whether the indicated time zone supports daylight saving time.
+    /// </summary>
+    /// <param name="TimeZoneId">The ID of the time zone that you want to check the daylight saving time settings for.</param>
+    /// <returns>A boolean indicating whether the requested time zone observes daylight saving time.</returns>
+    procedure TimeZoneSupportsDaylightSavingTime(TimeZoneId: Text): Boolean
+    begin
+        exit(TimeZoneImpl.TimeZoneSupportsDaylightSavingTime(TimeZoneId))
+    end;
+
+    /// <summary>
+    /// Checks whether the requested datetime falls within the indicated time zone's daylight saving time period.
+    /// </summary>
+    /// <param name="DateTimeToCheck">The datetime for which you want to check whether it falls within the time zone's daylight saving time period.</param>
+    /// <param name="TimeZoneId">The ID of the time zone against which you want to check the datetime.</param>
+    /// <returns>A boolean indicating whether the requested datetime falls within the daylight saving time period for the indicated time zone. If the time zone does not observe daylight saving time, this will always return false.</returns>
+    procedure IsDaylightSavingTime(DateTimeToCheck: DateTime; TimeZoneId: Text): Boolean
+    begin
+        exit(TimeZoneImpl.IsDaylightSavingTime(DateTimeToCheck, TimeZoneId));
     end;
 
     var
-        DateTimeOffsetImpl: Codeunit "DateTime Offset Impl.";
+        TimeZoneImpl: Codeunit "Time Zone Impl.";
 }
