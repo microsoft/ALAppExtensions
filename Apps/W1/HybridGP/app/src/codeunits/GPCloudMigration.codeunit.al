@@ -174,6 +174,8 @@ codeunit 4025 "GP Cloud Migration"
         if ProductID <> HybridGPWizard.ProductId() then
             exit;
 
+        UpdateOrInsertRecord(Database::"GP BM30200", 'BM30200');
+
         UpdateOrInsertRecord(Database::"GP Checkbook MSTR", 'CM00100');
         UpdateOrInsertRecord(Database::"GP Checkbook Transactions", 'CM20200');
         UpdateOrInsertRecord(Database::"GP CM20600", 'CM20600');

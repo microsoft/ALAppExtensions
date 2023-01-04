@@ -101,5 +101,6 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GP SY03300" = R,
                     tabledata "GP GL00105" = R,
                     tabledata "GP GL20000" = R,
-                    tabledata "GP GL30000" = R;
+                    tabledata "GP GL30000" = R,
+                    tabledata "GP BM30200" = R;
 }
