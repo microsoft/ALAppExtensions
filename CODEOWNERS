@@ -2,7 +2,7 @@
 # Each line is a file pattern followed by one or more owners.
 
 # These owners will be the default owners for everything in the repo.
-* @microsoft/dynamics-smb-application-engineers
+* @microsoft/dynamics-smb
 
 # AL-Go files are owned by Engineering Systems
 /Modules/.AL-Go @microsoft/dynamics-smb-engineering-systems
