@@ -7,6 +7,10 @@ codeunit 8721 "Time Zone Impl."
 {
     Access = Internal;
 
+    var
+        TimeZoneInfoInitializer: Codeunit "Time Zone Info Initializer";
+        TimeZoneInfoDotNet: DotNet TimeZoneInfo;
+
     procedure GetUtcOffset(SourceDateTime: DateTime; TimeZoneId: Text): Duration
     var
         TimeZoneInfoInitializer: Codeunit "Time Zone Info Initializer";
