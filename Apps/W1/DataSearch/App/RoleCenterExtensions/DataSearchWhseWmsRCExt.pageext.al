@@ -2,7 +2,7 @@ pageextension 2688 "Data Search Whse. Wms. RC Ext" extends"Whse. WMS Role Center
 {
     actions
     {
-        addafter("Navi&gate")
+        addafter("M&ovement Worksheet")
         {
             action(DataSearch)
             {

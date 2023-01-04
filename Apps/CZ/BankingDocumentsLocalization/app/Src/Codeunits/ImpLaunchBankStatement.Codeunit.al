@@ -47,6 +47,7 @@ codeunit 31364 "Imp. Launch Bank Statement CZB"
           TempBlob, WindowTitleTxt, '', BankExportImportSetup.GetFilterTextCZB(), BankExportImportSetup."Default File Type CZB");
         BankStatementLineCZB.Init();
         BankStatementLineCZB.SetRange("Bank Statement No.", BankStatementHeaderCZB."No.");
+        OnRunProcessingXMLPortOnAfterSetFilters(BankExportImportSetup, BankStatementHeaderCZB, BankStatementLineCZB);
         if TempBlob.HasValue() then
             XMLPORT.Import(BankExportImportSetup."Processing XMLport ID", InStream, BankStatementLineCZB);
     end;
@@ -88,5 +89,10 @@ codeunit 31364 "Imp. Launch Bank Statement CZB"
         CreateBankAccStmtLineCZB: Codeunit "Create Bank Acc. Stmt Line CZB";
     begin
         exit(CreateBankAccStmtLineCZB.Run(BankAccReconciliation));
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnRunProcessingXMLPortOnAfterSetFilters(BankExportImportSetup: Record "Bank Export/Import Setup"; BankStatementHeaderCZB: Record "Bank Statement Header CZB"; var BankStatementLineCZB: Record "Bank Statement Line CZB")
+    begin
     end;
 }

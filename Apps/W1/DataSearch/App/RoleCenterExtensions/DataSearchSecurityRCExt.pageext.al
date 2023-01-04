@@ -2,7 +2,14 @@ pageextension 2690 "Data Search Security RC Ext" extends "Security Admin Role Ce
 {
     actions
     {
-        addafter(Action29)
+#if not CLEAN21
+        // the 'processing' area is being deprecated in this page. After that has been done, we can remove these pragmas without any other change        
+#pragma warning disable AL0432
+#endif
+        addlast(processing)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
         {
             action(DataSearch)
             {

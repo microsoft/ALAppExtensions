@@ -8,6 +8,8 @@ codeunit 31039 "Purchase Posting Handler CZL"
         Currency: Record Currency;
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
+        PurchaseAlreadyExistsQst: Label 'Purchase %1 %2 already exists for this vendor.\Do you want to continue?',
+            Comment = '%1 = Document Type; %2 = External Document No.; e.g. Purchase Invoice 123 already exists...';
 
 #if not CLEAN20
 #pragma warning disable AL0432
@@ -445,9 +447,10 @@ codeunit 31039 "Purchase Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnCheckAndUpdateOnAfterSetPostingFlags', '', false, false)]
-    local procedure CheckTarifNoOnCheckAndUpdateOnAfterSetPostingFlags(var PurchHeader: Record "Purchase Header");
+    local procedure CheckPurchDocumentOnCheckAndUpdateOnAfterSetPostingFlags(var PurchHeader: Record "Purchase Header");
     begin
         CheckTariffNo(PurchHeader);
+        CheckAndConfirmExternalDocumentNumber(PurchHeader);
     end;
 
     local procedure CheckTariffNo(PurchaseHeader: Record "Purchase Header")
@@ -472,6 +475,58 @@ codeunit 31039 "Purchase Posting Handler CZL"
                                 PurchaseLine.TestField("Unit of Measure Code", TariffNumber."VAT Stat. UoM Code CZL");
                     end;
             until PurchaseLine.Next() = 0;
+    end;
+
+    local procedure CheckAndConfirmExternalDocumentNumber(PurchaseHeader: Record "Purchase Header")
+    var
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        PersistConfirmResponseCZL: Codeunit "Persist. Confirm Response CZL";
+        DocumentType: Enum "Gen. Journal Document Type";
+        ExternalDocumentNo: Code[35];
+        ConfirmQuestion: Text;
+    begin
+        if not GuiAllowed() or not PurchaseHeader.Invoice then
+            exit;
+
+        if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::Order,
+                                              PurchaseHeader."Document Type"::Invoice]
+        then begin
+            DocumentType := DocumentType::Invoice;
+            ExternalDocumentNo := PurchaseHeader."Vendor Invoice No.";
+        end else begin
+            DocumentType := DocumentType::"Credit Memo";
+            ExternalDocumentNo := PurchaseHeader."Vendor Cr. Memo No.";
+        end;
+
+        PurchasesPayablesSetup.Get();
+        if not PurchasesPayablesSetup."Ext. Doc. No. Mandatory" and (ExternalDocumentNo = '') then
+            exit;
+
+        if CheckExternalDocumentNumber(PurchaseHeader, ExternalDocumentNo) then
+            exit;
+
+        ConfirmQuestion := StrSubstNo(PurchaseAlreadyExistsQst, DocumentType, ExternalDocumentNo);
+        PersistConfirmResponseCZL.Init();
+        if not PersistConfirmResponseCZL.GetResponseOrDefault(ConfirmQuestion, false) then
+            Error('');
+    end;
+
+    local procedure CheckExternalDocumentNumber(PurchaseHeader: Record "Purchase Header"; ExternalDocumentNo: Code[35]): Boolean
+    var
+        VendLedgEntry: Record "Vendor Ledger Entry";
+    begin
+        exit(not PurchaseHeader.FindPostedDocumentWithSameExternalDocNo(VendLedgEntry, ExternalDocumentNo));
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeCheckExternalDocumentNumber', '', false, false)]
+    local procedure SkipCheckExternalDocumentNoOnBeforeCheckExternalDocumentNumber(var Handled: Boolean)
+    var
+        PersistConfirmResponseCZL: Codeunit "Persist. Confirm Response CZL";
+    begin
+        if Handled then
+            exit;
+
+        Handled := PersistConfirmResponseCZL.GetPersistentResponse();
     end;
 
 #if not CLEAN20

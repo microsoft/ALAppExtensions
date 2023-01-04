@@ -31,10 +31,12 @@ enum 30113 "Shpfy Order Fulfill. Status"
     {
         Caption = 'Restocked';
     }
-    value(7; Unfilfilled)
+#pragma warning disable AS0082
+    value(7; Unfulfilled)
     {
         Caption = 'Unfulfilled';
     }
+#pragma warning restore AS0082
     value(8; "Partially Fulfilled")
     {
         Caption = 'Partially Fulfilled';

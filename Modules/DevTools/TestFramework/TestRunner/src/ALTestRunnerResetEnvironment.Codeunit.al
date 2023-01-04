@@ -11,8 +11,16 @@ codeunit 130453 "ALTestRunner Reset Environment"
         CurrentWorkDate := WorkDate();
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnBeforeTestMethodRun', '', false, false)]
     procedure BeforeTestMethod(CodeunitID: Integer; CodeunitName: Text[30]; FunctionName: Text[128]; FunctionTestPermissions: TestPermissions; var CurrentTestMethodLine: Record "Test Method Line")
+#pragma warning restore
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnBeforeTestMethodRun', '', false, false)]
+    local procedure BeforeTestMethod(CodeunitID: Integer; CodeunitName: Text[30]; FunctionName: Text[128]; FunctionTestPermissions: TestPermissions; var CurrentTestMethodLine: Record "Test Method Line")
+#endif
     begin
         ClearLastError();
         ApplicationArea('');
@@ -23,8 +31,16 @@ codeunit 130453 "ALTestRunner Reset Environment"
         BindStopSystemTableChanges();
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnAfterCodeunitRun', '', false, false)]
     procedure AfterTestMethod(var TestMethodLine: Record "Test Method Line")
+#pragma warning restore
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnAfterCodeunitRun', '', false, false)]
+    local procedure AfterTestMethod(var TestMethodLine: Record "Test Method Line")
+#endif
     begin
         WorkDate(CurrentWorkDate);
         ApplicationArea('');

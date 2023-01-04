@@ -1037,9 +1037,11 @@ table 11733 "Cash Document Line CZP"
             exit;
 
         SourceCodeSetup.Get();
+        GetCashDocumentHeaderCZP();
         OldDimSetID := "Dimension Set ID";
         "Dimension Set ID" := DimensionManagement.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup."Cash Desk CZP",
-                                "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+                                "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", CashDocumentHeaderCZP."Dimension Set ID", 0);
+        DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
 
         OnAfterCreateDim(Rec, xRec, CurrFieldNo, OldDimSetID);
     end;

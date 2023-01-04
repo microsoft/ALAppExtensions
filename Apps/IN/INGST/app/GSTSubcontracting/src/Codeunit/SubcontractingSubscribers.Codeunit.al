@@ -1,5 +1,9 @@
 codeunit 18469 "Subcontracting Subscribers"
 {
+    var
+        DeliveryChallanExistsErr: Label 'You cannot delete this document. Delivery Challan exist for Subcontracting Order no. %1.', Comment = '%1 = Subcontracting Order No.';
+        QutstandingQuantityErr: Label 'Cannot delete Subcontracting order No: %1 as there is remaining quantity pending to be received. Continue with next order?', Comment = '%1 = Document No.';
+
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeTestNoSeries', '', false, false)]
     local procedure TestSubcontractingNoSeries(var PurchaseHeader: Record "Purchase Header"; Var Ishandled: boolean)
     var
@@ -245,15 +249,31 @@ codeunit 18469 "Subcontracting Subscribers"
         RemoveSubcontractingLinkFromProdOrderLine(PurchHeader);
     end;
 
+    [EventSubscriber(ObjectType::Report, Report::"Delete Invoiced Purch. Orders", 'OnAfterSetPurchLineFilters', '', false, false)]
+    local procedure OnAfterSetPurchLineFilters(var PurchaseLine: Record "Purchase Line")
+    var
+        PurchHeader: Record "Purchase Header";
+    begin
+        if PurchaseLine.FindFirst() then begin
+            PurchHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+            if not PurchHeader.Subcontracting then
+                exit;
+
+            if GuiAllowed then
+                if not Confirm(QutstandingQuantityErr, true, PurchaseLine."Document No.") then
+                    Error('Order not deleted');
+        end;
+    end;
+
     local procedure ValidateDeliveryChallanCreatedForOrder(PurchHeader: Record "Purchase Header")
     var
         DeliveryChallanLine: Record "Delivery Challan Line";
-        DeliveryChallanExistsErr: Label 'You cannot delete this document. Delivery Challan exist for Subcontractin Order no. %1.', Comment = '%1 = Subcontracting Order No.';
     begin
         if not PurchHeader.Subcontracting then
             exit;
 
         DeliveryChallanLine.SetRange("Document No.", PurchHeader."No.");
+        DeliveryChallanLine.SetFilter("Remaining Quantity", '<>0');
         if not DeliveryChallanLine.IsEmpty() then
             Error(DeliveryChallanExistsErr, PurchHeader."No.");
     end;

@@ -2,7 +2,7 @@
     "id":  "af38009d-413c-4927-acc6-1485c8f9b1f5",
     "name":  "Geolocation Tests",
     "publisher":  "Microsoft",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "brief":  "",
     "description":  "Tests for Geolocation module.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,19 +15,19 @@
                              "id":  "7f03f010-1703-47eb-a3cd-c6d28b8a806c",
                              "name":  "Geolocation",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "ca744f73-dfb4-4702-b72f-e095cac5526e",
                              "name":  "Geolocation Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "platform":  "21.0.0.0",
