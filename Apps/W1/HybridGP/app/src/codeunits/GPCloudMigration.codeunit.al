@@ -212,8 +212,8 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP PM20000", 'PM20000');
         UpdateOrInsertRecord(Database::GPPMHist, 'PM30200');
 
-        UpdateOrInsertRecord(Database::"GP POPPOHeader", 'POP10100');
-        UpdateOrInsertRecord(Database::"GP POPPOLine", 'POP10110');
+        UpdateOrInsertRecord(Database::"GP POP10100", 'POP10100');
+        UpdateOrInsertRecord(Database::"GP POP10110", 'POP10110');
         UpdateOrInsertRecord(Database::GPPOPReceiptApply, 'POP10500');
         UpdateOrInsertRecord(Database::GPPOPReceiptHist, 'POP30300');
         UpdateOrInsertRecord(Database::GPPOPReceiptLineHist, 'POP30310');

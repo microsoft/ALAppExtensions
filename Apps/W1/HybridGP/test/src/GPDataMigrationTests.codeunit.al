@@ -19,8 +19,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00200: Record "GP PM00200";
         GPRM00101: Record "GP RM00101";
         GPRM00201: Record "GP RM00201";
-        GPPOPPOHeader: Record "GP POPPOHeader";
-        GPPOPPOLine: Record "GP POPPOLine";
+        GPPOP10100: Record "GP POP10100";
+        GPPOP10110: Record "GP POP10110";
         GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
@@ -45,6 +45,7 @@ codeunit 139664 "GP Data Migration Tests"
         CurrencyCodeUSTxt: Label 'Z-US$', Comment = 'GP US Currency Code', Locked = true;
         PONumberTxt: Label 'PO001', Comment = 'PO number for Migrate Open POs setting tests', Locked = true;
         PostingGroupCodeTxt: Label 'GP', Locked = true;
+        FunnyMoneyCurrencyCode: Label 'FUNNYMONEY', Locked = true;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -595,7 +596,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [THEN] payment terms get created in BC.
         PaymentTerms.FindFirst();
-        Assert.AreEqual(6, PaymentTerms.Count(), 'Incorrect number of Payment Terms created.');
+        Assert.AreEqual(7, PaymentTerms.Count(), 'Incorrect number of Payment Terms created.');
 
         Evaluate(DiscountDateCalculation, '<D10>');
         Evaluate(DueDateCalculation, '<D10>');
@@ -775,6 +776,24 @@ codeunit 139664 "GP Data Migration Tests"
         GPPaymentTerms.CalculateDateFromDays := 0;
         GPPaymentTerms.DueMonth := 0; // empty
         GPPaymentTerms.DiscountMonth := 0; // empty
+        GPPaymentTerms.PYMTRMID_New := '';
+        GPPaymentTerms.Insert();
+
+        GPPaymentTerms.Init();
+        GPPaymentTerms.PYMTRMID := '5% 10/NET 30';
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 10;
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::EOM;
+        GPPaymentTerms.DISCDTDS := 10;
+        GPPaymentTerms.DSCLCTYP := GPPaymentTerms.DSCLCTYP::Percent;
+        GPPaymentTerms.DSCPCTAM := 200;
+        GPPaymentTerms.TAX := true;
+        GPPaymentTerms.CBUVATMD := false;
+        GPPaymentTerms.USEGRPER := false;
+        GPPaymentTerms.CalculateDateFrom := GPPaymentTerms.CalculateDateFrom::"Transaction Date";
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        GPPaymentTerms.DueMonth := 0;
+        GPPaymentTerms.DiscountMonth := 0;
         GPPaymentTerms.PYMTRMID_New := '';
         GPPaymentTerms.Insert();
     end;
@@ -1110,6 +1129,9 @@ codeunit 139664 "GP Data Migration Tests"
     procedure TestOpenPOSettingEnabled()
     var
         PurchaseHeader: Record "Purchase Header";
+        PaymentTerms: Record "Payment Terms";
+        GPPaymentTerms: Record "GP Payment Terms";
+        Currency: Record Currency;
     begin
         // [SCENARIO] Vendors and their PO information are queried from GP
         // [GIVEN] GP data
@@ -1125,15 +1147,35 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.Validate("Migrate Open POs", true);
         GPCompanyAdditionalSettings.Modify();
 
+        CreateGPPaymentTermsRecords();
+
+        // [WHEN] The Payment Terms migration code is run.
+        PaymentTerms.DeleteAll();
+        HelperFunctions.CreatePaymentTerms();
+
         GPTestHelperFunctions.InitializeMigration();
 
         GPVendor.Reset();
         MigrateVendors(GPVendor);
         HelperFunctions.CreatePostMigrationData();
 
-        // [then] Then the POs will be migrated
+        // [THEN] the too long PYMTRMID will be generated correctly
+        GPPaymentTerms.SetRange(PYMTRMID, '5% 10/NET 30');
+        GPPaymentTerms.FindFirst();
+        Assert.AreEqual('5% 10/NET2', GPPaymentTerms.PYMTRMID_New, 'Incorrect new PYMTRMID_New.');
+
+        GPPOP10100.FindFirst();
+        Assert.AreEqual('5% 10/NET2', GPPOP10100.PYMTRMID, 'Incorrect payment terms code in staging table.');
+
+        // [THEN] the POs will be migrated
         PurchaseHeader.SetRange("No.", PONumberTxt);
-        Assert.IsFalse(PurchaseHeader.IsEmpty(), 'POs should have been created.');
+        Assert.IsTrue(PurchaseHeader.FindFirst(), 'POs should have been created.');
+
+        // With the correct generated Payment Terms Code
+        Assert.AreEqual('5% 10/NET2', PurchaseHeader."Payment Terms Code", 'Incorrect payment terms code.');
+
+        // [THEN] the new Currency is created
+        Assert.IsTrue(Currency.Get(FunnyMoneyCurrencyCode), 'The new Currency was not created.');
     end;
 
     [Normal]
@@ -1158,8 +1200,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00200.DeleteAll();
         GPRM00101.DeleteAll();
         GPRM00201.DeleteAll();
-        GPPOPPOLine.DeleteAll();
-        GPPOPPOHeader.DeleteAll();
+        GPPOP10100.DeleteAll();
+        GPPOP10110.DeleteAll();
 
         if not GenBusPostingGroup.Get(PostingGroupCodeTxt) then begin
             GenBusPostingGroup.Validate("Code", PostingGroupCodeTxt);
@@ -3356,13 +3398,24 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure CreateOpenPOData()
     begin
-        Clear(GPPOPPOHeader);
-        GPPOPPOHeader.PONUMBER := CopyStr(PONumberTxt, 1, MaxStrLen(GPPOPPOLine.PONUMBER));
-        GPPOPPOHeader.VENDORID := 'DUFFY';
-        GPPOPPOHeader.DOCDATE := Today();
-        GPPOPPOHeader.PRMDATE := Today();
-        GPPOPPOHeader.PYMTRMID := '2% EOM/Net 15th';
-        GPPOPPOHeader.SHIPMTHD := 'Space Ship';
-        GPPOPPOHeader.Insert();
+        Clear(GPMC40200);
+        GPMC40200.CURNCYID := FunnyMoneyCurrencyCode;
+        GPMC40200.CRNCYDSC := 'Funny Money :)';
+        GPMC40200.CRNCYSYM := 'FM';
+        GPMC40200.Insert();
+
+        Clear(GPPOP10100);
+        GPPOP10100.POTYPE := GPPOP10100.POTYPE::Standard;
+        GPPOP10100.POSTATUS := GPPOP10100.POSTATUS::New;
+        GPPOP10100.PONUMBER := CopyStr(PONumberTxt, 1, MaxStrLen(GPPOP10110.PONUMBER));
+        GPPOP10100.VENDORID := 'DUFFY';
+        GPPOP10100.DOCDATE := 20230101D;
+        GPPOP10100.PRMDATE := 20230101D;
+        GPPOP10100.PYMTRMID := '5% 10/NET 30';
+        GPPOP10100.SHIPMTHD := 'Space Ship';
+        GPPOP10100.CURNCYID := FunnyMoneyCurrencyCode;
+        GPPOP10100.XCHGRATE := 0.01;
+        GPPOP10100.EXCHDATE := 20230101D;
+        GPPOP10100.Insert();
     end;
 }

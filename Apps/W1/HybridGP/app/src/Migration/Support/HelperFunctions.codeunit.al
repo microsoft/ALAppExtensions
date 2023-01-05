@@ -793,7 +793,7 @@ Codeunit 4037 "Helper Functions"
         GPPOPReceiptHist: Record "GPPOPReceiptHist"; //4116
         GPPOPPOHist: Record "GPPOPPOHist"; //4123
         GPPMHist: Record "GPPMHist"; //4126
-        GPPOPPOHeader: Record "GP POPPOHeader";
+        GPPOP10100: Record "GP POP10100";
         PaymentTerm: Text[22];
         PaymentTerm_New: Text[10];
     begin
@@ -865,10 +865,10 @@ Codeunit 4037 "Helper Functions"
                 if GPPMHist.FINDFIRST() then
                     GPPMHist.MODIFYALL(GPPMHist."PYMTRMID", PaymentTerm_New);
 
-                GPPOPPOHeader.Reset();
-                GPPOPPOHeader.SetRange(GPPOPPOHeader.PYMTRMID, PaymentTerm);
-                if GPPOPPOHeader.FindFirst() then
-                    GPPOPPOHeader.ModifyAll(GPPOPPOHeader.PYMTRMID, PaymentTerm_New);
+                GPPOP10100.Reset();
+                GPPOP10100.SetRange(GPPOP10100.PYMTRMID, PaymentTerm);
+                if GPPOP10100.FindFirst() then
+                    GPPOP10100.ModifyAll(GPPOP10100.PYMTRMID, PaymentTerm_New);
 
             end;
         until GPPaymentTerms.Next() = 0;
@@ -2004,5 +2004,22 @@ Codeunit 4037 "Helper Functions"
                 GLAccount."Gen. Prod. Posting Group" := PostingGroupCodeTxt;
                 GLAccount.Modify(true);
             end;
+    end;
+
+    procedure CreateCurrencyIfNeeded(CurrencyCode: Code[10])
+    var
+        Currency: Record Currency;
+        GPMC40200: Record "GP MC40200";
+    begin
+        if (CurrencyCode <> '') and not Currency.Get(CurrencyCode) then begin
+            GPMC40200.SetRange("CURNCYID", CurrencyCode);
+            if GPMC40200.FindFirst() then begin
+                Currency.Validate("Symbol", GPMC40200.CRNCYSYM);
+                Currency.Validate("Code", CurrencyCode);
+                Currency.Validate("Description", CopyStr(GPMC40200.CRNCYDSC, 1, 30));
+                Currency.Validate("Invoice Rounding Type", Currency."Invoice Rounding Type"::Nearest);
+                Currency.Insert();
+            end;
+        end;
     end;
 }

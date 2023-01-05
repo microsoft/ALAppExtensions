@@ -1,7 +1,11 @@
+#if not CLEAN22
 table 40102 "GP POPPOHeader"
 {
     DataClassification = CustomerContent;
     Extensible = false;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by table GP POP10100.';
+    ObsoleteTag = '22.0';
 
     fields
     {
@@ -856,3 +860,4 @@ table 40102 "GP POPPOHeader"
             PurchaseHeader."Ship-to County" := STATE;
     end;
 }
+#endif

@@ -6,43 +6,69 @@ codeunit 40108 "GP PO Migrator"
 
     procedure MigratePOStagingData()
     var
-        GPPOPPOHeader: Record "GP POPPOHeader";
+        GPPOP10100: Record "GP POP10100";
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         CompanyInformation: Record "Company Information";
         PurchaseHeader: Record "Purchase Header";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        HelperFunctions: Codeunit "Helper Functions";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
         CountryCode: Code[10];
+        CurrencyCode: Code[10];
     begin
-        if not GPPOPPOHeader.FindSet() then
+        GPPOP10100.SetRange(POTYPE, GPPOP10100.POTYPE::Standard);
+        GPPOP10100.SetFilter(POSTATUS, '%1..%2', 1, 4);
+        if not GPPOP10100.FindSet() then
             exit;
 
         CompanyInformation.Get();
-
+        GeneralLedgerSetup.Get();
         CountryCode := CompanyInformation."Country/Region Code";
 
         repeat
-            if not PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, GPPOPPOHeader.PONUMBER) then begin
+            if not PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, GPPOP10100.PONUMBER) then begin
+                CurrencyCode := CopyStr(GPPOP10100.CURNCYID.Trim(), 1, MaxStrLen(CurrencyCode));
+                HelperFunctions.CreateCurrencyIfNeeded(CurrencyCode);
+
+                PurchaseHeader.Init();
                 PurchaseHeader.Validate("Document Type", PurchaseDocumentType::Order);
-                PurchaseHeader."No." := GPPOPPOHeader.PONUMBER;
+                PurchaseHeader."No." := GPPOP10100.PONUMBER;
                 PurchaseHeader.Status := PurchaseDocumentStatus::Open;
                 PurchaseHeader.Insert(true);
 
-                PurchaseHeader.Validate("Buy-from Vendor No.", GPPOPPOHeader.VENDORID);
-                PurchaseHeader.Validate("Pay-to Vendor No.", GPPOPPOHeader.VENDORID);
-                PurchaseHeader.Validate("Order Date", GPPOPPOHeader.DOCDATE);
-                PurchaseHeader.Validate("Posting Date", GPPOPPOHeader.DOCDATE);
-                PurchaseHeader.Validate("Document Date", GPPOPPOHeader.DOCDATE);
-                PurchaseHeader.Validate("Expected Receipt Date", GPPOPPOHeader.PRMDATE);
+                PurchaseHeader.Validate("Buy-from Vendor No.", GPPOP10100.VENDORID);
+                PurchaseHeader.Validate("Pay-to Vendor No.", GPPOP10100.VENDORID);
+                PurchaseHeader.Validate("Order Date", GPPOP10100.DOCDATE);
+                PurchaseHeader.Validate("Posting Date", GPPOP10100.DOCDATE);
+                PurchaseHeader.Validate("Document Date", GPPOP10100.DOCDATE);
+                PurchaseHeader.Validate("Expected Receipt Date", GPPOP10100.PRMDATE);
                 PurchaseHeader.Validate("Posting Description", MigratedFromGPDescriptionTxt);
-                PurchaseHeader.Validate("Payment Terms Code", CopyStr(GPPOPPOHeader.PYMTRMID, 1, MaxStrLen(PurchaseHeader."Payment Terms Code")));
-                PurchaseHeader."Shipment Method Code" := CopyStr(GPPOPPOHeader.SHIPMTHD, 1, MaxStrLen(PurchaseHeader."Shipment Method Code"));
+                PurchaseHeader.Validate("Payment Terms Code", CopyStr(GPPOP10100.PYMTRMID, 1, MaxStrLen(PurchaseHeader."Payment Terms Code")));
+                PurchaseHeader."Shipment Method Code" := CopyStr(GPPOP10100.SHIPMTHD, 1, MaxStrLen(PurchaseHeader."Shipment Method Code"));
                 PurchaseHeader."Vendor Posting Group" := GPCodeTxt;
                 PurchaseHeader.Validate("Prices Including VAT", false);
-                PurchaseHeader.Validate("Vendor Invoice No.", GPPOPPOHeader.PONUMBER);
+                PurchaseHeader.Validate("Vendor Invoice No.", GPPOP10100.PONUMBER);
                 PurchaseHeader.Validate("Gen. Bus. Posting Group", GPCodeTxt);
 
-                UpdateShipToAddress(GPPOPPOHeader, CountryCode, PurchaseHeader);
+                if CurrencyCode <> '' then
+                    if CurrencyCode <> GeneralLedgerSetup."LCY Code" then
+                        if GPPOP10100.XCHGRATE <> 0 then begin
+                            if not CurrencyExchangeRate.Get(CurrencyCode, GPPOP10100.EXCHDATE) then begin
+                                CurrencyExchangeRate.Init();
+                                CurrencyExchangeRate.Validate("Currency Code", CurrencyCode);
+                                CurrencyExchangeRate.Validate("Starting Date", GPPOP10100.EXCHDATE);
+                                CurrencyExchangeRate.Validate("Exchange Rate Amount", GPPOP10100.XCHGRATE);
+                                CurrencyExchangeRate.Validate("Relational Exch. Rate Amount", GPPOP10100.XCHGRATE);
+                                CurrencyExchangeRate.Insert();
+                            end;
+
+                            PurchaseHeader."Currency Factor" := GPPOP10100.XCHGRATE;
+                            PurchaseHeader."Currency Code" := CurrencyCode;
+                        end;
+
+                UpdateShipToAddress(GPPOP10100, CountryCode, PurchaseHeader);
 
                 if PurchasesPayablesSetup.FindFirst() then begin
                     PurchaseHeader.Validate("Posting No. Series", PurchasesPayablesSetup."Posted Invoice Nos.");
@@ -50,43 +76,43 @@ codeunit 40108 "GP PO Migrator"
                 end;
 
                 PurchaseHeader.Modify(true);
-                CreateLines(GPPOPPOHeader);
+                CreateLines(GPPOP10100);
             end;
-        until GPPOPPOHeader.Next() = 0;
+        until GPPOP10100.Next() = 0;
     end;
 
-    local procedure UpdateShipToAddress(GPPOPPOHeader: Record "GP POPPOHeader"; CountryCode: Code[10]; var PurchaseHeader: Record "Purchase Header")
+    local procedure UpdateShipToAddress(GPPOP10100: Record "GP POP10100"; CountryCode: Code[10]; var PurchaseHeader: Record "Purchase Header")
     begin
-        if GPPOPPOHeader.PRSTADCD.Trim() <> '' then begin
-            PurchaseHeader."Ship-to Code" := CopyStr(DelChr(GPPOPPOHeader.PRSTADCD, '>', ' '), 1, MaxStrLen(PurchaseHeader."Ship-to Code"));
+        if GPPOP10100.PRSTADCD.Trim() <> '' then begin
+            PurchaseHeader."Ship-to Code" := CopyStr(DelChr(GPPOP10100.PRSTADCD, '>', ' '), 1, MaxStrLen(PurchaseHeader."Ship-to Code"));
             PurchaseHeader."Ship-to Country/Region Code" := CountryCode;
         end;
 
-        if GPPOPPOHeader.CMPNYNAM.Trim() <> '' then
-            PurchaseHeader."Ship-to Name" := GPPOPPOHeader.CMPNYNAM;
+        if GPPOP10100.CMPNYNAM.Trim() <> '' then
+            PurchaseHeader."Ship-to Name" := GPPOP10100.CMPNYNAM;
 
-        if GPPOPPOHeader.ADDRESS1.Trim() <> '' then
-            PurchaseHeader."Ship-to Address" := GPPOPPOHeader.ADDRESS1;
+        if GPPOP10100.ADDRESS1.Trim() <> '' then
+            PurchaseHeader."Ship-to Address" := GPPOP10100.ADDRESS1;
 
-        if GPPOPPOHeader.ADDRESS2.Trim() <> '' then
-            PurchaseHeader."Ship-to Address 2" := CopyStr(DelChr(GPPOPPOHeader.ADDRESS2, '>', ' '), 1, MaxStrLen(PurchaseHeader."Ship-to Address 2"));
+        if GPPOP10100.ADDRESS2.Trim() <> '' then
+            PurchaseHeader."Ship-to Address 2" := CopyStr(DelChr(GPPOP10100.ADDRESS2, '>', ' '), 1, MaxStrLen(PurchaseHeader."Ship-to Address 2"));
 
-        if GPPOPPOHeader.CITY.Trim() <> '' then
-            PurchaseHeader."Ship-to City" := CopyStr(DelChr(GPPOPPOHeader.CITY, '>', ' '), 1, MaxStrLen(PurchaseHeader."Ship-to City"));
+        if GPPOP10100.CITY.Trim() <> '' then
+            PurchaseHeader."Ship-to City" := CopyStr(DelChr(GPPOP10100.CITY, '>', ' '), 1, MaxStrLen(PurchaseHeader."Ship-to City"));
 
-        if GPPOPPOHeader.CONTACT.Trim() <> '' then
-            PurchaseHeader."Ship-to Contact" := GPPOPPOHeader.CONTACT;
+        if GPPOP10100.CONTACT.Trim() <> '' then
+            PurchaseHeader."Ship-to Contact" := GPPOP10100.CONTACT;
 
-        if GPPOPPOHeader.ZIPCODE.Trim() <> '' then
-            PurchaseHeader."Ship-to Post Code" := GPPOPPOHeader.ZIPCODE;
+        if GPPOP10100.ZIPCODE.Trim() <> '' then
+            PurchaseHeader."Ship-to Post Code" := GPPOP10100.ZIPCODE;
 
-        if GPPOPPOHeader.STATE.Trim() <> '' then
-            PurchaseHeader."Ship-to County" := GPPOPPOHeader.STATE;
+        if GPPOP10100.STATE.Trim() <> '' then
+            PurchaseHeader."Ship-to County" := GPPOP10100.STATE;
     end;
 
-    local procedure CreateLines(GPPOPPOHeader: Record "GP POPPOHeader")
+    local procedure CreateLines(GPPOP10100: Record "GP POP10100")
     var
-        GPPOPPOLine: Record "GP POPPOLine";
+        GPPOP10110: Record "GP POP10110";
         PurchaseLine: Record "Purchase Line";
         GPPOPReceiptApply: Record GPPOPReceiptApply;
         PurchaseDocumentType: Enum "Purchase Document Type";
@@ -94,52 +120,52 @@ codeunit 40108 "GP PO Migrator"
         LineNo: Integer;
         QtyShipped: Decimal;
     begin
-        GPPOPPOLine.SetRange(PONUMBER, GPPOPPOHeader.PONUMBER);
-        if not GPPOPPOLine.FindSet() then
+        GPPOP10110.SetRange(PONUMBER, GPPOP10100.PONUMBER);
+        if not GPPOP10110.FindSet() then
             exit;
 
         LineNo := 10000;
 
         repeat
             PurchaseLine.Init();
-            PurchaseLine."Document No." := GPPOPPOLine.PONUMBER;
+            PurchaseLine."Document No." := GPPOP10110.PONUMBER;
             PurchaseLine."Document Type" := PurchaseDocumentType::Order;
             PurchaseLine."Line No." := LineNo;
-            PurchaseLine."Buy-from Vendor No." := GPPOPPOLine.VENDORID;
+            PurchaseLine."Buy-from Vendor No." := GPPOP10110.VENDORID;
             PurchaseLine.Type := PurchaseLineType::Item;
 
-            if GPPOPPOLine.NONINVEN = 1 then
-                CreateNonInventoryItem(GPPOPPOLine);
+            if GPPOP10110.NONINVEN = 1 then
+                CreateNonInventoryItem(GPPOP10110);
 
             PurchaseLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
             PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
-            PurchaseLine."Unit of Measure" := GPPOPPOLine.UOFM;
-            PurchaseLine."Unit of Measure Code" := GPPOPPOLine.UOFM;
-            PurchaseLine.Validate("No.", CopyStr(GPPOPPOLine.ITEMNMBR, 1, MaxStrLen(PurchaseLine."No.")));
-            PurchaseLine."Location Code" := CopyStr(GPPOPPOLine.LOCNCODE, 1, MaxStrLen(PurchaseLine."Location Code"));
+            PurchaseLine."Unit of Measure" := GPPOP10110.UOFM;
+            PurchaseLine."Unit of Measure Code" := GPPOP10110.UOFM;
+            PurchaseLine.Validate("No.", CopyStr(GPPOP10110.ITEMNMBR, 1, MaxStrLen(PurchaseLine."No.")));
+            PurchaseLine."Location Code" := CopyStr(GPPOP10110.LOCNCODE, 1, MaxStrLen(PurchaseLine."Location Code"));
             PurchaseLine."Posting Group" := GPCodeTxt;
-            PurchaseLine.Validate("Expected Receipt Date", GPPOPPOLine.PRMDATE);
-            PurchaseLine.Description := CopyStr(GPPOPPOLine.ITEMDESC, 1, MaxStrLen(PurchaseLine.Description));
+            PurchaseLine.Validate("Expected Receipt Date", GPPOP10110.PRMDATE);
+            PurchaseLine.Description := CopyStr(GPPOP10110.ITEMDESC, 1, MaxStrLen(PurchaseLine.Description));
 
-            QtyShipped := GPPOPReceiptApply.GetSumQtyShipped(GPPOPPOLine.PONUMBER, GPPOPPOLine.ORD);
+            QtyShipped := GPPOPReceiptApply.GetSumQtyShipped(GPPOP10110.PONUMBER, GPPOP10110.ORD);
 
-            PurchaseLine.Validate("Quantity (Base)", GPPOPPOLine.QTYORDER - GPPOPPOLine.QTYCANCE);
+            PurchaseLine.Validate("Quantity (Base)", GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE);
             PurchaseLine."Quantity Received" := QtyShipped;
             PurchaseLine."Qty. Received (Base)" := QtyShipped;
-            PurchaseLine."Quantity Invoiced" := GPPOPReceiptApply.GetSumQtyInvoiced(GPPOPPOLine.PONUMBER, GPPOPPOLine.ORD);
+            PurchaseLine."Quantity Invoiced" := GPPOPReceiptApply.GetSumQtyInvoiced(GPPOP10110.PONUMBER, GPPOP10110.ORD);
             PurchaseLine."Outstanding Quantity" := PurchaseLine."Quantity (Base)" - QtyShipped;
-            PurchaseLine.Validate("Direct Unit Cost", GPPOPPOLine.UNITCOST);
-            PurchaseLine.Validate(Amount, GPPOPPOLine.EXTDCOST);
-            PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * GPPOPPOLine.UNITCOST);
+            PurchaseLine.Validate("Direct Unit Cost", GPPOP10110.UNITCOST);
+            PurchaseLine.Validate(Amount, GPPOP10110.EXTDCOST);
+            PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * GPPOP10110.UNITCOST);
             PurchaseLine."Qty. Rcd. Not Invoiced" := QtyShipped - PurchaseLine."Quantity Invoiced";
-            PurchaseLine.Validate("Amt. Rcd. Not Invoiced", PurchaseLine."Qty. Rcd. Not Invoiced" * GPPOPPOLine.UNITCOST);
+            PurchaseLine.Validate("Amt. Rcd. Not Invoiced", PurchaseLine."Qty. Rcd. Not Invoiced" * GPPOP10110.UNITCOST);
             PurchaseLine."Outstanding Amount (LCY)" := PurchaseLine."Outstanding Amount";
             PurchaseLine."Amt. Rcd. Not Invoiced (LCY)" := PurchaseLine."Amt. Rcd. Not Invoiced";
-            PurchaseLine."Unit Cost" := GPPOPPOLine.UNITCOST;
+            PurchaseLine."Unit Cost" := GPPOP10110.UNITCOST;
             PurchaseLine.Insert(true);
 
-            if QtyShipped > (GPPOPPOLine.QTYORDER - GPPOPPOLine.QTYCANCE) then
-                ProcessOverReceipt(PurchaseLine, QtyShipped - (GPPOPPOLine.QTYORDER - GPPOPPOLine.QTYCANCE));
+            if QtyShipped > (GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE) then
+                ProcessOverReceipt(PurchaseLine, QtyShipped - (GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE));
 
             PurchaseLine.Validate("Qty. to Receive (Base)", PurchaseLine."Outstanding Quantity");
             PurchaseLine.Validate("Outstanding Qty. (Base)", PurchaseLine."Outstanding Quantity");
@@ -152,10 +178,10 @@ codeunit 40108 "GP PO Migrator"
 
             PurchaseLine.Modify(true);
             LineNo := LineNo + 10000;
-        until GPPOPPOLine.Next() = 0;
+        until GPPOP10110.Next() = 0;
     end;
 
-    local procedure CreateNonInventoryItem(GPPOPPOLine: Record "GP POPPOLine")
+    local procedure CreateNonInventoryItem(GPPOP10110: Record "GP POP10110")
     var
         NewItem: Record Item;
         UnitOfMeasureRec: Record "Unit of Measure";
@@ -164,15 +190,15 @@ codeunit 40108 "GP PO Migrator"
         ItemNo: Code[20];
         UnitOfMeasure: Code[10];
     begin
-        ItemNo := CopyStr(GPPOPPOLine.ITEMNMBR, 1, MaxStrLen(ItemNo));
+        ItemNo := CopyStr(GPPOP10110.ITEMNMBR, 1, MaxStrLen(ItemNo));
         NewItem.SetRange("No.", ItemNo);
         if not NewItem.IsEmpty() then
             exit;
 
-        UnitOfMeasure := UpperCase(CopyStr(GPPOPPOLine.UOFM, 1, MaxStrLen(UnitOfMeasure)));
+        UnitOfMeasure := UpperCase(CopyStr(GPPOP10110.UOFM, 1, MaxStrLen(UnitOfMeasure)));
         if not UnitOfMeasureRec.Get(UnitOfMeasure) then begin
             UnitOfMeasureRec.Validate(Code, UnitOfMeasure);
-            UnitOfMeasureRec.Validate(Description, GPPOPPOLine.UOFM);
+            UnitOfMeasureRec.Validate(Description, GPPOP10110.UOFM);
             UnitOfMeasureRec.Insert(true);
         end;
 
@@ -184,9 +210,9 @@ codeunit 40108 "GP PO Migrator"
 
         NewItem.Init();
         NewItem.Validate("No.", ItemNo);
-        NewItem.Validate(Description, CopyStr(GPPOPPOLine.ITEMDESC, 1, MaxStrLen(NewItem.Description)));
+        NewItem.Validate(Description, CopyStr(GPPOP10110.ITEMDESC, 1, MaxStrLen(NewItem.Description)));
         NewItem.Validate(Type, ItemType::"Non-Inventory");
-        NewItem.Validate("Unit Cost", GPPOPPOLine.UNITCOST);
+        NewItem.Validate("Unit Cost", GPPOP10110.UNITCOST);
         NewItem.Validate("Gen. Prod. Posting Group", GPCodeTxt);
         NewItem.Insert(true);
 
