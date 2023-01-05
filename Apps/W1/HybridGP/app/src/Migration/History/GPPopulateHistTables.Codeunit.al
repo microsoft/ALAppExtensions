@@ -262,7 +262,7 @@ codeunit 40900 "GP Populate Hist. Tables"
 
             if HistSalesTrxHeader.Insert() then begin
                 PopulateSalesTransactionLines(GPSOPTrxHist, DocumentNo);
-                PopulateSOPItemTransaction(GPSOPTrxHist);
+                PopulateSOPItemTransaction(GPSOPTrxHist, HistSalesTrxHeader."Sales Trx. Type");
             end else
                 HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Receivables Trx.", GPSOPTrxHist.SOPNUMBE, true);
 
@@ -859,7 +859,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         AfterProcessedNextRecord();
     end;
 
-    local procedure PopulateSOPItemTransaction(GPSOPTrxHist: Record GPSOPTrxHist)
+    local procedure PopulateSOPItemTransaction(GPSOPTrxHist: Record GPSOPTrxHist; HistSalesTrxType: enum "Hist. Sales Trx. Type")
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
@@ -880,6 +880,12 @@ codeunit 40900 "GP Populate Hist. Tables"
 
         HistInventoryTrxHeader."Audit Code" := GPSOPTrxHist.TRXSORCE;
         HistInventoryTrxHeader."Document Type" := "Hist. Inventory Doc. Type"::"Sales Invoices";
+
+        if HistSalesTrxType = "Hist. Sales Trx. Type"::"Return Order" then
+            HistInventoryTrxHeader."Document Type" := "Hist. Inventory Doc. Type"::"Sales Returns"
+        else
+            HistInventoryTrxHeader."Document Type" := "Hist. Inventory Doc. Type"::"Sales Invoices";
+
         HistInventoryTrxHeader."Document No." := DocumentNo;
         HistInventoryTrxHeader."Document Date" := GPSOPTrxHist.DOCDATE;
         HistInventoryTrxHeader."Batch No." := GPSOPTrxHist.BACHNUMB;
