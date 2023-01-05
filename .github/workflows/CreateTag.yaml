@@ -6,49 +6,41 @@ on:
     types: ['completed']
     branches: [ 'add-build-tag' ]
 
-
 run-name: Create build tag <tag> on branch ${{ github.ref_name }}.
-
-permissions:
-  contents: read
-  actions: read
-  pull-requests: write
-  checks: write
-
 
 jobs:
   CreateBuildTag:
-    runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Create tag
-      uses: actions/github-script@v5
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          # Determine the build number from the artifacts name
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            # Determine the build number from the artifacts name
 
-          let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+
+            let apps = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name -like "*-Apps-*"
+            })[0];
+
+            if(-not $apps) {
+              # TODO mesage
+              return
+            }
+
+            let buildNumber = $apps.name -replace ".*-Apps-",""
+
+            # Create the tag
+            github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              run_id: context.payload.workflow_run.id,
-          });
-
-          let apps = allArtifacts.data.artifacts.filter((artifact) => {
-            return artifact.name -like "*-Apps-*"
-          })[0];
-
-          if(-not $apps) {
-            # TODO mesage
-            return
-          }
-
-          let buildNumber = $apps.name -replace ".*-Apps-",""
-
-          # Create the tag
-          github.rest.git.createRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: "refs/tags/v" + "$buildNumber",
-            sha: context.sha
-          })
+              ref: "refs/tags/v" + "$buildNumber",
+              sha: context.sha
+            })
