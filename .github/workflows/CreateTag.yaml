@@ -2,15 +2,14 @@ name: 'Create build tag'
 
 on:
   workflow_run:
-    workflows: [' CI/CD']
+    workflows: ["CI/CD"]
     types: ['completed']
-    branches: [ 'add-build-tag' ]
 
 run-name: Create build tag <tag> on branch ${{ github.ref_name }}.
 
 jobs:
   CreateBuildTag:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} && ${{ github.ref_name == 'add-build-tag' }}
     runs-on: ubuntu-latest
     steps:
       - name: Create tag
