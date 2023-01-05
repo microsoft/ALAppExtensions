@@ -2020,7 +2020,6 @@ Codeunit 4037 "Helper Functions"
         if Currency.Get(CurrencyCode) then
             exit;
 
-        Clear(Currency);
         Currency.Validate("Symbol", GPMC40200.CRNCYSYM);
         Currency.Validate("Code", CurrencyCode);
         Currency.Validate("Description", CopyStr(GPMC40200.CRNCYDSC, 1, 30));
