@@ -19,7 +19,7 @@ codeunit 40108 "GP PO Migrator"
         CurrencyCode: Code[10];
     begin
         GPPOP10100.SetRange(POTYPE, GPPOP10100.POTYPE::Standard);
-        GPPOP10100.SetFilter(POSTATUS, '%1..%2', 1, 4);
+        GPPOP10100.SetRange(POSTATUS, 1, 4);
         if not GPPOP10100.FindSet() then
             exit;
 
@@ -32,7 +32,7 @@ codeunit 40108 "GP PO Migrator"
                 CurrencyCode := CopyStr(GPPOP10100.CURNCYID.Trim(), 1, MaxStrLen(CurrencyCode));
                 HelperFunctions.CreateCurrencyIfNeeded(CurrencyCode);
 
-                PurchaseHeader.Init();
+                Clear(PurchaseHeader);
                 PurchaseHeader.Validate("Document Type", PurchaseDocumentType::Order);
                 PurchaseHeader."No." := GPPOP10100.PONUMBER;
                 PurchaseHeader.Status := PurchaseDocumentStatus::Open;
@@ -56,7 +56,7 @@ codeunit 40108 "GP PO Migrator"
                     if CurrencyCode <> GeneralLedgerSetup."LCY Code" then
                         if GPPOP10100.XCHGRATE <> 0 then begin
                             if not CurrencyExchangeRate.Get(CurrencyCode, GPPOP10100.EXCHDATE) then begin
-                                CurrencyExchangeRate.Init();
+                                Clear(CurrencyExchangeRate);
                                 CurrencyExchangeRate.Validate("Currency Code", CurrencyCode);
                                 CurrencyExchangeRate.Validate("Starting Date", GPPOP10100.EXCHDATE);
                                 CurrencyExchangeRate.Validate("Exchange Rate Amount", GPPOP10100.XCHGRATE);

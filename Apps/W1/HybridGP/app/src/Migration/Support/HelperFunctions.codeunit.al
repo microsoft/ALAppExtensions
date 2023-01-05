@@ -806,66 +806,66 @@ Codeunit 4037 "Helper Functions"
             // if the "old" and "new" payment terms are the same, skip
             if PaymentTerm <> PaymentTerm_New THEN begin
                 // update the payment terms in the tables that have this field
-                GPCustomer.RESET();
+                Clear(GPCustomer);
                 GPCustomer.SetRange(GPCustomer."PYMTRMID", PaymentTerm);
                 if not GPCustomer.IsEmpty() then
                     GPCustomer.MODIFYALL(GPCustomer."PYMTRMID", PaymentTerm_New);
 
 
-                GPCustomerTrans.RESET();
+                Clear(GPCustomerTrans);
                 GPCustomerTrans.SetRange(GPCustomerTrans."PYMTRMID", PaymentTerm);
                 if not GPCustomerTrans.IsEmpty() then
                     GPCustomerTrans.MODIFYALL(GPCustomerTrans."PYMTRMID", PaymentTerm_New);
 
 
-                GPVendor.RESET();
+                Clear(GPVendor);
                 GPVendor.SetRange(GPVendor."PYMTRMID", PaymentTerm);
                 if not GPVendor.IsEmpty() then
                     GPVendor.MODIFYALL(GPVendor."PYMTRMID", PaymentTerm_New);
 
 
-                GPVendorTransactions.RESET();
+                Clear(GPVendorTransactions);
                 GPVendorTransactions.SetRange(GPVendorTransactions."PYMTRMID", PaymentTerm);
                 if not GPVendorTransactions.IsEmpty() then
                     GPVendorTransactions.MODIFYALL(GPVendorTransactions."PYMTRMID", PaymentTerm_New);
 
 
-                GPSOPTrxHist.RESET();
+                Clear(GPSOPTrxHist);
                 GPSOPTrxHist.SetRange(GPSOPTrxHist."PYMTRMID", PaymentTerm);
                 if not GPSOPTrxHist.IsEmpty() then
                     GPSOPTrxHist.MODIFYALL(GPSOPTrxHist."PYMTRMID", PaymentTerm_New);
 
 
-                GPRMOpen.RESET();
+                Clear(GPRMOpen);
                 GPRMOpen.SetRange(GPRMOpen."PYMTRMID", PaymentTerm);
                 if not GPRMOpen.IsEmpty() then
                     GPRMOpen.MODIFYALL(GPRMOpen."PYMTRMID", PaymentTerm_New);
 
 
-                GPRMHist.RESET();
+                Clear(GPRMHist);
                 GPRMHist.SetRange(GPRMHist."PYMTRMID", PaymentTerm);
                 if not GPRMHist.IsEmpty() then
                     GPRMHist.MODIFYALL(GPRMHist."PYMTRMID", PaymentTerm_New);
 
 
-                GPPOPReceiptHist.RESET();
+                Clear(GPPOPReceiptHist);
                 GPPOPReceiptHist.SetRange(GPPOPReceiptHist."PYMTRMID", PaymentTerm);
                 if not GPPOPReceiptHist.IsEmpty() then
                     GPPOPReceiptHist.MODIFYALL(GPPOPReceiptHist."PYMTRMID", PaymentTerm_New);
 
 
-                GPPOPPOHist.RESET();
+                Clear(GPPOPPOHist);
                 GPPOPPOHist.SetRange(GPPOPPOHist."PYMTRMID", PaymentTerm);
                 if not GPPOPPOHist.IsEmpty() then
                     GPPOPPOHist.MODIFYALL(GPPOPPOHist."PYMTRMID", PaymentTerm_New);
 
 
-                GPPMHist.RESET();
+                Clear(GPPMHist);
                 GPPMHist.SetRange(GPPMHist."PYMTRMID", PaymentTerm);
                 if not GPPMHist.IsEmpty() then
                     GPPMHist.MODIFYALL(GPPMHist."PYMTRMID", PaymentTerm_New);
 
-                GPPOP10100.Reset();
+                Clear(GPPOP10100);
                 GPPOP10100.SetRange(GPPOP10100.PYMTRMID, PaymentTerm);
                 if not GPPOP10100.IsEmpty() then
                     GPPOP10100.ModifyAll(GPPOP10100.PYMTRMID, PaymentTerm_New);
@@ -2011,15 +2011,20 @@ Codeunit 4037 "Helper Functions"
         Currency: Record Currency;
         GPMC40200: Record "GP MC40200";
     begin
-        if (CurrencyCode <> '') and not Currency.Get(CurrencyCode) then begin
-            GPMC40200.SetRange("CURNCYID", CurrencyCode);
-            if GPMC40200.FindFirst() then begin
-                Currency.Validate("Symbol", GPMC40200.CRNCYSYM);
-                Currency.Validate("Code", CurrencyCode);
-                Currency.Validate("Description", CopyStr(GPMC40200.CRNCYDSC, 1, 30));
-                Currency.Validate("Invoice Rounding Type", Currency."Invoice Rounding Type"::Nearest);
-                Currency.Insert(true);
-            end;
-        end;
+        if CurrencyCode = '' then
+            exit;
+
+        if not GPMC40200.Get(CurrencyCode) then
+            exit;
+
+        if Currency.Get(CurrencyCode) then
+            exit;
+
+        Clear(Currency);
+        Currency.Validate("Symbol", GPMC40200.CRNCYSYM);
+        Currency.Validate("Code", CurrencyCode);
+        Currency.Validate("Description", CopyStr(GPMC40200.CRNCYDSC, 1, 30));
+        Currency.Validate("Invoice Rounding Type", Currency."Invoice Rounding Type"::Nearest);
+        Currency.Insert(true);
     end;
 }
