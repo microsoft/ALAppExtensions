@@ -1,10 +1,10 @@
 {
   "id": "76e7cf97-ab30-49f0-b430-6a91b6ac9b53",
-  "name": "Time Zone Management Test Library",
+  "name": "Date & Time Test Library",
   "publisher": "Microsoft",
   "version": "21.0.0.0",
-  "brief": "Library with Test objects for the Time Zone Management module",
-  "description": "Library with Test objects for the Time Zone Management module",
+  "brief": "Library with Test objects for the Date & Time module",
+  "description": "Library with Test objects for the Date & Time module",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "",
@@ -13,7 +13,7 @@
   "dependencies": [
     {
       "id": "4c315253-b024-4fdc-9c3d-794036768af5",
-      "name": "Time Zone Management",
+      "name": "Date & Time",
       "publisher": "Microsoft",
       "version": "21.0.0.0"
     }

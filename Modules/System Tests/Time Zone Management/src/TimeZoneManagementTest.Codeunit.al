@@ -1,4 +1,4 @@
-codeunit 132979 "Time Zone Management Test"
+codeunit 132979 "Date & Time Test"
 {
     Subtype = Test;
 
@@ -208,7 +208,7 @@ codeunit 132979 "Time Zone Management Test"
         if IsInitialized then
             exit;
 
-        PermissionsMock.Set('TimeZoneMgt-Objects');
+        PermissionsMock.Set('Date&Time - Execute');
 
         IsInitialized := true;
         Commit();

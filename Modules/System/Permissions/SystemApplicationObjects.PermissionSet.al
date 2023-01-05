@@ -89,5 +89,5 @@ PermissionSet 219 "System Application - Objects"
                              "Word Templates - Objects",
                              "XML Validation - Objects",
                              "XmlWriter - Objects",
-                             "Time Zone Mgt. - Objects";
+                             "Date & Time - Objects";
 }

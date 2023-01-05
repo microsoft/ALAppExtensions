@@ -3,9 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-permissionset 8720 "Time Zone Mgt. - Objects"
+permissionset 8720 "Date & Time - Objects"
 {
-    Caption = 'Time Zone Management - Objects';
+    Caption = 'Date & Time - Objects';
     Assignable = false;
     Access = Internal;
 
