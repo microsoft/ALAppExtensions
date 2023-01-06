@@ -2,7 +2,6 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>AlAppExtensions.Template</id>
-        <version></version>
         <title>Dynamics 365 Business Central - System Modules</title>
         <authors>aholstrup</authors>
         <owners>aholstrup</owners>
