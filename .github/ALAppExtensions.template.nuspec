@@ -7,7 +7,6 @@
         <owners>aholstrup</owners>
         <version>1.2.3</version>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <license type="file">LICENSE</license>
         <projectUrl>https://github.com/microsoft/ALAppExtensions</projectUrl>
         <description>System Application and Dev Tools for Dynamics 365 Business Central</description>
         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
@@ -15,4 +14,7 @@
                 The package contains app files and source code for System Application, System Application Test libraries and tests, as well as Dev Tools for Dynamics 365 Business Central.
         </summary>
     </metadata>
+    <files>
+        <file src="*" target="content" />
+    </files>
 </package>
