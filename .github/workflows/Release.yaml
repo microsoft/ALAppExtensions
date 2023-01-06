@@ -8,39 +8,31 @@ defaults:
     shell: powershell
 
 jobs:
-  build:
+  Release:
     runs-on: [ windows-latest ]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Upload Text File to Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: my-text-file
-        path: .github\AL-Go-Settings.json
-    
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:
-        path: '.artifacts'
-    
+
     - name: Setup NuGet.exe
       uses: nuget/setup-nuget@v1
+#      with:
+#        nuget-api-key: ${{ secrets.NuGetAPIKey }}
 
     - name: Nuget Pack
-      id: nugetpack
       run: |
           $nuspecPath = Join-Path $ENV:GITHUB_WORKSPACE '.github\ALAppExtensions.template.nuspec'
-          if (Test-Path $nuspecPath) {
-            nuget pack $nuspecPath -OutputDirectory $ENV:GITHUB_WORKSPACE/nuget
-          }
-          else {
-            get-childitem -path . -filter *.nuspec -recurse | % { nuget pack $_.FullName }
-          }
-
-    - name: Publish nuget
+          nuget pack $nuspecPath -OutputDirectory $ENV:GITHUB_WORKSPACE/nuget
+          
+    - name: Publish nuget to artifacts
       uses: actions/upload-artifact@v3
       with:
         name: 'nuget package'
         path: '${{ github.workspace }}/nuget/'
-        if-no-files-found: ignore
+        if-no-files-found: ignore      
+      
+#    - name: 'Push to Feed'
+#      run: |
+#          gci $ENV:GITHUB_WORKSPACE -Recurse -Filter *.nupkg | % {     
+#            nuget push $_.FullName -Source https://api.nuget.org/v3/index.json
+#          }
