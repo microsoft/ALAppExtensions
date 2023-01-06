@@ -27,7 +27,7 @@ jobs:
 
     - name: Nuget Pack
       id: nugetpack
-        run: |
+      run: |
           nuget pack './.github\ALAppExtensions.template.nuspec' 
 
     - name: Publish nuget
