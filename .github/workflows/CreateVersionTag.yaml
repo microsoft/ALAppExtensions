@@ -1,4 +1,4 @@
-name: 'Create Build Tag'
+name: 'Create Version Tag'
 
 on:
   workflow_run:
@@ -6,18 +6,18 @@ on:
     types: ['completed']
     branches: [ 'main', 'release/*']
 
-run-name: Create build tag on branch ${{ github.ref_name }}.
+run-name: Create version tag on branch ${{ github.ref_name }}.
 
 defaults:
   run:
     shell: powershell
 
 jobs:
-  CreateBuildTag:
+  TagSuccessfulBuild:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: windows-latest
     steps:
-      - name: Create build tag
+      - name: Create version tag
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,8 +35,9 @@ jobs:
 
             // The build number is after -Apps-
             let buildNumber = appsArtifact.name.replace(/.*-Apps-/, "")
-            let tag = `refs/tags/builds/${buildNumber}`
+            let tag = `refs/tags/${buildNumber}`
 
+            // Create the tag ref
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
