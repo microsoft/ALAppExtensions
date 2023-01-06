@@ -18,21 +18,21 @@ jobs:
         path: .github\AL-Go-Settings.json
     
     - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: '.artifacts'
+      uses: actions/download-artifact@v3
+      with:
+        path: '.artifacts'
     
     - name: Setup NuGet.exe
-        uses: nuget/setup-nuget@v1
+      uses: nuget/setup-nuget@v1
 
     - name: Nuget Pack
       id: nugetpack
         run: |
           nuget pack './.github\ALAppExtensions.template.nuspec' 
 
-      - name: Publish nuget
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'nuget package'
-          path: '$(Build.ArtifactStagingDirectory)/nuget'
-          if-no-files-found: ignore
+    - name: Publish nuget
+      uses: actions/upload-artifact@v3
+      with:
+        name: 'nuget package'
+        path: '$(Build.ArtifactStagingDirectory)/nuget'
+        if-no-files-found: ignore
