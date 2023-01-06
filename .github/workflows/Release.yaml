@@ -42,5 +42,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: 'nuget package'
-        path: '$ENV:GITHUB_WORKSPACE/nuget'
+        path: '$ENV:GITHUB_WORKSPACE/nuget/'
         if-no-files-found: ignore
