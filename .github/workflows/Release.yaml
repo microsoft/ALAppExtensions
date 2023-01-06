@@ -1,0 +1,38 @@
+name: 'Release'
+
+on:
+  workflow_dispatch:
+
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Upload Text File to Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-text-file
+        path: .github\AL-Go-Settings.json
+    
+    - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: '.artifacts'
+    
+    - name: Setup NuGet.exe
+        uses: nuget/setup-nuget@v1
+
+    - name: Nuget Pack
+      id: nugetpack
+        run: |
+          nuget pack '$(Build.SourcesDirectory)/.github\ALAppExtensions.template.nuspec' 
+
+      - name: Publish nuget
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'nuget package'
+          path: '$(Build.ArtifactStagingDirectory)/nuget'
+          if-no-files-found: ignore
