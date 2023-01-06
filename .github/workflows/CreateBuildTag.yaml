@@ -1,4 +1,4 @@
-name: 'Create build tag'
+name: 'Create Build Tag'
 
 on:
   workflow_run:
