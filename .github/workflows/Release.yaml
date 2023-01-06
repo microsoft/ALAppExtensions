@@ -28,7 +28,7 @@ jobs:
     - name: Nuget Pack
       id: nugetpack
         run: |
-          nuget pack '$(Build.SourcesDirectory)/.github\ALAppExtensions.template.nuspec' 
+          nuget pack './.github\ALAppExtensions.template.nuspec' 
 
       - name: Publish nuget
         uses: actions/upload-artifact@v3
