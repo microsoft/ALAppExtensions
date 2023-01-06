@@ -518,7 +518,7 @@ jobs:
 
       - name: Publish artifacts - apps
         uses: actions/upload-artifact@v3
-        if: github.ref_name == 'add-build-tag' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.AppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
