@@ -32,7 +32,7 @@ jobs:
       run: |
           $nuspecPath = Join-Path GITHUB_WORKSPACE '.github\ALAppExtensions.template.nuspec'
           if (Test-Path $nuspecPath) {
-            nuget pack $nuspecPath
+            nuget pack $nuspecPath -OutputDirectory $(Build.ArtifactStagingDirectory)/nuget
           }
           else {
             get-childitem -path . -filter *.nuspec -recurse | % { nuget pack $_.FullName }
