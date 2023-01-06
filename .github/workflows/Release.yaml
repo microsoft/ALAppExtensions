@@ -30,9 +30,9 @@ jobs:
     - name: Nuget Pack
       id: nugetpack
       run: |
-          $nuspecPath = Join-Path GITHUB_WORKSPACE '.github\ALAppExtensions.template.nuspec'
+          $nuspecPath = Join-Path $GITHUB_WORKSPACE '.github\ALAppExtensions.template.nuspec'
           if (Test-Path $nuspecPath) {
-            nuget pack $nuspecPath -OutputDirectory $(Build.ArtifactStagingDirectory)/nuget
+            nuget pack $nuspecPath -OutputDirectory $GITHUB_WORKSPACE/nuget
           }
           else {
             get-childitem -path . -filter *.nuspec -recurse | % { nuget pack $_.FullName }
@@ -42,5 +42,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: 'nuget package'
-        path: '$(Build.ArtifactStagingDirectory)/nuget'
+        path: '$GITHUB_WORKSPACE/nuget'
         if-no-files-found: ignore
