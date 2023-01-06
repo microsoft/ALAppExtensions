@@ -16,8 +16,8 @@ jobs:
 
     - name: Setup NuGet.exe
       uses: nuget/setup-nuget@v1
-#      with:
-#        nuget-api-key: ${{ secrets.NuGetAPIKey }}
+      with:
+        nuget-api-key: ${{ secrets.NuGetAPIKey }}
 
     - name: Nuget Pack
       run: |
