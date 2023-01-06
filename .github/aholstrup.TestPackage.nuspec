@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>AlAppExtensions.Template</id>
+        <id>aholstrup.TestPackage</id>
         <title>Dynamics 365 Business Central - System Modules</title>
         <authors>aholstrup</authors>
         <owners>aholstrup</owners>
         <version>1.2.3</version>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <projectUrl>https://github.com/microsoft/ALAppExtensions</projectUrl>
+        <projectUrl>https://github.com/aholstrup1/ALAppExtensions</projectUrl>
         <description>System Application and Dev Tools for Dynamics 365 Business Central</description>
         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <summary>

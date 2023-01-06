@@ -31,8 +31,8 @@ jobs:
         path: '${{ github.workspace }}/nuget/'
         if-no-files-found: ignore      
       
-#    - name: 'Push to Feed'
-#      run: |
-#          gci $ENV:GITHUB_WORKSPACE -Recurse -Filter *.nupkg | % {     
-#            nuget push $_.FullName -Source https://api.nuget.org/v3/index.json
-#          }
+    - name: 'Push to Feed'
+      run: |
+          gci $ENV:GITHUB_WORKSPACE -Recurse -Filter *.nupkg | % {     
+            nuget push $_.FullName -Source https://api.nuget.org/v3/index.json
+          }
