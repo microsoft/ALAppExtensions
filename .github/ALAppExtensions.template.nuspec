@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id></id>
+        <id>AlAppExtensions.Template</id>
         <version></version>
         <title>Dynamics 365 Business Central - System Modules</title>
-        <authors></authors>
-        <owners></owners>
+        <authors>aholstrup</authors>
+        <owners>aholstrup</owners>
+        <version>1.2.3</version>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <license type="file">LICENSE</license>
         <projectUrl>https://github.com/microsoft/ALAppExtensions</projectUrl>
