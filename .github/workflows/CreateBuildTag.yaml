@@ -28,10 +28,12 @@ jobs:
               run_id: context.payload.workflow_run.id,
             });
 
+            // Determine the build number, based on the apps artifact name
             let appsArtifact = allArtifacts.data.artifacts.filter((artifact) => {
               return artifact.name.match(/.*-Apps-.*/)
             })[0];
 
+            // The build number is after -Apps-
             let buildNumber = appsArtifact.name.replace(/.*-Apps-/, "")
             let tag = `refs/tags/builds/${buildNumber}`
 
