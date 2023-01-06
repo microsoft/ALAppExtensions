@@ -33,7 +33,7 @@ jobs:
             })[0];
 
             let buildNumber = appsArtifact.name.replace(/.*-Apps-/, "")
-            let tag = `refs/tags/v${buildNumber}`
+            let tag = `refs/tags/builds/${buildNumber}`
 
             github.rest.git.createRef({
               owner: context.repo.owner,
