@@ -27,8 +27,14 @@ jobs:
 
     - name: Nuget Pack
       id: nugetpack
-        run: |
-          nuget pack './.github\ALAppExtensions.template.nuspec' 
+      run: |
+          $nuspecPath = Join-Path GITHUB_WORKSPACE '.github\ALAppExtensions.template.nuspec'
+          if (Test-Path $nuspecPath) {
+            nuget pack $nuspecPath
+          }
+          else {
+            get-childitem -path . -filter *.nuspec -recurse | % { nuget pack $_.FullName }
+          }
 
     - name: Publish nuget
       uses: actions/upload-artifact@v3
