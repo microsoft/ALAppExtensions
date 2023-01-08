@@ -19,7 +19,7 @@ codeunit 710 Math
     /// <returns>Value of pi.</returns>
     procedure Pi(): Decimal
     begin
-        exit(3.1415926535897932);
+        exit(DotnetMath.PI);
     end;
 
     /// <summary>
@@ -28,7 +28,7 @@ codeunit 710 Math
     /// <returns>Value of E.</returns>
     procedure E(): Decimal
     begin
-        exit(2.7182818284590451);
+        exit(DotnetMath.E);
     end;
 
     /// <summary>
