@@ -1,15 +1,17 @@
 {
-    "country":  "us",
+    "country":  "base",
     "appFolders":  [
-                       "Modules\\System\\*"
+                       "..\\Modules\\System\\*"
                    ],
     "testFolders":  [
-                        "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\*",
+                        "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\Any",
+                        "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\Assert",
+                        "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\Permissions Mock",
+                        "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\Variable Storage",
                         "..\\Modules\\DevTools\\TestFramework\\TestRunner",
-                        "..\\Modules\\DevTools\\TestFramework\\TestStabilityTools\\*",
-                        "..\\Modules\\System Test Libraries\\*",
-                        "..\\Modules\\System Tests\\*"
-                    ],
+                        "..\\Modules\\System Test Libraries",
+                        "..\\Modules\\System Tests"
+    ],
     "artifact":  "bcinsider//21.3/base/latest/{INSIDERSASTOKEN}",
     "enablePerTenantExtensionCop":  false,
     "repoVersion":  "21.3",
