@@ -9,8 +9,8 @@
                         "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\Permissions Mock",
                         "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\Variable Storage",
                         "..\\Modules\\DevTools\\TestFramework\\TestRunner",
-                        "..\\Modules\\System Test Libraries",
-                        "..\\Modules\\System Tests"
+                        "..\\Modules\\System Test Libraries\\*",
+                        "..\\Modules\\System Tests\\*"
     ],
     "artifact":  "bcinsider//21.3/base/latest/{INSIDERSASTOKEN}",
     "enablePerTenantExtensionCop":  false,
