@@ -1,4 +1,4 @@
-name: 'Create Version Tag'
+name: 'Create Build Tag'
 
 on:
   workflow_run:
@@ -6,7 +6,7 @@ on:
     types: ['completed']
     branches: [ 'main', 'release/*']
 
-run-name: Create version tag on branch ${{ github.ref_name }}.
+run-name: Create build tag on branch ${{ github.ref_name }}.
 
 jobs:
   TagSuccessfulBuild:
@@ -40,7 +40,7 @@ jobs:
 
             // The build number is after -Apps-
             const buildNumber = appsArtifact.name.replace(/.*-Apps-/, "")
-            const tag = `refs/tags/${$buildNumber}`
+            const tag = `refs/tags/builds/${$buildNumber}`
 
             console.log(`Creating tag: ${$tag}`)
 
