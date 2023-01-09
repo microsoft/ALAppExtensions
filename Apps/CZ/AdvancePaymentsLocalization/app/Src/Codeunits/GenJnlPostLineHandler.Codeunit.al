@@ -35,6 +35,29 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
         OldCVLedgEntryBuf.TestField("Advance Letter No. CZZ", NewCVLedgEntryBuf."Advance Letter No. CZZ");
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeApplyCustLedgEntry', '', false, false)]
+    local procedure DisableApplicationOnBeforeApplyCustLedgEntry(var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        if (GenJnlLine."Advance Letter No. CZZ" <> '') or (GenJnlLine."Adv. Letter Template Code CZZ" <> '') then
+            GenJnlLine."Allow Application" := false;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeApplyVendLedgEntry', '', false, false)]
+    local procedure DisableApplicationOnBeforeApplyVendLedgEntry(var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        if (GenJnlLine."Advance Letter No. CZZ" <> '') or (GenJnlLine."Adv. Letter Template Code CZZ" <> '') then
+            GenJnlLine."Allow Application" := false;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId', '', false, false)]
+    local procedure SetManualApplicationOnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId(GenJournalLine: Record "Gen. Journal Line"; var OldCustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        if (GenJournalLine."Advance Letter No. CZZ" <> '') or (GenJournalLine."Adv. Letter Template Code CZZ" <> '') then begin
+            OldCustLedgerEntry.SetRange("Posting Date");
+            OldCustLedgerEntry.SetFilter("Amount to Apply", '<>%1', 0);
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"CV Ledger Entry Buffer", 'OnAfterCopyFromVendLedgerEntry', '', false, false)]
     local procedure FillAdvanceLetterNoOnAfterCopyFromVendLedgerEntry(var CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer"; VendorLedgerEntry: Record "Vendor Ledger Entry")
     begin

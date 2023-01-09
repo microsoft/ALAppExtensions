@@ -2,7 +2,7 @@
     "id":  "6936a6a5-43a6-4904-855c-8dc268cd49dd",
     "name":  "SharePoint Authorization",
     "publisher":  "Microsoft",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "brief":  "Provides means for authorizing HTTP requests to SharePoint REST API",
     "description":  "Provides interfaces and authorization logic for HTTP requests to SharePoint REST API",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,7 +15,7 @@
                              "id":  "aa171ba9-d3b0-450d-90fb-546b61e32074",
                              "name":  "OAuth2",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "screenshots":  [

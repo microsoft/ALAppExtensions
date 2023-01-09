@@ -115,17 +115,17 @@ codeunit 1695 "Bank Deposit Subscribers"
             BankDepositHeader.ChangeCompany(Company.Name);
             BankDepositHeader.Reset();
             if (not BankDepositHeader.IsEmpty()) or (not BankAccReconciliation.IsEmpty()) then
-                Error(EnableFeatureErr, Company.Name);
+                Error(EnableFeatureErr, Company.Name, Company."Display Name");
         until Company.Next() = 0;
+
     end;
 #endif
-
     var
         PostedBankDepositLinesLbl: Label 'Posted bank deposit - line information', Locked = true;
         PostingBankDepositLinesLbl: Label 'Before posting bank deposit - line information', Locked = true;
         OnBeforeUndoPostingBankDepositLbl: Label 'User is attempting to undo posted bank deposit.', Locked = true;
         OnAfterUndoPostingBankDepositLbl: Label 'User successfully reversed all transactions in posted bank deposit.', Locked = true;
 #if not CLEAN21
-        EnableFeatureErr: Label 'You must either post or delete all bank deposits and bank account reconciliations for company %1 and every company on this environment before disabling Bank Deposits feature.', Comment = '%1 - Name of the company';
+        EnableFeatureErr: Label 'You must either post or delete all bank deposits and bank account reconciliations in company "%1 - %2" before disabling Bank Deposits feature.', Comment = '%1 - Company''s name, %2 - Company''s display name';
 #endif
 }

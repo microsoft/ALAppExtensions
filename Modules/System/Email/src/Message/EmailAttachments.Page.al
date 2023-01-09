@@ -82,14 +82,13 @@ page 8889 "Email Attachments"
 
                     EmailChooseScenarioAttachments.LookupMode(true);
                     if EmailChooseScenarioAttachments.RunModal() = Action::LookupOK then begin
-                        FeatureTelemetry.LogUptake('0000I8Q', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Set up");
+                        FeatureTelemetry.LogUptake('0000I8R', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Used");
 
                         EmailChooseScenarioAttachments.GetSelectedAttachments(EmailAttachments);
                         EmailMessageImpl.Get(EmailMessageId);
                         EmailMessageImpl.AddAttachmentsFromScenario(EmailAttachments);
 
-                        FeatureTelemetry.LogUptake('0000I8R', 'Email Default Attachments', Enum::"Feature Uptake Status"::"Used");
-                        FeatureTelemetry.LogUsage('0000I8T', 'Email Default Attachment', 'Upload attachments from scenarios');
+                        FeatureTelemetry.LogUsage('0000I8T', 'Email Default Attachments', 'Upload attachments from scenarios');
                     end;
                     UpdateDeleteActionEnablement();
                 end;
@@ -110,6 +109,7 @@ page 8889 "Email Attachments"
                     EmailEditor: Codeunit "Email Editor";
                 begin
                     EmailEditor.AttachFromRelatedRecords(EmailMessageId);
+                    EmailMessageImpl.Get(EmailMessageId); // refresh the record on the email message implementation
                     UpdateDeleteActionEnablement();
                 end;
             }
