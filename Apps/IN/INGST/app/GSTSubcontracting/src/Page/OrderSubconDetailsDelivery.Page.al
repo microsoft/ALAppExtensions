@@ -191,6 +191,14 @@ page 18480 "Order Subcon. Details Delivery"
             }
         }
     }
+
+    trigger OnDeleteRecord(): Boolean
+    var
+        UpdateSubcontractDetails: Codeunit "Update Subcontract Details";
+    begin
+        UpdateSubcontractDetails.ValidateOrUpdateBeforeSubConOrderLineDelete(Rec);
+    end;
+
     local procedure DeliverCompForOnAfterValidate()
     begin
         CurrPage.Update();

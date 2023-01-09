@@ -26,49 +26,39 @@ codeunit 30195 "Shpfy Inventory API"
         ShopLocation: Record "Shpfy Shop Location";
         ShopifyProduct: Record "Shpfy Product";
         ShopifyVariant: Record "Shpfy Variant";
-        ItemAvailMgt: Codeunit "Item Availability Forms Mgt";
-        IsHandled: Boolean;
+        StockCalculation: Interface "Shpfy Stock Calculation";
         UOM: Code[10];
-        ExpectedInventory: Decimal;
-        GrossRequirement: Decimal;
-        PlannedOrderRcpt: Decimal;
-        PlannedOrderReleases: Decimal;
-        ProjAvailableBalance: Decimal;
-        QtyAvailable: Decimal;
-        ScheduledRcpt: Decimal;
     begin
         SetShop(ShopInventory."Shop Code");
         if ShopifyProduct.Get(ShopInventory."Product Id") and ShopifyVariant.Get(ShopInventory."Variant Id") then begin
             ShopLocation.SetRange("Shop Code", ShopInventory."Shop Code");
             ShopLocation.SetRange(Id, ShopInventory."Location Id");
-            ShopLocation.SetRange(Disabled, false);
-            if ShopLocation.FindFirst() and Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
-                Events.OnBeforeCalculationStock(Item, ShopifyShop, ShopLocation."Location Filter", ShopInventory."Shopify Stock", Stock, IsHandled);
-                if not IsHandled then begin
-                    Item.SetRange("Date Filter", 0D, Today);
-                    Item.SetFilter("Location Filter", ShopLocation."Location Filter");
-                    if not IsNullGuid(ShopifyVariant."Item Variant SystemId") then begin
-                        ShopifyVariant.CalcFields("Variant Code");
-                        Item.SetFilter("Variant Filter", ShopifyVariant."Variant Code");
-                    end;
-                    ItemAvailMgt.CalcAvailQuantities(Item, true, GrossRequirement, PlannedOrderRcpt, ScheduledRcpt, PlannedOrderReleases, ProjAvailableBalance, ExpectedInventory, QtyAvailable);
-                    Stock := ProjAvailableBalance;
-                    case ShopifyVariant."UoM Option Id" of
-                        1:
-                            UOM := CopyStr(ShopifyVariant."Option 1 Value", 1, MaxStrLen(UOM));
-                        2:
-                            UOM := CopyStr(ShopifyVariant."Option 1 Value", 2, MaxStrLen(UOM));
-                        3:
-                            UOM := CopyStr(ShopifyVariant."Option 1 Value", 3, MaxStrLen(UOM));
-                        else
-                            UOM := Item."Sales Unit of Measure";
-                    end;
-                    if (UOM <> '') and (UOM <> Item."Base Unit of Measure") then
-                        if ItemUOM.Get(Item."No.", UOM) then
-                            Stock := Stock / ItemUOM."Qty. per Unit of Measure";
-                    Events.OnAfterCalculationStock(Item, ShopifyShop, ShopLocation."Location Filter", Stock);
-                end;
+            ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
+            if ShopLocation.FindFirst() and Item.GetBySystemId(ShopifyVariant."Item SystemId") then
+                Item.SetRange("Date Filter", 0D, Today);
+            Item.SetFilter("Location Filter", ShopLocation."Location Filter");
+            if not IsNullGuid(ShopifyVariant."Item Variant SystemId") then begin
+                ShopifyVariant.CalcFields("Variant Code");
+                Item.SetFilter("Variant Filter", ShopifyVariant."Variant Code");
             end;
+
+            StockCalculationFactory(StockCalculation, ShopLocation."Stock Calculation");
+            Stock := StockCalculation.GetStock(Item);
+
+            case ShopifyVariant."UoM Option Id" of
+                1:
+                    UOM := CopyStr(ShopifyVariant."Option 1 Value", 1, MaxStrLen(UOM));
+                2:
+                    UOM := CopyStr(ShopifyVariant."Option 1 Value", 2, MaxStrLen(UOM));
+                3:
+                    UOM := CopyStr(ShopifyVariant."Option 1 Value", 3, MaxStrLen(UOM));
+                else
+                    UOM := Item."Sales Unit of Measure";
+            end;
+            if (UOM <> '') and (UOM <> Item."Base Unit of Measure") then
+                if ItemUOM.Get(Item."No.", UOM) then
+                    Stock := Stock / ItemUOM."Qty. per Unit of Measure";
+            Events.OnAfterCalculationStock(Item, ShopifyShop, ShopLocation."Location Filter", Stock);
         end;
     end;
 
@@ -120,7 +110,7 @@ codeunit 30195 "Shpfy Inventory API"
             exit;
         end;
 
-        if ShopLocation.Get(ShopInventory."Shop Code", ShopInventory."Location Id") and (not ShopLocation.Disabled) then begin
+        if ShopLocation.Get(ShopInventory."Shop Code", ShopInventory."Location Id") and (ShopLocation."Stock Calculation" <> ShopLocation."Stock Calculation"::Disabled) then begin
             Url := ShopifyCommunicationMgt.CreateWebRequestURL('inventory_levels/set.json');
             JRequest := CreateStockAsJson(ShopInventory, ShopLocation).AsToken();
             if ShopInventory."Shopify Stock" <> ShopInventory.Stock then
@@ -274,5 +264,10 @@ codeunit 30195 "Shpfy Inventory API"
             ShopifyShop.Get(ShopCode);
             ShopifyCommunicationMgt.SetShop(ShopifyShop);
         end;
+    end;
+
+    local procedure StockCalculationFactory(var StockCalculation: Interface "Shpfy Stock Calculation"; CalculationType: Enum "Shpfy Stock Calculation")
+    begin
+        StockCalculation := CalculationType;
     end;
 }

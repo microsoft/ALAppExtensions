@@ -45,13 +45,15 @@ concurrency: release
 
 defaults:
   run:
-    shell: PowerShell
+    shell: powershell
 
 jobs:
-  Initialization:
+  CreateRelease:
     runs-on: [ windows-latest ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+      artifacts: ${{ steps.analyzeartifacts.outputs.artifacts }}
+      releaseId: ${{ steps.createrelease.outputs.releaseId }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -60,60 +62,87 @@ jobs:
         id: init
         uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
+          shell: powershell
           eventId: "DO0094"
-
-  CreateRelease:
-    runs-on: [ windows-latest ]
-    needs: [ Initialization ]
-    outputs:
-      artifacts: ${{ steps.analyzeartifacts.outputs.artifacts }}
-      upload_url: ${{ steps.createrelease.outputs.upload_url }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
 
       - name: Read settings
         id: ReadSettings
         uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          get: TemplateUrl,RepoName
+          shell: powershell
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          get: templateUrl,repoName
           getProjects: 'Y'
 
       - name: Check for updates to AL-Go system files
         uses: microsoft/AL-Go-Actions/CheckForUpdates@preview
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          templateUrl: ${{ env.TemplateUrl }}
+          shell: powershell
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          templateUrl: ${{ env.templateUrl }}
 
       - name: Analyze Artifacts
         id: analyzeartifacts
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $projects = '${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json
-          $projects | out-host
+          Write-Host "projects:"
+          $projects | ForEach-Object { Write-Host "- $_" }
           $include = @()
+          $sha = ''
+          $allArtifacts = @()
+          $page = 1
+          $headers = @{ 
+            "Authorization" = "token ${{ github.token }}"
+            "Accept"        = "application/json"
+          }
+          do {
+            $repoArtifacts = Invoke-WebRequest -UseBasicParsing -Headers $headers -Uri "$($ENV:GITHUB_API_URL)/repos/$($ENV:GITHUB_REPOSITORY)/actions/artifacts?per_page=100&page=$page" | ConvertFrom-Json
+            $allArtifacts += $repoArtifacts.Artifacts
+            $page++
+          }
+          while ($repoArtifacts.Artifacts.Count -gt 0)
+          Write-Host "Repo Artifacts count: $($repoArtifacts.total_count)"
+          Write-Host "Downloaded Artifacts count: $($allArtifacts.Count)"
           $projects | ForEach-Object {
             $thisProject = $_
             if ($thisProject -and ($thisProject -ne '.')) {
               $project = $thisProject.Replace('\','_')
             }
             else {
-              $project = $env:RepoName
+              $project = $env:repoName
             }
+            $refname = "$ENV:GITHUB_REF_NAME".Replace('/','_')
             Write-Host "Analyzing artifacts for project $project"
             $appVersion = '${{ github.event.inputs.appVersion }}'
-            $headers = @{ 
-                "Authorization" = "token ${{ github.token }}"
-                "Accept"        = "application/json"
-            }
-            $allArtifacts = Invoke-WebRequest -UseBasicParsing -Headers $headers -Uri "$($ENV:GITHUB_API_URL)/repos/$($ENV:GITHUB_REPOSITORY)/actions/artifacts" | ConvertFrom-Json
-            $artifactsVersion = $appVersion
             if ($appVersion -eq "latest") {
-              $artifact = $allArtifacts.artifacts | Where-Object { $_.name -notlike "$project-PR*" -and $_.name -like "$project-*-Apps-*" } | Select-Object -First 1
+              Write-Host "Grab latest"
+              $artifact = $allArtifacts | Where-Object { $_.name -like "$project-$refname-Apps-*" } | Select-Object -First 1
+            }
+            else {
+              Write-Host "Search for $project-$refname-Apps-$appVersion"
+              $artifact = $allArtifacts | Where-Object { $_.name -eq "$project-$refname-Apps-$appVersion" } | Select-Object -First 1
+            }
+            if ($artifact) {
               $artifactsVersion = $artifact.name.SubString($artifact.name.LastIndexOf('-Apps-')+6)
             }
-            $allArtifacts.artifacts | Where-Object { $_.name -notlike "$project-PR*" -and ($_.name -like "$project-*-Apps-$($artifactsVersion)" -or $_.name -like "$project-*-TestApps-$($artifactsVersion)" -or $_.name -like "$project-*-Dependencies-$($artifactsVersion)") } | ForEach-Object {
+            else {
+              Write-Host "::Error::No artifacts found for this project"
+              exit 1
+            }
+            $artifact | out-host
+            if ($sha) {
+              if ($artifact.workflow_run.head_sha -ne $sha) {
+                Write-Host "::Error::The build selected for release doesn't contain all projects. Please rebuild all projects by manually running the CI/CD workflow and recreate the release."
+                throw "The build selected for release doesn't contain all projects. Please rebuild all projects by manually running the CI/CD workflow and recreate the release."
+              }
+            }
+            else {
+              $sha = $artifact.workflow_run.head_sha
+            }
+
+            $allArtifacts | Where-Object { ($_.name -like "$project-$refname-Apps-$($artifactsVersion)" -or $_.name -like "$project-$refname-TestApps-$($artifactsVersion)" -or $_.name -like "$project-$refname-Dependencies-$($artifactsVersion)") } | ForEach-Object {
               $atype = $_.name.SubString(0,$_.name.Length-$artifactsVersion.Length-1)
               $atype = $atype.SubString($atype.LastIndexOf('-')+1)
               $include += $( [ordered]@{ "name" = $_.name; "url" = $_.archive_download_url; "atype" = $atype; "project" = $thisproject } )
@@ -127,25 +156,40 @@ jobs:
           $artifactsJson = $artifacts | ConvertTo-Json -compress
           Add-Content -Path $env:GITHUB_OUTPUT -Value "artifacts=$artifactsJson"
           Write-Host "artifacts=$artifactsJson"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "commitish=$sha"
+          Write-Host "commitish=$sha"
 
       - name: Prepare release notes
         id: createreleasenotes
         uses: microsoft/AL-Go-Actions/CreateReleaseNotes@preview
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          shell: powershell
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           tag_name: ${{ github.event.inputs.tag }}
 
       - name: Create release
-        uses: actions/create-release@v1
+        uses: actions/github-script@v6
         id: createrelease
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          bodyMD: ${{ steps.createreleasenotes.outputs.releaseNotes }}
         with:
-          draft: ${{ github.event.inputs.draft=='Y' }}
-          prerelease: ${{ github.event.inputs.prerelease=='Y' }}
-          release_name: ${{ github.event.inputs.name }}
-          tag_name: ${{ github.event.inputs.tag }}
-          body: ${{ steps.createreleasenotes.outputs.releaseNotes }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var bodyMD = process.env.bodyMD
+            const createReleaseResponse = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: '${{ github.event.inputs.tag }}',
+              name: '${{ github.event.inputs.name }}',
+              body: bodyMD.replaceAll('\\n','\n'),
+              draft: ${{ github.event.inputs.draft=='Y' }},
+              prerelease: ${{ github.event.inputs.prerelease=='Y' }},
+              target_commitish: '${{ steps.analyzeartifacts.outputs.commitish }}'
+            });
+            const {
+              data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
+            } = createReleaseResponse;
+            core.setOutput('releaseId', releaseId);
 
   UploadArtifacts:
     runs-on: [ windows-latest ] 
@@ -160,45 +204,58 @@ jobs:
       - name: Read settings
         uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          shell: powershell
+          parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
 
       - name: Read secrets
         uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          shell: powershell
+          parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
-          secrets: 'NuGetContext,StorageContext'
+          secrets: 'nuGetContext,storageContext'
 
       - name: Download artifact
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           Write-Host "Downloading artifact ${{ matrix.name}}"
           $headers = @{ 
               "Authorization" = "token ${{ github.token }}"
               "Accept"        = "application/vnd.github.v3+json"
           }
           Invoke-WebRequest -UseBasicParsing -Headers $headers -Uri '${{ matrix.url }}' -OutFile '${{ matrix.name }}.zip'
-          
-      - name: Upload release artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ needs.createrelease.outputs.upload_url }}
-          asset_path: '${{ matrix.name }}.zip'
-          asset_name: '${{ matrix.name }}.zip'
-          asset_content_type: application/zip
 
-      - name: NuGetContext
+      - name: Upload release artifacts
+        uses: actions/github-script@v6
+        env:
+          releaseId: ${{ needs.createrelease.outputs.releaseId }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const releaseId = process.env.releaseId
+            const assetPath = '${{ matrix.name }}.zip'
+            const assetName = '${{ matrix.name }}.zip'
+            const fs = require('fs');
+            const uploadAssetResponse = await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: releaseId,
+              name: assetName,
+              data: fs.readFileSync(assetPath)
+            });
+
+      - name: nuGetContext
         id: nuGetContext
-        if: ${{ env.NuGetContext }}
+        if: ${{ env.nuGetContext }}
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $nuGetContext = ''
           if ('${{ matrix.atype }}' -eq 'Apps') {
-            $nuGetContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('NuGetContext')))
+            $nuGetContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('nuGetContext')))
           }
           Add-Content -Path $env:GITHUB_OUTPUT -Value "nuGetContext=$nuGetContext"
 
@@ -208,20 +265,22 @@ jobs:
         env:
           deliveryContext: ${{ steps.nuGetContext.outputs.nuGetContext }}
         with:
+          shell: powershell
           type: 'Release'
           projects: ${{ matrix.project }}
           deliveryTarget: 'NuGet'
           artifacts: ${{ github.event.inputs.appVersion }}
           atypes: 'Apps,TestApps'
 
-      - name: StorageContext
+      - name: storageContext
         id: storageContext
-        if: ${{ env.StorageContext }}
+        if: ${{ env.storageContext }}
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $storageContext = ''
           if ('${{ matrix.atype }}' -eq 'Apps') {
-            $storageContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('StorageContext')))
+            $storageContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('storageContext')))
           }
           Add-Content -Path $env:GITHUB_OUTPUT -Value "storageContext=$storageContext"
 
@@ -231,6 +290,7 @@ jobs:
         env:
           deliveryContext: ${{ steps.storageContext.outputs.storageContext }}
         with:
+          shell: powershell
           type: 'Release'
           projects: ${{ matrix.project }}
           deliveryTarget: 'Storage'
@@ -240,7 +300,7 @@ jobs:
   CreateReleaseBranch:
     if: ${{ github.event.inputs.createReleaseBranch=='Y' }}
     runs-on: [ windows-latest ]
-    needs: [ Initialization, CreateRelease, UploadArtifacts ]
+    needs: [ CreateRelease, UploadArtifacts ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -248,6 +308,7 @@ jobs:
       - name: Create Release Branch
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           git checkout -b release/${{ github.event.inputs.tag }}
           git config user.name ${{ github.actor}}
           git config user.email ${{ github.actor}}@users.noreply.github.com
@@ -257,19 +318,20 @@ jobs:
   UpdateVersionNumber:
     if: ${{ github.event.inputs.updateVersionNumber!='' }}
     runs-on: [ windows-latest ]
-    needs: [ Initialization, CreateRelease, UploadArtifacts ]
+    needs: [ CreateRelease, UploadArtifacts ]
     steps:
       - name: Update Version Number
         uses: microsoft/AL-Go-Actions/IncrementVersionNumber@preview
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          shell: powershell
+          parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
           versionNumber: ${{ github.event.inputs.updateVersionNumber }}
           directCommit: ${{ github.event.inputs.directCommit }}
 
   PostProcess:
     if: always()
     runs-on: [ windows-latest ]
-    needs: [ Initialization, CreateRelease, UploadArtifacts, CreateReleaseBranch, UpdateVersionNumber ]
+    needs: [ CreateRelease, UploadArtifacts, CreateReleaseBranch, UpdateVersionNumber ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -278,5 +340,6 @@ jobs:
         id: PostProcess
         uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
+          shell: powershell
           eventId: "DO0094"
-          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          telemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}

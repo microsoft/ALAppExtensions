@@ -8,19 +8,38 @@ codeunit 139586 "Shpfy Inventory API Test"
     EventSubscriberInstance = Manual;
     SingleInstance = true;
 
+    trigger OnRun()
+    begin
+        // [FEATURE] [Shopify]
+        isInitialized := false;
+    end;
+
     var
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
-#pragma warning disable AA0072
-        This: Codeunit "Shpfy Inventory API Test";
-#pragma warning restore AA0072
+        LibraryInventory: Codeunit "Library - Inventory";
         Stock: Decimal;
+        isInitialized: Boolean;
+
+    local procedure Initialize()
+    begin
+        if isInitialized then
+            exit;
+        isInitialized := true;
+        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
+    end;
 
     [Test]
     procedure UnitTestGetStock()
     var
+        ShpfyShop: Record "Shpfy Shop";
+        ShpfyShopLocation: Record "Shpfy Shop Location";
+        Item: Record Item;
+        ShpfyProduct: Record "Shpfy Product";
         ShpfyShopInventory: Record "Shpfy Shop Inventory";
+        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ShpfyInventoryAPI: Codeunit "Shpfy Inventory API";
+        StockCalculate: Enum "Shpfy Stock Calculation";
         StockResult: Decimal;
     begin
         // [SCENARIO] Calculates the stock for a given Shopify Shop Inventory record.
@@ -29,16 +48,26 @@ codeunit 139586 "Shpfy Inventory API Test"
         // [SCENARIO] Because this is a standard functionality of BC, we don't do the testing of this code in this test.
 
         // [GINVEN] A ShopInventory record
-        ShpfyShopInventory := RandomShopInventoryRecord();
+        Initialize();
 
-        // [WHEN] GetStock is invoked of codeunit "Shpfy Inventory API"
-        if BindSubscription(This) then;
+        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
+        CreateShopLocation(ShpfyShopLocation, ShpfyShop.Code, StockCalculate::Disabled);
+
+        CreateItem(Item);
+        UpdateItemInventory(Item, 9);
+        CreateShpfyProduct(ShpfyProduct, ShpfyShopInventory, Item.SystemId, ShpfyShop.Code, ShpfyShopLocation.Id);
+
         StockResult := ShpfyInventoryAPI.GetStock(ShpfyShopInventory);
-        if UnbindSubscription(This) then;
-
         // [THEN] StockResult = Stock
-        LibraryAssert.AreEqual(Stock, StockResult, 'ShpfyInventoryAPI.GetStock(ShopInventory)');
+        LibraryAssert.AreEqual(0, StockResult, 'Must zero with Stock calculation disabled');
+
+
+        ShpfyShopLocation."Stock Calculation" := ShpfyShopLocation."Stock Calculation"::"Projected Available Balance Today";
+        ShpfyShopLocation.Modify();
+        StockResult := ShpfyInventoryAPI.GetStock(ShpfyShopInventory);
+        LibraryAssert.AreEqual(9, StockResult, 'must be 9');
     end;
+
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Inventory Events", 'OnBeforeCalculationStock', '', true, false)]
     local procedure OnCalculateStock(Item: Record Item; ShopifyShop: Record "Shpfy Shop"; LocationFilter: Text; CurrentShopifyStock: Decimal; var StockResult: Decimal; var Handled: Boolean)
@@ -47,50 +76,50 @@ codeunit 139586 "Shpfy Inventory API Test"
         Handled := true;
     end;
 
-    local procedure RandomShopInventoryRecord() ShopInventory: Record "Shpfy Shop Inventory";
-    var
-        Item: Record Item;
-        ShpfyShopLocation: Record "Shpfy Shop Location";
-        ShpfyProduct: Record "Shpfy Product";
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyVariant: Record "Shpfy Variant";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+    local procedure CreateItem(var Item: Record Item)
     begin
-        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        Stock := Any.DecimalInRange(1000, 2);
+        LibraryInventory.CreateItemWithoutVAT(Item);
+    end;
 
-        Item.Init();
-        Item."No." := Any.AlphabeticText(MaxStrLen(Item."No."));
-        Item.Insert();
-
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-
-        ShpfyShopLocation.Init();
-        ShpfyShopLocation."Shop Code" := ShpfyShop.Code;
-        ShpfyShopLocation.Id := Any.IntegerInRange(10000, 999999);
-        ShpfyShopLocation.Disabled := false;
-        ShpfyShopLocation.Insert();
-
+    local procedure CreateShpfyProduct(var ShpfyProduct: Record "Shpfy Product"; var ShpfyShopInventory: Record "Shpfy Shop Inventory"; ItemSystemId: Guid; ShopCode: Code[20]; ShpfyShopLocationId: BigInteger)
+    var
+        ShpfyVariant: Record "Shpfy Variant";
+    begin
         ShpfyProduct.Init();
         ShpfyProduct.Id := Any.IntegerInRange(10000, 999999);
-        ShpfyProduct."Item SystemId" := Item.SystemId;
-        ShpfyProduct."Shop Code" := ShpfyShop.Code;
+        ShpfyProduct."Item SystemId" := ItemSystemId;
+        ShpfyProduct."Shop Code" := ShopCode;
         ShpfyProduct.Insert();
-
         ShpfyVariant.Init();
         ShpfyVariant.Id := Any.IntegerInRange(10000, 999999);
         ShpfyVariant."Product Id" := ShpfyProduct.Id;
-        ShpfyVariant."Item SystemId" := Item.SystemId;
-        ShpfyVariant."Shop Code" := ShpfyShop.Code;
+        ShpfyVariant."Item SystemId" := ItemSystemId;
+        ShpfyVariant."Shop Code" := ShopCode;
         ShpfyVariant.Insert();
 
-        ShopInventory.Init();
-        ShopInventory."Inventory Item Id" := Any.IntegerInRange(10000, 999999);
-        ShopInventory."Shop Code" := ShpfyShop.Code;
-        ShopInventory."Location Id" := ShpfyShopLocation.Id;
-        ShopInventory."Product Id" := ShpfyProduct.Id;
-        ShopInventory."Variant Id" := ShpfyVariant.Id;
-        ShopInventory.Insert();
-        Commit();
+        ShpfyShopInventory.Init();
+        ShpfyShopInventory."Inventory Item Id" := Any.IntegerInRange(10000, 999999);
+        ShpfyShopInventory."Shop Code" := ShopCode;
+        ShpfyShopInventory."Location Id" := ShpfyShopLocationId;
+        ShpfyShopInventory."Product Id" := ShpfyProduct.Id;
+        ShpfyShopInventory."Variant Id" := ShpfyVariant.Id;
+        ShpfyShopInventory.Insert();
+    end;
+
+    local procedure CreateShopLocation(var ShpfyShopLocation: Record "Shpfy Shop Location"; ShopCode: Code[20]; StockCalculation: Enum "Shpfy Stock Calculation")
+    begin
+        ShpfyShopLocation.Init();
+        ShpfyShopLocation."Shop Code" := ShopCode;
+        ShpfyShopLocation.Id := Any.IntegerInRange(10000, 999999);
+        ShpfyShopLocation."Stock Calculation" := StockCalculation;
+        ShpfyShopLocation.Insert();
+    end;
+
+    local procedure UpdateItemInventory(Item: Record Item; Qty: Decimal)
+    var
+        ItemJournalLine: Record "Item Journal Line";
+    begin
+        LibraryInventory.CreateItemJournalLineInItemTemplate(ItemJournalLine, Item."No.", '', '', Qty);
+        LibraryInventory.PostItemJournalLine(ItemJournalLine."Journal Template Name", ItemJournalLine."Journal Batch Name");
     end;
 }

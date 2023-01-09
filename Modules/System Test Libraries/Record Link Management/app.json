@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library with Test objects for the Record Link Management module",
     "description":  "Library with Test objects for the Record Link Management module",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "82834e1e-bbf2-4184-b70e-ee44bca1ca10",
                              "name":  "Record Link Management",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "screenshots":  [

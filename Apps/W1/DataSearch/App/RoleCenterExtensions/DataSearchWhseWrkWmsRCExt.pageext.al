@@ -2,7 +2,7 @@ pageextension 2689 "Data Search Whse WrkWms RC Ext" extends "Whse. Worker WMS Ro
 {
     actions
     {
-        addafter("Navi&gate")
+        addafter("Customer &Labels")
         {
             action(DataSearch)
             {

@@ -11,9 +11,10 @@
                         "DevTools\\TestFramework\\TestRunner",
                         "System Test Libraries",
                         "System Tests"
-                    ],
-    "artifact":  "bcinsider//21.3/base/latest/{INSIDERSASTOKEN}",
+    ],
+    "artifact":  "bcinsider//21.4/base/latest/{INSIDERSASTOKEN}",
     "enablePerTenantExtensionCop":  false,
-    "repoVersion":  "21.3",
-    "doNotRunTests": true
+    "repoVersion":  "21.4",
+    "doNotRunTests": true,
+    "cleanModePreprocessorSymbols":  ["CLEAN17", "CLEAN18", "CLEAN19", "CLEAN20", "CLEAN21", "CLEAN22"]
 }

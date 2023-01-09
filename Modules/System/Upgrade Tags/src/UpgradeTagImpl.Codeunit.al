@@ -185,6 +185,7 @@ codeunit 9996 "Upgrade Tag Impl."
         UpgradeTagSystemFieldRef: FieldRef;
         UpgradeTagFieldToken: JsonToken;
         FieldNameTxt: Text;
+        DateTimeValue: DateTime;
     begin
         UpgradeTagRecordRef.Open(Database::"Upgrade Tags");
         FieldMetadata.SetRange(TableNo, Database::"Upgrade Tags");
@@ -201,7 +202,11 @@ codeunit 9996 "Upgrade Tag Impl."
             UpgradeTagJsonObject.Get(FieldNameTxt, UpgradeTagFieldToken);
             case UpgradeTagFieldRef.Type of
                 FieldType::DateTime:
-                    UpgradeTagFieldRef.Value := UpgradeTagFieldToken.AsValue().AsDateTime();
+                    begin
+                        if not Evaluate(DateTimeValue, UpgradeTagFieldToken.AsValue().AsText(), 9) then
+                            DateTimeValue := CurrentDateTime;
+                        UpgradeTagFieldRef.Value := DateTimeValue;
+                    end;
                 FieldType::Boolean:
                     UpgradeTagFieldRef.Value := UpgradeTagFieldToken.AsValue().AsBoolean();
                 else
