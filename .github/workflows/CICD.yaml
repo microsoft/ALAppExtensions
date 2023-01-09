@@ -793,6 +793,12 @@ jobs:
         uses: nuget/setup-nuget@v1
         with:
           nuget-api-key: ${{ secrets.NuGetAPIKey }}
+      
+      - name: Nuget Pack
+        run: |
+            $outPath = Join-Path $ENV:GITHUB_WORKSPACE '/out' 
+            $nuspecPath = Join-Path $outPath 'manifest.nuspec'
+            nuget pack $nuspecPath -OutputDirectory $outPath
           
       - name: Publish nuget to artifacts
         uses: actions/upload-artifact@v3

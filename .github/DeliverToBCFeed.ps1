@@ -24,29 +24,6 @@ function GenerateManifest
     return $template
 }
 
-try 
-{
-    $deliverContext = $parameters.Context | ConvertFrom-Json | ConvertTo-HashTable
-    $deliverServerUrl = $deliverContext.ServerUrl
-    $deliverAcountToken = $deliverContext.Token
-}
-catch 
-{
-    throw "Deliver context is malformed. Needs to be formatted as JSON, containing serverUrl and token."
-}
-
-if (-not ($deliverServerUrl)) 
-{
-    throw "Cannot retrieve server URL from the deliver context"
-} 
-
-if (-not $deliverAcountToken) 
-{
-    throw "Cannot retrieve account token the deliver context"
-} 
-
-Write-Host "Successfully retrieved information from the deliver context" -ForegroundColor Green
-
 Write-Host $parameters -ForegroundColor Magenta
 
 $project = $parameters.project
@@ -85,33 +62,33 @@ $manifest = GenerateManifest `
             -Owners "$env:GITHUB_REPOSITORY_OWNER"
 
 # Create a temp folder to use for the packaging
-$packageFolder = Join-Path $env:TEMP ([GUID]::NewGuid().ToString())
+$packageFolder = Join-Path $env:GITHUB_WORKSPACE 'out'
+#$packageFolder = Join-Path $env:TEMP ([GUID]::NewGuid().ToString())
 New-Item -Path $packageFolder -ItemType Directory | Out-Null
 
 Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
 
-try 
-{
-    # Create folder to hold the apps
-    New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
-    
-    @($appsFolders) + @($testAppsFolders) | ForEach-Object { 
-        $appsToPackage = Join-Path $_ 'Package'
-        
-        if(Test-Path -Path $appsToPackage) 
-        {
-            Copy-Item -Path "$appsToPackage/*" -Destination "$packageFolder/Apps" -Recurse -Force
-        }
-    }
 
-    # Copy over the license file
-    Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
+# Create folder to hold the apps
+New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
+
+@($appsFolders) + @($testAppsFolders) | ForEach-Object { 
+    $appsToPackage = Join-Path $_ 'Package'
     
-    #Create .nuspec file
-    $manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
-    $manifest.Save($manifestFilePath)
+    if(Test-Path -Path $appsToPackage) 
+    {
+        Copy-Item -Path "$appsToPackage/*" -Destination "$packageFolder/Apps" -Recurse -Force
+    }
+}
+
+# Copy over the license file
+Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
+
+#Create .nuspec file
+$manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
+$manifest.Save($manifestFilePath)
     
-    $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
+    <#$outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
     New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
@@ -131,17 +108,5 @@ try
     if(-not $packageFile) 
     {
         throw "Cannot find the package file in $outputDirectory"
-    }
+    }#>
 
-    Write-Host "Push package $($packageFile.FullName) to $deliverServerUrl" -ForegroundColor Magenta
-    #$deliverOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($packageFile.FullName) -ApiKey $deliverAcountToken -Source $deliverServerUrl"
-
-    if ($LASTEXITCODE -or $null -eq $deliverOutput)
-    {
-        throw "Pushing package $($packageFile.FullName) failed with exit code $LASTEXITCODE"
-    }
-}
-finally 
-{
-    Remove-Item $packageFolder -Recurse -Force
-}
