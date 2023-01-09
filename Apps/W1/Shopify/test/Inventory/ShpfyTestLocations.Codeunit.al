@@ -11,7 +11,7 @@ codeunit 139577 "Shpfy Test Locations"
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        JLocations: JsonObject;
+        JData: JsonObject;
         KnownIds: List of [Integer];
 
     [Test]
@@ -27,7 +27,7 @@ codeunit 139577 "Shpfy Test Locations"
         // [GIVEN] A Shop
         ShpfySyncShopLocations.SetShop(ShpfyCommunicationMgt.GetShopRecord());
         // [GIVEN] A Shopify Location as an Jsonobject. 
-        JLocation := CreateShopifyLocation();
+        JLocation := CreateShopifyLocation(false);
         // [GIVEN] TempShopLocation
         // [WHEN] Invode ImportLocation
         ShpfySyncShopLocations.ImportLocation(JLocation, TempShpfyShopLocation);
@@ -41,8 +41,11 @@ codeunit 139577 "Shpfy Test Locations"
     var
         ShpfyShopLocation: Record "Shpfy Shop Location";
         ShpfySyncShopLocations: Codeunit "Shpfy Sync Shop Locations";
+        ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
         NumberOfLocations: Integer;
+        JLocations: JsonObject;
     begin
+        ShpfyShopLocation.DeleteAll();
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         // [SCENARIO] Invoke a REST API to get the locations from Shopify.
         // For the moking we will choose a random number between 1 and 5 to generate the number of locations that will be in the result set.
@@ -51,8 +54,10 @@ codeunit 139577 "Shpfy Test Locations"
         // [GIVEN] The number of locations we want to have in the moking data.
         NumberOfLocations := Any.IntegerInRange(1, 5);
         CreateShopifyLocationJson(NumberOfLocations);
+        // [GIVEN] Locations as Json object
+        ShpfyJsonHelper.GetJsonObject(JData.AsToken(), JLocations, 'locations');
         // [WHEN] Invoke Sync Locations.
-        ShpfySyncShopLocations.SyncLocations(JLocations.AsToken());
+        ShpfySyncShopLocations.SyncLocations(JLocations);
         // [THEN] ShpfyShopLocation.Count = NumberOfLocations WHERE (Shop.Code = Field("Shop Code"))
         ShpfyShopLocation.SetRange("Shop Code", ShpfyCommunicationMgt.GetShopRecord().Code);
         LibraryAssert.RecordCount(ShpfyShopLocation, NumberOfLocations);
@@ -64,6 +69,8 @@ codeunit 139577 "Shpfy Test Locations"
         ShpfyShopLocation: Record "Shpfy Shop Location";
         NumberOfLocations: Integer;
     begin
+
+        ShpfyShopLocation.DeleteAll();
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         // [SCENARIO] Invoke a REST API to get the locations from Shopify.
         // For the moking we will choose a random number between 1 and 5 to generate the number of locations that will be in the result set.
@@ -84,7 +91,7 @@ codeunit 139577 "Shpfy Test Locations"
         ShpfyShop: Record "Shpfy Shop";
         ShpfyLocationSubcriber: Codeunit "Shpfy Location Subcriber";
     begin
-        ShpfyLocationSubcriber.InitShopiyLocations(JLocations);
+        ShpfyLocationSubcriber.InitShopiyLocations(JData);
         BindSubscription(ShpfyLocationSubcriber);
         ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
         Result := Codeunit.Run(Codeunit::"Shpfy Sync Shop Locations", ShpfyShop);
@@ -93,49 +100,49 @@ codeunit 139577 "Shpfy Test Locations"
 
     local procedure CreateShopifyLocationJson(NumberOfLocations: Integer)
     var
-        JArray: JsonArray;
+        JLocations: JsonObject;
+        JEdges: JsonArray;
+        JPageInfo: JsonObject;
+        JExtensions: JsonObject;
+        JCost: JsonObject;
+        JThrottleStatus: JsonObject;
         Index: Integer;
     begin
-        Clear(JLocations);
+        Clear(JData);
         Clear(KnownIds);
         for Index := 1 TO NumberOfLocations do
-            JArray.Add(CreateShopifyLocation());
-        JLocations.Add('locations', JArray);
+            JEdges.Add(CreateShopifyLocation(Index = 1));
+        JLocations.Add('edges', JEdges);
+        JPageInfo.Add('hasNextPage', false);
+        JLocations.Add('pageInfo', JPageInfo);
+        JData.Add('locations', JLocations);
+        JThrottleStatus.Add('maximumAvailable', 1000.0);
+        JThrottleStatus.Add('currentlyAvailable', 996);
+        JThrottleStatus.Add('restoreRate', 50.0);
+        JCost.Add('requestedQueryCost', 12);
+        JCost.Add('actualQueryCost', 4);
+        JCost.Add('throttleStatus', JThrottleStatus);
+        JData.Add('extensions', JExtensions);
     end;
 
-    local procedure CreateShopifyLocation(): JsonObject
+    local procedure CreateShopifyLocation(AsPrimary: Boolean): JsonObject
     var
         Id: Integer;
         JLocation: JsonObject;
-        JValue: JsonValue;
-        CreateDate: Date;
+        JNode: JsonObject;
         LocationIdTxt: Label 'gid:\/\/shopify\/Location\/%1', Comment = '%1 = LocationId', Locked = true;
     begin
         repeat
             Id := Any.IntegerInRange(12354658, 99999999);
         until not KnownIds.Contains(Id);
         KnownIds.Add(Id);
-        JLocation.Add('id', Id);
-        JLocation.Add('name', Any.AlphabeticText(30));
-        JLocation.Add('address1', Any.AlphabeticText(30));
-        JLocation.Add('address2', '');
-        JLocation.Add('city', Any.AlphabeticText(30));
-        JLocation.Add('zip', Format(Any.IntegerInRange(1000, 9999)));
-        JLocation.Add('province', '');
-        JLocation.Add('country', '');
-        JLocation.Add('phone', '');
-        CreateDate := Any.DateInRange(20200101D, 100);
-        JLocation.Add('created_at', CreateDateTime(CreateDate, 0T));
-        JLocation.Add('updated_at', CreateDateTime(Any.DateInRange(CreateDate, 0, 100), 0T));
-        JLocation.Add('country_code', '');
-        JLocation.Add('country_name', '');
-        JValue.SetValueToNull();
-        JLocation.Add('province_code', JValue);
-        JLocation.Add('legacy', false);
-        JLocation.Add('active', true);
-        JLocation.Add('admin_graphql_api_id', StrSubstNo(LocationIdTxt, id));
-        JLocation.Add('localized_country_name', '');
-        JLocation.Add('localized_province_name', JValue);
+        JNode.Add('id', StrSubstNo(LocationIdTxt, id));
+        JNode.Add('isActive', true);
+        JNode.Add('isPrimary', AsPrimary);
+        JNode.Add('name', Any.AlphabeticText(30));
+        JNode.Add('legacyResourceId', Format(Id, 0, 9));
+        JLocation.Add('node', JNode);
+        JLocation.Add('cursor', Any.AlphabeticText(88));
         exit(JLocation);
     end;
 }

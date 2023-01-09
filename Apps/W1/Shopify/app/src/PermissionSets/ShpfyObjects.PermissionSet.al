@@ -86,7 +86,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL LocationOrderLines" = X,
         codeunit "Shpfy GQL NextCustomerIds" = X,
         codeunit "Shpfy GQL NextInvEntries" = X,
-        codeunit "Shpfy GQL NextOrderFulfillment" = X,
+        codeunit "Shpfy GQL NextFulfillmentLines" = X,
         codeunit "Shpfy GQL NextOrdersToImport" = X,
         codeunit "Shpfy GQL NextProductIds" = X,
         codeunit "Shpfy GQL NextProductImages" = X,

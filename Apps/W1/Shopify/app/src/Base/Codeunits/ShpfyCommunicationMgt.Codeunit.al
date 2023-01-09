@@ -234,16 +234,16 @@ codeunit 30103 "Shpfy Communication Mgt."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Wait: Duration;
-        Client: HttpClient;
-        HttpRequestMsg: HttpRequestMessage;
-        HttpResponseMsg: HttpResponseMessage;
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
+        HttpResponseMessage: HttpResponseMessage;
         RetryCounter: Integer;
     begin
         FeatureTelemetry.LogUptake('0000HUV', 'Shopify', Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000IF5', 'Shopify', 'Shopify web request executed.');
         CheckOutgoingRequests(Url, Method, Request);
 
-        CreateHttpRequestMessage(Url, Method, Request, HttpRequestMsg);
+        CreateHttpRequestMessage(Url, Method, Request, HttpRequestMessage);
 
         Wait := 100;
 
@@ -257,34 +257,34 @@ codeunit 30103 "Shpfy Communication Mgt."
         end;
 
         if IsTestInProgress then
-            ShpfyCommunicationEvents.OnClientSend(HttpRequestMsg, HttpResponseMsg)
+            ShpfyCommunicationEvents.OnClientSend(HttpRequestMessage, HttpResponseMessage)
         else
-            if Client.Send(HttpRequestMsg, HttpResponseMsg) then begin
+            if HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then begin
                 Clear(RetryCounter);
-                while (not HttpResponseMsg.IsBlockedByEnvironment) and (EvaluateResponse(HttpResponseMsg)) and (RetryCounter < MaxRetries) do begin
+                while (not HttpResponseMessage.IsBlockedByEnvironment) and (EvaluateResponse(HttpResponseMessage)) and (RetryCounter < MaxRetries) do begin
                     RetryCounter += 1;
                     Sleep(1000);
-                    CreateShopifyLogEntry(Url, Method, Request, HttpResponseMsg, Response);
-                    Clear(Client);
-                    Clear(HttpRequestMsg);
-                    Clear(HttpResponseMsg);
-                    CreateHttpRequestMessage(Url, Method, Request, HttpRequestMsg);
-                    Client.Send(HttpRequestMsg, HttpResponseMsg);
+                    CreateShopifyLogEntry(Url, Method, Request, HttpResponseMessage, Response);
+                    Clear(HttpClient);
+                    Clear(HttpRequestMessage);
+                    Clear(HttpResponseMessage);
+                    CreateHttpRequestMessage(Url, Method, Request, HttpRequestMessage);
+                    HttpClient.Send(HttpRequestMessage, HttpResponseMessage);
                 end;
             end;
-        if GetContent(HttpResponseMsg, Response) then;
-        ResponseHeaders := HttpResponseMsg.Headers();
-        CreateShopifyLogEntry(Url, Method, Request, HttpResponseMsg, Response);
+        if GetContent(HttpResponseMessage, Response) then;
+        ResponseHeaders := HttpResponseMessage.Headers();
+        CreateShopifyLogEntry(Url, Method, Request, HttpResponseMessage, Response);
         Commit();
     end;
 
     [TryFunction]
-    local procedure GetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
+    local procedure GetContent(HttpResponseMessage: HttpResponseMessage; var Response: Text)
     begin
         if IsTestInProgress then
-            ShpfyCommunicationEvents.OnGetContent(HttpResponseMsg, Response)
+            ShpfyCommunicationEvents.OnGetContent(HttpResponseMessage, Response)
         else
-            HttpResponseMsg.Content.ReadAs(Response);
+            HttpResponseMessage.Content.ReadAs(Response);
     end;
 
     /// <summary> 
@@ -349,16 +349,16 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="Url">Parameter of type text.</param>
     /// <param name="Method">Parameter of type Text.</param>
     /// <param name="Request">Parameter of type Text.</param>
-    /// <param name="HttpRequestMsg">Parameter of type HttpRequestMessage.</param>
-    local procedure CreateHttpRequestMessage(Url: text; Method: Text; Request: Text; var HttpRequestMsg: HttpRequestMessage)
+    /// <param name="HttpRequestMessage">Parameter of type HttpRequestMessage.</param>
+    local procedure CreateHttpRequestMessage(Url: text; Method: Text; Request: Text; var HttpRequestMessage: HttpRequestMessage)
     var
-        Content: HttpContent;
-        ContentHeaders: HttpHeaders;
-        Headers: HttpHeaders;
+        HttpContent: HttpContent;
+        ContentHttpHeaders: HttpHeaders;
+        HttpHeaders: HttpHeaders;
         AccessToken: Text;
     begin
-        HttpRequestMsg.SetRequestUri(url);
-        HttpRequestMsg.GetHeaders(Headers);
+        HttpRequestMessage.SetRequestUri(url);
+        HttpRequestMessage.GetHeaders(HttpHeaders);
 
 
         if IsTestInProgress then
@@ -366,16 +366,16 @@ codeunit 30103 "Shpfy Communication Mgt."
         else
             AccessToken := ShpfyShop.GetAccessToken();
 
-        Headers.Add('X-Shopify-Access-Token', AccessToken);
-        HttpRequestMsg.Method := Method;
+        HttpHeaders.Add('X-Shopify-Access-Token', AccessToken);
+        HttpRequestMessage.Method := Method;
 
         if Method in ['POST', 'PUT'] then begin
-            Content.WriteFrom(Request);
-            Content.GetHeaders(ContentHeaders);
-            if ContentHeaders.Contains('Content-Type') then
-                ContentHeaders.Remove('Content-Type');
-            ContentHeaders.Add('Content-Type', 'application/json');
-            HttpRequestMsg.Content(Content);
+            HttpContent.WriteFrom(Request);
+            HttpContent.GetHeaders(ContentHttpHeaders);
+            if ContentHttpHeaders.Contains('Content-Type') then
+                ContentHttpHeaders.Remove('Content-Type');
+            ContentHttpHeaders.Add('Content-Type', 'application/json');
+            HttpRequestMessage.Content(HttpContent);
         end;
     end;
 
@@ -416,9 +416,9 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <summary> 
     /// Evaluate Response.
     /// </summary>
-    /// <param name="HttpResponseMsg">Parameter of type HttpResponseMessage.</param>
+    /// <param name="HttpResponseMessage">Parameter of type HttpResponseMessage.</param>
     /// <returns>Return variable "Retry" of type Boolean.</returns>
-    local procedure EvaluateResponse(HttpResponseMsg: HttpResponseMessage) Retry: Boolean
+    local procedure EvaluateResponse(HttpResponseMessage: HttpResponseMessage) Retry: Boolean
     var
         BucketPerc: Decimal;
         WaitTime: Duration;
@@ -427,7 +427,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         Status: Integer;
         Values: array[10] of Text;
     begin
-        Status := HttpResponseMsg.HttpStatusCode();
+        Status := HttpResponseMessage.HttpStatusCode();
         case Status of
             429:
                 begin
@@ -440,7 +440,7 @@ codeunit 30103 "Shpfy Communication Mgt."
                     Retry := true;
                 end;
             else
-                if HttpResponseMsg.Headers().GetValues('X-Shopify-Shop-Api-Call-Limit', Values) then
+                if HttpResponseMessage.Headers().GetValues('X-Shopify-Shop-Api-Call-Limit', Values) then
                     if Evaluate(BucketUse, Values[1].Split('/').Get(1)) and Evaluate(BucketSize, Values[1].Split('/').Get(2)) then begin
                         BucketPerc := 100 * BucketUse / BucketSize;
                         if BucketPerc >= 90 then
@@ -500,7 +500,8 @@ codeunit 30103 "Shpfy Communication Mgt."
     [NonDebuggable]
     internal procedure GetShopRecord() Shop: Record "Shpfy Shop";
     begin
-        Shop := ShpfyShop;
+        if not Shop.Get(ShpfyShop.Code) then
+            Clear(Shop);
     end;
 
     internal procedure CheckOutgoingRequests(Url: Text; Method: Text; Request: Text)

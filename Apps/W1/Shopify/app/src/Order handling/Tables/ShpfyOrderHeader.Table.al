@@ -63,6 +63,9 @@ table 30118 "Shpfy Order Header"
             Caption = 'Token';
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteTag = '21.3';
+            ObsoleteReason = 'Not available in GraphQL data';
         }
         field(13; Gateway; Text[50])
         {
@@ -85,24 +88,36 @@ table 30118 "Shpfy Order Header"
             Caption = 'Currency';
             DataClassification = Customercontent;
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteTag = '21.3';
+            ObsoleteReason = 'Replacesd by the fields  "Currency Code" and "Presentment Currency code".';
         }
         field(17; "Cart Token"; Text[50])
         {
             Caption = 'Cart Token';
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteTag = '21.3';
+            ObsoleteReason = 'Not available in GraphQL data';
         }
         field(18; "Checkout Token"; Text[50])
         {
             Caption = 'Checkout Token';
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteTag = '21.3';
+            ObsoleteReason = 'Not available in GraphQL data';
         }
         field(19; Reference; Text[50])
         {
             Caption = 'Reference';
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteTag = '21.3';
+            ObsoleteReason = 'Not available in GraphQL data';
         }
         field(21; "Risk Level"; Enum "Shpfy Risk Level")
         {
@@ -133,6 +148,9 @@ table 30118 "Shpfy Order Header"
             Caption = 'Contact Email';
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteTag = '21.3';
+            ObsoleteReason = 'Not available in GraphQL data';
         }
         field(26; "Total Tip Received"; Decimal)
         {
@@ -145,6 +163,9 @@ table 30118 "Shpfy Order Header"
             Caption = 'Session Hash';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteTag = '21.3';
+            ObsoleteReason = 'Not available in GraphQL data';
         }
         field(48; "Ship-to First Name"; Text[50])
         {
@@ -304,6 +325,9 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Buyer Accepts Marketing';
             DataClassification = SystemMetadata;
+            ObsoleteState = Pending;
+            ObsoleteTag = '21.3';
+            ObsoleteReason = 'Not available in GraphQL data';
         }
         field(80; "Cancelled At"; DateTime)
         {
@@ -412,6 +436,71 @@ table 30118 "Shpfy Order Header"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(102; "Channel Name"; Text[100])
+        {
+            Caption = 'Channel Name';
+            Editable = false;
+        }
+        field(103; "App Name"; Text[100])
+        {
+            Caption = 'App Name';
+            Editable = false;
+        }
+        field(104; "Presentment Currency Code"; Code[10])
+        {
+            Caption = 'Presentment Currency Code';
+            Editable = false;
+        }
+        field(105; Unpaid; Boolean)
+        {
+            Caption = 'Unpaid';
+            Editable = false;
+        }
+        field(106; "Discount Code"; Code[20])
+        {
+            Caption = 'Discount Code';
+            Editable = false;
+        }
+        field(107; "Discount Codes"; Text[250])
+        {
+            Caption = 'Discount Codes';
+            Editable = false;
+        }
+        field(108; Refundable; Boolean)
+        {
+            Caption = 'Refundable';
+            Editable = false;
+        }
+        field(109; "Presentment Total Amount"; Decimal)
+        {
+            Caption = 'Presentment Total Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(110; "Presentment Subtotal Amount"; Decimal)
+        {
+            Caption = 'Presentment Subtotal Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(111; "Presentment VAT Amount"; Decimal)
+        {
+            Caption = 'Presentment VAT Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(112; "Presentment Discount Amount"; Decimal)
+        {
+            Caption = 'Discount Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(113; "Presentment Total Tip Received"; Decimal)
+        {
+            Caption = 'Presentment Total Tip Received';
+            DataClassification = SystemMetadata;
+        }
+        field(114; "Pres. Shipping Charges Amount"; Decimal)
+        {
+            Caption = 'Presentment Shipping Charges Amount';
+            DataClassification = SystemMetadata;
+        }
         field(500; "Shop Code"; Code[20])
         {
             Caption = 'Shop Code';
@@ -486,7 +575,6 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Work Description';
             DataClassification = SystemMetadata;
-
         }
         field(1008; "Sell-to Customer Name 2"; Text[50])
         {
@@ -520,6 +608,36 @@ table 30118 "Shpfy Order Header"
             Caption = 'Payment Method Code';
             DataClassification = CustomerContent;
             TableRelation = "Payment Method";
+        }
+        field(1014; "Sell-to Contact Name"; Text[100])
+        {
+            Caption = 'Sell-to Contact Name';
+            DataClassification = CustomerContent;
+        }
+        field(1015; "Bill-to Contact Name"; Text[100])
+        {
+            Caption = 'Bill-to Contact Name';
+            DataClassification = CustomerContent;
+        }
+        field(1016; "Ship-to Contact Name"; Text[100])
+        {
+            Caption = 'Ship-to Contact Name';
+            DataClassification = CustomerContent;
+        }
+        field(1017; "Sell-to Contact No."; Code[20])
+        {
+            Caption = 'Sell-to Contact No.';
+            DataClassification = CustomerContent;
+        }
+        field(1018; "Bill-to Contact No."; Code[20])
+        {
+            Caption = 'Bill-to Contact No.';
+            DataClassification = CustomerContent;
+        }
+        field(1019; "Ship-to Contact No."; Code[20])
+        {
+            Caption = 'Ship-to Contact No.';
+            DataClassification = CustomerContent;
         }
     }
     keys

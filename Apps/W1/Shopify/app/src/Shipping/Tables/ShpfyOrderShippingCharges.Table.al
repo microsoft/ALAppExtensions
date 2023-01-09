@@ -45,6 +45,16 @@ table 30130 "Shpfy Order Shipping Charges"
             Caption = 'Discount Amount';
             DataClassification = SystemMetadata;
         }
+        field(8; "Presentment Amount"; Decimal)
+        {
+            Caption = 'Presentment Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(9; "Presentment Discount Amount"; Decimal)
+        {
+            Caption = 'Presentment Discount Amount';
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

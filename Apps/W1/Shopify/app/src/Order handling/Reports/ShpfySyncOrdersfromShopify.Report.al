@@ -22,11 +22,20 @@ report 30104 "Shpfy Sync Orders from Shopify"
                 RequestFilterFields = "Fully Paid", "Risk Level", "Financial Status", "Fulfillment Status", Confirmed, "Import Action", "Attribute Key Filter", "Attribute Key Exists";
 
                 trigger OnPreDataItem()
+                var
+                    ShpfyOrdersToImport: Record "Shpfy Orders to Import";
                 begin
+                    ShpfyOrdersToImport.SetView(OrdersToImport.GetView(false));
+                    ShpfyOrdersToImport.SetRange("Shop Id", Shop."Shop Id");
+                    ShpfyOrdersToImport.SetRange("Shop Code", '');
+                    ShpfyOrdersToImport.ModifyAll("Shop Code", Shop.Code);
+                    Commit();
+
+
                     if GuiAllowed then begin
                         ToProcess := OrdersToImport.Count;
-                        Window.Open(ProcessMsg, ToProcess);
-                        Window.Update();
+                        Dialog.Open(ProcessMsg, ToProcess);
+                        Dialog.Update();
                     end;
                 end;
 
@@ -58,14 +67,14 @@ report 30104 "Shpfy Sync Orders from Shopify"
 
                     if GuiAllowed then begin
                         ToProcess -= 1;
-                        Window.Update();
+                        Dialog.Update();
                     end;
                 end;
 
                 trigger OnPostDataItem()
                 begin
                     if GuiAllowed then
-                        Window.Close();
+                        Dialog.Close();
                 end;
             }
 
@@ -79,7 +88,7 @@ report 30104 "Shpfy Sync Orders from Shopify"
 
     var
         OrdersAPI: Codeunit "Shpfy Orders API";
-        Window: Dialog;
+        Dialog: Dialog;
         ToProcess: Integer;
         ProcessMsg: Label 'To Process: #1###########', Comment = '#1 = ToPrgress';
 
@@ -89,19 +98,19 @@ report 30104 "Shpfy Sync Orders from Shopify"
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     local procedure CreateSalesDocument(ShopifyOrderHeader: Record "Shpfy Order Header")
     var
-        ProcessShopifyOrder: Codeunit "Shpfy Process Order";
+        ProcessOrder: Codeunit "Shpfy Process Order";
     begin
         if not ShopifyOrderHeader.Processed then begin
             Commit();
             ClearLastError();
-            if not ProcessShopifyOrder.Run(ShopifyOrderHeader) then begin
+            if not ProcessOrder.Run(ShopifyOrderHeader) then begin
                 SelectLatestVersion();
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
                 ShopifyOrderHeader."Has Error" := true;
                 ShopifyOrderHeader."Error Message" := CopyStr(Format(Time) + ' ' + GetLastErrorText(), 1, MaxStrLen(ShopifyOrderHeader."Error Message"));
                 ShopifyOrderHeader."Sales Order No." := '';
                 ShopifyOrderHeader."Sales Invoice No." := '';
-                ProcessShopifyOrder.CleanUpLastCreatedDocument();
+                ProcessOrder.CleanUpLastCreatedDocument();
             end else begin
                 SelectLatestVersion();
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");

@@ -112,7 +112,7 @@ codeunit 30181 "Shpfy Product Mapping"
         FindItemVariant: Record "Item Variant";
         ItemVendor: Record "Item Vendor";
         Vendor: Record Vendor;
-        ItemRefMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
         Founded: Boolean;
         VariantCode: Code[10];
         ItemNo: Code[20];
@@ -169,16 +169,16 @@ codeunit 30181 "Shpfy Product Mapping"
                                     if ShopifyProduct."Has Variants" then
                                         case ShopifyVariant."UoM Option Id" of
                                             1:
-                                                Founded := ItemRefMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
+                                                Founded := ItemReferenceMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
                                             2:
-                                                Founded := ItemRefMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, CopyStr(ShopifyVariant."Option 2 Value", 1, 10), ItemNo, VariantCode);
+                                                Founded := ItemReferenceMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, CopyStr(ShopifyVariant."Option 2 Value", 1, 10), ItemNo, VariantCode);
                                             3:
-                                                Founded := ItemRefMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, CopyStr(ShopifyVariant."Option 3 Value", 1, 10), ItemNo, VariantCode);
+                                                Founded := ItemReferenceMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, CopyStr(ShopifyVariant."Option 3 Value", 1, 10), ItemNo, VariantCode);
                                             else
-                                                Founded := ItemRefMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, '', ItemNo, VariantCode);
+                                                Founded := ItemReferenceMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, '', ItemNo, VariantCode);
                                         end
                                     else
-                                        Founded := ItemRefMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, '', ItemNo, VariantCode);
+                                        Founded := ItemReferenceMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, '', ItemNo, VariantCode);
                                     if Founded then
                                         if FindItem.Get(ItemNo) then begin
                                             Item := FindItem;
@@ -224,16 +224,16 @@ codeunit 30181 "Shpfy Product Mapping"
                                     if ShopifyProduct."Has Variants" then
                                         case ShopifyVariant."UoM Option Id" of
                                             1:
-                                                Founded := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
+                                                Founded := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
                                             2:
-                                                Founded := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 2 Value", 1, 10), ItemNo, VariantCode);
+                                                Founded := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 2 Value", 1, 10), ItemNo, VariantCode);
                                             3:
-                                                Founded := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 3 Value", 1, 10), ItemNo, VariantCode);
+                                                Founded := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 3 Value", 1, 10), ItemNo, VariantCode);
                                             else
-                                                Founded := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), '', ItemNo, VariantCode);
+                                                Founded := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), '', ItemNo, VariantCode);
                                         end
                                     else
-                                        Founded := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), '', ItemNo, VariantCode);
+                                        Founded := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), '', ItemNo, VariantCode);
                                     if Founded then
                                         if FindItem.Get(ItemNo) then begin
                                             Item := FindItem;
@@ -256,16 +256,16 @@ codeunit 30181 "Shpfy Product Mapping"
                         if ShopifyProduct."Has Variants" then
                             case ShopifyVariant."UoM Option Id" of
                                 1:
-                                    Found := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
+                                    Found := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
                                 2:
-                                    Found := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 2 Value", 1, 10), ItemNo, VariantCode);
+                                    Found := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 2 Value", 1, 10), ItemNo, VariantCode);
                                 3:
-                                    Found := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 3 Value", 1, 10), ItemNo, VariantCode);
+                                    Found := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 3 Value", 1, 10), ItemNo, VariantCode);
                                 else
-                                    Found := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), '', ItemNo, VariantCode);
+                                    Found := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), '', ItemNo, VariantCode);
                             end
                         else
-                            Found := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), '', ItemNo, VariantCode);
+                            Found := ItemReferenceMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), '', ItemNo, VariantCode);
                     if Found then
                         if FindItem.Get(ItemNo) then begin
                             Item := FindItem;

@@ -24,10 +24,10 @@ codeunit 30156 "Shpfy Hash"
     /// <summary> 
     /// Calc Hash.
     /// </summary>
-    /// <param name="Stream">Parameter of type InStream.</param>
+    /// <param name="InStream">Parameter of type InStream.</param>
     /// <param name="Length">Parameter of type Integer.</param>
     /// <returns>Return value of type Integer.</returns>
-    local procedure CalcHash(Stream: InStream; Length: Integer): Integer
+    local procedure CalcHash(InStream: InStream; Length: Integer): Integer
     var
         Hash: BigInteger;
         MaxInt: BigInteger;
@@ -35,9 +35,9 @@ codeunit 30156 "Shpfy Hash"
         Index: Integer;
     begin
         MaxInt := Power(2, 31);
-        while not Stream.EOS() do begin
+        while not InStream.EOS() do begin
             Index += 1;
-            Stream.Read(ByteData);
+            InStream.Read(ByteData);
             Hash += ByteData * Power(7, (Length - Index) mod (13));
             if Hash > MaxInt then
                 Hash := Hash mod MaxInt;

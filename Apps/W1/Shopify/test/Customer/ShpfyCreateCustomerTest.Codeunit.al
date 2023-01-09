@@ -10,7 +10,7 @@ codeunit 139565 "Shpfy Create Customer Test"
     var
         LibraryAssert: Codeunit "Library Assert";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        This: Codeunit "Shpfy Create Customer Test";
+        ShpfyCreateCustomerTest: Codeunit "Shpfy Create Customer Test";
         ShpfyCustomerInitTest: Codeunit "Shpfy Customer Init Test";
         OnCreateCustomerEventMsg: Label 'OnCreateCustomer', Locked = true;
 
@@ -39,9 +39,9 @@ codeunit 139565 "Shpfy Create Customer Test"
         // [GIVEN] The customer template code
         ShpfyCreateCustomer.SetTemplateCode(ConfigTemplateHeader.Code);
         // [GIVEN] The Shopify Customer Address record.
-        BindSubscription(This);
+        BindSubscription(ShpfyCreateCustomerTest);
         ShpfyCreateCustomer.Run(ShpfyCustomerAddress);
-        UnbindSubscription(This);
+        UnbindSubscription(ShpfyCreateCustomerTest);
         // [THEN] The customer record can be found by the link of CustomerSystemId.
         ShpfyCustomerAddress.Get(ShpfyCustomerAddress.Id);
         if not Customer.GetBySystemId(ShpfyCustomerAddress.CustomerSystemId) then

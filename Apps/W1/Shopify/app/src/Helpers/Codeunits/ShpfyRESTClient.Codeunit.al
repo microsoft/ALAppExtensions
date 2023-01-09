@@ -9,7 +9,7 @@ codeunit 30159 "Shpfy REST Client"
     var
         LastResponseHeaders: HttpHeaders;
         BaseUrl: Text;
-        Client: HttpClient;
+        HttpClient: HttpClient;
 
     /// <summary> 
     /// Execute Web Request.
@@ -53,20 +53,20 @@ codeunit 30159 "Shpfy REST Client"
     /// <param name="Url">Parameter of type text.</param>
     /// <param name="Method">Parameter of type Text.</param>
     /// <param name="RequestString">Parameter of type Text.</param>
-    /// <param name="RequestMessage">Parameter of type HttpRequestMessage.</param>
+    /// <param name="HttpRequestMessage">Parameter of type HttpRequestMessage.</param>
     /// <param name="HeaderValues">Parameter of type Dictionary of [Text, Text].</param>
-    local procedure CreateHttpRequestMessage(Url: text; Method: Text; RequestString: Text; var RequestMessage: HttpRequestMessage; HeaderValues: Dictionary of [Text, Text]);
+    local procedure CreateHttpRequestMessage(Url: text; Method: Text; RequestString: Text; var HttpRequestMessage: HttpRequestMessage; HeaderValues: Dictionary of [Text, Text]);
     var
-        Content: HttpContent;
+        HttpContent: HttpContent;
         Headers: HttpHeaders;
         HeaderKey: Text;
         HeaderValue: Text;
     begin
         if not url.StartsWith(BaseUrl) then
             Url := BaseUrl + Url;
-        RequestMessage.SetRequestUri(Url);
-        RequestMessage.Method := Method;
-        RequestMessage.GetHeaders(Headers);
+        HttpRequestMessage.SetRequestUri(Url);
+        HttpRequestMessage.Method := Method;
+        HttpRequestMessage.GetHeaders(Headers);
         if Headers.Contains('Accept') then
             Headers.Remove('Accept');
         Headers.Add('Accept', 'application/json');
@@ -79,12 +79,12 @@ codeunit 30159 "Shpfy REST Client"
         end;
 
         if Method <> 'GET' then begin
-            Content.WriteFrom(RequestString);
-            Content.GetHeaders(Headers);
+            HttpContent.WriteFrom(RequestString);
+            HttpContent.GetHeaders(Headers);
             if Headers.Contains('Content-Type') then
                 Headers.Remove('Content-Type');
             Headers.Add('Content-Type', 'application/json');
-            RequestMessage.Content(Content);
+            HttpRequestMessage.Content(HttpContent);
         end;
     end;
 
@@ -98,14 +98,14 @@ codeunit 30159 "Shpfy REST Client"
     /// <returns>Return variable "Response" of type Text.</returns>
     local procedure ExecuteWebRequest(Url: Text; Method: Text; Request: Text; HeaderValues: Dictionary of [Text, Text]) Response: Text
     var
-        RequestMessage: HttpRequestMessage;
-        ResponseMessage: HttpResponseMessage;
+        HttpRequestMessage: HttpRequestMessage;
+        HttpResponseMessage: HttpResponseMessage;
     begin
-        CreateHttpRequestMessage(Url, Method, Request, RequestMessage, HeaderValues);
+        CreateHttpRequestMessage(Url, Method, Request, HttpRequestMessage, HeaderValues);
 
-        if Client.send(RequestMessage, ResponseMessage) then begin
-            ResponseMessage.Content.ReadAs(Response);
-            LastResponseHeaders := ResponseMessage.Headers;
+        if HttpClient.send(HttpRequestMessage, HttpResponseMessage) then begin
+            HttpResponseMessage.Content.ReadAs(Response);
+            LastResponseHeaders := HttpResponseMessage.Headers;
         end;
     end;
 }

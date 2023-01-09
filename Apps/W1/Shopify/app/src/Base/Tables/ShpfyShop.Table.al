@@ -34,6 +34,7 @@ table 30102 "Shpfy Shop"
                     if not ShpfyAuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
                 end;
+                CalcShopId();
             end;
         }
         field(3; Enabled; Boolean)
@@ -280,7 +281,7 @@ table 30102 "Shpfy Shop"
             Caption = 'Inventory Tracked';
             DataClassification = CustomerContent;
         }
-        field(43; "Default Inventory Policy"; Enum "Shpfy Inventory Policy")
+        field(43; "Default Inventory Policy"; enum "Shpfy Inventory Policy")
         {
             Caption = 'Default Inventory Policy';
             DataClassification = CustomerContent;
@@ -327,12 +328,12 @@ table 30102 "Shpfy Shop"
             Caption = 'Customer Mapping Type';
             DataClassification = CustomerContent;
         }
-        field(50; "Status for Created Products"; Enum "Shpfy Cr. Prod. Status Value")
+        field(50; "Status for Created Products"; enum "Shpfy Cr. Prod. Status Value")
         {
             Caption = 'Status for Created Products';
             DataClassification = CustomerContent;
         }
-        field(51; "Action for Removed Products"; Enum "Shpfy Remove Product Action")
+        field(51; "Action for Removed Products"; enum "Shpfy Remove Product Action")
         {
             Caption = 'Action for Removed Products';
             DataClassification = CustomerContent;
@@ -342,6 +343,51 @@ table 30102 "Shpfy Shop"
             Caption = 'Currency Code';
             DataClassification = CustomerContent;
             TableRelation = Currency.Code;
+        }
+        field(53; "Gen. Bus. Posting Group"; code[20])
+        {
+            Caption = 'Gen. Bus. Posting Group';
+            DataClassification = CustomerContent;
+            TableRelation = "Gen. Business Posting Group";
+        }
+        field(54; "VAT Bus. Posting Group"; code[20])
+        {
+            Caption = 'VAT Bus. Posting Group';
+            DataClassification = CustomerContent;
+            TableRelation = "VAT Business Posting Group";
+        }
+        field(55; "Tax Area Code"; Code[20])
+        {
+            Caption = 'Tax Area Code';
+            DataClassification = CustomerContent;
+            TableRelation = "Tax Area";
+        }
+        field(56; "Tax Liable"; Boolean)
+        {
+            Caption = 'Tax Liable';
+            DataClassification = CustomerContent;
+        }
+        field(57; "VAT Country/Region Code"; Code[10])
+        {
+            Caption = 'VAT Country/Region Code';
+            DataClassification = CustomerContent;
+            TableRelation = "Country/Region";
+        }
+        field(58; "Customer Posting Group"; Code[20])
+        {
+            Caption = 'Customer Posting Group';
+            DataClassification = CustomerContent;
+            TableRelation = "Customer Posting Group";
+        }
+        field(59; "Prices Including VAT"; Boolean)
+        {
+            Caption = 'Prices Including VAT';
+            DataClassification = CustomerContent;
+        }
+        field(60; "Allow Line Disc."; Boolean)
+        {
+            Caption = 'Allow Line Disc.';
+            DataClassification = CustomerContent;
         }
         field(100; "Collection Last Export Version"; BigInteger)
         {
@@ -399,7 +445,7 @@ table 30102 "Shpfy Shop"
             ObsoleteState = Removed;
 #endif
         }
-        field(104; "SKU Mapping"; Enum "Shpfy SKU Mappging")
+        field(104; "SKU Mapping"; enum "Shpfy SKU Mappging")
         {
             Caption = 'SKU Mapping';
             DataClassification = SystemMetadata;
@@ -411,7 +457,7 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = '|';
         }
-        field(106; "Tax Area Priority"; Enum "Shpfy Tax By")
+        field(106; "Tax Area Priority"; enum "Shpfy Tax By")
         {
             Caption = 'Tax Area Priority';
             DataClassification = CustomerContent;
@@ -507,33 +553,46 @@ table 30102 "Shpfy Shop"
         end;
     end;
 
-    internal procedure GetLastSyncTime(Type: Enum "Shpfy Synchronization Type"): DateTime
+    internal procedure GetLastSyncTime(Type: enum "Shpfy Synchronization Type"): DateTime
     var
-        SyncInfo: Record "Shpfy Synchronization Info";
+        ShpfySynchronizationInfo: Record "Shpfy Synchronization Info";
     begin
-        if SyncInfo.Get(Rec.Code, Type) then
-            exit(SyncInfo."Last Sync Time");
+        if Type = "Shpfy Synchronization Type"::Orders then begin
+            if Rec."Shop Id" = 0 then begin
+                CalcShopId();
+                Rec.Modify();
+            end;
+            if ShpfySynchronizationInfo.Get(Format(Rec."Shop Id"), Type) then
+                exit(ShpfySynchronizationInfo."Last Sync Time");
+        end;
+        if ShpfySynchronizationInfo.Get(Rec.Code, Type) then
+            exit(ShpfySynchronizationInfo."Last Sync Time");
         exit(0DT);
     end;
 
-    internal procedure SetLastSyncTime(Type: Enum "Shpfy Synchronization Type")
+    internal procedure SetLastSyncTime(Type: enum "Shpfy Synchronization Type")
     begin
         SetLastSyncTime(Type, CurrentDateTime);
     end;
 
-    internal procedure SetLastSyncTime(Type: Enum "Shpfy Synchronization Type"; ToDateTime: DateTime)
+    internal procedure SetLastSyncTime(Type: enum "Shpfy Synchronization Type"; ToDateTime: DateTime)
     var
-        SyncInfo: Record "Shpfy Synchronization Info";
+        ShpfySynchronizationInfo: Record "Shpfy Synchronization Info";
+        Code: Code[20];
     begin
-        if SyncInfo.Get(Rec.Code, Type) then begin
-            SyncInfo."Last Sync Time" := ToDateTime;
-            SyncInfo.Modify();
+        if Type = "Shpfy Synchronization Type"::Orders then
+            Code := Format(Rec."Shop Id")
+        else
+            Code := Rec.Code;
+        if ShpfySynchronizationInfo.Get(Code, Type) then begin
+            ShpfySynchronizationInfo."Last Sync Time" := ToDateTime;
+            ShpfySynchronizationInfo.Modify();
         end else begin
-            Clear(SyncInfo);
-            SyncInfo."Shop Code" := Rec.Code;
-            SyncInfo."Synchronization Type" := Type;
-            SyncInfo."Last Sync Time" := ToDateTime;
-            SyncInfo.Insert();
+            Clear(ShpfySynchronizationInfo);
+            ShpfySynchronizationInfo."Shop Code" := Code;
+            ShpfySynchronizationInfo."Synchronization Type" := Type;
+            ShpfySynchronizationInfo."Last Sync Time" := ToDateTime;
+            ShpfySynchronizationInfo.Insert();
         end;
     end;
 
@@ -542,5 +601,35 @@ table 30102 "Shpfy Shop"
         GLAccount.TestField("Account Type", GLAccount."Account Type"::Posting);
         GLAccount.TestField("Direct Posting", true);
         GLAccount.TestField(Blocked, false);
+    end;
+
+    internal procedure CopyPriceCalculationFieldsFromCustomerTemplate(TemplateCode: Code[10])
+    var
+        Customer: Record Customer;
+    begin
+        if TemplateCode <> '' then begin
+            Rec."Gen. Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Gen. Bus. Posting Group"));
+            Rec."VAT Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("VAT Bus. Posting Group"));
+            Rec."Tax Area Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Area Code"));
+            if Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable"))) then;
+            Rec."VAT Country/Region Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Country/Region Code"));
+            Rec."Customer Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Customer Posting Group"));
+            if Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT"))) then;
+            if Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc."))) then;
+            Rec.Modify();
+        end;
+    end;
+
+    local procedure GetValueFromConfigTemplateLine(TemplateCode: Code[10]; TableID: Integer; FieldID: Integer): Text
+    var
+        ConfigTemplateLine: Record "Config. Template Line";
+    begin
+        ConfigTemplateLine.Reset();
+        ConfigTemplateLine.SetRange("Data Template Code", TemplateCode);
+        ConfigTemplateLine.SetRange(Type, ConfigTemplateLine.type::Field);
+        ConfigTemplateLine.SetRange("Table ID", TableID);
+        ConfigTemplateLine.SetRange("Field ID", FieldID);
+        if ConfigTemplateLine.FindFirst() then
+            exit(ConfigTemplateLine."Default Value");
     end;
 }

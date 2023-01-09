@@ -136,14 +136,53 @@ page 30101 "Shpfy Shop Card"
                 field(CustomerPriceGroup; Rec."Customer Price Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies which price should be used for an item in Shopify. The sales price of this customer price group is taken. If no group is entered, the group of the "Customer Template Code" is used.';
+                    ToolTip = 'Specifies which Customer Price Group is used to calculate the prices in Shopify.';
                 }
                 field(CustomerDiscountGroup; Rec."Customer Discount Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies  which discount should be used for an item in Shopify. The sales discount of this customer discount group is taken. If no group is entered, the discount group from the "Customer Template Code" is used.';
+                    ToolTip = 'Specifies which Customer Discount Group is used to calculate the prices in Shopify.';
                 }
-
+                field("Customer Posting Group"; Rec."Customer Posting Group")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which Customer Posting Group is used to calculate the prices in Shopify.';
+                }
+                field("Gen. Bus. Posting Group"; Rec."Gen. Bus. Posting Group")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which Gen. Bus. Posting Group is used to calculate the prices in Shopify.';
+                }
+                field("VAT Bus. Posting Group"; Rec."VAT Bus. Posting Group")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which VAT. Bus. Posting Group is used to calculate the prices in Shopify.';
+                }
+                field("Prices Including VAT"; Rec."Prices Including VAT")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if the prices calculate for Shopify are Including VAT.';
+                }
+                field("Allow Line Disc."; Rec."Allow Line Disc.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if line discount is allowed while calculating prices for Shopify.';
+                }
+                field("Tax Area Code"; Rec."Tax Area Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which Tax Area Code is used to calculate the prices in Shopify.';
+                }
+                field("Tax Liable"; Rec."Tax Liable")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if Tax Liable is used to calculate the prices in Shopify.';
+                }
+                field("VAT Country/Region Code"; Rec."VAT Country/Region Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which VAT Country/Region Code is used to calculate the prices in Shopify.';
+                }
                 field(SyncItemImages; Rec."Sync Item Images")
                 {
                     ApplicationArea = All;
@@ -243,7 +282,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
-                    ToolTip = 'Specifies which customer template to use when creating unknown customers and for calculating prices.';
+                    ToolTip = 'Specifies which customer template to use when creating unknown customers.';
                 }
 
                 field(DefaultCustomer; Rec."Default Customer No.")

@@ -1,7 +1,7 @@
 /// <summary>
-/// Codeunit Shpfy GQL ProductImages (ID 30148) implements Interface Shpfy IGarphQL.
+/// Codeunit Shpfy GQL Next Locations (ID 301204) implements Interface Shpfy IGarphQL.
 /// </summary>
-codeunit 30148 "Shpfy GQL ProductImages" implements "Shpfy IGraphQL"
+codeunit 30214 "Shpfy GQL Next Locations" implements "Shpfy IGraphQL"
 {
     Access = Internal;
 
@@ -11,7 +11,7 @@ codeunit 30148 "Shpfy GQL ProductImages" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{products(first:100){pageInfo{hasNextPage},edges{cursor node{legacyResourceId images(maxHeight: 360, maxWidth: 360, first: 1) {edges {node {id, transformedSrc}}}}}}}"}');
+        exit('{"query":"{locations(first: 10, after:\"{{After}}\") { edges {node {id isActive isPrimary name legacyResourceId}cursor} pageInfo {hasNextPage}}}"}');
     end;
 
     /// <summary>
@@ -20,7 +20,7 @@ codeunit 30148 "Shpfy GQL ProductImages" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(420);
+        exit(12);
     end;
 
 }

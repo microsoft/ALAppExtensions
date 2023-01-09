@@ -55,7 +55,7 @@ codeunit 30185 "Shpfy Sync Products"
         TempProduct: Record "Shpfy Product" temporary;
         Id: BigInteger;
         UpdatedAt: DateTime;
-        Window: Dialog;
+        Dialog: Dialog;
         ProductIds: Dictionary of [BigInteger, DateTime];
         Imported: Integer;
         Skipped: Integer;
@@ -65,8 +65,8 @@ codeunit 30185 "Shpfy Sync Products"
         ProductApi.RetrieveShopifyProductIds(ProductIds, NumberOfRecords);
         if GuiAllowed then begin
             ToImport := ProductIds.Count;
-            Window.Open(Msg, ToImport, Skipped, Imported);
-            Window.Update(1, ToImport);
+            Dialog.Open(Msg, ToImport, Skipped, Imported);
+            Dialog.Update(1, ToImport);
         end;
         foreach Id in ProductIds.Keys do
             if Product.Get(Id) then begin
@@ -82,7 +82,7 @@ codeunit 30185 "Shpfy Sync Products"
             end;
         if GuiAllowed then begin
             Skipped := ToImport - TempProduct.Count;
-            Window.Update(2, Skipped);
+            Dialog.Update(2, Skipped);
         end;
         Clear(TempProduct);
         if TempProduct.FindSet(false, false) then begin
@@ -95,12 +95,12 @@ codeunit 30185 "Shpfy Sync Products"
                     ErrMsg := GetLastErrorText;
                 if GuiAllowed then begin
                     Imported += 1;
-                    Window.Update(3, Imported);
+                    Dialog.Update(3, Imported);
                 end;
             until TempProduct.Next() = 0;
         end;
         if GuiAllowed then
-            Window.Close();
+            Dialog.Close();
     end;
 
     internal procedure SetOnlySyncPriceOn()

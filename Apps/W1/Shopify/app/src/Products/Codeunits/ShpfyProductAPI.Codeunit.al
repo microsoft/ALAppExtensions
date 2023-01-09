@@ -9,8 +9,8 @@ codeunit 30176 "Shpfy Product API"
     var
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        JHelper: Codeunit "Shpfy Json Helper";
-        Events: Codeunit "Shpfy Product Events";
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        ProductEvents: Codeunit "Shpfy Product Events";
         VariantApi: Codeunit "Shpfy Variant API";
 
     /// <summary> 
@@ -39,7 +39,7 @@ codeunit 30176 "Shpfy Product API"
                     Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductImageUrlTxt, Product.Id, Product."Image Id"));
                 end;
                 if JResponse.ReadFrom(CommunicationMgt.ExecuteWebRequest(Url, Method, Request)) then
-                    exit(JHelper.GetValueAsBigInteger(JResponse, 'image.id'))
+                    exit(JsonHelper.GetValueAsBigInteger(JResponse, 'image.id'))
                 else
                     exit(Product."Image Id");
             end else
@@ -69,7 +69,7 @@ codeunit 30176 "Shpfy Product API"
 
     begin
         ShopifyVariant.FindSet();
-        Events.OnBeforeSendCreateShopifyProduct(Shop, ShopifyProduct, ShopifyVariant);
+        ProductEvents.OnBeforeSendCreateShopifyProduct(Shop, ShopifyProduct, ShopifyVariant);
         GraphQuery.Append('{"query":"mutation {productCreate(input: {');
         GraphQuery.Append('title: \"');
         GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Title));
@@ -184,23 +184,23 @@ codeunit 30176 "Shpfy Product API"
 
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
         NewShopifyProduct := ShopifyProduct;
-        NewShopifyProduct.Id := JHelper.GetValueAsBigInteger(JResponse, 'data.productCreate.product.legacyResourceId');
+        NewShopifyProduct.Id := JsonHelper.GetValueAsBigInteger(JResponse, 'data.productCreate.product.legacyResourceId');
         if NewShopifyProduct.Id = 0 then
             exit;
 #pragma warning disable AA0139
-        NewShopifyProduct."Preview URL" := JHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStorePreviewUrl', MaxStrLen(NewShopifyProduct."Preview URL"));
-        NewShopifyProduct.URL := JHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStoreUrl', MaxStrLen(NewShopifyProduct.URL));
+        NewShopifyProduct."Preview URL" := JsonHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStorePreviewUrl', MaxStrLen(NewShopifyProduct."Preview URL"));
+        NewShopifyProduct.URL := JsonHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStoreUrl', MaxStrLen(NewShopifyProduct.URL));
 #pragma warning restore AA0139
-        NewShopifyProduct."Created At" := JHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.createdAt');
-        NewShopifyProduct."Updated At" := JHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.updatedAt');
+        NewShopifyProduct."Created At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.createdAt');
+        NewShopifyProduct."Updated At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.updatedAt');
         NewShopifyProduct.Insert();
 
         NewShopifyVariant := ShopifyVariant;
         NewShopifyVariant."Product Id" := NewShopifyProduct.Id;
-        if JHelper.GetJsonArray(JResponse, JArray, 'data.productCreate.product.variants.edges') and JArray.Get(0, JToken) then begin
-            NewShopifyVariant.Id := JHelper.GetValueAsBigInteger(JToken, 'edges.node.legacyResourceId');
-            NewShopifyVariant."Created At" := JHelper.GetValueAsDateTime(JToken, 'edges.node.createdAt');
-            NewShopifyVariant."Updated At" := JHelper.GetValueAsDateTime(JToken, 'edges.node.updatedAt');
+        if JsonHelper.GetJsonArray(JResponse, JArray, 'data.productCreate.product.variants.edges') and JArray.Get(0, JToken) then begin
+            NewShopifyVariant.Id := JsonHelper.GetValueAsBigInteger(JToken, 'edges.node.legacyResourceId');
+            NewShopifyVariant."Created At" := JsonHelper.GetValueAsDateTime(JToken, 'edges.node.createdAt');
+            NewShopifyVariant."Updated At" := JsonHelper.GetValueAsDateTime(JToken, 'edges.node.updatedAt');
             NewShopifyVariant.Insert();
         end;
 
@@ -249,13 +249,13 @@ codeunit 30176 "Shpfy Product API"
     /// <returns>Return value of type Text.</returns>
     local procedure CreateTenantMediaBase64String(TenantMedia: Record "Tenant Media"): Text;
     var
-        Convert: Codeunit "Base64 Convert";
+        Base64Convert: Codeunit "Base64 Convert";
         InStream: InStream;
     begin
         TenantMedia.CalcFields(Content);
         if TenantMedia.Content.HasValue then begin
             TenantMedia.Content.CreateInStream(InStream);
-            exit(Convert.ToBase64(InStream));
+            exit(Base64Convert.ToBase64(InStream));
         end;
     end;
 
@@ -268,7 +268,7 @@ codeunit 30176 "Shpfy Product API"
     var
         Data: Dictionary of [BigInteger, Text];
     begin
-        Data.Add(CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JImageNode, 'node.id')), JHelper.GetValueAsText(JImageNode, 'node.transformedSrc'));
+        Data.Add(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JImageNode, 'node.id')), JsonHelper.GetValueAsText(JImageNode, 'node.transformedSrc'));
         ImageData := Data;
     end;
 
@@ -287,7 +287,7 @@ codeunit 30176 "Shpfy Product API"
         Parameters.Add('ProductId', Format(ShopifyProduct.Id));
         Parameters.add('MaxLengthDescription', Format(MaxStrLen(ShopifyProduct.Description)));
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetProductById, Parameters);
-        if JHelper.GetJsonObject(JResponse, JProduct, 'data.product') then
+        if JsonHelper.GetJsonObject(JResponse, JProduct, 'data.product') then
             exit(UpdateShopifyProductFields(ShopifyProduct, JProduct));
     end;
 
@@ -319,12 +319,12 @@ codeunit 30176 "Shpfy Product API"
             Parameters.Add('Time', '');
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-            if JHelper.GetJsonArray(JResponse, JProducts, 'data.products.edges') then begin
+            if JsonHelper.GetJsonArray(JResponse, JProducts, 'data.products.edges') then begin
                 foreach JItem in JProducts do begin
-                    Cursor := JHelper.GetValueAsText(JItem.AsObject(), 'cursor');
-                    if JHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
-                        Id := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JNode, 'id'));
-                        UpdatedAt := JHelper.GetValueAsDateTime(JNode, 'updatedAt');
+                    Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
+                    if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
+                        Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+                        UpdatedAt := JsonHelper.GetValueAsDateTime(JNode, 'updatedAt');
                         if not ProductIds.ContainsKey(Id) then
                             ProductIds.Add(Id, UpdatedAt)
                         else
@@ -340,7 +340,7 @@ codeunit 30176 "Shpfy Product API"
                 else
                     Parameters.Add('After', Cursor);
             end;
-        until not JHelper.GetValueAsBoolean(JResponse, 'data.products.pageInfo.hasNextPage');
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.products.pageInfo.hasNextPage');
     end;
 
     /// <summary> 
@@ -365,12 +365,12 @@ codeunit 30176 "Shpfy Product API"
         GraphQLType := GraphQLType::GetProductImages;
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-            if JHelper.GetJsonArray(JResponse, JProducts, 'data.products.edges') then begin
+            if JsonHelper.GetJsonArray(JResponse, JProducts, 'data.products.edges') then begin
                 foreach JItem in JProducts do begin
-                    Cursor := JHelper.GetValueAsText(JItem.AsObject(), 'cursor');
-                    if JHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
-                        Id := JHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
-                        if JHelper.GetJsonArray(JNode, JImages, 'images.edges') and (JImages.Count = 1) then begin
+                    Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
+                    if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
+                        Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
+                        if JsonHelper.GetJsonArray(JNode, JImages, 'images.edges') and (JImages.Count = 1) then begin
                             foreach JImage in JImages do
                                 GetImageData(JImage, ImageData);
                             ProductImages.Add(Id, ImageData);
@@ -383,7 +383,7 @@ codeunit 30176 "Shpfy Product API"
                     Parameters.Add('After', Cursor);
             end;
             GraphQLType := GraphQLType::GetNextProductImages;
-        until not JHelper.GetValueAsBoolean(JResponse, 'data.products.pageInfo.hasNextPage');
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.products.pageInfo.hasNextPage');
     end;
 
     /// <summary> 
@@ -419,7 +419,7 @@ codeunit 30176 "Shpfy Product API"
         Data: Text;
         GraphQuery: TextBuilder;
     begin
-        Events.OnBeforeSendUpdateShopifyProduct(Shop, ShopifyProduct, xShopifyProduct);
+        ProductEvents.OnBeforeSendUpdateShopifyProduct(Shop, ShopifyProduct, xShopifyProduct);
         GraphQuery.Append('{"query":"mutation {productUpdate(input: {id: \"gid://shopify/Product/');
         GraphQuery.Append(Format(ShopifyProduct.Id));
         GraphQuery.Append('\"');
@@ -469,10 +469,10 @@ codeunit 30176 "Shpfy Product API"
 
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
 #pragma warning disable AA0139
-        ShopifyProduct."Preview URL" := JHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview URL"));
-        ShopifyProduct.URL := JHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStoreUrl', MaxStrLen(ShopifyProduct.URL));
+        ShopifyProduct."Preview URL" := JsonHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview URL"));
+        ShopifyProduct.URL := JsonHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStoreUrl', MaxStrLen(ShopifyProduct.URL));
 #pragma warning restore AA0139
-        ShopifyProduct."Updated At" := JHelper.GetValueAsDateTime(JResponse, 'data.productUpdate.product.updatedAt');
+        ShopifyProduct."Updated At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productUpdate.product.updatedAt');
     end;
 
     /// <summary> 
@@ -485,31 +485,31 @@ codeunit 30176 "Shpfy Product API"
     var
         UpdatedAt: DateTime;
     begin
-        UpdatedAt := JHelper.GetValueAsDateTime(JProduct, 'updatedAt');
+        UpdatedAt := JsonHelper.GetValueAsDateTime(JProduct, 'updatedAt');
         if UpdatedAt < ShopifyProduct."Updated At" then
             exit(false);
 
         Result := true;
         ShopifyProduct."Updated At" := UpdatedAt;
-        ShopifyProduct."Created At" := JHelper.GetValueAsDateTime(JProduct, 'createdAt');
-        ShopifyProduct."Has Variants" := not JHelper.GetValueAsBoolean(JProduct, 'hasOnlyDefaultVariant');
+        ShopifyProduct."Created At" := JsonHelper.GetValueAsDateTime(JProduct, 'createdAt');
+        ShopifyProduct."Has Variants" := not JsonHelper.GetValueAsBoolean(JProduct, 'hasOnlyDefaultVariant');
 #pragma warning disable AA0139
-        ShopifyProduct.Description := JHelper.GetValueAsText(JProduct, 'description', MaxStrLen(ShopifyProduct.Description));
+        ShopifyProduct.Description := JsonHelper.GetValueAsText(JProduct, 'description', MaxStrLen(ShopifyProduct.Description));
 #pragma warning restore AA0139
-        ShopifyProduct.SetDescriptionHtml(JHelper.GetValueAsText(JProduct, 'descriptionHtml'));
+        ShopifyProduct.SetDescriptionHtml(JsonHelper.GetValueAsText(JProduct, 'descriptionHtml'));
 #pragma warning disable AA0139
-        ShopifyProduct."Preview URL" := JHelper.GetValueAsText(JProduct, 'onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview URL"));
-        ShopifyProduct.URL := JHelper.GetValueAsText(JProduct, 'onlineStoreUrl', MaxStrLen(ShopifyProduct.URL));
-        ShopifyProduct."Product Type" := JHelper.GetValueAsText(JProduct, 'productType', MaxStrLen(ShopifyProduct."Product Type"));
+        ShopifyProduct."Preview URL" := JsonHelper.GetValueAsText(JProduct, 'onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview URL"));
+        ShopifyProduct.URL := JsonHelper.GetValueAsText(JProduct, 'onlineStoreUrl', MaxStrLen(ShopifyProduct.URL));
+        ShopifyProduct."Product Type" := JsonHelper.GetValueAsText(JProduct, 'productType', MaxStrLen(ShopifyProduct."Product Type"));
 #pragma warning restore AA0139
-        ShopifyProduct.UpdateTags(JHelper.GetArrayAsText(JProduct, 'tags'));
+        ShopifyProduct.UpdateTags(JsonHelper.GetArrayAsText(JProduct, 'tags'));
 #pragma warning disable AA0139
-        ShopifyProduct.Title := JHelper.GetValueAsText(JProduct, 'title', MaxStrLen(ShopifyProduct.Title));
-        ShopifyProduct.Vendor := JHelper.GetValueAsText(JProduct, 'vendor', MaxStrLen(ShopifyProduct.Vendor));
-        ShopifyProduct."SEO Description" := JHelper.GetValueAsText(JProduct, 'seo.description', MaxStrLen(ShopifyProduct."SEO Description"));
-        ShopifyProduct."SEO Title" := JHelper.GetValueAsText(JProduct, 'seo.title', MaxStrLen(ShopifyProduct."SEO Title"));
+        ShopifyProduct.Title := JsonHelper.GetValueAsText(JProduct, 'title', MaxStrLen(ShopifyProduct.Title));
+        ShopifyProduct.Vendor := JsonHelper.GetValueAsText(JProduct, 'vendor', MaxStrLen(ShopifyProduct.Vendor));
+        ShopifyProduct."SEO Description" := JsonHelper.GetValueAsText(JProduct, 'seo.description', MaxStrLen(ShopifyProduct."SEO Description"));
+        ShopifyProduct."SEO Title" := JsonHelper.GetValueAsText(JProduct, 'seo.title', MaxStrLen(ShopifyProduct."SEO Title"));
 #pragma warning restore AA0139
-        ShopifyProduct.Status := ConvertToProductStatus(JHelper.GetValueAsText(JProduct, 'status'));
+        ShopifyProduct.Status := ConvertToProductStatus(JsonHelper.GetValueAsText(JProduct, 'status'));
         ShopifyProduct.Modify(false);
     end;
 

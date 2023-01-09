@@ -98,8 +98,8 @@ codeunit 30162 "Shpfy Order Events"
     /// Raised After Release Sales Header.
     /// </summary>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
-    /// <param name="ShopifyHeader">Parameter of type Record "Shopify Order Header".</param>
-    internal procedure OnAfterReleaseSalesHeader(var SalesHeader: Record "Sales Header"; ShopifyHeader: Record "Shpfy Order Header")
+    /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    internal procedure OnAfterReleaseSalesHeader(var SalesHeader: Record "Sales Header"; OrderHeader: Record "Shpfy Order Header")
     begin
     end;
 
@@ -119,9 +119,9 @@ codeunit 30162 "Shpfy Order Events"
     /// <summary> 
     /// Raised After Create Sales Header.
     /// </summary>
-    /// <param name="ShopifyHeader">Parameter of type Record "Shopify Order Header".</param>
+    /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
-    internal procedure OnAfterCreateSalesHeader(ShopifyHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
+    internal procedure OnAfterCreateSalesHeader(OrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
     begin
     end;
 
@@ -130,10 +130,10 @@ codeunit 30162 "Shpfy Order Events"
     /// Raised After Create Shipping Cost Sales Line.
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    /// <param name="ShopifyShippingCost">Parameter of type Record "Shopify Order Shipping Cost".</param>
+    /// <param name="OrderShippingCharges">Parameter of type Record "Shopify Order Shipping Cost".</param>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="SalesLine">Parameter of type Record "Sales Line".</param>
-    internal procedure OnAfterCreateShippingCostSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; ShopifyShippingCost: Record "Shpfy Order Shipping Charges"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line")
+    internal procedure OnAfterCreateShippingCostSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; OrderShippingCharges: Record "Shpfy Order Shipping Charges"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line")
     begin
     end;
 
@@ -153,11 +153,11 @@ codeunit 30162 "Shpfy Order Events"
     /// Raised Before Create Shipping Cost Sales Line.
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    /// <param name="ShopifyShippingCost">Parameter of type Record "Shopify Order Shipping Cost".</param>
+    /// <param name="OrderShippingCharges">Parameter of type Record "Shopify Order Shipping Cost".</param>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="SalesLine">Parameter of type Record "Sales Line".</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
-    internal procedure OnBeforeCreateShippingCostSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; ShopifyShippingCost: Record "Shpfy Order Shipping Charges"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var Handled: Boolean)
+    internal procedure OnBeforeCreateShippingCostSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; OrderShippingCharges: Record "Shpfy Order Shipping Charges"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var Handled: Boolean)
     begin
     end;
 
@@ -171,6 +171,21 @@ codeunit 30162 "Shpfy Order Events"
     /// <param name="SalesLine">Parameter of type Record "Sales Line".</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
     internal procedure OnBeforeCreateItemSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; ShopifyOrderLine: Record "Shpfy Order Line"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var Handled: Boolean)
+    begin
+    end;
+
+    [InternalEvent(false)]
+    internal procedure OnBeforeTranslateCurrencyCode(ShopifyCurrencyCode: Text; var CurrencyCode: Code[10]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [InternalEvent(false)]
+    internal procedure OnBeforeConvertToFinancielStatus(Value: Text; var ShpfyFinancialStatus: Enum "Shpfy Financial Status"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [InternalEvent(false)]
+    internal procedure OnBeforeConvertToFulfillmentStatus(Value: Text; var ShpfyOrderFulfillStatus: Enum "Shpfy Order Fulfill. Status"; var IsHandled: Boolean)
     begin
     end;
 

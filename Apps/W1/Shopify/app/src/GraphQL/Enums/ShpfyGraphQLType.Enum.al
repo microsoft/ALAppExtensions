@@ -54,10 +54,10 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Order Fulfillment';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderFulfillment";
     }
-    value(9; GetNextOrderFulfillment)
+    value(9; GetNextOrderFulfillmentLines)
     {
-        Caption = 'Get Next Order Fulfillment';
-        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOrderFulfillment";
+        Caption = 'Get Next Order Fulfillment Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextFulfillmentLines";
     }
     value(10; GetProductImages)
     {
@@ -145,5 +145,54 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Location of the Order Lines';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL LocationOrderLines";
     }
-
+    value(27; ModifyInventory)
+    {
+        Caption = 'Modify Inventory';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Modify Inventory";
+    }
+    value(28; GetLocations)
+    {
+        Caption = 'Get Locations';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Locations";
+    }
+    value(29; GetNextLocations)
+    {
+        Caption = 'Get Next Locations';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Next Locations";
+    }
+    value(30; GetOpenOrdersToImport)
+    {
+        Caption = 'Get Open Orders to Import';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OpenOrdersToImport";
+    }
+    value(31; "GetNextOpenOrdersToImport")
+    {
+        Caption = 'Get Next Open Orders to Import';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOpenOrdToImport";
+    }
+    value(32; GetOrderHeader)
+    {
+        Caption = 'Get Order Header';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderHeader";
+    }
+    value(33; GetOrderLines)
+    {
+        Caption = 'Get Order Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderLines";
+    }
+    value(34; GetNextOrderLines)
+    {
+        Caption = 'Get Next Order Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOrderLines";
+    }
+    value(35; GetShipmentLines)
+    {
+        Caption = 'Get Shipment Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ShipmentLines";
+    }
+    value(36; GetNextShipmentLines)
+    {
+        Caption = 'Get Next Order Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextShipmentLines";
+    }
 }

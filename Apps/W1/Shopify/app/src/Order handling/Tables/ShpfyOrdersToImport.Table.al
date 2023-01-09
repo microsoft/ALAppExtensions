@@ -131,6 +131,12 @@ table 30121 "Shpfy Orders to Import"
             FieldClass = FlowField;
             CalcFormula = exist("Shpfy Order Attribute" where("Order Id" = field(Id), "Key" = field("Attribute Key Filter")));
         }
+        field(22; "Channel Name"; Text[100])
+        {
+            Caption = 'Channel Name';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
         field(100; "Import Action"; enum "Shpfy Import Action")
         {
             Caption = 'Import Action';

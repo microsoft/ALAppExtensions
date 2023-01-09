@@ -99,6 +99,13 @@ table 30113 "Shpfy Shop Location"
             Description = 'Active in Shopfy';
             Editable = false;
         }
+        field(9; "Is Primary"; Boolean)
+        {
+            Caption = 'Is Primary';
+            DataClassification = SystemMetadata;
+            Description = 'Is primary location in Shopify';
+            Editable = false;
+        }
         field(10; "Stock Calculation"; Enum "Shpfy Stock Calculation")
         {
             Caption = 'Stock calculation';
@@ -131,13 +138,13 @@ table 30113 "Shpfy Shop Location"
     internal procedure CreateLocationFilter()
     var
         Location: Record Location;
-        LocationFilter: Report "Shpfy Create Location Filter";
+        ShpfyCreateLocationFilter: Report "Shpfy Create Location Filter";
     begin
         if "Location Filter" <> '' then
             Location.SetFilter(Code, "Location Filter");
-        LocationFilter.SetTableView(Location);
-        LocationFilter.RunModal();
-        "Location Filter" := CopyStr(LocationFilter.GetLocationFilter(), 1, MaxStrLen("Location Filter"));
+        ShpfyCreateLocationFilter.SetTableView(Location);
+        ShpfyCreateLocationFilter.RunModal();
+        "Location Filter" := CopyStr(ShpfyCreateLocationFilter.GetLocationFilter(), 1, MaxStrLen("Location Filter"));
     end;
 
 }

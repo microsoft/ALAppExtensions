@@ -36,7 +36,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -85,7 +85,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -134,7 +134,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -183,7 +183,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -233,7 +233,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -299,7 +299,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() must contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -365,7 +365,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -431,7 +431,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -496,7 +496,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -545,7 +545,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -594,7 +594,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -643,7 +643,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -693,7 +693,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -759,7 +759,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -825,7 +825,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -891,7 +891,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -956,7 +956,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1005,7 +1005,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1054,7 +1054,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1103,7 +1103,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1153,7 +1153,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -1219,7 +1219,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -1285,7 +1285,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -1351,7 +1351,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -1416,7 +1416,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1465,7 +1465,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1514,7 +1514,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1563,7 +1563,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1613,7 +1613,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -1679,7 +1679,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -1745,7 +1745,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -1811,7 +1811,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -1876,7 +1876,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1925,7 +1925,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -1974,7 +1974,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -2023,7 +2023,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -2075,7 +2075,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -2144,7 +2144,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -2213,7 +2213,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -2282,7 +2282,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -2350,7 +2350,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -2402,7 +2402,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -2454,7 +2454,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -2506,7 +2506,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.Title = Item.Description
         LibraryAssert.AreEqual(Item.Description, TempShpfyProduct.Title, 'TempShpfyProduct.Title = Item.Description');
@@ -2559,7 +2559,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -2628,7 +2628,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -2697,7 +2697,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() cannot contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsFalse(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');
@@ -2766,7 +2766,7 @@ codeunit 139601 "Shpfy Create Product Test"
         Item.SetRecFilter();
 
         // [WHEN] Invoke ShpfyCreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
-        ShpfyCreateProduct.CreateTempProduct(Item, TempShpfyProduct, TempShpfyVariant);
+        ShpfyCreateProduct.CreateProduct(Item, TempShpfyProduct, TempShpfyVariant);
 
         // [THEN] TempShpfyProduct.GetDescriptionHtml() contains the HTML section '<div class="productDescription">'
         LibraryAssert.IsTrue(TempShpfyProduct.GetDescriptionHtml().Contains('<div class="productDescription">'), '<div class="productDescription">');

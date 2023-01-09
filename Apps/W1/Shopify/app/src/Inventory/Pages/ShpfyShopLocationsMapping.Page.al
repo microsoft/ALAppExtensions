@@ -65,6 +65,16 @@ page 30117 "Shpfy Shop Locations Mapping"
                     ApplicationArea = All;
                     ToolTip = 'Select the stock calculation used for this location.';
                 }
+                field(Active; Rec.Active)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if the location is active in Shopify.';
+                }
+                field("Is Primary"; Rec."Is Primary")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if this the primary location in Shopify.';
+                }
             }
         }
     }

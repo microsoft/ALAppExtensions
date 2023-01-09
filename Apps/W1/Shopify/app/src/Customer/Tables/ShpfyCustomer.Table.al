@@ -125,13 +125,13 @@ table 30105 "Shpfy Customer"
 
     trigger OnDelete()
     var
-        Address: Record "Shpfy Customer Address";
+        CustomerAddress: Record "Shpfy Customer Address";
         Metafield: Record "Shpfy Metafield";
         Tag: Record "Shpfy Tag";
     begin
-        Address.SetRange("Customer Id", Id);
-        if not Address.IsEmpty() then
-            Address.DeleteAll(false);
+        CustomerAddress.SetRange("Customer Id", Id);
+        if not CustomerAddress.IsEmpty() then
+            CustomerAddress.DeleteAll(false);
 
         Tag.SetRange("Parent Id", Id);
         if not Tag.IsEmpty() then

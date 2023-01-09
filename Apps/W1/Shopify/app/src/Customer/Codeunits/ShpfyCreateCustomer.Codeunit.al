@@ -33,26 +33,26 @@ codeunit 30110 "Shpfy Create Customer"
     /// Do Create Customer.
     /// </summary>
     /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
-    /// <param name="ShopifyAddress">Parameter of type Record "Shopify Customer Address".</param>
+    /// <param name="CustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
     /// <param name="Customer">Parameter of type Record Customer.</param>
-    local procedure DoCreateCustomer(Shop: Record "Shpfy Shop"; var ShopifyAddress: Record "Shpfy Customer Address"; var Customer: Record Customer);
+    local procedure DoCreateCustomer(Shop: Record "Shpfy Shop"; var CustomerAddress: Record "Shpfy Customer Address"; var Customer: Record Customer);
     var
         ConfigTemplateHeader: Record "Config. Template Header";
         ConfigConfigTemplateLine: Record "Config. Template Line";
         DimensionsTemplate: Record "Dimensions Template";
         ShopifyCustomer: Record "Shpfy Customer";
         ConfigTemplateManagement: Codeunit "Config. Template Management";
-        CustCont: Codeunit "CustCont-Update";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        CustContUpdate: Codeunit "CustCont-Update";
+        NoSeriesManagement: Codeunit NoSeriesManagement;
         UpdateCustomer: Codeunit "Shpfy Update Customer";
-        CustRecRef: RecordRef;
+        CustomerRecordRef: RecordRef;
         CurrentTemplateCode: Code[10];
     begin
 
-        ShopifyCustomer.Get(ShopifyAddress."Customer Id");
+        ShopifyCustomer.Get(CustomerAddress."Customer Id");
 
         if TemplateCode = '' then
-            CurrentTemplateCode := FindCustomerTemplate(Shop, ShopifyAddress."Country/Region Code")
+            CurrentTemplateCode := FindCustomerTemplate(Shop, CustomerAddress."Country/Region Code")
         else
             CurrentTemplateCode := TemplateCode;
         if (CurrentTemplateCode <> '') and ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
@@ -62,21 +62,21 @@ codeunit 30110 "Shpfy Create Customer"
             ConfigConfigTemplateLine.SetRange("Table ID", Database::Customer);
             ConfigConfigTemplateLine.SetRange("Field ID", Customer.FieldNo("No. Series"));
             if ConfigConfigTemplateLine.FindFirst() and (ConfigConfigTemplateLine."Default Value" <> '') then
-                NoSeriesMgt.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, Customer."No.", Customer."No. Series");
+                NoSeriesManagement.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, Customer."No.", Customer."No. Series");
             Customer.Insert(true);
-            CustRecRef.GetTable(Customer);
-            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, CustRecRef);
+            CustomerRecordRef.GetTable(Customer);
+            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, CustomerRecordRef);
             DimensionsTemplate.InsertDimensionsFromTemplates(ConfigTemplateHeader, Customer."No.", Database::Customer);
-            CustRecRef.SetTable(Customer);
-            UpdateCustomer.FillInCustomerFields(Customer, Shop, ShopifyCustomer, ShopifyAddress);
+            CustomerRecordRef.SetTable(Customer);
+            UpdateCustomer.FillInCustomerFields(Customer, Shop, ShopifyCustomer, CustomerAddress);
             Customer.Modify();
-            ShopifyAddress.CustomerSystemId := Customer.SystemId;
-            ShopifyAddress.Modify();
+            CustomerAddress.CustomerSystemId := Customer.SystemId;
+            CustomerAddress.Modify();
             if IsNullGuid(ShopifyCustomer."Customer SystemId") then begin
                 ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                 ShopifyCustomer.Modify();
             end;
-            CustCont.OnModify(Customer);
+            CustContUpdate.OnModify(Customer);
         end;
     end;
 

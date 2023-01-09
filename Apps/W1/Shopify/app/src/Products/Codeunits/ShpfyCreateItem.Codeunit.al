@@ -193,21 +193,21 @@ codeunit 30171 "Shpfy Create Item"
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
     internal procedure CreateReferences(ShpfyProduct: Record "Shpfy Product"; ShpfyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant")
     var
-        ItemRefMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
     begin
         if ShpfyVariant.Barcode <> '' then
-            ItemRefMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.Barcode);
+            ItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.Barcode);
         if ShpfyVariant.SKU <> '' then
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":
-                    ItemRefMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.SKU);
+                    ItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.SKU);
                 Shop."SKU Mapping"::"Vendor Item No.":
                     if Item."Vendor No." <> '' then begin
                         if ItemVariant.code = '' then begin
                             Item."Vendor Item No." := ShpfyVariant.SKU;
                             Item.Modify();
                         end;
-                        ItemRefMgt.CreateItemReference(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), "Item Reference Type"::Vendor, Item."Vendor No.", ShpfyVariant.SKU);
+                        ItemReferenceMgt.CreateItemReference(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), "Item Reference Type"::Vendor, Item."Vendor No.", ShpfyVariant.SKU);
                     end;
             end;
     end;
@@ -224,11 +224,11 @@ codeunit 30171 "Shpfy Create Item"
         ConfigTemplateHeader: Record "Config. Template Header";
         DimensionsTemplate: Record "Dimensions Template";
         ItemCategory: Record "Item Category";
-        ItemUOM: Record "Item Unit of Measure";
+        ItemUnitofMeasure: Record "Item Unit of Measure";
         ItemVariant: Record "Item Variant";
         Vendor: Record Vendor;
         ConfigTemplateManagement: Codeunit "Config. Template Management";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         CurrentTemplateCode: Code[10];
         Code: Text;
     begin
@@ -249,10 +249,10 @@ codeunit 30171 "Shpfy Create Item"
                         end;
                 end;
             Item.Insert(true);
-            RecRef.GetTable(Item);
-            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecRef);
+            RecordRef.GetTable(Item);
+            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecordRef);
             DimensionsTemplate.InsertDimensionsFromTemplates(ConfigTemplateHeader, Item."No.", Database::Item);
-            RecRef.SetTable(Item);
+            RecordRef.SetTable(Item);
             Item.Description := ShpfyProduct.Title;
         end;
         case ShopifyVariant."UoM Option Id" of
@@ -266,14 +266,14 @@ codeunit 30171 "Shpfy Create Item"
         if Code <> '' then begin
             Code := FindUoMCode(ShopifyVariant);
             if Code <> '' then begin
-                ItemUOM.SetRange("Item No.", Item."No.");
-                ItemUOM.SetRange(Code, Code);
-                if ItemUOM.IsEmpty() then begin
-                    Clear(ItemUOM);
-                    ItemUOM."Item No." := Item."No.";
-                    ItemUOM.Code := CopyStr(Code, 1, MaxStrLen(ItemUOM.Code));
-                    ITemUOM."Qty. per Unit of Measure" := 1;
-                    ItemUOM.Insert();
+                ItemUnitofMeasure.SetRange("Item No.", Item."No.");
+                ItemUnitofMeasure.SetRange(Code, Code);
+                if ItemUnitofMeasure.IsEmpty() then begin
+                    Clear(ItemUnitofMeasure);
+                    ItemUnitofMeasure."Item No." := Item."No.";
+                    ItemUnitofMeasure.Code := CopyStr(Code, 1, MaxStrLen(ItemUnitofMeasure.Code));
+                    ItemUnitofMeasure."Qty. per Unit of Measure" := 1;
+                    ItemUnitofMeasure.Insert();
                 end;
             end;
         end;
@@ -385,7 +385,7 @@ codeunit 30171 "Shpfy Create Item"
     /// <returns>Return value of type Code[10].</returns>
     local procedure FindUoMCode(ShopifyVariant: Record "Shpfy Variant"): Code[10]
     var
-        UOM: Record "Unit of Measure";
+        ItemUnitofMeasure: Record "Unit of Measure";
         Code: Text;
     begin
         case ShopifyVariant."UoM Option Id" of
@@ -397,23 +397,23 @@ codeunit 30171 "Shpfy Create Item"
                 Code := ShopifyVariant."Option 3 Value";
         end;
         if Code <> '' then
-            if UOM.Get(CopyStr(Code.ToUpper(), 1, MaxStrLen(UOM.Code))) then
-                exit(UOM.Code)
+            if ItemUnitofMeasure.Get(CopyStr(Code.ToUpper(), 1, MaxStrLen(ItemUnitofMeasure.Code))) then
+                exit(ItemUnitofMeasure.Code)
             else begin
-                UOM.SetFilter(Description, '@' + Code);
-                if UOM.IsEmpty then begin
+                ItemUnitofMeasure.SetFilter(Description, '@' + Code);
+                if ItemUnitofMeasure.IsEmpty then begin
 #pragma warning disable AA0139
-                    if (StrLen(Code) <= MaxStrLen(UOM.Code)) then begin
-                        Clear(UOM);
-                        UOM.Code := Code;
-                        UOM.Description := Code;
-                        UOM.Insert();
-                        exit(UOM.Code);
+                    if (StrLen(Code) <= MaxStrLen(ItemUnitofMeasure.Code)) then begin
+                        Clear(ItemUnitofMeasure);
+                        ItemUnitofMeasure.Code := Code;
+                        ItemUnitofMeasure.Description := Code;
+                        ItemUnitofMeasure.Insert();
+                        exit(ItemUnitofMeasure.Code);
                     end;
 #pragma warning restore AA0139
                 end else begin
-                    UOM.FindFirst();
-                    exit(UOM.Code);
+                    ItemUnitofMeasure.FindFirst();
+                    exit(ItemUnitofMeasure.Code);
                 end;
             end;
     end;

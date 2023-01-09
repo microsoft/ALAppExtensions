@@ -47,17 +47,17 @@ codeunit 30168 "Shpfy Sync Orders"
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     local procedure CreateSalesDocument(ShopifyOrderHeader: Record "Shpfy Order Header")
     var
-        ProcessShopifyOrder: Codeunit "Shpfy Process Order";
+        ProcessOrder: Codeunit "Shpfy Process Order";
     begin
         if not ShopifyOrderHeader.Processed then begin
             Commit();
             ClearLastError();
-            if not ProcessShopifyOrder.Run(ShopifyOrderHeader) then begin
+            if not ProcessOrder.Run(ShopifyOrderHeader) then begin
                 SelectLatestVersion();
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
                 ShopifyOrderHeader."Has Error" := true;
                 ShopifyOrderHeader."Error Message" := CopyStr(Format(Time) + ' ' + GetLastErrorText(), 1, MaxStrLen(ShopifyOrderHeader."Error Message"));
-                ProcessShopifyOrder.CleanUpLastCreatedDocument();
+                ProcessOrder.CleanUpLastCreatedDocument();
             end else begin
                 SelectLatestVersion();
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");

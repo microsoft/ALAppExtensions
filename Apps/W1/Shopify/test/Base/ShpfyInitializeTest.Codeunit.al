@@ -9,7 +9,8 @@ codeunit 139561 "Shpfy Initialize Test"
     var
         DummyCustomer: Record Customer;
         DummyItem: Record Item;
-        ShpfyShop: Record "Shpfy Shop";
+
+        TempShpfyShop: Record "Shpfy Shop" temporary;
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
@@ -17,9 +18,7 @@ codeunit 139561 "Shpfy Initialize Test"
 
     trigger OnRun()
     begin
-        if ShpfyShop.IsEmpty() then
-            CreateShop();
-        Commit();
+        CreateShop();
     end;
 
     internal procedure CreateShop(): Record "Shpfy Shop"
@@ -29,6 +28,10 @@ codeunit 139561 "Shpfy Initialize Test"
         Code: Code[10];
         UrlTxt: Label 'https://%1.myshopify.com', Comment = '%1 = Shop name', Locked = true;
     begin
+        if not TempShpfyShop.IsEmpty() then
+            if ShpfyShop.Get(TempShpfyShop.Code) then
+                exit(ShpfyShop);
+
         Code := Any.AlphabeticText(MaxStrLen(Code));
         GLAccount.SetRange("Direct Posting", true);
         GLAccount.FindLast();
@@ -42,24 +45,31 @@ codeunit 139561 "Shpfy Initialize Test"
         CreateVATPostingSetup(ShpfyShop."Customer Template Code", ShpfyShop."Item Template Code");
         CreateVATPostingSetup(ShpfyShop."Customer Template Code", '');
         ShpfyShop."Shipping Charges Account" := GLAccount."No.";
-
+        ShpfyShop."Customer Posting Group" := ShpfyShop."Customer Template Code";
+        ShpfyShop."Gen. Bus. Posting Group" := ShpfyShop."Customer Template Code";
+        ShpfyShop."VAT Bus. Posting Group" := ShpfyShop."Customer Template Code";
+        CreateCountryRegionCode(ShpfyShop."Customer Template Code");
+        ShpfyShop."VAT Country/Region Code" := ShpfyShop."Customer Template Code";
         ShpfyShop.Insert();
         Commit();
         ShpfyCommunicationMgt.SetShop(ShpfyShop);
         ShpfyCommunicationMgt.SetTestInProgress(true);
         CreateDummyCustomer(ShpfyShop."Customer Template Code");
         CreateDummyItem(ShpfyShop."Item Template Code");
+        TempShpfyShop := ShpfyShop;
+        TempShpfyShop.Insert();
+        Commit();
         exit(ShpfyShop);
     end;
 
-local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
+    local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
     var
         ConfigTemplateHeader: Record "Config. Template Header";
         ConfigConfigTemplateLine: Record "Config. Template Line";
         DimensionsTemplate: Record "Dimensions Template";
         ConfigTemplateManagement: Codeunit "Config. Template Management";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
-        RecRef: RecordRef;
+        NoSeriesManagement: Codeunit NoSeriesManagement;
+        RecordRef: RecordRef;
     begin
         if (CurrentTemplateCode <> '') and ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
             Clear(DummyCustomer);
@@ -68,12 +78,12 @@ local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
             ConfigConfigTemplateLine.SetRange("Table ID", Database::Customer);
             ConfigConfigTemplateLine.SetRange("Field ID", DummyCustomer.FieldNo("No. Series"));
             if ConfigConfigTemplateLine.FindFirst() and (ConfigConfigTemplateLine."Default Value" <> '') then
-                NoSeriesMgt.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, DummyCustomer."No.", DummyCustomer."No. Series");
+                NoSeriesManagement.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, DummyCustomer."No.", DummyCustomer."No. Series");
             DummyCustomer.Insert(true);
-            RecRef.GetTable(DummyCustomer);
-            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecRef);
+            RecordRef.GetTable(DummyCustomer);
+            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecordRef);
             DimensionsTemplate.InsertDimensionsFromTemplates(ConfigTemplateHeader, DummyCustomer."No.", Database::Customer);
-            RecRef.SetTable(DummyCustomer);
+            RecordRef.SetTable(DummyCustomer);
             DummyCustomer.Name := 'Dummy Customer Name';
             DummyCustomer."E-Mail" := 'dummy@customer.com';
             DummyCustomer.Modify();
@@ -87,8 +97,8 @@ local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
         ConfigConfigTemplateLine: Record "Config. Template Line";
         DimensionsTemplate: Record "Dimensions Template";
         ConfigTemplateManagement: Codeunit "Config. Template Management";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
-        RecRef: RecordRef;
+        NoSeriesManagement: Codeunit NoSeriesManagement;
+        RecordRef: RecordRef;
     begin
         if (CurrentTemplateCode <> '') and ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
             Clear(DummyItem);
@@ -97,12 +107,12 @@ local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
             ConfigConfigTemplateLine.SetRange("Table ID", Database::Item);
             ConfigConfigTemplateLine.SetRange("Field ID", DummyItem.FieldNo("No. Series"));
             if ConfigConfigTemplateLine.FindFirst() and (ConfigConfigTemplateLine."Default Value" <> '') then
-                NoSeriesMgt.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, DummyItem."No.", DummyItem."No. Series");
+                NoSeriesManagement.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, DummyItem."No.", DummyItem."No. Series");
             DummyItem.Insert(true);
-            RecRef.GetTable(DummyItem);
-            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecRef);
+            RecordRef.GetTable(DummyItem);
+            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecordRef);
             DimensionsTemplate.InsertDimensionsFromTemplates(ConfigTemplateHeader, DummyItem."No.", Database::Customer);
-            RecRef.SetTable(DummyItem);
+            RecordRef.SetTable(DummyItem);
             DummyItem.Description := 'Dummy Item Description';
             DummyItem.Modify();
             DummyItem.SetRecFilter();
@@ -189,6 +199,16 @@ local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
         end;
     end;
 
+    local procedure CreateCountryRegionCode(Code: code[10]) CountryRegion: Record "Country/Region"
+    begin
+        CountryRegion.Reset();
+        if not CountryRegion.Get(code) then begin
+            clear(CountryRegion);
+            CountryRegion.Code := Code;
+            CountryRegion.Insert();
+        end;
+    end;
+
     local procedure CreateNoSeries(Code: Code[20]) NoSeries: Record "No. Series"
     var
         NoSeriesLine: Record "No. Series Line";
@@ -230,20 +250,19 @@ local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
         VatBusinessPostingGroup := CreateVatBusPostingGroup(Code);
         AddFieldTemplate(ConfigTemplateHeader.Code, 30000, Database::CUstomer, Customer.FieldNo("VAT Bus. Posting Group"), VatBusinessPostingGroup.Code);
 
-        if not VatPostingSetup.Get(Code, Code) then begin
-            Clear(VatPostingSetup);
-            VatPostingSetup."VAT Bus. Posting Group" := Code;
-            VatPostingSetup."VAT Prod. Posting Group" := Code;
-            VatPostingSetup."VAT Calculation Type" := "Tax Calculation Type"::"Normal VAT";
-            VatPostingSetup.Insert();
-        end;
 
-        if not GeneralPostingSetup.Get(Code, Code) then begin
-            Clear(GeneralPostingSetup);
-            GeneralPostingSetup."Gen. Bus. Posting Group" := Code;
-            GeneralPostingSetup."Gen. Prod. Posting Group" := Code;
-            GeneralPostingSetup.Insert();
-        end;
+        Clear(VatPostingSetup);
+        VatPostingSetup."VAT Bus. Posting Group" := Code;
+        VatPostingSetup."VAT Prod. Posting Group" := Code;
+        VatPostingSetup."VAT Calculation Type" := "Tax Calculation Type"::"Normal VAT";
+        if not VatPostingSetup.Insert() then
+            VatPostingSetup.Modify();
+
+        Clear(GeneralPostingSetup);
+        GeneralPostingSetup."Gen. Bus. Posting Group" := Code;
+        GeneralPostingSetup."Gen. Prod. Posting Group" := Code;
+        if not GeneralPostingSetup.Insert() then
+            GeneralPostingSetup.Modify();
     end;
 
     local procedure CreateCustomerPostingGroup(Code: Code[10]) CustPostingGroup: Record "Customer Posting Group"
@@ -287,9 +306,9 @@ local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
-    local procedure OnClientSend(HttpRequestMsg: HttpRequestMessage; var HttpResponseMsg: HttpResponseMessage)
+    local procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     begin
-        TestRequestHeaderContainsAccessToken(HttpRequestMsg);
+        TestRequestHeaderContainsAccessToken(HttpRequestMessage);
     end;
 
     local procedure TestRequestHeaderContainsAccessToken(HttpRequestMessage: HttpRequestMessage)

@@ -18,6 +18,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         MoveShpfyRegisteredStore();
 #endif
         SetAllowOutgoingRequests();
+        PriceCalculationUpgrade();
     end;
 #if not CLEAN21
 
@@ -56,6 +57,23 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         UpgradeTag.SetUpgradeTag(GetAllowOutgoingRequestseUpgradeTag());
     end;
 
+    local procedure PriceCalculationUpgrade()
+    var
+        ShpfyShop: Record "Shpfy Shop";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetPriceCalculationUpgradeTag()) then
+            exit;
+
+        if ShpfyShop.FindSet(true, false) then
+            repeat
+                ShpfyShop.CopyPriceCalculationFieldsFromCustomerTemplate(ShpfyShop."Customer Template Code");
+                ShpfyShop.Modify();
+            until ShpfyShop.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(GetPriceCalculationUpgradeTag());
+    end;
+
     internal procedure SetShpfyStockCalculation()
     var
         ShpfyShopLocation: Record "Shpfy Shop Location";
@@ -80,6 +98,11 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         exit('MS-445989-AllowOutgoingRequestseUpgradeTag-20220816');
     end;
 
+    internal procedure GetPriceCalculationUpgradeTag(): Code[250]
+    begin
+        exit('PriceCalculationUpgradeTag-20221201');
+    end;
+
     local procedure GetDateBeforeFeature(): DateTime
     begin
         exit(CreateDateTime(DMY2Date(1, 8, 2022), 0T));
@@ -92,5 +115,8 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     begin
         if not UpgradeTag.HasUpgradeTag(GetAllowOutgoingRequestseUpgradeTag()) then
             PerCompanyUpgradeTags.Add(GetAllowOutgoingRequestseUpgradeTag());
+
+        if not UpgradeTag.HasUpgradeTag(GetPriceCalculationUpgradeTag()) then
+            PerCompanyUpgradeTags.Add(GetPriceCalculationUpgradeTag());
     end;
 }

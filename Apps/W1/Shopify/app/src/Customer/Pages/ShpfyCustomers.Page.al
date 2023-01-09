@@ -152,8 +152,8 @@ page 30107 "Shpfy Customers"
                 begin
                     BackgroundSyncs.CustomerSync();
                 end;
-
             }
+
         }
     }
 }

@@ -166,10 +166,10 @@ table 30127 "Shpfy Product"
     internal procedure GetCommaSeperatedTags() Tags: Text
     var
         ShopifyTag: Record "Shpfy Tag";
-        Events: Codeunit "Shpfy Product Events";
+        ProductEvents: Codeunit "Shpfy Product Events";
     begin
         Tags := ShopifyTag.GetCommaSeperatedTags(Id);
-        Events.OnAfterGetCommaSeperatedTags(Rec, Tags);
+        ProductEvents.OnAfterGetCommaSeperatedTags(Rec, Tags);
         exit(Tags);
     end;
 

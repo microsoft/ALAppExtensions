@@ -99,6 +99,18 @@ table 30111 "Shpfy Order Fulfillment"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(17; "Tracking Companies"; Text[2048])
+        {
+            Caption = 'Tracking Companies';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(18; "Contains Gift Cards"; Boolean)
+        {
+            Caption = 'Contains Gift Cards';
+            FieldClass = FlowField;
+            CalcFormula = exist("Shpfy Fulfillment Line" where("Order Id" = field("Shopify Order Id"), "Is Gift Card" = const(true)));
+        }
     }
 
     keys
