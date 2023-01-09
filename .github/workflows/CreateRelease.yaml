@@ -1,4 +1,4 @@
-﻿name: ' Create release'
+name: ' Create release'
 
 on:
   workflow_dispatch:
@@ -192,7 +192,7 @@ jobs:
             core.setOutput('releaseId', releaseId);
 
   UploadArtifacts:
-    runs-on: [ windows-latest ] 
+    runs-on: [ windows-latest ]
     needs: [ CreateRelease ]
     strategy:
       matrix: ${{ fromJson(needs.CreateRelease.outputs.artifacts) }}

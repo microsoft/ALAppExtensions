@@ -1,4 +1,4 @@
-﻿## Preview
+## Preview
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
@@ -11,17 +11,24 @@ Note that when using the preview version of AL-Go for GitHub, you need to Update
 AL-Go projects can now be built in different modes, by specifying the _buildModes_ setting in AL-Go-Settings.json. Read more about build modes in the [Basic Repository settings](https://github.com/microsoft/AL-Go/blob/main/Scenarios/settings.md#basic-repository-settings).
 
 ### Continuous Delivery
-
 Continuous Delivery can now run from other branches than main. By specifying a property called branches, containing an array of branches in the deliveryContext json construct, the artifacts generated from this branch are also delivered. The branch specification can include wildcards (like release/*). Default is main, i.e. no changes to functionality.
 
 ### Continuous Deployment
-
 Continuous Deployment can now run from other branches than main. By creating a repo setting (.github/AL-Go-Settings.json) called **`<environmentname>-Branches`**, which is an array of branches, which will deploy the generated artifacts to this environment. The branch specification can include wildcards (like release/*), although this probably won't be used a lot in continuous deployment. Default is main, i.e. no changes to functionality.
 
 ### Create Release
 When locating artifacts for the various projects, the SHA used to build the artifact is used for the release tag
 If all projects are not available with the same SHA, this error is thrown: **The build selected for release doesn't contain all projects. Please rebuild all projects by manually running the CI/CD workflow and recreate the release.**
 There is no longer a hard dependency on the main branch name from Create Release.
+
+### AL-Go Tests
+Some unit tests have been added and AL-Go unit tests can now be run directly from VS Code.
+Another set of end to end tests have also been added and in the documentation on contributing to AL-Go, you can see how to run these in a local fork or from VS Code.
+
+### LF, UTF8 and JSON
+GitHub natively uses LF as line seperator in source files.
+In earlier versions of AL-Go for GitHub, many scripts and actions would use CRLF and convert back and forth. Some files were written with UTF8 BOM (Byte Order Mark), other files without and JSON formatting was done using PowerShell 5.1 (which is different from PowerShell 7).
+In the latest version, we always use LF as line seperator, UTF8 without BOM and JSON files are written using PowerShell 7. If you have self-hosted runners, you need to ensure that PS7 is installed to make this work.
 
 ### Experimental Support
 Setting the repo setting "shell" to "pwsh", followed by running Update AL-Go System Files, will cause all PowerShell code to be run using PowerShell 7 instead of PowerShell 5. This functionality is experimental. Please report any issues at https://github.com/microsoft/AL-Go/issues
