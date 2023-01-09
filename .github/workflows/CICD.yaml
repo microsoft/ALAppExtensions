@@ -214,7 +214,7 @@ jobs:
                 }
               }
               else {
-                $include = ($ENV:GITHUB_REF_NAME -eq 'main' or $ENV:GITHUB_REF_NAME -eq 'aholstrup/release-workflow-main')
+                $include = (($ENV:GITHUB_REF_NAME -eq 'main') -or ($ENV:GITHUB_REF_NAME -eq 'aholstrup/release-workflow-main'))
               }
             }
             if ($include) {
