@@ -418,6 +418,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                                             begin
                                                 GenJournalLine."Account No." := GetVATAccountNo(VATEntry, "VAT Posting Setup");
                                                 CopyAmounts(GenJournalLine, VATEntry);
+                                                OnBeforePostGenJnlLineReverseChargeVATAccount(GenJournalLine, VATEntry, VATAmount, VATAmountAddCurr);
                                                 if PostSettlement then
                                                     PostGenJnlLine(GenJournalLine);
 
@@ -978,6 +979,11 @@ report 11971 "Calc. and Post VAT Settl. CZL"
 
     [IntegrationEvent(true, false)]
     local procedure OnClosingGLAndVATEntryOnAfterGetRecordOnAfterSetVATEntryFilters(VATPostingSetup: Record "VAT Posting Setup"; var VATEntry: Record "VAT Entry"; var VATEntry2: Record "VAT Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGenJnlLineReverseChargeVATAccount(var GenJournalLine: Record "Gen. Journal Line"; VATEntry: Record "VAT Entry"; var VATAmount: Decimal; var VATAmountAddCurr: Decimal)
     begin
     end;
 }
