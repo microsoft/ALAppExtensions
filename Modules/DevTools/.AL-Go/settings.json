@@ -1,0 +1,20 @@
+{
+    "country":  "base",
+    "appFolders":  [
+    ],
+    "testFolders":  [
+                        "BusinessCentralPerformanceToolkit",
+                        "BusinessCentralPerformanceToolkit Tests",
+                        "TestFramework\\TestLibraries\\Any",
+                        "TestFramework\\TestLibraries\\Assert",
+                        "TestFramework\\TestLibraries\\Permissions Mock",
+                        "TestFramework\\TestLibraries\\Variable Storage",
+                        "TestFramework\\TestRunner",
+                        "TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
+    ],
+    "artifact":  "bcinsider//21.4/base/latest/{INSIDERSASTOKEN}",
+    "enablePerTenantExtensionCop":  false,
+    "repoVersion":  "21.4",
+    "doNotRunTests": true,
+    "cleanModePreprocessorSymbols":  ["CLEAN17", "CLEAN18", "CLEAN19", "CLEAN20", "CLEAN21", "CLEAN22"]
+}
