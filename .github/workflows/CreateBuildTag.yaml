@@ -40,9 +40,9 @@ jobs:
 
             // The build number is after -Apps-
             const buildNumber = appsArtifact.name.replace(/.*-Apps-/, "")
-            const tag = `refs/tags/builds/${$buildNumber}`
+            const tag = `refs/tags/builds/${buildNumber}`
 
-            console.log(`Creating tag: ${$tag}`)
+            console.log(`Creating tag: ${tag}`)
 
             github.rest.git.createRef({
               owner: context.repo.owner,
