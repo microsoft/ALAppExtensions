@@ -30,6 +30,7 @@ PermissionSet 219 "System Application - Objects"
                              "Confirm Management - Objects",
                              "Cryptography Mgt. - Objects",
                              "Cues and KPIs - Objects",
+                             "Date & Time - Objects",
                              "Data Archive - Objects",
                              "Data Classification - Objects",
                              "Data Compression - Objects",
@@ -88,6 +89,5 @@ PermissionSet 219 "System Application - Objects"
                              "Web Service Management - Obj.",
                              "Word Templates - Objects",
                              "XML Validation - Objects",
-                             "XmlWriter - Objects",
-                             "Date & Time - Objects";
+                             "XmlWriter - Objects";
 }
