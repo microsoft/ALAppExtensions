@@ -134,7 +134,7 @@ try
     }
 
     Write-Host "Push package $($packageFile.FullName) to $deliverServerUrl" -ForegroundColor Magenta
-    $deliverOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($packageFile.FullName) -ApiKey $deliverAcountToken -Source $deliverServerUrl"
+    #$deliverOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($packageFile.FullName) -ApiKey $deliverAcountToken -Source $deliverServerUrl"
 
     if ($LASTEXITCODE -or $null -eq $deliverOutput)
     {
