@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: ['CI/CD']
     types: ['completed']
-    branches: [ 'main', 'release/*']
+    branches: [ 'main', 'release/*', 'fix-create-build-tag']
 
 run-name: Create build tag on branch ${{ github.ref_name }}.
 
