@@ -186,7 +186,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppName := 'Direct Banking NL';
         AppPublisher := 'IDYN B.V.';
         AppDescription := 'Integrate ABN, Rabo, ING, Triodos, Knab, ASN, SNS, etc. with Microsoft Dynamics 365 Business Central.';
-        AppProviderSupportURL := 'https://help.idyn.nl/directbanking';
+        AppProviderSupportURL := 'https://help.idyn.nl/directbanking/bc/en/topic/about-directbanking';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking_nl%7CPAPPID.7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
         AppApprovedFor := 'NL';
         AppWorksOn := 'NL';
