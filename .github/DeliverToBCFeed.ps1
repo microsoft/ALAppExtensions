@@ -1,7 +1,12 @@
 Param(
     [Hashtable] $parameters
 )
-
+<#
+$project = "$parameters.project"
+$projectName = "Modules"
+$appsFolders = $parameters.appsFolders
+$testAppsFolders = $parameters.testAppsFolders
+#>
 function GenerateManifest
 (
     [Parameter(Mandatory=$true)]
@@ -30,22 +35,28 @@ $project = $parameters.project
 $projectName = $parameters.projectName
 $appsFolders = $parameters.appsFolders
 $testAppsFolders = $parameters.testAppsFolders
-$type = $parameters.type
 
 Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
 Write-Host "Test app folder(s): $($testAppsFolders -join ', ')" -ForegroundColor Magenta
 
-# Construct package ID
-$packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)"
+$artifactsPath = Join-Path $env:GITHUB_WORKSPACE '.artifacts'
 
-if (-not $project -or ($project -ne '.')) 
-{
-    $packageId += "-$projectName"
+if (test-path $artifactsPath) {
+    $testAppsFolders2 = Get-ChildItem $artifactsPath -Recurse | where-object {$_.FullName.Contains("-TestApps-")} | Select-Object -ExpandProperty FullName
+    $AppsFolders2 = Get-ChildItem $artifactsPath -Recurse | where-object {$_.FullName.Contains("-Apps-")} | Select-Object -ExpandProperty FullName
+
+    Write-Host "App folder(s) 2: $($AppsFolders2 -join ', ')" -ForegroundColor Magenta
+    Write-Host "Test app folder(s) 2: $($testAppsFolders2 -join ', ')" -ForegroundColor Magenta
+
+} else {
+    Write-Host "No artifacts folder found in path $artifactsPath" -ForegroundColor Magenta
 }
 
-if ($type -eq 'CD') 
-{
-    $packageId += "-preview"
+# Construct package ID
+if ($ENV:GITHUB_REF_NAME -eq "main") {
+    $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)-$projectName-preview"
+} else {
+    $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)-$projectName-test"
 }
 
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta
@@ -85,28 +96,4 @@ New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
 Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
 
 #Create .nuspec file
-$manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
-$manifest.Save($manifestFilePath)
-    
-    <#$outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
-    New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
-
-    Write-Host "Download nuget CLI" -ForegroundColor Magenta
-    Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $outputDirectory/nuget.exe
-    
-    $deliverOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe pack $manifestFilePath -OutputDirectory $outputDirectory"
-    
-    $deliverOutput | Write-Host -ForegroundColor Magenta
-    if ($LASTEXITCODE -or $null -eq $deliverOutput)
-    {
-        throw "Generating the package failed with exit code $LASTEXITCODE"
-    }
-    
-    # Get the newly created package
-    $packageFile = Get-ChildItem -Path $outputDirectory -Filter "$packageId*.nupkg"
-
-    if(-not $packageFile) 
-    {
-        throw "Cannot find the package file in $outputDirectory"
-    }#>
-
+$manifest.Save("$PSScriptRoot\ALAppExtensions.template.nuspec")

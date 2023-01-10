@@ -797,7 +797,7 @@ jobs:
       - name: Nuget Pack
         run: |
             $outPath = Join-Path $ENV:GITHUB_WORKSPACE '/out' 
-            $nuspecPath = Join-Path $outPath 'manifest.nuspec'
+            $nuspecPath = Join-Path $ENV:GITHUB_WORKSPACE '/github/AlAppExtensions.template.nuspec' 
             nuget pack $nuspecPath -OutputDirectory $outPath
           
       - name: Publish nuget to artifacts
