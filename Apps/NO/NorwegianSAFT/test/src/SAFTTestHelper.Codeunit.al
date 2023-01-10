@@ -234,6 +234,7 @@ codeunit 148099 "SAF-T Test Helper"
         VATEntry.init();
         VATEntry."Entry No." := LibraryUtility.GetNewRecNo(VATEntry, VATEntry.FieldNo("Entry No."));
         VATEntry."Posting Date" := PostingDate;
+        VATEntry."VAT Reporting Date" := PostingDate;
         VATEntry."Transaction No." := TransactionNo;
         VATEntry."Document No." := LibraryUtility.GenerateGUID();
         VATEntry.Type := Type;

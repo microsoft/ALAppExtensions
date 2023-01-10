@@ -79,5 +79,5 @@ enum 9064 "SAS Permission"
     value(11; "Set Immutability Policy")
     {
         Caption = 'i', Locked = true;
-    }
+    }	
 }

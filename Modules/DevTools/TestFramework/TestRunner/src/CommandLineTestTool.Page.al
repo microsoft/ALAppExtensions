@@ -126,6 +126,7 @@ page 130455 "Command Line Test Tool"
             {
                 ApplicationArea = All;
                 Caption = 'Code Coverage Map';
+                Tooltip = 'Code Coverage Map';
                 trigger OnValidate()
                 begin
                     TestSuiteMgt.SetCCMap(GlobalALTestSuite, CCMap);
@@ -167,6 +168,8 @@ page 130455 "Command Line Test Tool"
 
             field(CCMapCSVText; CCMapCSVText)
             {
+                Caption = 'Code Coverage Map CSV Text';
+                Tooltip = 'Code Coverage Map CSV Text';
                 ApplicationArea = All;
                 Editable = false;
                 MultiLine = true;
@@ -348,6 +351,7 @@ page 130455 "Command Line Test Tool"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 ToolTip = 'Update Code Coverage';
+                Image = Action;
 
                 trigger OnAction()
                 var
@@ -364,9 +368,11 @@ page 130455 "Command Line Test Tool"
             action(GetCodeCoverageMap)
             {
                 ApplicationArea = All;
+                Tooltip = 'Get Code Coverage Map';
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                Image = Action;
 
                 trigger OnAction()
                 var
@@ -384,6 +390,7 @@ page 130455 "Command Line Test Tool"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 ToolTip = 'Clear Code Coverage';
+                Image = Action;
 
                 trigger OnAction()
                 var

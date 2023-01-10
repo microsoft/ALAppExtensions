@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Test Module for Language",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,25 +15,25 @@
                              "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
                              "name":  "Language",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "40860557-a18d-42ad-aecb-22b7dd80dc80",
                              "name":  "Permissions Mock",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "79e72120-0c70-4ccf-b45c-fb75a5c7af8b",
                              "name":  "Language Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "screenshots":  [

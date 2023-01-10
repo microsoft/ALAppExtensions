@@ -58,6 +58,30 @@ codeunit 135011 "Camera Test"
         Assert.AreEqual(CameraTestLibrary.GetSmallJpeg(), Base64Convert.ToBase64(PictureInStream), 'The mock picture was expected.');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure GetPictureWithQualityErrorTest()
+    var
+        Camera: Codeunit Camera;
+        CameraTestLibrary: Codeunit "Camera Test Library";
+        PictureInStream: InStream;
+        PictureName: Text;
+        Quality: Integer;
+    begin
+        // [Given] Camera test library subscribers are binded.
+        BindSubscription(CameraTestLibrary);
+
+        // [GIVEN] Invalid Quality
+        Quality := 200;
+
+        // [When] GetPicture is invoked on the camera object.
+        ClearLastError();
+        asserterror Camera.GetPicture(200, PictureInStream, PictureName);
+
+        // [Then] An error is shown about an invalid value for the quality
+        Assert.ExpectedError('The picture quality must be in the range from 0 to 100.');
+    end;
+
 #if not CLEAN20
     [Test]
     [Scope('OnPrem')]
@@ -351,4 +375,3 @@ codeunit 135011 "Camera Test"
         // Do nothing
     end;
 }
-

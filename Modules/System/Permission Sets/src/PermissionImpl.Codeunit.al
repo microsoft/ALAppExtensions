@@ -9,6 +9,7 @@ codeunit 9864 "Permission Impl."
 
     var
         AllObjTxt: Label 'All objects of type %1', Comment = '%1= type name, e.g. Table Data or Report or Page';
+        AllObjExceptTxt: Label 'All objects of type %1 (except where otherwise stated)', Comment = '%1= type name, e.g. Table Data or Report or Page';
         SelectObjectsLbl: Label 'Select objects to add';
         SelectObjectLbl: Label 'Select object to add';
         PermissionAlreadyExistsWithDifferentTypeErr: Label 'The permission already exists with type %1', Comment = '%1 = the type of the existing permission';
@@ -151,6 +152,15 @@ codeunit 9864 "Permission Impl."
             ObjectName := CopyStr(StrSubstNo(AllObjTxt, MetadataPermission."Object Type"), 1, MaxStrLen(MetadataPermission."Object Name"));
             ObjectCaption := ObjectName;
         end;
+    end;
+
+    procedure GetObjectName(var ExpandedPermission: Record "Expanded Permission"; var ObjectName: Text)
+    begin
+        if ExpandedPermission."Object ID" <> 0 then begin
+            ExpandedPermission.CalcFields("Object Name");
+            ObjectName := ExpandedPermission."Object Name";
+        end else
+            ObjectName := CopyStr(StrSubstNo(AllObjExceptTxt, ExpandedPermission."Object Type"), 1, MaxStrLen(ExpandedPermission."Object Name"));
     end;
 
     procedure GetPermission(PermissionType: Option Include,Exclude; PermissionAsTxt: Text): Option " ",Yes,Indirect

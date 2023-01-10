@@ -285,6 +285,17 @@ tableextension 11723 "Gen. Journal Line CZL" extends "Gen. Journal Line"
         OnAfterUpdateBankInfoCZL(Rec);
     end;
 
+    procedure IsCheckDimensionsEnabledCZL(): Boolean
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        if "Posting Date" = 0D then
+            exit(true);
+
+        GeneralLedgerSetup.Get();
+        exit((ClosingDate("Posting Date") <> "Posting Date") or not GeneralLedgerSetup."Do Not Check Dimensions CZL");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var GenJournalLine: Record "Gen. Journal Line")
     begin

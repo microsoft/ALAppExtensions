@@ -2713,6 +2713,43 @@ codeunit 18134 "GST Purchase Registered"
         LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::Invoice, PostedInvoiceNo, 3);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromGSTPurchInvRegVendWithNonITCForServiceInterStateForDCA()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentNo: Code[20];
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] [459354] Difference in DCA and Purchase Account Balance in case of GST Non-Availment
+        // [FEATURE] [Goods, Purchase Invoice] [ITC Non-Availment, Registered Vendor, Inter-State]
+
+        // [GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit adjustment is Not Available with GST group type as Item
+        CreateGeneralLedgerSetup();
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Goods, false, false);
+        InitializeShareStep(false, false, true);
+        SetStorageLibraryPurchaseText(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Purchase Invoice with GST and Line Type as Item for Interstate Transactions.
+        DocumentNo := CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::Item, DocumentType::Invoice);
+
+        // [THEN] GST ledger entries are created and Verified
+        LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::Invoice, DocumentNo, 4);
+        VerifyGSTEntries(DocumentNo, Database::"Purch. Inv. Header");
+    end;
+
+    local procedure CreateGeneralLedgerSetup()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup."Inv. Rounding Precision (LCY)" := 1;
+        GeneralLedgerSetup."Inv. Rounding Type (LCY)" := GeneralLedgerSetup."Inv. Rounding Type (LCY)"::Nearest;
+    end;
+
     local procedure CreateGSTSetup(GSTVendorType: Enum "GST Vendor Type"; GSTGroupType: Enum "GST Group Type"; IntraState: Boolean; ReverseCharge: Boolean)
     var
         GSTGroup: Record "GST Group";

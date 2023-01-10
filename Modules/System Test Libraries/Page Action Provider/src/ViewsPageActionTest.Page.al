@@ -22,11 +22,12 @@ page 132618 "Views Page Action Test"
                 field(TestDecimal; Rec.TestDecimal)
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Test decimal field';
                 }
                 field("Test Spaces"; Rec."Field With Spaces")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Test decimal field';
+                    ToolTip = 'Field with spaces';
                 }
             }
         }

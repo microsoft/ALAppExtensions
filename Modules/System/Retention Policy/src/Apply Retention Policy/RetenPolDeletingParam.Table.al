@@ -55,6 +55,7 @@ table 3907 "Reten. Pol. Deleting Param"
         field(4; "Max. Number of Rec. to Delete"; Integer)
         {
             DataClassification = SystemMetadata;
+            MinValue = 0;
         }
         /// <summary>
         /// if set to true the event OnApplyRetentionPolicyRecordLimitExceeded will not be raised.
@@ -69,6 +70,7 @@ table 3907 "Reten. Pol. Deleting Param"
         field(6; "Total Max. Nr. of Rec. to Del."; Integer)
         {
             DataClassification = SystemMetadata;
+            MinValue = 0;
         }
         /// <summary>
         /// If true, indicates that user is applying the retention policies manually.

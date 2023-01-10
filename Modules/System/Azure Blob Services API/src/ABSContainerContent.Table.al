@@ -44,7 +44,8 @@ table 9043 "ABS Container Content"
         field(11; "Creation Time"; DateTime)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Creation Time', Locked = true;
+            Caption = 'Creation-Time', Locked = true;
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210588#response-body';
         }
         field(12; "Last Modified"; DateTime)
         {

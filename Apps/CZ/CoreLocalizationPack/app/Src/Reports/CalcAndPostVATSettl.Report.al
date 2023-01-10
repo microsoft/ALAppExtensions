@@ -508,6 +508,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                             VATEntry.SetFilter("Advance Letter No.", '<>%1', '');
 #pragma warning restore AL0432
 #endif
+                        OnClosingGLAndVATEntryOnAfterGetRecordOnAfterSetVATEntryFilters("VAT Posting Setup", VATEntry, "VAT Entry");
 
                         case "VAT Posting Setup"."VAT Calculation Type" of
                             "VAT Posting Setup"."VAT Calculation Type"::"Normal VAT",
@@ -972,6 +973,11 @@ report 11971 "Calc. and Post VAT Settl. CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; var VATAccountNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnClosingGLAndVATEntryOnAfterGetRecordOnAfterSetVATEntryFilters(VATPostingSetup: Record "VAT Posting Setup"; var VATEntry: Record "VAT Entry"; var VATEntry2: Record "VAT Entry")
     begin
     end;
 }
