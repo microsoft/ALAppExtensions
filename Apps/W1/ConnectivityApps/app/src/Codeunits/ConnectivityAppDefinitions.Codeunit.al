@@ -23,6 +23,8 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterContiniaPaymentManagement365DK();
         RegisterContiniaPaymentManagement365NO();
         RegisterDirectBankingNL();
+        RegisterIQBanking();
+        RegisterWiseBanking();
     end;
 
     local procedure RegisterAppBankingNL()
