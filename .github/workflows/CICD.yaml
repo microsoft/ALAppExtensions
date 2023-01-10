@@ -753,46 +753,12 @@ jobs:
         with:
           path: '.artifacts'
 
-      - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
-        with:
-          shell: powershell
-
-      - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
-        env:
-          secrets: ${{ toJson(secrets) }}
-        with:
-          shell: powershell
-          settingsJson: ${{ env.Settings }}
-          secrets: '${{ matrix.deliveryTarget }}Context'
-
-      - name: DeliveryContext
-        id: deliveryContext
-        run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
-          $contextName = '${{ matrix.deliveryTarget }}Context'
-          $deliveryContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable($contextName)))
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "deliveryContext=$deliveryContext"
-          Write-Host "deliveryContext=$deliveryContext"
-
-      - name: Deliver
-        uses: microsoft/AL-Go-Actions/Deliver@preview
-        env:
-          deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
-        with:
-          shell: powershell
-          type: 'CD'
-          projects: ${{ needs.Initialization.outputs.projects }}
-          deliveryTarget: ${{ matrix.deliveryTarget }}
-          artifacts: '.artifacts'
-
-
       - name: Setup NuGet.exe
         uses: nuget/setup-nuget@v1
-        with:
-          nuget-api-key: ${{ secrets.NuGetAPIKey }}
+
+      - name: Prepare Package
+        run: |
+          .github\DeliverToBCFeed.ps1
       
       - name: Nuget Pack
         run: |
