@@ -51,10 +51,6 @@ $manifest = GenerateManifest `
             -Authors "$env:GITHUB_REPOSITORY_OWNER" `
             -Owners "$env:GITHUB_REPOSITORY_OWNER"
 
-#Create .nuspec file
-$manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
-$manifest.Save($manifestFilePath)
-
 ### Copy files to package folder
 New-Item -Path $packageFolder -ItemType Directory | Out-Null
 Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
@@ -74,6 +70,8 @@ New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
 # Copy over the license file
 Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
 
-$outPath = Join-Path $ENV:GITHUB_WORKSPACE '/out' 
-$nuspecPath = Join-Path $ENV:GITHUB_WORKSPACE '/.github/AlAppExtensions.template.nuspec' 
+#Create .nuspec file
+$manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
+$manifest.Save($manifestFilePath)
+
 nuget pack $manifestFilePath -OutputDirectory $packageFolder
