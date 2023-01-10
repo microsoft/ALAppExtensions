@@ -18,7 +18,7 @@ function GenerateManifest
     $template.package.metadata.authors = $Authors
     $template.package.metadata.owners = $Owners
 
-    $template.Save("$PSScriptRoot\ALAppExtensions.template.nuspec")
+    return $template
 }
 
 $buildArtifactsPath = Join-Path $env:GITHUB_WORKSPACE '.artifacts'
@@ -45,11 +45,15 @@ if ($ENV:GITHUB_REF_NAME -eq "main") {
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta
 Write-Host "Package version: $packageVersion" -ForegroundColor Magenta
 
-GenerateManifest `
-    -PackageId $packageId `
-    -Version $packageVersion `
-    -Authors "$env:GITHUB_REPOSITORY_OWNER" `
-    -Owners "$env:GITHUB_REPOSITORY_OWNER"
+$manifest = GenerateManifest `
+            -PackageId $packageId `
+            -Version $packageVersion `
+            -Authors "$env:GITHUB_REPOSITORY_OWNER" `
+            -Owners "$env:GITHUB_REPOSITORY_OWNER"
+
+#Create .nuspec file
+$manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
+$manifest.Save($manifestFilePath)
 
 ### Copy files to package folder
 New-Item -Path $packageFolder -ItemType Directory | Out-Null
@@ -68,4 +72,8 @@ New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
 }
 
 # Copy over the license file
-Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder/Apps" -Force
+Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
+
+$outPath = Join-Path $ENV:GITHUB_WORKSPACE '/out' 
+$nuspecPath = Join-Path $ENV:GITHUB_WORKSPACE '/.github/AlAppExtensions.template.nuspec' 
+nuget pack $manifestFilePath -OutputDirectory $packageFolder
