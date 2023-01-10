@@ -1,4 +1,4 @@
-﻿name: ' Test Next Minor'
+name: ' Test Next Minor'
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ defaults:
     shell: powershell
 
 env:
-  workflowDepth: 1
+  workflowDepth: 2
 
 jobs:
   Initialization:
@@ -26,6 +26,10 @@ jobs:
       projectDependenciesJson: ${{ steps.ReadSettings.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
       buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
+      projects1: ${{ steps.BuildOrder.outputs.projects1Json }}
+      projects1Count: ${{ steps.BuildOrder.outputs.projects1Count }}
+      projects2: ${{ steps.BuildOrder.outputs.projects2Json }}
+      projects2Count: ${{ steps.BuildOrder.outputs.projects2Count }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -84,16 +88,152 @@ jobs:
               $step--
           }
 
-  Build:
+  Build1:
     needs: [ Initialization ]
-    if: ${{ needs.Initialization.outputs.projectCount > 0 }}
+    if: needs.Initialization.outputs.projects1Count > 0
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
     defaults:
       run:
         shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
-        project: ${{ fromJson(needs.Initialization.outputs.projects) }}
+        project: ${{ fromJson(needs.Initialization.outputs.projects1) }}
+      fail-fast: false
+    name: Build ${{ matrix.project }}
+    outputs:
+      TestResultsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestResultsArtifactsName }}
+      BcptTestResultsArtifactsName: ${{ steps.calculateArtifactNames.outputs.BcptTestResultsArtifactsName }}
+      BuildOutputArtifactsName: ${{ steps.calculateArtifactNames.outputs.BuildOutputArtifactsName }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download thisbuild artifacts
+        if: env.workflowDepth > 1
+        uses: actions/download-artifact@v3
+        with:
+          path: '${{ github.workspace }}\.dependencies'
+
+      - name: Read settings
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          project: ${{ matrix.project }}
+
+      - name: Read secrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
+        env:
+          secrets: ${{ toJson(secrets) }}
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
+
+      - name: Run pipeline
+        uses: microsoft/AL-Go-Actions/RunPipeline@preview
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          Project: ${{ matrix.project }}
+          ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
+          settingsJson: ${{ env.Settings }}
+          SecretsJson: ${{ env.RepoSecrets }}
+
+      - name: Upload thisbuild artifacts - apps
+        if: env.workflowDepth > 1
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'thisbuild-${{ matrix.project }}-Apps'
+          path: '${{ matrix.project }}/.buildartifacts/Apps/'
+          if-no-files-found: ignore
+          retention-days: 1
+
+      - name: Upload thisbuild artifacts - test apps
+        if: env.workflowDepth > 1
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'thisbuild-${{ matrix.project }}-TestApps'
+          path: '${{ matrix.project }}/.buildartifacts/TestApps/'
+          if-no-files-found: ignore
+          retention-days: 1
+
+      - name: Calculate Artifact names
+        id: calculateArtifactNames
+        if: success() || failure()
+        run: |
+          $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
+          $settings = '${{ env.Settings }}' | ConvertFrom-Json
+          $project = '${{ matrix.project }}'
+          if ($project -eq ".") { $project = $settings.repoName }
+          'TestResults','BcptTestResults','BuildOutput','ContainerEventLog' | ForEach-Object {
+            $name = "$($_)ArtifactsName"
+            $value = "$($project.Replace('\','_'))-$_-NextMinor-$([DateTime]::UtcNow.ToString('yyyyMMdd'))"
+            Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
+            Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
+          }
+
+      - name: Publish artifacts - build output
+        uses: actions/upload-artifact@v3
+        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
+        with:
+          name: ${{ env.buildOutputArtifactsName }}
+          path: '${{ matrix.project }}/BuildOutput.txt'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - container event log
+        uses: actions/upload-artifact@v3
+        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
+        with:
+          name: ${{ env.ContainerEventLogArtifactsName }}
+          path: '${{ matrix.project }}/ContainerEventLog.evtx'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - test results
+        uses: actions/upload-artifact@v3
+        if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
+        with:
+          name: ${{ env.testResultsArtifactsName }}
+          path: '${{ matrix.project }}/TestResults.xml'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - bcpt test results
+        uses: actions/upload-artifact@v3
+        if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',matrix.project)) != '')
+        with:
+          name: ${{ env.bcptTestResultsArtifactsName }}
+          path: '${{ matrix.project }}/bcptTestResults.json'
+          if-no-files-found: ignore
+
+      - name: Analyze Test Results
+        id: analyzeTestResults
+        if: success() || failure()
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          Project: ${{ matrix.project }}
+
+      - name: Cleanup
+        if: always()
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          Project: ${{ matrix.project }}
+
+  Build:
+    needs: [ Initialization, Build1 ]
+    if: always() && (!cancelled()) && (needs.Build1.result == 'success' || needs.Build1.result == 'skipped') && needs.Initialization.outputs.projects2Count > 0
+    runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
+    defaults:
+      run:
+        shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.Initialization.outputs.projects2) }}
       fail-fast: false
     name: Build ${{ matrix.project }}
     outputs:
