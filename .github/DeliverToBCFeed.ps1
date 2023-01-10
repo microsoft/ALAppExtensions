@@ -42,8 +42,8 @@ Write-Host "Test app folder(s): $($testAppsFolders -join ', ')" -ForegroundColor
 $artifactsPath = Join-Path $env:GITHUB_WORKSPACE '.artifacts'
 
 if (test-path $artifactsPath) {
-    $testAppsFolders2 = Get-ChildItem $artifactsPath -Recurse | where-object {$_.FullName.Contains("-TestApps-")} | Select-Object -ExpandProperty FullName
-    $AppsFolders2 = Get-ChildItem $artifactsPath -Recurse | where-object {$_.FullName.Contains("-Apps-")} | Select-Object -ExpandProperty FullName
+    $testAppsFolders2 = Get-ChildItem $artifactsPath -Recurse -Directory | where-object {$_.FullName.Contains("-TestApps-")} | Select-Object -ExpandProperty FullName
+    $AppsFolders2 = Get-ChildItem $artifactsPath -Recurse -Directory | where-object {$_.FullName.Contains("-Apps-")} | Select-Object -ExpandProperty FullName
 
     Write-Host "App folder(s) 2: $($AppsFolders2 -join ', ')" -ForegroundColor Magenta
     Write-Host "Test app folder(s) 2: $($testAppsFolders2 -join ', ')" -ForegroundColor Magenta
