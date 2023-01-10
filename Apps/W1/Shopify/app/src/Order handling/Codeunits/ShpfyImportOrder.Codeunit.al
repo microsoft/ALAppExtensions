@@ -362,13 +362,22 @@ codeunit 30161 "Shpfy Import Order"
     /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
     internal procedure CloseOrder(OrderHeader: Record "Shpfy Order Header")
     var
-        Response: Text;
-        Url: Text;
-        OrdersUrlTxt: Label 'orders/%1/close.json', Locked = true;
+        OrderHeaderRecordRef: RecordRef;
+        JResponse: JsonToken;
+        Parameters: Dictionary of [Text, Text];
     begin
         CommunicationMgt.SetShop(OrderHeader."Shop Code");
-        Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(OrdersUrlTxt, OrderHeader."Shopify Order Id"));
-        Response := CommunicationMgt.ExecuteWebRequest(Url, 'POST', '');
+        Parameters.Add('OrderId', Format(OrderHeader."Shopify Order Id"));
+        JResponse := CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::CloseOrder, Parameters);
+        if JsonHelper.GetValueAsBigInteger(JResponse, 'data.orderClose.order.legacyResourceId') = OrderHeader."Shopify Order Id" then begin
+            OrderHeaderRecordRef.GetTable(OrderHeader);
+            JsonHelper.GetValueIntoField(JResponse, 'data.orderClose.order.closed', OrderHeaderRecordRef, OrderHeader.FieldNo(Closed));
+            if OrderHeaderRecordRef.Field(OrderHeader.FieldNo(Closed)).Value then
+                JsonHelper.GetValueIntoField(JResponse, 'data.orderClose.order.closedAt', OrderHeaderRecordRef, OrderHeader.FieldNo("Closed At"))
+            else
+                OrderHeaderRecordRef.Field(OrderHeader.FieldNo(OrderHeader."Closed At")).Value := 0DT;
+            OrderHeaderRecordRef.Modify();
+        end;
         OrderHeader.Validate(Closed, true);
         OrderHeader.Modify();
     end;

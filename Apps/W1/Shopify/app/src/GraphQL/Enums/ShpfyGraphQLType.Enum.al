@@ -195,4 +195,9 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Next Order Lines';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextShipmentLines";
     }
+    value(37; CloseOrder)
+    {
+        Caption = 'Close Order';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CloseOrder";
+    }
 }
