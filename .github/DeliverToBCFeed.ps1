@@ -35,10 +35,11 @@ Write-Host "Test app folder(s): $($testAppsFolders -join ', ')" -ForegroundColor
 
 ### Generate Nuspec file
 # Construct package ID
+$RepoName = $env:GITHUB_REPOSITORY -replace "/", "-"
 if ($ENV:GITHUB_REF_NAME -eq "main") {
-    $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)-$projectName-preview"
+    $packageId = "$RepoName-$projectName-preview"
 } else {
-    $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)-$projectName-test"
+    $packageId = "$RepoName-$projectName-test"
 }
 
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta
