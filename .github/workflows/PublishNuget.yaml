@@ -29,7 +29,7 @@ jobs:
           script: |
             const downloadArtifact = async (artifact) => {
                 let fs = require('fs');
-                const archivePath = `${process.env.GITHUB_WORKSPACE}/${artifact.name}.zip`;
+                const archivePath = `${process.env.GITHUB_WORKSPACE}/artifacts/${artifact.name}.zip`;
                 console.log(`Download artifact.name into path: ${archivePath}`);
                 let download = await github.rest.actions.downloadArtifact({
                     owner: context.repo.owner,
@@ -57,6 +57,10 @@ jobs:
       - name: Unzip Build Output
         if: github.event_name == 'workflow_run'
         run: | 
+          Get-ChildItem -Include "$($env:GITHUB_WORKSPACE)/artifacts/*zip" | % {
+            Write-Host $_.FullName
+            #Expand-Archive -DestinationPath "$($env:GITHUB_WORKSPACE)/artifacts"
+          }
           write-host "PRREPOFULLNAME: $env:PRREPOFULLNAME"
             
 
