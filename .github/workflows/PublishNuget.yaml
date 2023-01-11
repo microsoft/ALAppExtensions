@@ -17,21 +17,25 @@ defaults:
     shell: powershell
 
 jobs:
+  Push:
+    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: [ windows-latest ]
+    name: Push
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: publish artifact to github artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'Other'
+          path: '${{ github.workspace }}/Other/'
+          if-no-files-found: ignore
   Publish:
     if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: publish artifact to github artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: 'Other'
-        path: '${{ github.workspace }}/Other/'
-        if-no-files-found: ignore
-
       - name: Download Build Output
         if: github.event_name == 'workflow_run'
         uses: actions/github-script@v6
