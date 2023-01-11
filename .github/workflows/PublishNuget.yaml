@@ -29,35 +29,26 @@ jobs:
         with:
           script: |
             var run_id = Number('${{ github.event.workflow_run.id }}');
-            var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            const bv_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
                repo: context.repo.repo,
                run_id: run_id
             });
 
-            console.log(artifacts);
-
-            for (let i = 0; i < artifacts.data.artifacts.length; i++) { 
-              console.log(artifacts[i]);
-              var download = await github.rest.actions.downloadArtifact({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                artifact_id: artifacts[i].id,
-                archive_format: 'zip'
+            console.log("::group::Downloading artifacts");
+            const files = bv_artifacts.map(async function(artifact) {
+              let download = await github.rest.actions.downloadArtifact({
+                owner: repo_parts[0],
+                repo: repo_parts[1],
+                artifact_id: artifact.id,
+                archive_format: 'zip',
               });
-              var fs = require('fs');
-              fs.writeFileSync(artifacts[i].name, Buffer.from(download.data));
-            }
-
-            for (let matchArtifact in artifacts) {
-              console.log(matchArtifact.name);
-              var download = await github.rest.actions.downloadArtifact({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                artifact_id: matchArtifact.id,
-                archive_format: 'zip'
-              });
-              var fs = require('fs');
-              fs.writeFileSync(matchArtifact.name, Buffer.from(download.data));
-            }
+              return await fs.writeFile(
+                `${process.env.GITHUB_WORKSPACE}/${artifact.name}.zip`,
+                Buffer.from(download.data),
+              );
+            });
+            await Promise.all(files);
+            console.log("Artifacts downloaded");
+            console.log("::endgroup::");
 
