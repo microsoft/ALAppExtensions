@@ -38,7 +38,7 @@ jobs:
                     archive_format: 'zip'
                 });
                 
-                fs.writeFileSync(archivePath, Buffer.from(download.data));
+                fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/nuget.zip`, Buffer.from(download.data));
             };
 
 
@@ -57,14 +57,9 @@ jobs:
             for (const artifact of all_artifacts.data.artifacts) {
                 const artifactFullName = `${artifact.archive_download_url}/${artifact.name}`;
                 console.log(artifactFullName);
-                try {
-                    console.log(`Attempting to download artifact (${artifact.id}): ${artifactFullName}`);
-                    await downloadArtifact(artifact);
-                    console.log(`Successfully downloaded artifact (${artifact.id}): ${artifactFullName}`);
-                    break;
-                } catch (e) {
-                    console.log(`Error while trying to download artifact (${artifact.id}): ${artifactFullName}. error: ${e}`);
-                }
+                console.log(`Attempting to download artifact (${artifact.id}): ${artifactFullName}`);
+                await downloadArtifact(artifact);
+                console.log(`Successfully downloaded artifact (${artifact.id}): ${artifactFullName}`);
             }
       - name: Unzip Build Output
         if: github.event_name == 'workflow_run'
