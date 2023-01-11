@@ -28,31 +28,36 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            const downloadArtifact = async (artifact) => {
+            let download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifact.id,
+                archive_format: 'zip'
+            });
+            fs.writeFileSync(`${artifact_download_dir}/${artifact.name}.zip`, Buffer.from(download.data));
+            };
+
+            console.log(`Downloading artifacts from workflow run: ${run_id}`);
+
             var run_id = Number('${{ github.event.workflow_run.id }}');
             const all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    run_id: run_id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: run_id,
             });
 
-            for (const artifact of allArtifacts.data.artifacts) {
-              console.log(${artifact.name});
+            for (const artifact of all_artifacts) {
+                const artifactFullName = `${artifact_download_dir}/${artifact.name}.zip`;
+                try {
+                    console.log(`Attempting to download artifact (${artifact.id}): ${artifactFullName}`);
+                    await downloadArtifact(artifact);
+                    console.log(`Successfully downloaded artifact (${artifact.id}): ${artifactFullName}`);
+                    break;
+                } catch (e) {
+                    console.log(`Error while trying to download artifact (${artifact.id}): ${artifactFullName}. error: ${e}`);
+                }
             }
 
             
-            const files = bv_artifacts.map(async function(artifact) {
-              let download = await github.rest.actions.downloadArtifact({
-                owner: repo_parts[0],
-                repo: repo_parts[1],
-                artifact_id: artifact.id,
-                archive_format: 'zip',
-              });
-              return await fs.writeFile(
-                `${process.env.GITHUB_WORKSPACE}/${artifact.name}.zip`,
-                Buffer.from(download.data),
-              );
-            });
-            await Promise.all(files);
-            console.log("Artifacts downloaded");
-            console.log("::endgroup::");
 
