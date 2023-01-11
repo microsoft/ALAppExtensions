@@ -28,11 +28,11 @@ This module must not be used outside the test code.
 procedure IsTrue(Condition: Boolean; Msg: Text)
 ```
 #### Parameters
-*Condition ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Condition ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 The condition the test expects to be true.
 
-*Msg ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Msg ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to include in the exception when condition is false. The message is shown in test results.
 
@@ -46,11 +46,11 @@ The message to include in the exception when condition is false. The message is 
 procedure IsFalse(Condition: Boolean; Msg: Text)
 ```
 #### Parameters
-*Condition ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Condition ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 The condition the test expects to be false.
 
-*Msg ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Msg ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to include in the exception when condition is true. The message is shown in test results.
 
@@ -64,15 +64,15 @@ The message to include in the exception when condition is true. The message is s
 procedure AreEqual(Expected: Variant; Actual: Variant; Msg: Text)
 ```
 #### Parameters
-*Expected ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*Expected ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The first value to compare. This is the value the tests expects.
 
-*Actual ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*Actual ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The second value to compare. This is the value produced by the code under test.
 
-*Msg ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Msg ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to include in the exception when actual is not equal to expected. The message is shown in test results.
 
@@ -86,15 +86,15 @@ The message to include in the exception when actual is not equal to expected. Th
 procedure AreNotEqual(Expected: Variant; Actual: Variant; Msg: Text)
 ```
 #### Parameters
-*Expected ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*Expected ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The first value to compare. This is the value the test expects not to match actual.
 
-*Actual ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*Actual ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The second value to compare. This is the value produced by the code under test.
 
-*Msg ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Msg ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to include in the exception when actual is not equal to expected. The message is shown in test results.
 
@@ -108,19 +108,19 @@ The message to include in the exception when actual is not equal to expected. Th
 procedure AreNearlyEqual(Expected: Decimal; Actual: Decimal; Delta: Decimal; Msg: Text)
 ```
 #### Parameters
-*Expected ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*Expected ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The first value to compare. This is the value the tests expects.
 
-*Actual ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*Actual ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The second value to compare. This is the value produced by the code under test.
 
-*Delta ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*Delta ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The required accuracy. An exception will be thrown only if actual is different than expected by more than delta.
 
-*Msg ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Msg ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to include in the exception when actual is different than expected by more than delta. The message is shown in test results.
 
@@ -134,19 +134,19 @@ The message to include in the exception when actual is different than expected b
 procedure AreNotNearlyEqual(Expected: Decimal; Actual: Decimal; Delta: Decimal; Msg: Text)
 ```
 #### Parameters
-*Expected ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*Expected ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The first value to compare. This is the value the tests expects not to match actual.
 
-*Actual ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*Actual ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The second value to compare. This is the value produced by the code under test.
 
-*Delta ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*Delta ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 The required accuracy. An exception will be thrown only if actual is different than Expected by at most delta.
 
-*Msg ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Msg ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to include in the exception when actual is equal to Expected or different by less than delta. The message is shown in test results.
 
@@ -160,7 +160,7 @@ The message to include in the exception when actual is equal to Expected or diff
 procedure Fail(Msg: Text)
 ```
 #### Parameters
-*Msg ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Msg ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The message to include in the exception. The message is shown in test results.
 
@@ -174,7 +174,7 @@ The message to include in the exception. The message is shown in test results.
 procedure RecordIsEmpty(RecVariant: Variant)
 ```
 #### Parameters
-*RecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The record to be checked
 
@@ -188,7 +188,7 @@ The record to be checked
 procedure RecordIsNotEmpty(RecVariant: Variant)
 ```
 #### Parameters
-*RecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The record to be checked
 
@@ -202,7 +202,7 @@ The record to be checked
 procedure TableIsEmpty(TableNo: Integer)
 ```
 #### Parameters
-*TableNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The id of table the test expects to be empty
 
@@ -216,7 +216,7 @@ The id of table the test expects to be empty
 procedure TableIsNotEmpty(TableNo: Integer)
 ```
 #### Parameters
-*TableNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The id of table the test expects not to be empty
 
@@ -230,11 +230,11 @@ The id of table the test expects not to be empty
 procedure RecordCount(RecVariant: Variant; ExpectedCount: Integer)
 ```
 #### Parameters
-*RecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The table whos records will be counter
 
-*ExpectedCount ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*ExpectedCount ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The expected number of records in the table
 
@@ -248,11 +248,11 @@ The expected number of records in the table
 procedure KnownFailure(Expected: Text; WorkItemNo: Integer)
 ```
 #### Parameters
-*Expected ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Expected ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The expected error
 
-*WorkItemNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*WorkItemNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The Id of the workitem to fix the know test defect
 
@@ -266,7 +266,7 @@ The Id of the workitem to fix the know test defect
 procedure ExpectedError(Expected: Text)
 ```
 #### Parameters
-*Expected ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Expected ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The expected error
 
@@ -280,7 +280,7 @@ The expected error
 procedure ExpectedErrorCode(Expected: Text)
 ```
 #### Parameters
-*Expected ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Expected ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The expected error code
 
@@ -294,11 +294,11 @@ The expected error code
 procedure ExpectedMessage(Expected: Text; Actual: Text)
 ```
 #### Parameters
-*Expected ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Expected ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The first value to compare. This is the value the tests expects not to match actual.
 
-*Actual ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Actual ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The second value to compare. This is the value produced by the code under test.
 

@@ -11,6 +11,7 @@ codeunit 132508 "Record Link Mgt. Test"
     var
         RecordLinkManagement: Codeunit "Record Link Management";
         Assert: Codeunit "Library Assert";
+        Any: Codeunit Any;
         PermissionsMock: Codeunit "Permissions Mock";
 
     trigger OnRun()
@@ -22,7 +23,6 @@ codeunit 132508 "Record Link Mgt. Test"
     procedure TestWriteNote();
     var
         RecordLink: Record "Record Link";
-        Any: Codeunit Any;
         Instream: InStream;
         LongText: Text;
         Text: Text;
@@ -83,12 +83,9 @@ codeunit 132508 "Record Link Mgt. Test"
         BindSubscription(OnAfterCopyLinksMonitor);
         PermissionsMock.Set('Record Link View');
 
-        // [GIVEN] A new record is created to set record links on
+        // [GIVEN] A new record 'Rec A' is created to set record links on
         FromRecordLinkRecordTest.DeleteAll();
-        FromRecordLinkRecordTest.Init();
-        FromRecordLinkRecordTest.PK := 1;
-        FromRecordLinkRecordTest.Field := 'Rec A';
-        FromRecordLinkRecordTest.Insert();
+        CreateRecordLinkRecTest(FromRecordLinkRecordTest);
 
         // [GIVEN] Some text is written to the record Link
         RecordLink.Type := RecordLink.Type::Note;
@@ -106,11 +103,8 @@ codeunit 132508 "Record Link Mgt. Test"
         PermissionsMock.Start();
         PermissionsMock.Set('Record Link View');
 
-        // [GIVEN] A different instance of the table
-        ToRecordLinkRecordTest.Init();
-        ToRecordLinkRecordTest.PK := 2;
-        ToRecordLinkRecordTest.Field := 'Rec B';
-        ToRecordLinkRecordTest.Insert();
+        // [GIVEN] A different record 'Rec B' in the same table
+        CreateRecordLinkRecTest(ToRecordLinkRecordTest);
 
         // [WHEN] The record link is copied to the other instance
         RecLinkCount := NewRecordLink.Count();
@@ -119,7 +113,7 @@ codeunit 132508 "Record Link Mgt. Test"
 
         // [THEN] A new record link has been created
         Assert.AreEqual(RecLinkCount + 1, NewRecordLink.Count(), 'No new record links created');
-        Assert.AreNotEqual(NewRecordLink."Link ID", RecordLink."Link ID", 'New record link should be created with anew id.');
+        Assert.AreNotEqual(NewRecordLink."Link ID", RecordLink."Link ID", 'New record link should be created with a new id.');
 
         // [THEN] The record link on the other instance has the same text
         NewRecordLink.SetRange("Record ID", ToRecordLinkRecordTest.RecordId());
@@ -158,6 +152,59 @@ codeunit 132508 "Record Link Mgt. Test"
 
         // [THEN] No record link with that link id exists
         Assert.IsFalse(RecordLink.Get(RecordLink."Link ID"), 'As an orphan record link, this should have been removed.');
+    end;
+
+    [Test]
+    procedure RemoveRecordLinksFromRecordSet()
+    var
+        RecordLinkRecTest: Record "Record Link Record Test";
+        RecID: array[6] of Integer;
+        I: Integer;
+    begin
+        // [SCENARIO] Delete all record links from a filtered recordset
+
+        // [GIVEN] 6 records with record links
+        for I := 1 to 6 do begin
+            CreateRecordLinkRecTest(RecordLinkRecTest);
+            RecordLinkRecTest.AddLink('');
+            RecID[I] := RecordLinkRecTest.PK;
+        end;
+
+        // [WHEN] Filter the table to include records 1, 3, and 5, and call RemoveLinks
+        RecordLinkRecTest.SetFilter(PK, '%1|%2|%3', RecID[1], RecID[3], RecID[5]);
+        RecordLinkManagement.RemoveLinks(RecordLinkRecTest);
+
+        // [THEN] Records 1, 3, 5 have no links
+        RecordLinkRecTest.FindSet();
+        repeat
+            Assert.IsFalse(RecordLinkRecTest.HasLinks(), 'Record must not have links.');
+        until RecordLinkRecTest.Next() = 0;
+
+        // [THEN] Records 2, 4, 6 have links
+        RecordLinkRecTest.SetFilter(PK, '%1|%2|%3', RecID[2], RecID[4], RecID[6]);
+        RecordLinkRecTest.FindSet();
+        repeat
+            Assert.IsTrue(RecordLinkRecTest.HasLinks(), 'Record must have a record link.');
+        until RecordLinkRecTest.Next() = 0;
+    end;
+
+    [Test]
+    procedure RemoveRecordLinksErrorOnNotRecordArgument()
+    var
+        DummyText: Text;
+        NotARecordErr: Label 'Internal server error. Please contact your system administrator.';
+    begin
+        // [SCENARIO] Error is thrown if the argument passed to the RemoveLinks procedure is not a Record
+
+        asserterror RecordLinkManagement.RemoveLinks(DummyText);
+        Assert.ExpectedError(NotARecordErr);
+    end;
+
+    local procedure CreateRecordLinkRecTest(var RecordLinkRecTest: Record "Record Link Record Test")
+    begin
+        Clear(RecordLinkRecTest);
+        RecordLinkRecTest.Field := CopyStr(Any.AlphanumericText(10), 1, MaxStrLen(RecordLinkRecTest.Field));
+        RecordLinkRecTest.Insert();
     end;
 
     [ConfirmHandler]

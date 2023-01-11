@@ -120,6 +120,68 @@ codeunit 132605 "Checklist Banner Test"
         UnbindSubscription(ChecklistBannerTest);
     end;
 
+    [Test]
+    [HandlerFunctions('ChecklistBannerHandler,AssistedSetupWizardHandler,HyperlinkHandler,RequestPageHandler')]
+    procedure TestChecklistBannerVisibilityAfterDelete()
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        TempProfileAllProfile: Record "All Profile" temporary;
+        ChecklistBannerTest: Codeunit "Checklist Banner Test";
+        Checklist: Codeunit Checklist;
+        SystemActionTriggers: Codeunit "System Action Triggers";
+        GuidedExperienceType: Enum "Guided Experience Type";
+        ChecklistStatus: Enum "Checklist Status";
+        ObjectType: ObjectType;
+        Link: Text[250];
+        PartID: Integer;
+    begin
+        BindSubscription(ChecklistBannerTest);
+
+        PermissionsMock.Start();
+        PermissionsMock.Set('SUPER');
+
+        Initialize(true);
+
+        // [GIVEN] One profile
+        AddRoleToList(TempProfileAllProfile, ProfileID1);
+
+        // [GIVEN] The current company type is evaluation
+        SetCompanyTypeToEvaluation(true);
+
+        PermissionsMock.Set('Guided Exp Edit');
+
+        // [GIVEN] One link
+        GetLink(Link);
+
+        // [GIVEN] One guided experience item
+        InsertGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Assisted Setup Wizard", '');
+
+        // [GIVEN] The checklist item for the guided experience item
+        Checklist.Insert(GuidedExperienceItem."Guided Experience Type", GetObjectType(GuidedExperienceItem."Object Type to Run"),
+            GuidedExperienceItem."Object ID to Run", 100, TempProfileAllProfile, true);
+
+        // [GIVEN] The current profile is set to ProfileID1
+        SetCurrentProfile(ProfileID1);
+
+        // [WHEN] Calling GetRoleCenterBannerPartID (this will trigger the event subscriber 
+        // that switches the role for the user checklist status and returns the ID of the checklist banner)
+        SystemActionTriggers.GetRoleCenterBannerPartID(PartID);
+
+        // [THEN] The return value of the event is the ID of the checklist banner page
+        Assert.AreEqual(Page::"Checklist Banner", PartID, 'The return value of GetRoleCenterBannerPartID is wrong.');
+
+        // [THEN] A user checklist status record will be created for the first profile
+        VerifyUserChecklistStatus(ProfileID1, ChecklistStatus::"Not Started", true, true);
+
+        // [WHEN] Delete all checklist items for a user
+        Checklist.Delete(GuidedExperienceItem."Guided Experience Type", GetObjectType(GuidedExperienceItem."Object Type to Run"), GuidedExperienceItem."Object ID to Run");
+
+        // [THEN] A user checklist status should have "Is Visible" = false
+        VerifyUserChecklistStatus(ProfileID1, ChecklistStatus::"Not Started", false, true);
+
+        UnbindSubscription(ChecklistBannerTest);
+    end;
+
     local procedure InsertProfile(var ProfileID: Code[30])
     var
         AllProfile: Record "All Profile";

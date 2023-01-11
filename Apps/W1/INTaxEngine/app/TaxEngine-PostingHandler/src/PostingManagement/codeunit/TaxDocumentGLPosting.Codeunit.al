@@ -344,6 +344,7 @@ codeunit 20341 "Tax Document GL Posting"
                     UpdateSourceOnGenJnlLine(TaxGenJnlLine, GenJournalLine);
                     TaxGenJnlLine."Dimension Set ID" := TransactionPostingBuffer."Dimension Set ID";
                     TaxGenJnlLine."Document Date" := GenJournalLine."Document Date";
+                    TaxGenJnlLine."External Document No." := GenJournalLine."External Document No.";
 
                     DimensionManagement.UpdateGlobalDimFromDimSetID(
                         TaxGenJnlLine."Dimension Set ID",

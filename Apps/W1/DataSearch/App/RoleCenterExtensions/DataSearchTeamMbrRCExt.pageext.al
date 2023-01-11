@@ -2,7 +2,7 @@ pageextension 2691 "Data Search Team Mbr. RC Ext" extends "Team Member Role Cent
 {
     actions
     {
-        addafter("Navi&gate")
+        addlast(Processing)
         {
             action(DataSearch)
             {

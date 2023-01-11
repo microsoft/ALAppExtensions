@@ -86,7 +86,7 @@ page 2681 "Data Search lines"
         Rec.SetFilter("Line Type", '%1|%2|%3', Rec."Line Type"::Header, Rec."Line Type"::Data, Rec."Line Type"::MoreHeader);
     end;
 
-    internal procedure AddResults(TableTypeID: Integer; NewResults: Dictionary of [Text, Text])
+    internal procedure AddResults(TableTypeID: Integer; var NewResults: Dictionary of [Text, Text])
     var
         DataSearchSetupTable: Record "Data Search Setup (Table)";
         TableNo: Integer;

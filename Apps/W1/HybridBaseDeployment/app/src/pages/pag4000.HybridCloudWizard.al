@@ -323,6 +323,8 @@ page 4000 "Hybrid Cloud Setup Wizard"
                     group("Para5.1.2")
                     {
                         ShowCaption = false;
+                        Visible = CompanySelectionSelectAllVisible;
+
 #pragma warning disable AA0218
                         field(SelectAll; ChooseAll)
                         {
@@ -705,6 +707,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         SQLServerTypeVisible: Boolean;
         IRInstructionsVisible: Boolean;
         CompanySelectionVisible: Boolean;
+        CompanySelectionSelectAllVisible: Boolean;
         ScheduleVisible: Boolean;
         DoneVisible: Boolean;
         BackEnabled: Boolean;
@@ -880,6 +883,8 @@ page 4000 "Hybrid Cloud Setup Wizard"
     end;
 
     local procedure ShowCompanySelectionStep(Backwards: Boolean)
+    var
+        HybridCompany: Record "Hybrid Company";
     begin
         if not Backwards and IsChanged then begin
             HybridCloudManagement.HandleShowCompanySelectionStep(TempHybridProductType, SqlConnectionStringTxt, ConvertSqlServerTypeToText(), RuntimeNameTxt);
@@ -889,6 +894,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         ResetWizardControls();
         CompanySelectionVisible := true;
 
+        CompanySelectionSelectAllVisible := HybridCompany.Count() < HybridCompany.GetRecommendedNumberOfCompaniesToReplicateInBatch();
         // Get latest changes from database to refresh the company list
         SelectLatestVersion();
         CurrPage.Update();

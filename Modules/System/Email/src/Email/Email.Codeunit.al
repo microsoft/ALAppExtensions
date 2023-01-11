@@ -259,6 +259,19 @@ codeunit 8901 "Email"
     end;
 
     /// <summary>
+    /// Opens an email message in "Email Editor" page modally with scenario.
+    /// </summary>
+    /// <param name="EmailMessage">The email message to use as payload.</param>
+    /// <param name="EmailAccount">The email account to fill in.</param>
+    /// <param name="Scenario">The email scenario to fill in.</param>
+    /// <remarks>Both "Account Id" and Connector fields need to be set on the <paramref name="EmailAccount"/> parameter.</remarks>
+    /// <returns>The action that the user performed with the email message.</returns>
+    procedure OpenInEditorModallyWithScenario(EmailMessage: Codeunit "Email Message"; EmailAccount: Record "Email Account" temporary; Scenario: Enum "Email Scenario"): Enum "Email Action"
+    begin
+        exit(EmailImpl.OpenInEditorWithScenario(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector, true, Scenario));
+    end;
+
+    /// <summary>
     /// Opens an email message in "Email Editor" page modally.
     /// </summary>
     /// <param name="EmailMessage">The email message to use as payload.</param>

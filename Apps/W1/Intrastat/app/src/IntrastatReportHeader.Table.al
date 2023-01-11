@@ -55,21 +55,11 @@ table 4811 "Intrastat Report Header"
         {
             AccessByPermission = TableData Currency = R;
             Caption = 'Amounts in Add. Currency';
-
-            trigger OnValidate()
-            begin
-                TestField(Reported, false);
-            end;
         }
         field(16; "Currency Identifier"; Code[10])
         {
             AccessByPermission = TableData Currency = R;
             Caption = 'Currency Identifier';
-
-            trigger OnValidate()
-            begin
-                TestField(Reported, false);
-            end;
         }
         field(17; "No. Series"; Code[20])
         {

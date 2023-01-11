@@ -29,7 +29,7 @@ procedure GetPeriod(TenantLicenseState: Enum "Tenant License State"): Integer
 The tenant license state.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The default number of days that the tenant license can be in the current state, passed as a parameter or -1 if a default period is not defined for the state.
 ### GetStartDate (Method) <a name="GetStartDate"></a> 
@@ -42,7 +42,7 @@ The default number of days that the tenant license can be in the current state, 
 procedure GetStartDate(): DateTime
 ```
 #### Return Value
-*[DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type)*
+*[DateTime](https://go.microsoft.com/fwlink/?linkid=2210239)*
 
 The start date for the current license state or a blank date if no license state is found.
 ### GetEndDate (Method) <a name="GetEndDate"></a> 
@@ -55,7 +55,7 @@ The start date for the current license state or a blank date if no license state
 procedure GetEndDate(): DateTime
 ```
 #### Return Value
-*[DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type)*
+*[DateTime](https://go.microsoft.com/fwlink/?linkid=2210239)*
 
 The end date for the current license state or a blank date if no license state is found.
 ### IsEvaluationMode (Method) <a name="IsEvaluationMode"></a> 
@@ -68,7 +68,7 @@ The end date for the current license state or a blank date if no license state i
 procedure IsEvaluationMode(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current license state is evaluation, otherwise false.
 ### IsTrialMode (Method) <a name="IsTrialMode"></a> 
@@ -81,7 +81,7 @@ True if the current license state is evaluation, otherwise false.
 procedure IsTrialMode(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current license state is trial, otherwise false.
 ### IsTrialSuspendedMode (Method) <a name="IsTrialSuspendedMode"></a> 
@@ -94,7 +94,7 @@ True if the current license state is trial, otherwise false.
 procedure IsTrialSuspendedMode(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current license state is suspended and the previous license state is trial, otherwise false.
 ### IsTrialExtendedMode (Method) <a name="IsTrialExtendedMode"></a> 
@@ -107,7 +107,7 @@ True if the current license state is suspended and the previous license state is
 procedure IsTrialExtendedMode(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current license state is trial and the tenant has had at least one trial license state before, otherwise false.
 ### IsTrialExtendedSuspendedMode (Method) <a name="IsTrialExtendedSuspendedMode"></a> 
@@ -120,7 +120,7 @@ True if the current license state is trial and the tenant has had at least one t
 procedure IsTrialExtendedSuspendedMode(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current license state is suspended and the tenant has had at least two trial license states before, otherwise false.
 ### IsPaidMode (Method) <a name="IsPaidMode"></a> 
@@ -133,7 +133,7 @@ True if the current license state is suspended and the tenant has had at least t
 procedure IsPaidMode(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current license state is paid, otherwise false.
 ### IsPaidWarningMode (Method) <a name="IsPaidWarningMode"></a> 
@@ -146,7 +146,7 @@ True if the current license state is paid, otherwise false.
 procedure IsPaidWarningMode(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current license state is warning and the previous license state is paid, otherwise false.
 ### IsPaidSuspendedMode (Method) <a name="IsPaidSuspendedMode"></a> 
@@ -159,7 +159,7 @@ True if the current license state is warning and the previous license state is p
 procedure IsPaidSuspendedMode(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current license state is suspended and the previous license state is paid, otherwise false.
 ### GetLicenseState (Method) <a name="GetLicenseState"></a> 

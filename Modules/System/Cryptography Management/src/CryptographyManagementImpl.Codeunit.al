@@ -471,6 +471,11 @@ codeunit 1279 "Cryptography Management Impl."
         exit(VerifyData(DataInStream, XmlString, HashAlgorithm, SignatureInStream));
     end;
 
+    procedure VerifyData(InputString: Text; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    begin
+        exit(VerifyData(InputString, SignatureKey.ToXmlString(), HashAlgorithm, SignatureInStream));
+    end;
+
 #if not CLEAN19
 #pragma warning disable AL0432
     procedure VerifyData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
@@ -514,6 +519,11 @@ codeunit 1279 "Cryptography Management Impl."
         ISignatureAlgorithm := Enum::SignatureAlgorithm::RSA;
         ISignatureAlgorithm.FromXmlString(XmlString);
         exit(ISignatureAlgorithm.VerifyData(DataInStream, HashAlgorithm, SignatureInStream));
+    end;
+
+    procedure VerifyData(DataInStream: InStream; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    begin
+        exit(VerifyData(DataInStream, SignatureKey.ToXmlString(), HashAlgorithm, SignatureInStream));
     end;
 
 #if not CLEAN19

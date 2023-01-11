@@ -357,7 +357,7 @@ codeunit 3970 "Image Impl."
         OrientationPropertyId: Integer;
         OrientationValue: Integer;
     begin
-        OrientationPropertyId := 274; // exif property tag orientation, ID = 0x0112 which corresponds to integer value 274 (https://docs.microsoft.com/en-gb/windows/win32/gdiplus/-gdiplus-constant-property-item-descriptions#propertytagorientation)
+        OrientationPropertyId := 274; // exif property tag orientation, ID = 0x0112 which corresponds to integer value 274 (https://go.microsoft.com/fwlink/?linkid=2211500)
 
         LoadImage(Image);
         PropertyList := Image.PropertyIdList();

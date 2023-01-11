@@ -543,6 +543,65 @@ codeunit 139087 "Azure AD Graph Test"
         TearDown();
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestIsGraphUserAccountEnabledTrue()
+    var
+        UserId: Guid;
+        UserPrincipalName: Text;
+        IsEnabled: Boolean;
+    begin
+        Initialize();
+
+        // [GIVEN] A user id and a principal name
+        UserId := CreateGuid();
+        UserPrincipalName := 'random_user_principal_name@microsoft.com';
+
+        // [WHEN] Trying to get user is enabled in Azure AD with the given user principal name from the Azure AD Graph
+        // [THEN] An error should be thrown, as the user has not been inserted yet
+        LibraryAssert.IsFalse(AzureADGraph.IsGraphUserAccountEnabled(UserPrincipalName, IsEnabled), 'User account should not exist');
+
+        // [THEN] The user is not enabled
+        LibraryAssert.IsFalse(IsEnabled, 'The user should not be enabled, as no user with this principal name has been inserted yet');
+
+        // [GIVEN] A graph user that is enabled
+        MockGraphQueryTestLibrary.AddGraphUser(UserId, '', '', UserPrincipalName, true);
+
+        // [WHEN] Getting whether the user is enabled
+        AzureADGraph.IsGraphUserAccountEnabled(UserPrincipalName, IsEnabled);
+
+        // [THEN] The user is enabled
+        LibraryAssert.IsTrue(IsEnabled, 'The user should be enabled');
+
+        TearDown();
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestIsGraphUserAccountEnabledFalse()
+    var
+        UserId: Guid;
+        UserPrincipalName: Text;
+        IsEnabled: Boolean;
+    begin
+        Initialize();
+
+        // [GIVEN] A user id and a principal name
+        UserId := CreateGuid();
+        UserPrincipalName := 'random_user_principal_name@microsoft.com';
+
+        // [GIVEN] A graph user that is not enabled
+        MockGraphQueryTestLibrary.AddGraphUser(UserId, '', '', UserPrincipalName, false);
+
+        // [WHEN] Getting whether the user is enabled
+        AzureADGraph.IsGraphUserAccountEnabled(UserPrincipalName, IsEnabled);
+
+        // [THEN] The user is not enabled
+        LibraryAssert.IsFalse(IsEnabled, 'The user should not be enabled');
+
+        TearDown();
+    end;
+
     local procedure Initialize()
     begin
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := true;

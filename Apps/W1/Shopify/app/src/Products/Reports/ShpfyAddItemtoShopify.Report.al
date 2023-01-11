@@ -59,7 +59,7 @@ report 30106 "Shpfy Add Item to Shopify"
                                 SyncImagesVisible := ShpfyShop."Sync Item Images" = ShpfyShop."Sync Item Images"::"To Shopify";
                                 SyncImages := SyncImagesVisible;
                                 ShpfyLocation.SetRange("Shop Code", ShpfyShop.Code);
-                                ShpfyLocation.SetRange(Disabled, false);
+                                ShpfyLocation.SetFilter("Stock Calculation", '<>%1', ShpfyLocation."Stock Calculation"::Disabled);
                                 SyncInventoryVisible := not ShpfyLocation.IsEmpty();
                                 SyncInventory := SyncInventoryVisible;
                             end else begin
@@ -97,7 +97,7 @@ report 30106 "Shpfy Add Item to Shopify"
                 SyncImagesVisible := ShpfyShop."Sync Item Images" = ShpfyShop."Sync Item Images"::"To Shopify";
                 SyncImages := SyncImagesVisible;
                 ShpfyLocation.SetRange("Shop Code", ShpfyShop.Code);
-                ShpfyLocation.SetRange(Disabled, false);
+                ShpfyLocation.SetFilter("Stock Calculation", '<>%1', ShpfyLocation."Stock Calculation"::Disabled);
                 SyncInventoryVisible := not ShpfyLocation.IsEmpty();
                 SyncInventory := SyncInventoryVisible;
             end else begin

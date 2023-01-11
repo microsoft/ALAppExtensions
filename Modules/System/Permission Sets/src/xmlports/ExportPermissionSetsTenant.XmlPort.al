@@ -137,6 +137,9 @@ xmlport 9863 "Export Permission Sets Tenant"
                                 currXMLport.Skip();
                         end;
                     }
+                    fieldelement(PermissionType; "Tenant Permission".Type)
+                    {
+                    }
                 }
             }
         }

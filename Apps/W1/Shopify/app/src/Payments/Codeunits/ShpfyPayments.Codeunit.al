@@ -149,7 +149,7 @@ codeunit 30169 "Shpfy Payments"
     begin
         Transaction.SetRange("Shop Code", ShopCode);
         if Transaction.FindLast() then
-            Exit(Transaction."Payout Id");
+            exit(Transaction."Payout Id");
     end;
 
     internal procedure ImportPaymentTransaction(JTransaction: JsonToken; var SinceId: BigInteger)

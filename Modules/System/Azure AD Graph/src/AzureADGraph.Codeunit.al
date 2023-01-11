@@ -230,5 +230,18 @@ codeunit 9012 "Azure AD Graph"
     begin
         exit(AzureADGraphImpl.IsMemberOfGroupWithId(GroupId, GraphUserInfo));
     end;
+
+    /// <summary>
+    /// Checks if the Microsoft 365 user account for the specified principal name is enabled.
+    /// Note: Even if the graph user is enabled, the account may be disabled in Business Central.
+    /// </summary>
+    /// <param name="UserPrincipalName">The user principal name.</param>
+    [Scope('OnPrem')]
+    [TryFunction]
+    [NonDebuggable]
+    procedure IsGraphUserAccountEnabled(UserPrincipalName: Text; var IsEnabled: Boolean)
+    begin
+        AzureADGraphImpl.IsGraphUserAccountEnabled(UserPrincipalName, IsEnabled);
+    end;
 }
 #pragma warning restore AS0018

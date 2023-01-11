@@ -219,6 +219,7 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine.Validate("Original Doc. VAT Date CZL", InitCashDocumentHeaderCZP."VAT Date");
         TempGenJournalLine."Posting Group" := InitCashDocumentLineCZP."Posting Group";
         TempGenJournalLine.Description := InitCashDocumentLineCZP.Description;
+        OnInitGenJnlLineOnBeforeSetAccount(TempGenJournalLine, InitCashDocumentHeaderCZP, InitCashDocumentLineCZP);
         case InitCashDocumentLineCZP."Account Type" of
             InitCashDocumentLineCZP."Account Type"::"G/L Account":
                 TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::"G/L Account";
@@ -485,4 +486,8 @@ codeunit 11729 "Cash Document-Post CZP"
     begin
     end;
 
+    [IntegrationEvent(true, false)]
+    local procedure OnInitGenJnlLineOnBeforeSetAccount(var GenJournalLine: Record "Gen. Journal Line"; CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+    end;
 }

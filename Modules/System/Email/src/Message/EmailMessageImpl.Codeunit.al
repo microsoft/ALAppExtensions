@@ -13,7 +13,8 @@ codeunit 8905 "Email Message Impl."
                   tabledata "Email Recipient" = rid,
                   tabledata "Email Message Attachment" = rid,
                   tabledata "Email Related Record" = rd,
-                  tabledata "Tenant Media" = rm;
+                  tabledata "Tenant Media" = rm,
+                  tabledata "Email Attachments" = rimd;
 
     procedure Create(EmailMessageImpl: Codeunit "Email Message Impl.")
     var
@@ -30,7 +31,7 @@ codeunit 8905 "Email Message Impl."
         if EmailMessageImpl.Attachments_First() then
             repeat
                 EmailMessageImpl.Attachments_GetContent(AttachmentInStream);
-                AddAttachment(EmailMessageImpl.Attachments_GetName(), EmailMessageImpl.Attachments_GetContentType(), AttachmentInStream);
+                AddAttachment(EmailMessageImpl.Attachments_GetName(), EmailMessageImpl.Attachments_GetContentType(), AttachmentInStream, EmailMessageImpl.Attachments_IsInline(), EmailMessageImpl.Attachments_GetContentId());
             until EmailMessageImpl.Attachments_Next() = 0;
 
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessageImpl.GetId());
@@ -247,12 +248,23 @@ codeunit 8905 "Email Message Impl."
         AddAttachmentInternal(AttachmentName, ContentType, AttachmentInStream);
     end;
 
+    procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream; InLine: Boolean; ContentId: Text[40])
+    begin
+        AddAttachmentInternal(AttachmentName, ContentType, AttachmentInStream, InLine, ContentId);
+    end;
+
     procedure AddAttachmentInternal(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream) Size: Integer
     var
-        EmailMessageAttachment: Record "Email Message Attachment";
         NullGuid: Guid;
     begin
-        AddAttachment(AttachmentName, ContentType, false, NullGuid, EmailMessageAttachment);
+        exit(AddAttachmentInternal(AttachmentName, ContentType, AttachmentInStream, false, NullGuid));
+    end;
+
+    procedure AddAttachmentInternal(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream; InLine: Boolean; ContentId: Text[40]) Size: Integer
+    var
+        EmailMessageAttachment: Record "Email Message Attachment";
+    begin
+        AddAttachment(AttachmentName, ContentType, InLine, ContentId, EmailMessageAttachment);
         InsertAttachment(EmailMessageAttachment, AttachmentInStream, '');
         exit(EmailMessageAttachment.Length);
     end;
@@ -267,6 +279,41 @@ codeunit 8905 "Email Message Impl."
         EmailMessageAttachment.Length := TenantMedia.Content.Length;
         EmailMessageAttachment.Insert();
         Modify();
+    end;
+
+    procedure AddAttachmentsFromScenario(var EmailAttachments: Record "Email Attachments")
+    var
+        EmailMessageAttachment: Record "Email Message Attachment";
+        NullGuid: Guid;
+        ContentType: Text[250];
+    begin
+        if not EmailAttachments.FindSet() then
+            exit;
+        repeat
+            ContentType := GetContentTypeFromFilename(EmailAttachments."Attachment Name");
+            AddAttachment(EmailAttachments."Attachment Name", ContentType, false, NullGuid, EmailMessageAttachment);
+            InsertAttachmentsFromScenario(EmailMessageAttachment, EmailAttachments);
+        until EmailAttachments.Next() = 0;
+    end;
+
+    local procedure InsertAttachmentsFromScenario(EmailMessageAttachment: Record "Email Message Attachment"; EmailAttachments: Record "Email Attachments")
+    var
+        TempBlob: Codeunit "Temp Blob";
+        MediaOutStream: OutStream;
+        MediaInStream: InStream;
+        MediaID: Guid;
+    begin
+        TempBlob.CreateOutStream(MediaOutStream, TextEncoding::UTF8);
+        EmailAttachments."Email Attachment".ExportStream(MediaOutStream);
+
+        TempBlob.CreateInStream(MediaInStream, TextEncoding::UTF8);
+        EmailMessageAttachment.Data.ImportStream(MediaInStream, EmailAttachments."Attachment Name");
+
+        MediaID := EmailMessageAttachment.Data.MediaId();
+        TenantMedia.Get(MediaID);
+        TenantMedia.CalcFields(Content);
+        EmailMessageAttachment.Length := TenantMedia.Content.Length;
+        EmailMessageAttachment.Insert();
     end;
 
     local procedure ReplaceRgbaColorsWithRgb(var Body: Text)
@@ -460,6 +507,34 @@ codeunit 8905 "Email Message Impl."
         exit(GlobalEmailMessageAttachment.Length);
     end;
 
+    procedure GetRelatedAttachments(var EmailRelatedAttachments: Record "Email Related Attachment"): Boolean
+    begin
+        exit(GetRelatedAttachments(GlobalEmailMessage.Id, EmailRelatedAttachments));
+    end;
+
+    procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachmentOut: Record "Email Related Attachment"): Boolean
+    var
+        EmailRelatedAttachment: Record "Email Related Attachment";
+        EmailRelatedRecord: Record "Email Related Record";
+        Email: Codeunit "Email";
+        EmailImpl: Codeunit "Email Impl";
+    begin
+        EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
+        EmailImpl.FilterRemovedSourceRecords(EmailRelatedRecord);
+
+        if not EmailRelatedRecord.FindSet() then
+            exit(false);
+
+        repeat
+            Email.OnFindRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedAttachment);
+            if EmailRelatedAttachment.FindSet() then
+                InsertRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedAttachment, EmailRelatedAttachmentOut);
+            EmailRelatedAttachment.DeleteAll();
+        until EmailRelatedRecord.Next() = 0;
+
+        exit(true);
+    end;
+
     procedure GetId(): Guid
     begin
         exit(GlobalEmailMessage.Id);
@@ -490,6 +565,23 @@ codeunit 8905 "Email Message Impl."
     procedure GetNoOfModifies(): Integer
     begin
         exit(GlobalEmailMessage."No. of Modifies");
+    end;
+
+    local procedure InsertRelatedAttachments(TableID: Integer; SystemID: Guid; var EmailRelatedAttachment2: Record "Email Related Attachment"; var EmailRelatedAttachment: Record "Email Related Attachment")
+    var
+        RecordRef: RecordRef;
+    begin
+        RecordRef.Open(TableID);
+        if not RecordRef.GetBySystemId(SystemID) then begin
+            Session.LogMessage('0000CTZ', StrSubstNo(RecordNotFoundMsg, TableID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            exit;
+        end;
+
+        repeat
+            EmailRelatedAttachment.Copy(EmailRelatedAttachment2);
+            EmailRelatedAttachment."Attachment Source" := CopyStr(Format(RecordRef.RecordId(), 0, 1), 1, MaxStrLen(EmailRelatedAttachment."Attachment Source"));
+            EmailRelatedAttachment.Insert();
+        until EmailRelatedAttachment2.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sent Email", 'OnAfterDeleteEvent', '', false, false)]
@@ -674,6 +766,7 @@ codeunit 8905 "Email Message Impl."
         GlobalEmailMessage: Record "Email Message";
         GlobalEmailMessageAttachment: Record "Email Message Attachment";
         TenantMedia: Record "Tenant Media";
+        EmailCategoryLbl: Label 'Email', Locked = true;
         EmailMessageQueuedCannotModifyErr: Label 'Cannot edit the email because it has been queued to be sent.';
         EmailMessageSentCannotModifyErr: Label 'Cannot edit the message because it has already been sent.';
         EmailMessageQueuedCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has been queued to be sent.';
@@ -686,6 +779,7 @@ codeunit 8905 "Email Message Impl."
         EmailMessageSentCannotInsertRecipientErr: Label 'Cannot add the recipient because the email has already been sent.';
         EmailMessageGetAttachmentContentErr: Label 'The attachment content was not found.';
         NoAccountErr: Label 'You must specify a valid email account to send the message to.';
+        RecordNotFoundMsg: Label 'Record not found in table: %1', Comment = '%1 - File size', Locked = true;
         RgbReplacementTok: Label 'rgb($1, $2, $3)', Locked = true;
         RbgaPatternTok: Label 'rgba\((\d+), ?(\d+), ?(\d+), ?\d+\)', Locked = true;
 }

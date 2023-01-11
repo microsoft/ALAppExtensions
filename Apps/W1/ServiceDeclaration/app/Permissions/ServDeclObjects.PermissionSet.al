@@ -22,5 +22,7 @@ permissionset 5017 "Serv. Decl. - Objects"
                   page "Service Declaration Setup" = X,
                   codeunit "Export Service Declaration" = X,
                   codeunit "Get Service Declaration Lines" = X,
-                  codeunit "Service Declaration Mgt." = X;
+                  codeunit "Service Declaration Mgt." = X,
+                  codeunit "Serv. Decl. Installation" = X,
+                  codeunit "Service Declaration Upgrade" = X;
 }

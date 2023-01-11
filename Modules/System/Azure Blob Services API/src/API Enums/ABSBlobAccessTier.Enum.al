@@ -6,7 +6,7 @@
 /// <summary>
 /// Azure storage offers different access tiers.
 /// Azure Blog storage offers access tiers that let you manage the cost of storing large amounts of unstructured data, such as text or binary data.allowing you to store blob object data in the most cost-effective manner.
-/// See: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-storage-tiers
+/// See: https://go.microsoft.com/fwlink/?linkid=2210394
 /// </summary>
 enum 9042 "ABS Blob Access Tier"
 {

@@ -94,7 +94,7 @@ codeunit 9802 "Log Activity Permissions"
         TempTablePermissionBuffer.Modify();
     end;
 
-    local procedure GetMaxPermission(CurrentPermission: Option; NewPermission: Option): Integer
+    internal procedure GetMaxPermission(CurrentPermission: Option; NewPermission: Option): Integer
     begin
         if IsFirstPermissionHigherThanSecond(CurrentPermission, NewPermission) then
             exit(CurrentPermission);

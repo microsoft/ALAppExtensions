@@ -97,6 +97,20 @@ codeunit 18604 "Gate Entry Subscribers"
         GateEntryCommentLine.DeleteAll();
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"e-Invoice Json Handler", 'OnAfterGetLRNoAndLrDate', '', false, false)]
+    local procedure OnAfterGetLRNoAndLrDate(SalesInvHeader: Record "Sales Invoice Header"; var TransDocNo: Text[15]; var TransDocDt: Text[10])
+    begin
+        GetLRNoAndLRDateForEInvoice(SalesInvHeader, TransDocNo, TransDocDt);
+    end;
+
+    local procedure GetLRNoAndLRDateForEInvoice(SalesInvHeader: Record "Sales Invoice Header"; var TransDocNo: Text[15]; var TransDocDt: Text[10])
+    begin
+        if not SalesInvHeader.IsEmpty() then begin
+            TransDocNo := SalesInvHeader."LR/RR No.";
+            TransDocDt := Format(SalesInvHeader."LR/RR Date", 0, '<Day,2>/<Month,2>/<Year4>');
+        end;
+    end;
+
     local procedure AttachGateEntryOnAfterPurchRcptHdrInsert(PurchaseHeader: Record "Purchase Header")
     var
         PostedGateEntryAttachment: Record "Posted Gate Entry Attachment";

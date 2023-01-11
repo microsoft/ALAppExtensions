@@ -20,6 +20,7 @@ codeunit 1996 "Checklist Banner"
                   tabledata Company = r;
 
     var
+        Telemetry: Codeunit Telemetry;
         CompletedStepLbl: Label 'This step is completed';
         SkippedStepLbl: Label 'You skipped this step';
         BannerTitleLbl: Label 'Get started', MaxLength = 50, Comment = '*Onboarding Checklist*';
@@ -78,7 +79,6 @@ codeunit 1996 "Checklist Banner"
         UserChecklistStatus: Record "User Checklist Status";
         UserPersonalization: Record "User Personalization";
         ChecklistImplementation: Codeunit "Checklist Implementation";
-        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         Dimensions: Dictionary of [Text, Text];
         OldStatus: Enum "Checklist Status";
         UserNameCode: Code[50];
@@ -104,21 +104,14 @@ codeunit 1996 "Checklist Banner"
         end;
 
         GetUserChecklistStatusDimensionsInDefaultLanguage(OldStatus, NewStatus, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
-        GetCustomDimensionsForUserChecklistStatusUpdate(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
+        AddStatusUpdateDimensions(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
 
-        if UserPersonalization."Profile ID" = '' then
-            if UserPersonalization.Get(UserSecurityId()) then;
-
-        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-        GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
-
-        Session.LogMessage('0000EIQ', StrSubstNo(UserChecklistStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+        Telemetry.LogMessage('0000EIQ', StrSubstNo(UserChecklistStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
             Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
     end;
 
     procedure UpdateChecklistItemUserStatus(var ChecklistItemBuffer: Record "Checklist Item Buffer"; UserName: Text; NewStatus: Enum "Checklist Item Status")
     var
-        UserPersonalization: Record "User Personalization";
         GuidedExperienceItem: Record "Guided Experience Item";
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         OldStatus: Enum "Checklist Item Status";
@@ -135,20 +128,16 @@ codeunit 1996 "Checklist Banner"
         OldStatus := UpdateChecklistItemUserStatus(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version, CopyStr(UserName, 1, 50), NewStatus);
 
         GetChecklistItemStatusDimensionsInDefaultLanguage(OldStatus, NewStatus, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
-        GetCustomDimensionsForChecklistItemStatusUpdate(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
+        AddStatusUpdateDimensions(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
 
-        if UserPersonalization.Get(UserSecurityId()) then;
-        GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
-        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-
-        Session.LogMessage('0000EIT', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+        Telemetry.LogMessage('0000EIT', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
             Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
 
-        if GuidedExperienceItem.Get(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version) then;
-
-        GuidedExperienceImpl.AddGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem, 'Checklist');
-        Session.LogMessage('0000EIR', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
-            Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, Dimensions);
+        if GuidedExperienceItem.Get(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version) then begin
+            GuidedExperienceImpl.AddGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem, 'Checklist');
+            Telemetry.LogMessage('0000EIR', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+                Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, Dimensions);
+        end;
     end;
 
     procedure IsUserChecklistStatusComplete(UserName: Text): Boolean
@@ -789,12 +778,6 @@ codeunit 1996 "Checklist Banner"
         GlobalLanguage(CurrentLanguageId);
     end;
 
-    local procedure GetCustomDimensionsForChecklistItemStatusUpdate(var Dimensions: Dictionary of [Text, Text]; OldStatus: Text; NewStatus: Text)
-    begin
-        Dimensions.Add('OldStatus', OldStatus);
-        Dimensions.Add('NewStatus', NewStatus);
-    end;
-
     local procedure GetUserChecklistStatusDimensionsInDefaultLanguage(OldStatus: Enum "Checklist Status"; NewStatus: Enum "Checklist Status"; var OldStatusInDefaultLanguage: Text; var NewStatusInDefaultLanguage: Text)
     var
         Language: Codeunit Language;
@@ -809,7 +792,7 @@ codeunit 1996 "Checklist Banner"
         GlobalLanguage(CurrentLanguageId);
     end;
 
-    local procedure GetCustomDimensionsForUserChecklistStatusUpdate(var Dimensions: Dictionary of [Text, Text]; OldStatus: Text; NewStatus: Text)
+    local procedure AddStatusUpdateDimensions(var Dimensions: Dictionary of [Text, Text]; OldStatus: Text; NewStatus: Text)
     begin
         Dimensions.Add('OldStatus', OldStatus);
         Dimensions.Add('NewStatus', NewStatus);

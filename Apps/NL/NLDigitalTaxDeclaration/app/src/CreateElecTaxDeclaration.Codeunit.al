@@ -4,13 +4,13 @@ codeunit 11421 "Create Elec. Tax Declaration"
 
     var
         XMLDoc: XmlDocument;
-        BdINameSpaceTxt: Label 'http://www.nltaxonomie.nl/nt16/bd/20211208/dictionary/bd-data', Locked = true;
 
     trigger OnRun()
     var
         CompanyInformation: Record "Company Information";
         GeneralLedgerSetup: Record "General Ledger Setup";
         ElecTaxDeclarationSetup: Record "Elec. Tax Declaration Setup";
+        ElecTaxDeclMgt: Codeunit "Elec. Tax Declaration Mgt.";
         RootElement: XmlElement;
         SchemaRef: XmlElement;
         ContextElement: XmlElement;
@@ -28,13 +28,13 @@ codeunit 11421 "Create Elec. Tax Declaration"
         RootElement := XmlElement.Create('xbrl', 'http://www.xbrl.org/2003/instance');
         RootElement.Add(XmlAttribute.Create('lang', 'http://www.w3.org/XML/1998/namespace', 'nl'));
         RootElement.Add(XmlAttribute.CreateNamespaceDeclaration('link', 'http://www.xbrl.org/2003/linkbase').AsXmlNode());
-        RootElement.Add(XmlAttribute.CreateNamespaceDeclaration('bd-i', BdINameSpaceTxt).AsXmlNode());
+        RootElement.Add(XmlAttribute.CreateNamespaceDeclaration('bd-i', ElecTaxDeclMgt.GetBDDataEndpoint()).AsXmlNode());
         RootElement.Add(XmlAttribute.CreateNamespaceDeclaration('iso4217', 'http://www.xbrl.org/2003/iso4217'));
         RootElement.Add(XmlAttribute.CreateNamespaceDeclaration('xbrli', 'http://www.xbrl.org/2003/instance').AsXmlNode());
         RootElement.Add(XmlAttribute.CreateNamespaceDeclaration('xlink', 'http://www.w3.org/1999/xlink').AsXmlNode());
         SchemaRef := XmlElement.Create('schemaRef', 'http://www.xbrl.org/2003/linkbase');
         SchemaRef.Add(XmlAttribute.Create('type', 'http://www.w3.org/1999/xlink', 'simple').AsXmlNode());
-        SchemaRef.Add(XmlAttribute.Create('href', 'http://www.w3.org/1999/xlink', 'http://www.nltaxonomie.nl/nt16/bd/20211208/entrypoints/bd-rpt-ob-aangifte-2022.xsd').AsXmlNode());
+        SchemaRef.Add(XmlAttribute.Create('href', 'http://www.w3.org/1999/xlink', ElecTaxDeclMgt.GetVATDeclarationSchemaEndpoint()).AsXmlNode());
         RootElement.Add(SchemaRef);
 
         ContextElement := XmlElement.Create('context', 'http://www.xbrl.org/2003/instance');
@@ -125,15 +125,19 @@ codeunit 11421 "Create Elec. Tax Declaration"
     end;
 
     local procedure AddContextElement(var RootElement: XmlElement; ElementName: Text; ElementValue: Text)
+    var
+        ElecTaxDeclMgt: Codeunit "Elec. Tax Declaration Mgt.";
     begin
-        RootElement.Add(XmlElement.Create(ElementName, BdINameSpaceTxt, XmlAttribute.Create('contextRef', 'Msg'), ElementValue));
+        RootElement.Add(XmlElement.Create(ElementName, ElecTaxDeclMgt.GetBDDataEndpoint(), XmlAttribute.Create('contextRef', 'Msg'), ElementValue));
     end;
 
     local procedure AddAmountElement(var RootElement: XmlElement; ElementName: Text; ElementValue: Text)
+    var
+        ElecTaxDeclMgt: Codeunit "Elec. Tax Declaration Mgt.";
     begin
         RootElement.Add(
             XmlElement.Create(
-            ElementName, BdINameSpaceTxt,
+            ElementName, ElecTaxDeclMgt.GetBDDataEndpoint(),
             XmlAttribute.Create('decimals', 'INF'),
             XmlAttribute.Create('contextRef', 'Msg'),
             XmlAttribute.Create('unitRef', 'EUR'),

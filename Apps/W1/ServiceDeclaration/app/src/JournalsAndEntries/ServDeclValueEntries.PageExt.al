@@ -14,7 +14,7 @@ pageextension 5037 "Serv. Decl. Value Entries" extends "Value Entries"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the code for a service transaction type.';
-                Visible = UseServDeclaration;
+                Visible = EnableServTransType;
                 ShowMandatory = Rec."Applicable For Serv. Decl.";
             }
         }
@@ -22,11 +22,13 @@ pageextension 5037 "Serv. Decl. Value Entries" extends "Value Entries"
 
     var
         UseServDeclaration: Boolean;
+        EnableServTransType: Boolean;
 
     trigger OnOpenPage()
     var
         ServiceDeclarationMgt: Codeunit "Service Declaration Mgt.";
     begin
         UseServDeclaration := ServiceDeclarationMgt.IsFeatureEnabled();
+        EnableServTransType := ServiceDeclarationMgt.IsServTransTypeEnabled();
     end;
 }

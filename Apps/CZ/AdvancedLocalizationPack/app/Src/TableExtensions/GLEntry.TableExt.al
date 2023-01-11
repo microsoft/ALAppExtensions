@@ -59,12 +59,25 @@ tableextension 31265 "G/L Entry CZA" extends "G/L Entry"
         }
     }
 
-    procedure RemainingAmountCZA(): Decimal
+    procedure RemainingAmountCZA() Result: Decimal
+    var
+        IsHandled: Boolean;
     begin
-        if Rec."Closed CZA" then
-            exit(0);
+        IsHandled := false;
+        Result := 0;
+        OnBeforeRemainingAmountCZA(Rec, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
 
-        Rec.CalcFields("Applied Amount CZA");
-        exit(Rec.Amount - Rec."Applied Amount CZA");
+        if not Rec."Closed CZA" then begin
+            Rec.CalcFields("Applied Amount CZA");
+            Result := (Rec.Amount - Rec."Applied Amount CZA");
+        end;
+        exit(Result);
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeRemainingAmountCZA(var GLEntry: Record "G/L Entry"; var Result: Decimal; var IsHandled: Boolean)
+    begin
     end;
 }

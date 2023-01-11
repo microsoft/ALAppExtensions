@@ -15,16 +15,16 @@ Contains functionality that enables users to interact with a camera or media.
 procedure GetPicture(PictureStream: InStream; var PictureName: Text): Boolean
 ```
 #### Parameters
-*PictureStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*PictureStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 An InStream object that will hold the image in case taking a picture was successful.
 
-*PictureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*PictureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A generated name for the taken picture. It will include the current date and time (for example, "Picture_05_03_2020_12_49_23.jpeg").
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the camera is available, the user took a picture and decided to use it, false otherwise.
 ### AddPicture (Method) <a name="AddPicture"></a> 
@@ -44,16 +44,16 @@ The provided variant is not of type record.
 procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
 ```
 #### Parameters
-*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecordVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The record to which to add the picture to.
 
-*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of the field to write the image to. Must be of type 'Media' or 'MediaSet'.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the camera is available, the user took a picture and decided to use it, false otherwise.
 ### IsAvailable (Method) <a name="IsAvailable"></a> 
@@ -66,7 +66,7 @@ True if the camera is available, the user took a picture and decided to use it, 
 procedure IsAvailable(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the camera is available, false otherwise.
 
@@ -85,7 +85,7 @@ True if the camera is available, false otherwise.
 procedure IsAvailable(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the camera is available, false otherwise.
 ### SetAllowEdit (Method) <a name="SetAllowEdit"></a> 
@@ -98,7 +98,7 @@ True if the camera is available, false otherwise.
 procedure SetAllowEdit(AllowEdit: Boolean)
 ```
 #### Parameters
-*AllowEdit ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*AllowEdit ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 True to enable simple editing, false otherwise.
 
@@ -130,7 +130,7 @@ The picture quality must be in the range from 0 to 100.
 procedure SetQuality(Quality: Integer)
 ```
 #### Parameters
-*Quality ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Quality ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The quality of the picture to be taken.
 
@@ -166,7 +166,7 @@ The object to put the picture BLOB in.
 procedure HasPicture(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the picture is available, false otherwise.
 ### GetPicture (Method) <a name="GetPicture"></a> 
@@ -202,7 +202,7 @@ The InStream to read the picture from.
 procedure IsAvailable(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the media upload is available, false otherwise.
 ### SetMediaType (Method) <a name="SetMediaType"></a> 
@@ -231,7 +231,7 @@ Has no effect on Android.
 procedure SetUploadFromSavedPhotoAlbum(UploadFromSavedPhotoAlbum: Boolean)
 ```
 #### Parameters
-*UploadFromSavedPhotoAlbum ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*UploadFromSavedPhotoAlbum ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Whether to upload media from Saved Photo Album.
 
@@ -267,7 +267,7 @@ The object to put the picture BLOB in.
 procedure HasMedia(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the media is available, false otherwise.
 ### GetMedia (Method) <a name="GetMedia"></a> 

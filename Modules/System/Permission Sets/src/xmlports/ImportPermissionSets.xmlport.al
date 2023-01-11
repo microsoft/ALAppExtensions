@@ -100,6 +100,19 @@ xmlport 9864 "Import Permission Sets"
                     {
                         MinOccurs = Zero;
                     }
+                    fieldelement(PermissionType; TempTenantPermission.Type)
+                    {
+                        MinOccurs = Zero;
+                    }
+
+                    trigger OnAfterInitRecord()
+                    begin
+                        TempTenantPermission."Read Permission" := TempTenantPermission."Read Permission"::" ";
+                        TempTenantPermission."Insert Permission" := TempTenantPermission."Insert Permission"::" ";
+                        TempTenantPermission."Modify Permission" := TempTenantPermission."Modify Permission"::" ";
+                        TempTenantPermission."Delete Permission" := TempTenantPermission."Delete Permission"::" ";
+                        TempTenantPermission."Execute Permission" := TempTenantPermission."Execute Permission"::" ";
+                    end;
                 }
 
                 trigger OnBeforeInsertRecord()
@@ -182,6 +195,15 @@ xmlport 9864 "Import Permission Sets"
                     {
                         MinOccurs = Zero;
                     }
+
+                    trigger OnAfterInitRecord()
+                    begin
+                        TempMetadataPermission."Read Permission" := TempMetadataPermission."Read Permission"::" ";
+                        TempMetadataPermission."Insert Permission" := TempMetadataPermission."Insert Permission"::" ";
+                        TempMetadataPermission."Modify Permission" := TempMetadataPermission."Modify Permission"::" ";
+                        TempMetadataPermission."Delete Permission" := TempMetadataPermission."Delete Permission"::" ";
+                        TempMetadataPermission."Execute Permission" := TempMetadataPermission."Execute Permission"::" ";
+                    end;
                 }
 
                 trigger OnBeforeInsertRecord()

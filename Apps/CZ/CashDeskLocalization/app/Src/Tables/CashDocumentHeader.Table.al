@@ -965,6 +965,8 @@ table 11732 "Cash Document Header CZP"
             CashDocumentLineCZP."Cash Desk No." := "Cash Desk No.";
             CashDocumentLineCZP."Cash Document No." := "No.";
             CashDocumentLineCZP."Line No." := LineNo;
+            CashDocumentLineCZP.Insert(true);
+
             CashDocumentLineCZP.Validate("Account Type", CashDocumentLineCZP."Account Type"::"G/L Account");
             case "Document Type" of
                 "Document Type"::Receipt:
@@ -990,7 +992,7 @@ table 11732 "Cash Document Header CZP"
                       Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY("Posting Date", "Currency Code", CashDocumentLineCZP.Amount, "Currency Factor"));
             end;
             CashDocumentLineCZP."System-Created Entry" := true;
-            CashDocumentLineCZP.Insert(true);
+            CashDocumentLineCZP.Modify();
         end;
     end;
 
@@ -1316,6 +1318,30 @@ table 11732 "Cash Document Header CZP"
             exit;
 
         ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
+    end;
+
+    internal procedure PerformManualRelease(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        NoOfSelected: Integer;
+        NoOfSkipped: Integer;
+    begin
+        NoOfSelected := CashDocumentHeaderCZP.Count;
+        CashDocumentHeaderCZP.SetFilter(Status, '<>%1', CashDocumentHeaderCZP.Status::Released);
+        NoOfSkipped := NoOfSelected - CashDocumentHeaderCZP.Count;
+        BatchProcessingMgt.BatchProcess(CashDocumentHeaderCZP, Codeunit::"Cash Document Manual Release", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
+    end;
+
+    internal procedure PerformManualReopen(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        NoOfSelected: Integer;
+        NoOfSkipped: Integer;
+    begin
+        NoOfSelected := CashDocumentHeaderCZP.Count;
+        CashDocumentHeaderCZP.SetFilter(Status, '<>%1', CashDocumentHeaderCZP.Status::Open);
+        NoOfSkipped := NoOfSelected - CashDocumentHeaderCZP.Count;
+        BatchProcessingMgt.BatchProcess(CashDocumentHeaderCZP, Codeunit::"Cash Document Manual Reopen", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
     end;
 
     [IntegrationEvent(true, false)]

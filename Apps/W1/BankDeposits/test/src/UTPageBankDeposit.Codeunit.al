@@ -622,6 +622,41 @@ codeunit 139768 "UT Page Bank Deposit"
         VerifyCurrencyCodeAndFactor(BankDepositHeader, CurrencyCode, CurrencyFactor[2], Amount, AmountLCY);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerTRUE')]
+    procedure VerifyPostBankDepositfromPage()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        BankDeposit: TestPage "Bank Deposit";
+        PostedBankDeposit: TestPage "Posted Bank Deposit";
+        BankDepositHeaderNo: Code[20];
+        PostedBankDepositHeaderNo: Code[20];
+    begin
+        // [SCENARIO 450845] Source Code is not populating on Bank Deposit Journal Lines
+        Initialize();
+
+        // [GIVEN] Create Bank deposit header
+        CreateBankDepositHeader(BankDepositHeader, '');
+
+        // [THEN] Open Bank deposit page and insert line and post the Bank deposit
+        BankDeposit.Trap();
+        BankDepositHeader.SetRecFilter();
+        Page.Run(Page::"Bank Deposit", BankDepositHeader);
+        BankDeposit.Subform."Account No.".SetValue(CreateGLAccount());
+        BankDeposit.Subform."Document No.".SetValue(LibraryUtility.GenerateRandomNumericText(2));
+        BankDeposit.Subform."Credit Amount".SetValue(BankDepositHeader."Total Deposit Amount");
+
+        // [THEN] Post the bank deposit
+        PostedBankDeposit.Trap();
+        BankDepositHeaderNo := BankDepositHeader."No.";
+        BankDeposit.Post.Invoke();
+
+        // [VERIFY] Bank deposit will posted successfully and verfied the document no.
+        PostedBankDepositHeaderNo := COPYSTR(PostedBankDeposit."No.".Value(), 1, MaxStrLen(PostedBankDepositHeaderNo));
+        PostedBankDeposit.Close();
+        Assert.AreEqual(BankDepositHeaderNo, PostedBankDepositHeaderNo, '');
+    end;
+
     local procedure GetBankDepositsFeature(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ID: Text[50])
     begin
         if FeatureDataUpdateStatus.Get(ID, CompanyName()) then
@@ -744,10 +779,14 @@ codeunit 139768 "UT Page Bank Deposit"
     local procedure CreateGenJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
     var
         GenJournalTemplate: Record "Gen. Journal Template";
+        SourceCodeSetup: Record "Source Code Setup";
     begin
+        SourceCodeSetup.Get();
         GenJournalTemplate.Name := LibraryUtility.GenerateGUID();
         GenJournalTemplate.Type := GenJournalTemplate.Type::"Bank Deposits";
         GenJournalTemplate."Page ID" := PAGE::"Bank Deposit";
+        GenJournalTemplate."Source Code" := SourceCodeSetup."Bank Deposit";
+        GenJournalTemplate."No. Series" := LibraryUtility.GetGlobalNoSeriesCode();
         GenJournalTemplate.Insert();
 
         GenJournalBatch."Journal Template Name" := GenJournalTemplate.Name;

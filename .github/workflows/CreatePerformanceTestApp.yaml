@@ -37,11 +37,11 @@ permissions:
 
 defaults:
   run:
-    shell: PowerShell
+    shell: powershell
 
 jobs:
   CreatePerformanceTestApp:
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -50,11 +50,13 @@ jobs:
         id: init
         uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
+          shell: powershell
           eventId: "DO0102"
 
       - name: Creating a new test app
         uses: microsoft/AL-Go-Actions/CreateApp@preview
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           project: ${{ github.event.inputs.project }}
           type: 'Performance Test App'
@@ -69,5 +71,6 @@ jobs:
         if: always()
         uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
+          shell: powershell
           eventId: "DO0102"
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}

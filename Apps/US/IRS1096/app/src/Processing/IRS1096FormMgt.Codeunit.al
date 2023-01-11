@@ -29,6 +29,18 @@ codeunit 10016 "IRS 1096 Form Mgt."
         OnAfterCheckFeatureEnabled(IsEnabled);
     end;
 
+    internal procedure InstallFeature()
+    var
+        FeatureKey: Record "Feature Key";
+        FeatureMgtFacade: Codeunit "Feature Management Facade";
+    begin
+        if FeatureMgtFacade.IsEnabled(GetIRS1096FormFeatureKeyId()) then begin
+            FeatureKey.Get(GetIRS1096FormFeatureKeyId());
+            FeatureKey.Validate(Enabled, FeatureKey.Enabled::None);
+            FeatureKey.Modify(true);
+        end;
+    end;
+
     procedure ReleaseForm(var IRS1096FormHeader: Record "IRS 1096 Form Header")
     begin
         IRS1096FormHeader.TestField("Starting Date");

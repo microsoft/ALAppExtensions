@@ -19,7 +19,7 @@ This module can only be installed on a sandbox.
 procedure StartScenario(ScenarioOperation: Text)
 ```
 #### Parameters
-*ScenarioOperation ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ScenarioOperation ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Scenario name or label.
 
@@ -32,7 +32,7 @@ Scenario name or label.
 procedure EndScenario(ScenarioOperation: Text)
 ```
 #### Parameters
-*ScenarioOperation ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ScenarioOperation ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Scenario name or label.
 
@@ -45,11 +45,11 @@ Scenario name or label.
 procedure EndScenario(ScenarioOperation: Text; ExecutionSuccess: Boolean)
 ```
 #### Parameters
-*ScenarioOperation ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ScenarioOperation ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Scenario name or label.
 
-*ExecutionSuccess ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*ExecutionSuccess ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 true if the BCPT finished without any errors, else false.
 
@@ -62,7 +62,7 @@ true if the BCPT finished without any errors, else false.
 procedure GetParameters()
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Parameters as text.
 
@@ -75,12 +75,12 @@ Parameters as text.
 procedure GetParameter(ParameterName: Text): Text
 ```
 #### Parameters
-*ParameterName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ParameterName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Parameter name or label.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Parameter value for the parameter passed.
 
@@ -95,29 +95,29 @@ Parameter value for the parameter passed.
 procedure CreateTestSuiteHeader(SuiteCode: Code[10]; SuiteDescription: Text[50]; DurationInMinutes: Integer; DefaultMinUserDelayInMs: Integer; DefaultMaxUserDelayInMs: Integer;  OneDayCorrespondsToMinutes: Integer; Tag: Text[20])
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*SuiteDescription ([Text]([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SuiteDescription ([Text]([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Test suite description.
 
-*DurationInMinutes ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DurationInMinutes ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test suite run duration in minutes.
 
-*DefaultMinUserDelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DefaultMinUserDelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Default minimum user delays in milliseconds.
 
-*DefaultMaxUserDelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DefaultMaxUserDelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Default maximum user delays in milliseconds.
 
-*OneDayCorrespondsToMinutes ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*OneDayCorrespondsToMinutes ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
-*Tag ([Text]([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Tag ([Text]([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Test suite tag.
 
@@ -130,11 +130,11 @@ Test suite tag.
 procedure CreateTestSuiteHeader(SuiteCode: Code[10]; SuiteDescription: Text[50])
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*SuiteDescription ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SuiteDescription ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Test suite description.
 
@@ -147,11 +147,11 @@ Test suite description.
 procedure SetTestSuiteDuration(SuiteCode: Code[10]; DurationInMinutes: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*DurationInMinutes ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DurationInMinutes ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test suite run duration in minutes.
 
@@ -164,11 +164,11 @@ Test suite run duration in minutes.
 procedure SetTestSuiteDefaultMinUserDelay(SuiteCode: Code[10]; DelayInMs: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*DelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test suite run duration in minutes.
 
@@ -181,11 +181,11 @@ Test suite run duration in minutes.
 procedure SetTestSuiteDefaultMinUserDelay(SuiteCode: Code[10]; DelayInMs: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*DelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test suite run duration in minutes.
 
@@ -198,11 +198,11 @@ Test suite run duration in minutes.
 procedure SetTestSuiteDefaultMaxUserDelay(SuiteCode: Code[10]; DelayInMs: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*DelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test suite run duration in minutes.
 
@@ -215,11 +215,11 @@ Test suite run duration in minutes.
 procedure SetTestSuite1DayCorresponds(SuiteCode: Code[10]; DurationInMinutes: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*DurationInMinutes ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DurationInMinutes ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test suite run duration in minutes.
 
@@ -232,11 +232,11 @@ Test suite run duration in minutes.
 procedure SetTestSuiteTag(SuiteCode: Code[10]; Tag: Text[20])
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*Tag ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Tag ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Test suite tag.
 
@@ -249,44 +249,44 @@ Test suite tag.
 procedure AddLineToTestSuiteHeader(SuiteCode: Code[10]; CodeunitId: Integer; NoOfSessions: Integer; Description: Text[50]; MinUserDelayInMs: Integer; MaxUserDelayInMs: Integer; DelayBtwnIterInSecs: Integer; RunInForeground: Boolean; Parameters: Text[1000]): Integer
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*CodeunitId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*CodeunitId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test codeunit id.
 
-*NoOfSessions ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*NoOfSessions ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Number of sessions that runs the specified codeunit.
 
-*Description ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Description ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Optional field to store additional description.
 
-*MinUserDelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MinUserDelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Minimum delay between user actions in milliseconds.
 
-*MaxUserDelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxUserDelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Maximum delay between user actions in milliseconds.
 
-*DelayBtwnIterInSecs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DelayBtwnIterInSecs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Delay between iterations in seconds.
 
-*RunInForeground ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*RunInForeground ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Run in foreground session.
 
-*Parameters ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Parameters ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Input parameter for the codeunit.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 Line number of the newly created line.
 
@@ -299,16 +299,16 @@ Line number of the newly created line.
 procedure AddLineToTestSuiteHeader(SuiteCode: Code[10]; CodeunitId: Integer): Integer
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*CodeunitId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*CodeunitId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test codeunit id.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 Line number of the newly created line.
 
@@ -321,48 +321,48 @@ Line number of the newly created line.
 procedure AddLineToTestSuiteHeader(SuiteCode: Code[10]; CodeunitId: Integer; NoOfSessions: Integer; Description: Text[50]; MinUserDelayInMs: Integer; MaxUserDelayInMs: Integer; DelayBtwnIterInSecs: Integer; RunInForeground: Boolean; Parameters: Text[1000]; DelayType: Enum "BCPT Line Delay Type"): Integer
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*CodeunitId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*CodeunitId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Test codeunit id.
 
-*NoOfSessions ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*NoOfSessions ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Number of sessions that runs the specified codeunit.
 
-*Description ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Description ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Optional field to store additional description.
 
-*MinUserDelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MinUserDelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Minimum delay between user actions in milliseconds.
 
-*MaxUserDelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxUserDelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Maximum delay between user actions in milliseconds.
 
-*DelayBtwnIterInSecs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DelayBtwnIterInSecs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Delay between iterations in seconds.
 
-*RunInForeground ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*RunInForeground ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Run in foreground session.
 
-*Parameters ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Parameters ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Input parameter for the codeunit.
 
-*DelayType ([Enum](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/enum/enum-data-type))*
+*DelayType ([Enum](https://go.microsoft.com/fwlink/?linkid=2212262))*
 
 Type of Delay between user actions.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 Line number of the newly created line.
 
@@ -375,15 +375,15 @@ Line number of the newly created line.
 procedure SetTestSuiteLineNoOfSessions(SuiteCode: Code[10]; LineNo: Integer; NoOfSessions: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*LineNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*LineNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Line no. of the test suite line.
 
-*NoOfSessions ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*NoOfSessions ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Number of sessions that runs the specified codeunit.
 
@@ -396,15 +396,15 @@ Number of sessions that runs the specified codeunit.
 procedure SetTestSuiteLineDescription(SuiteCode: Code[10]; LineNo: Integer; Description: Text[50])
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*LineNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*LineNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Line no. of the test suite line.
 
-*Description ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Description ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Field to store additional description.
 
@@ -417,15 +417,15 @@ Field to store additional description.
 procedure SetTestSuiteLineMinUserDelay(SuiteCode: Code[10]; LineNo: Integer; DelayInMs: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*LineNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*LineNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Line no. of the test suite line.
 
-*DelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Minimum delay between user actions in milliseconds.
 
@@ -438,15 +438,15 @@ Minimum delay between user actions in milliseconds.
 procedure SetTestSuiteLineMaxUserDelay(SuiteCode: Code[10]; LineNo: Integer; DelayInMs: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*LineNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*LineNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Line no. of the test suite line.
 
-*DelayInMs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DelayInMs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Maximum delay between user actions in milliseconds.
 
@@ -459,15 +459,15 @@ Maximum delay between user actions in milliseconds.
 procedure SetTestSuiteLineDelayBtwnIter(SuiteCode: Code[10]; LineNo: Integer; DelayInSecs: Integer)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*LineNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*LineNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Line no. of the test suite line.
 
-*DelayInSecs ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DelayInSecs ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Delay between iterations in seconds.
 
@@ -480,15 +480,15 @@ Delay between iterations in seconds.
 procedure SetTestSuiteLineRunInForeground(SuiteCode: Code[10]; LineNo: Integer; RunInForeground: Boolean)
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*LineNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*LineNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Line no. of the test suite line.
 
-*RunInForeground ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*RunInForeground ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Run in foreground session.
 
@@ -501,15 +501,15 @@ Run in foreground session.
 procedure SetTestSuiteLineParameters(SuiteCode: Code[10]; LineNo: Integer; Parameters: Text[1000])
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
-*LineNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*LineNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Line no. of the test suite line.
 
-*Parameters ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Parameters ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Input parameter for the codeunit.
 
@@ -523,7 +523,7 @@ Input parameter for the codeunit.
 procedure IsAnyTestRunInProgress(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Returns if a test run is in progress or not.
 
@@ -536,12 +536,12 @@ Returns if a test run is in progress or not.
 procedure IsTestRunInProgress(SuiteCode: Code[10]): Boolean
 ```
 #### Parameters
-*SuiteCode ([Code](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*SuiteCode ([Code](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 Test suite code.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Returns if a test run is in progress or not for a passed test suite code.
 

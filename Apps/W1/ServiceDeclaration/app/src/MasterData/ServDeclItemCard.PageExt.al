@@ -9,7 +9,7 @@ pageextension 5012 "Serv. Decl. Item Card" extends "Item Card"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the code for a service transaction type.';
                 Editable = IsService;
-                Visible = UseServDeclaration;
+                Visible = EnableServTransType;
             }
             field("Exclude From Service Decl."; Rec."Exclude From Service Decl.")
             {
@@ -23,11 +23,13 @@ pageextension 5012 "Serv. Decl. Item Card" extends "Item Card"
 
     var
         UseServDeclaration: Boolean;
+        EnableServTransType: Boolean;
 
     trigger OnOpenPage()
     var
         ServiceDeclarationMgt: Codeunit "Service Declaration Mgt.";
     begin
         UseServDeclaration := ServiceDeclarationMgt.IsFeatureEnabled();
+        EnableServTransType := ServiceDeclarationMgt.IsServTransTypeEnabled();
     end;
 }

@@ -727,8 +727,12 @@ page 31181 "Purch. Advance Letter CZZ"
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
+                var
+                    PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                 begin
-                    Rec.PrintToDocumentAttachment();
+                    PurchAdvLetterHeaderCZZ := Rec;
+                    CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
+                    PurchAdvLetterHeaderCZZ.PrintToDocumentAttachment();
                 end;
             }
         }

@@ -16,12 +16,12 @@ Exposes ability for selecting and displaying time zones.
 procedure LookupTimeZone(var TimeZoneText: Text[180]): Boolean
 ```
 #### Parameters
-*TimeZoneText ([Text[180]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TimeZoneText ([Text[180]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Out parameter with the Time Zone id of the selected Time Zone.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if a timezone was selected.
 ### ValidateTimeZone (Method) <a name="ValidateTimeZone"></a> 
@@ -34,7 +34,7 @@ True if a timezone was selected.
 procedure ValidateTimeZone(var TimeZoneText: Text[180])
 ```
 #### Parameters
-*TimeZoneText ([Text[180]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TimeZoneText ([Text[180]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The Time Zone text to validate.
 
@@ -48,12 +48,12 @@ The Time Zone text to validate.
 procedure GetTimeZoneDisplayName(TimeZoneText: Text[180]): Text[250]
 ```
 #### Parameters
-*TimeZoneText ([Text[180]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TimeZoneText ([Text[180]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The search query for the Time Zone.
 
 #### Return Value
-*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The Display Name of the Time Zone.
 

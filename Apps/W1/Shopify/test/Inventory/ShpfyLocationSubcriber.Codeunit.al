@@ -23,6 +23,12 @@ codeunit 139587 "Shpfy Location Subcriber"
         MakeReponse(CommunicationMgt.GetShopRecord(), CommunicationMgt.GetVersion(), HttpRequestMsg, HttpResponseMsg);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnGetContent', '', true, false)]
+    local procedure OnGetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
+    begin
+        HttpResponseMsg.Content.ReadAs(Response);
+    end;
+
     local procedure MakeReponse(ShpfyShop: Record "Shpfy Shop"; Version: Text; HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     var
         GetLocationUrlTxt: Label '%1/admin/api/%2/locations.json', Locked = true;

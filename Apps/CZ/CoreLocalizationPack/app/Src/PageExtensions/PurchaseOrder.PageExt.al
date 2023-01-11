@@ -9,6 +9,15 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
         }
 #endif
         movelast(General; "Posting Description")
+        addlast(General)
+        {
+            field("Your Reference CZL"; Rec."Your Reference")
+            {
+                ApplicationArea = Basic, Suite;
+                Importance = Additional;
+                ToolTip = 'Specifies the customer''s reference. The contents will be printed on sales documents.';
+            }
+        }
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")

@@ -10,9 +10,11 @@ codeunit 13601 "DK Core Event Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Bank Account", 'OnGetBankAccount', '', false, false)]
     local procedure GetBankAccountNo(var Handled: Boolean; BankAccount: Record "Bank Account"; var ResultBankAccountNo: Text);
     begin
-        Handled := true;
+        if not Handled then begin
+            Handled := true;
 
-        GetBankAccNo(BankAccount."Bank Account No.", BankAccount."Bank Branch No.", BankAccount.IBAN, ResultBankAccountNo);
+            GetBankAccNo(BankAccount."Bank Account No.", BankAccount."Bank Branch No.", BankAccount.IBAN, ResultBankAccountNo);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Customer Bank Account", 'OnValidateBankAccount', '', false, false)]
@@ -24,9 +26,11 @@ codeunit 13601 "DK Core Event Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Customer Bank Account", 'OnGetBankAccount', '', false, false)]
     local procedure GetCustomerBankAccountNo(var Handled: Boolean; CustomerBankAccount: Record "Customer Bank Account"; var ResultBankAccountNo: Text);
     begin
-        Handled := true;
+        if not Handled then begin
+            Handled := true;
 
-        GetBankAccNo(CustomerBankAccount."Bank Account No.", CustomerBankAccount."Bank Branch No.", CustomerBankAccount.IBAN, ResultBankAccountNo);
+            GetBankAccNo(CustomerBankAccount."Bank Account No.", CustomerBankAccount."Bank Branch No.", CustomerBankAccount.IBAN, ResultBankAccountNo);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Vendor Bank Account", 'OnValidateBankAccount', '', false, false)]
@@ -38,9 +42,11 @@ codeunit 13601 "DK Core Event Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Vendor Bank Account", 'OnGetBankAccount', '', false, false)]
     local procedure GetVendorBankAccountNo(var Handled: Boolean; VendorBankAccount: Record "Vendor Bank Account"; var ResultBankAccountNo: Text);
     begin
-        Handled := true;
+        if not Handled then begin
+            Handled := true;
 
-        GetBankAccNo(VendorBankAccount."Bank Account No.", VendorBankAccount."Bank Branch No.", VendorBankAccount.IBAN, ResultBankAccountNo);
+            GetBankAccNo(VendorBankAccount."Bank Account No.", VendorBankAccount."Bank Branch No.", VendorBankAccount.IBAN, ResultBankAccountNo);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt.", 'OnGetBasicExperienceAppAreas', '', false, false)]
@@ -52,22 +58,26 @@ codeunit 13601 "DK Core Event Subscribers"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pre & Post Process XML Import", 'OnCheckBankAccNo', '', false, false)]
     local procedure OnCheckBankAccNo(var Handled: Boolean; var CheckedResult: Boolean; DataExchFieldDetails: Query "Data Exch. Field Details"; BankAccount: Record "Bank Account");
     begin
-        Handled := true;
+        if not Handled then begin
+            Handled := true;
 
-        if (DelChr(DataExchFieldDetails.FieldValue, '=', '- ') <> DelChr(BankAccount."Bank Account No." + BankAccount."Bank Branch No.", '=', '- ')) then
-            CheckedResult := true
+            if (DelChr(DataExchFieldDetails.FieldValue, '=', '- ') <> DelChr(BankAccount."Bank Account No." + BankAccount."Bank Branch No.", '=', '- ')) then
+                CheckedResult := true
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Setup Posting Groups", 'OnInitWithStandardValues', '', false, false)]
     local procedure OnInitWithStandardValuesOnInitWithStandardValues(var Handled: Boolean; VATSetupPostingGroups: Record "VAT Setup Posting Groups");
     begin
-        Handled := true;
+        if not Handled then begin
+            Handled := true;
 
-        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('FULLNORMTok'), VATSetupPostingGroups.GetLabelTxt('FULLNORMTxt'), 100, '', '', false, true);
-        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('FULLREDTok'), VATSetupPostingGroups.GetLabelTxt('FULLREDTxt'), 100, '', '', false, true);
-        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('SERVNORMTok'), VATSetupPostingGroups.GetLabelTxt('SERVNORMTxt'), 25, '24010', '24020', true, true);
-        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('STANDARDTok'), VATSetupPostingGroups.GetLabelTxt('STANDARDTxt'), 25, '24010', '24020', false, true);
-        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('ZEROTok'), VATSetupPostingGroups.GetLabelTxt('ZEROTxt'), 0, '24010', '24020', false, true);
+            VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('FULLNORMTok'), VATSetupPostingGroups.GetLabelTxt('FULLNORMTxt'), 100, '', '', false, true);
+            VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('FULLREDTok'), VATSetupPostingGroups.GetLabelTxt('FULLREDTxt'), 100, '', '', false, true);
+            VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('SERVNORMTok'), VATSetupPostingGroups.GetLabelTxt('SERVNORMTxt'), 25, '24010', '24020', true, true);
+            VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('STANDARDTok'), VATSetupPostingGroups.GetLabelTxt('STANDARDTxt'), 25, '24010', '24020', false, true);
+            VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('ZEROTok'), VATSetupPostingGroups.GetLabelTxt('ZEROTxt'), 0, '24010', '24020', false, true);
+        end;
     end;
 
     local procedure ValidateBankAcc(var BankAccountNo: Text[30]; var BankBranchNo: Text[20]; FieldToValidate: Text)

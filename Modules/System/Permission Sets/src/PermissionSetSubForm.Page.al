@@ -68,6 +68,25 @@ page 9864 "Permission Set Subform"
     {
         area(Processing)
         {
+            action(SelectPermissionSets)
+            {
+                ApplicationArea = All;
+                Caption = 'Select Permission Sets';
+                ToolTip = 'Add two or more permission sets.';
+                Image = NewItem;
+                Ellipsis = true;
+                Enabled = CurrScope = CurrScope::Tenant;
+                Scope = Page;
+
+                trigger OnAction()
+                var
+                    PermissionSetRelation: Codeunit "Permission Set Relation Impl.";
+                begin
+                    if PermissionSetRelation.SelectPermissionSets(CurrAppId, CurrRoleId, CurrScope) then
+                        RefreshTreeView();
+                end;
+            }
+
             action(ViewPermissionSet)
             {
                 ApplicationArea = All;
@@ -102,6 +121,8 @@ page 9864 "Permission Set Subform"
                 RunObject = page "Expanded Permissions";
                 RunPageLink = "Role ID" = field("Related Role ID"), "App ID" = field("Related App ID");
             }
+
+
         }
     }
 

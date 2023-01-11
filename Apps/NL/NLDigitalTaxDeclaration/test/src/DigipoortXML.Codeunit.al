@@ -20,6 +20,8 @@ codeunit 148000 "Digipoort XML"
         XbrliXbrlTok: Label 'xbrli:xbrl';
         AttrBdITok: Label 'xmlns:bd-i';
         AttrBdObTok: Label 'xmlns:bd-ob';
+        BDDataEndpointTxt: Label 'https://www.nltaxonomie.nl/nt17/bd/20221207/dictionary/bd-data', Locked = true;
+        VATDeclarationSchemaEndpointTxt: Label 'https://www.nltaxonomie.nl/nt17/bd/20221207/entrypoints/bd-rpt-ob-aangifte-2023.xsd', Locked = true;
 
     [Test]
     [HandlerFunctions('VATStatementRequestPageHandler,MessageHandler')]
@@ -88,7 +90,6 @@ codeunit 148000 "Digipoort XML"
         VATReportArchive: Record "VAT Report Archive";
         ElecTaxDeclarationSetup: Record "Elec. Tax Declaration Setup";
         CompanyInfo: Record "Company Information";
-        ElecTaxDeclarationMgt: Codeunit "Elec. Tax Declaration Mgt.";
         SubmissionMessageInStream: InStream;
         NodeList: List of [Text];
         Node: Text;
@@ -103,9 +104,9 @@ codeunit 148000 "Digipoort XML"
         VATReportArchive."Submission Message BLOB".CreateInStream(SubmissionMessageInStream, TextEncoding::UTF8);
         LibraryXMLReadServer.LoadXMLDocFromInStream(SubmissionMessageInStream);
         LibraryXMLReadServer.VerifyAttributeAbsence(XbrliXbrlTok, AttrBdObTok);
-        LibraryXMLReadServer.VerifyAttributeValue(XbrliXbrlTok, AttrBdITok, ElecTaxDeclarationMgt.GetBDDataEndpoint());
+        LibraryXMLReadServer.VerifyAttributeValue(XbrliXbrlTok, AttrBdITok, BDDataEndpointTxt);
         LibraryXMLReadServer.VerifyAttributeValueInSubtree(
-          XbrliXbrlTok, 'link:schemaRef', 'xlink:href', ElecTaxDeclarationMgt.GetVATDeclarationSchemaEndpoint());
+          XbrliXbrlTok, 'link:schemaRef', 'xlink:href', VATDeclarationSchemaEndpointTxt);
         LibraryXMLReadServer.VerifyNodeValueInSubtree('xbrli:context', 'xbrli:identifier', DelStr(CompanyInfo."VAT Registration No.", 1, 2));
         LibraryXMLReadServer.VerifyNodeValueInSubtree(
           'xbrli:period', 'xbrli:startDate', Format(VATReportHeader."Start Date", 0, '<Year4>-<Month,2>-<Day,2>'));

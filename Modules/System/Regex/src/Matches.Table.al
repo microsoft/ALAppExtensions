@@ -7,7 +7,7 @@
 /// Provides a representation of Regex Matches that models Match objects in .Net
 /// </summary>
 /// <remark>
-/// For more information, visit https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.match?view=netcore-3.1.
+/// For more information, visit https://go.microsoft.com/fwlink/?linkid=2210238.
 /// </remark>
 table 3965 Matches
 {

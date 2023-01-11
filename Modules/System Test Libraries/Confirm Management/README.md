@@ -13,7 +13,7 @@
 procedure SetGuiAllowed(IsGuiAllowed: Boolean)
 ```
 #### Parameters
-*IsGuiAllowed ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*IsGuiAllowed ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 The desired value of GUI allowed.
 

@@ -42,6 +42,28 @@ page 5010 "Service Declaration Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether the VAT Registration No. is enabled for the service declaration.';
                 }
+                field("Vend. VAT Reg. No. Type"; Rec."Vend. VAT Reg. No. Type")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies how a vendor''s VAT registration number exports to the file. 0 is the value of the VAT Reg. No. field, 1 adds the country code as a prefix, and 2 removes the country code.';
+                }
+                field("Cust. VAT Reg. No. Type"; Rec."Cust. VAT Reg. No. Type")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies how a customer''s VAT registration number exports to the file. 0 is the value of the VAT Reg. No. field, 1 adds the country code as a prefix, and 2 removes the country code.';
+                }
+                field("Def. Customer/Vendor VAT No."; Rec."Def. Customer/Vendor VAT No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the VAT registration number that will be used if customer or vendor company does not have its own VAT registration number.';
+                    Visible = false;
+                }
+                field("Def. Private Person VAT No."; Rec."Def. Private Person VAT No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the VAT registration number that will be used if customer or vendor private person does not have its own VAT registration number.';
+                    Visible = false;
+                }
             }
         }
     }

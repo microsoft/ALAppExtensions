@@ -29,10 +29,10 @@ pageextension 31288 "Payment Journal CZB" extends "Payment Journal"
 
                 trigger OnAction()
                 var
-                    MatchBankPaymentCZB: Codeunit "Match Bank Payment CZB";
+                    GenJournalLine: Record "Gen. Journal Line";
                 begin
-                    MatchBankPaymentCZB.Run(Rec);
-                    Rec.Modify(true);
+                    CurrPage.SetSelectionFilter(GenJournalLine);
+                    GenJournalLine.SendToMatchingCZB();
                 end;
             }
         }

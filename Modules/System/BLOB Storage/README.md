@@ -16,7 +16,7 @@ Provides a way to store various kinds of data. It consists of the TempBlob conta
 procedure Create(): BigInteger
 ```
 #### Return Value
-*[BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type)*
+*[BigInteger](https://go.microsoft.com/fwlink/?linkid=2210125)*
 
 The key of the new BLOB.
 ### Exists (Method) <a name="Exists"></a> 
@@ -29,12 +29,12 @@ The key of the new BLOB.
 procedure Exists("Key": BigInteger): Boolean
 ```
 #### Parameters
-*Key ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
+*Key ([BigInteger](https://go.microsoft.com/fwlink/?linkid=2210125))* 
 
 The key of the BLOB.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the BLOB with the given key exists.
 ### Delete (Method) <a name="Delete"></a> 
@@ -47,12 +47,12 @@ True if the BLOB with the given key exists.
 procedure Delete("Key": BigInteger): Boolean
 ```
 #### Parameters
-*Key ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
+*Key ([BigInteger](https://go.microsoft.com/fwlink/?linkid=2210125))* 
 
 The key of the BLOB.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the BLOB with the given key was deleted.
 ### CopyFromInStream (Method) <a name="CopyFromInStream"></a> 
@@ -65,16 +65,16 @@ True if the BLOB with the given key was deleted.
 procedure CopyFromInStream("Key": BigInteger; Source: InStream): Boolean
 ```
 #### Parameters
-*Key ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
+*Key ([BigInteger](https://go.microsoft.com/fwlink/?linkid=2210125))* 
 
 The key of the BLOB.
 
-*Source ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*Source ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 The InStream from which content will be copied to the PersistentBlob.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the BLOB with the given key was updated with the contents of the source.
 ### CopyToOutStream (Method) <a name="CopyToOutStream"></a> 
@@ -87,16 +87,16 @@ True if the BLOB with the given key was updated with the contents of the source.
 procedure CopyToOutStream("Key": BigInteger; Destination: OutStream): Boolean
 ```
 #### Parameters
-*Key ([BigInteger](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/biginteger/biginteger-data-type))* 
+*Key ([BigInteger](https://go.microsoft.com/fwlink/?linkid=2210125))* 
 
 The key of the BLOB.
 
-*Destination ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+*Destination ([OutStream](https://go.microsoft.com/fwlink/?linkid=2210034))* 
 
 The OutStream to which the contents of the PersistentBlob will be copied.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the BLOB with the given Key was copied to the Destination.
 
@@ -115,7 +115,7 @@ True if the BLOB with the given Key was copied to the Destination.
 procedure CreateInStream(var InStream: InStream)
 ```
 #### Parameters
-*InStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*InStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 The InStream variable passed as a VAR to which the BLOB content will be attached.
 
@@ -129,11 +129,11 @@ The InStream variable passed as a VAR to which the BLOB content will be attached
 procedure CreateInStream(var InStream: InStream; Encoding: TextEncoding)
 ```
 #### Parameters
-*InStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*InStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 The InStream variable passed as a VAR to which the BLOB content will be attached.
 
-*Encoding ([TextEncoding](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-file-handling-and-text-encoding))* 
+*Encoding ([TextEncoding](https://go.microsoft.com/fwlink/?linkid=2210385))* 
 
 The text encoding to use.
 
@@ -147,7 +147,7 @@ The text encoding to use.
 procedure CreateOutStream(var OutStream: OutStream)
 ```
 #### Parameters
-*OutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+*OutStream ([OutStream](https://go.microsoft.com/fwlink/?linkid=2210034))* 
 
 The OutStream variable passed as a VAR to which the BLOB content will be attached.
 
@@ -161,11 +161,11 @@ The OutStream variable passed as a VAR to which the BLOB content will be attache
 procedure CreateOutStream(var OutStream: OutStream; Encoding: TextEncoding)
 ```
 #### Parameters
-*OutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+*OutStream ([OutStream](https://go.microsoft.com/fwlink/?linkid=2210034))* 
 
 The OutStream variable passed as a VAR to which the BLOB content will be attached.
 
-*Encoding ([TextEncoding](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-file-handling-and-text-encoding))* 
+*Encoding ([TextEncoding](https://go.microsoft.com/fwlink/?linkid=2210385))* 
 
 The text encoding to use.
 
@@ -179,7 +179,7 @@ The text encoding to use.
 procedure HasValue(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the TempBlob has a value.
 ### Length (Method) <a name="Length"></a> 
@@ -192,7 +192,7 @@ True if the TempBlob has a value.
 procedure Length(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The number of bytes stored in the BLOB.
 ### FromRecord (Method) <a name="FromRecord"></a> 
@@ -205,11 +205,11 @@ The number of bytes stored in the BLOB.
 procedure FromRecord(RecordVariant: Variant; FieldNo: Integer)
 ```
 #### Parameters
-*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecordVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 Any Record variable.
 
-*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The field number of the BLOB field to be read.
 
@@ -223,11 +223,11 @@ The field number of the BLOB field to be read.
 procedure FromRecordRef(RecordRef: RecordRef; FieldNo: Integer)
 ```
 #### Parameters
-*RecordRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecordRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 A RecordRef variable attached to a Record.
 
-*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The field number of the BLOB field to be read.
 
@@ -241,11 +241,11 @@ The field number of the BLOB field to be read.
 procedure ToRecordRef(var RecordRef: RecordRef; FieldNo: Integer)
 ```
 #### Parameters
-*RecordRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+*RecordRef ([RecordRef](https://go.microsoft.com/fwlink/?linkid=2210242))* 
 
 A RecordRef variable attached to a Record.
 
-*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The field number of the Blob field to be written.
 
@@ -259,7 +259,7 @@ The field number of the Blob field to be written.
 procedure FromFieldRef(BlobFieldRef: FieldRef)
 ```
 #### Parameters
-*BlobFieldRef ([FieldRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/fieldref/fieldref-data-type))* 
+*BlobFieldRef ([FieldRef](https://go.microsoft.com/fwlink/?linkid=2210386))* 
 
 A FieldRef variable attached to a field for a record.
 
@@ -273,7 +273,7 @@ A FieldRef variable attached to a field for a record.
 procedure ToFieldRef(var BlobFieldRef: FieldRef)
 ```
 #### Parameters
-*BlobFieldRef ([FieldRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/fieldref/fieldref-data-type))* 
+*BlobFieldRef ([FieldRef](https://go.microsoft.com/fwlink/?linkid=2210386))* 
 
 A FieldRef variable attached to a field for a record.
 
@@ -293,12 +293,12 @@ A FieldRef variable attached to a field for a record.
 procedure Exists(Index: Integer): Boolean
 ```
 #### Parameters
-*Index ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Index ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The index of the TempBlob in the list.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if an element at the given index exists.
 ### Count (Method) <a name="Count"></a> 
@@ -311,7 +311,7 @@ True if an element at the given index exists.
 procedure Count(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The number of elements in the list.
 ### Get (Method) <a name="Get"></a> 
@@ -326,7 +326,7 @@ The index is larger than the number of elements in the list or less than one.
 procedure Get(Index: Integer; var TempBlob: Codeunit "Temp Blob")
 ```
 #### Parameters
-*Index ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Index ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The index of the TempBlob in the list.
 
@@ -346,7 +346,7 @@ The index is larger than the number of elements in the list or less than one.
 procedure Set(Index: Integer; TempBlob: Codeunit "Temp Blob"): Boolean
 ```
 #### Parameters
-*Index ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Index ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The index of the TempBlob in the list.
 
@@ -355,7 +355,7 @@ The index of the TempBlob in the list.
 The TempBlob to set.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if successful.
 ### RemoveAt (Method) <a name="RemoveAt"></a> 
@@ -370,12 +370,12 @@ The index is larger than the number of elements in the list or less than one.
 procedure RemoveAt(Index: Integer): Boolean
 ```
 #### Parameters
-*Index ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Index ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The index of the TempBlob in the list.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if successful.
 ### IsEmpty (Method) <a name="IsEmpty"></a> 
@@ -388,7 +388,7 @@ True if successful.
 procedure IsEmpty(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the list is empty.
 ### Add (Method) <a name="Add"></a> 
@@ -406,7 +406,7 @@ procedure Add(TempBlob: Codeunit "Temp Blob"): Boolean
 The TempBlob to add.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if successful.
 ### AddRange (Method) <a name="AddRange"></a> 
@@ -424,7 +424,7 @@ procedure AddRange(TempBlobList: Codeunit "Temp Blob List"): Boolean
 The TempBlob list to add.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if successful.
 ### GetRange (Method) <a name="GetRange"></a> 
@@ -439,11 +439,11 @@ The index is larger than the number of elements in the list or less than one.
 procedure GetRange(Index: Integer; ElemCount: Integer; var TempBlobListOut: Codeunit "Temp Blob List")
 ```
 #### Parameters
-*Index ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Index ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The index of the first object.
 
-*ElemCount ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*ElemCount ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of objects to be returned.
 
