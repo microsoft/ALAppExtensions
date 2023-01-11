@@ -27,7 +27,7 @@ $packageFolder = Join-Path $env:GITHUB_WORKSPACE 'out'
 $projectName = "Modules" 
 $appsFolders = Get-ChildItem $buildArtifactsPath -Directory | where-object {$_.FullName.Contains("Apps-")} | Select-Object -ExpandProperty FullName
 $testAppsFolders = Get-ChildItem $buildArtifactsPath -Directory | where-object {$_.FullName.Contains("TestApps-")} | Select-Object -ExpandProperty FullName
-$packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() #version is right after '-Apps-'
+$packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
 
 Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
 Write-Host "Test app folder(s): $($testAppsFolders -join ', ')" -ForegroundColor Magenta

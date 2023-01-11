@@ -1,0 +1,85 @@
+name: 'Publish Package'
+
+on:
+  workflow_run:
+    workflows: ['CI/CD']
+    types: [completed]
+    branches: ["main"]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  checks: read
+
+defaults:
+  run:
+    shell: powershell
+
+jobs:
+  Publish:
+    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: [ windows-latest ]
+    name: Publish Nuget
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download Build Output
+        if: github.event_name == 'workflow_run'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const downloadArtifact = async (artifact) => {
+                let fs = require('fs');
+                const artifactsDirectory = `${process.env.GITHUB_WORKSPACE}/.artifacts`;
+                fs.mkdirSync(artifactsDirectory);
+                const archivePath = `${artifactsDirectory}/${artifact.name}.zip`;
+                console.log(`Download artifact.name into path: ${archivePath}`);
+                let download = await github.rest.actions.downloadArtifact({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    artifact_id: artifact.id,
+                    archive_format: 'zip'
+                });
+                
+                fs.writeFileSync(archivePath, Buffer.from(download.data));
+            };
+
+
+            var run_id = Number('${{ github.event.workflow_run.id }}');
+            var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: run_id,
+            });
+
+            console.log(`Found ${all_artifacts.data.total_count} artifacts`);
+
+            for (const artifact of all_artifacts.data.artifacts) {
+                await downloadArtifact(artifact);
+            }
+            
+      - name: Unzip Build Output
+        if: github.event_name == 'workflow_run'
+        run: | 
+          $artifactsDirectory = "$($env:GITHUB_WORKSPACE)/.artifacts"
+          Get-ChildItem -Path "$artifactsDirectory/*zip" | % {
+            Write-Host "Expand archive: $($_.FullName)"
+            Expand-Archive -DestinationPath $artifactsDirectory -Path $_.FullName -Verbose
+            Remove-Item -Path $_.FullName -Force
+          }
+
+      - name: Setup NuGet.exe
+        uses: nuget/setup-nuget@v1
+
+      - name: Prepare Package
+        run: |
+          .github\DeliverToBCFeed.ps1
+          
+      - name: Publish nuget to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'nuget package'
+          path: '${{ github.workspace }}/out/'
+          if-no-files-found: ignore     
