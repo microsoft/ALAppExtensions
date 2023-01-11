@@ -37,7 +37,7 @@ jobs:
             });
             console.log(download.data);
             let fs = require('fs');
-            fs.writeFileSync(`${artifact.archive_download_url}/${artifact.name}`, Buffer.from(download.data));
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/nuget.zip`, Buffer.from(download.data));
             };
 
 
