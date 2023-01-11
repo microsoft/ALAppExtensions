@@ -22,12 +22,15 @@ jobs:
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
-      
-      - name: Download Pull Request Changes
+      - name: Download Build Output
         if: github.event_name == 'workflow_run'
         uses: actions/github-script@v6
         with:
           script: |
+            let fs = require('fs');
+            const archivePath = `${process.env.GITHUB_WORKSPACE}/artifacts/${artifact.name}.zip`;
+            console.log(`Download artifact.name into path: ${archivePath}}`);
+            
             const downloadArtifact = async (artifact) => {
             let download = await github.rest.actions.downloadArtifact({
                 owner: context.repo.owner,
@@ -35,9 +38,8 @@ jobs:
                 artifact_id: artifact.id,
                 archive_format: 'zip'
             });
-            console.log(download.data);
-            let fs = require('fs');
-            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/nuget.zip`, Buffer.from(download.data));
+            
+            fs.writeFileSync(archivePath, Buffer.from(download.data));
             };
 
 
@@ -65,6 +67,9 @@ jobs:
                     console.log(`Error while trying to download artifact (${artifact.id}): ${artifactFullName}. error: ${e}`);
                 }
             }
-
+      - name: Unzip Build Output
+        if: github.event_name == 'workflow_run'
+        run: | 
+          write-host "PRREPOFULLNAME: $env:PRREPOFULLNAME"
             
 
