@@ -35,6 +35,18 @@ jobs:
                run_id: run_id
             });
 
+            for (let i = 0; i < artifacts.data.artifacts.length; i++) { 
+              console.log(artifacts[i]);
+              var download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifacts[i].id,
+                archive_format: 'zip'
+              });
+              var fs = require('fs');
+              fs.writeFileSync(artifacts[i].name, Buffer.from(download.data));
+            }
+
             for (let matchArtifact in artifacts) {
               console.log(matchArtifact.name);
               var download = await github.rest.actions.downloadArtifact({
@@ -46,3 +58,4 @@ jobs:
               var fs = require('fs');
               fs.writeFileSync(matchArtifact.name, Buffer.from(download.data));
             }
+
