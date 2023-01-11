@@ -1,4 +1,4 @@
-name: 'Publish Package'
+name: 'Publish Nuget'
 
 on:
   workflow_run:
