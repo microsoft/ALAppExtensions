@@ -28,18 +28,18 @@ jobs:
         with:
           script: |
             let fs = require('fs');
-            const archivePath = `${process.env.GITHUB_WORKSPACE}/artifacts/${artifact.name}.zip`;
-            console.log(`Download artifact.name into path: ${archivePath}}`);
-            
+             
             const downloadArtifact = async (artifact) => {
-            let download = await github.rest.actions.downloadArtifact({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                artifact_id: artifact.id,
-                archive_format: 'zip'
-            });
-            
-            fs.writeFileSync(archivePath, Buffer.from(download.data));
+                const archivePath = `${process.env.GITHUB_WORKSPACE}/artifacts/${artifact.name}.zip`;
+                console.log(`Download artifact.name into path: ${archivePath}}`);
+                let download = await github.rest.actions.downloadArtifact({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    artifact_id: artifact.id,
+                    archive_format: 'zip'
+                });
+                
+                fs.writeFileSync(archivePath, Buffer.from(download.data));
             };
 
 
