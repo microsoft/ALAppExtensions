@@ -25,7 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       
-      steps:
       - name: Download artifacts from previous workflow
         uses: actions/download-artifact@v2
         with:
