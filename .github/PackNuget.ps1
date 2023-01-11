@@ -24,6 +24,8 @@ function GenerateManifest
 $buildArtifactsPath = Join-Path $env:GITHUB_WORKSPACE '.artifacts'
 $packageFolder = Join-Path $env:GITHUB_WORKSPACE 'out'
 
+New-Item -Path $packageFolder -ItemType Directory | Out-Null
+
 $projectName = "Modules" 
 $appsFolders = Get-ChildItem $buildArtifactsPath -Directory | where-object {$_.FullName.Contains("Apps-")} | Select-Object -ExpandProperty FullName
 $testAppsFolders = Get-ChildItem $buildArtifactsPath -Directory | where-object {$_.FullName.Contains("TestApps-")} | Select-Object -ExpandProperty FullName
@@ -32,9 +34,7 @@ $packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1)
 Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
 Write-Host "Test app folder(s): $($testAppsFolders -join ', ')" -ForegroundColor Magenta
 
-
-### Generate Nuspec file
-# Construct package ID
+# Generate Nuspec file
 $RepoName = $env:GITHUB_REPOSITORY -replace "/", "-"
 if ($ENV:GITHUB_REF_NAME -eq "main") {
     $packageId = "$RepoName-$projectName-preview"
@@ -51,13 +51,13 @@ $manifest = GenerateManifest `
             -Authors "$env:GITHUB_REPOSITORY_OWNER" `
             -Owners "$env:GITHUB_REPOSITORY_OWNER"
 
+#Save .nuspec file
+$manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
+$manifest.Save($manifestFilePath)
+
 ### Copy files to package folder
-New-Item -Path $packageFolder -ItemType Directory | Out-Null
 Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
-
-# Create folder to hold the apps
 New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
-
 @($appsFolders) + @($testAppsFolders) | ForEach-Object { 
     $appsToPackage = Join-Path $_ 'Package'
     
@@ -69,9 +69,5 @@ New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
 
 # Copy over the license file
 Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
-
-#Create .nuspec file
-$manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
-$manifest.Save($manifestFilePath)
 
 nuget pack $manifestFilePath -OutputDirectory $packageFolder

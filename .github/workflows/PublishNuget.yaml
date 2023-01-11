@@ -72,14 +72,18 @@ jobs:
 
       - name: Setup NuGet.exe
         uses: nuget/setup-nuget@v1
+        with:
+          nuget-api-key: ${{ secrets.BCFEEDCONTEXT.Token }}
 
       - name: Prepare Package
         run: |
-          .github\DeliverToBCFeed.ps1
-          
-      - name: Publish nuget to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'nuget package'
-          path: '${{ github.workspace }}/out/'
-          if-no-files-found: ignore     
+          .github\PackNuget.ps1
+
+      - name: Push Package
+        run: |
+          $packageFolder = Join-Path $env:GITHUB_WORKSPACE 'out'
+          $nugetSource = https://api.nuget.org/v3/index.json
+          Get-ChildItem -Path "$packageFolder/*nupkg" | % {
+            Write-Host "Pushing package: $($_.FullName)"
+            nuget push $nupkgName -Source $nugetSource
+          }
