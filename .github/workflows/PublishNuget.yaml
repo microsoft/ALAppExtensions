@@ -29,13 +29,17 @@ jobs:
         with:
           script: |
             var run_id = Number('${{ github.event.workflow_run.id }}');
-            const bv_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: run_id
+            const all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    run_id: run_id,
             });
 
-            console.log("::group::Downloading artifacts");
+            for (const artifact of allArtifacts.data.artifacts) {
+              console.log(${artifact.name});
+            }
+
+            
             const files = bv_artifacts.map(async function(artifact) {
               let download = await github.rest.actions.downloadArtifact({
                 owner: repo_parts[0],
