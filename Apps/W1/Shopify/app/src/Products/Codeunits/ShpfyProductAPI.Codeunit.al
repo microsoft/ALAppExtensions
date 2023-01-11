@@ -14,44 +14,6 @@ codeunit 30176 "Shpfy Product API"
         VariantApi: Codeunit "Shpfy Variant API";
 
     /// <summary> 
-    /// Create Shopify Product Image.
-    /// </summary>
-    /// <param name="Product">Parameter of type Record "Shopify Product".</param>
-    /// <param name="Item">Parameter of type Record Item.</param>
-    /// <returns>Return value of type BigInteger.</returns>
-    internal procedure CreateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item): BigInteger
-    var
-        JResponse: JsonToken;
-        Method: Text;
-        Request: Text;
-        Url: Text;
-        ProductUrlTxt: Label 'products/%1/images.json', Comment = '%1 = Shopify product id', Locked = true;
-        ProductImageUrlTxt: Label 'products/%1/images/%2.json', Comment = '%1 = Shopify product id, %2 = Shopify image id.', Locked = true;
-    begin
-        if Shop."Sync Item Images" = Shop."Sync Item Images"::"To Shopify" then
-            if Item.Picture.Count > 0 then begin
-                CreateProductImageAsJson(Item, Product.Id, Product."Image Id").WriteTo(Request);
-                if Product."Image Id" = 0 then begin
-                    Method := 'POST';
-                    Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductUrlTxt, Product.Id));
-                end else begin
-                    Method := 'PUT';
-                    Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductImageUrlTxt, Product.Id, Product."Image Id"));
-                end;
-                if JResponse.ReadFrom(CommunicationMgt.ExecuteWebRequest(Url, Method, Request)) then
-                    exit(JsonHelper.GetValueAsBigInteger(JResponse, 'image.id'))
-                else
-                    exit(Product."Image Id");
-            end else
-                if Product."Image Id" > 0 then begin
-                    Method := 'DELETE';
-                    Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductImageUrlTxt, Product.Id, Product."Image Id"));
-                    CommunicationMgt.ExecuteWebRequest(Url, Method, Request);
-                    exit(0);
-                end;
-    end;
-
-    /// <summary> 
     /// Create Product.
     /// </summary>
     /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
@@ -211,6 +173,98 @@ codeunit 30176 "Shpfy Product API"
 
     end;
 
+    local procedure CreateImageUploadUrl(Item: Record Item; var Url: Text; var ResourceUrl: Text; var TenantMedia: Record "Tenant Media"): boolean
+    var
+        MimeType: Text;
+        MediaId: Guid;
+        Filename: Text;
+        JResponse: JsonToken;
+        JArray: JsonArray;
+        Parameters: Dictionary of [Text, Text];
+    begin
+        Clear(Url);
+        Clear(ResourceUrl);
+        if Item.Picture.Count > 0 then begin
+            MediaId := Item.Picture.Item(1);
+            if TenantMedia.Get(MediaId) then begin
+                MimeType := TenantMedia."Mime Type";
+                Filename := 'BC_Upload.' + MimeType.Split('/').Get(MimeType.Split('/').Count);
+                Parameters.Add('Filename', Filename);
+                Parameters.Add('MimeType', MimeType);
+                JResponse := CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::CreateImageUploadUrl, Parameters);
+                JArray := JsonHelper.GetJsonArray(JResponse, 'data.stagedUploadsCreate.stagedTargets');
+                if JArray.Count = 1 then
+                    if JArray.Get(0, JResponse) then begin
+                        Url := JsonHelper.GetValueAsText(JResponse, 'url');
+                        ResourceUrl := JsonHelper.GetValueAsText(JResponse, 'resourceUrl');
+                        exit((Url <> '') and (ResourceUrl <> ''));
+                    end;
+            end;
+        end;
+    end;
+
+    [TryFunction]
+    local procedure UploadImage(TenantMedia: Record "Tenant Media"; Url: Text)
+    var
+        Client: HttpClient;
+        Content: HttpContent;
+        Headers: HttpHeaders;
+        Request: HttpRequestMessage;
+        Response: HttpResponseMessage;
+        InStream: InStream;
+    begin
+        Content.GetHeaders(Headers);
+        if Headers.Contains('Content-Type') then
+            Headers.Remove('Content-Type');
+        Headers.Add('Content-Type', TenantMedia."Mime Type");
+        TenantMedia.CalcFields(Content);
+        if TenantMedia.Content.HasValue then begin
+            TenantMedia.Content.CreateInStream(InStream);
+            Content.WriteFrom(InStream);
+            Client.Put(Url, Content, Response);
+        end;
+    end;
+
+    local procedure SetProductImage(Product: Record "Shpfy Product"; ResourceUrl: Text): BigInteger
+    var
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+        JArray: JsonArray;
+    begin
+        Parameters.Add('ProductId', Format(Product.Id));
+        Parameters.Add('ResourceUrl', ResourceUrl);
+        if Product."Image Id" = 0 then begin
+            JResponse := CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::AddProductImage, Parameters);
+            JArray := JsonHelper.GetJsonArray(JResponse, 'data.productAppendImages.newImages');
+            if JArray.Count = 1 then
+                if JArray.Get(0, JResponse) then
+                    exit(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JResponse, 'id')));
+        end else begin
+            Parameters.Add('ImageId', Format(Product."Image Id"));
+            CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::UpdateProductImage, Parameters);
+            exit(Product."Image Id");
+        end;
+    end;
+
+    /// <summary> 
+    /// Create Shopify Product Image.
+    /// </summary>
+    /// <param name="Product">Parameter of type Record "Shopify Product".</param>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <returns>Return value of type BigInteger.</returns>
+    internal procedure CreateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item): BigInteger
+    var
+        TenantMedia: Record "Tenant Media";
+        Url: Text;
+        ResourceUrl: Text;
+    begin
+        if Shop."Sync Item Images" = Shop."Sync Item Images"::"To Shopify" then
+            if Item.Picture.Count > 0 then
+                if CreateImageUploadUrl(Item, Url, ResourceUrl, TenantMedia) then
+                    if UploadImage(TenantMedia, Url) then
+                        exit(SetProductImage(Product, ResourceUrl));
+    end;
+
     /// <summary> 
     /// Create Product Image As Json.
     /// </summary>
@@ -218,7 +272,8 @@ codeunit 30176 "Shpfy Product API"
     /// <param name="ProductId">Parameter of type BigInteger.</param>
     /// <param name="ImageId">Parameter of type BigInteger.</param>
     /// <returns>Return variable "Result" of type JsonObject.</returns>
-    internal procedure CreateProductImageAsJson(Item: Record Item; ProductId: BigInteger; ImageId: BigInteger) Result: JsonObject;
+    [Obsolete('Not used any more.', '21.4')]
+    internal procedure CreateProductImageAsJson(Item: Record Item; ProductId: BigInteger; ImageId: BigInteger) Result: JsonObject;/// 
     var
         TenantMedia: Record "Tenant Media";
         MediaId: Guid;
@@ -240,6 +295,31 @@ codeunit 30176 "Shpfy Product API"
 
         Image.Add('attachment', ImageString);
         Result.Add('image', Image);
+    end;
+
+    [Obsolete('Not used any more.', '21.4')]
+    internal procedure CreateProductImageUrl(Item: Record Item; ProductId: BigInteger; ImageId: BigInteger): Text
+    var
+        TenantMedia: Record "Tenant Media";
+        MediaId: Guid;
+        Image: JsonObject;
+        ImageString: Text;
+    begin
+        if Item.Picture.Count > 0 then begin
+            MediaId := Item.Picture.Item(1);
+            if TenantMedia.Get(MediaId) then
+                ImageString := CreateTenantMediaBase64String(TenantMedia);
+        end;
+
+        if ImageId <> 0 then
+            Image.Add('id', ImageId)
+        else
+            Image.Add('position', 1);
+        if ProductId <> 0 then
+            Image.Add('product_id', ProductId);
+
+        Image.Add('attachment', ImageString);
+        //Result.Add('image', Image);
     end;
 
     /// <summary> 

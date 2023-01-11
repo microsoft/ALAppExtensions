@@ -200,4 +200,19 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Close Order';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL CloseOrder";
     }
+    value(38; CreateImageUploadUrl)
+    {
+        Caption = 'Create Image Upload URL';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreateImageUploadUrl";
+    }
+    value(39; AddProductImage)
+    {
+        Caption = 'Add Product Image';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL AddProductImage";
+    }
+    value(40; UpdateProductImage)
+    {
+        Caption = 'Update Product Image';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL UpdateProductImage";
+    }
 }

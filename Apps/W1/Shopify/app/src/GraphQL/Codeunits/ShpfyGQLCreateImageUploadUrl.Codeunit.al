@@ -1,7 +1,4 @@
-/// <summary>
-/// Codeunit Shpfy GQL CloseOrder (ID 30217) implements Interface Shpfy IGarphQL.
-/// </summary>
-codeunit 30217 "Shpfy GQL CloseOrder" implements "Shpfy IGraphQL"
+codeunit 30218 "Shpfy GQL CreateImageUploadUrl" implements "Shpfy IGraphQL"
 {
     Access = Internal;
 
@@ -11,7 +8,7 @@ codeunit 30217 "Shpfy GQL CloseOrder" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "mutation { orderClose(input: { id: \"gid://shopify/Order/{{OrderId}}\" }) { order { legacyResourceId closed closedAt }}}"}');
+        exit('{"query": "mutation { stagedUploadsCreate(input: {filename: \"{{Filename}}\", mimeType: \"{{MimeType}}\", resource: IMAGE, httpMethod: PUT}) { stagedTargets { url resourceUrl }}}"}');
     end;
 
     /// <summary>
@@ -20,9 +17,10 @@ codeunit 30217 "Shpfy GQL CloseOrder" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(55);
+        exit(11);
     end;
 }
+
 
 
 

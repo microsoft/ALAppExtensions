@@ -5,6 +5,9 @@ codeunit 30159 "Shpfy REST Client"
 {
     Access = Internal;
     SingleInstance = true;
+    ObsoleteTag = '21.4';
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Is not used';
 
     var
         LastResponseHeaders: HttpHeaders;
