@@ -27,11 +27,10 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            let fs = require('fs');
-             
             const downloadArtifact = async (artifact) => {
+                let fs = require('fs');
                 const archivePath = `${process.env.GITHUB_WORKSPACE}/artifacts/${artifact.name}.zip`;
-                console.log(`Download artifact.name into path: ${archivePath}}`);
+                console.log(`Download artifact.name into path: ${archivePath}`);
                 let download = await github.rest.actions.downloadArtifact({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
