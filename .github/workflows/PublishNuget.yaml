@@ -40,7 +40,7 @@ jobs:
 
 
             var run_id = Number('${{ github.event.workflow_run.id }}');
-            console.log(`Downloading artifacts from workflow run: ${run_id}`);
+            console.log(`Downloading artifacts from workflow run: ${run_id} ${context.repo.owner} ${context.repo.repo}`);
 
             var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
@@ -48,7 +48,8 @@ jobs:
                 run_id: run_id,
             });
 
-            console.log(`Found ${all_artifacts.data.length} artifacts`);
+            console.log(all_artifacts);
+            console.log(`Found ${all_artifacts.length} artifacts`);
 
             for (const artifact of all_artifacts) {
                 const artifactFullName = `${artifact_download_dir}/${artifact.name}.zip`;
