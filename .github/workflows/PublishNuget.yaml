@@ -22,17 +22,7 @@ jobs:
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       
-      steps:
-      - name: Download artifacts from previous workflow
-        uses: actions/download-artifact@v2
-        with:
-          name: Pull_Request_Files
-          run_id: ${{ github.event.workflow_run.id }}
-
-
       - name: Download Pull Request Changes
         if: github.event_name == 'workflow_run'
         uses: actions/github-script@v6
@@ -46,6 +36,7 @@ jobs:
             });
 
             for (let matchArtifact in artifacts) {
+              console.log(matchArtifact.name);
               var download = await github.rest.actions.downloadArtifact({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
