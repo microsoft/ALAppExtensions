@@ -77,13 +77,15 @@ jobs:
 
       - name: Prepare Package
         run: |
-          .github\PackNuget.ps1
+          $BuildArtifactsPath = (Join-Path $env:GITHUB_WORKSPACE '.artifacts')
+          $OutputPackageFolder = (Join-Path $env:GITHUB_WORKSPACE 'out')
+          .github\PackNuget.ps1 -BuildArtifactsPath $BuildArtifactsPath -OutputPackageFolder $OutputPackageFolder
 
       - name: Push Package
         run: |
-          $packageFolder = Join-Path $env:GITHUB_WORKSPACE 'out'
+          $OutputPackageFolder = (Join-Path $env:GITHUB_WORKSPACE 'out')
           $nugetSource = https://api.nuget.org/v3/index.json
-          Get-ChildItem -Path "$packageFolder/*nupkg" | % {
+          Get-ChildItem -Path "$OutputPackageFolder/*nupkg" | % {
             Write-Host "Pushing package: $($_.FullName)"
             nuget push $nupkgName -Source $nugetSource
           }

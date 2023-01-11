@@ -1,3 +1,7 @@
+Param(
+    [string] $BuildArtifactsPath,
+    [string] $OutputPackageFolder
+)
 
 function GenerateManifest
 (
@@ -21,14 +25,12 @@ function GenerateManifest
     return $template
 }
 
-$buildArtifactsPath = Join-Path $env:GITHUB_WORKSPACE '.artifacts'
-$packageFolder = Join-Path $env:GITHUB_WORKSPACE 'out'
 
-New-Item -Path $packageFolder -ItemType Directory | Out-Null
+New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
 
 $projectName = "Modules" 
-$appsFolders = Get-ChildItem $buildArtifactsPath -Directory | where-object {$_.FullName.Contains("Apps-")} | Select-Object -ExpandProperty FullName
-$testAppsFolders = Get-ChildItem $buildArtifactsPath -Directory | where-object {$_.FullName.Contains("TestApps-")} | Select-Object -ExpandProperty FullName
+$appsFolders = Get-ChildItem $BuildArtifactsPath -Directory | where-object {$_.FullName.Contains("Apps-")} | Select-Object -ExpandProperty FullName
+$testAppsFolders = Get-ChildItem $BuildArtifactsPath -Directory | where-object {$_.FullName.Contains("TestApps-")} | Select-Object -ExpandProperty FullName
 $packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
 
 Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
@@ -52,22 +54,22 @@ $manifest = GenerateManifest `
             -Owners "$env:GITHUB_REPOSITORY_OWNER"
 
 #Save .nuspec file
-$manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
+$manifestFilePath = (Join-Path $OutputPackageFolder 'manifest.nuspec')
 $manifest.Save($manifestFilePath)
 
 ### Copy files to package folder
-Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
-New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
+Write-Host "Package folder: $OutputPackageFolder" -ForegroundColor Magenta
+New-Item -Path "$OutputPackageFolder/Apps" -ItemType Directory -Force | Out-Null
 @($appsFolders) + @($testAppsFolders) | ForEach-Object { 
     $appsToPackage = Join-Path $_ 'Package'
     
     if(Test-Path -Path $appsToPackage) 
     {
-        Copy-Item -Path "$appsToPackage/*" -Destination "$packageFolder/Apps" -Recurse -Force
+        Copy-Item -Path "$appsToPackage/*" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
     }
 }
 
 # Copy over the license file
-Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
+Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$OutputPackageFolder" -Force
 
-nuget pack $manifestFilePath -OutputDirectory $packageFolder
+nuget pack $manifestFilePath -OutputDirectory $OutputPackageFolder
