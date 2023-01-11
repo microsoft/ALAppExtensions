@@ -28,7 +28,6 @@ function GenerateManifest
 
 New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
 
-$projectName = "Modules" 
 $appsFolders = Get-ChildItem $BuildArtifactsPath -Directory | where-object {$_.FullName.Contains("Apps-")} | Select-Object -ExpandProperty FullName
 $testAppsFolders = Get-ChildItem $BuildArtifactsPath -Directory | where-object {$_.FullName.Contains("TestApps-")} | Select-Object -ExpandProperty FullName
 $packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
@@ -37,12 +36,9 @@ Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
 Write-Host "Test app folder(s): $($testAppsFolders -join ', ')" -ForegroundColor Magenta
 
 # Generate Nuspec file
+$projectName = "Modules" 
 $RepoName = $env:GITHUB_REPOSITORY -replace "/", "-"
-if ($ENV:GITHUB_REF_NAME -eq "main") {
-    $packageId = "$RepoName-$projectName-preview"
-} else {
-    $packageId = "$RepoName-$projectName-test"
-}
+$packageId = "$RepoName-$projectName-preview"
 
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta
 Write-Host "Package version: $packageVersion" -ForegroundColor Magenta
