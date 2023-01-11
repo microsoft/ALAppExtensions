@@ -22,7 +22,7 @@ jobs:
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
-    - name: publish artifact to github artifacts
+      - name: publish artifact to github artifacts
         uses: actions/upload-artifact@v2
         with:
           name: 'Other'
