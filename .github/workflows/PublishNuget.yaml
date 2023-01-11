@@ -26,11 +26,11 @@ jobs:
       uses: actions/checkout@v3
 
     - name: publish artifact to github artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: 'Other'
-          path: '${{ github.workspace }}/Other/'
-          if-no-files-found: ignore
+      uses: actions/upload-artifact@v2
+      with:
+        name: 'Other'
+        path: '${{ github.workspace }}/Other/'
+        if-no-files-found: ignore
 
       - name: Download Build Output
         if: github.event_name == 'workflow_run'
