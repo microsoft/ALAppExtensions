@@ -29,8 +29,9 @@ jobs:
           script: |
             const downloadArtifact = async (artifact) => {
                 let fs = require('fs');
-                fs.mkdirSync(`${process.env.GITHUB_WORKSPACE}/artifacts`);
-                const archivePath = `${process.env.GITHUB_WORKSPACE}/artifacts/${artifact.name}.zip`;
+                const artifactsDirectory = `${process.env.GITHUB_WORKSPACE}/.artifacts`;
+                fs.mkdirSync(artifactsDirectory);
+                const archivePath = `${artifactsDirectory}/${artifact.name}.zip`;
                 console.log(`Download artifact.name into path: ${archivePath}`);
                 let download = await github.rest.actions.downloadArtifact({
                     owner: context.repo.owner,
@@ -58,7 +59,9 @@ jobs:
       - name: Unzip Build Output
         if: github.event_name == 'workflow_run'
         run: | 
-          Get-ChildItem -Path "$($env:GITHUB_WORKSPACE)/artifacts/*zip" | % {
+          $artifactsDirectory = "$($env:GITHUB_WORKSPACE)/.artifacts"
+          Get-ChildItem -Path "$artifactsDirectory/*zip" | % {
             Write-Host "Expand archive: $($_.FullName)"
-            Expand-Archive -DestinationPath "$($env:GITHUB_WORKSPACE)/artifacts" -Path $_.FullName -Verbose
+            Expand-Archive -DestinationPath $artifactsDirectory -Path $_.FullName -Verbose
+            Remove-Item -Path $_.FullName -Force
           }
