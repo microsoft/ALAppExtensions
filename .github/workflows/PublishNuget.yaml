@@ -59,6 +59,6 @@ jobs:
         if: github.event_name == 'workflow_run'
         run: | 
           Get-ChildItem -Path "$($env:GITHUB_WORKSPACE)/artifacts/*zip" | % {
-            Write-Host "Expand archive: $_.FullName"
-            Expand-Archive -DestinationPath "$($env:GITHUB_WORKSPACE)/artifacts" -Path $_.FullName
+            Write-Host "Expand archive: $($_.FullName)"
+            Expand-Archive -DestinationPath "$($env:GITHUB_WORKSPACE)/artifacts" -Path $_.FullName -Verbose
           }
