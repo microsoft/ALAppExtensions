@@ -22,6 +22,9 @@ jobs:
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - name: publish artifact to github artifacts
         uses: actions/upload-artifact@v2
         with:
