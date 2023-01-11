@@ -758,7 +758,7 @@ jobs:
 
       - name: Prepare Package
         run: |
-          .github\DeliverToBCFeed.ps1
+          .github\PackNuget.ps1
           
       - name: Publish nuget to artifacts
         uses: actions/upload-artifact@v3
