@@ -35,6 +35,8 @@ jobs:
                run_id: run_id
             });
 
+            console.log(artifacts);
+
             for (let i = 0; i < artifacts.data.artifacts.length; i++) { 
               console.log(artifacts[i]);
               var download = await github.rest.actions.downloadArtifact({
