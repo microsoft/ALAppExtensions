@@ -58,10 +58,7 @@ jobs:
       - name: Unzip Build Output
         if: github.event_name == 'workflow_run'
         run: | 
-          Get-ChildItem -Include "$($env:GITHUB_WORKSPACE)/artifacts/*zip" | % {
-            Write-Host $_.FullName
-            #Expand-Archive -DestinationPath "$($env:GITHUB_WORKSPACE)/artifacts"
+          Get-ChildItem -Path "$($env:GITHUB_WORKSPACE)/artifacts/*zip" | % {
+            Write-Host "Expand archive: $_.FullName"
+            Expand-Archive -DestinationPath "$($env:GITHUB_WORKSPACE)/artifacts" -Path $_.FullName
           }
-          write-host "PRREPOFULLNAME: $env:PRREPOFULLNAME"
-            
-
