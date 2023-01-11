@@ -22,6 +22,13 @@ jobs:
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
+    - name: publish artifact to github artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'Other'
+          path: '${{ github.workspace }}/Other/'
+          if-no-files-found: ignore
+
       - name: Download Build Output
         if: github.event_name == 'workflow_run'
         uses: actions/github-script@v6
