@@ -51,7 +51,7 @@ jobs:
             console.log(all_artifacts.data.artifacts);
             console.log(`Found ${all_artifacts.data.total_count} artifacts`);
 
-            for (const artifact of all_artifacts) {
+            for (const artifact of all_artifacts.data.artifacts) {
                 const artifactFullName = `${artifact_download_dir}/${artifact.name}.zip`;
                 try {
                     console.log(`Attempting to download artifact (${artifact.id}): ${artifactFullName}`);
