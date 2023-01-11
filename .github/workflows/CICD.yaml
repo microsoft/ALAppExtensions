@@ -1,4 +1,4 @@
-﻿name: 'CI/CD'
+﻿name: ' CI/CD'
 
 on:
   workflow_dispatch:
@@ -214,7 +214,7 @@ jobs:
                 }
               }
               else {
-                $include = (($ENV:GITHUB_REF_NAME -eq 'main') -or ($ENV:GITHUB_REF_NAME -eq 'aholstrup/release-workflow-main'))
+                $include = ($ENV:GITHUB_REF_NAME -eq 'main')
               }
             }
             if ($include) {
@@ -737,7 +737,7 @@ jobs:
 
   Deliver:
     needs: [ Initialization, Build ]
-    #if: always() && needs.Build.result == 'Success' && github.event_name != 'workflow_run' && needs.Initialization.outputs.deliveryTargetCount > 0
+    if: always() && needs.Build.result == 'Success' && github.event_name != 'workflow_run' && needs.Initialization.outputs.deliveryTargetCount > 0
     strategy:
       matrix:
         deliveryTarget: ${{ fromJson(needs.Initialization.outputs.deliveryTargets) }}
@@ -753,19 +753,40 @@ jobs:
         with:
           path: '.artifacts'
 
-      - name: Setup NuGet.exe
-        uses: nuget/setup-nuget@v1
-
-      - name: Prepare Package
-        run: |
-          .github\PackNuget.ps1
-          
-      - name: Publish nuget to artifacts
-        uses: actions/upload-artifact@v3
+      - name: Read settings
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
-          name: 'nuget package'
-          path: '${{ github.workspace }}/out/'
-          if-no-files-found: ignore      
+          shell: powershell
+
+      - name: Read secrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
+        env:
+          secrets: ${{ toJson(secrets) }}
+        with:
+          shell: powershell
+          settingsJson: ${{ env.Settings }}
+          secrets: '${{ matrix.deliveryTarget }}Context'
+
+      - name: DeliveryContext
+        id: deliveryContext
+        run: |
+          $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
+          $contextName = '${{ matrix.deliveryTarget }}Context'
+          $deliveryContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable($contextName)))
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "deliveryContext=$deliveryContext"
+          Write-Host "deliveryContext=$deliveryContext"
+
+      - name: Deliver
+        uses: microsoft/AL-Go-Actions/Deliver@preview
+        env:
+          deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
+        with:
+          shell: powershell
+          type: 'CD'
+          projects: ${{ needs.Initialization.outputs.projects }}
+          deliveryTarget: ${{ matrix.deliveryTarget }}
+          artifacts: '.artifacts'
 
   UpdatePRcheck:
     if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
