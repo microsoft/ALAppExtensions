@@ -22,17 +22,17 @@ jobs:
     - name: Nuget Pack
       run: |
           $nuspecPath = Join-Path $ENV:GITHUB_WORKSPACE '.github\aholstrup.TestPackage.nuspec'
-          nuget pack $nuspecPath -OutputDirectory $ENV:GITHUB_WORKSPACE/nuget
-          
-    - name: Publish nuget to artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: 'nuget package'
-        path: '${{ github.workspace }}/nuget/'
-        if-no-files-found: ignore      
+          nuget pack $nuspecPath -OutputDirectory $ENV:GITHUB_WORKSPACE/out
       
     - name: 'Push to Feed'
       run: |
           gci $ENV:GITHUB_WORKSPACE -Recurse -Filter *.nupkg | % {     
             nuget push $_.FullName -Source https://api.nuget.org/v3/index.json
           }
+          
+    - name: Publish nuget to artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: 'nuget package'
+        path: '${{ github.workspace }}/out/'
+        if-no-files-found: ignore      
