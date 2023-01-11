@@ -35,6 +35,7 @@ jobs:
                 artifact_id: artifact.id,
                 archive_format: 'zip'
             });
+            let fs = require('fs');
             fs.writeFileSync(`${artifact.archive_download_url}/${artifact.name}`, Buffer.from(download.data));
             };
 
