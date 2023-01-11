@@ -24,6 +24,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      
+      steps:
+      - name: Download artifacts from previous workflow
+        uses: actions/download-artifact@v2
+        with:
+          name: Pull_Request_Files
+          run_id: ${{ github.event.workflow_run.id }}
+
 
       - name: Download Pull Request Changes
         if: github.event_name == 'workflow_run'
@@ -36,14 +44,14 @@ jobs:
                repo: context.repo.repo,
                run_id: run_id
             });
-            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == 'Pull_Request_Files'
-            })[0];
-            var download = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact.id,
-               archive_format: 'zip'
-            });
-            var fs = require('fs');
-            fs.writeFileSync('.PullRequestChanges.zip', Buffer.from(download.data));
+
+            for (let matchArtifact in artifacts) {
+              var download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: matchArtifact.id,
+                archive_format: 'zip'
+              });
+              var fs = require('fs');
+              fs.writeFileSync(matchArtifact.name, Buffer.from(download.data));
+            }
