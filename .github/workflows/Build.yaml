@@ -24,6 +24,6 @@ jobs:
       - name: publish artifact to github artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: 'nuget package'
+          name: 'Pull_Request_Files'
           path: '${{ github.workspace }}/.github/'
           if-no-files-found: ignore

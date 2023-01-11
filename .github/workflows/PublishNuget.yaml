@@ -25,11 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: '.artifacts'
-
       - name: Download Pull Request Changes
         if: github.event_name == 'workflow_run'
         uses: actions/github-script@v6
@@ -41,14 +36,14 @@ jobs:
                repo: context.repo.repo,
                run_id: run_id
             });
-
-            for (let matchArtifact in artifacts) {
-              var download = await github.rest.actions.downloadArtifact({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                artifact_id: matchArtifact.id,
-                archive_format: 'zip'
-              });
-              var fs = require('fs');
-              fs.writeFileSync(matchArtifact.name, Buffer.from(download.data));
-            }
+            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == 'Pull_Request_Files'
+            })[0];
+            var download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip'
+            });
+            var fs = require('fs');
+            fs.writeFileSync('.PullRequestChanges.zip', Buffer.from(download.data));
