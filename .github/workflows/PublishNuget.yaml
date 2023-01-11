@@ -35,7 +35,7 @@ jobs:
                 artifact_id: artifact.id,
                 archive_format: 'zip'
             });
-            fs.writeFileSync(`${archive_download_url}/${artifact.name}.zip`, Buffer.from(download.data));
+            fs.writeFileSync(`${artifact.archive_download_url}/${artifact.name}.zip`, Buffer.from(download.data));
             };
 
 
@@ -52,7 +52,8 @@ jobs:
             console.log(`Found ${all_artifacts.data.total_count} artifacts`);
 
             for (const artifact of all_artifacts.data.artifacts) {
-                const artifactFullName = `${archive_download_url}/${artifact.name}.zip`;
+                const artifactFullName = `${artifact.archive_download_url}/${artifact.name}.zip`;
+                console.log(artifactFullName);
                 try {
                     console.log(`Attempting to download artifact (${artifact.id}): ${artifactFullName}`);
                     await downloadArtifact(artifact);
