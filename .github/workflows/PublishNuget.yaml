@@ -38,14 +38,17 @@ jobs:
             fs.writeFileSync(`${artifact_download_dir}/${artifact.name}.zip`, Buffer.from(download.data));
             };
 
-            console.log(`Downloading artifacts from workflow run: ${run_id}`);
 
             var run_id = Number('${{ github.event.workflow_run.id }}');
-            const all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            console.log(`Downloading artifacts from workflow run: ${run_id}`);
+
+            var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: run_id,
             });
+
+            console.log(`Found ${all_artifacts.data.length} artifacts`);
 
             for (const artifact of all_artifacts) {
                 const artifactFullName = `${artifact_download_dir}/${artifact.name}.zip`;
