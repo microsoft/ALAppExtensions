@@ -1,0 +1,54 @@
+name: 'Publish Nuget'
+
+on:
+  workflow_run:
+    workflows: ['Build']
+    types: [completed]
+    branches: ["main"]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  checks: read
+
+defaults:
+  run:
+    shell: powershell
+
+jobs:
+  Publish:
+    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: [ windows-latest ]
+    name: Publish Nuget
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: '.artifacts'
+
+      - name: Download Pull Request Changes
+        if: github.event_name == 'workflow_run'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            var run_id = Number('${{ github.event.workflow_run.id }}');
+            var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: run_id
+            });
+
+            for (let matchArtifact in artifacts) {
+              var download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: matchArtifact.id,
+                archive_format: 'zip'
+              });
+              var fs = require('fs');
+              fs.writeFileSync(matchArtifact.name, Buffer.from(download.data));
+            }

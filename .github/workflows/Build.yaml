@@ -1,0 +1,29 @@
+name: 'Publish Nuget'
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  checks: read
+
+defaults:
+  run:
+    shell: powershell
+
+jobs:
+  Publish:
+    runs-on: [ windows-latest ]
+    name: Publish Nuget
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: publish artifact to github artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'nuget package'
+          path: '${{ github.workspace }}/.github/'
+          if-no-files-found: ignore
