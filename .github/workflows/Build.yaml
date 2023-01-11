@@ -1,4 +1,4 @@
-name: 'Publish Nuget'
+name: 'Build'
 
 on:
   workflow_dispatch:
