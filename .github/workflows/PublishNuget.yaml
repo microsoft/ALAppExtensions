@@ -43,23 +43,16 @@ jobs:
 
 
             var run_id = Number('${{ github.event.workflow_run.id }}');
-            console.log(`Downloading artifacts from workflow run: ${run_id} ${context.repo.owner} ${context.repo.repo}`);
-
             var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: run_id,
             });
 
-            console.log(all_artifacts.data.artifacts);
             console.log(`Found ${all_artifacts.data.total_count} artifacts`);
 
             for (const artifact of all_artifacts.data.artifacts) {
-                const artifactFullName = `${artifact.archive_download_url}/${artifact.name}`;
-                console.log(artifactFullName);
-                console.log(`Attempting to download artifact (${artifact.id}): ${artifactFullName}`);
                 await downloadArtifact(artifact);
-                console.log(`Successfully downloaded artifact (${artifact.id}): ${artifactFullName}`);
             }
       - name: Unzip Build Output
         if: github.event_name == 'workflow_run'
