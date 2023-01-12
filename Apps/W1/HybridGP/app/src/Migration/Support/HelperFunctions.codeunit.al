@@ -793,7 +793,7 @@ Codeunit 4037 "Helper Functions"
         GPPOPReceiptHist: Record "GPPOPReceiptHist"; //4116
         GPPOPPOHist: Record "GPPOPPOHist"; //4123
         GPPMHist: Record "GPPMHist"; //4126
-        GPPOPPOHeader: Record "GP POPPOHeader";
+        GPPOP10100: Record "GP POP10100";
         PaymentTerm: Text[22];
         PaymentTerm_New: Text[10];
     begin
@@ -806,69 +806,69 @@ Codeunit 4037 "Helper Functions"
             // if the "old" and "new" payment terms are the same, skip
             if PaymentTerm <> PaymentTerm_New THEN begin
                 // update the payment terms in the tables that have this field
-                GPCustomer.RESET();
+                Clear(GPCustomer);
                 GPCustomer.SetRange(GPCustomer."PYMTRMID", PaymentTerm);
-                if GPCustomer.FINDFIRST() then
+                if not GPCustomer.IsEmpty() then
                     GPCustomer.MODIFYALL(GPCustomer."PYMTRMID", PaymentTerm_New);
 
 
-                GPCustomerTrans.RESET();
+                Clear(GPCustomerTrans);
                 GPCustomerTrans.SetRange(GPCustomerTrans."PYMTRMID", PaymentTerm);
-                if GPCustomerTrans.FINDFIRST() then
+                if not GPCustomerTrans.IsEmpty() then
                     GPCustomerTrans.MODIFYALL(GPCustomerTrans."PYMTRMID", PaymentTerm_New);
 
 
-                GPVendor.RESET();
+                Clear(GPVendor);
                 GPVendor.SetRange(GPVendor."PYMTRMID", PaymentTerm);
-                if GPVendor.FINDFIRST() then
+                if not GPVendor.IsEmpty() then
                     GPVendor.MODIFYALL(GPVendor."PYMTRMID", PaymentTerm_New);
 
 
-                GPVendorTransactions.RESET();
+                Clear(GPVendorTransactions);
                 GPVendorTransactions.SetRange(GPVendorTransactions."PYMTRMID", PaymentTerm);
-                if GPVendorTransactions.FINDFIRST() then
+                if not GPVendorTransactions.IsEmpty() then
                     GPVendorTransactions.MODIFYALL(GPVendorTransactions."PYMTRMID", PaymentTerm_New);
 
 
-                GPSOPTrxHist.RESET();
+                Clear(GPSOPTrxHist);
                 GPSOPTrxHist.SetRange(GPSOPTrxHist."PYMTRMID", PaymentTerm);
-                if GPSOPTrxHist.FINDFIRST() then
+                if not GPSOPTrxHist.IsEmpty() then
                     GPSOPTrxHist.MODIFYALL(GPSOPTrxHist."PYMTRMID", PaymentTerm_New);
 
 
-                GPRMOpen.RESET();
+                Clear(GPRMOpen);
                 GPRMOpen.SetRange(GPRMOpen."PYMTRMID", PaymentTerm);
-                if GPRMOpen.FINDFIRST() then
+                if not GPRMOpen.IsEmpty() then
                     GPRMOpen.MODIFYALL(GPRMOpen."PYMTRMID", PaymentTerm_New);
 
 
-                GPRMHist.RESET();
+                Clear(GPRMHist);
                 GPRMHist.SetRange(GPRMHist."PYMTRMID", PaymentTerm);
-                if GPRMHist.FINDFIRST() then
+                if not GPRMHist.IsEmpty() then
                     GPRMHist.MODIFYALL(GPRMHist."PYMTRMID", PaymentTerm_New);
 
 
-                GPPOPReceiptHist.RESET();
+                Clear(GPPOPReceiptHist);
                 GPPOPReceiptHist.SetRange(GPPOPReceiptHist."PYMTRMID", PaymentTerm);
-                if GPPOPReceiptHist.FINDFIRST() then
+                if not GPPOPReceiptHist.IsEmpty() then
                     GPPOPReceiptHist.MODIFYALL(GPPOPReceiptHist."PYMTRMID", PaymentTerm_New);
 
 
-                GPPOPPOHist.RESET();
+                Clear(GPPOPPOHist);
                 GPPOPPOHist.SetRange(GPPOPPOHist."PYMTRMID", PaymentTerm);
-                if GPPOPPOHist.FINDFIRST() then
+                if not GPPOPPOHist.IsEmpty() then
                     GPPOPPOHist.MODIFYALL(GPPOPPOHist."PYMTRMID", PaymentTerm_New);
 
 
-                GPPMHist.RESET();
+                Clear(GPPMHist);
                 GPPMHist.SetRange(GPPMHist."PYMTRMID", PaymentTerm);
-                if GPPMHist.FINDFIRST() then
+                if not GPPMHist.IsEmpty() then
                     GPPMHist.MODIFYALL(GPPMHist."PYMTRMID", PaymentTerm_New);
 
-                GPPOPPOHeader.Reset();
-                GPPOPPOHeader.SetRange(GPPOPPOHeader.PYMTRMID, PaymentTerm);
-                if GPPOPPOHeader.FindFirst() then
-                    GPPOPPOHeader.ModifyAll(GPPOPPOHeader.PYMTRMID, PaymentTerm_New);
+                Clear(GPPOP10100);
+                GPPOP10100.SetRange(GPPOP10100.PYMTRMID, PaymentTerm);
+                if not GPPOP10100.IsEmpty() then
+                    GPPOP10100.ModifyAll(GPPOP10100.PYMTRMID, PaymentTerm_New);
 
             end;
         until GPPaymentTerms.Next() = 0;
@@ -2004,5 +2004,26 @@ Codeunit 4037 "Helper Functions"
                 GLAccount."Gen. Prod. Posting Group" := PostingGroupCodeTxt;
                 GLAccount.Modify(true);
             end;
+    end;
+
+    procedure CreateCurrencyIfNeeded(CurrencyCode: Code[10])
+    var
+        Currency: Record Currency;
+        GPMC40200: Record "GP MC40200";
+    begin
+        if CurrencyCode = '' then
+            exit;
+
+        if not GPMC40200.Get(CurrencyCode) then
+            exit;
+
+        if Currency.Get(CurrencyCode) then
+            exit;
+
+        Currency.Validate("Symbol", GPMC40200.CRNCYSYM);
+        Currency.Validate("Code", CurrencyCode);
+        Currency.Validate("Description", CopyStr(GPMC40200.CRNCYDSC, 1, 30));
+        Currency.Validate("Invoice Rounding Type", Currency."Invoice Rounding Type"::Nearest);
+        Currency.Insert(true);
     end;
 }
