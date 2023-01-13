@@ -82,7 +82,6 @@ codeunit 9856 "Permission Set Relation Impl."
         exit(AddNewPermissionSet(CurrAppId, CurrRoleID, CurrScope, RelatedAppId, RelatedRoleId, RelatedScope, PermissionType));
     end;
 
-
     procedure ModifyPermissionSet(CurrAppId: Guid; CurrRoleID: Code[30]; CurrScope: Option System,Tenant; RelatedAppId: Guid; RelatedRoleId: Code[30]; PermissionType: Option Include,Exclude): Boolean
     var
         TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary;
