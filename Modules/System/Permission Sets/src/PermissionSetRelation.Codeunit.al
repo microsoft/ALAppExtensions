@@ -25,7 +25,7 @@ codeunit 9855 "Permission Set Relation"
     var
         PermissionSetRelationImpl: Codeunit "Permission Set Relation Impl.";
     begin
-        exit(PermissionSetRelationImpl.AddNewPermissionSet(AppId, RoleId, Scope, RelatedAppId, RelatedRoleId, RelatedScope, PermissionType));
+        exit(PermissionSetRelationImpl.AddNewPermissionSetRelation(AppId, RoleId, Scope, RelatedAppId, RelatedRoleId, RelatedScope, PermissionType));
     end;
 
     /// <summary>
