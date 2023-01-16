@@ -48,7 +48,7 @@ jobs:
 
 
             var run_id = Number('${{ github.event.workflow_run.id }}');
-            var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            const all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: run_id,
