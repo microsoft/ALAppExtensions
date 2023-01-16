@@ -16,9 +16,13 @@ defaults:
   run:
     shell: powershell
 
+env:
+  buildArtifactsPath: ${{ github.workspace }}/.artifacts
+  packageOutputPath: ${{ github.workspace }}/out
+
 jobs:
   Publish:
-    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
@@ -26,16 +30,15 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download Build Output
-        if: github.event_name == 'workflow_run'
         uses: actions/github-script@v6
         with:
           script: |
             const downloadArtifact = async (artifact) => {
                 let fs = require('fs');
-                const artifactsDirectory = `${process.env.GITHUB_WORKSPACE}/.artifacts`;
+                const artifactsDirectory = `${process.env.artifactsPath}`;
                 fs.mkdirSync(artifactsDirectory);
                 const archivePath = `${artifactsDirectory}/${artifact.name}.zip`;
-                console.log(`Download artifact.name into path: ${archivePath}`);
+                console.log(`Download artifact to path: ${archivePath}`);
                 let download = await github.rest.actions.downloadArtifact({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
@@ -60,12 +63,10 @@ jobs:
             }
             
       - name: Unzip Build Output
-        if: github.event_name == 'workflow_run'
         run: | 
-          $artifactsDirectory = "$($env:GITHUB_WORKSPACE)/.artifacts"
-          Get-ChildItem -Path "$artifactsDirectory/*zip" | ForEach-Object {
+          Get-ChildItem -Path "$($env:buildArtifactsPath)/*zip" | ForEach-Object {
             Write-Host "Expand archive: $($_.FullName)"
-            Expand-Archive -DestinationPath $artifactsDirectory -Path $_.FullName -Verbose
+            Expand-Archive -DestinationPath $env:buildArtifactsPath -Path $_.FullName -Verbose
             Remove-Item -Path $_.FullName -Force
           }
 
@@ -76,15 +77,12 @@ jobs:
 
       - name: Prepare Package
         run: |
-          $BuildArtifactsPath = (Join-Path $env:GITHUB_WORKSPACE '.artifacts')
-          $OutputPackageFolder = (Join-Path $env:GITHUB_WORKSPACE 'out')
-          .github\PackNuget.ps1 -BuildArtifactsPath $BuildArtifactsPath -OutputPackageFolder $OutputPackageFolder
+          .github\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath
 
       - name: Push Package
         run: |
-          $OutputPackageFolder = (Join-Path $env:GITHUB_WORKSPACE 'out')
           $nugetSource = https://api.nuget.org/v3/index.json
-          Get-ChildItem -Path "$OutputPackageFolder/*nupkg" | % {
+          Get-ChildItem -Path "$($env:packageOutputPath)/*nupkg" | % {
             Write-Host "Pushing package: $($_.FullName)"
             nuget push $nupkgName -Source $nugetSource
           }
