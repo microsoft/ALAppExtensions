@@ -64,7 +64,7 @@ jobs:
         if: github.event_name == 'workflow_run'
         run: | 
           $artifactsDirectory = "$($env:GITHUB_WORKSPACE)/.artifacts"
-          Get-ChildItem -Path "$artifactsDirectory/*zip" | % {
+          Get-ChildItem -Path "$artifactsDirectory/*zip" | ForEach-Object {
             Write-Host "Expand archive: $($_.FullName)"
             Expand-Archive -DestinationPath $artifactsDirectory -Path $_.FullName -Verbose
             Remove-Item -Path $_.FullName -Force
