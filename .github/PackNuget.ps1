@@ -27,12 +27,10 @@ function GenerateManifest
 
 New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
 
-$appsFolders = Get-ChildItem $BuildArtifactsPath -Directory | where-object {$_.FullName.Contains("Apps-")} | Select-Object -ExpandProperty FullName
-$testAppsFolders = Get-ChildItem $BuildArtifactsPath -Directory | where-object {$_.FullName.Contains("TestApps-")} | Select-Object -ExpandProperty FullName
+$appsFolders = Get-ChildItem $BuildArtifactsPath -Directory 
 $packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
 
 Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
-Write-Host "Test app folder(s): $($testAppsFolders -join ', ')" -ForegroundColor Magenta
 
 # Generate Nuspec file
 $projectName = "Modules" 
@@ -55,7 +53,7 @@ $manifest.Save($manifestFilePath)
 ### Copy files to package folder
 Write-Host "Package folder: $OutputPackageFolder" -ForegroundColor Magenta
 New-Item -Path "$OutputPackageFolder/Apps" -ItemType Directory -Force | Out-Null
-@($appsFolders) + @($testAppsFolders) | ForEach-Object { 
+$appsFolders | ForEach-Object { 
     $appsToPackage = Join-Path $_ 'Package'
     
     if(Test-Path -Path $appsToPackage) 

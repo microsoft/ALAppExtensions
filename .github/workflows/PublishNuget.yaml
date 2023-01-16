@@ -50,10 +50,14 @@ jobs:
             };
 
             const run_id = Number('${{ github.event.workflow_run.id }}');
-            const all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: run_id,
+            });
+
+            all_artifacts = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name.includes('Apps-');
             });
 
             console.log(`Found ${all_artifacts.data.total_count} artifacts`);
