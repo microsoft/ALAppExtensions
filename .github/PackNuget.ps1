@@ -25,7 +25,6 @@ function GenerateManifest
     return $template
 }
 
-
 New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
 
 $appsFolders = Get-ChildItem $BuildArtifactsPath -Directory | where-object {$_.FullName.Contains("Apps-")} | Select-Object -ExpandProperty FullName
