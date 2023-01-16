@@ -46,7 +46,6 @@ jobs:
                 fs.writeFileSync(archivePath, Buffer.from(download.data));
             };
 
-
             var run_id = Number('${{ github.event.workflow_run.id }}');
             const all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
