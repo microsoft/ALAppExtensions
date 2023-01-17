@@ -33,11 +33,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const downloadArtifact = async (artifact) => {
-                let fs = require('fs');
-                const artifactsDirectory = `${process.env.artifactsPath}`;
-                fs.mkdirSync(artifactsDirectory);
-                const archivePath = `${artifactsDirectory}/${artifact.name}.zip`;
+            const downloadArtifact = async (artifact, downloadDirectory) => {
+                const archivePath = `${downloadDirectory}/${artifact.name}.zip`;
                 console.log(`Download artifact to path: ${archivePath}`);
                 let download = await github.rest.actions.downloadArtifact({
                     owner: context.repo.owner,
@@ -49,33 +46,34 @@ jobs:
                 fs.writeFileSync(archivePath, Buffer.from(download.data));
             };
 
+            let fs = require('fs');
+            const artifactsDirectory = `${process.env.buildArtifactsPath}`;
+            fs.mkdirSync(artifactsDirectory);
+
             const run_id = Number('${{ github.event.workflow_run.id }}');
-
-            console.log(`Looking for artifacts for run: ${run_id}`);
-
+            const artifactFilter = 'Apps-'
             var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: run_id,
             });
 
-            console.log(`Found ${all_artifacts.data.total_count} artifacts`);
-
-            all_artifacts = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name.includes('Apps-');
+            all_artifacts = all_artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name.includes(artifactFilter);
             });
 
-            console.log(`Found ${all_artifacts.data.total_count} artifacts`);
+            console.log(`Found ${all_artifacts.length} artifacts matching filter: ${artifactFilter}`);
 
-            for (const artifact of all_artifacts.data.artifacts) {
-                await downloadArtifact(artifact);
+            for (const artifact of all_artifacts) {
+                await downloadArtifact(artifact, artifactsDirectory);
             }
             
       - name: Unzip Build Output
         run: | 
           Get-ChildItem -Path "$($env:buildArtifactsPath)/*zip" | ForEach-Object {
-            Write-Host "Expand archive: $($_.FullName)"
-            Expand-Archive -DestinationPath $env:buildArtifactsPath -Path $_.FullName -Verbose
+            $downloadIntoPath = "$($env:buildArtifactsPath)/$($_.BaseName)"
+            Write-Host "Expand archive: $($_.FullName) into path $downloadIntoPath"
+            Expand-Archive -DestinationPath $downloadIntoPath -Path $_.FullName
             Remove-Item -Path $_.FullName -Force
           }
 
@@ -86,7 +84,8 @@ jobs:
 
       - name: Prepare Package
         run: |
-          .github\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath
+          $RepoName = $env:GITHUB_REPOSITORY -replace "/", "-"
+          .github\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $RepoName -$RepoOwner $env:GITHUB_REPOSITORY_OWNER -RepoRoot $env:GITHUB_WORKSPACE
 
       - name: Push Package
         run: |

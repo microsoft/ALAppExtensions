@@ -1,6 +1,11 @@
 Param(
+    [Parameter(Mandatory=$true)]
     [string] $BuildArtifactsPath,
-    [string] $OutputPackageFolder
+    [Parameter(Mandatory=$true)]
+    [string] $OutputPackageFolder,
+    [string] $RepoName,
+    [string] $RepoOwner,
+    [string] $RepoRoot
 )
 
 function GenerateManifest
@@ -34,7 +39,6 @@ Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
 
 # Generate Nuspec file
 $projectName = "Modules" 
-$RepoName = $env:GITHUB_REPOSITORY -replace "/", "-"
 $packageId = "$RepoName-$projectName-preview"
 
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta
@@ -43,8 +47,8 @@ Write-Host "Package version: $packageVersion" -ForegroundColor Magenta
 $manifest = GenerateManifest `
             -PackageId $packageId `
             -Version $packageVersion `
-            -Authors "$env:GITHUB_REPOSITORY_OWNER" `
-            -Owners "$env:GITHUB_REPOSITORY_OWNER"
+            -Authors "$RepoOwner" `
+            -Owners "$RepoOwner"
 
 #Save .nuspec file
 $manifestFilePath = (Join-Path $OutputPackageFolder 'manifest.nuspec')
@@ -63,6 +67,6 @@ $appsFolders | ForEach-Object {
 }
 
 # Copy over the license file
-Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$OutputPackageFolder" -Force
+Copy-Item -Path "$RepoRoot/LICENSE" -Destination "$OutputPackageFolder" -Force
 
 nuget pack $manifestFilePath -OutputDirectory $OutputPackageFolder
