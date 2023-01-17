@@ -833,6 +833,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
+        HistInventoryDocType: enum "Hist. Inventory Doc. Type";
         DocumentNo: Code[22];
     begin
         if not GPCompanyAdditionalSettings.GetMigrateHistInvTrx() then
@@ -846,19 +847,27 @@ codeunit 40900 "GP Populate Hist. Tables"
         DocumentNo := GPGL20000.REFRENCE.TrimEnd();
 #pragma warning restore AA0139
 
+        GPIVTrxAmountsHist.SetRange(TRXSORCE, GPGL20000.ORTRXSRC);
         GPIVTrxAmountsHist.SetRange(DOCNUMBR, DocumentNo);
-
         if not GPIVTrxAmountsHist.FindFirst() then
             exit;
 
+        HistInventoryDocType := ConvertGPDocTypeToHistInventoryDocType(GPIVTrxAmountsHist.DOCTYPE);
+
+        HistInventoryTrxHeader.SetRange("Document Type", HistInventoryDocType);
+        HistInventoryTrxHeader.SetRange("Document No.", DocumentNo);
+        if not HistInventoryTrxHeader.IsEmpty() then
+            exit;
+
+        Clear(HistInventoryTrxHeader);
         HistInventoryTrxHeader."Audit Code" := GPGL20000.TRXSORCE;
-        HistInventoryTrxHeader."Document Type" := ConvertGPDocTypeToHistInventoryDocType(GPIVTrxAmountsHist.DOCTYPE);
+        HistInventoryTrxHeader."Document Type" := HistInventoryDocType;
         HistInventoryTrxHeader."Document No." := DocumentNo;
         HistInventoryTrxHeader."Document Date" := DT2Date(OutlookSynchTypeConv.LocalDT2UTC(GPGL20000.TRXDATE));
         HistInventoryTrxHeader."Post Date" := HistInventoryTrxHeader."Document Date";
 
         if HistInventoryTrxHeader.Insert() then
-            PopulateInventoryTrxLines(GPGL20000.TRXSORCE, DocumentNo)
+            PopulateInventoryTrxLines(GPGL20000.ORTRXSRC, DocumentNo)
         else
             HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo, true);
 
@@ -870,6 +879,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
+        HistInventoryDocType: enum "Hist. Inventory Doc. Type";
         DocumentNo: Code[22];
     begin
         if not GPCompanyAdditionalSettings.GetMigrateHistInvTrx() then
@@ -883,19 +893,27 @@ codeunit 40900 "GP Populate Hist. Tables"
         DocumentNo := GPGL30000.REFRENCE.TrimEnd();
 #pragma warning restore AA0139
 
+        GPIVTrxAmountsHist.SetRange(TRXSORCE, GPGL30000.ORTRXSRC);
         GPIVTrxAmountsHist.SetRange(DOCNUMBR, DocumentNo);
-
         if not GPIVTrxAmountsHist.FindFirst() then
             exit;
 
+        HistInventoryDocType := ConvertGPDocTypeToHistInventoryDocType(GPIVTrxAmountsHist.DOCTYPE);
+
+        HistInventoryTrxHeader.SetRange("Document Type", HistInventoryDocType);
+        HistInventoryTrxHeader.SetRange("Document No.", DocumentNo);
+        if not HistInventoryTrxHeader.IsEmpty() then
+            exit;
+
+        Clear(HistInventoryTrxHeader);
         HistInventoryTrxHeader."Audit Code" := GPGL30000.TRXSORCE;
-        HistInventoryTrxHeader."Document Type" := ConvertGPDocTypeToHistInventoryDocType(GPIVTrxAmountsHist.DOCTYPE);
+        HistInventoryTrxHeader."Document Type" := HistInventoryDocType;
         HistInventoryTrxHeader."Document No." := DocumentNo;
         HistInventoryTrxHeader."Document Date" := DT2Date(OutlookSynchTypeConv.LocalDT2UTC(GPGL30000.TRXDATE));
         HistInventoryTrxHeader."Post Date" := HistInventoryTrxHeader."Document Date";
 
         if HistInventoryTrxHeader.Insert() then
-            PopulateInventoryTrxLines(GPGL30000.TRXSORCE, DocumentNo)
+            PopulateInventoryTrxLines(GPGL30000.ORTRXSRC, DocumentNo)
         else
             HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo, true);
 
@@ -1119,8 +1137,8 @@ codeunit 40900 "GP Populate Hist. Tables"
                 exit("Hist. Inventory Doc. Type"::"Sales Invoices");
             7:
                 exit("Hist. Inventory Doc. Type"::"Assembly");
-            8, 11:
-                exit("Hist. Inventory Doc. Type"::"Inventory cost adjustment");
+            8, 11, 12:
+                exit("Hist. Inventory Doc. Type"::"Inventory Cost Adjustment");
         end;
 
         exit("Hist. Inventory Doc. Type"::Blank);

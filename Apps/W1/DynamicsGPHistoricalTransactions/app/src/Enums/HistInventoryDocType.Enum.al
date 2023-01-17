@@ -10,5 +10,5 @@ enum 40005 "Hist. Inventory Doc. Type"
     value(5; "Sales Returns") { Caption = 'Sales Returns'; }
     value(6; "Sales Invoices") { Caption = 'Sales Invoices'; }
     value(7; "Assembly") { Caption = 'Assembly'; }
-    value(8; "Inventory cost adjustment") { Caption = 'Inventory cost adjustment'; }
+    value(8; "Inventory Cost Adjustment") { Caption = 'Inventory Cost Adjustment'; }
 }
