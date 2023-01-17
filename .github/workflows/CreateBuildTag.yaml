@@ -26,7 +26,8 @@ jobs:
             });
 
             if(!allArtifacts) {
-              throw `Could not fetch artifacts from run ID ${context.payload.workflow_run.id}`
+              console.log(`Could not fetch artifacts from run ID ${context.payload.workflow_run.id}`)
+              return;
             }
 
             // Determine the build number, based on the apps artifact name
@@ -35,7 +36,8 @@ jobs:
             })[0];
 
             if(!appsArtifact) {
-              throw `Could not find apps artifact from run ID ${context.payload.workflow_run.id}`
+              console.log(`Could not find apps artifact from run ID ${context.payload.workflow_run.id}`)
+              return;
             }
 
             // The build number is after -Apps-
