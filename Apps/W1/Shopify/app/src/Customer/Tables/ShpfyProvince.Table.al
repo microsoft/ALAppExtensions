@@ -6,6 +6,9 @@ table 30108 "Shpfy Province"
     Access = Internal;
     Caption = 'Shopify Province';
     DataClassification = SystemMetadata;
+    ObsoleteState = Removed;
+    ObsoleteReason = 'Replaced by Shpfy Tax Area';
+    ObsoleteTag = '21.4';
 
     fields
     {

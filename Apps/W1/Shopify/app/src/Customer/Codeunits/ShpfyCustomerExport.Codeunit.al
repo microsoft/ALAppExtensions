@@ -107,7 +107,7 @@ codeunit 30116 "Shpfy Customer Export"
         xShopifyCustomer: Record "Shpfy Customer" temporary;
         xCustomerAddress: Record "Shpfy Customer Address" temporary;
 #pragma warning restore AA0073
-        Province: Record "Shpfy Province";
+        TaxArea: Record "Shpfy Tax Area";
     begin
         xShopifyCustomer := ShopifyCustomer;
         xCustomerAddress := CustomerAddress;
@@ -145,16 +145,25 @@ codeunit 30116 "Shpfy Customer Export"
         if Customer.County <> '' then
             case Shop."County Source" of
                 Shop."County Source"::Code:
-                    CustomerAddress."Province Code" := CopyStr(Customer.County, 1, MaxStrLen(CustomerAddress."Province Code"));
+                    begin
+                        TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+                        TaxArea.SetRange("County Code", CustomerAddress."Province Code");
+                        if TaxArea.FindFirst() then
+                            CustomerAddress."Province Name" := TaxArea.County;
+                    end;
                 Shop."County Source"::Name:
                     begin
-                        Province.SetRange(Name, Customer.County);
-                        if Province.FindFirst() then
-                            CustomerAddress."Province Code" := CopyStr(Province.Code, 1, MaxStrLen(CustomerAddress."Province Code"))
-                        else begin
-                            Province.SetFilter(Name, Customer.County + '*');
-                            if Province.FindFirst() then
-                                CustomerAddress."Province Code" := CopyStr(Province.Code, 1, MaxStrLen(CustomerAddress."Province Code"));
+                        TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+                        TaxArea.SetRange(County, Customer.County);
+                        if TaxArea.FindFirst() then begin
+                            CustomerAddress."Province Code" := TaxArea."County Code";
+                            CustomerAddress."Province Name" := TaxArea.County;
+                        end else begin
+                            TaxArea.SetFilter(County, Customer.County + '*');
+                            if TaxArea.FindFirst() then begin
+                                CustomerAddress."Province Code" := TaxArea."County Code";
+                                CustomerAddress."Province Name" := TaxArea.County;
+                            end;
                         end;
                     end;
             end;

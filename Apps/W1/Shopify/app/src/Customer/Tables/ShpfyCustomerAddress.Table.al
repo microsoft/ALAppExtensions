@@ -66,7 +66,7 @@ table 30106 "Shpfy Customer Address"
             Caption = 'Country/Region Name';
             DataClassification = CustomerContent;
         }
-        field(12; "Province Code"; Code[2])
+        field(12; "Province Code"; Code[20])
         {
             Caption = 'Province Code';
             DataClassification = CustomerContent;
