@@ -70,8 +70,9 @@ jobs:
       - name: Unzip Build Output
         run: | 
           Get-ChildItem -Path "$($env:buildArtifactsPath)/*zip" | ForEach-Object {
-            Write-Host "Expand archive: $($_.FullName)"
-            Expand-Archive -DestinationPath $env:buildArtifactsPath -Path $_.FullName -Verbose
+            $downloadIntoPath = "$($env:buildArtifactsPath)/$($_.BaseName)"
+            Write-Host "Expand archive: $($_.FullName) into path $downloadIntoPath"
+            Expand-Archive -DestinationPath $downloadIntoPath -Path $_.FullName
             Remove-Item -Path $_.FullName -Force
           }
 
