@@ -57,9 +57,9 @@ jobs:
                 run_id: run_id,
             });
 
-            /*all_artifacts = artifacts.data.artifacts.filter((artifact) => {
+            all_artifacts = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name.includes('Apps-');
-            });*/
+            });
 
             console.log(`Found ${all_artifacts.data.total_count} artifacts`);
 
