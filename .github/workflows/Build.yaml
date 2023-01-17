@@ -41,3 +41,9 @@ jobs:
           name: 'Modules-main-TranslatedApps-1.2.3.4'
           path: '${{ github.workspace }}/.github/'
           if-no-files-found: ignore
+      - name: publish artifact to github artifacts 4
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'Modules-main-BuildOutput-1.2.3.4'
+          path: '${{ github.workspace }}/.github/'
+          if-no-files-found: ignore
