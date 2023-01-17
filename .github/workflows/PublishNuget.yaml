@@ -34,7 +34,6 @@ jobs:
         with:
           script: |
             const downloadArtifact = async (artifact) => {
-                let fs = require('fs');
                 const artifactsDirectory = `${process.env.buildArtifactsPath}`;
                 const archivePath = `${artifactsDirectory}/${artifact.name}.zip`;
                 console.log(`Download artifact to path: ${archivePath}`);
@@ -48,6 +47,7 @@ jobs:
                 fs.writeFileSync(archivePath, Buffer.from(download.data));
             };
 
+            let fs = require('fs');
             fs.mkdirSync(artifactsDirectory);
 
             const run_id = Number('${{ github.event.workflow_run.id }}');
