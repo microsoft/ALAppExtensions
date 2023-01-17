@@ -22,7 +22,7 @@ env:
 
 jobs:
   Publish:
-    if: github.event.workflow_run.conclusion == 'success'
+    if: github.event.workflow_run.conclusion == 'success' && github.repository_owner == 'microsoft'
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
