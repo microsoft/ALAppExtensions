@@ -57,7 +57,7 @@ jobs:
                 run_id: run_id,
             });
 
-            all_artifacts = artifacts.data.artifacts.filter((artifact) => {
+            all_artifacts = all_artifacts.data.artifacts.filter((artifact) => {
               return artifact.name.includes('Apps-');
             });
 
