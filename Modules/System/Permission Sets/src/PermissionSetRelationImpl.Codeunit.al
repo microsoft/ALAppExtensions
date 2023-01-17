@@ -255,7 +255,7 @@ codeunit 9856 "Permission Set Relation Impl."
             until MetaDataPermissionSetRel.Next() = 0;
     end;
 
-    procedure AddNewPermissionSet(CurrAppId: Guid; CurrRoleID: Code[30]; CurrScope: Option System,Tenant; RelatedAppId: Guid; RelatedRoleId: Code[30]; RelatedScope: Option System,Tenant; PermissionType: Option Include,Exclude) Success: Boolean
+    local procedure AddNewPermissionSet(CurrAppId: Guid; CurrRoleID: Code[30]; CurrScope: Option System,Tenant; RelatedAppId: Guid; RelatedRoleId: Code[30]; RelatedScope: Option System,Tenant; PermissionType: Option Include,Exclude) Success: Boolean
     var
         TenantPermissionSetRel: Record "Tenant Permission Set Rel.";
     begin
