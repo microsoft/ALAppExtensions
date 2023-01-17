@@ -36,7 +36,6 @@ jobs:
             const downloadArtifact = async (artifact) => {
                 let fs = require('fs');
                 const artifactsDirectory = `${process.env.buildArtifactsPath}`;
-                fs.mkdirSync(artifactsDirectory);
                 const archivePath = `${artifactsDirectory}/${artifact.name}.zip`;
                 console.log(`Download artifact to path: ${archivePath}`);
                 let download = await github.rest.actions.downloadArtifact({
@@ -48,6 +47,8 @@ jobs:
                 
                 fs.writeFileSync(archivePath, Buffer.from(download.data));
             };
+
+            fs.mkdirSync(artifactsDirectory);
 
             const run_id = Number('${{ github.event.workflow_run.id }}');
             var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
