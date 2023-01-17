@@ -35,7 +35,7 @@ jobs:
           script: |
             const downloadArtifact = async (artifact) => {
                 let fs = require('fs');
-                const artifactsDirectory = `${process.env.artifactsPath}`;
+                const artifactsDirectory = `${process.env.buildArtifactsPath}`;
                 fs.mkdirSync(artifactsDirectory);
                 const archivePath = `${artifactsDirectory}/${artifact.name}.zip`;
                 console.log(`Download artifact to path: ${archivePath}`);
