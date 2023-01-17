@@ -23,9 +23,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: publish artifact to github artifacts
+      - name: publish artifact to github artifacts 1
         uses: actions/upload-artifact@v2
         with:
-          name: 'Pull_Request_Files'
+          name: 'Modules-main-Apps-1.2.3.4'
+          path: '${{ github.workspace }}/.github/'
+          if-no-files-found: ignore
+      - name: publish artifact to github artifacts 2
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'Modules-main-TestApps-1.2.3.4'
+          path: '${{ github.workspace }}/.github/'
+          if-no-files-found: ignore
+      - name: publish artifact to github artifacts 3
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'Modules-main-TranslatedApps-1.2.3.4'
           path: '${{ github.workspace }}/.github/'
           if-no-files-found: ignore

@@ -15,38 +15,30 @@ permissions:
 defaults:
   run:
     shell: powershell
+  
+env:
+  buildArtifactsPath: ${{ github.workspace }}/.artifacts
+  packageOutputPath: ${{ github.workspace }}/out
 
 jobs:
-  Push:
-    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+  Publish:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: [ windows-latest ]
-    name: Push
+    name: Publish Nuget
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: publish artifact to github artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: 'Other'
-          path: '${{ github.workspace }}/Other/'
-          if-no-files-found: ignore
-  Publish:
-    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
-    runs-on: [ windows-latest ]
-    name: Publish Nuget
-    steps:
       - name: Download Build Output
-        if: github.event_name == 'workflow_run'
         uses: actions/github-script@v6
         with:
           script: |
             const downloadArtifact = async (artifact) => {
                 let fs = require('fs');
-                const artifactsDirectory = `${process.env.GITHUB_WORKSPACE}/.artifacts`;
+                const artifactsDirectory = `${process.env.artifactsPath}`;
                 fs.mkdirSync(artifactsDirectory);
                 const archivePath = `${artifactsDirectory}/${artifact.name}.zip`;
-                console.log(`Download artifact.name into path: ${archivePath}`);
+                console.log(`Download artifact to path: ${archivePath}`);
                 let download = await github.rest.actions.downloadArtifact({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
@@ -57,12 +49,15 @@ jobs:
                 fs.writeFileSync(archivePath, Buffer.from(download.data));
             };
 
-
-            var run_id = Number('${{ github.event.workflow_run.id }}');
+            const run_id = Number('${{ github.event.workflow_run.id }}');
             var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: run_id,
+            });
+
+            all_artifacts = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name.includes('Apps-');
             });
 
             console.log(`Found ${all_artifacts.data.total_count} artifacts`);
@@ -70,12 +65,12 @@ jobs:
             for (const artifact of all_artifacts.data.artifacts) {
                 await downloadArtifact(artifact);
             }
+            
       - name: Unzip Build Output
-        if: github.event_name == 'workflow_run'
         run: | 
-          $artifactsDirectory = "$($env:GITHUB_WORKSPACE)/.artifacts"
-          Get-ChildItem -Path "$artifactsDirectory/*zip" | % {
+          Get-ChildItem -Path "$($env:buildArtifactsPath)/*zip" | ForEach-Object {
             Write-Host "Expand archive: $($_.FullName)"
-            Expand-Archive -DestinationPath $artifactsDirectory -Path $_.FullName -Verbose
+            Expand-Archive -DestinationPath $env:buildArtifactsPath -Path $_.FullName -Verbose
             Remove-Item -Path $_.FullName -Force
           }
+
