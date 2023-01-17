@@ -65,7 +65,7 @@ jobs:
 
             console.log(`Found ${all_artifacts.length} artifacts`);
 
-            for (const artifact of all_artifacts.data.artifacts) {
+            for (const artifact of all_artifacts) {
                 await downloadArtifact(artifact, artifactsDirectory);
             }
             
