@@ -11,6 +11,8 @@ codeunit 132979 "Date & Time Test"
         PermissionsMock: Codeunit "Permissions Mock";
         TimeZone: Codeunit "Time Zone";
         LibraryAssert: Codeunit "Library Assert";
+        DSTTimeZoneData: Dictionary of [Text, Decimal];
+        NonDSTTimeZoneData: Dictionary of [Text, Decimal];
         IsInitialized: Boolean;
 
     [Test]
@@ -101,7 +103,7 @@ codeunit 132979 "Date & Time Test"
         Offset := RequestOffsetBetweenTimeZones(DateTimeToTest, SourceTimeZoneId, DestinationTimeZoneId);
 
         // [THEN] Offset between time zones is correct
-        VerifyOffsetBetweenTimeZonesIsCorrect(Offset);
+        VerifyOffsetBetweenTimeZonesIsCorrect(Offset, GetExpectedOffset(SourceTimeZoneId, true), GetExpectedOffset(DestinationTimeZoneId, true));
     end;
 
     [Test]
@@ -214,6 +216,7 @@ codeunit 132979 "Date & Time Test"
             exit;
 
         PermissionsMock.Set('Date&Time - Execute');
+        InitTimeZoneDictionaries();
 
         IsInitialized := true;
         Commit();
@@ -253,12 +256,12 @@ codeunit 132979 "Date & Time Test"
         LibraryAssert.AreEqual(ExpectedOffset, Offset, OffsetMismatchErr);
     end;
 
-    local procedure VerifyOffsetBetweenTimeZonesIsCorrect(Offset: Duration)
+    local procedure VerifyOffsetBetweenTimeZonesIsCorrect(Offset: Duration; SourceUTCOffset: Decimal; DestinationUTCOffset: Decimal)
     var
         OffsetMismatchErr: Label 'Offset between time zones did not match expected offset.', Locked = true;
         ExpectedOffset: Duration;
     begin
-        ExpectedOffset := -9 * GetHourConversionFactor();
+        ExpectedOffset := (DestinationUTCOffset - SourceUTCOffset) * GetHourConversionFactor();
         LibraryAssert.AreEqual(ExpectedOffset, Offset, OffsetMismatchErr);
     end;
 
@@ -301,27 +304,38 @@ codeunit 132979 "Date & Time Test"
     end;
 
     local procedure GetExpectedOffset(TimeZoneId: Text; InDaylightSavingPeriod: Boolean): Decimal
+    var
+        BaseOffset: Decimal;
+        IsDSTTimeZone: Boolean;
     begin
-        case TimeZoneId of
-            GetTimeZoneIdForNonDSTTimeZone():
-                exit(-7);
-            GetTimeZoneIdForDSTTimeZone():
-                begin
-                    if InDaylightSavingPeriod then
-                        exit(2);
-                    exit(1);
-                end;
-        end;
+        IsDSTTimeZone := DSTTimeZoneData.Get(TimeZoneId, BaseOffset);
+        if not IsDSTTimeZone then
+            BaseOffset := NonDSTTimeZoneData.Get(TimeZoneId);
+
+        if IsDSTTimeZone then
+            if InDaylightSavingPeriod then
+                exit(BaseOffset + 1);
+        exit(BaseOffset);
     end;
 
     local procedure GetTimeZoneIdForNonDSTTimeZone(): Text
+    var
+        Index: Integer;
+        SelectedTimeZone: Text;
     begin
-        exit('US Mountain Standard Time');
+        Index := GetRandomDictionaryIndex(NonDSTTimeZoneData.Count());
+        SelectedTimeZone := NonDSTTimeZoneData.Keys.Get(Index);
+        exit(SelectedTimeZone);
     end;
 
     local procedure GetTimeZoneIdForDSTTimeZone(): Text
+    var
+        Index: Integer;
+        SelectedTimeZone: Text;
     begin
-        exit('W. Europe Standard Time');
+        Index := GetRandomDictionaryIndex(DSTTimeZoneData.Count());
+        SelectedTimeZone := DSTTimeZoneData.Keys.Get(Index);
+        exit(SelectedTimeZone);
     end;
 
     local procedure GetHourConversionFactor(): Decimal
@@ -332,5 +346,38 @@ codeunit 132979 "Date & Time Test"
     local procedure RequestOffsetBetweenTimeZones(DateTimeToTest: DateTime; SourceTimeZoneId: Text; DestinationTimeZoneId: Text): Duration
     begin
         exit(TimeZone.GetTimeZoneOffset(DateTimeToTest, SourceTimeZoneId, DestinationTimeZoneId));
+    end;
+
+    local procedure InitTimeZoneDictionaries()
+    begin
+        InitDSTTimeZoneData();
+        InitNonDSTTimeZoneData();
+    end;
+
+    local procedure InitDSTTimeZoneData()
+    begin
+        Clear(DSTTimeZoneData);
+
+        //Dictionary of time zones that use DST with their base UTC offsets
+        DSTTimeZoneData.Add('Mountain Standard Time', -7);
+        DSTTimeZoneData.Add('W. Europe Standard Time', 1);
+        DSTTimeZoneData.Add('Russian Standard Time', 3);
+        DSTTimeZoneData.Add('Tasmania Standard Time', 8);
+    end;
+
+    local procedure InitNonDSTTimeZoneData()
+    begin
+        //Dictionary of time zones that do not use with their base UTC offsets
+        NonDSTTimeZoneData.Add('Hawaiian Standard Time', -10);
+        NonDSTTimeZoneData.Add('US Mountain Standard Time', -7);
+        NonDSTTimeZoneData.Add('W. Central Africa Standard Time', 1);
+        NonDSTTimeZoneData.Add('China Standard Time', 8);
+    end;
+
+    local procedure GetRandomDictionaryIndex(DictionaryLength: Integer): Integer
+    var
+        Any: Codeunit Any;
+    begin
+        exit(Any.IntegerInRange(1, DictionaryLength));
     end;
 }
