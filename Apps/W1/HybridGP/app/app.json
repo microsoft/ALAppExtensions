@@ -26,7 +26,7 @@
                          },
                          {
                             "id": "7c7d97ca-3598-40f5-b263-f713f49bd2a5",
-                            "name": "Dynamics GP to BC Companion",
+                            "name": "Dynamics GP Historical Data",
                             "publisher": "Microsoft",
                             "version": "21.3.0.0"
                          }
@@ -48,5 +48,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "Cloud",
-    "application":  "21.3.0.0"
+    "application": "21.3.0.0"
 }
