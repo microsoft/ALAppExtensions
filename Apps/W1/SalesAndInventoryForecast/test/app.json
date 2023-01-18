@@ -10,7 +10,7 @@
     "help":  "https://go.microsoft.com/fwlink/?linkid=2189535",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2189535",
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/ui-extensions-sales-forecast/",
     "dependencies":  [
                          {
                              "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",

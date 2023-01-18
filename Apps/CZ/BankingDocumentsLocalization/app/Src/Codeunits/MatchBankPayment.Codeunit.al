@@ -78,11 +78,12 @@ codeunit 31362 "Match Bank Payment CZB"
                     GenJournalLine.Validate("Account No.", SearchRuleLineCZB."Account No.");
                     GenJournalLine."Search Rule Line No. CZB" := SearchRuleLineCZB."Line No.";
                     GenJournalLine.Description := OriginalGenJournalLine.Description;
+                    GenJournalLine.Modify();
                 end;
-                SearchRuleLineCZB.SetRange("Description Filter");
-                SearchRuleLineCZB.SetRange("Variable Symbol Filter");
-                SearchRuleLineCZB.SetRange("Constant Symbol Filter");
-                SearchRuleLineCZB.SetRange("Specific Symbol Filter");
+                GenJournalLine.SetRange(Description);
+                GenJournalLine.SetRange("Variable Symbol CZL");
+                GenJournalLine.SetRange("Constant Symbol CZL");
+                GenJournalLine.SetRange("Specific Symbol CZL");
             end else begin
                 // search rule
                 TempMatchBankPaymentBufferCZB.Reset();

@@ -4,6 +4,8 @@ permissionset 18359 "D365 Common Access - India GST"
     Assignable = false;
     Caption = 'D365 Common Access - India GST';
 
+    IncludedPermissionSets = "IN Advance Objects - India GST";
+
     Permissions = tabledata "Applied Delivery Challan Entry" = RMID,
                   tabledata "Applied Delivery Challan" = RMID,
                   tabledata "Delivery Challan Header" = RIMD,

@@ -93,4 +93,17 @@ tableextension 31285 "Gen. Journal Line CZB" extends "Gen. Journal Line"
         if not IsSuccess then
             ErrorMessageHandler.ShowErrors();
     end;
+
+    procedure IsDimensionFromApplyEntryEnabledCZB(): Boolean
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        if ("Bal. Account Type" <> "Bal. Account Type"::"Bank Account") or
+           ("Bal. Account No." = '')
+        then
+            exit(false);
+        if not BankAccount.Get("Bal. Account No.") then
+            exit(false);
+        exit(BankAccount."Dimension from Apply Entry CZB");
+    end;
 }

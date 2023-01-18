@@ -315,6 +315,8 @@ codeunit 3904 "Apply Retention Policy Impl."
         TempRetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary;
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
+        RecordReference: Codeunit "Record Reference";
+        RecordReferenceIndirectPermission: Interface "Record Reference";
         RecordsToDelete: Boolean;
     begin
         TempRetenPolFilteringParam."Null Date Replacement value" := DT2Date(RetentionPolicySetup.SystemCreatedAt);
@@ -331,7 +333,8 @@ codeunit 3904 "Apply Retention Policy Impl."
 
         RecordsToDelete := RetenPolFiltering.ApplyRetentionPolicySubSetFilters(RetentionPolicySetup, RecordRef, TempRetenPolFilteringParam);
         RecordRef.MarkedOnly(true);
-        if RecordsToDelete and RecordRef.IsEmpty() then begin
+        RecordReference.Initialize(RecordRef, RecordReferenceIndirectPermission);
+        if RecordsToDelete and RecordReferenceIndirectPermission.IsEmpty(RecordRef) then begin
             RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(NoFiltersReturnedErr, RecordRef.Number, RecordRef.Caption));
             exit(false)
         end;

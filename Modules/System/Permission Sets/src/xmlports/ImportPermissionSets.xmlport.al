@@ -417,7 +417,7 @@ xmlport 9864 "Import Permission Sets"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterOnPreXmlPort(var UpdatePermissions: boolean)
+    local procedure OnAfterOnPreXmlPort(var UpdatePermissions: Boolean)
     begin
     end;
 }
