@@ -132,12 +132,13 @@ codeunit 30181 "Shpfy Product Mapping"
                     if (ShopifyVariant.SKU <> '') then
                         case Shop."SKU Mapping" of
                             Shop."SKU Mapping"::"Item No.":
-                                if FindItem.Get(ShopifyVariant.SKU) then begin
-                                    Item := FindItem;
-                                    exit(true);
-                                end;
+                                if StrLen(ShopifyVariant.SKU) <= MaxStrLen(FindItem."No.") then
+                                    if FindItem.Get(ShopifyVariant.SKU) then begin
+                                        Item := FindItem;
+                                        exit(true);
+                                    end;
                             Shop."SKU Mapping"::"Vendor Item No.":
-                                begin
+                                if StrLen(ShopifyVariant.SKU) <= MaxStrLen(ItemVendor."Vendor Item No.") then begin
                                     ItemVendor.SetRange("Vendor Item No.", ShopifyVariant.SKU);
                                     if ShopifyProduct.Vendor <> '' then
                                         if StrLen(ShopifyProduct.Vendor) <= MaxStrLen(Vendor."No.") then begin
@@ -192,7 +193,7 @@ codeunit 30181 "Shpfy Product Mapping"
                                         end;
                                 end;
                             Shop."SKU Mapping"::"Variant Code":
-                                begin
+                                if StrLen(ShopifyVariant.SKU) <= MaxStrLen(FindItemVariant.Code) then begin
                                     FindItemVariant.SetRange(Code, ShopifyVariant.SKU.ToUpper());
                                     if FindItemVariant.FindFirst() then begin
                                         ItemVariant := FindItemVariant;
@@ -205,17 +206,27 @@ codeunit 30181 "Shpfy Product Mapping"
                                     Codes := ShopifyVariant.SKU.Split(Shop."SKU Field Separator");
                                     Case Codes.Count of
                                         1:
-                                            if Codes.Get(1, CodeNo) and FindItem.Get(CodeNo) then begin
-                                                Item := FindItem;
-                                                exit(true);
+                                            begin
+                                                CodeNo := Codes.Get(1);
+                                                if StrLen(CodeNo) <= MaxStrLen(FindItem."No.") then
+                                                    if FindItem.Get(CodeNo) then begin
+                                                        Item := FindItem;
+                                                        exit(true);
+                                                    end;
                                             end;
                                         2:
-                                            if Codes.Get(1, CodeNo) and FindItem.Get(CodeNo) then begin
-                                                Item := FindItem;
-                                                if Codes.Get(2, CodeNo) and FindItemVariant.Get(Item."No.", CodeNo) then begin
-                                                    ItemVariant := FindItemVariant;
-                                                    exit(true);
-                                                end;
+                                            begin
+                                                CodeNo := Codes.Get(1);
+                                                if StrLen(CodeNo) <= MaxStrLen(FindItem."No.") then
+                                                    if FindItem.Get(CodeNo) then begin
+                                                        Item := FindItem;
+                                                        CodeNo := Codes.Get(2);
+                                                        if StrLen(CodeNo) <= MaxStrLen(FindItemVariant.Code) then
+                                                            if FindItemVariant.Get(Item."No.", CodeNo) then begin
+                                                                ItemVariant := FindItemVariant;
+                                                                exit(true);
+                                                            end;
+                                                    end;
                                             end;
                                     end;
                                 end;
@@ -241,8 +252,7 @@ codeunit 30181 "Shpfy Product Mapping"
                                                 if (VariantCode <> '') and FindItemVariant.Get(Item."No.", VariantCode) then begin
                                                     ItemVariant := FindItemVariant;
                                                     exit(true);
-                                                end
-                                                else
+                                                end else
                                                     exit(true);
                                         end;
                                 end;
