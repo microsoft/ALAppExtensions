@@ -36,11 +36,10 @@ function GenerateManifest
 New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
 
 $appsFolders = Get-ChildItem $BuildArtifactsPath -Directory 
-$packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
-
 Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
 
 # Generate Nuspec file
+$packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
 $packageId = "$RepoOwner-$RepoName-Modules-preview"
 
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta

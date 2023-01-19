@@ -19,6 +19,7 @@ defaults:
 env:
   buildArtifactsPath: ${{ github.workspace }}/.artifacts
   packageOutputPath: ${{ github.workspace }}/out
+  repoName: ${{ github.event.repository.name }}
 
 jobs:
   Publish:
@@ -50,21 +51,21 @@ jobs:
             const artifactsDirectory = `${process.env.buildArtifactsPath}`;
             fs.mkdirSync(artifactsDirectory);
 
-            const run_id = Number('${{ github.event.workflow_run.id }}');
+            const runId = Number('${{ github.event.workflow_run.id }}');
             const artifactFilter = 'Apps-'
-            var all_artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            var allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                run_id: run_id,
+                run_id: runId,
             });
 
-            all_artifacts = all_artifacts.data.artifacts.filter((artifact) => {
+            allArtifacts = allArtifacts.data.artifacts.filter((artifact) => {
               return artifact.name.includes(artifactFilter);
             });
 
-            console.log(`Found ${all_artifacts.length} artifacts matching filter: ${artifactFilter}`);
+            console.log(`Found ${allArtifacts.length} artifacts matching filter: ${artifactFilter}`);
 
-            for (const artifact of all_artifacts) {
+            for (const artifact of allArtifacts) {
                 await downloadArtifact(artifact, artifactsDirectory);
             }
             
@@ -84,8 +85,7 @@ jobs:
 
       - name: Prepare Package
         run: |
-          $RepoName = 'ALAppExtensions'
-          Build\Scripts\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $RepoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -RepoRoot $env:GITHUB_WORKSPACE
+          Build\Scripts\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -RepoRoot $env:GITHUB_WORKSPACE
 
       - name: Push Package
         run: |
