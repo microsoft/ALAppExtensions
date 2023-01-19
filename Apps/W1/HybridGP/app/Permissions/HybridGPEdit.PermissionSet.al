@@ -49,6 +49,8 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GPSOPWorkflowWorkHist" = IMD,
 #pragma warning disable AL0432
                     tabledata "GPForecastTemp" = IMD,
+                    tabledata "GP POPPOHeader" = IMD,
+                    tabledata "GP POPPOLine" = IMD,
 #pragma warning restore AL0432
                     tabledata "GP Item" = IMD,
                     tabledata "GP Item Location" = IMD,
@@ -61,8 +63,6 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GP Bank MSTR" = IMD,
                     tabledata "GP Checkbook MSTR" = IMD,
                     tabledata "GP Checkbook Transactions" = IMD,
-                    tabledata "GP POPPOHeader" = IMD,
-                    tabledata "GP POPPOLine" = IMD,
                     tabledata "GP Vendor" = IMD,
                     tabledata "GP Vendor Transactions" = IMD,
                     tabledata "GP Company Migration Settings" = IMD,
@@ -98,5 +98,7 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GP SY00300" = IMD,
                     tabledata "GP SY01100" = IMD,
                     tabledata "GP SY01200" = IMD,
-                    tabledata "GP SY03300" = IMD;
+                    tabledata "GP SY03300" = IMD,
+                    tabledata "GP POP10100" = IMD,
+                    tabledata "GP POP10110" = IMD;
 }
