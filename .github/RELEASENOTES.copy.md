@@ -2,13 +2,26 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+## v2.3
+
 ### Issues
 - Issue #312 Branching enhancements
 - Issue #229 Create Release action tags wrong commit
 - Issue #283 Create Release workflow uses deprecated actions
+- Issue #319 Support for AssignPremiumPlan
+- Issue #328 Allow multiple projects in AppSource App repo
+- Issue #344 Deliver To AppSource on finding app.json for the app
+- Issue #345 LocalDevEnv.ps1 can't Dowload the file license file
+
+### New Settings
+New Project setting: AssignPremiumPlan on user in container executing tests and when setting up local development environment
+New Repo setting: unusedALGoSystemFiles is an array of AL-Go System Files, which won't be updated during Update AL-Go System Files. They will instead be removed. Use with care, as this can break the AL-Go for GitHub functionality and potentially leave your repo no longer functional.
 
 ### Build modes support
 AL-Go projects can now be built in different modes, by specifying the _buildModes_ setting in AL-Go-Settings.json. Read more about build modes in the [Basic Repository settings](https://github.com/microsoft/AL-Go/blob/main/Scenarios/settings.md#basic-repository-settings).
+
+### LocalDevEnv / CloudDevEnv
+With the support for PowerShell 7 in BcContainerHelper, the scripts LocalDevEnv and CloudDevEnv (placed in the .AL-Go folder) for creating development environments have been modified to run inside VS Code instead of spawning a new powershell 5.1 session.
 
 ### Continuous Delivery
 Continuous Delivery can now run from other branches than main. By specifying a property called branches, containing an array of branches in the deliveryContext json construct, the artifacts generated from this branch are also delivered. The branch specification can include wildcards (like release/*). Default is main, i.e. no changes to functionality.
