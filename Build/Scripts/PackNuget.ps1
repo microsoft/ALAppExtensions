@@ -41,8 +41,7 @@ $packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1)
 Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
 
 # Generate Nuspec file
-$projectName = "Modules" 
-$packageId = "$RepoName-$projectName-preview"
+$packageId = "$RepoOwner-$RepoName-Modules-preview"
 
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta
 Write-Host "Package version: $packageVersion" -ForegroundColor Magenta
