@@ -16,46 +16,47 @@ codeunit 3916 "Reten. Pol. Delete. Impl." implements "Reten. Pol. Deleting"
     procedure DeleteRecords(var RecordRef: RecordRef; var RetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary);
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
+        RecordReference: Codeunit "Record Reference";
+        RecordReferenceIndirectPermission: Interface "Record Reference";
     begin
         if RetenPolDeletingParam."Max. Number of Rec. To Delete" < 0 then begin
             RetentionPolicyLog.LogWarning(LogCategory(), MaxNumberofRecToDeleteNegLbl);
             exit;
         end;
 
+        RecordReference.Initialize(RecordRef, RecordReferenceIndirectPermission);
+
         if not RecordRef.ReadPermission then
             RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecordRef.Number, RecordRef.Caption))
         else
-            if not RecordRef.IsEmpty then
-                if (RecordRef.Count() > (RetenPolDeletingParam."Max. Number of Rec. To Delete" + NumberOfRecordsToDeleteBuffer())) then begin
+            if not RecordReferenceIndirectPermission.IsEmpty(RecordRef) then
+                if (RecordReferenceIndirectPermission.Count(RecordRef) > (RetenPolDeletingParam."Max. Number of Rec. To Delete" + NumberOfRecordsToDeleteBuffer())) then begin
                     RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(TooManyRecordsToDeleteLbl, RetenPolDeletingParam."Total Max. Nr. of Rec. to Del."));
-                    LimitRecordsToBeDeleted(RecordRef, RetenPolDeletingParam."Skip Event Rec. Limit Exceeded", RetenPolDeletingParam."Max. Number of Rec. To Delete", RetenPolDeletingParam."Total Max. Nr. of Rec. to Del.");
+                    LimitRecordsToBeDeleted(RecordRef, RecordReferenceIndirectPermission, RetenPolDeletingParam."Skip Event Rec. Limit Exceeded", RetenPolDeletingParam."Max. Number of Rec. To Delete", RetenPolDeletingParam."Total Max. Nr. of Rec. to Del.");
                 end;
-        // if indirect permissions, raise event
-        // if direct permission or no permission, delete
-        //  -> if no permission, delete and let error bubble up
         if not RetenPolDeletingParam."Indirect Permission Required" then
-            RecordRef.DeleteAll(true);
+            RecordReferenceIndirectPermission.DeleteAll(RecordRef, true);
         RetenPolDeletingParam."Skip Event Indirect Perm. Req." := not RetenPolDeletingParam."Indirect Permission Required";
         RecordRef.Close();
     end;
 
-    local procedure LimitRecordsToBeDeleted(var RecordRef: RecordRef; var SkipOnApplyRetentionPolicyRecordLimitExceeded: Boolean; MaxNumberOfRecordsToDelete: Integer; TotalMaxNumberOfRecordsToDelete: Integer)
+    local procedure LimitRecordsToBeDeleted(var RecordRef: RecordRef; RecordReferenceIndirectPermission: Interface "Record Reference"; var SkipOnApplyRetentionPolicyRecordLimitExceeded: Boolean; MaxNumberOfRecordsToDelete: Integer; TotalMaxNumberOfRecordsToDelete: Integer)
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
     begin
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(LimitNumberOfRecordsLbl, RecordRef.Number, RecordRef.Caption, MaxNumberOfRecordsToDelete, TotalMaxNumberOfRecordsToDelete, TotalMaxNumberOfRecordsToDelete - MaxNumberOfRecordsToDelete));
-        FilterRecordsToLimit(RecordRef, MaxNumberOfRecordsToDelete);
+        FilterRecordsToLimit(RecordRef, RecordReferenceIndirectPermission, MaxNumberOfRecordsToDelete);
         SkipOnApplyRetentionPolicyRecordLimitExceeded := false;
     end;
 
-    local procedure FilterRecordsToLimit(var RecordRef: RecordRef; StartRecordIndex: Integer)
+    local procedure FilterRecordsToLimit(var RecordRef: RecordRef; RecordReferenceIndirectPermission: Interface "Record Reference"; StartRecordIndex: Integer)
     var
         FieldRef: FieldRef;
         KeyRef: KeyRef;
         i: integer;
     begin
-        RecordRef.FindSet();
-        RecordRef.Next(StartRecordIndex);
+        RecordReferenceIndirectPermission.FindSet(RecordRef);
+        RecordReferenceIndirectPermission.Next(RecordRef, StartRecordIndex);
 
         RecordRef.FilterGroup := 15;
         KeyRef := RecordRef.KeyIndex(RecordRef.CurrentKeyIndex());

@@ -99,7 +99,7 @@ report 31284 "Payment Order - Test CZB"
                     column(MessageType_ErrorMessage; "Message Type")
                     {
                     }
-                    column(Description_ErrorMessage; Description)
+                    column(Description_ErrorMessage; "Message")
                     {
                     }
 

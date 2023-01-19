@@ -4,6 +4,8 @@ permissionset 18360 "D365 Read Access - India GST"
     Assignable = false;
     Caption = 'D365 Read Access - India GST';
 
+    IncludedPermissionSets = "IN Advance Objects - India GST";
+
     Permissions = tabledata "Applied Delivery Challan Entry" = R,
                   tabledata "Applied Delivery Challan" = R,
                   tabledata "Bank Charge" = R,

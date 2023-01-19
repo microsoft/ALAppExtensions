@@ -1,11 +1,15 @@
-#if not CLEAN22
 table 40103 "GP POPPOLine"
 {
     DataClassification = CustomerContent;
     Extensible = false;
-    ObsoleteState = Pending;
     ObsoleteReason = 'Replaced by table GP POP10110.';
+ #if not CLEAN22
+    ObsoleteState = Pending;
     ObsoleteTag = '22.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '25.0';
+#endif
 
     fields
     {
@@ -677,4 +681,3 @@ table 40103 "GP POPPOLine"
         end;
     end;
 }
-#endif

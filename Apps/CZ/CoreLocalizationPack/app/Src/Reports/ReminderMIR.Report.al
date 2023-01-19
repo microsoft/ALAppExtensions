@@ -332,7 +332,7 @@ report 31035 "Reminder MIR CZL"
                     column(GreetingLbl; GreetingLbl)
                     {
                     }
-                    column(AmtDueLbl; AmtDueLbl)
+                    column(AmtDueLbl; AmtDueTxt)
                     {
                     }
                     column(BodyLbl; BodyLbl)

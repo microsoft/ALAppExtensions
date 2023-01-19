@@ -509,7 +509,7 @@ codeunit 31116 "EET Service Management CZL"
 
         TempErrorMessage.Reset();
         TempErrorMessage.FindFirst();
-        exit(TempErrorMessage.Description);
+        exit(TempErrorMessage."Message");
     end;
 
     procedure SetVerificationMode(NewVerificationMode: Boolean)

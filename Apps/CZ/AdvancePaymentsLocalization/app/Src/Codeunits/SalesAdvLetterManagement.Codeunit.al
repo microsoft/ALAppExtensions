@@ -710,7 +710,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
         AdvanceLetterTypeCZZ: Enum "Advance Letter Type CZZ";
         AmountToUse, UseAmount, UseAmountLCY : Decimal;
-        PostingDateErr: Label 'Posting Date of Advance Payment %1 must be before Posting Date of Sales Invoice %2.', Comment = '%1 = Advance Letter No., %2 = Sales Invoice No.';
     begin
         if CustLedgerEntry."Remaining Amount" = 0 then
             CustLedgerEntry.CalcFields("Remaining Amount");
@@ -732,12 +731,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", AdvanceLetterApplicationCZZ."Advance Letter No.");
             SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
             SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Payment);
+            SalesAdvLetterEntryCZZ.SetFilter("Posting Date", '..%1', SalesInvoiceHeader."Posting Date");
             OnPostAdvancePaymentUsageOnBeforeLoopSalesAdvLetterEntry(AdvanceLetterApplicationCZZ, SalesAdvLetterEntryCZZ);
             if SalesAdvLetterEntryCZZ.FindSet() then
                 repeat
-                    if not Preview then
-                        if SalesAdvLetterEntryCZZ."Posting Date" > SalesInvoiceHeader."Posting Date" then
-                            Error(PostingDateErr, SalesAdvLetterEntryCZZ."Sales Adv. Letter No.", SalesInvoiceHeader."No.");
                     TempSalesAdvLetterEntryCZZ := SalesAdvLetterEntryCZZ;
                     TempSalesAdvLetterEntryCZZ.Amount := GetRemAmtSalAdvPayment(SalesAdvLetterEntryCZZ, 0D);
                     if TempSalesAdvLetterEntryCZZ.Amount <> 0 then
@@ -1078,6 +1075,9 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 if not Preview then
                     GenJnlPostLine.RunWithCheck(GenJournalLine);
             until TempAdvancePostingBufferCZZ1.Next() = 0;
+
+        if not Preview then
+            UpdateStatus(SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ.Status::Closed);
     end;
 
     local procedure SuggestUsageVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ"; InvoiceNo: Code[20]; UsedAmount: Decimal; Preview: Boolean)

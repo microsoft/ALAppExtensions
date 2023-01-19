@@ -115,7 +115,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
                         if VATEntry.Closed then
                             Error(VATEntryClosedErr, VATEntry."VAT Date CZL");
                         VATEntry.Validate("VAT Date CZL", "VAT Date CZL");
-                        VATEntry.Modify();
+                        Codeunit.Run(Codeunit::"VAT Entry - Edit", VATEntry);
                     until VATEntry.Next() = 0
                 else begin
                     "VAT Date CZL" := xRec."VAT Date CZL";
@@ -130,7 +130,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
                 if GLEntry.FindSet(true, false) then
                     repeat
                         GLEntry.Validate("VAT Date CZL", "VAT Date CZL");
-                        GLEntry.Modify();
+                        Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
                     until GLEntry.Next() = 0;
             end;
         }
