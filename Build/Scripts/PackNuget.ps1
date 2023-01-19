@@ -3,8 +3,11 @@ Param(
     [string] $BuildArtifactsPath,
     [Parameter(Mandatory=$true)]
     [string] $OutputPackageFolder,
+    [Parameter(Mandatory=$true)]
     [string] $RepoName,
+    [Parameter(Mandatory=$true)]
     [string] $RepoOwner,
+    [Parameter(Mandatory=$true)]
     [string] $RepoRoot
 )
 
@@ -20,7 +23,7 @@ function GenerateManifest
     $Owners
 )
 {
-    [xml] $template = Get-Content "$PSScriptRoot\ALAppExtensions.template.nuspec"
+    [xml] $template = Get-Content "$RepoRoot\Build\ALAppExtensions.template.nuspec"
 
     $template.package.metadata.id = $PackageId
     $template.package.metadata.version = $Version

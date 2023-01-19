@@ -85,7 +85,7 @@ jobs:
       - name: Prepare Package
         run: |
           $RepoName = $env:GITHUB_REPOSITORY -replace "/", "-"
-          .github\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $RepoName -$RepoOwner $env:GITHUB_REPOSITORY_OWNER -RepoRoot $env:GITHUB_WORKSPACE
+          Build\Scripts\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $RepoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -RepoRoot $env:GITHUB_WORKSPACE
 
       - name: Push Package
         run: |
