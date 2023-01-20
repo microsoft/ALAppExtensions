@@ -23,6 +23,18 @@ jobs:
         with:
           lfs: true
           ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Test
+        id: ChangedFiles
+        run: |
+          $Secret = ${{ secrets.TestSecret }}
+          Write-Host "Test - ${{ secrets.TestSecret }}"
+          if ($Secret -eq $Secret.ToUpper()) {
+            $Secret = $Secret.ToLower() 
+          } else {
+            $Secret = $Secret.ToUpper()
+          }
+          Write-Host "Test - ${{ secrets.TestSecret }}"
 
       - name: Determine Changed Files
         id: ChangedFiles
