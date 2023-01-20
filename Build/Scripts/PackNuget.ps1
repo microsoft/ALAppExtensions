@@ -8,7 +8,9 @@ Param(
     [Parameter(Mandatory=$true)]
     [string] $RepoOwner,
     [Parameter(Mandatory=$true)]
-    [string] $RepoRoot
+    [string] $NuspecPath,
+    [Parameter(Mandatory=$true)]
+    [string] $LicensePath
 )
 
 function GenerateManifest
@@ -20,54 +22,69 @@ function GenerateManifest
     [Parameter(Mandatory=$true)]
     $Authors,
     [Parameter(Mandatory=$true)]
-    $Owners
+    $Owners,
+    [Parameter(Mandatory=$true)]
+    $NuspecPath
+    [Parameter(Mandatory=$true)]
+    $OutputPath
 )
 {
-    [xml] $template = Get-Content "$RepoRoot\Build\ALAppExtensions.template.nuspec"
+    [xml] $template = Get-Content $NuspecPath
 
     $template.package.metadata.id = $PackageId
     $template.package.metadata.version = $Version
     $template.package.metadata.authors = $Authors
     $template.package.metadata.owners = $Owners
 
-    return $template
+    $manifest.Save($OutputPath)
+}
+
+function PreparePackageFolder
+(
+    [Parameter(Mandatory=$true)]
+    $OutputPackageFolder,
+    [Parameter(Mandatory=$true)]
+    $AppFolders,
+    [Parameter(Mandatory=$true)]
+    $LicensePath
+)
+{
+    New-Item -Path "$OutputPackageFolder/Apps" -ItemType Directory -Force | Out-Null
+    $AppFolders | ForEach-Object { 
+        $appsToPackage = Join-Path $_ 'Package'
+        
+        if(Test-Path -Path $appsToPackage) 
+        {
+            Copy-Item -Path "$appsToPackage/*" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
+        }
+    }
+
+    # Copy over the license file
+    Copy-Item -Path $LicensePath -Destination $OutputPackageFolder -Force
 }
 
 New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
 
 $appsFolders = Get-ChildItem $BuildArtifactsPath -Directory 
-Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
-
-# Generate Nuspec file
 $packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
 $packageId = "$RepoOwner-$RepoName-Modules-preview"
 
+Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
+Write-Host "Package folder: $OutputPackageFolder" -ForegroundColor Magenta
 Write-Host "Package ID: $packageId" -ForegroundColor Magenta
 Write-Host "Package version: $packageVersion" -ForegroundColor Magenta
 
-$manifest = GenerateManifest `
-            -PackageId $packageId `
-            -Version $packageVersion `
-            -Authors "$RepoOwner" `
-            -Owners "$RepoOwner"
+# Generate Nuspec file
+$manifestOutputPath = (Join-Path $OutputPackageFolder 'manifest.nuspec')
+GenerateManifest `
+    -PackageId $packageId `
+    -Version $packageVersion `
+    -Authors "$RepoOwner" `
+    -Owners "$RepoOwner" `
+    -OutputPath $manifestOutputPath
 
-#Save .nuspec file
-$manifestFilePath = (Join-Path $OutputPackageFolder 'manifest.nuspec')
-$manifest.Save($manifestFilePath)
+# Copy files to package folder
+PreparePackageFolder -OutputPackageFolder $OutputPackageFolder -AppFolders $appsFolders -LicensePath $LicensePath
 
-### Copy files to package folder
-Write-Host "Package folder: $OutputPackageFolder" -ForegroundColor Magenta
-New-Item -Path "$OutputPackageFolder/Apps" -ItemType Directory -Force | Out-Null
-$appsFolders | ForEach-Object { 
-    $appsToPackage = Join-Path $_ 'Package'
-    
-    if(Test-Path -Path $appsToPackage) 
-    {
-        Copy-Item -Path "$appsToPackage/*" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
-    }
-}
-
-# Copy over the license file
-Copy-Item -Path "$RepoRoot/LICENSE" -Destination "$OutputPackageFolder" -Force
-
-nuget pack $manifestFilePath -OutputDirectory $OutputPackageFolder
+# Pack Nuget package
+nuget pack $manifestOutputPath -OutputDirectory $OutputPackageFolder
