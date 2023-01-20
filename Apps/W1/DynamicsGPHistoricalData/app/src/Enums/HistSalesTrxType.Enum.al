@@ -1,7 +1,5 @@
 enum 40000 "Hist. Sales Trx. Type"
 {
-    Extensible = true;
-
     value(0; "Blank") { Caption = ''; }
     value(1; "Quote") { Caption = 'Quote'; }
     value(2; "Order") { Caption = 'Order'; }

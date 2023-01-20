@@ -1,7 +1,5 @@
 enum 40003 "Hist. Receivables Doc. Type"
 {
-    Extensible = true;
-
     value(0; Balance) { Caption = 'Balance'; }
     value(1; SaleOrInvoice) { Caption = 'Sale / Invoice'; }
     value(2; "Scheduled Payment") { Caption = 'Scheduled Payment'; }

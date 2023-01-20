@@ -114,15 +114,35 @@ codeunit 4035 "Wizard Integration"
         exit(codeunit::"Wizard Integration");
     end;
 
+    local procedure GetDefaultGPHistoricalMigrationJobTimeoutDuration(): Integer
+    begin
+        exit(3600000 * 60); // 60 hours
+    end;
+
+    local procedure GetDefaultGPHistoricalMigrationJobMaxAttempts(): Integer
+    begin
+        exit(1);
+    end;
+
     procedure ScheduleGPHistoricalSnapshotMigration()
     var
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         TimeoutDuration: Duration;
         MaxAttempts: Integer;
         QueueCategory: Code[10];
+        IsHandled: Boolean;
+        OverrideTimeoutDuration: Duration;
+        OverrideMaxAttempts: Integer;
     begin
-        TimeoutDuration := 3600000 * 60; // 60 hours
-        MaxAttempts := 1;
+        TimeoutDuration := GetDefaultGPHistoricalMigrationJobTimeoutDuration();
+        MaxAttempts := GetDefaultGPHistoricalMigrationJobMaxAttempts();
+
+        OnBeforeCreateGPHistoricalMigrationJob(IsHandled, OverrideTimeoutDuration, OverrideMaxAttempts);
+        if IsHandled then begin
+            TimeoutDuration := OverrideTimeoutDuration;
+            MaxAttempts := OverrideMaxAttempts;
+        end;
+
         QueueCategory := HybridCloudManagement.GetJobQueueCategory();
 
         CreateAndScheduleBackgroundJob(Codeunit::"GP Populate Hist. Tables",
@@ -130,6 +150,11 @@ codeunit 4035 "Wizard Integration"
                 MaxAttempts,
                 QueueCategory,
                 GPSnapshotJobDescriptionTxt);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateGPHistoricalMigrationJob(var IsHandled: Boolean; var TimeoutDuration: Duration; var MaxAttempts: Integer)
+    begin
     end;
 
     procedure CreateAndScheduleBackgroundJob(ObjectIdToRun: Integer; TimeoutDuration: Duration; MaxAttempts: Integer; CategoryCode: Code[10]; Description: Text[250]): Guid

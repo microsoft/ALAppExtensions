@@ -40,16 +40,21 @@ pageextension 41021 "Hist. Sales Factbox Ext." extends "Sales Hist. Sell-to Fact
         HistSalesTrxHeader: Record "Hist. Sales Trx. Header";
         HistReceivablesDocument: Record "Hist. Receivables Document";
     begin
-        // Number of GP Sales Transactions
-        HistSalesTrxHeader.SetRange("Customer No.", Rec."No.");
-        NumberOfHistSalesTrx := HistSalesTrxHeader.Count();
+        if CurrentRecNo <> Rec."No." then begin
+            CurrentRecNo := Rec."No.";
 
-        // Number of GP Receivables Transactions
-        HistReceivablesDocument.SetRange("Customer No.", Rec."No.");
-        NumberOfHistRecvTrx := HistReceivablesDocument.Count();
+            // Number of GP Sales Transactions
+            HistSalesTrxHeader.SetRange("Customer No.", Rec."No.");
+            NumberOfHistSalesTrx := HistSalesTrxHeader.Count();
+
+            // Number of GP Receivables Transactions
+            HistReceivablesDocument.SetRange("Customer No.", Rec."No.");
+            NumberOfHistRecvTrx := HistReceivablesDocument.Count();
+        end;
     end;
 
     var
         NumberOfHistSalesTrx: Integer;
         NumberOfHistRecvTrx: Integer;
+        CurrentRecNo: Code[20];
 }

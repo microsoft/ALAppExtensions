@@ -1,7 +1,5 @@
 enum 40005 "Hist. Inventory Doc. Type"
 {
-    Extensible = true;
-
     value(0; "Blank") { Caption = ''; }
     value(1; "Inventory Adjustment") { Caption = 'Inventory Adjustment'; }
     value(2; Variance) { Caption = 'Variance'; }

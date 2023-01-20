@@ -1,7 +1,5 @@
 enum 40007 "Hist. Migration Step Type"
 {
-    Extensible = true;
-
     value(0; "Not Started") { Caption = 'Not Started'; }
     value(1; "Started") { Caption = 'Started'; }
     value(2; "GP GL Accounts") { Caption = 'GP G/L Accounts'; }

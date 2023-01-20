@@ -1,7 +1,5 @@
 enum 40001 "Hist. Sales Trx. Status"
 {
-    Extensible = true;
-
     value(0; "Blank") { Caption = ''; }
     value(1; New) { Caption = 'New'; }
     value(2; "Ready to Print Pick Ticket") { Caption = 'Ready to Print Pick Ticket'; }

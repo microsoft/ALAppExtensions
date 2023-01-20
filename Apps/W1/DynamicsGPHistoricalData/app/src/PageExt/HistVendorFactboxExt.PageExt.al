@@ -38,16 +38,21 @@ pageextension 41022 "Hist. Vendor Factbox Ext." extends "Vendor Hist. Buy-from F
         HistPayablesDocument: Record "Hist. Payables Document";
         HistPurchaseRecvHeader: Record "Hist. Purchase Recv. Header";
     begin
-        // Number of GP Payables Transactions
-        HistPayablesDocument.SetRange("Vendor No.", Rec."No.");
-        NumberOfHistPayablesTrx := HistPayablesDocument.Count();
+        if CurrentRecNo <> Rec."No." then begin
+            CurrentRecNo := Rec."No.";
 
-        // Number of GP Receivings Transactions
-        HistPurchaseRecvHeader.SetRange("Vendor No.", Rec."No.");
-        NumberOfHistReceivingsTrx := HistPurchaseRecvHeader.Count();
+            // Number of GP Payables Transactions
+            HistPayablesDocument.SetRange("Vendor No.", Rec."No.");
+            NumberOfHistPayablesTrx := HistPayablesDocument.Count();
+
+            // Number of GP Receivings Transactions
+            HistPurchaseRecvHeader.SetRange("Vendor No.", Rec."No.");
+            NumberOfHistReceivingsTrx := HistPurchaseRecvHeader.Count();
+        end;
     end;
 
     var
         NumberOfHistPayablesTrx: Integer;
         NumberOfHistReceivingsTrx: Integer;
+        CurrentRecNo: Text;
 }

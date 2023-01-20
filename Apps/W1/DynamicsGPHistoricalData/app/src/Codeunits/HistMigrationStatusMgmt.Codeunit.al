@@ -1,11 +1,13 @@
 codeunit 40902 "Hist. Migration Status Mgmt."
 {
-    var
-        DeleteBatchSize: integer;
-
     procedure PrepareHistoryMigration()
     begin
         ResetAll();
+    end;
+
+    local procedure GetDeleteBatchSize(): Integer
+    begin
+        exit(500000);
     end;
 
     procedure UpdateStepStatus(StepType: enum "Hist. Migration Step Type"; Completed: Boolean)
@@ -53,7 +55,8 @@ codeunit 40902 "Hist. Migration Status Mgmt."
             HistMigrationStepStatus.Completed := true;
             HistMigrationStepStatus."End Date" := System.CurrentDateTime();
             HistMigrationStepStatus.Modify();
-        end;
+        end else
+            StartedDate := System.CurrentDateTime();
 
         Clear(HistMigrationStepStatus);
         HistMigrationStepStatus.Step := "Hist. Migration Step Type"::Finished;
@@ -103,8 +106,6 @@ codeunit 40902 "Hist. Migration Status Mgmt."
         HistPurchaseRecvHeader: Record "Hist. Purchase Recv. Header";
         HistPurchaseRecvLine: Record "Hist. Purchase Recv. Line";
     begin
-        DeleteBatchSize := 500000;
-
         UpdateStepStatus("Hist. Migration Step Type"::"Resetting Data", false);
 
         if not HistPurchaseRecvLine.IsEmpty() then
@@ -153,7 +154,16 @@ codeunit 40902 "Hist. Migration Status Mgmt."
         RangeStart: Integer;
         RangeEnd: Integer;
         StartingRecordCount: Integer;
+        DeleteBatchSize: integer;
+        IsHandled: Boolean;
+        OverrideBatchDeleteSize: Integer;
     begin
+        DeleteBatchSize := GetDeleteBatchSize();
+
+        OnBeforeBatchDeleteAll(IsHandled, OverrideBatchDeleteSize);
+        if IsHandled then
+            DeleteBatchSize := OverrideBatchDeleteSize;
+
         TableRecordRef.Open(TableId);
         StartingRecordCount := TableRecordRef.Count();
         EntryNoFieldRef := TableRecordRef.Field(KeyFieldId);
@@ -168,5 +178,10 @@ codeunit 40902 "Hist. Migration Status Mgmt."
             RangeStart := RangeStart + DeleteBatchSize;
             RangeEnd := RangeEnd + DeleteBatchSize;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeBatchDeleteAll(var IsHandled: Boolean; var OverrideBatchDeleteSize: Integer)
+    begin
     end;
 }

@@ -622,6 +622,9 @@ table 4077 "GPSOPTrxAmountsHist"
         {
             Clustered = false;
         }
+        key(Key2; SOPTYPE, SOPNUMBE)
+        {
+        }
     }
 
     fieldgroups

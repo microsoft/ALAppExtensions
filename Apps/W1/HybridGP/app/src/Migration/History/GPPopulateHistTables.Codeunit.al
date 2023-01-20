@@ -6,9 +6,22 @@ codeunit 40900 "GP Populate Hist. Tables"
         CommitAfterXRecordCount: Integer;
         CurrentRecordCount: Integer;
 
-    trigger OnRun()
+    local procedure GetDefaultCommitAfterXRecordCount(): Integer
     begin
-        CommitAfterXRecordCount := 1000;
+        exit(1000);
+    end;
+
+    trigger OnRun()
+    var
+        IsHandled: Boolean;
+        OverrideCommitAfterXRecordCount: Integer;
+    begin
+        CommitAfterXRecordCount := GetDefaultCommitAfterXRecordCount();
+
+        OnBeforeRunGPPopulateHistTables(IsHandled, OverrideCommitAfterXRecordCount);
+        if IsHandled then
+            CommitAfterXRecordCount := OverrideCommitAfterXRecordCount;
+
         HistMigrationStatusMgmt.PrepareHistoryMigration();
         HistMigrationStatusMgmt.SetStatusStarted();
         PopulateHistoricalTables();
@@ -1214,5 +1227,10 @@ codeunit 40900 "GP Populate Hist. Tables"
             Commit();
             CurrentRecordCount := 0;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRunGPPopulateHistTables(var IsHandled: Boolean; var OverrideCommitAfterXRecordCount: Integer)
+    begin
     end;
 }

@@ -144,5 +144,8 @@ table 40904 "Hist. Receivables Document"
         {
             IncludedFields = "Customer No.", "Audit Code";
         }
+        key(Key3; "Customer No.")
+        {
+        }
     }
 }

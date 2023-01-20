@@ -154,5 +154,8 @@ table 40905 "Hist. Payables Document"
         {
             IncludedFields = "Audit Code", "Vendor No.";
         }
+        key(Key3; "Vendor No.")
+        {
+        }
     }
 }
