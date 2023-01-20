@@ -24,7 +24,7 @@ function GenerateManifest
     [Parameter(Mandatory=$true)]
     $Owners,
     [Parameter(Mandatory=$true)]
-    $NuspecPath
+    $NuspecPath,
     [Parameter(Mandatory=$true)]
     $OutputPath
 )
@@ -36,7 +36,8 @@ function GenerateManifest
     $template.package.metadata.authors = $Authors
     $template.package.metadata.owners = $Owners
 
-    $manifest.Save($OutputPath)
+    Write-Host "Generating manifest file: $OutputPath" -ForegroundColor Magenta
+    $template.Save($OutputPath)
 }
 
 function PreparePackageFolder
@@ -51,11 +52,14 @@ function PreparePackageFolder
 {
     New-Item -Path "$OutputPackageFolder/Apps" -ItemType Directory -Force | Out-Null
     $AppFolders | ForEach-Object { 
-        $appsToPackage = Join-Path $_ 'Package'
+        $appsToPackage = Join-Path $_.FullName 'Package'
+        Write-Host "Copying apps from $appsToPackage" -ForegroundColor Magenta
         
         if(Test-Path -Path $appsToPackage) 
         {
             Copy-Item -Path "$appsToPackage/*" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
+        } else {
+            throw "No apps found in $appsToPackage" 
         }
     }
 
