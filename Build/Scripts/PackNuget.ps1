@@ -81,6 +81,7 @@ GenerateManifest `
     -Version $packageVersion `
     -Authors "$RepoOwner" `
     -Owners "$RepoOwner" `
+    -NuspecPath $NuspecPath `
     -OutputPath $manifestOutputPath
 
 # Copy files to package folder
