@@ -1,0 +1,32 @@
+name: 'Build Trigger 1'
+
+on:
+  workflow_run:
+    workflows: ['Build']
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  checks: read
+
+defaults:
+  run:
+    shell: powershell
+  
+env:
+  buildArtifactsPath: ${{ github.workspace }}/.artifacts
+  packageOutputPath: ${{ github.workspace }}/out
+
+jobs:
+  Publish:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: [ windows-latest ]
+    name: Publish Nuget
+    steps:
+      - name: Test
+        run: | 
+          Write-Host "TEST: "
+          Write-Host ${{ github.event.workflow_run.head_branch }}
+
