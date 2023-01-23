@@ -50,7 +50,6 @@ codeunit 4035 "Wizard Integration"
     var
         GPConfiguration: Record "GP Configuration";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        GPPopulateHistTables: Codeunit "GP Populate Hist. Tables";
         DataSyncStatus: Page "Data Sync Status";
         Flag: Boolean;
     begin
@@ -124,9 +123,16 @@ codeunit 4035 "Wizard Integration"
         exit(1);
     end;
 
+    procedure StartGPHistoricalJobMigrationAction(JobNotRanNotification: Notification)
+    begin
+        ScheduleGPHistoricalSnapshotMigration();
+    end;
+
     procedure ScheduleGPHistoricalSnapshotMigration()
     var
+        GPConfiguration: Record "GP Configuration";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        UserPermissions: Codeunit "User Permissions";
         TimeoutDuration: Duration;
         MaxAttempts: Integer;
         QueueCategory: Code[10];
@@ -134,6 +140,9 @@ codeunit 4035 "Wizard Integration"
         OverrideTimeoutDuration: Duration;
         OverrideMaxAttempts: Integer;
     begin
+        if not UserPermissions.IsSuper(UserSecurityId()) then
+            exit;
+
         TimeoutDuration := GetDefaultGPHistoricalMigrationJobTimeoutDuration();
         MaxAttempts := GetDefaultGPHistoricalMigrationJobMaxAttempts();
 
@@ -150,6 +159,11 @@ codeunit 4035 "Wizard Integration"
                 MaxAttempts,
                 QueueCategory,
                 GPSnapshotJobDescriptionTxt);
+
+        if GPConfiguration.Get() then begin
+            GPConfiguration."Historical Job Ran" := true;
+            GPConfiguration.Modify();
+        end;
     end;
 
     [IntegrationEvent(false, false)]
