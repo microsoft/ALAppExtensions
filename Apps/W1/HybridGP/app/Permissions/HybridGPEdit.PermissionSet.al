@@ -102,5 +102,6 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GP GL00105" = IMD,
                     tabledata "GP GL20000" = IMD,
                     tabledata "GP GL30000" = IMD,
-                    tabledata "GP BM30200" = IMD;
+                    tabledata "GP BM30200" = IMD,
+                    tabledata "GP Hist. Source Progress" = IMD;
 }

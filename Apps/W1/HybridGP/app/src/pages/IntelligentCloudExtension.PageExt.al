@@ -53,6 +53,8 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 trigger OnAction()
                 var
                     GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+                    HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
+                    GPHistSourceProgress: Record "GP Hist. Source Progress";
                     WizardIntegration: Codeunit "Wizard Integration";
                 begin
                     if not GPCompanyAdditionalSettings.GetMigrateHistory() then begin
@@ -61,6 +63,12 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                     end;
 
                     if Confirm(ConfirmRerunQst) then begin
+                        if not GPHistSourceProgress.IsEmpty() then begin
+                            HistMigrationCurrentStatus.EnsureInit();
+                            HistMigrationCurrentStatus."Reset Data" := Confirm(ResetPreviousRunQst);
+                            HistMigrationCurrentStatus.Modify();
+                        end;
+
                         WizardIntegration.ScheduleGPHistoricalSnapshotMigration();
                         Message(SnapshotJobRunningMsg);
                     end;
@@ -118,7 +126,8 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         FactBoxesVisible: Boolean;
         HasCompletedSetupWizard: Boolean;
         DetailSnapshotNotConfiguredMsg: Label 'GP Historical Snapshot is not configured to migrate.';
-        ConfirmRerunQst: Label 'Are you sure you want to rerun the GP Historical Snapshot migration? This will clear any previous run attempts.';
+        ConfirmRerunQst: Label 'Are you sure you want to rerun the GP Historical Snapshot migration?';
+        ResetPreviousRunQst: Label 'Do you want to reset your previous GP Historical Snapshot migration? Choose No if you want to continue progress from the previous attempt.';
         SnapshotJobRunningMsg: Label 'The GP Historical Snapshot job is running.';
         HistoricalDataJobNotRanMsg: Label 'The GP Historical Snapshot job has not ran.';
         HistoricalDataStartJobMsg: Label 'Start GP Historical Snapshot job.';

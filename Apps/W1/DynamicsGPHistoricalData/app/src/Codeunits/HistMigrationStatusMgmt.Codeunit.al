@@ -1,10 +1,5 @@
 codeunit 40902 "Hist. Migration Status Mgmt."
 {
-    procedure PrepareHistoryMigration()
-    begin
-        ResetAll();
-    end;
-
     local procedure GetDeleteBatchSize(): Integer
     begin
         exit(500000);

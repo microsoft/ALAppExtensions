@@ -25,6 +25,11 @@ table 40912 "Hist. Migration Current Status"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(5; "Reset Data"; Boolean)
+        {
+            Caption = 'Reset Data';
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

@@ -127,6 +127,10 @@ table 40129 "GP PM20000"
         {
             DataClassification = CustomerContent;
         }
+        field(80; DEX_ROW_ID; Integer)
+        {
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {
@@ -136,6 +140,9 @@ table 40129 "GP PM20000"
         }
 
         key(Key2; DOCTYPE, CURTRXAM, VOIDED)
+        {
+        }
+        key(Key3; DEX_ROW_ID)
         {
         }
     }
