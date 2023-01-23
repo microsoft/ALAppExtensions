@@ -29,5 +29,6 @@ jobs:
         run: | 
           Write-Host "TEST: "
           Write-Host ${{ github.event.workflow_run.head_branch }}
-          Write-Host ${{ github.event.workflow_run }}
+          $wf_run = ${{ github.event.workflow_run }}
+          Write-Host "$($wf_run.ToString())"
 
