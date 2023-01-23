@@ -64,21 +64,6 @@ codeunit 40902 "Hist. Migration Status Mgmt."
         HistMigrationCurrentStatus.SetCurrentStep("Hist. Migration Step Type"::Finished);
     end;
 
-    procedure ReportLastError(Step: enum "Hist. Migration Step Type"; Reference: Text[150]; ShouldClearLastError: Boolean)
-    var
-        HistMigrationStepError: Record "Hist. Migration Step Error";
-    begin
-        HistMigrationStepError.Step := Step;
-        HistMigrationStepError.Reference := Reference;
-        HistMigrationStepError."Error Code" := CopyStr(GetLastErrorCode(), 1, MaxStrLen(HistMigrationStepError."Error Code"));
-        HistMigrationStepError."Error Date" := System.CurrentDateTime();
-        HistMigrationStepError.SetErrorMessage(GetLastErrorCallStack());
-        HistMigrationStepError.Insert();
-
-        if ShouldClearLastError then
-            ClearLastError();
-    end;
-
     procedure GetCurrentStatus(): enum "Hist. Migration Step Type";
     var
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
@@ -89,7 +74,6 @@ codeunit 40902 "Hist. Migration Status Mgmt."
     procedure ResetAll()
     var
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
-        HistMigrationStepError: Record "Hist. Migration Step Error";
         HistGLAccount: Record "Hist. G/L Account";
         HistGenJournalLine: Record "Hist. Gen. Journal Line";
         HistSalesTrxHeader: Record "Hist. Sales Trx. Header";
@@ -132,9 +116,6 @@ codeunit 40902 "Hist. Migration Status Mgmt."
 
         if not HistGLAccount.IsEmpty() then
             BatchDeleteAll(Database::"Hist. G/L Account", HistGLAccount.FieldNo(HistGLAccount."Primary Key"));
-
-        if not HistMigrationStepError.IsEmpty() then
-            BatchDeleteAll(Database::"Hist. Migration Step Error", HistMigrationStepError.FieldNo(HistMigrationStepError."Primary Key"));
 
         UpdateStepStatus("Hist. Migration Step Type"::"Resetting Data", true);
 

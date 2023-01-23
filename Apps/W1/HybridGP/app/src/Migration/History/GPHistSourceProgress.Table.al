@@ -8,6 +8,7 @@ table 41004 "GP Hist. Source Progress"
         field(1; "Table Id"; Integer)
         {
             Caption = 'Table Id';
+            NotBlank = true;
         }
         field(2; "Last Processed Record Id"; Integer)
         {

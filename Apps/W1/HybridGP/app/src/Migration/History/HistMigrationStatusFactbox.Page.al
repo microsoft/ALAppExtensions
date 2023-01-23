@@ -1,4 +1,4 @@
-page 41019 "Hist. Migration Status Factbox"
+page 4101 "Hist. Migration Status Factbox"
 {
     Caption = 'GP Detail Snapshot Migration Status';
     PageType = CardPart;
@@ -32,17 +32,17 @@ page 41019 "Hist. Migration Status Factbox"
                 {
                     ShowCaption = false;
 
-                    field("Error Count"; Rec."Error Count")
+                    field("Error Count"; ErrorCount)
                     {
                         Caption = 'GP Detail Snapshot Errors';
                         ApplicationArea = All;
                         Style = Unfavorable;
-                        StyleExpr = (Rec."Error Count" > 0);
+                        StyleExpr = (ErrorCount > 0);
                         ToolTip = 'Indicates the number of historical snapshot errors that occurred during the GP Detail Snapshot migration.';
 
                         trigger OnDrillDown()
                         begin
-                            Page.RunModal(Page::"Hist. Migration Step Errors");
+                            Page.RunModal(Page::"Hist. Migration Errors");
                         end;
                     }
                     field("Log Count"; Rec."Log Count")
@@ -68,4 +68,14 @@ page 41019 "Hist. Migration Status Factbox"
             Rec.Insert();
         end;
     end;
+
+    trigger OnAfterGetCurrRecord()
+    var
+        GPHistSourceError: Record "GP Hist. Source Error";
+    begin
+        ErrorCount := GPHistSourceError.Count();
+    end;
+
+    var
+        ErrorCount: Integer;
 }

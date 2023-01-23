@@ -15,6 +15,7 @@ codeunit 40900 "GP Populate Hist. Tables"
     var
         HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
         GPHistSourceProgress: Record "GP Hist. Source Progress";
+        GPHistSourceError: Record "GP Hist. Source Error";
         IsHandled: Boolean;
         OverrideCommitAfterXRecordCount: Integer;
     begin
@@ -30,6 +31,9 @@ codeunit 40900 "GP Populate Hist. Tables"
 
             if not GPHistSourceProgress.IsEmpty() then
                 GPHistSourceProgress.DeleteAll();
+
+            if not GPHistSourceError.IsEmpty() then
+                GPHistSourceError.DeleteAll();
 
             HistMigrationCurrentStatus."Reset Data" := false;
             HistMigrationCurrentStatus.Modify();
@@ -55,6 +59,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         PopulateInventoryTransactions();
         PopulateAssemblyItemTransactions();
         PopulatePurchaseRecvTransactions();
+
         HistMigrationStatusMgmt.SetStatusFinished();
         Commit();
     end;
@@ -79,8 +84,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         GPGL00105: Record "GP GL00105";
         GPGL00100: Record "GP GL00100";
         HistGLAccount: Record "Hist. G/L Account";
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
-        GPGL00105.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::"GP GL00105"));
+        SourceTableId := Database::"GP GL00105";
+
+        GPGL00105.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPGL00105.SetCurrentKey(DEX_ROW_ID);
         GPGL00105.SetAscending(DEX_ROW_ID, true);
 
@@ -90,6 +99,8 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP GL Accounts", false);
 
         repeat
+            LastSourceRecordId := GPGL00105.DEX_ROW_ID;
+
             Clear(HistGLAccount);
             if GPGL00100.Get(GPGL00105.ACTINDX) then begin
 
@@ -98,12 +109,16 @@ codeunit 40900 "GP Populate Hist. Tables"
 #pragma warning restore AA0139
                 HistGLAccount.Name := GPGL00100.ACTDESCR;
 
-                if not HistGLAccount.Insert() then
-                    HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP GL Accounts", GPGL00105.ACTNUMST, true);
+                if HistGLAccount.Insert() then
+                    ReportLastSuccess(SourceTableId, LastSourceRecordId)
+                else
+                    ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP GL Accounts", GPGL00105.ACTNUMST);
 
-                AfterProcessedNextRecord(Database::"GP GL00105", GPGL00105.DEX_ROW_ID);
+                AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
             end;
         until GPGL00105.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP GL Accounts", true);
     end;
 
@@ -114,8 +129,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistGenJournalLine: Record "Hist. Gen. Journal Line";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
         InitialHistYear: Integer;
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
-        GPGL20000.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::"GP GL20000"));
+        SourceTableId := Database::"GP GL20000";
+
+        GPGL20000.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPGL20000.SetCurrentKey(DEX_ROW_ID);
         GPGL20000.SetAscending(DEX_ROW_ID, true);
 
@@ -128,6 +147,7 @@ codeunit 40900 "GP Populate Hist. Tables"
 
         repeat
             if GPGL00105.Get(GPGL20000.ACTINDX) then begin
+                LastSourceRecordId := GPGL20000.DEX_ROW_ID;
                 Clear(HistGenJournalLine);
 
 #pragma warning disable AA0139
@@ -162,14 +182,17 @@ codeunit 40900 "GP Populate Hist. Tables"
                     HistGenJournalLine."Source Name" := CopyStr(GPGL20000.ORMSTRNM, 1, MaxStrLen(HistGenJournalLine."Source Name"));
                 end;
 
-                if HistGenJournalLine.Insert() then
+                if HistGenJournalLine.Insert() then begin
+                    ReportLastSuccess(SourceTableId, LastSourceRecordId);
                     PopulateGLOpenYearItemTransaction(GPGL20000)
-                else
-                    HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP GL Journal Trx.", GPGL20000.TRXSORCE, true);
+                end else
+                    ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP GL Journal Trx.", GPGL20000.TRXSORCE);
 
-                AfterProcessedNextRecord(Database::"GP GL20000", GPGL20000.DEX_ROW_ID);
+                AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
             end;
         until GPGL20000.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
     local procedure PopulateHistoricalYearPostedTransactions()
@@ -179,8 +202,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistGenJournalLine: Record "Hist. Gen. Journal Line";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
         InitialHistYear: Integer;
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
-        GPGL30000.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::"GP GL30000"));
+        SourceTableId := Database::"GP GL30000";
+
+        GPGL30000.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPGL30000.SetCurrentKey(DEX_ROW_ID);
         GPGL30000.SetAscending(DEX_ROW_ID, true);
 
@@ -193,6 +220,7 @@ codeunit 40900 "GP Populate Hist. Tables"
 
         repeat
             if GPGL00105.Get(GPGL30000.ACTINDX) then begin
+                LastSourceRecordId := GPGL30000.DEX_ROW_ID;
                 Clear(HistGenJournalLine);
 
 #pragma warning disable AA0139
@@ -227,14 +255,17 @@ codeunit 40900 "GP Populate Hist. Tables"
                     HistGenJournalLine."Source Name" := CopyStr(GPGL30000.ORMSTRNM, 1, MaxStrLen(HistGenJournalLine."Source Name"));
                 end;
 
-                if HistGenJournalLine.Insert() then
+                if HistGenJournalLine.Insert() then begin
+                    ReportLastSuccess(SourceTableId, LastSourceRecordId);
                     PopulateGLHistoricalYearItemTransaction(GPGL30000)
-                else
-                    HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP GL Journal Trx.", GPGL30000.TRXSORCE, true);
+                end else
+                    ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP GL Journal Trx.", GPGL30000.TRXSORCE);
 
-                AfterProcessedNextRecord(Database::"GP GL30000", GPGL30000.DEX_ROW_ID);
+                AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
             end;
         until GPGL30000.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
     local procedure PopulateReceivables()
@@ -254,8 +285,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistSalesTrxHeader: Record "Hist. Sales Trx. Header";
         InitialHistYear: Integer;
         DocumentNo: Code[35];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
-        GPSOPTrxHist.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::GPSOPTrxHist));
+        SourceTableId := Database::GPSOPTrxHist;
+
+        GPSOPTrxHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPSOPTrxHist.SetCurrentKey(DEX_ROW_ID);
         GPSOPTrxHist.SetAscending(DEX_ROW_ID, true);
 
@@ -267,6 +302,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             exit;
 
         repeat
+            LastSourceRecordId := GPSOPTrxHist.DEX_ROW_ID;
             Clear(HistSalesTrxHeader);
 
 #pragma warning disable AA0139
@@ -307,13 +343,16 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistSalesTrxHeader."Audit Code" := GPSOPTrxHist.TRXSORCE;
 
             if HistSalesTrxHeader.Insert() then begin
+                ReportLastSuccess(SourceTableId, LastSourceRecordId);
                 PopulateSalesTransactionLines(GPSOPTrxHist, DocumentNo);
-                PopulateSOPItemTransaction(GPSOPTrxHist);
+                PopulateSOPItemTransaction(GPSOPTrxHist)
             end else
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Receivables Trx.", GPSOPTrxHist.SOPNUMBE, true);
+                ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Receivables Trx.", GPSOPTrxHist.SOPNUMBE);
 
-            AfterProcessedNextRecord(Database::GPSOPTrxHist, GPSOPTrxHist.DEX_ROW_ID);
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPSOPTrxHist.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
     local procedure PopulateSalesTransactionLines(GPSOPTrxHist: Record GPSOPTrxHist; DocumentNo: Code[35])
@@ -345,7 +384,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistSalesTrxLine."Ship-to Name" := CopyStr(GPSOPTrxAmountsHist.ShipToName, 1, MaxStrLen(HistSalesTrxLine."Ship-to Name"));
 
             if not HistSalesTrxLine.Insert() then
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Receivables Trx.", GPSOPTrxHist.SOPNUMBE, true);
+                ReportLastError(Database::GPSOPTrxAmountsHist, GPSOPTrxAmountsHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Receivables Trx.", GPSOPTrxHist.SOPNUMBE);
 
             AfterProcessedNextChildRecord();
         until GPSOPTrxAmountsHist.Next() = 0;
@@ -364,8 +403,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         GPRM00101: Record "GP RM00101";
         CustomerName: Text[100];
         InitialHistYear: Integer;
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
-        GPRM20101.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::"GP RM20101"));
+        SourceTableId := Database::"GP RM20101";
+
+        GPRM20101.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPRM20101.SetCurrentKey(DEX_ROW_ID);
         GPRM20101.SetAscending(DEX_ROW_ID, true);
 
@@ -377,6 +420,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             exit;
 
         repeat
+            LastSourceRecordId := GPRM20101.DEX_ROW_ID;
             Clear(HistReceivablesDocument);
 
             if GPRM00101.Get(GPRM20101.CUSTNMBR) then
@@ -416,11 +460,15 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistReceivablesDocument."Payment Terms ID" := GPRM20101.PYMTRMID;
             HistReceivablesDocument."Write Off Amount" := GPRM20101.WROFAMNT;
 
-            if not HistReceivablesDocument.Insert() then
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Receivables Trx.", GPRM20101.DOCNUMBR, true);
+            if HistReceivablesDocument.Insert() then
+                ReportLastSuccess(SourceTableId, LastSourceRecordId)
+            else
+                ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Receivables Trx.", GPRM20101.DOCNUMBR);
 
-            AfterProcessedNextRecord(Database::"GP RM20101", GPRM20101.DEX_ROW_ID);
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPRM20101.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
     local procedure PopulateRecvHistoricalDocuments()
@@ -430,8 +478,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         GPRM00101: Record "GP RM00101";
         CustomerName: Text[100];
         InitialHistYear: Integer;
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
-        GPRMHist.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::GPRMHist));
+        SourceTableId := Database::GPRMHist;
+
+        GPRMHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPRMHist.SetCurrentKey(DEX_ROW_ID);
         GPRMHist.SetAscending(DEX_ROW_ID, true);
 
@@ -443,6 +495,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             exit;
 
         repeat
+            LastSourceRecordId := GPRMHist.DEX_ROW_ID;
             Clear(HistReceivablesDocument);
 
             if GPRM00101.Get(GPRMHist.CUSTNMBR) then
@@ -482,11 +535,15 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistReceivablesDocument."Payment Terms ID" := GPRMHist.PYMTRMID;
             HistReceivablesDocument."Write Off Amount" := GPRMHist.WROFAMNT;
 
-            if not HistReceivablesDocument.Insert() then
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Receivables Trx.", GPRMHist.DOCNUMBR, true);
+            if HistReceivablesDocument.Insert() then
+                ReportLastSuccess(SourceTableId, LastSourceRecordId)
+            else
+                ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Receivables Trx.", GPRMHist.DOCNUMBR);
 
-            AfterProcessedNextRecord(Database::GPRMHist, GPRMHist.DEX_ROW_ID);
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPRMHist.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
     local procedure PopulatePayablesDocuments()
@@ -507,8 +564,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistPayablesDocument: Record "Hist. Payables Document";
         InitialHistYear: Integer;
         VendorName: Text[65];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
-        GPPM20000.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::"GP PM20000"));
+        SourceTableId := Database::"GP PM20000";
+
+        GPPM20000.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPPM20000.SetCurrentKey(DEX_ROW_ID);
         GPPM20000.SetAscending(DEX_ROW_ID, true);
 
@@ -520,6 +581,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             exit;
 
         repeat
+            LastSourceRecordId := GPPM20000.DEX_ROW_ID;
             Clear(HistPayablesDocument);
 
             if GPPM00200.Get(GPPM20000.VENDORID) then
@@ -561,11 +623,15 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistPayablesDocument."1099 Box Number" := Format(GPPM20000.TEN99BOXNUMBER);
             HistPayablesDocument."PO Number" := GPPM20000.PONUMBER;
 
-            if not HistPayablesDocument.Insert() then
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Payables Trx.", GPPM20000.DOCNUMBR, true);
+            if HistPayablesDocument.Insert() then
+                ReportLastSuccess(SourceTableId, LastSourceRecordId)
+            else
+                ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Payables Trx.", GPPM20000.DOCNUMBR);
 
-            AfterProcessedNextRecord(Database::"GP PM20000", GPPM20000.DEX_ROW_ID);
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPPM20000.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
     local procedure PopulatePayablesHistoricalDocuments()
@@ -575,8 +641,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistPayablesDocument: Record "Hist. Payables Document";
         InitialHistYear: Integer;
         VendorName: Text[65];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
-        GPPMHist.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::GPPMHist));
+        SourceTableId := Database::GPPMHist;
+
+        GPPMHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPPMHist.SetCurrentKey(DEX_ROW_ID);
         GPPMHist.SetAscending(DEX_ROW_ID, true);
 
@@ -588,6 +658,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             exit;
 
         repeat
+            LastSourceRecordId := GPPMHist.DEX_ROW_ID;
             Clear(HistPayablesDocument);
 
             if GPPM00200.Get(GPPMHist.VENDORID) then
@@ -629,11 +700,15 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistPayablesDocument."1099 Box Number" := Format(GPPMHist.TEN99BOXNUMBER);
             HistPayablesDocument."PO Number" := GPPMHist.PONUMBER;
 
-            if not HistPayablesDocument.Insert() then
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Payables Trx.", GPPMHist.DOCNUMBR, true);
+            if HistPayablesDocument.Insert() then
+                ReportLastSuccess(SourceTableId, LastSourceRecordId)
+            else
+                ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Payables Trx.", GPPMHist.DOCNUMBR);
 
-            AfterProcessedNextRecord(Database::GPPMHist, GPPMHist.DEX_ROW_ID);
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPPMHist.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
     local procedure PopulateInventoryTransactions()
@@ -642,11 +717,15 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
         InitialHistYear: Integer;
         DocumentNo: Code[35];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
         if not GPCompanyAdditionalSettings.GetMigrateHistInvTrx() then
             exit;
 
-        GPIVTrxHist.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::GPIVTrxHist));
+        SourceTableId := Database::GPIVTrxHist;
+
+        GPIVTrxHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPIVTrxHist.SetCurrentKey(DEX_ROW_ID);
         GPIVTrxHist.SetAscending(DEX_ROW_ID, true);
 
@@ -660,6 +739,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP Inventory Trx.", false);
 
         repeat
+            LastSourceRecordId := GPIVTrxHist.DEX_ROW_ID;
             Clear(HistInventoryTrxHeader);
 
 #pragma warning disable AA0139
@@ -676,13 +756,16 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistInventoryTrxHeader."Source Reference No." := GPIVTrxHist.SRCRFRNCNMBR;
             HistInventoryTrxHeader."Source Indicator" := GetInventoryTrxSourceIndicatorText(GPIVTrxHist.SOURCEINDICATOR);
 
-            if HistInventoryTrxHeader.Insert() then
+            if HistInventoryTrxHeader.Insert() then begin
+                ReportLastSuccess(SourceTableId, LastSourceRecordId);
                 PopulateInventoryTrxLines(GPIVTrxHist.TRXSORCE, DocumentNo)
-            else
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", GPIVTrxHist.DOCNUMBR, true);
+            end else
+                ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Inventory Trx.", GPIVTrxHist.DOCNUMBR);
 
-            AfterProcessedNextRecord(Database::GPIVTrxHist, GPIVTrxHist.DEX_ROW_ID);
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPIVTrxHist.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP Inventory Trx.", true);
     end;
 
@@ -720,7 +803,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistInventoryTrxLine."Reason Code" := GPIVTrxAmountsHist.Reason_Code;
 
             if not HistInventoryTrxLine.Insert() then
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo, true);
+                ReportLastError(Database::GPIVTrxAmountsHist, GPIVTrxAmountsHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo);
 
             AfterProcessedNextChildRecord();
         until GPIVTrxAmountsHist.Next() = 0;
@@ -732,11 +815,15 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
         InitialHistYear: Integer;
         DocumentNo: Code[35];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
         if not GPCompanyAdditionalSettings.GetMigrateHistInvTrx() then
             exit;
 
-        GPBM30200.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::"GP BM30200"));
+        SourceTableId := Database::"GP BM30200";
+
+        GPBM30200.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPBM30200.SetCurrentKey(DEX_ROW_ID);
         GPBM30200.SetAscending(DEX_ROW_ID, true);
 
@@ -750,6 +837,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP Inventory Trx.", false);
 
         repeat
+            LastSourceRecordId := GPBM30200.DEX_ROW_ID;
             Clear(HistInventoryTrxHeader);
 
 #pragma warning disable AA0139
@@ -765,13 +853,16 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistInventoryTrxHeader."Post Date" := System.DT2Date(GPBM30200.PSTGDATE);
             HistInventoryTrxHeader."Source Reference No." := GPBM30200.REFRENCE;
 
-            if HistInventoryTrxHeader.Insert() then
+            if HistInventoryTrxHeader.Insert() then begin
+                ReportLastSuccess(SourceTableId, LastSourceRecordId);
                 PopulateInventoryTrxLines(GPBM30200.TRXSORCE, DocumentNo)
-            else
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo, true);
+            end else
+                ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo);
 
-            AfterProcessedNextRecord(Database::"GP BM30200", GPBM30200.DEX_ROW_ID);
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPBM30200.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP Inventory Trx.", true);
     end;
 
@@ -781,11 +872,15 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistPurchaseRecvHeader: Record "Hist. Purchase Recv. Header";
         InitialHistYear: Integer;
         ReceiptNo: Code[35];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
     begin
         if not GPCompanyAdditionalSettings.GetMigrateHistPurchTrx() then
             exit;
 
-        GPPOPReceiptHist.SetFilter(DEX_ROW_ID, '>%1', GetLastProcessedRecId(Database::GPPOPReceiptHist));
+        SourceTableId := Database::GPPOPReceiptHist;
+
+        GPPOPReceiptHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPPOPReceiptHist.SetCurrentKey(DEX_ROW_ID);
         GPPOPReceiptHist.SetAscending(DEX_ROW_ID, true);
 
@@ -799,6 +894,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP Purchase Receivables Trx.", false);
 
         repeat
+            LastSourceRecordId := GPPOPReceiptHist.DEX_ROW_ID;
             Clear(HistPurchaseRecvHeader);
 
 #pragma warning disable AA0139
@@ -837,13 +933,16 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistPurchaseRecvHeader."Prepayment Amount" := GPPOPReceiptHist.PrepaymentAmount;
 
             if HistPurchaseRecvHeader.Insert() then begin
+                ReportLastSuccess(SourceTableId, LastSourceRecordId);
                 PopulatePurchaseRecvLines(GPPOPReceiptHist, ReceiptNo);
                 PopulatePOPItemTransaction(GPPOPReceiptHist)
             end else
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Purchase Receivables Trx.", GPPOPReceiptHist.POPRCTNM, true);
+                ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Purchase Receivables Trx.", GPPOPReceiptHist.POPRCTNM);
 
-            AfterProcessedNextRecord(Database::GPPOPReceiptHist, GPPOPReceiptHist.DEX_ROW_ID);
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPPOPReceiptHist.Next() = 0;
+
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP Purchase Receivables Trx.", true);
     end;
 
@@ -895,7 +994,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             end;
 
             if not HistPurchaseRecvLine.Insert() then
-                HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Purchase Receivables Trx.", ReceiptNo, true);
+                ReportLastError(Database::GPPOPReceiptLineHist, GPPOPReceiptLineHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Purchase Receivables Trx.", ReceiptNo);
 
             AfterProcessedNextChildRecord();
         until GPPOPReceiptLineHist.Next() = 0;
@@ -942,7 +1041,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         if HistInventoryTrxHeader.Insert() then
             PopulateInventoryTrxLines(GPGL20000.ORTRXSRC, DocumentNo)
         else
-            HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo, true);
+            ReportLastError(Database::GPIVTrxAmountsHist, GPIVTrxAmountsHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo);
 
         AfterProcessedNextChildRecord();
     end;
@@ -988,7 +1087,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         if HistInventoryTrxHeader.Insert() then
             PopulateInventoryTrxLines(GPGL30000.ORTRXSRC, DocumentNo)
         else
-            HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo, true);
+            ReportLastError(Database::GPIVTrxAmountsHist, GPIVTrxAmountsHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo);
 
         AfterProcessedNextChildRecord();
     end;
@@ -1022,7 +1121,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         if HistInventoryTrxHeader.Insert() then
             PopulateInventoryTrxLines(GPPOPReceiptHist.TRXSORCE, DocumentNo)
         else
-            HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo, true);
+            ReportLastError(Database::GPPOPReceiptHist, GPPOPReceiptHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo);
 
         AfterProcessedNextChildRecord();
     end;
@@ -1056,7 +1155,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         if HistInventoryTrxHeader.Insert() then
             PopulateInventoryTrxLines(GPSOPTrxHist.TRXSORCE, DocumentNo)
         else
-            HistMigrationStatusMgmt.ReportLastError("Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo, true);
+            ReportLastError(Database::GPIVTrxAmountsHist, GPIVTrxAmountsHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo);
 
         AfterProcessedNextChildRecord();
     end;
@@ -1285,12 +1384,23 @@ codeunit 40900 "GP Populate Hist. Tables"
     begin
         CurrentRecordCount := CurrentRecordCount + 1;
 
-        GPHistSourceProgress.SetLastProcessedRecId(TableId, RecId);
-
         if CurrentRecordCount >= CommitAfterXRecordCount then begin
+            GPHistSourceProgress.SetLastProcessedRecId(TableId, RecId);
             Commit();
             CurrentRecordCount := 0;
         end;
+    end;
+
+    local procedure AfterProcessedSection(TableId: Integer; LastRecId: Integer)
+    var
+        GPHistSourceProgress: Record "GP Hist. Source Progress";
+    begin
+        if LastRecId = 0 then
+            exit;
+
+        CurrentRecordCount := 0;
+        GPHistSourceProgress.SetLastProcessedRecId(TableId, LastRecId);
+        Commit();
     end;
 
     local procedure AfterProcessedNextChildRecord()
@@ -1303,11 +1413,50 @@ codeunit 40900 "GP Populate Hist. Tables"
         end;
     end;
 
-    local procedure GetLastProcessedRecId(TableId: Integer): Integer
+    procedure ReportLastError(TableId: Integer; RecordId: Integer; Step: enum "Hist. Migration Step Type"; Reference: Text[150])
+    var
+        GPHistSourceError: Record "GP Hist. Source Error";
+    begin
+        GPHistSourceError.SetRange("Table Id", TableId);
+        GPHistSourceError.SetRange("Record Id", RecordId);
+        if not GPHistSourceError.IsEmpty() then
+            exit;
+
+        GPHistSourceError."Table Id" := TableId;
+        GPHistSourceError."Record Id" := RecordId;
+        GPHistSourceError.Step := Step;
+        GPHistSourceError.Reference := Reference;
+        GPHistSourceError."Error Code" := CopyStr(GetLastErrorCode(), 1, MaxStrLen(GPHistSourceError."Error Code"));
+        GPHistSourceError.SetErrorMessage(GetLastErrorCallStack());
+        GPHistSourceError.Insert();
+
+        ClearLastError();
+    end;
+
+    procedure ReportLastSuccess(TableId: Integer; RecordId: Integer)
+    var
+        GPHistSourceError: Record "GP Hist. Source Error";
+    begin
+        if GPHistSourceError.Get(TableId, RecordId) then
+            GPHistSourceError.Delete();
+    end;
+
+    local procedure GetSourceTableRecIdFilter(TableId: Integer): Text
     var
         GPHistSourceProgress: Record "GP Hist. Source Progress";
+        GPHistSourceError: Record "GP Hist. Source Error";
+        FilterText: Text;
     begin
-        exit(GPHistSourceProgress.GetLastProcessedRecId(TableId));
+        FilterText := '>' + Format(GPHistSourceProgress.GetLastProcessedRecId(TableId));
+
+        GPHistSourceError.SetRange("Table Id", TableId);
+        GPHistSourceError.SetLoadFields("Record Id");
+        if GPHistSourceError.FindSet() then
+            repeat
+                FilterText += '|' + Format(GPHistSourceError."Record Id");
+            until GPHistSourceError.Next() = 0;
+
+        exit(FilterText);
     end;
 
     [IntegrationEvent(false, false)]

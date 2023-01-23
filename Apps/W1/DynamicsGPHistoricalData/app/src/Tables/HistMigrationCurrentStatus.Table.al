@@ -13,19 +13,13 @@ table 40912 "Hist. Migration Current Status"
             Caption = 'Current Step';
             DataClassification = SystemMetadata;
         }
-        field(3; "Error Count"; Integer)
-        {
-            CalcFormula = Count("Hist. Migration Step Error");
-            Editable = false;
-            FieldClass = FlowField;
-        }
-        field(4; "Log Count"; Integer)
+        field(3; "Log Count"; Integer)
         {
             CalcFormula = Count("Hist. Migration Step Status");
             Editable = false;
             FieldClass = FlowField;
         }
-        field(5; "Reset Data"; Boolean)
+        field(4; "Reset Data"; Boolean)
         {
             Caption = 'Reset Data';
             DataClassification = SystemMetadata;

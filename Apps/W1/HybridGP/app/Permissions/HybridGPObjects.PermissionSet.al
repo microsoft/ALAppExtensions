@@ -130,5 +130,8 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP GL20000" = X,
                     table "GP GL30000" = X,
                     table "GP BM30200" = X,
-                    table "GP Hist. Source Progress" = X;
+                    table "GP Hist. Source Progress" = X,
+                    table "GP Hist. Source Error" = X,
+                    page "Hist. Migration Errors" = X,
+                    page "Hist. Migration Status Factbox" = X;
 }

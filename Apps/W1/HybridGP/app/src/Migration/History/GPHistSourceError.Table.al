@@ -1,45 +1,41 @@
-table 40911 "Hist. Migration Step Error"
+table 41005 "GP Hist. Source Error"
 {
+    Caption = 'GP Hist. Source Error';
     DataClassification = SystemMetadata;
 
     fields
     {
-        field(1; "Primary Key"; Integer)
+        field(1; "Table Id"; Integer)
         {
-            DataClassification = SystemMetadata;
-            AutoIncrement = true;
-        }
-        field(2; Step; enum "Hist. Migration Step Type")
-        {
-            Caption = 'Step';
-            DataClassification = SystemMetadata;
+            Caption = 'Table Id';
             NotBlank = true;
         }
-        field(3; Reference; Text[150])
+        field(2; "Record Id"; Integer)
+        {
+            Caption = 'Record Id';
+            NotBlank = true;
+        }
+        field(3; Step; enum "Hist. Migration Step Type")
+        {
+            Caption = 'Step';
+        }
+        field(4; Reference; Text[150])
         {
             Caption = 'Reference';
             DataClassification = CustomerContent;
         }
-        field(4; "Error Code"; Text[100])
+        field(5; "Error Code"; Text[100])
         {
             Caption = 'Error Code';
-            DataClassification = SystemMetadata;
         }
-        field(5; "Error Message"; Blob)
+        field(6; "Error Message"; Blob)
         {
             Caption = 'Error Message';
-            DataClassification = SystemMetadata;
-        }
-        field(6; "Error Date"; DateTime)
-        {
-            Caption = 'Error Date';
-            DataClassification = SystemMetadata;
         }
     }
-
     keys
     {
-        key(PK; "Primary Key")
+        key(PK; "Table Id", "Record Id")
         {
             Clustered = true;
         }

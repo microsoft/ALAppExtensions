@@ -1,4 +1,4 @@
-page 41018 "Hist. Migration Step Errors"
+page 4100 "Hist. Migration Errors"
 {
     ApplicationArea = All;
     Caption = 'GP Detail Snapshot Migration Errors';
@@ -8,26 +8,32 @@ page 41018 "Hist. Migration Step Errors"
     InsertAllowed = false;
     LinksAllowed = false;
     ModifyAllowed = false;
-    SourceTable = "Hist. Migration Step Error";
+    SourceTable = "GP Hist. Source Error";
     UsageCategory = History;
 
     layout
     {
         area(Content)
         {
-            repeater(GroupName)
+            repeater(List)
             {
-                field("Error Date"; Rec."Error Date")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Error Date';
-                    ToolTip = 'Specifies the value of the Error Date field.';
-                }
                 field(Step; Rec.Step)
                 {
                     ApplicationArea = All;
                     Caption = 'Step';
                     ToolTip = 'Specifies the value of the Step field.';
+                }
+                field("Table Id"; Rec."Table Id")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Table Id';
+                    ToolTip = 'Specifies the value of the Table Id field.';
+                }
+                field("Record Id"; Rec."Record Id")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Record Id';
+                    ToolTip = 'Specifies the value of the Record Id field.';
                 }
                 field(Reference; Rec.Reference)
                 {

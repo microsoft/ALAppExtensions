@@ -11,7 +11,5 @@ permissionsetextension 4700 "D365 Basic Ext." extends "D365 BASIC"
                   tabledata "Hist. Purchase Recv. Header" = R,
                   tabledata "Hist. Purchase Recv. Line" = R,
                   tabledata "Hist. Migration Step Status" = R,
-                  tabledata "Hist. Migration Step Error" = R,
-                  tabledata "Hist. Migration Current Status" = R,
-                  page "Hist. Migration Status Factbox" = X;
+                  tabledata "Hist. Migration Current Status" = R;
 }

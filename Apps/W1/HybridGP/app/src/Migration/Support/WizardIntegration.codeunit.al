@@ -131,6 +131,7 @@ codeunit 4035 "Wizard Integration"
     procedure ScheduleGPHistoricalSnapshotMigration()
     var
         GPConfiguration: Record "GP Configuration";
+        JobQueueEntry: Record "Job Queue Entry";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         UserPermissions: Codeunit "User Permissions";
         TimeoutDuration: Duration;
@@ -141,6 +142,12 @@ codeunit 4035 "Wizard Integration"
         OverrideMaxAttempts: Integer;
     begin
         if not UserPermissions.IsSuper(UserSecurityId()) then
+            exit;
+
+        if not TaskScheduler.CanCreateTask() then
+            exit;
+
+        if not JobQueueEntry.WritePermission then
             exit;
 
         TimeoutDuration := GetDefaultGPHistoricalMigrationJobTimeoutDuration();

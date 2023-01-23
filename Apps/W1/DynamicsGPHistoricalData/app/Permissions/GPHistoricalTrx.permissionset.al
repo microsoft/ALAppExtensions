@@ -19,7 +19,5 @@ permissionset 4700 "GP Historical Trx."
                   page "Hist. Sales Trx." = X,
                   page "Hist. Sales Trx. Headers" = X,
                   page "Hist. Sales Trx. Lines" = X,
-                  page "Hist. Migration Status Factbox" = X,
-                  page "Hist. Migration Step Errors" = X,
                   page "Hist. Migration Step Status" = X;
 }
