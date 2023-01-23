@@ -29,5 +29,5 @@ jobs:
         run: | 
           Write-Host "TEST: "
           Write-Host ${{ github.event.workflow_run.head_branch }}
-          Write-Host ${{ github.event.workflow_run.workflow_run.head_branch }}
+          Write-Host ${{ github.event.workflow_run.event_name }}
 
