@@ -1,4 +1,4 @@
-﻿name: ' Increment Version Number'
+name: ' Increment Version Number'
 
 on:
   workflow_dispatch:

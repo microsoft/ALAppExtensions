@@ -64,6 +64,12 @@
                              "name":  "User Permissions",
                              "publisher":  "Microsoft",
                              "version":  "21.4.0.0"
+                         },
+                         {
+                            "id":  "44012bcf-22c2-40d9-bb24-410b1dfc72dc",
+                            "name":  "Record Reference",
+                            "publisher":  "Microsoft",
+                            "version":  "21.4.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
@@ -80,10 +86,10 @@
     "idRanges":  [
                      {
                          "from":  3900,
-                         "to":  3916
+                         "to":  3917
                      }
                  ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603",
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,

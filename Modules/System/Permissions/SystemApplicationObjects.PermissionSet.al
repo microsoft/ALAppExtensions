@@ -30,6 +30,7 @@ PermissionSet 219 "System Application - Objects"
                              "Confirm Management - Objects",
                              "Cryptography Mgt. - Objects",
                              "Cues and KPIs - Objects",
+                             "Date & Time - Objects",
                              "Data Archive - Objects",
                              "Data Classification - Objects",
                              "Data Compression - Objects",
@@ -62,11 +63,14 @@ PermissionSet 219 "System Application - Objects"
                              "Permission Sets - Objects",
                              "Printer Management - Objects",
                              "Record Link Management - Obj.",
+                             "Record Reference - Objects",
                              "Recurrence Schedule - Objects",
                              "Regex - Objects",
                              "Retention Policy - Objects",
 #if not CLEAN20
+#pragma warning disable AL0432
                              "Sandbox Cleanup - Objects",
+#pragma warning restore AL0432
 #endif
                              "Environment Cleanup - Objects",
                              "Satisfaction Survey - Objects",

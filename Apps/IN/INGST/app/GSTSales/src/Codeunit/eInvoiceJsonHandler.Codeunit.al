@@ -1078,7 +1078,7 @@ codeunit 18147 "e-Invoice Json Handler"
                     TransID := ShippingAgent."GST Registration No.";
                     TransName := ShippingAgent.Name;
                 end;
-                
+
                 TransMode := SalesInvHeader."Transport Method";
                 TransDocDt := Format(SalesInvoiceHeader."Posting Date", 0, '<Day,2>/<Month,2>/<Year4>');
                 Distance := SalesInvHeader."Distance (Km)";
@@ -1114,11 +1114,24 @@ codeunit 18147 "e-Invoice Json Handler"
     var
         JDocEwayDetails: JsonObject;
     begin
-        JDocEwayDetails.Add('TransId', TransId);
-        JDocEwayDetails.Add('TransName', TransName);
+        if TransId = '' then
+            JDocEwayDetails.Add('TransId', 'null')
+        else
+            JDocEwayDetails.Add('TransId', TransId);
+
+        if TransName = '' then
+            JDocEwayDetails.Add('TransName', 'null')
+        else
+            JDocEwayDetails.Add('TransName', TransName);
+
         JDocEwayDetails.Add('TransMode', TransMode);
         JDocEwayDetails.Add('Distance', Distance);
-        JDocEwayDetails.Add('TransDocNo', TransDocNo);
+
+        if TransDocNo = '' then
+            JDocEwayDetails.Add('TransDocNo', 'null')
+        else
+            JDocEwayDetails.Add('TransDocNo', TransDocNo);
+
         JDocEwayDetails.Add('TransDocDt', TransDocDt);
         JDocEwayDetails.Add('VehNo', VehNo);
         JDocEwayDetails.Add('VehType', VehType);

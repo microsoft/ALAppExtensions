@@ -74,7 +74,6 @@ codeunit 3910 "Apply Retention Policy"
     /// <param name="ExpirationDate">The expiration date used in the filter.</param>
     /// <param name="RecordRef">The record reference on which the filter will be placed.</param>
     /// <param name="FilterGroup">The filtergroup in which the filter will be placed.</param>
-    /// <param name="NullDateFilterGroup">The filtergroup in which the null date filter will be placed.</param>
     /// <param name="NullDateReplacementValue">The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.</param>
     procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
     var
@@ -90,7 +89,6 @@ codeunit 3910 "Apply Retention Policy"
     /// <param name="ExpirationDate">The expiration date used in the filter.</param>
     /// <param name="RecordRef">The record reference on whic the filter will be placed.</param>
     /// <param name="FilterGroup">The filtergroup in which the filter will be placed.</param>
-    /// <param name="NullDateFilterGroup">The filtergroup in which the null date filter will be placed.</param>
     /// <param name="NullDateReplacementValue">The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.</param>
     procedure SetWhereNewerExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
     var
@@ -100,14 +98,13 @@ codeunit 3910 "Apply Retention Policy"
     end;
 
     /// <summary>
-    /// 
+    /// This method places a filter on the record reference where records are expired one day at the expiration date. The filter excludes any record where the date field specified in DateFieldNo has no value.
     /// </summary>
-    /// <param name="DateFieldNo"></param>
-    /// <param name="ExpirationDate"></param>
-    /// <param name="RecordRef"></param>
-    /// <param name="FilterGroup"></param>
-    /// <param name="NullDateReplacementValue"></param>
-    /// <param name="CurrDate"></param>
+    /// <param name="DateFieldNo">The date or datetime field the filter will be placed on.</param>
+    /// <param name="ExpirationDate">The expiration date used in the filter.</param>
+    /// <param name="RecordRef">The record reference on whic the filter will be placed.</param>
+    /// <param name="FilterGroup">The filtergroup in which the filter will be placed.</param>
+    /// <param name="NullDateReplacementValue">The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.</param>
     procedure SetSingleDateExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
     var
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";

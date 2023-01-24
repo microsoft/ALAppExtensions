@@ -9,7 +9,8 @@ PermissionSet 8901 "Email - Edit"
     Assignable = false;
     Caption = 'Email - Edit';
 
-    IncludedPermissionSets = "Email - Read";
+    IncludedPermissionSets = "Email - Read",
+                             "Record Reference - Exec";
 
     Permissions = tabledata "Email Connector Logo" = imd,
                   tabledata "Email Error" = imd,

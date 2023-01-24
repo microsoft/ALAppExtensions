@@ -1,4 +1,4 @@
-﻿#
+#
 # Script for creating local development environment
 # Please do not modify this script as it will be auto-updated from the AL-Go Template
 # Recommended approach is to use as is or add a script (freddyk-devenv.ps1), which calls this script with the user specific parameters
@@ -15,35 +15,6 @@ Param(
 $ErrorActionPreference = "stop"
 Set-StrictMode -Version 2.0
 
-$pshost = Get-Host
-if ($pshost.Name -eq "Visual Studio Code Host") {
-    $executionPolicy = Get-ExecutionPolicy -Scope CurrentUser
-    Write-Host "Execution Policy is $executionPolicy"
-    if ($executionPolicy -eq "Restricted") {
-        Write-Host "Changing Execution Policy to RemoteSigned"
-        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-    }
-    if ($MyInvocation.InvocationName -eq '.' -or $MyInvocation.Line -eq '') {
-        $scriptName = Join-Path $PSScriptRoot $MyInvocation.MyCommand
-    }
-    else {
-        $scriptName = $MyInvocation.InvocationName
-    }
-    if (Test-Path -Path $scriptName -PathType Leaf) {
-        $scriptName = (Get-Item -path $scriptName).FullName
-        $pslink = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk"
-        if (!(Test-Path $pslink)) {
-            $pslink = "powershell.exe"
-        }
-        $credstr = ""
-        if ($credential) {
-            $credstr = " -credential (New-Object PSCredential '$($credential.UserName)', ('$($credential.Password | ConvertFrom-SecureString)' | ConvertTo-SecureString))"
-        }
-        Start-Process -Verb runas $pslink @("-Command ""$scriptName"" -fromVSCode -containerName '$containerName' -auth '$auth' -licenseFileUrl '$licenseFileUrl' -insiderSasToken '$insiderSasToken'$credstr")
-        return
-    }
-}
-
 try {
 $webClient = New-Object System.Net.WebClient
 $webClient.CachePolicy = New-Object System.Net.Cache.RequestCachePolicy -argumentList ([System.Net.Cache.RequestCacheLevel]::NoCacheNoStore)
@@ -58,9 +29,11 @@ $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actio
 Import-Module $GitHubHelperPath
 . $ALGoHelperPath -local
 
-$baseFolder = Join-Path $PSScriptRoot ".." -Resolve
+$baseFolder = GetBaseFolder -folder $PSScriptRoot
+$project = GetProject -baseFolder $baseFolder -projectALGoFolder $PSScriptRoot
 
 Clear-Host
+Write-Host
 Write-Host -ForegroundColor Yellow @'
   _                     _   _____             ______            
  | |                   | | |  __ \           |  ____|           
@@ -82,7 +55,7 @@ The script will also modify launch.json to have a Local Sandbox configuration po
 
 '@
 
-$settings = ReadSettings -baseFolder $baseFolder -userName $env:USERNAME
+$settings = ReadSettings -baseFolder $baseFolder -project $project -userName $env:USERNAME
 
 Write-Host "Checking System Requirements"
 $dockerProcess = (Get-Process "dockerd" -ErrorAction Ignore)
@@ -101,7 +74,8 @@ if (-not $containerName) {
     $containerName = Enter-Value `
         -title "Container name" `
         -question "Please enter the name of the container to create" `
-        -default "bcserver"
+        -default "bcserver" `
+        -trimCharacters @('"',"'",' ')
 }
 
 if (-not $auth) {
@@ -140,7 +114,9 @@ if (-not $licenseFileUrl) {
         -title "LicenseFileUrl" `
         -description $description `
         -question "Local path or a secure download URL to license file " `
-        -default $default
+        -default $default `
+        -doNotConvertToLower `
+        -trimCharacters @('"',"'",' ')
 
     if ($licenseFileUrl -eq "none") {
         $licenseFileUrl = ""
@@ -152,6 +128,7 @@ CreateDevEnv `
     -caller local `
     -containerName $containerName `
     -baseFolder $baseFolder `
+    -project $project `
     -auth $auth `
     -credential $credential `
     -licenseFileUrl $licenseFileUrl `

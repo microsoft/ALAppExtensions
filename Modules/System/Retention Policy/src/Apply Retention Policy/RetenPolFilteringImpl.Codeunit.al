@@ -12,21 +12,23 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         RetentionPolicySetupNotFoundLbl: Label 'The retention policy setup for table %1 was not found.', Comment = '%1 = a id of a table (integer)';
         FutureExpirationDateWarningLbl: Label 'The expiration date %1 for table %2, %3, must be at least two days before the current date.', Comment = '%1 = a date, %2 = a id of a table (integer),%3 = the caption of the table.';
         AllRecordsFilterInfoLbl: Label 'Applying filters: Table ID: %1, All Records, Expiration Date: %2.', Comment = '%1 = a id of a table (integer), %2 = a date';
-        MissingReadPermissionLbl: Label 'The user does not have Read permission for table %1, %2.', Comment = '%1 = table number, %2 = table caption';
         NoRecordsToDeleteLbl: Label 'There are no records to delete for table ID %1, %2.', Comment = '%1 = a id of a table (integer), %2 = the caption of the table.';
         MinExpirationDateErr: Label 'The expiration date for table %1, %2 must be at least %3 days before the current date. Please update the retention policy.', Comment = '%1 = table number, %2 = table caption, %3 = integer';
+        RecordReferenceIndirectPermission: Interface "Record Reference";
 
     procedure HasReadPermission(TableId: Integer): Boolean
     var
+        RecordReference: Codeunit "Record Reference";
         RecordRef: RecordRef;
     begin
         RecordRef.Open(TableId);
-        exit(RecordRef.ReadPermission())
+        RecordReference.Initialize(RecordRef, RecordReferenceIndirectPermission);
+        exit(RecordReferenceIndirectPermission.ReadPermission(RecordRef))
     end;
 
     procedure Count(RecordRef: RecordRef): Integer
     begin
-        exit(RecordRef.Count())
+        exit(RecordReferenceIndirectPermission.Count(RecordRef))
     end;
 
     procedure ApplyRetentionPolicyAllRecordFilters(RetentionPolicySetup: Record "Retention Policy Setup"; var RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary): Boolean
@@ -34,6 +36,7 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         RetentionPeriod: Record "Retention Period";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordReference: Codeunit "Record Reference";
         ExpirationDate: Date;
     begin
         if not RetentionPeriod.Get(RetentionPolicySetup."Retention Period") then begin
@@ -50,14 +53,10 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(AllRecordsFilterInfoLbl, RetentionPolicySetup."Table Id", Format(ExpirationDate, 0, 9)));
 
         RecordRef.Open(RetentionPolicySetup."Table ID");
-        if not RecordRef.ReadPermission() then begin
-            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecordRef.Number, RecordRef.Caption));
-            exit(false);
-        end;
+        RecordReference.Initialize(RecordRef, RecordReferenceIndirectPermission);
         ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(RetentionPolicySetup."Date Field No.", ExpirationDate, RecordRef, 11, RetenPolFilteringParam."Null Date Replacement value");
-        if not RecordRef.IsEmpty then
+        if not RecordReferenceIndirectPermission.IsEmpty(RecordRef) then
             exit(true);
-
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(NoRecordsToDeleteLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
         exit(false);
     end;
@@ -67,15 +66,13 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
+        RecordReference: Codeunit "Record Reference";
         TotalRecords: Integer;
         YoungestExpirationDate, OldestRecordDate, CurrDate : Date;
         NumberOfDays, i : Integer;
     begin
         RecordRef.Open(RetentionPolicySetup."Table ID");
-        if not RecordRef.ReadPermission() then begin
-            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecordRef.Number, RecordRef.Caption));
-            exit(false);
-        end;
+        RecordReference.Initialize(RecordRef, RecordReferenceIndirectPermission);
 
         RetentionPolicySetupLine.SetRange("Table ID", RetentionPolicySetup."Table Id");
         RetentionPolicySetupLine.SetRange(Enabled, true);
@@ -100,7 +97,7 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
 
             // if max records exceeded, exit loop
             RecordRef.MarkedOnly(true);
-            TotalRecords := RecordRef.Count();
+            TotalRecords := Count(RecordRef);
             if TotalRecords >= ApplyRetentionPolicyImpl.MaxNumberOfRecordsToDelete() then begin
                 RetenPolFilteringParam."Expired Record Expiration Date" := CurrDate;
                 exit(true);
@@ -108,7 +105,7 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         end;
         RetenPolFilteringParam."Expired Record Expiration Date" := CurrDate;
 
-        if not RecordRef.IsEmpty then
+        if not RecordReferenceIndirectPermission.IsEmpty(RecordRef) then
             exit(true);
 
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(NoRecordsToDeleteLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
@@ -149,7 +146,8 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
             repeat
                 if RetentionPolicySetupLine."Date Field No." <> PrevDateFieldNo then begin
                     RecordRef.SetView(StrSubstNo(ViewStringTxt, RetentionPolicySetupLine."Date Field No."));
-                    RecordRef.FindFirst();
+                    RecordReferenceIndirectPermission.FindFirst(RecordRef);
+
                     FieldRef := RecordRef.Field(RetentionPolicySetupLine."Date Field No.");
 
                     if FieldRef.Type = FieldType::DateTime then
@@ -200,7 +198,7 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         SetMarksOnRecordRef(RetentionPolicySetup, RecordRef, false, RetenPolFilteringParam, CurrDate);
     end;
 
-    local procedure SetMarksOnRecordRef(RetentionPolicySetup: Record "Retention Policy Setup"; RecordRef: RecordRef; MarkValue: boolean; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary; CurrDate: Date);
+    local procedure SetMarksOnRecordRef(RetentionPolicySetup: Record "Retention Policy Setup"; RecordRef: RecordRef; MarkValue: Boolean; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary; CurrDate: Date);
     var
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
         RetentionPeriod: Record "Retention Period";
@@ -240,12 +238,12 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
             until RetentionPolicySetupLine.Next() = 0;
     end;
 
-    local procedure SetMarks(var RecordRef: RecordRef; MarkValue: boolean)
+    local procedure SetMarks(var RecordRef: RecordRef; MarkValue: Boolean)
     begin
-        if RecordRef.FindSet(false, false) then
+        if RecordReferenceIndirectPermission.FindSet(RecordRef, true) then
             repeat
                 RecordRef.Mark := MarkValue;
-            until RecordRef.Next() = 0;
+            until RecordReferenceIndirectPermission.Next(RecordRef) = 0;
     end;
 
     local procedure SetRetentionPolicyLineTableFilter(var RetentionPolicySetupLine: Record "Retention Policy Setup Line"; var RecordRef: RecordRef; FilterGroup: Integer);

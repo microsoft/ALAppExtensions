@@ -232,18 +232,18 @@ codeunit 148089 "Check User Setup Dim. CZL"
         Assert.RecordCount(TempErrorMessage, 3);
         TempErrorMessage.FindFirst();
         TempErrorMessage.TestField("Message Type", TempErrorMessage."Message Type"::Error);
-        TempErrorMessage.TestField(Description, ExpectedErrorMessage[1]);
+        TempErrorMessage.TestField("Message", ExpectedErrorMessage[1]);
         TempErrorMessage.TestField("Context Record ID", ContextRecID);
         TempErrorMessage.TestField("Record ID", SourceRecID);
         // second line
         TempErrorMessage.Next();
         TempErrorMessage.TestField("Message Type", TempErrorMessage."Message Type"::Error);
-        TempErrorMessage.TestField(Description, ExpectedErrorMessage[2]);
+        TempErrorMessage.TestField("Message", ExpectedErrorMessage[2]);
         TempErrorMessage.TestField("Context Record ID", ContextRecID);
         TempErrorMessage.TestField("Record ID", SourceRecID);
         // the last error is "There is nothing to post."
         TempErrorMessage.FindLast();
-        TempErrorMessage.TestField(Description, DocumentErrorsMgt.GetNothingToPostErrorMsg());
+        TempErrorMessage.TestField("Message", DocumentErrorsMgt.GetNothingToPostErrorMsg());
     end;
 
     [ModalPageHandler]

@@ -1,4 +1,4 @@
-﻿name: ' CI/CD'
+name: ' CI/CD'
 
 on:
   workflow_dispatch:
@@ -188,8 +188,19 @@ jobs:
           $ErrorActionPreference = "STOP"
           Set-StrictMode -version 2.0
           $deliveryTargets = @('GitHubPackages','NuGet','Storage')
-          if ($env:type -eq "AppSource App" -and $env:AppSourceContinuousDelivery -eq "true") {
-            $deliveryTargets += @("AppSource")
+          if ($env:type -eq "AppSource App") {
+            $continuousDelivery = $false
+            # For multi-project repositories, we will add deliveryTarget AppSource if any project has AppSourceContinuousDelivery set to true
+            ('${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
+              $projectSettings = Get-Content (Join-Path $_ '.AL-Go/settings.json') -raw | ConvertFrom-Json
+              if ($projectSettings.PSObject.Properties.Name -eq 'AppSourceContinuousDelivery' -and $projectSettings.AppSourceContinuousDelivery) {
+                Write-Host "Project $_ is setup for Continuous Delivery"
+                $continuousDelivery = $true
+              }
+            }
+            if ($continuousDelivery) {
+              $deliveryTargets += @("AppSource")
+            }
           }
           $namePrefix = 'DeliverTo'
           Get-Item -Path (Join-Path $ENV:GITHUB_WORKSPACE ".github/$($namePrefix)*.ps1") | ForEach-Object {
@@ -480,9 +491,8 @@ jobs:
           $buildMode = '${{ matrix.buildMode }}'
           if ("$ENV:GITHUB_EVENT_NAME" -eq 'workflow_run') {
             $eventStr = Get-Content $ENV:GITHUB_EVENT_PATH -Encoding UTF8
-            $eventStr | Out-Host
             $event = $eventStr | ConvertFrom-Json
-            $ref = "PR$($event.workflow_run.pull_requests[0].number)"
+            $ref = "PR$($event.workflow_run.id)"
           }
           else {
             $ref = "$ENV:GITHUB_REF_NAME".Replace('/','_')
@@ -676,7 +686,7 @@ jobs:
             Write-Host "::Error::No AuthContext provided"
             exit 1
           }
-          if ($deployToSetting.PSObject.Properties.name -eq "EnvironmentName") {
+          if (("$deployToSetting" -ne "") -and $deployToSetting.PSObject.Properties.name -eq "EnvironmentName") {
             $environmentName = $deployToSetting.EnvironmentName
           }
           else {
@@ -696,7 +706,7 @@ jobs:
           }
           $environmentName = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($environmentName + '${{ matrix.environment }}'.SubString($envName.Length)).ToUpperInvariant()))
 
-          if ($deployToSetting.PSObject.Properties.name -eq "projects") {
+          if (("$deployToSetting" -ne "") -and $deployToSetting.PSObject.Properties.name -eq "projects") {
             $projects = $deployToSetting.projects
           }
           else {

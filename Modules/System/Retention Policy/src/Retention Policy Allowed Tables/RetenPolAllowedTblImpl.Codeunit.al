@@ -137,7 +137,7 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
         exit(RetentionPolicyAllowedTable.Delete());
     end;
 
-    procedure IsAllowedTable(TableId: Integer): boolean
+    procedure IsAllowedTable(TableId: Integer): Boolean
     var
         RetentionPolicyAllowedTable: Record "Retention Policy Allowed Table";
         AllObjWithCaption: Record AllObjWithCaption;
