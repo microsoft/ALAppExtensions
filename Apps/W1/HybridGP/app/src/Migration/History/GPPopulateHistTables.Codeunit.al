@@ -35,6 +35,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             if not GPHistSourceError.IsEmpty() then
                 GPHistSourceError.DeleteAll();
 
+            HistMigrationCurrentStatus.EnsureInit();
             HistMigrationCurrentStatus."Reset Data" := false;
             HistMigrationCurrentStatus.Modify();
         end;
