@@ -470,7 +470,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: '${{ matrix.project }}'
-      
+
       - name: Run pipeline
         id: RunPipeline
         uses: microsoft/AL-Go-Actions/RunPipeline@preview
