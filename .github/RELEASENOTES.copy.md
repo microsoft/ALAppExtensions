@@ -2,6 +2,14 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+### Issues
+- Issue #171 create a workspace file when creating a project
+- Issue #356 Publish to AppSource fails in multi project repo
+- Issue #358 Publish To Environment Action stopped working in v2.3
+
+### Refactoring and tests
+ReadSettings has been refactored to allow organization wide settings to be added as well. CI Tests have been added to cover ReadSettings.
+
 ## v2.3
 
 ### Issues

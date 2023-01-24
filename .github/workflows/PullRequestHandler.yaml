@@ -1,10 +1,10 @@
-﻿name: 'Pull Request Handler'
+name: 'Pull Request Handler'
 
 on:
   pull_request_target:
     paths-ignore:
       - '**.md'
-    branches: [ 'main' ]
+    branches: [ 'main', 'release/*' ]
 
 defaults:
   run:

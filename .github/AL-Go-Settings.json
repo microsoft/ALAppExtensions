@@ -22,5 +22,8 @@
     "NextMinor.yaml",
     "PublishToEnvironment.yaml"
   ],
-  "CICDPullRequestBranches": ["main", "release/*"]
+  "CICDPullRequestBranches": [
+    "main",
+    "release/*"
+  ]
 }
