@@ -4,6 +4,7 @@ codeunit 20101 "AMC Bank Bank Acc. Rec Lin"
     ObsoleteState = Pending;
     ObsoleteReason = 'Codeunit 1248 is used.';
     ObsoleteTag = '20.0';
+    
 
     Permissions = TableData "Data Exch." = rimd;
     TableNo = "Bank Acc. Reconciliation Line";
