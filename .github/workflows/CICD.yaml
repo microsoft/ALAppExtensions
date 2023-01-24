@@ -465,7 +465,12 @@ jobs:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,storageContext,gitHubPackagesContext'
-
+      
+      - name: Publish repo as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: '${{ matrix.project }}'
+      
       - name: Run pipeline
         id: RunPipeline
         uses: microsoft/AL-Go-Actions/RunPipeline@preview
