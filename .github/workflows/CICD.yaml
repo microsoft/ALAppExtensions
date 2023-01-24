@@ -466,6 +466,14 @@ jobs:
           settingsJson: ${{ env.Settings }}
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,storageContext,gitHubPackagesContext'
 
+
+      - name: Log Branch
+        if: github.event_name == 'workflow_run'
+        run: |
+          Write-Host "Branch: ${{ github.event.workflow_run.head_branch }}"
+          Write-Host "SHA: ${{ github.event.workflow_run.head_sha }}"
+          Write-Host "PR: ${{ github.event.workflow_run.head_repository.full_name }}"
+
       - name: Publish repo as artifact
         uses: actions/upload-artifact@v3
         with:
