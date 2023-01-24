@@ -4,7 +4,7 @@ on:
   pull_request_target:
     paths-ignore:
       - '**.md'
-    branches: [ 'main' ]
+    branches: [ 'main', 'releases/*' ]
 
 defaults:
   run:
