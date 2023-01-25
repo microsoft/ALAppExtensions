@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Access information about the subscribed SKUs and the corresponding service plans.",
     "description":  "Access information about the subscribed SKUs and the corresponding service plans. You can retrieve information such as the SKU Object ID, SKU ID, number of licenses assigned, the license state (enabled, suspended, or warning), and the SKU part number. For the corresponding service plans, you can retrieve the ID, the capability status, or the name.",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,19 +15,19 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
                              "name":  "Azure AD Graph",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
                              "name":  "Azure AD Plan",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "screenshots":  [
@@ -56,5 +56,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
 }

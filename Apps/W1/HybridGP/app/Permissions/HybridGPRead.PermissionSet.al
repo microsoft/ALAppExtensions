@@ -47,9 +47,19 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GPSOPTrxHist" = R,
                     tabledata "GPSOPUserDefinedWorkHist" = R,
                     tabledata "GPSOPWorkflowWorkHist" = R,
+#if not CLEAN21
 #pragma warning disable AL0432
+#endif
                     tabledata "GPForecastTemp" = R,
+#if not CLEAN21
 #pragma warning restore AL0432
+#endif
+#if not CLEAN22
+#pragma warning disable AL0432
+                    tabledata "GP POPPOHeader" = R,
+                    tabledata "GP POPPOLine" = R,
+#pragma warning restore AL0432
+#endif
                     tabledata "GP Item" = R,
                     tabledata "GP Item Location" = R,
                     tabledata "GP Item Transactions" = R,
@@ -61,8 +71,6 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GP Bank MSTR" = R,
                     tabledata "GP Checkbook MSTR" = R,
                     tabledata "GP Checkbook Transactions" = R,
-                    tabledata "GP POPPOHeader" = R,
-                    tabledata "GP POPPOLine" = R,
                     tabledata "GP Vendor" = R,
                     tabledata "GP Vendor Transactions" = R,
                     tabledata "GP Company Migration Settings" = R,
@@ -104,5 +112,7 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GP GL30000" = R,
                     tabledata "GP BM30200" = R,
                     tabledata "GP Hist. Source Progress" = R,
-                    tabledata "GP Hist. Source Error" = R;
+                    tabledata "GP Hist. Source Error" = R,
+                    tabledata "GP POP10100" = R,
+                    tabledata "GP POP10110" = R;
 }

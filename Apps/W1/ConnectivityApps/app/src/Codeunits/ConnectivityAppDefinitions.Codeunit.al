@@ -19,10 +19,12 @@ codeunit 20352 "Connectivity App Definitions"
     begin
         RegisterAppBankingNL();
         RegisterAppSwissSalaryBanking();
-        RegisterContiniaPaymentManagement365NL();
-        RegisterContiniaPaymentManagement365DK();
-        RegisterContiniaPaymentManagement365NO();
+        RegisterContiniaPaymentManagementNL();
+        RegisterContiniaPaymentManagementDK();
+        RegisterContiniaPaymentManagementNO();
         RegisterIQBanking();
+        RegisterWiseBanking();
+        RegisterDirectBankingNL();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -83,7 +85,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
-    local procedure RegisterContiniaPaymentManagement365NL()
+    local procedure RegisterContiniaPaymentManagementNL()
     var
         AppId: Text[250];
         AppName: Text[1024];
@@ -95,11 +97,11 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Continia Payment Management 365 (NL)' to NL
+            Add app 'Continia Payment Management (NL)' to NL
         ***************************************************/
 
         AppId := 'ec587884-e9e3-48ac-97ca-3f2bdd40bb2e';
-        AppName := 'Continia Payment Management 365 (NL)';
+        AppName := 'Continia Payment Management (NL)';
         AppPublisher := 'Continia Software';
         AppDescription := 'Connect your online bank to Business Central. With Continia Payment Management, you can pay your vendors, match customer payments, and reconcile statements directly from Business Central - fully integrated and secure without having to log into your online bank. Payment Management offers direct integration to most banks in the Netherlands, such as: ABN-Amro, ING, Rabobank, ASN Bank, Bunq, Knab, RegioBank, SNS, Triodos Bank. Start a free trial by downloading the app, or visit the Continia website for more information.';
         AppProviderSupportURL := 'https://www.continia.com/inspiration/solution-usage/connect-your-banks-to-business-central/';
@@ -111,7 +113,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
-    local procedure RegisterContiniaPaymentManagement365DK()
+    local procedure RegisterContiniaPaymentManagementDK()
     var
         AppId: Text[250];
         AppName: Text[1024];
@@ -123,11 +125,11 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Continia Payment Management 365 (DK)' to DK
+            Add app 'Continia Payment Management (DK)' to DK
         ***************************************************/
 
         AppId := '1dafd1ac-6218-4a6e-9bd7-3dec0f14a072';
-        AppName := 'Continia Payment Management 365 (DK)';
+        AppName := 'Continia Payment Management (DK)';
         AppPublisher := 'Continia Software';
         AppDescription := 'Connect your online bank to Business Central. With Continia Payment Management, you can pay your vendors, match customer payments, and reconcile statements directly from Business Central - fully integrated and secure without having to log into your online bank. Payment Management offers direct integration to most banks in Denmark, such as: Danske Bank, Nordea, Sydbank, Handelsbanken, SparNord, Jyske Bank, SEB, Arbejdernes Landsbank, All Savings banks. Start a free trial by downloading the app, or visit the Continia website for more information.';
         AppProviderSupportURL := 'https://www.continia.com/inspiration/solution-usage/connect-your-banks-to-business-central/';
@@ -139,7 +141,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
-    local procedure RegisterContiniaPaymentManagement365NO()
+    local procedure RegisterContiniaPaymentManagementNO()
     var
         AppId: Text[250];
         AppName: Text[1024];
@@ -151,11 +153,11 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Continia Payment Management 365 (NO)' to NO
+            Add app 'Continia Payment Management (NO)' to NO
         ***************************************************/
 
         AppId := '9f6c9dd2-64ac-488c-85bc-9bd05a0b42a3';
-        AppName := 'Continia Payment Management 365 (NO)';
+        AppName := 'Continia Payment Management (NO)';
         AppPublisher := 'Continia Software';
         AppDescription := 'Connect your online bank to Business Central. With Continia Payment Management, you can pay your vendors, match customer payments, and reconcile statements directly from Business Central - fully integrated and secure without having to log into your online bank. Payment Management offers direct integration to most banks in Norway, such as: DNB, Handelsbanken, Nordea, SpareBank 1, Sparebanken Vest, Danske Bank. Start a free trial by downloading the app, or visit the Continia website for more information.';
         AppProviderSupportURL := 'https://www.continia.com/inspiration/solution-usage/connect-your-banks-to-business-central/';
@@ -192,6 +194,62 @@ codeunit 20352 "Connectivity App Definitions"
         AppWorksOn := 'ES';
 
         AddDescriptionTranslation(AppId, 'Gestiona tus bancos directamente desde Business Central. Con la finalidad de facilitar la gestión financiera, esta app te permite importar transacciones bancarias y ejecutar pagos de una forma sencilla y segura, sin salir de tu entorno de Business Central.', 1034);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+    local procedure RegisterWiseBanking()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Wise Banking' to IS
+        ***************************************************/
+
+        AppId := '6a580fed-3f05-40d3-bd61-652c7af0622f';
+        AppName := 'Wise Banking';
+        AppPublisher := 'Wise';
+        AppDescription := 'Wise Banking provides the user with secure communication with all commercial banks of Iceland. It does this by using the banking standards of the Icelandic banks (IOBS). With Wise Banking the user can therefore safely manage bank accounts, automatic bank reconciliation, outgoing payments and currency and exchange rates directly from Business Central.';
+        AppProviderSupportURL := 'https://wise.is/en/solutions/wisebusiness/wise-banking/';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wiselausnirehf1587117975659%7CAID.wisebanking%7CPAPPID.6a580fed-3f05-40d3-bd61-652c7af0622f?tab=Overview';
+        AppApprovedFor := 'IS';
+        AppWorksOn := 'IS';
+
+        AddDescriptionTranslation(AppId, 'Með Bankasamskiptakerfi Wise  eru fyrirtæki í öruggum samskiptum við sína viðskiptabanka. Bankasamskiptakerfi Wise fylgir samræmdum bankastaðli íslensku bankanna (IOBS) og uppfyllir ströngustu öryggisstaðla. Með kerfinu getur notandinn haldið utan um bankareikninga, sjálfvirkar afstemmingar, útgreiðslur og gengi gjaldmiðla beint úr Business Central á öruggan hátt.', 1039);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+    local procedure RegisterDirectBankingNL()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Direct Banking' to NL
+        ***************************************************/
+
+        AppId := '7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
+        AppName := 'Direct Banking NL';
+        AppPublisher := 'IDYN B.V.';
+        AppDescription := 'Integrate ABN, Rabo, ING, Triodos, Knab, ASN, SNS, etc. with Microsoft Dynamics 365 Business Central.';
+        AppProviderSupportURL := 'https://help.idyn.nl/directbanking/bc/en/topic/about-directbanking';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking_nl%7CPAPPID.7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
+        AppApprovedFor := 'NL';
+        AppWorksOn := 'NL';
+
+        AddDescriptionTranslation(AppId, 'Integreer ABN, Rabo, ING, Triodos, Knab, ASN, SNS etc. met Microsoft Dynamics 365 Business Central.', 1043);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
@@ -326,7 +384,7 @@ codeunit 20352 "Connectivity App Definitions"
                 exit(AppDescription);
 
         if TempConnectivityAppDescription.Get(AppId, UserPersonalization."Language ID") then
-                    exit(TempConnectivityAppDescription.Description);
+            exit(TempConnectivityAppDescription.Description);
 
         exit(AppDescription);
     end;

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Sets and verifies passwords",
     "description":  "This module provides the functionality for generating and validating passwords, introduces a dialog for the user to enter a password.",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -39,5 +39,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
 }

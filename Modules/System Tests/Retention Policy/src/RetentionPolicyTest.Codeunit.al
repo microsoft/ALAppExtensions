@@ -40,7 +40,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -77,7 +79,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-1Y>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>=''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -114,7 +118,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(ExpirationDate - 1, 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -149,7 +155,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -186,7 +194,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -218,7 +228,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-1Y>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -256,7 +268,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>=''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -293,7 +307,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-1Y>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -330,7 +346,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(ExpirationDate, 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -365,7 +383,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -402,7 +422,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -434,7 +456,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-1Y>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -472,7 +496,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -507,7 +533,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-1Y>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(''''..''''|%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -542,7 +570,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, Format(ExpirationDate - 1, 0, 9));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -577,7 +607,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -612,7 +644,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-6M>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -644,7 +678,9 @@ codeunit 138702 "Retention Policy Test"
         NullDateReplacementDate := CalcDate('<-1Y>', Today());
         Filtergroup := 10;
         EmptyView := 'VERSION(1) SORTING(Field1)';
+#pragma warning disable AA0217
         ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+#pragma warning restore
         RecordRef.GetTable(RetentionPolicyTestData);
 
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
@@ -1339,7 +1375,7 @@ codeunit 138702 "Retention Policy Test"
         PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         MaxRecordsToDelete := 250000;
-        Buffer := 1000;
+        Buffer := 1500;
         ClearTestData();
         InsertOneMonthRetentionPeriod(RetentionPeriod);
         InsertEnabledRetentionPolicySetupForAllRecords(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData.FieldNo("Date Field"));
@@ -1355,6 +1391,37 @@ codeunit 138702 "Retention Policy Test"
 
         // Verify
         Assert.RecordIsEmpty(RetentionPolicyTestData);
+    end;
+
+    [Test]
+    procedure TestApplyRetentionPolicyTooManyLinesToDeleteOneTableDontReschedule()
+    var
+        RetentionPeriod: Record "Retention Period";
+        RetentionPolicySetup: Record "Retention Policy Setup";
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        i: Integer;
+        MaxRecordsToDelete: Integer;
+        Buffer: Integer;
+    begin
+        PermissionsMock.Set('Retention Pol. Admin');
+        // Setup
+        MaxRecordsToDelete := 250000;
+        Buffer := 1500;
+        ClearTestData();
+        InsertOneMonthRetentionPeriod(RetentionPeriod);
+        InsertEnabledRetentionPolicySetupForAllRecords(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData.FieldNo("Date Field"));
+
+        For i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by >1k
+            InsertRetentionPolicyTestData('<-2M>');
+
+        Assert.AreEqual((MaxRecordsToDelete + Buffer), RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
+
+        // Exercise
+        ApplyRetentionPolicy.ApplyRetentionPolicy(RetentionPolicySetup, false);
+
+        // Verify
+        Assert.RecordIsNotEmpty(RetentionPolicyTestData);
     end;
 
     [HandlerFunctions('RetentionPolicyFilterPageHandler')]
@@ -1647,12 +1714,16 @@ codeunit 138702 "Retention Policy Test"
 
     local procedure FixViewsTimeZoneIssueMaxRange(InDate: Date): Date
     begin
+#pragma warning disable AA0217
         exit(ParseDateOutOfViewRange(StrSubstNo('WHERE(Field2000000001=1(..%1))', InDate)))
+#pragma warning restore
     end;
 
     local procedure FixViewsTimeZoneIssueMinRange(InDate: Date): Date
     begin
+#pragma warning disable AA0217
         exit(ParseDateOutOfViewRange(StrSubstNo('WHERE(Field2000000001=1(%1..))', InDate)))
+#pragma warning restore
     end;
 
     local procedure ParseDateOutOfViewRange(ViewText: Text) OutDate: Date
@@ -1669,7 +1740,9 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData: Record "Retention Policy Test Data";
         ViewText: Text;
     begin
+#pragma warning disable AA0217
         RetentionPolicyTestData.SetView(StrSubstNo('WHERE(Field2000000001=1(%1))', InDate));
+#pragma warning restore
         ViewText := RetentionPolicyTestData.GetView(false);
         exit(ViewText.Substring(ViewText.LastIndexOf('(') + 1, 42))
     end;

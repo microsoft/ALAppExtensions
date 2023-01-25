@@ -1,4 +1,4 @@
-﻿name: ' Increment Version Number'
+name: ' Increment Version Number'
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ permissions:
 
 defaults:
   run:
-    shell: PowerShell
+    shell: powershell
 
 jobs:
   IncrementVersionNumber:
@@ -32,13 +32,15 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.3
         with:
+          shell: powershell
           eventId: "DO0096"
 
       - name: Increment Version Number
-        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@preview
+        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@v2.3
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           project: ${{ github.event.inputs.project }}
           versionNumber: ${{ github.event.inputs.versionNumber }}
@@ -46,7 +48,8 @@ jobs:
   
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.3
         with:
+          shell: powershell
           eventId: "DO0096"
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}

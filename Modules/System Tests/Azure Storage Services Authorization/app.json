@@ -2,7 +2,7 @@
     "id":  "d80e9dc1-c590-422c-aa4a-0b4b44848e8e",
     "name":  "Azure Storage Services Authorization Test",
     "publisher":  "Microsoft",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "brief":  "Tests for Azure Storage Services Authorization module",
     "description":  "",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,19 +15,19 @@
                              "id":  "e409d343-14fa-42a4-a1be-fec499383e59",
                              "name":  "Azure Storage Services Authorization",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "publisher":  "Microsoft",
                              "name":  "Any",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "screenshots":  [
@@ -43,7 +43,7 @@
                          "to":  132918
                      }
                  ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/dev-itpro/terms/legal/",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,

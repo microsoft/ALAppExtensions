@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Simplify using Azure Functions",
     "description":  "Support for writing AL code and connecting to Azure Functions",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,25 +15,25 @@
                              "id":  "1b2efb4b-8c44-4d74-a56f-60646645bb21",
                              "name":  "URI",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "3f95f4c2-037f-44d4-b089-b56ffc01693f",
                              "name":  "OAuth",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "aa171ba9-d3b0-450d-90fb-546b61e32074",
                              "name":  "OAuth2",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "de35f591-7216-4e60-8be1-1911d71a7fc2",
                              "name":  "Telemetry",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
@@ -50,5 +50,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
 }

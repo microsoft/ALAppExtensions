@@ -105,7 +105,7 @@ codeunit 31318 "Dimension Mgt. Handler CZL"
         end else begin
             LastErrorMessage.Init();
             LastErrorMessage.ID += 1;
-            LastErrorMessage.Description := CopyStr(Message, 1, MaxStrLen(LastErrorMessage.Description));
+            LastErrorMessage."Message" := CopyStr(Message, 1, MaxStrLen(LastErrorMessage."Message"));
         end;
     end;
 
@@ -115,7 +115,7 @@ codeunit 31318 "Dimension Mgt. Handler CZL"
     begin
         ErrorMessageManagement.GetErrors(TempErrorMessage);
 
-        TempErrorMessage.SetRange(Description, CopyStr(Message, 1, MaxStrLen(TempErrorMessage.Description)));
+        TempErrorMessage.SetRange("Message", CopyStr(Message, 1, MaxStrLen(TempErrorMessage."Message")));
         exit(not (TempErrorMessage.IsEmpty()));
     end;
 

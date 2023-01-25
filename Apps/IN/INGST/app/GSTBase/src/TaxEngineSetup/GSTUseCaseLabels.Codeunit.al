@@ -157,6 +157,28 @@ codeunit 18019 "GST Use Case Labels"
         CaseList.Add('{df5e22a4-bd3c-4c80-b6d3-9f667c8037dd}');
         CaseList.Add('{8fcf5988-06c7-44e2-a7bd-a5a9b40cdef8}');
         CaseList.Add('{67fecb97-a3fa-4fc9-8a80-e214c3df4ca9}');
+        CaseList.Add('{b8a8c947-5ba0-45b4-b8a4-33088f25782f}');
+        CaseList.Add('{1A135F44-7A65-49A6-A08A-C87D453E5837}');
+        CaseList.Add('{d9172942-78eb-4305-950c-c9dec70f16e6}');
+        CaseList.Add('{9d6c4ac2-81d1-47e7-8c7c-494f20f1719f}');
+        CaseList.Add('{9cbcec6f-a01b-422b-8aab-4b6bc90ec959}');
+        CaseList.Add('{bfcc5c7f-f391-44d5-84f1-1d72dc7a9dec}');
+        CaseList.Add('{b95176d6-58ff-487c-a25b-26e433d85356}');
+        CaseList.Add('{13e5d66f-422b-4830-992b-39c740d6d560}');
+        CaseList.Add('{8e537871-c8f7-4e07-8b32-84411c668443}');
+        CaseList.Add('{bc9a772f-dbf9-4f4f-8607-212dc829c005}');
+        CaseList.Add('{d7a29410-a685-41b6-a8f9-268d65f062b6}');
+        CaseList.Add('{4dc1d2dc-a8f8-4443-a563-348b8e8961c1}');
+        CaseList.Add('{85dae7d1-95ac-4fd1-b1e0-5ffd980481bf}');
+        CaseList.Add('{0e1a782b-cf1f-4cf0-8797-a1310519b1db}');
+        CaseList.Add('{05312e80-be4e-4eb1-9a1e-af55ea4d8e3d}');
+        CaseList.Add('{55b6317f-25f3-4c73-8aa5-afa3ec519c88}');
+        CaseList.Add('{3e14881b-db97-473e-9a0b-c8a0a2d604c1}');
+        CaseList.Add('{0cf4326b-fd68-4ae6-b52a-cd2aa2f2a788}');
+        CaseList.Add('{d2c0bc32-d71c-4fec-a3fc-63a0586da3d6}');
+        CaseList.Add('{0410bc8a-0231-4947-8ed6-982a68846120}');
+        CaseList.Add('{8e20fc81-1137-41b3-a90e-ae86cd66f718}');
+        CaseList.Add('{3277542b-b49c-4ccd-b661-f72c71ced698}');
     end;
 
     procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
@@ -265,6 +287,29 @@ codeunit 18019 "GST Use Case Labels"
         "{df5e22a4-bd3c-4c80-b6d3-9f667c8037dd}Lbl": Label 'GST Use Cases';
         "{8fcf5988-06c7-44e2-a7bd-a5a9b40cdef8}Lbl": Label 'GST Use Cases';
         "{67fecb97-a3fa-4fc9-8a80-e214c3df4ca9}Lbl": Label 'GST Use Cases';
+        "{b8a8c947-5ba0-45b4-b8a4-33088f25782f}Lbl": Label 'GST Use Cases';
+        "{1A135F44-7A65-49A6-A08A-C87D453E5837}Lbl": Label 'GST Use Cases';
+        "{d9172942-78eb-4305-950c-c9dec70f16e6}Lbl": Label 'GST Use Cases';
+        "{9d6c4ac2-81d1-47e7-8c7c-494f20f1719f}Lbl": Label 'GST Use Cases';
+        "{9cbcec6f-a01b-422b-8aab-4b6bc90ec959}Lbl": Label 'GST Use Cases';
+        "{bfcc5c7f-f391-44d5-84f1-1d72dc7a9dec}Lbl": Label 'GST Use Cases';
+        "{b95176d6-58ff-487c-a25b-26e433d85356}Lbl": Label 'GST Use Cases';
+        "{13e5d66f-422b-4830-992b-39c740d6d560}Lbl": Label 'GST Use Cases';
+        "{8e537871-c8f7-4e07-8b32-84411c668443}Lbl": Label 'GST Use Cases';
+        "{bc9a772f-dbf9-4f4f-8607-212dc829c005}Lbl": Label 'GST Use Cases';
+        "{d7a29410-a685-41b6-a8f9-268d65f062b6}Lbl": Label 'GST Use Cases';
+        "{4dc1d2dc-a8f8-4443-a563-348b8e8961c1}Lbl": Label 'GST Use Cases';
+        "{85dae7d1-95ac-4fd1-b1e0-5ffd980481bf}Lbl": Label 'GST Use Cases';
+        "{0e1a782b-cf1f-4cf0-8797-a1310519b1db}Lbl": Label 'GST Use Cases';
+        "{05312e80-be4e-4eb1-9a1e-af55ea4d8e3d}Lbl": Label 'GST Use Cases';
+        "{55b6317f-25f3-4c73-8aa5-afa3ec519c88}Lbl": Label 'GST Use Cases';
+        "{3e14881b-db97-473e-9a0b-c8a0a2d604c1}Lbl": Label 'GST Use Cases';
+        "{0cf4326b-fd68-4ae6-b52a-cd2aa2f2a788}Lbl": Label 'GST Use Cases';
+        "{d2c0bc32-d71c-4fec-a3fc-63a0586da3d6}Lbl": Label 'GST Use Cases';
+        "{0410bc8a-0231-4947-8ed6-982a68846120}Lbl": Label 'GST Use Cases';
+        "{8e20fc81-1137-41b3-a90e-ae86cd66f718}Lbl": Label 'GST Use Cases';
+        "{3277542b-b49c-4ccd-b661-f72c71ced698}Lbl": Label 'GST Use Cases';
+
     begin
         Handled := true;
 
@@ -498,6 +543,56 @@ codeunit 18019 "GST Use Case Labels"
                 exit("{8fcf5988-06c7-44e2-a7bd-a5a9b40cdef8}Lbl");
             '{67fecb97-a3fa-4fc9-8a80-e214c3df4ca9}':
                 exit("{67fecb97-a3fa-4fc9-8a80-e214c3df4ca9}Lbl");
+        end;
+
+        case CaseID of
+            '{b8a8c947-5ba0-45b4-b8a4-33088f25782f}':
+                exit("{b8a8c947-5ba0-45b4-b8a4-33088f25782f}Lbl");
+            '{1A135F44-7A65-49A6-A08A-C87D453E5837}':
+                exit("{1A135F44-7A65-49A6-A08A-C87D453E5837}Lbl");
+            '{d9172942-78eb-4305-950c-c9dec70f16e6}':
+                exit("{d9172942-78eb-4305-950c-c9dec70f16e6}Lbl");
+            '{9d6c4ac2-81d1-47e7-8c7c-494f20f1719f}':
+                exit("{9d6c4ac2-81d1-47e7-8c7c-494f20f1719f}Lbl");
+            '{9cbcec6f-a01b-422b-8aab-4b6bc90ec959}':
+                exit("{9cbcec6f-a01b-422b-8aab-4b6bc90ec959}Lbl");
+            '{bfcc5c7f-f391-44d5-84f1-1d72dc7a9dec}':
+                exit("{bfcc5c7f-f391-44d5-84f1-1d72dc7a9dec}Lbl");
+            '{b95176d6-58ff-487c-a25b-26e433d85356}':
+                exit("{b95176d6-58ff-487c-a25b-26e433d85356}Lbl");
+            '{13e5d66f-422b-4830-992b-39c740d6d560}':
+                exit("{13e5d66f-422b-4830-992b-39c740d6d560}Lbl");
+            '{8e537871-c8f7-4e07-8b32-84411c668443}':
+                exit("{8e537871-c8f7-4e07-8b32-84411c668443}Lbl");
+            '{bc9a772f-dbf9-4f4f-8607-212dc829c005}':
+                exit("{bc9a772f-dbf9-4f4f-8607-212dc829c005}Lbl");
+        end;
+
+        case CaseID of
+            '{d7a29410-a685-41b6-a8f9-268d65f062b6}':
+                exit("{d7a29410-a685-41b6-a8f9-268d65f062b6}Lbl");
+            '{4dc1d2dc-a8f8-4443-a563-348b8e8961c1}':
+                exit("{4dc1d2dc-a8f8-4443-a563-348b8e8961c1}Lbl");
+            '{85dae7d1-95ac-4fd1-b1e0-5ffd980481bf}':
+                exit("{85dae7d1-95ac-4fd1-b1e0-5ffd980481bf}Lbl");
+            '{0e1a782b-cf1f-4cf0-8797-a1310519b1db}':
+                exit("{0e1a782b-cf1f-4cf0-8797-a1310519b1db}Lbl");
+            '{05312e80-be4e-4eb1-9a1e-af55ea4d8e3d}':
+                exit("{05312e80-be4e-4eb1-9a1e-af55ea4d8e3d}Lbl");
+            '{55b6317f-25f3-4c73-8aa5-afa3ec519c88}':
+                exit("{55b6317f-25f3-4c73-8aa5-afa3ec519c88}Lbl");
+            '{3e14881b-db97-473e-9a0b-c8a0a2d604c1}':
+                exit("{3e14881b-db97-473e-9a0b-c8a0a2d604c1}Lbl");
+            '{0cf4326b-fd68-4ae6-b52a-cd2aa2f2a788}':
+                exit("{0cf4326b-fd68-4ae6-b52a-cd2aa2f2a788}Lbl");
+            '{d2c0bc32-d71c-4fec-a3fc-63a0586da3d6}':
+                exit("{d2c0bc32-d71c-4fec-a3fc-63a0586da3d6}Lbl");
+            '{0410bc8a-0231-4947-8ed6-982a68846120}':
+                exit("{0410bc8a-0231-4947-8ed6-982a68846120}Lbl");
+            '{8e20fc81-1137-41b3-a90e-ae86cd66f718}':
+                exit("{8e20fc81-1137-41b3-a90e-ae86cd66f718}Lbl");
+            '{3277542b-b49c-4ccd-b661-f72c71ced698}':
+                exit("{3277542b-b49c-4ccd-b661-f72c71ced698}Lbl");
         end;
 
         Handled := false;

@@ -13,6 +13,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
     trigger OnUpgradePerCompany()
     begin
+        SetShpfyStockCalculation();
 #if not CLEAN21
         MoveShpfyRegisteredStore();
 #endif
@@ -53,6 +54,25 @@ codeunit 30106 "Shpfy Upgrade Mgt."
             until ShpfyShop.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetAllowOutgoingRequestseUpgradeTag());
+    end;
+
+    internal procedure SetShpfyStockCalculation()
+    var
+        ShpfyShopLocation: Record "Shpfy Shop Location";
+    begin
+        if ShpfyShopLocation.FindSet() then
+            repeat
+                if ShpfyShopLocation.Disabled then begin
+                    ShpfyShopLocation.Disabled := false;
+                    ShpfyShopLocation."Stock Calculation" := ShpfyShopLocation."Stock Calculation"::Disabled;
+                    ShpfyShopLocation.Modify();
+                end;
+            until ShpfyShopLocation.Next() = 0;
+    end;
+
+    internal procedure GetNewAvailabilityCalculationTag(): Code[250]
+    begin
+        exit('MS-454264-NewAvailabilityCalculationTag-20221121');
     end;
 
     internal procedure GetAllowOutgoingRequestseUpgradeTag(): Code[250]

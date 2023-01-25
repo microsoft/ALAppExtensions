@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides relevant actions of an AL page",
     "description":  "Contains functionality for providing relevant actions for a given page.",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,25 +15,25 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
                              "name":  "Base64 Convert",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
                              "publisher":  "Microsoft",
                              "name":  "Azure AD Plan",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
@@ -59,5 +59,5 @@
                          "to":  2925
                      }
                  ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
 }

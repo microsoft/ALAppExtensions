@@ -26,6 +26,7 @@ permissionset 8906 "Email - Objects"
                   Codeunit "Email Logs Delete" = X,
                   Codeunit "Email Message Impl." = X,
                   Codeunit "Email Message" = X,
+                  Codeunit "Email Record Reference Impl." = X,
                   Codeunit "Email Scenario Impl." = X,
                   Codeunit "Email Scenario" = X,
                   Codeunit "Email Test Mail" = X,

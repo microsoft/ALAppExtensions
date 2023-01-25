@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Store and retrieve User related settings.",
     "description":  "Provides functionality for storing retrieving and viewing user related settings.",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,67 +15,67 @@
                              "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
                              "name":  "Language",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "959630b2-01c5-48d8-a477-d6d40da855fb",
                              "name":  "User Login Times",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "21566fb3-3c6b-4cac-a70d-052f5d66ac64",
                              "name":  "Tenant License State",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "fa2b571d-3f92-4685-9113-421ea9c0b5f5",
                              "name":  "Time Zone Selection",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "7f850a76-a58c-4ade-a14f-7d7acff97115",
                              "name":  "User Selection",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
                              "name":  "User Permissions",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "name":  "Upgrade Tags",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "574d5c26-62d4-4541-bc36-0fbbaed0072a",
                              "name":  "Azure AD User Management",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
                              "name":  "Azure AD User",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
@@ -128,5 +128,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
 }

@@ -1,8 +1,25 @@
-﻿{
-    "type":  "PTE",
-    "templateUrl":  "https://github.com/microsoft/AL-Go-PTE@preview",
-    "bcContainerHelperVersion":  "preview",
-    "runs-on":  "windows-latest",
-    "cacheImageName":  "",
-    "UsePsSession":  false
+{
+  "type": "PTE",
+  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
+  "bcContainerHelperVersion": "preview",
+  "runs-on": "windows-latest",
+  "cacheImageName": "",
+  "UsePsSession": false,
+  "buildModes": [
+    "Default",
+    "Clean",
+    "Translated"
+  ],
+  "unusedALGoSystemFiles": [
+    "AddExistingAppOrTestApp.yaml",
+    "CreateApp.yaml",
+    "CreateOnlineDevelopmentEnvironment.yaml",
+    "CreatePerformanceTestApp.yaml",
+    "CreateRelease.yaml",
+    "CreateTestApp.yaml",
+    "Current.yaml",
+    "NextMajor.yaml",
+    "NextMinor.yaml",
+    "PublishToEnvironment.yaml"
+  ]
 }

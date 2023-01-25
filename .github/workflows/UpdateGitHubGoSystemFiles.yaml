@@ -1,4 +1,4 @@
-﻿name: ' Update AL-Go System Files'
+name: ' Update AL-Go System Files'
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ permissions:
 
 defaults:
   run:
-    shell: PowerShell
+    shell: powershell
 
 jobs:
   UpdateALGoSystemFiles:
@@ -28,34 +28,38 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.3
         with:
+          shell: powershell
           eventId: "DO0098"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          get: KeyVaultName,GhTokenWorkflowSecretName,TemplateUrl
+          get: keyVaultName,ghTokenWorkflowSecretName,templateUrl
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
         env:
           secrets: ${{ toJson(secrets) }}
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
           secrets: 'ghTokenWorkflow=${{ env.GHTOKENWORKFLOWSECRETNAME }}'
 
-      - name: Override TemplateUrl
+      - name: Override templateUrl
         env:
           templateUrl: ${{ github.event.inputs.templateUrl }}
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $templateUrl = $ENV:templateUrl
           if ($templateUrl) {
             Write-Host "Using Template Url: $templateUrl"
-            Add-Content -Path $env:GITHUB_ENV -Value "TemplateUrl=$templateUrl"
+            Add-Content -Path $env:GITHUB_ENV -Value "templateUrl=$templateUrl"
           }
 
       - name: Calculate DirectCommit
@@ -64,6 +68,7 @@ jobs:
           eventName: ${{ github.event_name }}
         run: |
           $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
           $directCommit = $ENV:directCommit
           Write-Host $ENV:eventName
           if ($ENV:eventName -eq 'schedule') {
@@ -73,17 +78,19 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "DirectCommit=$directCommit"
 
       - name: Update AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@preview
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.3
         with:
+          shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           token: ${{ env.ghTokenWorkflow }}
           Update: Y
-          templateUrl: ${{ env.TemplateUrl }}
+          templateUrl: ${{ env.templateUrl }}
           directCommit: ${{ env.directCommit }}
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.3
         with:
+          shell: powershell
           eventId: "DO0098"
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}

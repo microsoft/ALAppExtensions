@@ -4,9 +4,13 @@ permissionsetextension 4025 "D365 BASIC - HGP" extends "D365 BASIC"
                   tabledata GPPOPTaxHist = RIMD,
                   tabledata GPSOPTrxHist = RIMD,
                   tabledata GPSOPProcessHoldWorkHist = RIMD,
+#if not CLEAN21
 #pragma warning disable AL0432
+#endif
                   tabledata GPForecastTemp = RIMD,
+#if not CLEAN21
 #pragma warning restore AL0432
+#endif
                   tabledata GPIVTrxAmountsHist = RIMD,
                   tabledata GPSOPWorkflowWorkHist = RIMD,
                   tabledata "GP GLTransactions" = RIMD,
@@ -97,5 +101,7 @@ permissionsetextension 4025 "D365 BASIC - HGP" extends "D365 BASIC"
                   tabledata "GP GL30000" = RIMD,
                   tabledata "GP BM30200" = RIMD,
                   tabledata "GP Hist. Source Progress" = RIMD,
-                  tabledata "GP Hist. Source Error" = RIMD;
+                  tabledata "GP Hist. Source Error" = RIMD,
+                  tabledata "GP POP10100" = RIMD,
+                  tabledata "GP POP10110" = RIMD;
 }

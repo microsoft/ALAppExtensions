@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Create documents that incorporate data from Business Central using mail merge.",
     "description":  "Use Word templates to create documents that incorporate data from Business Central using mail merge. For example, mail merge is a great way to personalize bulk communications with business partners by letter or email.",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,49 +15,49 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "008c9419-0c3b-4d08-b03e-84e3adca689f",
                              "name":  "Data Compression",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
                              "name":  "Language",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "2edca772-d3b5-4cfc-9ed6-b17ce4bd53c9",
                              "name":  "Object Selection",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "b185fd4a-677b-48d3-a701-768de7563df0",
                              "name":  "Regex",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "94245fbb-b5b1-416e-b8cf-484306646e82",
                              "name":  "Field Selection",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          },
                          {
                              "id":  "de35f591-7216-4e60-8be1-1911d71a7fc2",
                              "name":  "Telemetry",
                              "publisher":  "Microsoft",
-                             "version":  "21.3.0.0"
+                             "version":  "21.4.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
@@ -88,5 +88,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
 }

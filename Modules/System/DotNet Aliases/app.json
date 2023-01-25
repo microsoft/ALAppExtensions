@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Defines aliases for .NET classes.",
     "description":  "Defines aliases for .NET classes so that you do not have to write the full name of the class. For example, rather than having to write \"System.Collections.Queue\", you can just use \"Queue\".",
-    "version":  "21.3.0.0",
+    "version":  "21.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -18,5 +18,5 @@
                     ],
     "platform":  "21.0.0.0",
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
 }

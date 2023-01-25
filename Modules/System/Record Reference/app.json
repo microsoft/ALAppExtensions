@@ -1,0 +1,26 @@
+{
+    "id":  "44012bcf-22c2-40d9-bb24-410b1dfc72dc",
+    "name":  "Record Reference",
+    "publisher":  "Microsoft",
+    "version":  "21.4.0.0",
+    "brief":  "Provides an interface to delegate record operations.",
+    "description":  "Provides an interface to delegate record operations. This can be used when indirect permissions are required but the code does not support them.",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [ ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "21.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  3917,
+                         "to":  3919
+                     }
+                 ],
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+}

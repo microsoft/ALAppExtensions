@@ -34,7 +34,7 @@ codeunit 4470 "Record Link Impl."
         SkipReset: Boolean;
     begin
         SkipReset := false;
-        RecordLinkManagement.OnBeforeCopyLinks(FromRecordVariant, ToRecordVariant, SkipReset);        
+        RecordLinkManagement.OnBeforeCopyLinks(FromRecordVariant, ToRecordVariant, SkipReset);
         RecordRefTo.GetTable(ToRecordVariant);
         RecordRefTo.CopyLinks(FromRecordVariant);
         if not SkipReset then
@@ -63,6 +63,22 @@ codeunit 4470 "Record Link Impl."
         if BinReader.BaseStream().Position() = BinReader.BaseStream().Length() then
             exit;
         Note := BinReader.ReadString();
+    end;
+
+    procedure RemoveLinks(RecVariant: Variant)
+    var
+        RecRef: RecordRef;
+        NotARecordErr: Label 'Internal server error. Please contact your system administrator.';
+    begin
+        if not RecVariant.IsRecord() then
+            Error(NotARecordErr);
+
+        RecRef.GetTable(RecVariant);
+        if RecRef.FindSet() then
+            repeat
+                if RecRef.HasLinks() then
+                    RecRef.DeleteLinks();
+            until RecRef.Next() = 0;
     end;
 
     procedure RemoveOrphanedLinks()

@@ -95,10 +95,6 @@ page 9855 "Permission Set"
 #if not CLEAN22
         area(factboxes)
         {
-            ObsoleteState = Pending;
-            ObsoleteReason = 'Factbox no longer used. Use the "View Permissions In Set" actions on the Permission Set parts instead.';
-            ObsoleteTag = '22.0';
-
             part(PermissionsRelated; "Expanded Permissions Factbox")
             {
                 ObsoleteState = Pending;

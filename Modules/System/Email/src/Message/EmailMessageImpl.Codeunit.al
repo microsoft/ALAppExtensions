@@ -298,9 +298,17 @@ codeunit 8905 "Email Message Impl."
 
     local procedure InsertAttachmentsFromScenario(EmailMessageAttachment: Record "Email Message Attachment"; EmailAttachments: Record "Email Attachments")
     var
+        TempBlob: Codeunit "Temp Blob";
+        MediaOutStream: OutStream;
+        MediaInStream: InStream;
         MediaID: Guid;
     begin
-        EmailMessageAttachment.Data := EmailAttachments."Email Attachment";
+        TempBlob.CreateOutStream(MediaOutStream, TextEncoding::UTF8);
+        EmailAttachments."Email Attachment".ExportStream(MediaOutStream);
+
+        TempBlob.CreateInStream(MediaInStream, TextEncoding::UTF8);
+        EmailMessageAttachment.Data.ImportStream(MediaInStream, EmailAttachments."Attachment Name");
+
         MediaID := EmailMessageAttachment.Data.MediaId();
         TenantMedia.Get(MediaID);
         TenantMedia.CalcFields(Content);

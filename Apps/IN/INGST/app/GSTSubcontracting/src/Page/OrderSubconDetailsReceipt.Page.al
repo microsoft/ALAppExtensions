@@ -217,6 +217,13 @@ page 18481 "Order Subcon Details Receipt"
         }
     }
 
+    trigger OnDeleteRecord(): Boolean
+    var
+        UpdateSubcontractDetails: Codeunit "Update Subcontract Details";
+    begin
+        UpdateSubcontractDetails.ValidateOrUpdateBeforeSubConOrderLineDelete(Rec);
+    end;
+
     local procedure QtytoReceiveOnAfterValidate()
     begin
         SubOrderCompListVend.UpdateReceiptDetails(Rec, Rec."Qty. to Reject (C.E.)", Rec."Qty. to Reject (V.E.)");
