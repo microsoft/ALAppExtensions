@@ -1,16 +1,14 @@
-pageextension 20104 "AMC Bank Paym. Meth. Page Ext" extends "Payment Methods"
+pageextension 20108 "AMC Bank Credit Trf. Reg. Ext" extends "Credit Transfer Registers"
 {
-
-    ContextSensitiveHelpPage = '402';
-
     layout
     {
-        addAfter("Pmt. Export Line Definition")
+        addlast(Group)
         {
-            field("Bank Payment Type"; Rec."AMC Bank Pmt. Type")
+            field("XTL Journal"; "AMC Bank XTL Journal")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the payment type that the AMC Banking 365 Fundamentals extension requires when you export payments that have the selected payment method.';
+                Importance = Additional;
+                ToolTip = 'XTL Journal associated with the Credit Transfer Register';
                 Visible = IsAMCFundamentalsEnabled;
             }
         }
@@ -24,4 +22,5 @@ pageextension 20104 "AMC Bank Paym. Meth. Page Ext" extends "Payment Methods"
     begin
         IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled(); //Hotfix AMC-JN
     end;
+
 }

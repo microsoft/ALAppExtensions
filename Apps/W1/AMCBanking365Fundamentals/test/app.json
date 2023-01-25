@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the AMC Banking 365 Fundamentals extension.",
     "description":  "Tests for the AMC Banking 365 Fundamentals extension.",
-    "version":  "21.4.0.0",
+    "version":  "21.4.51548.1",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2101583",
@@ -16,7 +16,7 @@
                              "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
                              "name":  "AMC Banking 365 Fundamentals",
                              "publisher":  "Microsoft",
-                             "version":  "21.4.0.0"
+                             "version":  "21.4.51548.1"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
