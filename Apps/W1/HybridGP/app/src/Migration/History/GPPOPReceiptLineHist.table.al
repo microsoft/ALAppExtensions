@@ -353,6 +353,9 @@ table 4062 "GPPOPReceiptLineHist"
         {
             Clustered = false;
         }
+        key(Key2; POPRCTNM)
+        {
+        }
     }
 
     fieldgroups

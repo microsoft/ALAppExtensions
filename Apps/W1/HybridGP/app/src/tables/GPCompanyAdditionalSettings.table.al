@@ -100,6 +100,11 @@ table 40105 "GP Company Additional Settings"
         field(14; "Oldest GL Year to Migrate"; Integer)
         {
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                Rec.Validate("Oldest Hist. Year to Migrate", Rec."Oldest GL Year to Migrate");
+            end;
         }
         field(15; "Migrate Bank Module"; Boolean)
         {
@@ -126,6 +131,7 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Open POs", false);
                     Rec.Validate("Migrate Vendor Classes", false);
                     Rec.Validate("Migrate Only Payables Master", false);
+                    Rec.Validate("Migrate Hist. AP Trx.", false);
                 end;
             end;
         }
@@ -140,6 +146,7 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Inactive Customers", false);
                     Rec.Validate("Migrate Customer Classes", false);
                     Rec.Validate("Migrate Only Rec. Master", false);
+                    Rec.Validate("Migrate Hist. AR Trx.", false);
                 end;
             end;
         }
@@ -156,6 +163,7 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Only Inventory Master", false);
                     Rec.Validate("Migrate Inactive Items", false);
                     Rec.Validate("Migrate Discontinued Items", false);
+                    Rec.Validate("Migrate Hist. Inv. Trx.", false);
                 end;
             end;
         }
@@ -282,6 +290,35 @@ table 40105 "GP Company Additional Settings"
                 if Rec."Migrate Discontinued Items" then
                     Rec.Validate("Migrate Inventory Module", true);
             end;
+        }
+        field(29; "Oldest Hist. Year to Migrate"; Integer)
+        {
+            DataClassification = SystemMetadata;
+        }
+        field(30; "Migrate Hist. GL Trx."; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(31; "Migrate Hist. AR Trx."; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(32; "Migrate Hist. AP Trx."; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(33; "Migrate Hist. Inv. Trx."; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(34; "Migrate Hist. Purch. Trx."; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
         }
     }
 
@@ -427,5 +464,64 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Oldest GL Year to Migrate");
+    end;
+
+    // Historical Transactions
+    procedure GetHistInitialYear(): Integer
+    begin
+        GetSingleInstance();
+        exit(Rec."Oldest Hist. Year to Migrate");
+    end;
+
+    procedure GetMigrateHistGLTrx(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Hist. GL Trx.");
+    end;
+
+    procedure GetMigrateHistARTrx(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Hist. AR Trx.");
+    end;
+
+    procedure GetMigrateHistAPTrx(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Hist. AP Trx.");
+    end;
+
+    procedure GetMigrateHistInvTrx(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Hist. Inv. Trx.");
+    end;
+
+    procedure GetMigrateHistPurchTrx(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Hist. Purch. Trx.");
+    end;
+
+    procedure GetMigrateHistory(): Boolean
+    begin
+        GetSingleInstance();
+
+        if Rec."Migrate Hist. GL Trx." then
+            exit(true);
+
+        if Rec."Migrate Hist. AR Trx." then
+            exit(true);
+
+        if Rec."Migrate Hist. AP Trx." then
+            exit(true);
+
+        if Rec."Migrate Hist. Inv. Trx." then
+            exit(true);
+
+        if Rec."Migrate Hist. Purch. Trx." then
+            exit(true);
+
+        exit(false);
     end;
 }
