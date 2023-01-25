@@ -10,20 +10,7 @@
     "help":  "https://go.microsoft.com/fwlink/?linkid=2173136",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "name":  "System Application",
-                             "publisher":  "Microsoft",
-                             "version":  "21.4.0.0"
-                         },
-                         {
-                             "id":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
-                             "name":  "Base Application",
-                             "publisher":  "Microsoft",
-                             "version":  "21.4.0.0"
-                         }
-                     ],
+    "application":  "21.4.0.0",
     "screenshots":  [
 
                     ],

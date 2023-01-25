@@ -17,11 +17,13 @@ codeunit 139768 "UT Page Bank Deposit"
         LibraryERM: Codeunit "Library - ERM";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryApplicationArea: Codeunit "Library - Application Area";
+        LibraryPurchase: Codeunit "Library - Purchase";
         Initialized: Boolean;
         InitializeHandled: Boolean;
         ValueMustExistMsg: Label 'Value must exist.';
         PostingDateErr: Label 'Validation error for Field: Posting Date,  Message = ', Comment = 'Label contains error message for invalid posting date''Posting Date must have a value in Bank Deposit Header: No.=%1. It cannot be zero or empty. (Select Refresh to discard errors)''';
         FeatureKeyIdTok: Label 'StandardizedBankReconciliationAndDeposits', Locked = true;
+        SourceCodeErr: Label 'Source Code are not equal.';
 
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
@@ -655,6 +657,38 @@ codeunit 139768 "UT Page Bank Deposit"
         PostedBankDepositHeaderNo := COPYSTR(PostedBankDeposit."No.".Value(), 1, MaxStrLen(PostedBankDepositHeaderNo));
         PostedBankDeposit.Close();
         Assert.AreEqual(BankDepositHeaderNo, PostedBankDepositHeaderNo, '');
+    end;
+
+    [Test]
+    procedure VerifySourceCodeOnBankDepositPage()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        SourceCodeSetup: Record "Source Code Setup";
+        GenJnlLine: Record "Gen. Journal Line";
+        BankDeposit: TestPage "Bank Deposit";
+    begin
+        // [SCENARIO 450845] Source Code is not populating on Bank Deposit Journal Lines
+        Initialize();
+
+        // [GIVEN] Create Bank deposit header
+        CreateBankDepositHeader(BankDepositHeader, '');
+
+        // [THEN] Open Bank deposit page and insert line and post the Bank deposit
+        BankDeposit.Trap();
+        BankDepositHeader.SetRecFilter();
+        Page.Run(Page::"Bank Deposit", BankDepositHeader);
+        BankDeposit.Subform."Account Type".SetValue(GenJnlLine."Account Type"::Vendor.AsInteger());
+        BankDeposit.Subform."Account No.".SetValue(LibraryPurchase.CreateVendorNo());
+        BankDeposit.Subform."Document No.".SetValue(LibraryUtility.GenerateRandomNumericText(2));
+        BankDeposit.Subform."Credit Amount".SetValue(BankDepositHeader."Total Deposit Amount");
+
+        // [GIVEN] Get the created General Jnl Line.
+        GenJnlLine.SetFilter("External Document No.", BankDepositHeader."No.");
+        GenJnlLine.FindFirst();
+        SourceCodeSetup.Get();
+
+        // [VERIFY] Verify Source Code have values from Source Code Setup
+        Assert.AreEqual(SourceCodeSetup."Bank Deposit", GenJnlLine."Source Code", SourceCodeErr);
     end;
 
     local procedure GetBankDepositsFeature(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ID: Text[50])
