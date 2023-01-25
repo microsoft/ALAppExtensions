@@ -963,8 +963,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         if SalesAdvLetterHeaderCZZ."Automatic Post VAT Document" then
             ReverseAdvancePaymentVAT(SalesAdvLetterEntryCZZ, CustLedgerEntry."Source Code", CustLedgerEntry.Description, ReverseAmount, CustLedgerEntry."Original Currency Factor", DocumentNo, CustLedgerEntry."Posting Date", SalesAdvLetterEntryCZZGlob."Entry No.", CustLedgerEntry."Document No.", "Advance Letter Entry Type CZZ"::"VAT Usage", GenJnlPostLine, Preview);
 
-        if not Preview then
+        if not Preview then begin
+            SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
             UpdateStatus(SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ.Status::Closed);
+        end;
     end;
 
     local procedure ReverseAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; SourceCode: Code[10]; PostDescription: Text[100]; ReverseAmount: Decimal; CurrencyFactor: Decimal; DocumentNo: Code[20]; PostingDate: Date; UsageEntryNo: Integer; InvoiceNo: Code[20]; EntryType: enum "Advance Letter Entry Type CZZ"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; Preview: Boolean)
@@ -1580,6 +1582,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 until SalesAdvLetterEntryCZZ.Next() = 0;
 
             CancelInitEntry(SalesAdvLetterHeaderCZZ, PostingDate, false);
+            SalesAdvLetterHeaderCZZ.Find();
             UpdateStatus(SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ.Status::Closed);
 
             AdvanceLetterApplicationCZZ.SetRange("Advance Letter Type", AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales);

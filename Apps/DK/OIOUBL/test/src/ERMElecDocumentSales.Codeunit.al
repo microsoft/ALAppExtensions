@@ -908,7 +908,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Editor is opened.
         // [THEN] ZIP file is created, it contains OIOUBL Electronic Document and PDF with printed copy of Posted Sales Invoice.
         FindSalesInvoiceHeader(SalesInvoiceHeader, SalesHeader."No.");
-        FileNameLst.AddRange(GetFileName(SalesInvoiceHeader."No.", 'Invoice', 'XML'), GetFileName(SalesInvoiceHeader."No.", 'S.Invoice', 'PDF'));
+        FileNameLst.AddRange(GetFileName(SalesInvoiceHeader."No.", 'Invoice', 'XML'), GetFileName(SalesInvoiceHeader."No.", 'Sales Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
     end;
 

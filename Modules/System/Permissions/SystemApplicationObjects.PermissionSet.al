@@ -30,7 +30,6 @@ PermissionSet 219 "System Application - Objects"
                              "Confirm Management - Objects",
                              "Cryptography Mgt. - Objects",
                              "Cues and KPIs - Objects",
-                             "Date & Time - Objects",
                              "Data Archive - Objects",
                              "Data Classification - Objects",
                              "Data Compression - Objects",
