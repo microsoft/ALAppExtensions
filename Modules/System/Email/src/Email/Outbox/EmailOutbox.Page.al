@@ -261,9 +261,11 @@ page 8882 "Email Outbox"
         EmailOutbox.SetRange(Status, Enum::"Email Status"::Queued);
         if EmailOutbox.FindSet() then
             repeat
-                ActualDuration := EmailOutbox."Date Sending" - EmailOutbox."Date Queued";
-                if ActualDuration >= RateLimitDuration then
-                    exit(true)
+                if (EmailOutbox."Date Sending" <> 0DT) and (EmailOutbox."Date Queued" <> 0DT) then begin
+                    ActualDuration := EmailOutbox."Date Sending" - EmailOutbox."Date Queued";
+                    if ActualDuration >= RateLimitDuration then
+                        exit(true)
+                end;
             until Emailoutbox.Next() = 0;
         exit(false);
     end;

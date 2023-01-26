@@ -306,7 +306,7 @@ codeunit 31356 "Payment Order Management CZB"
         TempErrorMessage.SetFilter("Field Number", '%1', PaymentOrderLineCZB.FieldNo("Applies-to C/V/E Entry No."));
         if TempErrorMessage.FindSet() then
             repeat
-                if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(TwoPlaceholdersTok, TempErrorMessage.Description, ContinueQst), false) then
+                if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(TwoPlaceholdersTok, TempErrorMessage."Message", ContinueQst), false) then
                     Error('');
             until TempErrorMessage.Next() = 0;
     end;

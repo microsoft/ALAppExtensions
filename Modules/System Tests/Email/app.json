@@ -76,6 +76,12 @@
                              "name":  "Permissions Mock",
                              "publisher":  "Microsoft",
                              "version":  "21.4.0.0"
+                         },
+                         {
+                            "id":  "a8177fd4-0adb-4482-889c-2e123a13b50a",
+                            "name":  "Retention Policy",
+                            "publisher":  "Microsoft",
+                            "version":  "21.4.0.0"
                          }
                      ],
     "screenshots":  [
@@ -108,8 +114,8 @@
                          "to":  134853
                      },
                      {
-                         "from":  134705,
-                         "to":  134705
+                        "from": 134705,
+                        "to": 134706
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",

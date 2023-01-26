@@ -783,7 +783,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
         AdvanceLetterTypeCZZ: Enum "Advance Letter Type CZZ";
         AmountToUse, UseAmount, UseAmountLCY : Decimal;
-        PostingDateErr: Label 'Posting Date of Advance Payment %1 must be before Posting Date of Purchase Invoice %2.', Comment = '%1 = Advance Letter No., %2 = Purchase Invoice No.';
     begin
         if VendorLedgerEntry."Remaining Amount" = 0 then
             VendorLedgerEntry.CalcFields("Remaining Amount");
@@ -805,12 +804,10 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", AdvanceLetterApplicationCZZ."Advance Letter No.");
             PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
             PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::Payment);
+            PurchAdvLetterEntryCZZ.SetFilter("Posting Date", '..%1', PurchInvHeader."Posting Date");
             OnPostAdvancePaymentUsageOnBeforeLoopPurchAdvLetterEntry(AdvanceLetterApplicationCZZ, PurchAdvLetterEntryCZZ);
             if PurchAdvLetterEntryCZZ.FindSet() then
                 repeat
-                    if not Preview then
-                        if PurchAdvLetterEntryCZZ."Posting Date" > PurchInvHeader."Posting Date" then
-                            Error(PostingDateErr, PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.", PurchInvHeader."No.");
                     TempPurchAdvLetterEntryCZZ := PurchAdvLetterEntryCZZ;
                     TempPurchAdvLetterEntryCZZ.Amount := GetRemAmtPurchAdvPayment(PurchAdvLetterEntryCZZ, 0D);
                     if TempPurchAdvLetterEntryCZZ.Amount <> 0 then

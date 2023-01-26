@@ -28,7 +28,7 @@
       <DataExchColumnDef ColumnNo="24" Name="Zero" Show="false" DataType="0" Length="3" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="25" Name="Currency Identifier" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="26" Name="Space" Show="false" DataType="0" Length="6" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="27" Name="Transaction Specification" Show="false" DataType="0" Length="2" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="27" Name="Transaction Type" Show="false" DataType="0" Length="2" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="28" Name="Partner VAT ID" Show="false" DataType="0" Length="17" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchMapping TableId="4812" Name="" KeyIndex="9" MappingCodeunit="1269">
         <DataExchFieldMapping ColumnNo="1" FieldID="4" Optional="true" TransformationRule="GETYEAR">
@@ -429,7 +429,7 @@
           </TransformationRules>
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="26" Optional="true" UseDefaultValue="true" />
-        <DataExchFieldMapping ColumnNo="27" FieldID="27" Optional="true" />
+        <DataExchFieldMapping ColumnNo="27" FieldID="8" Optional="true" />
         <DataExchFieldMapping ColumnNo="28" FieldID="29" Optional="true" />
       </DataExchMapping>
     </DataExchLineDef>

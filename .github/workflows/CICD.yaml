@@ -1,4 +1,4 @@
-﻿name: ' CI/CD'
+name: ' CI/CD'
 
 on:
   workflow_dispatch:
@@ -146,14 +146,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.3
         with:
           shell: powershell
           eventId: "DO0091"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -174,7 +174,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "Secrets=$($deliveryTargetSecrets -join ',')"
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -188,8 +188,19 @@ jobs:
           $ErrorActionPreference = "STOP"
           Set-StrictMode -version 2.0
           $deliveryTargets = @('GitHubPackages','NuGet','Storage')
-          if ($env:type -eq "AppSource App" -and $env:AppSourceContinuousDelivery -eq "true") {
-            $deliveryTargets += @("AppSource")
+          if ($env:type -eq "AppSource App") {
+            $continuousDelivery = $false
+            # For multi-project repositories, we will add deliveryTarget AppSource if any project has AppSourceContinuousDelivery set to true
+            ('${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
+              $projectSettings = Get-Content (Join-Path $_ '.AL-Go/settings.json') -raw | ConvertFrom-Json
+              if ($projectSettings.PSObject.Properties.Name -eq 'AppSourceContinuousDelivery' -and $projectSettings.AppSourceContinuousDelivery) {
+                Write-Host "Project $_ is setup for Continuous Delivery"
+                $continuousDelivery = $true
+              }
+            }
+            if ($continuousDelivery) {
+              $deliveryTargets += @("AppSource")
+            }
           }
           $namePrefix = 'DeliverTo'
           Get-Item -Path (Join-Path $ENV:GITHUB_WORKSPACE ".github/$($namePrefix)*.ps1") | ForEach-Object {
@@ -278,14 +289,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           get: templateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@preview
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.3
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -439,14 +450,14 @@ jobs:
           Remove-Item -Path $prfolder -recurse -force
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -457,7 +468,7 @@ jobs:
 
       - name: Run pipeline
         id: RunPipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@preview
+        uses: microsoft/AL-Go-Actions/RunPipeline@v2.3
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
@@ -480,9 +491,8 @@ jobs:
           $buildMode = '${{ matrix.buildMode }}'
           if ("$ENV:GITHUB_EVENT_NAME" -eq 'workflow_run') {
             $eventStr = Get-Content $ENV:GITHUB_EVENT_PATH -Encoding UTF8
-            $eventStr | Out-Host
             $event = $eventStr | ConvertFrom-Json
-            $ref = "PR$($event.workflow_run.pull_requests[0].number)"
+            $ref = "PR$($event.workflow_run.id)"
           }
           else {
             $ref = "$ENV:GITHUB_REF_NAME".Replace('/','_')
@@ -575,7 +585,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@v2.3
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -605,7 +615,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@v2.3
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -637,12 +647,12 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
         with:
           shell: powershell
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -676,7 +686,7 @@ jobs:
             Write-Host "::Error::No AuthContext provided"
             exit 1
           }
-          if ($deployToSetting.PSObject.Properties.name -eq "EnvironmentName") {
+          if (("$deployToSetting" -ne "") -and $deployToSetting.PSObject.Properties.name -eq "EnvironmentName") {
             $environmentName = $deployToSetting.EnvironmentName
           }
           else {
@@ -696,7 +706,7 @@ jobs:
           }
           $environmentName = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($environmentName + '${{ matrix.environment }}'.SubString($envName.Length)).ToUpperInvariant()))
 
-          if ($deployToSetting.PSObject.Properties.name -eq "projects") {
+          if (("$deployToSetting" -ne "") -and $deployToSetting.PSObject.Properties.name -eq "projects") {
             $projects = $deployToSetting.projects
           }
           else {
@@ -725,7 +735,7 @@ jobs:
           Write-Host "projects=$projects"
 
       - name: Deploy
-        uses: microsoft/AL-Go-Actions/Deploy@preview
+        uses: microsoft/AL-Go-Actions/Deploy@v2.3
         env:
           AuthContext: ${{ steps.authContext.outputs.authContext }}
         with:
@@ -754,12 +764,12 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
         with:
           shell: powershell
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -778,7 +788,7 @@ jobs:
           Write-Host "deliveryContext=$deliveryContext"
 
       - name: Deliver
-        uses: microsoft/AL-Go-Actions/Deliver@preview
+        uses: microsoft/AL-Go-Actions/Deliver@v2.3
         env:
           deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
         with:
@@ -815,7 +825,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.3
         with:
           shell: powershell
           eventId: "DO0091"

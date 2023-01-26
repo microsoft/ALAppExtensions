@@ -16,15 +16,15 @@ This example shows how to use the `CreateAuthorizationCode()` function when savi
         SharePointClient: Codeunit "SharePoint Client";
         SaveFailedErr: Label 'Save to SharePoint failed.\ErrorMessage: %1\HttpRetryAfter: %2\HttpStatusCode: %3\ResponseReasonPhrase: %4', Comment = '%1=GetErrorMessage; %2=GetHttpRetryAfter; %3=GetHttpStatusCode; %4=GetResponseReasonPhrase';
         AadTenantId: Text;
-        IS: InStream;
-        Diag: Interface "HTTP Diagnostics";
+        InStream: InStream;
+        HttpDiagnostics: Interface "HTTP Diagnostics";
     begin
         AadTenantId := GetAadTenantNameFromBaseUrl(BaseUrl);
         SharePointClient.Initialize(BaseUrl, GetSharePointAuthorization(AadTenantId));
-        IS := TempBlob.CreateInStream();
-        if not SharePointClient.AddFileToFolder(LibraryAndFolderPath, Filename, IS, SharePointFile) then begin
-            Diag := SharePointClient.GetDiagnostics();
-            Error(SaveFailedErr, Diag.GetErrorMessage(), Diag.GetHttpRetryAfter(), Diag.GetHttpStatusCode(), Diag.GetResponseReasonPhrase());
+        InStream := TempBlob.CreateInStream();
+        if not SharePointClient.AddFileToFolder(LibraryAndFolderPath, Filename, InStream, SharePointFile) then begin
+            HttpDiagnostics:= SharePointClient.GetDiagnostics();
+            Error(SaveFailedErr, HttpDiagnostics.GetErrorMessage(), HttpDiagnostics.GetHttpRetryAfter(), HttpDiagnostics.GetHttpStatusCode(), HttpDiagnostics.GetResponseReasonPhrase());
         end;
     end;
 

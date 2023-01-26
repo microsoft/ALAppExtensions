@@ -392,6 +392,9 @@ report 31186 "Sales Quote CZL"
                               "Salesperson Code", "Campaign No.", "Posting Description", "Opportunity No.");
                     end;
                 end;
+
+                if "Currency Code" = '' then
+                    "Currency Code" := "General Ledger Setup"."LCY Code";
             end;
         }
     }

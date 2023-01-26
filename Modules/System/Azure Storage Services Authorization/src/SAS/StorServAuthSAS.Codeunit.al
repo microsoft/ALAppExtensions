@@ -22,7 +22,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 
         QueryText := DelChr(QueryText, '<', '?'); // remove ? from the query
 
-        QueryText += GetSharedAccessSignature();
+        QueryText += '&' + GetSharedAccessSignature();
         UriBuilder.SetQuery(QueryText);
 
         UriBuilder.GetUri(Uri);
@@ -122,7 +122,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         StringToSign.Append(IPRange + NewLine());
         StringToSign.Append(ProtocolsToString(Protocols) + NewLine());
         StringToSign.Append(VersionToString(ApiVersion) + NewLine());
-        if SignedEncryptionScope <> '' then
+        if ApiVersion <> Enum::"Storage Service API Version"::"2020-10-02" then // Must be provided for all versions above 2020-10-02
             StringToSign.Append(SignedEncryptionScope + NewLine());
         exit(StringToSign.ToText());
     end;
@@ -179,9 +179,9 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         Builder.Append('&');
         Builder.Append(StrSubstNo(KeyValueLbl, 'sp', PermissionsToString(SasPermissions)));
         Builder.Append('&');
-        Builder.Append(StrSubstNo(KeyValueLbl, 'se', DateToString(EndDateTime)));
+        Builder.Append(StrSubstNo(KeyValueLbl, 'se', Uri.EscapeDataString(DateToString(EndDateTime))));
         Builder.Append('&');
-        Builder.Append(StrSubstNo(KeyValueLbl, 'st', DateToString(StartDateTime)));
+        Builder.Append(StrSubstNo(KeyValueLbl, 'st', Uri.EscapeDataString(DateToString(StartDateTime))));
         Builder.Append('&');
         Builder.Append(StrSubstNo(KeyValueLbl, 'spr', ProtocolsToString(ProtocolStrings)));
         Builder.Append('&');
@@ -208,7 +208,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 
     local procedure DateToString(MyDateTime: DateTime): Text
     begin
-        exit(AuthFormatHelper.GetIso8601DateTime(MyDateTime));
+        exit(AuthFormatHelper.GetIso8601DateTime(MyDateTime) + 'Z'); // Must be in 'yyyy-MM-ddTHH:mm:ssZ' UTC format
     end;
 
     local procedure ResourcesToString(ResourceTypes: List of [Enum "SAS Resource Type"]): Text

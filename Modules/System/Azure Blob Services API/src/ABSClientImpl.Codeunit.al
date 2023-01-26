@@ -188,11 +188,7 @@ codeunit 9051 "ABS Client Impl."
         SourceContentVariant: Variant;
     begin
         SourceContentVariant := SourceInStream;
-
-        ABSOperationPayload.SetBlobName(BlobName);
-        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
-
-        ABSOperationResponse := PutBlobBlockBlob(SourceContentVariant);
+        ABSOperationResponse := PutBlobBlockBlob(BlobName, ABSOptionalParameters, SourceContentVariant);
         exit(ABSOperationResponse);
     end;
 
@@ -201,15 +197,12 @@ codeunit 9051 "ABS Client Impl."
         ABSOperationResponse: Codeunit "ABS Operation Response";
         SourceContentVariant: Variant;
     begin
-        ABSOperationPayload.SetBlobName(BlobName);
-        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
-
         SourceContentVariant := SourceText;
-        ABSOperationResponse := PutBlobBlockBlob(SourceContentVariant);
+        ABSOperationResponse := PutBlobBlockBlob(BlobName, ABSOptionalParameters, SourceContentVariant);
         exit(ABSOperationResponse);
     end;
 
-    local procedure PutBlobBlockBlob(var SourceContentVariant: Variant): Codeunit "ABS Operation Response"
+    local procedure PutBlobBlockBlob(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var SourceContentVariant: Variant): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
@@ -218,6 +211,8 @@ codeunit 9051 "ABS Client Impl."
         SourceText: Text;
     begin
         ABSOperationPayload.SetOperation(Operation::PutBlob);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
         case true of
             SourceContentVariant.IsInStream():
@@ -350,8 +345,10 @@ codeunit 9051 "ABS Client Impl."
     begin
         ABSOperationResponse := GetBlobAsStream(BlobName, TargetInStream, ABSOptionalParameters);
 
-        BlobName := ABSOperationPayload.GetBlobName();
-        DownloadFromStream(TargetInStream, '', '', '', BlobName);
+        if ABSOperationResponse.IsSuccessful() then begin
+            BlobName := ABSOperationPayload.GetBlobName();
+            DownloadFromStream(TargetInStream, '', '', '', BlobName);
+        end;
         exit(ABSOperationResponse);
     end;
 

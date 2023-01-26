@@ -94,8 +94,14 @@
                              "name":  "Language",
                              "publisher":  "Microsoft",
                              "version":  "21.4.0.0"
+                         },
+                         {
+                            "id":  "44012bcf-22c2-40d9-bb24-410b1dfc72dc",
+                            "name":  "Record Reference",
+                            "publisher":  "Microsoft",
+                            "version":  "21.4.0.0"
                          }
-                     ],
+                        ],
     "internalsVisibleTo":  [
                                {
                                    "id":  "eb303ff1-7a68-45b5-b7de-bf6965244dd7",

@@ -167,7 +167,7 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
     /// </summary>
     /// <param name="TableId">The table ID to check.</param>
     /// <returns>True if the table is in the list of allowed tables. False if the table is not in the list of allowed tables.</returns>
-    procedure IsAllowedTable(TableId: Integer): boolean
+    procedure IsAllowedTable(TableId: Integer): Boolean
     var
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
     begin

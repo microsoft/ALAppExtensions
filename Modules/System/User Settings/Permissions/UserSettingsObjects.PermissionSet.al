@@ -22,7 +22,9 @@ permissionset 9175 "User Settings - Objects"
                   Page "User Settings" = X,
                   Page Roles = X,
 #if not CLEAN20
+#pragma warning disable AL0432
                   Table "Extra Settings" = X,
+#pragma warning restore AL0432
 #endif
                   Table "User Settings" = X,
                   Table "Application User Settings" = X;

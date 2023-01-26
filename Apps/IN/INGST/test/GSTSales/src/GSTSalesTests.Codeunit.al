@@ -3559,6 +3559,36 @@ codeunit 18196 "GST Sales Tests"
         Assert.IsTrue(true, 'E-Invoice generated');
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromRegCustomerSalesServiceInvoicesIntraStateWithTwoLines()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [460710] Detailed GST ledger entry getting doubled up, when advance receipt and Invoice paid are made through Sales Invoice
+        // [FEATURE] [Service Sales Invoices] [Intra-State GST,Registered Customer]
+        // [GIVEN] Created GST Setup
+        CreateGSTSetup(GSTCustomeType::Registered, GSTGroupType::Service, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, '2');
+
+        // [WHEN] Create and Post Sales Invoice with GST and Line Type as Services and Intrastate Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocumentWithNegativeAndPostiveUnitPrice(
+            SalesHeader,
+            SalesLine,
+            LineType::"G/L Account",
+            DocumentType::Invoice);
+
+        // [THEN] G/L Entries and Detailed GST Ledger Entries verified
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 3)
+    end;
+
     local procedure CreateAndPostSalesDocumentForEInvoice(
             var SalesHeader: Record "Sales Header";
             var SalesLine: Record "Sales Line";
@@ -3916,6 +3946,25 @@ codeunit 18196 "GST Sales Tests"
         exit(PostedDocumentNo);
     end;
 
+    local procedure CreateAndPostSalesDocumentWithNegativeAndPostiveUnitPrice(
+        var SalesHeader: Record "Sales Header";
+        var SalesLine: Record "Sales Line";
+        LineType: Enum "Sales Line Type";
+        DocumentType: Enum "Sales Document Type"): Code[20];
+    var
+        CustomerNo: Code[20];
+        LocationCode: Code[10];
+        PostedDocumentNo: Code[20];
+    begin
+        CustomerNo := Storage.Get(CustomerNoLbl);
+        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
+        CreateSalesHeaderWithGST(SalesHeader, CustomerNo, DocumentType, LocationCode);
+        CreateSalesLineWithNegativeAndPositiveUnitPriceWithGST(SalesHeader, SalesLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Storage.Set(PostedDocumentNoLbl, PostedDocumentNo);
+        exit(PostedDocumentNo);
+    end;
+
     local procedure CreateAndPostSalesDocumentWithApplication(
         var SalesHeader: Record "Sales Header";
         var SalesLine: Record "Sales Line";
@@ -4015,6 +4064,57 @@ codeunit 18196 "GST Sales Tests"
             CalculateGSTOnSalesLine(SalesLine);
         end;
     end;
+
+    local procedure CreateSalesLineWithNegativeAndPositiveUnitPriceWithGST(
+            var SalesHeader: Record "Sales Header";
+            var SalesLine: Record "Sales Line";
+            LineType: Enum "Sales Line Type";
+            Quantity: Decimal;
+            Exempted: Boolean;
+            LineDiscount: Boolean)
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        LineTypeNo: Code[20];
+        LineNo: Integer;
+        NoOfLine: Integer;
+    begin
+        if not Storage.ContainsKey(NoOfLineLbl) then
+            NoOfLine := 1
+        else
+            Evaluate(NoOfLine, Storage.Get(NoOfLineLbl));
+        for LineNo := 1 to NoOfLine do begin
+            case LineType of
+                LineType::Item:
+                    LineTypeNo := LibraryGST.CreateItemWithGSTDetails(VATPostingSetup, (Storage.Get(GSTGroupCodeLbl)), (Storage.Get(HSNSACCodeLbl)), true, Exempted);
+                LineType::"G/L Account":
+                    LineTypeNo := LibraryGST.CreateGLAccWithGSTDetails(VATPostingSetup, (Storage.Get(GSTGroupCodeLbl)), (Storage.Get(HSNSACCodeLbl)), true, Exempted);
+                LineType::"Fixed Asset":
+                    LineTypeNo := LibraryGST.CreateFixedAssetWithGSTDetails(VATPostingSetup, (Storage.Get(GSTGroupCodeLbl)), (Storage.Get(HSNSACCodeLbl)), true, Exempted);
+            end;
+
+            LibrarySales.CreateSalesLine(SalesLine, SalesHeader, LineType, LineTypeno, Quantity);
+            SalesLine.Validate("VAT Prod. Posting Group", VATPostingsetup."VAT Prod. Posting Group");
+            if StorageBoolean.ContainsKey(PartialShipLbl) then begin
+                if StorageBoolean.Get(PartialShipLbl) then
+                    SalesLine.Validate(SalesLine."Qty. to Ship", Quantity / 2);
+                SalesLine.Validate(SalesLine."Qty. to Invoice", Quantity / 2);
+                StorageBoolean.Remove(PartialShipLbl);
+            end;
+            if LineDiscount then begin
+                SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
+                LibraryGST.UpdateLineDiscAccInGeneralPostingSetup(SalesLine."Gen. Bus. Posting Group", SalesLine."Gen. Prod. Posting Group");
+            end;
+
+            if LineNo = 1 then
+                SalesLine.Validate("Unit Price", 10000)
+            else
+                SalesLine.Validate("Unit Price", -10000);
+
+            SalesLine.Modify(true);
+            CalculateGSTOnSalesLine(SalesLine);
+        end;
+    end;
+
 
     local procedure CreateGenJnlLineForVoucherWithAdvancePayment(
         var GenJournalLine: Record "Gen. Journal Line";

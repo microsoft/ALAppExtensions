@@ -114,12 +114,11 @@ codeunit 1151 "COHUB Core"
         COHUBEnviroment: Record "COHUB Enviroment";
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000IFQ', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
-        FeatureTelemetry.LogUsage('0000IFV', GetFeatureTelemetryName(), 'Updating all companies');
-
         COHUBEnviroment.SetFilter(Link, '<> %1', '');
         COHUBEnviroment.SetFilter(Name, '<> %1', GetCRONUSEnviromentName());
-        if COHUBEnviroment.FindSet() then
+        if COHUBEnviroment.FindSet() then begin
+            FeatureTelemetry.LogUptake('0000IFQ', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+            FeatureTelemetry.LogUsage('0000IFV', GetFeatureTelemetryName(), 'Updating all companies');
             repeat
                 if UpdatateAsync then
                     TaskScheduler.CreateTask(
@@ -128,7 +127,7 @@ codeunit 1151 "COHUB Core"
                     if not Codeunit.Run(Codeunit::"COHUB Url Task Manager", COHUBEnviroment) then
                         Codeunit.Run(Codeunit::"COHUB Url Error Handler", COHUBEnviroment);
             until COHUBEnviroment.Next() = 0;
-
+        end;
         Session.LogMessage('0000164', COHUBTelemetryReloadCompaniesTxt + Format(COHUBEnviroment.Count()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', COHUBTelemetryCategoryTxt);
     end;
 

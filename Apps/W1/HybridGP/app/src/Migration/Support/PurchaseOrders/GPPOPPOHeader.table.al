@@ -2,7 +2,14 @@ table 40102 "GP POPPOHeader"
 {
     DataClassification = CustomerContent;
     Extensible = false;
-
+    ObsoleteReason = 'Replaced by table GP POP10100.';    
+#if not CLEAN22
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '25.0';
+#endif
     fields
     {
         field(1; PONUMBER; Text[18])

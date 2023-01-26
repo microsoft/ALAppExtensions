@@ -44,5 +44,8 @@ table 8909 "Email Related Record"
         {
             Clustered = true;
         }
+        key(Key2; "Email Message Id")
+        {
+        }
     }
 }

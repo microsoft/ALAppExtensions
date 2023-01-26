@@ -236,7 +236,7 @@ codeunit 18544 "Tax Base Subscribers"
         if PurchRcptLine."Document No." <> PurchLine."Receipt No." then
             exit;
 
-        if PurchLine.CanCalculateTax() then
+        if PurchLine.GetSkipTaxCalculation() then
             PurchLine.SetSkipTaxCalulation(false);
     end;
 
@@ -244,6 +244,13 @@ codeunit 18544 "Tax Base Subscribers"
     local procedure OnAfterInsertReceiptLines(var PurchHeader: Record "Purchase Header")
     begin
         CallTaxEngineForPurchaseLines(PurchHeader);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Event Handling", 'OnBeforePurchaseUseCaseHandleEvent', '', false, false)]
+    local procedure OnBeforePurchaseUseCaseHandleEvent(var PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+        if PurchLine.GetSkipTaxCalculation() then
+            IsHandled := true;
     end;
 
     local procedure CallTaxEngineForPurchaseLines(var PurchaseHeader: Record "Purchase Header")
