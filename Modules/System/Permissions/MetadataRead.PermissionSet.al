@@ -23,6 +23,7 @@ permissionset 87 "Metadata - Read"
                   tabledata "Profile Configuration Symbols" = R,
                   tabledata "Profile Metadata" = R,
                   tabledata "Profile Page Metadata" = R,
+                  tabledata "Query Metadata" = R,
                   tabledata "Report Metadata" = R,
                   tabledata "System Object" = R,
                   tabledata "Table Metadata" = R,

@@ -345,8 +345,10 @@ codeunit 9051 "ABS Client Impl."
     begin
         ABSOperationResponse := GetBlobAsStream(BlobName, TargetInStream, ABSOptionalParameters);
 
-        BlobName := ABSOperationPayload.GetBlobName();
-        DownloadFromStream(TargetInStream, '', '', '', BlobName);
+        if ABSOperationResponse.IsSuccessful() then begin
+            BlobName := ABSOperationPayload.GetBlobName();
+            DownloadFromStream(TargetInStream, '', '', '', BlobName);
+        end;
         exit(ABSOperationResponse);
     end;
 

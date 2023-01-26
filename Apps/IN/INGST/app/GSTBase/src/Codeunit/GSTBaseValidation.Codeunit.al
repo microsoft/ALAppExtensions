@@ -158,8 +158,14 @@ codeunit 18001 "GST Base Validation"
             SignFactor := Getsign(DocTypeEnum, TransTypeEnum);
         end;
 
-        Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
-        Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
+        if Rec."Transaction Type" = Rec."Transaction Type"::Sales then begin
+            Rec."GST Base Amount" := (Rec."GST Base Amount") * SignFactor;
+            Rec."GST Amount" := (Rec."GST Amount") * SignFactor;
+        end else begin
+            Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
+            Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
+        end;
+
         if GSTPostingManagement.GetPaytoVendorNo() <> '' then
             if Rec."Source Type" = Rec."Source Type"::Vendor then
                 Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
@@ -244,8 +250,14 @@ codeunit 18001 "GST Base Validation"
             SignFactor := Getsign(DocTypeEnum, TransTypeEnum);
         end;
 
-        Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
-        Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
+        if Rec."Transaction Type" = Rec."Transaction Type"::Sales then begin
+            Rec."GST Base Amount" := (Rec."GST Base Amount") * SignFactor;
+            Rec."GST Amount" := (Rec."GST Amount") * SignFactor;
+        end else begin
+            Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
+            Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
+        end;
+
         if Rec."Document Type" = Rec."Document Type"::"Credit Memo" then
             Rec.Quantity := Abs(Rec.Quantity)
         else

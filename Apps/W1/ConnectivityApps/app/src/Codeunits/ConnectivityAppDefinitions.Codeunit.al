@@ -384,7 +384,7 @@ codeunit 20352 "Connectivity App Definitions"
                 exit(AppDescription);
 
         if TempConnectivityAppDescription.Get(AppId, UserPersonalization."Language ID") then
-                    exit(TempConnectivityAppDescription.Description);
+            exit(TempConnectivityAppDescription.Description);
 
         exit(AppDescription);
     end;

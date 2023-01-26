@@ -134,6 +134,9 @@ codeunit 18471 "Update Subcontract Details"
         if not PurchaseLine.Subcontracting then
             exit;
 
+        if PurchaseLine."Quantity Received" > 0 then
+            PurchaseLine.TestField("Quantity Received", 0);
+
         DeliveryChallanLine.LoadFields("Document No.", "Production Order No.", "Production Order Line No.", "Parent Item No.");
         DeliveryChallanLine.SetRange("Document No.", PurchaseLine."Document No.");
         DeliveryChallanLine.SetRange("Production Order No.", PurchaseLine."Prod. Order No.");

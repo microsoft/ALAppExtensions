@@ -13,16 +13,22 @@
     "logo":  "ExtensionLogo.png",
     "dependencies":  [
                          {
-                             "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
-                             "name":  "Intelligent Cloud Base",
-                             "publisher":  "Microsoft",
-                             "version":  "21.4.0.0"
+                            "id": "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
+                            "name": "Intelligent Cloud Base",
+                            "publisher": "Microsoft",
+                            "version": "21.4.0.0"
                          },
                          {
-                             "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
-                             "name":  "Sales and Inventory Forecast",
-                             "publisher":  "Microsoft",
-                             "version":  "21.4.0.0"
+                            "id": "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
+                            "name": "Sales and Inventory Forecast",
+                            "publisher": "Microsoft",
+                            "version": "21.4.0.0"
+                         },
+                         {
+                            "id": "7c7d97ca-3598-40f5-b263-f713f49bd2a5",
+                            "name": "Dynamics GP Historical Data",
+                            "publisher": "Microsoft",
+                            "version": "21.4.0.0"
                          }
                      ],
     "screenshots":  [
