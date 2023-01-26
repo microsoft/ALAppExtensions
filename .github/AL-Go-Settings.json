@@ -6,9 +6,7 @@
   "cacheImageName": "",
   "UsePsSession": false,
   "buildModes": [
-    "Default",
-    "Clean",
-    "Translated"
+    "Default"
   ],
   "unusedALGoSystemFiles": [
     "AddExistingAppOrTestApp.yaml",
