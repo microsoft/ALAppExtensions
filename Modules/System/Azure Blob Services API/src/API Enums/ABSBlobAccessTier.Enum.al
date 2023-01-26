@@ -14,6 +14,14 @@ enum 9042 "ABS Blob Access Tier"
     Extensible = false;
 
     /// <summary>
+    /// Optimized for storing data that is accessed frequently.
+    /// </summary>
+    value(0; Hot)
+    {
+        Caption = 'Hot', Locked = true;
+    }
+
+    /// <summary>
     /// Optimized for storing data that is infrequently accessed and stored for at least 30 days.
     /// </summary>
     value(1; Cool)
