@@ -5,6 +5,14 @@ Param(
 Write-Host "BuildMode - $ENV:BuildMode"
 $appBuildMode = $ENV:BuildMode
 
+# Extract app properties from app.json
+$appProjectFolder = $parameters.appProjectFolder
+$appJson = Get-ChildItem -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json
+
+$appName = $appJson.name
+$appVersion = $appJson.version
+$appPublisher = $appJson.publisher
+
 # $app is a variable that determine whether the current app is a normal app (not test app, for instance)
 if($app)
 {
@@ -17,20 +25,21 @@ if($app)
     # Setup compiler features to generate LCGs for the default build mode
     if($appBuildMode -eq 'Default') {
         $parameters["Features"] += @("lcgtranslationfile")
+
+        # Download the app from the container to use it as a baseline for breaking changes
+        Get-BcContainerApp -containerName $parameters.containerName -appName "$appName" -credential $parameters.credential -appVersion $appVersion -publisher $appPublisher -appFile (Join-Path $parameters.appSymbolsFolder "$appName.app") -skipVerification
     }
 }
 
 $appFile = Compile-AppInBcContainer @parameters
 
+#unpublish the app from the container 
+Unpublish-BcContainerApp -containerName $parameters.ContainerName -name $appName -unInstall -doNotSaveData -doNotSaveSchema -force
+
 $branchName = $ENV:GITHUB_REF_NAME
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
 if(($branchName -eq 'main') -or $branchName.StartsWith('release/')) {
-    $appProjectFolder = $parameters.appProjectFolder
-    
-    # Extract app name from app.json
-    $appName = (Get-ChildItem -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
-
     Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
     # Determine the folder where the artifacts for the package will be stored
