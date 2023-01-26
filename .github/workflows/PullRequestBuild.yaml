@@ -19,6 +19,11 @@ jobs:
   PullRequestHandler:
     runs-on: [ windows-latest ]
     steps:
+      - name: Test Adding new action
+        id: ChangedFiles
+        run: |
+          Write-host "Test Adding new action"
+
       - uses: actions/checkout@v3
         with:
           lfs: true
