@@ -36,4 +36,12 @@ enum 9042 "ABS Blob Access Tier"
     {
         Caption = 'Archive', Locked = true;
     }
+
+    /// <summary>
+    /// Random access tier.
+    /// </summary>
+    value(4; Random)
+    {
+        Caption = 'Random', Locked = true;
+    }
 }
