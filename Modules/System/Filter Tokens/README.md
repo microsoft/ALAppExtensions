@@ -24,7 +24,7 @@ You can add more filter tokens by subscribing to the following events:
 
  Turns text that represents date formats into a valid date filter expression with respect to filter tokens and date formulas.
  Call this function from onValidate trigger of page field that should behave similar to system filters.
- The text from which the date filter should be extracted passed as VAR. For example: "YESTERDAY", or " 01-01-2012 ".
+ The text from which the date filter should be extracted passed as VAR. For example: "%YESTERDAY", or " 01-01-2012 ".
 
 #### Syntax
 ```
@@ -33,7 +33,7 @@ procedure MakeDateFilter(var DateFilterText: Text)
 #### Parameters
 *DateFilterText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The text from which the date filter should be extracted passed as VAR. For example: "YESTERDAY", or " 01-01-2012 ".
+The text from which the date filter should be extracted passed as VAR. For example: "%YESTERDAY", or " 01-01-2012 ".
 
 ### MakeTimeFilter (Method) <a name="MakeTimeFilter"></a> 
 
@@ -48,7 +48,7 @@ procedure MakeTimeFilter(var TimeFilterText: Text)
 #### Parameters
 *TimeFilterText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The text from which the time filter should be extracted, passed as VAR. For example: "NOW".
+The text from which the time filter should be extracted, passed as VAR. For example: "%NOW".
 
 ### MakeTextFilter (Method) <a name="MakeTextFilter"></a> 
 
@@ -63,7 +63,7 @@ procedure MakeTextFilter(var TextFilter: Text)
 #### Parameters
 *TextFilter ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The expression from which the text filter should be extracted, passed as VAR. For example: "ME".
+The expression from which the text filter should be extracted, passed as VAR. For example: "%ME".
 
 ### MakeDateTimeFilter (Method) <a name="MakeDateTimeFilter"></a> 
 
@@ -78,11 +78,11 @@ procedure MakeDateTimeFilter(var DateTimeFilterText: Text)
 #### Parameters
 *DateTimeFilterText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The text from which the date and time should be extracted, passed as VAR. For example: "NOW" or "01-01-2012 11:11:11..NOW".
+The text from which the date and time should be extracted, passed as VAR. For example: "%NOW" or "01-01-2012 11:11:11..NOW".
 
 ### OnResolveDateFilterToken (Event) <a name="OnResolveDateFilterToken"></a> 
 
- Use this event if you want to add support for additional tokens that user will be able to use when working with date filters, for example "Christmas" or "StoneAge".
+ Use this event if you want to add support for additional tokens that user will be able to use when working with date filters, for example "%Christmas" or "%StoneAge".
  Ensure that in your subscriber you check that what user entered contains your keyword, then return proper date range for your filter token.
  
 
@@ -94,7 +94,7 @@ internal procedure OnResolveDateFilterToken(DateToken: Text; var FromDate: Date;
 #### Parameters
 *DateToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The date token to resolve, for example: "Summer".
+The date token to resolve, for example: "%Summer".
 
 *FromDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
@@ -134,7 +134,7 @@ Stores whether the operation was successful.
 
 ### OnResolveTimeFilterToken (Event) <a name="OnResolveTimeFilterToken"></a> 
 
- Use this event if you want to add support for additional filter tokens that user will be able to use when working with time filters, for example "Lunch".
+ Use this event if you want to add support for additional filter tokens that user will be able to use when working with time filters, for example "%Lunch".
  Ensure that in your subscriber you check that what user entered contains your token, then return properly formatted time for your filter token.
  
 
@@ -146,7 +146,7 @@ internal procedure OnResolveTimeFilterToken(TimeToken: Text; var TimeFilter: Tim
 #### Parameters
 *TimeToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The time token to resolve, for example: "Lunch".
+The time token to resolve, for example: "%Lunch".
 
 *TimeFilter ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
@@ -170,7 +170,7 @@ internal procedure OnResolveDateTokenFromDateTimeFilter(DateToken: Text; var Dat
 #### Parameters
 *DateToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The date token to resolve, for example: "Christmas".
+The date token to resolve, for example: "%Christmas".
 
 *DateFilter ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
@@ -194,7 +194,7 @@ internal procedure OnResolveTimeTokenFromDateTimeFilter(TimeToken: Text; var Tim
 #### Parameters
 *TimeToken ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The time token to resolve, for example: "Lunch".
+The time token to resolve, for example: "%Lunch".
 
 *TimeFilter ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
