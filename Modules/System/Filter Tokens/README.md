@@ -11,6 +11,8 @@ You can add more filter tokens by subscribing to the following events:
 - `OnResolveDateTokenFromDateTimeFilter`
 - `OnResolveTimeTokenFromDateTimeFilter`
 
+> **Warning**  
+> Every filter token needs to start with a `%` sign as first charakter. Otherwise the events listed above might not get raised at all.
 
 # Public Objects
 ## Filter Tokens (Codeunit 41)
