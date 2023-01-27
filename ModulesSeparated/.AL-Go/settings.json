@@ -15,6 +15,6 @@
     "artifact":  "bcinsider//21.4/base/latest/{INSIDERSASTOKEN}",
     "enablePerTenantExtensionCop":  false,
     "repoVersion":  "21.4",
-    "doNotRunTests": true,
+    "doNotPublishTests": true,
     "cleanModePreprocessorSymbols":  ["CLEAN17", "CLEAN18", "CLEAN19", "CLEAN20", "CLEAN21", "CLEAN22"]
 }
