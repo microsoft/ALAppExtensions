@@ -41,7 +41,7 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: aholstrup1/AL-Go-Actions/WorkflowInitialize@v2.3
+        uses: aholstrup1/AL-Go-Actions/WorkflowInitialize@main
         with:
           shell: powershell
           eventId: "DO0091"
@@ -69,7 +69,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "Secrets=$($deliveryTargetSecrets -join ',')"
 
       - name: Read secrets
-        uses: aholstrup1/AL-Go-Actions/ReadSecrets@v2.3
+        uses: aholstrup1/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -162,7 +162,7 @@ jobs:
           get: templateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: aholstrup1/AL-Go-Actions/CheckForUpdates@v2.3
+        uses: aholstrup1/AL-Go-Actions/CheckForUpdates@main
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -207,7 +207,7 @@ jobs:
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: aholstrup1/AL-Go-Actions/ReadSecrets@v2.3
+        uses: aholstrup1/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -218,7 +218,7 @@ jobs:
 
       - name: Run pipeline
         id: RunPipeline
-        uses: aholstrup1/AL-Go-Actions/RunPipeline@v2.3
+        uses: aholstrup1/AL-Go-Actions/RunPipeline@main
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
@@ -317,7 +317,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: aholstrup1/AL-Go-Actions/AnalyzeTests@v2.3
+        uses: aholstrup1/AL-Go-Actions/AnalyzeTests@main
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -325,7 +325,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: aholstrup1/AL-Go-Actions/PipelineCleanup@v2.3
+        uses: aholstrup1/AL-Go-Actions/PipelineCleanup@main
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -362,7 +362,7 @@ jobs:
           shell: powershell
 
       - name: Read secrets
-        uses: aholstrup1/AL-Go-Actions/ReadSecrets@v2.3
+        uses: aholstrup1/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -445,7 +445,7 @@ jobs:
           Write-Host "projects=$projects"
 
       - name: Deploy
-        uses: aholstrup1/AL-Go-Actions/Deploy@v2.3
+        uses: aholstrup1/AL-Go-Actions/Deploy@main
         env:
           AuthContext: ${{ steps.authContext.outputs.authContext }}
         with:
@@ -479,7 +479,7 @@ jobs:
           shell: powershell
 
       - name: Read secrets
-        uses: aholstrup1/AL-Go-Actions/ReadSecrets@v2.3
+        uses: aholstrup1/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -498,7 +498,7 @@ jobs:
           Write-Host "deliveryContext=$deliveryContext"
 
       - name: Deliver
-        uses: aholstrup1/AL-Go-Actions/Deliver@v2.3
+        uses: aholstrup1/AL-Go-Actions/Deliver@main
         env:
           deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
         with:
@@ -517,7 +517,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: aholstrup1/AL-Go-Actions/WorkflowPostProcess@v2.3
+        uses: aholstrup1/AL-Go-Actions/WorkflowPostProcess@main
         with:
           shell: powershell
           eventId: "DO0091"
