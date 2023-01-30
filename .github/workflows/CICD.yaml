@@ -237,7 +237,7 @@ jobs:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           settings: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
-          buildMode: ${{ matrix.project }}
+          buildMode: ${{ matrix.buildMode }}
           refName: ${{ github.ref_name }}
 
       - name: Upload thisbuild artifacts - apps
