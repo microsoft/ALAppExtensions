@@ -12,7 +12,7 @@
                         "System Test Libraries",
                         "System Tests"
     ],
-    "artifact":  "bcinsider//21.4/base/latest/{INSIDERSASTOKEN}",
+    "artifact":  "bcartifacts//20.5/base/latest",
     "enablePerTenantExtensionCop":  false,
     "enableCodeCop": true, 
     "repoVersion":  "21.4",
