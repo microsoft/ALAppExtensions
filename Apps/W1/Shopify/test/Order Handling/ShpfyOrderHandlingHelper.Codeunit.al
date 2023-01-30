@@ -2,7 +2,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
 {
     var
         Any: Codeunit Any;
-        ShpfyJsonHelper: codeunit "Shpfy Json Helper";
+        JsonHelper: codeunit "Shpfy Json Helper";
 
     internal procedure GetOrdersToImport() JResult: JsonObject
     var
@@ -70,15 +70,15 @@ codeunit 139607 "Shpfy Order Handling Helper"
     var
         JOrders: JsonArray;
     begin
-        if ShpfyJsonHelper.GetJsonArray(JOrdersToImport, JOrders, 'data.orders.edges') then
+        if JsonHelper.GetJsonArray(JOrdersToImport, JOrders, 'data.orders.edges') then
             exit(JOrders.Count);
     end;
 
 
-    internal procedure CreateShopifyOrderAsJson(ShpfyShop: Record "Shpfy Shop"; var ShpfyOrdersToImport: Record "Shpfy Orders to Import"; var JShopifyLineItems: JsonArray) JOrder: JsonObject
+    internal procedure CreateShopifyOrderAsJson(Shop: Record "Shpfy Shop"; var OrdersToImport: Record "Shpfy Orders to Import"; var JShopifyLineItems: JsonArray) JOrder: JsonObject
     var
         Customer: Record Customer;
-        ShpfyOrdersAPI: Codeunit "Shpfy Orders API";
+        OrdersAPI: Codeunit "Shpfy Orders API";
         BrowserIp: Text;
         Cursor: Text;
         JNull: JsonValue;
@@ -93,29 +93,29 @@ codeunit 139607 "Shpfy Order Handling Helper"
         OrderNumber: Integer;
         AddressId: BigInteger;
     begin
-        Clear(ShpfyOrdersToImport);
-        if not ShpfyOrdersToImport.IsEmpty then
-            ShpfyOrdersToImport.DeleteAll();
-        ShpfyOrdersAPI.ExtractShopifyOrdersToImport(ShpfyShop, GetOrdersToImport(), Cursor);
-        ShpfyOrdersToImport.FindFirst();
-        ShpfyOrdersToImport.SetRecFilter();
+        Clear(OrdersToImport);
+        if not OrdersToImport.IsEmpty then
+            OrdersToImport.DeleteAll();
+        OrdersAPI.ExtractShopifyOrdersToImport(Shop, GetOrdersToImport(), Cursor);
+        OrdersToImport.FindFirst();
+        OrdersToImport.SetRecFilter();
         JNull.SetValueToNull();
         JStore.Add('name', 'Online Store');
         Customer := GetCustomer();
         AddressId := Any.IntegerInRange(1000000, 9999999);
         BrowserIp := StrSubstNo('%1.%2.%3.%4', Any.IntegerInRange(1, 255), Any.IntegerInRange(0, 255), Any.IntegerInRange(0, 255), Any.IntegerInRange(0, 255));
-        Price := ShpfyOrdersToImport."Order Amount";
+        Price := OrdersToImport."Order Amount";
         TaxRate := 10;
         TaxPrice := Price - Round(Price / (1 + TaxRate / 100), 0.01);
         DiscountPrice := 0;
         ShippingPrice := Any.DecimalInRange(0, TaxPrice, 2);
         ItemPrice := Price - ShippingPrice;
-        if Evaluate(OrderNumber, DelChr(ShpfyOrdersToImport."Order No.", '=', DelChr(ShpfyOrdersToImport."Order No.", '=', '0123456789'))) then;
-        JOrder.Add('legacyResourceId', ShpfyOrdersToImport.Id);
-        JOrder.Add('name', ShpfyOrdersToImport."Order No.");
-        JOrder.Add('createdAt', ShpfyOrdersToImport."Created At");
+        if Evaluate(OrderNumber, DelChr(OrdersToImport."Order No.", '=', DelChr(OrdersToImport."Order No.", '=', '0123456789'))) then;
+        JOrder.Add('legacyResourceId', OrdersToImport.Id);
+        JOrder.Add('name', OrdersToImport."Order No.");
+        JOrder.Add('createdAt', OrdersToImport."Created At");
         JOrder.Add('confirmed', true);
-        JOrder.Add('updatedAt', ShpfyOrdersToImport."Updated At");
+        JOrder.Add('updatedAt', OrdersToImport."Updated At");
         JOrder.Add('cancelReason', JNull);
         JOrder.Add('cancelledAt', JNull);
         JOrder.Add('closed', JNull);
@@ -130,23 +130,23 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('billingAddress', CreateAddress(Customer, AddressId, true, false));
         JOrder.Add('publication', JStore);
         JOrder.Add('app', JStore);
-        JOrder.Add('currency', ShpfyOrdersToImport."Currency Code");
-        JOrder.Add('presentmentCurrencyCode', ShpfyOrdersToImport."Currency Code");
+        JOrder.Add('currency', OrdersToImport."Currency Code");
+        JOrder.Add('presentmentCurrencyCode', OrdersToImport."Currency Code");
         JOrder.Add('unpaid', false);
         JOrder.Add('location', JNull);
         JOrder.Add('physicalLocation', JNull);
         JOrder.Add('note', Any.AlphabeticText(Any.IntegerInRange(100, 500)));
         JOrder.Add('customAttributes', JArray);
         JOrder.Add('discountCodes', JNull);
-        JOrder.Add('displayFinancialStatus', "Shpfy Financial Status".Names().Get(ShpfyOrdersToImport."Financial Status".AsInteger()).ToUpper().Replace(' ', '_'));
-        JOrder.Add('displayFulfillmentStatus', Format(ShpfyOrdersToImport."Fulfillment Status").ToUpper());
+        JOrder.Add('displayFinancialStatus', "Shpfy Financial Status".Names().Get(OrdersToImport."Financial Status".AsInteger()).ToUpper().Replace(' ', '_'));
+        JOrder.Add('displayFulfillmentStatus', Format(OrdersToImport."Fulfillment Status").ToUpper());
         JOrder.Add('total_weight', Any.IntegerInRange(0, 1000));
         JOrder.Add('refundable', false);
-        JOrder.Add('riskLevel', "Shpfy Risk Level".Names().Get(ShpfyOrdersToImport."Risk Level".AsInteger()).ToUpper().Replace(' ', '_'));
+        JOrder.Add('riskLevel', "Shpfy Risk Level".Names().Get(OrdersToImport."Risk Level".AsInteger()).ToUpper().Replace(' ', '_'));
         JOrder.Add('risks', GetRiskLevels());
-        JOrder.Add('tags', ShpfyOrdersToImport.Tags);
+        JOrder.Add('tags', OrdersToImport.Tags);
         JOrder.Add('paymentGatewayNames', GetPaymentGatewayNames());
-        JOrder.Add('processedAt', ShpfyOrdersToImport."Created At");
+        JOrder.Add('processedAt', OrdersToImport."Created At");
         JOrder.Add('requiresShipping', true);
         JOrder.Add('sourceIdentifier', JNull);
         JOrder.Add('paymentTerms', JNull);
@@ -164,7 +164,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('totalCapturableSet', AddPriceSet(0));
         JOrder.Add('totalDiscountsSet', AddPriceSet(DiscountPrice));
         JOrder.Add('totalOutstandingSet', AddPriceSet(0));
-        JOrder.Add('totalPriceSet', AddPriceSet(ShpfyOrdersToImport."Order Amount"));
+        JOrder.Add('totalPriceSet', AddPriceSet(OrdersToImport."Order Amount"));
         JOrder.Add('totalReceivedSet', AddPriceSet(0));
         JOrder.Add('totalRefundedSet', AddPriceSet(0));
         JOrder.Add('totalRefundedShippingSet', AddPriceSet(0));
@@ -172,18 +172,18 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('totalTaxSet', CreateTaxLines(TaxPrice, TaxRate));
         JOrder.Add('totalTipReceivedSet', AddPriceSet(0));
 
-        JShopifyLineItems := CreateLineItem(ShpfyShop, Price, TaxPrice, TaxRate, DiscountPrice)
+        JShopifyLineItems := CreateLineItem(Shop, Price, TaxPrice, TaxRate, DiscountPrice)
     end;
 
-    internal procedure CreateLineItem(ShpfyShop: Record "Shpfy Shop"; Price: Decimal; TaxPrice: Decimal; TaxRate: Decimal; Discount: Decimal) JLines: JsonArray
+    internal procedure CreateLineItem(Shop: Record "Shpfy Shop"; Price: Decimal; TaxPrice: Decimal; TaxRate: Decimal; Discount: Decimal) JLines: JsonArray
     var
         Item: Record Item;
         Location: Record Location;
-        ShpfyShopLocation: Record "Shpfy Shop Location";
-        ShpfyProduct: Record "Shpfy Product";
-        ShpfyVariant: Record "Shpfy Variant";
-        ShpfyCreateProduct: Codeunit "Shpfy Create Product";
-        ShpfyProductInitTest: codeunit "Shpfy Product Init Test";
+        ShopLocation: Record "Shpfy Shop Location";
+        ShopifyProduct: Record "Shpfy Product";
+        ShopifyVariant: Record "Shpfy Variant";
+        CreateProduct: Codeunit "Shpfy Create Product";
+        ProductInitTest: codeunit "Shpfy Product Init Test";
         Id: BigInteger;
         JLine: JsonObject;
         JNull: JsonValue;
@@ -194,31 +194,31 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JLocation: JsonObject;
         GidLbl: Label 'gid://shopify/LineItem/%1', Locked = true, Comment = '%1 = Line Id';
     begin
-        Item := ShpfyProductInitTest.CreateItem();
+        Item := ProductInitTest.CreateItem();
         Item.SetRecFilter();
-        ShpfyProduct.SetRange(Id, 0);
-        if not ShpfyProduct.IsEmpty then
-            ShpfyProduct.Delete();
-        ShpfyVariant.SetRange(Id, 0);
-        if not ShpfyVariant.IsEmpty then
-            ShpfyVariant.Delete();
-        ShpfyCreateProduct.CreateProduct(Item, ShpfyProduct, ShpfyVariant);
+        ShopifyProduct.SetRange(Id, 0);
+        if not ShopifyProduct.IsEmpty then
+            ShopifyProduct.Delete();
+        ShopifyVariant.SetRange(Id, 0);
+        if not ShopifyVariant.IsEmpty then
+            ShopifyVariant.Delete();
+        CreateProduct.CreateProduct(Item, ShopifyProduct, ShopifyVariant);
 
-        ShpfyShopLocation.Init();
-        ShpfyShopLocation."Shop Code" := ShpfyShop.Code;
-        ShpfyShopLocation.Id := Any.IntegerInRange(10000, 999999);
-        ShpfyShopLocation.Disabled := false;
+        ShopLocation.Init();
+        ShopLocation."Shop Code" := Shop.Code;
+        ShopLocation.Id := Any.IntegerInRange(10000, 999999);
+        ShopLocation.Disabled := false;
         if Location.FindFirst() then begin
-            ShpfyShopLocation."Default Location Code" := Location.Code;
-            ShpfyShopLocation.Name := CopyStr(Location.Name, 1, MaxStrLen(ShpfyShopLocation.Name));
+            ShopLocation."Default Location Code" := Location.Code;
+            ShopLocation.Name := CopyStr(Location.Name, 1, MaxStrLen(ShopLocation.Name));
         end;
-        ShpfyShopLocation.Insert();
+        ShopLocation.Insert();
         Id := Any.IntegerInRange(10000, 99999);
-        JProduct.Add('legacyResourceId', ShpfyProduct.Id);
+        JProduct.Add('legacyResourceId', ShopifyProduct.Id);
         JProduct.Add('isGiftCard', false);
-        JVariant.Add('legacyResourceId', ShpfyVariant.Id);
-        JLocation.Add('legacyResourceId', ShpfyShopLocation.Id);
-        JLocation.Add('name', ShpfyShopLocation.Name);
+        JVariant.Add('legacyResourceId', ShopifyVariant.Id);
+        JLocation.Add('legacyResourceId', ShopLocation.Id);
+        JLocation.Add('name', ShopLocation.Name);
         JFulfillmentService.Add('location', JLocation);
         JFulfillmentService.Add('shippingMethods', JArray);
         JFulfillmentService.Add('serviceName', 'Manual');
@@ -228,10 +228,10 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JLine.Add('quantity', 1);
         JLine.Add('currentQuantity', 1);
         JLine.Add('nonFulfillableQuantity', 0);
-        JLine.Add('sku', ShpfyVariant.SKU);
+        JLine.Add('sku', ShopifyVariant.SKU);
         JLine.Add('title', Item.Description);
         JLine.Add('variantTitle', '');
-        JLine.Add('vendor', ShpfyProduct.Vendor);
+        JLine.Add('vendor', ShopifyProduct.Vendor);
         JLine.Add('product', JProduct);
         JLine.Add('varaint', JVariant);
         JLine.Add('customAttributes', JArray);
@@ -283,9 +283,9 @@ codeunit 139607 "Shpfy Order Handling Helper"
 
     local procedure GetCustomer(): Record Customer
     var
-        ShpfyInitializeTest: codeunit "Shpfy Initialize Test";
+        InitializeTest: codeunit "Shpfy Initialize Test";
     begin
-        exit(ShpfyInitializeTest.GetDummyCustomer());
+        exit(InitializeTest.GetDummyCustomer());
     end;
 
     local procedure GetRiskLevels() JRisks: JsonArray
@@ -359,17 +359,17 @@ codeunit 139607 "Shpfy Order Handling Helper"
 
     local procedure CreateCustomer(Customer: Record Customer) JCustomer: JsonObject
     var
-        ShpfyCustomer: Record "Shpfy Customer";
-        ShpfyCustomerInitTest: codeunit "Shpfy Customer Init Test";
+        ShopifyCustomer: Record "Shpfy Customer";
+        CustomerInitTest: codeunit "Shpfy Customer Init Test";
         JNull: JsonValue;
     begin
-        ShpfyCustomerInitTest.CreateShopifyCustomer(ShpfyCustomer);
-        ShpfyCustomer."Customer SystemId" := Customer.SystemId;
-        ShpfyCustomer.Modify();
+        CustomerInitTest.CreateShopifyCustomer(ShopifyCustomer);
+        ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+        ShopifyCustomer.Modify();
         JNull.SetValueToNull();
-        JCustomer.Add('legacyResourceId', ShpfyCustomer.Id);
+        JCustomer.Add('legacyResourceId', ShopifyCustomer.Id);
         JCustomer.Add('email', Customer."E-Mail");
         JCustomer.Add('phone', Customer."Phone No.");
-        JCustomer.Add('defaultAddress', CreateCustomerAddress(Customer, ShpfyCustomer.Id));
+        JCustomer.Add('defaultAddress', CreateCustomerAddress(Customer, ShopifyCustomer.Id));
     end;
 }

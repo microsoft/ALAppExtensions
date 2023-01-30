@@ -48,7 +48,7 @@ codeunit 30174 "Shpfy Create Product"
             ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant);
     end;
 
-    internal procedure CreateProduct(Item: Record Item; var ShopifyProduct: Record "Shpfy Product" temporary; var ShpfyVariant: Record "Shpfy Variant" temporary)
+    internal procedure CreateProduct(Item: Record Item; var ShopifyProduct: Record "Shpfy Product" temporary; var " temporary; var ShopifyVariant: Record ": Record "Shpfy Variant" temporary)
     var
         ItemUnitofMeasure: Record "Item Unit of Measure";
         ItemVariant: Record "Item Variant";
@@ -70,76 +70,76 @@ codeunit 30174 "Shpfy Create Product"
                     if ItemUnitofMeasure.FindSet(false, false) then
                         repeat
                             Id += 1;
-                            Clear(ShpfyVariant);
-                            ShpfyVariant.Id := Id;
-                            ShpfyVariant."Available For Sales" := true;
-                            ShpfyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShpfyVariant.Barcode));
-                            ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, ShpfyVariant."Unit Cost", ShpfyVariant.Price, ShpfyVariant."Compare at Price");
-                            ShpfyVariant.Title := ItemVariant.Description;
-                            ShpfyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+                            Clear(" temporary; var ShopifyVariant: Record ");
+                            " temporary; var ShopifyVariant: Record ".Id := Id;
+                            " temporary; var ShopifyVariant: Record "."Available For Sales" := true;
+                            " temporary; var ShopifyVariant: Record ".Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(" temporary; var ShopifyVariant: Record ".Barcode));
+                            ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, " temporary; var ShopifyVariant: Record "."Unit Cost", " temporary; var ShopifyVariant: Record ".Price, " temporary; var ShopifyVariant: Record "."Compare at Price");
+                            " temporary; var ShopifyVariant: Record ".Title := ItemVariant.Description;
+                            " temporary; var ShopifyVariant: Record "."Inventory Policy" := Shop."Default Inventory Policy";
                             case Shop."SKU Mapping" of
                                 Shop."SKU Mapping"::"Bar Code":
-                                    ShpfyVariant.SKU := ShpfyVariant.Barcode;
+                                    " temporary; var ShopifyVariant: Record ".SKU := " temporary; var ShopifyVariant: Record ".Barcode;
                                 Shop."SKU Mapping"::"Item No.":
-                                    ShpfyVariant.SKU := Item."No.";
+                                    " temporary; var ShopifyVariant: Record ".SKU := Item."No.";
                                 Shop."SKU Mapping"::"Variant Code":
                                     if ItemVariant.Code <> '' then
-                                        ShpfyVariant.SKU := ItemVariant.Code;
+                                        " temporary; var ShopifyVariant: Record ".SKU := ItemVariant.Code;
                                 Shop."SKU Mapping"::"Item No. + Variant Code":
                                     if ItemVariant.Code <> '' then
-                                        ShpfyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
+                                        " temporary; var ShopifyVariant: Record ".SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                                     else
-                                        ShpfyVariant.SKU := Item."No.";
+                                        " temporary; var ShopifyVariant: Record ".SKU := Item."No.";
                                 Shop."SKU Mapping"::"Vendor Item No.":
-                                    ShpfyVariant.SKU := Item."Vendor Item No.";
+                                    " temporary; var ShopifyVariant: Record ".SKU := Item."Vendor Item No.";
                             end;
-                            ShpfyVariant."Tax Code" := Item."Tax Group Code";
-                            ShpfyVariant.Taxable := true;
-                            ShpfyVariant.Weight := Item."Gross Weight";
-                            ShpfyVariant."Option 1 Name" := 'Variant';
-                            ShpfyVariant."Option 1 Value" := ItemVariant.Code;
-                            ShpfyVariant."Option 2 Name" := Shop."Option Name for UoM";
-                            ShpfyVariant."Option 2 Value" := ItemUnitofMeasure.Code;
-                            ShpfyVariant."Shop Code" := Shop.Code;
-                            ShpfyVariant."Item SystemId" := Item.SystemId;
-                            ShpfyVariant."Item Variant SystemId" := ItemVariant.SystemId;
-                            ShpfyVariant."UoM Option Id" := 2;
-                            ShpfyVariant.Insert(false);
+                            " temporary; var ShopifyVariant: Record "."Tax Code" := Item."Tax Group Code";
+                            " temporary; var ShopifyVariant: Record ".Taxable := true;
+                            " temporary; var ShopifyVariant: Record ".Weight := Item."Gross Weight";
+                            " temporary; var ShopifyVariant: Record "."Option 1 Name" := 'Variant';
+                            " temporary; var ShopifyVariant: Record "."Option 1 Value" := ItemVariant.Code;
+                            " temporary; var ShopifyVariant: Record "."Option 2 Name" := Shop."Option Name for UoM";
+                            " temporary; var ShopifyVariant: Record "."Option 2 Value" := ItemUnitofMeasure.Code;
+                            " temporary; var ShopifyVariant: Record "."Shop Code" := Shop.Code;
+                            " temporary; var ShopifyVariant: Record "."Item SystemId" := Item.SystemId;
+                            " temporary; var ShopifyVariant: Record "."Item Variant SystemId" := ItemVariant.SystemId;
+                            " temporary; var ShopifyVariant: Record "."UoM Option Id" := 2;
+                            " temporary; var ShopifyVariant: Record ".Insert(false);
                         until ItemUnitofMeasure.Next() = 0;
                 end else begin
                     Id += 1;
-                    Clear(ShpfyVariant);
-                    ShpfyVariant.Id := Id;
-                    ShpfyVariant."Available For Sales" := true;
-                    ShpfyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(ShpfyVariant.Barcode));
-                    ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", ShpfyVariant."Unit Cost", ShpfyVariant.Price, ShpfyVariant."Compare at Price");
-                    ShpfyVariant.Title := ItemVariant.Description;
-                    ShpfyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+                    Clear(" temporary; var ShopifyVariant: Record ");
+                    " temporary; var ShopifyVariant: Record ".Id := Id;
+                    " temporary; var ShopifyVariant: Record "."Available For Sales" := true;
+                    " temporary; var ShopifyVariant: Record ".Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(" temporary; var ShopifyVariant: Record ".Barcode));
+                    ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", " temporary; var ShopifyVariant: Record "."Unit Cost", " temporary; var ShopifyVariant: Record ".Price, " temporary; var ShopifyVariant: Record "."Compare at Price");
+                    " temporary; var ShopifyVariant: Record ".Title := ItemVariant.Description;
+                    " temporary; var ShopifyVariant: Record "."Inventory Policy" := Shop."Default Inventory Policy";
                     case Shop."SKU Mapping" of
                         Shop."SKU Mapping"::"Bar Code":
-                            ShpfyVariant.SKU := ShpfyVariant.Barcode;
+                            " temporary; var ShopifyVariant: Record ".SKU := " temporary; var ShopifyVariant: Record ".Barcode;
                         Shop."SKU Mapping"::"Item No.":
-                            ShpfyVariant.SKU := Item."No.";
+                            " temporary; var ShopifyVariant: Record ".SKU := Item."No.";
                         Shop."SKU Mapping"::"Variant Code":
                             if ItemVariant.Code <> '' then
-                                ShpfyVariant.SKU := ItemVariant.Code;
+                                " temporary; var ShopifyVariant: Record ".SKU := ItemVariant.Code;
                         Shop."SKU Mapping"::"Item No. + Variant Code":
                             if ItemVariant.Code <> '' then
-                                ShpfyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
+                                " temporary; var ShopifyVariant: Record ".SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                             else
-                                ShpfyVariant.SKU := Item."No.";
+                                " temporary; var ShopifyVariant: Record ".SKU := Item."No.";
                         Shop."SKU Mapping"::"Vendor Item No.":
-                            ShpfyVariant.SKU := CopyStr(GetVendorItemNo(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(ShpfyVariant.SKU));
+                            " temporary; var ShopifyVariant: Record ".SKU := CopyStr(GetVendorItemNo(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(" temporary; var ShopifyVariant: Record ".SKU));
                     end;
-                    ShpfyVariant."Tax Code" := Item."Tax Group Code";
-                    ShpfyVariant.Taxable := true;
-                    ShpfyVariant.Weight := Item."Gross Weight";
-                    ShpfyVariant."Option 1 Name" := 'Variant';
-                    ShpfyVariant."Option 1 Value" := ItemVariant.Code;
-                    ShpfyVariant."Shop Code" := Shop.Code;
-                    ShpfyVariant."Item SystemId" := Item.SystemId;
-                    ShpfyVariant."Item Variant SystemId" := ItemVariant.SystemId;
-                    ShpfyVariant.Insert(false);
+                    " temporary; var ShopifyVariant: Record "."Tax Code" := Item."Tax Group Code";
+                    " temporary; var ShopifyVariant: Record ".Taxable := true;
+                    " temporary; var ShopifyVariant: Record ".Weight := Item."Gross Weight";
+                    " temporary; var ShopifyVariant: Record "."Option 1 Name" := 'Variant';
+                    " temporary; var ShopifyVariant: Record "."Option 1 Value" := ItemVariant.Code;
+                    " temporary; var ShopifyVariant: Record "."Shop Code" := Shop.Code;
+                    " temporary; var ShopifyVariant: Record "."Item SystemId" := Item.SystemId;
+                    " temporary; var ShopifyVariant: Record "."Item Variant SystemId" := ItemVariant.SystemId;
+                    " temporary; var ShopifyVariant: Record ".Insert(false);
                 end;
             until ItemVariant.Next() = 0
         else
@@ -148,68 +148,68 @@ codeunit 30174 "Shpfy Create Product"
                 if ItemUnitofMeasure.FindSet(false, false) then
                     repeat
                         Id += 1;
-                        Clear(ShpfyVariant);
-                        ShpfyVariant.Id := Id;
-                        ShpfyVariant."Available For Sales" := true;
-                        ShpfyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', ItemUnitofMeasure.Code), 1, MaxStrLen(ShpfyVariant.Barcode));
-                        ProductPriceCalc.CalcPrice(Item, '', ItemUnitofMeasure.Code, ShpfyVariant."Unit Cost", ShpfyVariant.Price, ShpfyVariant."Compare at Price");
-                        ShpfyVariant.Title := Item.Description;
-                        ShpfyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+                        Clear(" temporary; var ShopifyVariant: Record ");
+                        " temporary; var ShopifyVariant: Record ".Id := Id;
+                        " temporary; var ShopifyVariant: Record "."Available For Sales" := true;
+                        " temporary; var ShopifyVariant: Record ".Barcode := CopyStr(GetBarcode(Item."No.", '', ItemUnitofMeasure.Code), 1, MaxStrLen(" temporary; var ShopifyVariant: Record ".Barcode));
+                        ProductPriceCalc.CalcPrice(Item, '', ItemUnitofMeasure.Code, " temporary; var ShopifyVariant: Record "."Unit Cost", " temporary; var ShopifyVariant: Record ".Price, " temporary; var ShopifyVariant: Record "."Compare at Price");
+                        " temporary; var ShopifyVariant: Record ".Title := Item.Description;
+                        " temporary; var ShopifyVariant: Record "."Inventory Policy" := Shop."Default Inventory Policy";
                         case Shop."SKU Mapping" of
                             Shop."SKU Mapping"::"Bar Code":
-                                ShpfyVariant.SKU := ShpfyVariant.Barcode;
+                                " temporary; var ShopifyVariant: Record ".SKU := " temporary; var ShopifyVariant: Record ".Barcode;
                             Shop."SKU Mapping"::"Item No.":
-                                ShpfyVariant.SKU := Item."No.";
+                                " temporary; var ShopifyVariant: Record ".SKU := Item."No.";
                             Shop."SKU Mapping"::"Variant Code":
                                 if ItemVariant.Code <> '' then
-                                    ShpfyVariant.SKU := ItemVariant.Code;
+                                    " temporary; var ShopifyVariant: Record ".SKU := ItemVariant.Code;
                             SHop."SKU Mapping"::"Item No. + Variant Code":
                                 if ItemVariant.Code <> '' then
-                                    ShpfyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
+                                    " temporary; var ShopifyVariant: Record ".SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                                 else
-                                    ShpfyVariant.SKU := Item."No.";
+                                    " temporary; var ShopifyVariant: Record ".SKU := Item."No.";
                             Shop."SKU Mapping"::"Vendor Item No.":
-                                ShpfyVariant.SKU := Item."Vendor Item No.";
+                                " temporary; var ShopifyVariant: Record ".SKU := Item."Vendor Item No.";
                         end;
-                        ShpfyVariant."Tax Code" := Item."Tax Group Code";
-                        ShpfyVariant.Taxable := true;
-                        ShpfyVariant.Weight := Item."Gross Weight";
-                        ShpfyVariant."Option 1 Name" := Shop."Option Name for UoM";
-                        ShpfyVariant."Option 1 Value" := ItemUnitofMeasure.Code;
-                        ShpfyVariant."Shop Code" := Shop.Code;
-                        ShpfyVariant."Item SystemId" := Item.SystemId;
-                        ShpfyVariant."UoM Option Id" := 1;
-                        ShpfyVariant.Insert(false);
+                        " temporary; var ShopifyVariant: Record "."Tax Code" := Item."Tax Group Code";
+                        " temporary; var ShopifyVariant: Record ".Taxable := true;
+                        " temporary; var ShopifyVariant: Record ".Weight := Item."Gross Weight";
+                        " temporary; var ShopifyVariant: Record "."Option 1 Name" := Shop."Option Name for UoM";
+                        " temporary; var ShopifyVariant: Record "."Option 1 Value" := ItemUnitofMeasure.Code;
+                        " temporary; var ShopifyVariant: Record "."Shop Code" := Shop.Code;
+                        " temporary; var ShopifyVariant: Record "."Item SystemId" := Item.SystemId;
+                        " temporary; var ShopifyVariant: Record "."UoM Option Id" := 1;
+                        " temporary; var ShopifyVariant: Record ".Insert(false);
                     until ItemUnitofMeasure.Next() = 0;
             end else begin
-                Clear(ShpfyVariant);
-                ShpfyVariant."Available For Sales" := true;
-                ShpfyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', Item."Sales Unit of Measure"), 1, MaxStrLen(ShpfyVariant.Barcode));
-                ProductPriceCalc.CalcPrice(Item, '', Item."Sales Unit of Measure", ShpfyVariant."Unit Cost", ShpfyVariant.Price, ShpfyVariant."Compare at Price");
-                ShpfyVariant.Title := ItemVariant.Description;
-                ShpfyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+                Clear(" temporary; var ShopifyVariant: Record ");
+                " temporary; var ShopifyVariant: Record "."Available For Sales" := true;
+                " temporary; var ShopifyVariant: Record ".Barcode := CopyStr(GetBarcode(Item."No.", '', Item."Sales Unit of Measure"), 1, MaxStrLen(" temporary; var ShopifyVariant: Record ".Barcode));
+                ProductPriceCalc.CalcPrice(Item, '', Item."Sales Unit of Measure", " temporary; var ShopifyVariant: Record "."Unit Cost", " temporary; var ShopifyVariant: Record ".Price, " temporary; var ShopifyVariant: Record "."Compare at Price");
+                " temporary; var ShopifyVariant: Record ".Title := ItemVariant.Description;
+                " temporary; var ShopifyVariant: Record "."Inventory Policy" := Shop."Default Inventory Policy";
                 case Shop."SKU Mapping" of
                     Shop."SKU Mapping"::"Bar Code":
-                        ShpfyVariant.SKU := ShpfyVariant.Barcode;
+                        " temporary; var ShopifyVariant: Record ".SKU := " temporary; var ShopifyVariant: Record ".Barcode;
                     Shop."SKU Mapping"::"Item No.":
-                        ShpfyVariant.SKU := Item."No.";
+                        " temporary; var ShopifyVariant: Record ".SKU := Item."No.";
                     Shop."SKU Mapping"::"Variant Code":
                         if ItemVariant.Code <> '' then
-                            ShpfyVariant.SKU := ItemVariant.Code;
+                            " temporary; var ShopifyVariant: Record ".SKU := ItemVariant.Code;
                     SHop."SKU Mapping"::"Item No. + Variant Code":
                         if ItemVariant.Code <> '' then
-                            ShpfyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
+                            " temporary; var ShopifyVariant: Record ".SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                         else
-                            ShpfyVariant.SKU := Item."No.";
+                            " temporary; var ShopifyVariant: Record ".SKU := Item."No.";
                     Shop."SKU Mapping"::"Vendor Item No.":
-                        ShpfyVariant.SKU := Item."Vendor Item No.";
+                        " temporary; var ShopifyVariant: Record ".SKU := Item."Vendor Item No.";
                 end;
-                ShpfyVariant."Tax Code" := Item."Tax Group Code";
-                ShpfyVariant.Taxable := true;
-                ShpfyVariant.Weight := Item."Gross Weight";
-                ShpfyVariant."Shop Code" := Shop.Code;
-                ShpfyVariant."Item SystemId" := Item.SystemId;
-                ShpfyVariant.Insert(false);
+                " temporary; var ShopifyVariant: Record "."Tax Code" := Item."Tax Group Code";
+                " temporary; var ShopifyVariant: Record ".Taxable := true;
+                " temporary; var ShopifyVariant: Record ".Weight := Item."Gross Weight";
+                " temporary; var ShopifyVariant: Record "."Shop Code" := Shop.Code;
+                " temporary; var ShopifyVariant: Record "."Item SystemId" := Item.SystemId;
+                " temporary; var ShopifyVariant: Record ".Insert(false);
             end;
         ShopifyProduct.Insert(false);
     end;

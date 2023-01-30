@@ -40,7 +40,7 @@ page 30136 "Shpfy Connector Guide"
                     Caption = 'Welcome to Shopify Connector Setup';
                     InstructionalText = 'This guide will connect Business Central to your shop on Shopify. We''ll create a new shop in Business Central, and help you import data you may already have on Shopify.';
                 }
-                group("Note")
+                group(Note)
                 {
                     Caption = 'Note';
                     InstructionalText = 'While you''re using a demo company, we want to keep things safe for your Shopify store. You can use this guide to import up to 25 products from Shopify, but you can''t export Business Central data to your store.';
@@ -114,12 +114,12 @@ page 30136 "Shpfy Connector Guide"
 
                     trigger OnValidate()
                     var
-                        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
+                        AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
                     begin
                         if ShopUrl = '' then
                             NextActionEnabled := false
                         else begin
-                            if not ShpfyAuthenticationMgt.IsValidShopUrl(ShopUrl) then
+                            if not AuthenticationMgt.IsValidShopUrl(ShopUrl) then
                                 Error(InvalidShopUrlErr);
                             NextActionEnabled := true;
                         end;
@@ -371,7 +371,7 @@ page 30136 "Shpfy Connector Guide"
 
                         trigger OnDrillDown()
                         begin
-                            Page.RunModal(Page::"Shpfy Shop Card", ShpfyShop);
+                            Page.RunModal(Page::"Shpfy Shop Card", Shop);
                         end;
                     }
                 }
@@ -409,7 +409,7 @@ page 30136 "Shpfy Connector Guide"
 
                         trigger OnDrillDown()
                         begin
-                            Page.RunModal(Page::"Shpfy Shop Card", ShpfyShop);
+                            Page.RunModal(Page::"Shpfy Shop Card", Shop);
                         end;
                     }
                 }
@@ -498,7 +498,7 @@ page 30136 "Shpfy Connector Guide"
         MediaRepositoryStandard: Record "Media Repository";
         MediaResourcesDone: Record "Media Resources";
         MediaResourcesStandard: Record "Media Resources";
-        ShpfyShop: Record "Shpfy Shop";
+        Shop: Record "Shpfy Shop";
         TopBannerVisible: Boolean;
         BackActionEnabled: Boolean;
         FinishActionEnabled: Boolean;
@@ -565,10 +565,10 @@ page 30136 "Shpfy Connector Guide"
         if (Step = Step::Step2) and not Backwards then begin
             AccessRequested := true;
 
-            CreateShop(ShpfyShop);
-            ShpfyShop.RequestAccessToken();
-            ShpfyShop.Enabled := true;
-            ShpfyShop.Modify();
+            CreateShop(Shop);
+            Shop.RequestAccessToken();
+            Shop.Enabled := true;
+            Shop.Modify();
 
             CorrectConnection := true;
         end;
@@ -587,8 +587,8 @@ page 30136 "Shpfy Connector Guide"
             ScheduleInitialImport();
 
         if (Step = Step::FinishMyCompany) and not IsDemoCompany and not Backwards and not SyncScheduled then begin
-            SetShopProperties(ShpfyShop);
-            ShpfyShop.Modify();
+            SetShopProperties(Shop);
+            Shop.Modify();
             ScheduleInitialImport();
         end;
 
@@ -783,7 +783,7 @@ page 30136 "Shpfy Connector Guide"
 
     local procedure FinishAction();
     var
-        ShpfyInitialImport: Codeunit "Shpfy Initial Import";
+        InitialImport: Codeunit "Shpfy Initial Import";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         GuidedExperience: Codeunit "Guided Experience";
         StartTime: DateTime;
@@ -794,7 +794,7 @@ page 30136 "Shpfy Connector Guide"
         GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Shpfy Connector Guide");
         StartTime := CurrentDateTime();
         Dialog.Open(InitialImportWaitMsg);
-        while not ShpfyInitialImport.InitialImportCompleted() do begin
+        while not InitialImport.InitialImportCompleted() do begin
             Sleep(2000);
             if CurrentDateTime() >= StartTime + 10000 then begin
                 Message(InitialImportTakingLongerMsg);
@@ -806,58 +806,58 @@ page 30136 "Shpfy Connector Guide"
         FeatureTelemetry.LogUptake('0000HUX', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
     end;
 
-    local procedure CreateShop(var ShpfyShop: Record "Shpfy Shop")
+    local procedure CreateShop(var Shop: Record "Shpfy Shop")
     begin
-        if ShpfyShop.Get(GetShopCode()) then begin
-            ShpfyShop.Validate("Shopify URL", ShopUrl);
+        if Shop.Get(GetShopCode()) then begin
+            Shop.Validate("Shopify URL", ShopUrl);
             if IsDemoCompany then
-                SetShopProperties(ShpfyShop);
-            ShpfyShop.Modify();
+                SetShopProperties(Shop);
+            Shop.Modify();
         end else begin
-            ShpfyShop.Init();
-            ShpfyShop.Validate(Code, GetShopCode());
-            ShpfyShop.Validate("Shopify URL", ShopUrl);
+            Shop.Init();
+            Shop.Validate(Code, GetShopCode());
+            Shop.Validate("Shopify URL", ShopUrl);
             if IsDemoCompany then
-                SetShopProperties(ShpfyShop);
-            ShpfyShop.Insert();
+                SetShopProperties(Shop);
+            Shop.Insert();
         end;
     end;
 
-    local procedure SetShopProperties(var ShpfyShop: Record "Shpfy Shop")
+    local procedure SetShopProperties(var Shop: Record "Shpfy Shop")
     begin
-        ShpfyShop.Validate("Allow Background Syncs", true);
-        ShpfyShop.Validate("Allow Outgoing Requests", false);
+        Shop.Validate("Allow Background Syncs", true);
+        Shop.Validate("Allow Outgoing Requests", false);
 
         // Item synchronization
         if IsDemoCompany then begin
-            ShpfyShop.Validate("Item Template Code", GetItemTemplateCode());
-            ShpfyShop.Validate("Sync Item Images", ShpfyShop."Sync Item Images"::"From Shopify");
+            Shop.Validate("Item Template Code", GetItemTemplateCode());
+            Shop.Validate("Sync Item Images", Shop."Sync Item Images"::"From Shopify");
         end else
             if ImportProducts then begin
-                ShpfyShop.Validate("Item Template Code", ItemTemplateCode);
+                Shop.Validate("Item Template Code", ItemTemplateCode);
                 if SyncItemImages then
-                    ShpfyShop.Validate("Sync Item Images", ShpfyShop."Sync Item Images"::"From Shopify");
+                    Shop.Validate("Sync Item Images", Shop."Sync Item Images"::"From Shopify");
             end;
-        ShpfyShop.Validate("Auto Create Unknown Items", true);
-        ShpfyShop.Validate("Sync Item", ShpfyShop."Sync Item"::"From Shopify");
+        Shop.Validate("Auto Create Unknown Items", true);
+        Shop.Validate("Sync Item", Shop."Sync Item"::"From Shopify");
 
         // Customer synchronization
         if IsDemoCompany then
-            ShpfyShop.Validate("Customer Template Code", GetCustomerTemplateCode())
+            Shop.Validate("Customer Template Code", GetCustomerTemplateCode())
         else
             if ImportCustomers then
-                ShpfyShop.Validate("Customer Template Code", CustomerTemplateCode);
-        ShpfyShop.Validate("Auto Create Unknown Customers", true);
-        ShpfyShop.Validate("Customer Import From Shopify", ShpfyShop."Customer Import From Shopify"::AllCustomers);
-        ShpfyShop.Validate("Export Customer To Shopify", false);
+                Shop.Validate("Customer Template Code", CustomerTemplateCode);
+        Shop.Validate("Auto Create Unknown Customers", true);
+        Shop.Validate("Customer Import From Shopify", Shop."Customer Import From Shopify"::AllCustomers);
+        Shop.Validate("Export Customer To Shopify", false);
 
         // Order synchronization
         if IsDemoCompany then begin
-            ShpfyShop.Validate("Shipping Charges Account", GetShippingChargesGLAccount());
-            ShpfyShop.Validate("Auto Create Orders", true);
+            Shop.Validate("Shipping Charges Account", GetShippingChargesGLAccount());
+            Shop.Validate("Auto Create Orders", true);
         end else begin
-            ShpfyShop.Validate("Shipping Charges Account", ShippingChargesAccountNo);
-            ShpfyShop.Validate("Auto Create Orders", AutoCreateOrders);
+            Shop.Validate("Shipping Charges Account", ShippingChargesAccountNo);
+            Shop.Validate("Auto Create Orders", AutoCreateOrders);
         end;
     end;
 
@@ -988,16 +988,16 @@ page 30136 "Shpfy Connector Guide"
 
     local procedure ScheduleInitialImport()
     var
-        ShpfyInitialImportLine: Record "Shpfy Initial Import Line";
-        ShpfyInitialImport: Codeunit "Shpfy Initial Import";
+        InitialImportLine: Record "Shpfy Initial Import Line";
+        InitialImport: Codeunit "Shpfy Initial Import";
     begin
         if not SyncScheduled then begin
-            ShpfyInitialImportLine.DeleteAll();
+            InitialImportLine.DeleteAll();
             if IsDemoCompany then
-                ShpfyInitialImport.GenerateSelected(ShpfyShop.Code, true, false, true, true)
+                InitialImport.GenerateSelected(Shop.Code, true, false, true, true)
             else
-                ShpfyInitialImport.GenerateSelected(ShpfyShop.Code, ImportProducts, ImportCustomers, SyncItemImages, false);
-            ShpfyInitialImport.Start();
+                InitialImport.GenerateSelected(Shop.Code, ImportProducts, ImportCustomers, SyncItemImages, false);
+            InitialImport.Start();
             SyncScheduled := true;
         end;
     end;

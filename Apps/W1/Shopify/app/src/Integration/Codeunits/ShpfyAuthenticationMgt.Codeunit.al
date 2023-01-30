@@ -133,14 +133,14 @@ codeunit 30199 "Shpfy Authentication Mgt."
     [Scope('OnPrem')]
     internal procedure GetAccessToken(Store: Text): Text
     var
-        ShpfyRegisteredStoreNew: Record "Shpfy Registered Store New";
+        RegisteredStoreNew: Record "Shpfy Registered Store New";
         AccessToken: Text;
         NoAccessTokenErr: label 'No Access token for the store "%1".\Please request an access token for this store.', Comment = '%1 = Store';
         ChangedScopeErr: Label 'The application scope is changed, please request a new access token for the store "%1".', Comment = '%1 = Store';
     begin
-        if ShpfyRegisteredStoreNew.Get(Store) then
-            if ShpfyRegisteredStoreNew."Requested Scope" = ScopeTxt then begin
-                AccessToken := ShpfyRegisteredStoreNew.GetAccessToken();
+        if RegisteredStoreNew.Get(Store) then
+            if RegisteredStoreNew."Requested Scope" = ScopeTxt then begin
+                AccessToken := RegisteredStoreNew.GetAccessToken();
                 if AccessToken <> '' then
                     exit(AccessToken)
                 else

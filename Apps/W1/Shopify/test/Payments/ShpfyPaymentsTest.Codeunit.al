@@ -10,8 +10,8 @@ codeunit 139566 "Shpfy Payments Test"
     [Test]
     procedure UnitTestImportPayment()
     var
-        ShpfyPaymentTransaction: Record "Shpfy Payment Transaction";
-        ShpfyPayments: Codeunit "Shpfy Payments";
+        PaymentTransaction: Record "Shpfy Payment Transaction";
+        Payments: Codeunit "Shpfy Payments";
         Id: BigInteger;
         LastPayoutId: BigInteger;
         JPayment: JsonToken;
@@ -22,10 +22,10 @@ codeunit 139566 "Shpfy Payments Test"
         JPayment := GetRandomPaymentAsJsonToken(Id);
 
         // [WHEN] Invoke the function ImportPayment(JFulfillment)
-        ShpfyPayments.ImportPaymentTransaction(JPayment, LastPayoutId);
+        Payments.ImportPaymentTransaction(JPayment, LastPayoutId);
 
         // [THEN] We must find the "Shpfy Payment" record with the same id
-        LibraryAssert.IsTrue(ShpfyPaymentTransaction.Get(Id), 'Get "Shpfy Payment Transaction" record');
+        LibraryAssert.IsTrue(PaymentTransaction.Get(Id), 'Get "Shpfy Payment Transaction" record');
     end;
 
     local procedure GetRandomPaymentAsJsonToken(id: BigInteger): JsonToken

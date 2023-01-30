@@ -13,8 +13,8 @@ codeunit 139578 "Shpfy Order Fulfillments Test"
     [Test]
     procedure UnitTestImportFulfillment()
     var
-        ShpfyOrderfulfillment: Record "Shpfy Order Fulfillment";
-        ShpfyOrderFulfillments: Codeunit "Shpfy Order Fulfillments";
+        Orderfulfillment: Record "Shpfy Order Fulfillment";
+        OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         Id: BigInteger;
         OrderId: BigInteger;
         JFulfillment: JsonToken;
@@ -28,13 +28,13 @@ codeunit 139578 "Shpfy Order Fulfillments Test"
         JFulfillment := GetRandomFullFilmentAsJsonToken(Id, TrackingNo);
 
         // [WHEN] Invoke the function ImportFulfillment(JFulfillment)
-        ShpfyOrderFulfillments.ImportFulfillment(OrderId, JFulfillment);
+        OrderFulfillments.ImportFulfillment(OrderId, JFulfillment);
 
         // [THEN] We must find the "Shpfy Order Fufillment" record with the same id
-        LibraryAssert.IsTrue(ShpfyOrderfulfillment.Get(Id), 'Get "Shpfy Order Fufillment" record');
+        LibraryAssert.IsTrue(Orderfulfillment.Get(Id), 'Get "Shpfy Order Fufillment" record');
 
         // [THEN] TrackingNo = ShpfyOrderfulfillment."Tracking Number"
-        LibraryAssert.AreEqual(TrackingNo, ShpfyOrderfulfillment."Tracking Number", 'Tracking number check');
+        LibraryAssert.AreEqual(TrackingNo, Orderfulfillment."Tracking Number", 'Tracking number check');
     end;
 
     local procedure GetRandomFullFilmentAsJsonToken(id: BigInteger; TrackingNo: Text): JsonToken

@@ -9,13 +9,13 @@ codeunit 30125 "Shpfy Gift Cards"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
 
-    internal procedure GetGiftCardsFromFulfillment(ShpfyShop: Record "Shpfy Shop"; OrderId: BigInteger; FulfillmentId: BigInteger)
+    internal procedure GetGiftCardsFromFulfillment(Shop: Record "Shpfy Shop"; OrderId: BigInteger; FulfillmentId: BigInteger)
     var
         Response: Text;
         Url: Label 'orders/%1/fulfillments/%2.json?fields=id,receipt', Locked = true;
         JToken: JsonToken;
     begin
-        CommunicationMgt.SetShop(ShpfyShop);
+        CommunicationMgt.SetShop(Shop);
         Response := CommunicationMgt.ExecuteWebRequest(CommunicationMgt.CreateWebRequestURL(StrSubstNo(Url, OrderId, FulfillmentId)), 'GET', '');
         if JToken.ReadFrom(Response) then
             AddSoldGiftCards(JsonHelper.GetJsonArray(JToken, 'fulfillment.receipt.gift_cards'));

@@ -29,7 +29,7 @@ codeunit 30165 "Shpfy Orders API"
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     internal procedure GetOrdersToImport(ShopifyShop: Record "Shpfy Shop")
     var
-        ShpfyOrderstoImport: Record "Shpfy Orders to Import";
+        OrderstoImport: Record "Shpfy Orders to Import";
         LastSyncTime: DateTime;
         Cursor: Text;
         Parameters: Dictionary of [Text, Text];
@@ -37,7 +37,7 @@ codeunit 30165 "Shpfy Orders API"
     begin
         CommunicationMgt.SetShop(ShopifyShop);
 
-        Clear(ShpfyOrderstoImport);
+        Clear(OrderstoImport);
         LastSyncTime := ShopifyShop.GetLastSyncTime("Shpfy Synchronization Type"::Orders);
         Parameters.Add('Time', Format(LastSyncTime, 0, 9));
         if LastSyncTime = 0DT then
@@ -197,20 +197,12 @@ codeunit 30165 "Shpfy Orders API"
                 Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
                 if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
                     Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
-                    // OrderToImport.SetCurrentKey(Id, "Shop Id");
-                    // OrderToImport.SetRange(Id, Id);
-                    // OrderToImport.SetRange("Shop Id", ShopifyShop."Shop Id");
-                    // OrderToImport.SetRange("Shop Code", ShopifyShop.Code);
-
-                    // if not OrderToImport.IsEmpty then
-                    //     OrderToImport.DeleteAll();
 
                     OrdersToImport.SetRange(Id, Id);
                     if not OrdersToImport.FindFirst() then
                         Clear(OrdersToImport);
                     OrdersToImport.Id := Id;
                     OrdersToImport."Shop Id" := ShopifyShop."Shop Id";
-                    // OrderToImport."Shop Code" := ShopifyShop.Code;
                     RecordRef.GetTable(OrdersToImport);
                     JsonHelper.GetValueIntoField(JNode, 'name', RecordRef, OrdersToImport.FieldNo("Order No."));
                     JsonHelper.GetValueIntoField(JNode, 'createdAt', RecordRef, OrdersToImport.FieldNo("Created At"));

@@ -13,64 +13,64 @@ codeunit 139588 "Shpfy Connector Guide Test"
     [Test]
     procedure ConnectorGuideConsentTest()
     var
-        ShpfyConnectorGuide: TestPage "Shpfy Connector Guide";
+        ConnectorGuide: TestPage "Shpfy Connector Guide";
     begin
         // Init
         Initialize();
 
         // Setup
-        ShpfyConnectorGuide.OpenEdit();
-        ShpfyConnectorGuide.ActionNext.Invoke();
-        LibraryAssert.IsTrue(ShpfyConnectorGuide.Consent.Visible(), 'Consent dialog must be visible.');
-        LibraryAssert.AreEqual('No', ShpfyConnectorGuide.Consent.Value(), 'Consent should be disabled.');
-        LibraryAssert.IsFalse(ShpfyConnectorGuide.ActionNext.Enabled(), 'Next action should not be Enabled.');
+        ConnectorGuide.OpenEdit();
+        ConnectorGuide.ActionNext.Invoke();
+        LibraryAssert.IsTrue(ConnectorGuide.Consent.Visible(), 'Consent dialog must be visible.');
+        LibraryAssert.AreEqual('No', ConnectorGuide.Consent.Value(), 'Consent should be disabled.');
+        LibraryAssert.IsFalse(ConnectorGuide.ActionNext.Enabled(), 'Next action should not be Enabled.');
 
         //Exercise
-        ShpfyConnectorGuide.Consent.Value(format(true));
+        ConnectorGuide.Consent.Value(format(true));
 
         // Verify
-        LibraryAssert.AreEqual('Yes', ShpfyConnectorGuide.Consent.Value(), 'Consent should be enabled.');
-        LibraryAssert.IsTrue(ShpfyConnectorGuide.ActionNext.Enabled(), 'Next action should be Enabled.');
+        LibraryAssert.AreEqual('Yes', ConnectorGuide.Consent.Value(), 'Consent should be enabled.');
+        LibraryAssert.IsTrue(ConnectorGuide.ActionNext.Enabled(), 'Next action should be Enabled.');
     end;
 
     [HandlerFunctions('SetupNotCompleteConfirmHandler')]
     [Test]
     procedure ConnectorGuideUrlAutoFillTest()
     var
-        ShpfyConnectorGuide: TestPage "Shpfy Connector Guide";
+        ConnectorGuide: TestPage "Shpfy Connector Guide";
     begin
         // Init
         Initialize();
 
         // Setup
         MockShopifySignupContext();
-        ShpfyConnectorGuide.OpenEdit();
-        ShpfyConnectorGuide.ActionNext.Invoke();
-        ShpfyConnectorGuide.Consent.Value(format(true));
+        ConnectorGuide.OpenEdit();
+        ConnectorGuide.ActionNext.Invoke();
+        ConnectorGuide.Consent.Value(format(true));
 
         //Exercise
-        ShpfyConnectorGuide.ActionNext.Invoke();
+        ConnectorGuide.ActionNext.Invoke();
 
         // Verify
-        LibraryAssert.AreEqual('https://' + DummyShopUrlTxt, ShpfyConnectorGuide.ShopUrl.Value(), 'Shop url should be filled in automatically.')
+        LibraryAssert.AreEqual('https://' + DummyShopUrlTxt, ConnectorGuide.ShopUrl.Value(), 'Shop url should be filled in automatically.')
     end;
 
     [Test]
     procedure ConnectorGuideInvalidUrlTest()
     var
-        ShpfyConnectorGuide: TestPage "Shpfy Connector Guide";
+        ConnectorGuide: TestPage "Shpfy Connector Guide";
     begin
         // Init
         Initialize();
 
         // Setup
-        ShpfyConnectorGuide.OpenEdit();
-        ShpfyConnectorGuide.ActionNext.Invoke();
-        ShpfyConnectorGuide.Consent.Value(format(true));
-        ShpfyConnectorGuide.ActionNext.Invoke();
+        ConnectorGuide.OpenEdit();
+        ConnectorGuide.ActionNext.Invoke();
+        ConnectorGuide.Consent.Value(format(true));
+        ConnectorGuide.ActionNext.Invoke();
 
         //Exercise
-        AssertError ShpfyConnectorGuide.ShopUrl.SetValue('https://NotAValidShopifyUrl.OurShopify.com');
+        AssertError ConnectorGuide.ShopUrl.SetValue('https://NotAValidShopifyUrl.OurShopify.com');
 
         // Verify
         LibraryAssert.ExpectedError('The URL must refer to the internal shop location at myshopify.com');

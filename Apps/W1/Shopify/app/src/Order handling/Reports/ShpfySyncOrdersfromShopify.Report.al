@@ -23,12 +23,12 @@ report 30104 "Shpfy Sync Orders from Shopify"
 
                 trigger OnPreDataItem()
                 var
-                    ShpfyOrdersToImport: Record "Shpfy Orders to Import";
+                    OrdersToImport: Record "Shpfy Orders to Import";
                 begin
-                    ShpfyOrdersToImport.SetView(OrdersToImport.GetView(false));
-                    ShpfyOrdersToImport.SetRange("Shop Id", Shop."Shop Id");
-                    ShpfyOrdersToImport.SetRange("Shop Code", '');
-                    ShpfyOrdersToImport.ModifyAll("Shop Code", Shop.Code);
+                    OrdersToImport.SetView(OrdersToImport.GetView(false));
+                    OrdersToImport.SetRange("Shop Id", Shop."Shop Id");
+                    OrdersToImport.SetRange("Shop Code", '');
+                    OrdersToImport.ModifyAll("Shop Code", Shop.Code);
                     Commit();
 
 

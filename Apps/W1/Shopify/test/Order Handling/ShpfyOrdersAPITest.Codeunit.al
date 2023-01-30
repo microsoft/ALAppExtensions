@@ -9,105 +9,105 @@ codeunit 139608 "Shpfy Orders API Test"
     [Test]
     procedure UnitTestExtractShopifyOrdersToImport()
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyOrdersToImport: Record "Shpfy Orders to Import";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        ShpfyOrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
-        ShpfyOrdersAPI: Codeunit "Shpfy Orders API";
+        Shop: Record "Shpfy Shop";
+        OrdersToImport: Record "Shpfy Orders to Import";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        OrdersAPI: Codeunit "Shpfy Orders API";
         Cursor: Text;
         JOrdersToImport: JsonObject;
     begin
         // [SCENARIO] Create a randpom expected Json structure for the OrdersToImport and see of all orders are available in the "Shpfy Orders to Import" table.
         // [SCENARIO] At start we reset the "Shpfy Orders to Import" table so we can see how many record are added.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        Clear(ShpfyOrdersToImport);
-        if not ShpfyOrdersToImport.IsEmpty then
-            ShpfyOrdersToImport.DeleteAll();
+        Clear(OrdersToImport);
+        if not OrdersToImport.IsEmpty then
+            OrdersToImport.DeleteAll();
 
         // [GIVEN] the shopify shop
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
+        Shop := CommunicationMgt.GetShopRecord();
         // [GIVEN] the orders to import as a json structure.
-        JOrdersToImport := ShpfyOrderHandlingHelper.GetOrdersToImport();
+        JOrdersToImport := OrderHandlingHelper.GetOrdersToImport();
         // [GIVEN] the cursor text varable for retreiving the last cursor.
 
         // [WHEN] Execute ShpfyOrdersAPI.ExtractShopifyOrdersToImport
-        ShpfyOrdersAPI.ExtractShopifyOrdersToImport(ShpfyShop, JOrdersToImport, Cursor);
+        OrdersAPI.ExtractShopifyOrdersToImport(Shop, JOrdersToImport, Cursor);
         // [THEN] The result must be true.
-        LibraryAssert.IsTrue(ShpfyOrdersAPI.ExtractShopifyOrdersToImport(ShpfyShop, JOrdersToImport, Cursor), 'Extracting orders must return true.');
+        LibraryAssert.IsTrue(OrdersAPI.ExtractShopifyOrdersToImport(Shop, JOrdersToImport, Cursor), 'Extracting orders must return true.');
 
         // [THEN] The last cursor must have lenght of 92 characters.
         LibraryAssert.AreEqual(92, StrLen(Cursor), 'The cursor has a lenght of 92 characters');
 
         // [THEN] The number of orders that where imported must be the same as in the table "Shpfy Order to Import".
-        LibraryAssert.AreEqual(ShpfyOrderHandlingHelper.CountOrdersToImport(JOrdersToImport), ShpfyOrdersToImport.Count, 'All orders to import are in the "Shpfy Orders to Import" table');
+        LibraryAssert.AreEqual(OrderHandlingHelper.CountOrdersToImport(JOrdersToImport), OrdersToImport.Count, 'All orders to import are in the "Shpfy Orders to Import" table');
     end;
 
     [Test]
     procedure UnitTestImportShopifyOrder()
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyOrderHeader: Record "Shpfy Order Header";
-        ShpfyOrdersToImport: Record "Shpfy Orders to Import";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        ShpfyImportOrder: codeunit "Shpfy Import Order";
-        ShpfyOrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        OrdersToImport: Record "Shpfy Orders to Import";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ImportOrder: codeunit "Shpfy Import Order";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
         JShopifyOrder: JsonObject;
         JShopifyLineItems: JsonArray;
     begin
         // [SCENARIO] Import a Shopify order from the "Shpfy Orders to Import" record.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        ShpfyImportOrder.SetTestInProgress(true);
+        ImportOrder.SetTestInProgress(true);
 
         // [GIVEN] the shopify shop
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-        ShpfyShop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
-        if not ShpfyShop.Modify() then
-            ShpfyShop.Insert();
-        ShpfyImportOrder.SetShop(ShpfyShop);
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
+        if not Shop.Modify() then
+            Shop.Insert();
+        ImportOrder.SetShop(Shop);
 
         // [GIVEN] the order to import as a json structure.
-        JShopifyOrder := ShpfyOrderHandlingHelper.CreateShopifyOrderAsJson(ShpfyShop, ShpfyOrdersToImport, JShopifyLineItems);
+        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems);
 
         // [WHEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(ShpfyShop, ShpfyOrderHeader, ShpfyOrdersToImport, ShpfyImportOrder, ShpfyOrderHandlingHelper, JShopifyOrder, JShopifyLineItems);
+        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, OrderHandlingHelper, JShopifyOrder, JShopifyLineItems);
 
         // [THEN] ShpfyOrdersToImport.Id = ShpfyOrderHeader."Shopify Order Id"
-        LibraryAssert.AreEqual(ShpfyOrdersToImport.Id, ShpfyOrderHeader."Shopify Order Id", 'ShpfyOrdersToImport.Id = ShpfyOrderHeader."Shopify Order Id"');
+        LibraryAssert.AreEqual(OrdersToImport.Id, OrderHeader."Shopify Order Id", 'ShpfyOrdersToImport.Id = ShpfyOrderHeader."Shopify Order Id"');
 
         // [THEN] ShpfyOrdersToImport."Order No." = ShpfyOrderHeader."Shopify Order No."
-        LibraryAssert.AreEqual(ShpfyOrdersToImport."Order No.", ShpfyOrderHeader."Shopify Order No.", 'ShpfyOrdersToImport."Order No." = ShpfyOrderHeader."Shopify Order No."');
+        LibraryAssert.AreEqual(OrdersToImport."Order No.", OrderHeader."Shopify Order No.", 'ShpfyOrdersToImport."Order No." = ShpfyOrderHeader."Shopify Order No."');
 
         // [THEN] ShpfyOrdersToImport."Order Amount" = ShpfyOrderHeader."Total Amount"
-        LibraryAssert.AreEqual(ShpfyOrdersToImport."Order Amount", ShpfyOrderHeader."Total Amount", 'ShpfyOrdersToImport."Order Amount" = ShpfyOrderHeader."Total Amount"');
+        LibraryAssert.AreEqual(OrdersToImport."Order Amount", OrderHeader."Total Amount", 'ShpfyOrdersToImport."Order Amount" = ShpfyOrderHeader."Total Amount"');
     end;
 
     [Test]
     procedure UnitTestDoMappingsOnAShopifyOrder()
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyOrderHeader: Record "Shpfy Order Header";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        ShpfyOrderMapping: Codeunit "Shpfy Order Mapping";
-        ShpfyImportOrder: codeunit "Shpfy Import Order";
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        OrderMapping: Codeunit "Shpfy Order Mapping";
+        ImportOrder: codeunit "Shpfy Import Order";
         Result: Boolean;
     begin
         // [SCENARION] Crating a random Shopify Order and try to map customer and product data.
         // [SCENARION] If everithing succeed the function will return true.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        ShpfyImportOrder.SetTestInProgress(true);
+        ImportOrder.SetTestInProgress(true);
 
         // [GIVEN] the shopify shop
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-        ShpfyShop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
-        if not ShpfyShop.Modify() then
-            ShpfyShop.Insert();
-        ShpfyImportOrder.SetShop(ShpfyShop);
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
+        if not Shop.Modify() then
+            Shop.Insert();
+        ImportOrder.SetShop(Shop);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(ShpfyShop, ShpfyOrderHeader, ShpfyImportOrder);
+        ImportShopifyOrder(Shop, OrderHeader, ImportOrder);
 
         // [WHEN] ShpfyOrderMapping.DoMapping(ShpfyOrderHeader)
-        Result := ShpfyOrderMapping.DoMapping(ShpfyOrderHeader);
+        Result := OrderMapping.DoMapping(OrderHeader);
 
         // [THEN] The result must be true if everthing is mapped.
         LibraryAssert.IsTrue(Result, 'Order Mapping must succeed.');
@@ -116,73 +116,73 @@ codeunit 139608 "Shpfy Orders API Test"
     [Test]
     procedure UnitTestImportShopifyOrderAndCreateSalesDocument()
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyOrderHeader: Record "Shpfy Order Header";
-        ShpfyOrdersToImport: Record "Shpfy Orders to Import";
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        OrdersToImport: Record "Shpfy Orders to Import";
         SalesHeader: Record "Sales Header";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        ShpfyImportOrder: codeunit "Shpfy Import Order";
-        ShpfyOrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
-        ShpfyProcessOrders: Codeunit "Shpfy Process Orders";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ImportOrder: codeunit "Shpfy Import Order";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        ProcessOrders: Codeunit "Shpfy Process Orders";
         JShopifyOrder: JsonObject;
     begin
         // [SCENARION] Crating a random Shopify Order and try to map customer and product data.
         // [SCENARION] When the sales document is created, everything will be mapped and the sales document must exist.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        ShpfyImportOrder.SetTestInProgress(true);
+        ImportOrder.SetTestInProgress(true);
 
         // [GIVEN] the shopify shop
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-        ShpfyShop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
-        if not ShpfyShop.Modify() then
-            ShpfyShop.Insert();
-        ShpfyImportOrder.SetShop(ShpfyShop);
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
+        if not Shop.Modify() then
+            Shop.Insert();
+        ImportOrder.SetShop(Shop);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(ShpfyShop, ShpfyOrderHeader, ShpfyImportOrder);
+        ImportShopifyOrder(Shop, OrderHeader, ImportOrder);
         Commit();
 
         // [WHEN]
-        ShpfyProcessOrders.ProcessShopifyOrder(ShpfyOrderHeader);
-        ShpfyOrderHeader.Find();
+        ProcessOrders.ProcessShopifyOrder(OrderHeader);
+        OrderHeader.Find();
 
         // [THEN] Sales document is created from Shopify order
-        SalesHeader.SetRange("Shpfy Order Id", ShpfyOrderHeader."Shopify Order Id");
+        SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
         LibraryAssert.IsTrue(SalesHeader.FindLast(), 'Sales document is created from Shopify order');
 
         case SalesHeader."Document Type" of
             "Sales Document Type"::Order:
                 // [THEN] ShShpfyOrderHeader."Sales Order No." = SalesHeader."No."
-                LibraryAssert.AreEqual(ShpfyOrderHeader."Sales Order No.", SalesHeader."No.", 'ShpfyOrderHeader."Sales Order No." = SalesHeader."No."');
+                LibraryAssert.AreEqual(OrderHeader."Sales Order No.", SalesHeader."No.", 'ShpfyOrderHeader."Sales Order No." = SalesHeader."No."');
             "Sales document Type"::Invoice:
                 // [THEN] ShShpfyOrderHeader."Sales Invoice No." = SalesHeader."No."
-                LibraryAssert.AreEqual(ShpfyOrderHeader."Sales Invoice No.", SalesHeader."No.", 'ShpfyOrderHeader."Sales Invoice No." = SalesHeader."No."');
+                LibraryAssert.AreEqual(OrderHeader."Sales Invoice No.", SalesHeader."No.", 'ShpfyOrderHeader."Sales Invoice No." = SalesHeader."No."');
             else
                 Error('Invalid Document Type');
         end;
     end;
 
-    local procedure ImportShopifyOrder(var ShpfyShop: Record "Shpfy Shop"; var ShpfyOrderHeader: Record "Shpfy Order Header"; var ShpfyOrdersToImport: Record "Shpfy Orders to Import"; var ShpfyImportOrder: codeunit "Shpfy Import Order"; var ShpfyOrderHandlingHelper: Codeunit "Shpfy Order Handling Helper"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
+    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var OrdersToImport: Record "Shpfy Orders to Import"; var ImportOrder: codeunit "Shpfy Import Order"; var OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
     var
-        ShpfyOrderLine: Record "Shpfy Order Line";
+        OrderLine: Record "Shpfy Order Line";
         JOrderLine: JsonToken;
     begin
-        ShpfyOrdersToImport."Shop Code" := ShpfyShop.Code;
-        ShpfyOrdersToImport.Modify();
-        ShpfyImportOrder.ImportOrderHeader(ShpfyOrdersToImport, ShpfyOrderHeader, JShopifyOrder);
+        OrdersToImport."Shop Code" := Shop.Code;
+        OrdersToImport.Modify();
+        ImportOrder.ImportOrderHeader(OrdersToImport, OrderHeader, JShopifyOrder);
         foreach JOrderline in JShopifyLineItems do
-            ShpfyImportOrder.ImportOrderLine(ShpfyOrderHeader, ShpfyOrderLine, JOrderLine);
+            ImportOrder.ImportOrderLine(OrderHeader, OrderLine, JOrderLine);
     end;
 
-    local procedure ImportShopifyOrder(var ShpfyShop: Record "Shpfy Shop"; var ShpfyOrderHeader: Record "Shpfy Order Header"; var ShpfyImportOrder: codeunit "Shpfy Import Order")
+    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var ImportOrder: codeunit "Shpfy Import Order")
     var
-        ShpfyOrdersToImport: Record "Shpfy Orders to Import";
-        ShpfyOrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        OrdersToImport: Record "Shpfy Orders to Import";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
         JShopifyOrder: JsonObject;
         JShopifyLineItems: JsonArray;
     begin
-        JShopifyOrder := ShpfyOrderHandlingHelper.CreateShopifyOrderAsJson(ShpfyShop, ShpfyOrdersToImport, JShopifyLineItems);
-        ImportShopifyOrder(ShpfyShop, ShpfyOrderHeader, ShpfyOrdersToImport, ShpfyImportOrder, ShpfyOrderHandlingHelper, JShopifyOrder, JShopifyLineItems);
+        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems);
+        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, OrderHandlingHelper, JShopifyOrder, JShopifyLineItems);
     end;
 
 }

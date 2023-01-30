@@ -10,10 +10,10 @@ codeunit 139561 "Shpfy Initialize Test"
         DummyCustomer: Record Customer;
         DummyItem: Record Item;
 
-        TempShpfyShop: Record "Shpfy Shop" temporary;
+        TempShop: Record "Shpfy Shop" temporary;
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         _AccessToken: Text;
 
     trigger OnRun()
@@ -24,42 +24,42 @@ codeunit 139561 "Shpfy Initialize Test"
     internal procedure CreateShop(): Record "Shpfy Shop"
     var
         GLAccount: Record "G/L Account";
-        ShpfyShop: Record "Shpfy Shop";
+        Shop: Record "Shpfy Shop";
         Code: Code[10];
         UrlTxt: Label 'https://%1.myshopify.com', Comment = '%1 = Shop name', Locked = true;
     begin
-        if not TempShpfyShop.IsEmpty() then
-            if ShpfyShop.Get(TempShpfyShop.Code) then
-                exit(ShpfyShop);
+        if not TempShop.IsEmpty() then
+            if Shop.Get(TempShop.Code) then
+                exit(Shop);
 
         Code := Any.AlphabeticText(MaxStrLen(Code));
         GLAccount.SetRange("Direct Posting", true);
         GLAccount.FindLast();
 
-        ShpfyShop.Init();
-        ShpfyShop.Code := Code;
-        ShpfyShop."Shopify URL" := StrSubstNo(UrlTxt, Any.AlphabeticText(20));
-        ShpfyShop.Enabled := true;
-        ShpfyShop."Customer Template Code" := CreateCustomerTemplate();
-        ShpfyShop."Item Template Code" := CreateItemTemplate();
-        CreateVATPostingSetup(ShpfyShop."Customer Template Code", ShpfyShop."Item Template Code");
-        CreateVATPostingSetup(ShpfyShop."Customer Template Code", '');
-        ShpfyShop."Shipping Charges Account" := GLAccount."No.";
-        ShpfyShop."Customer Posting Group" := ShpfyShop."Customer Template Code";
-        ShpfyShop."Gen. Bus. Posting Group" := ShpfyShop."Customer Template Code";
-        ShpfyShop."VAT Bus. Posting Group" := ShpfyShop."Customer Template Code";
-        CreateCountryRegionCode(ShpfyShop."Customer Template Code");
-        ShpfyShop."VAT Country/Region Code" := ShpfyShop."Customer Template Code";
-        ShpfyShop.Insert();
+        Shop.Init();
+        Shop.Code := Code;
+        Shop."Shopify URL" := StrSubstNo(UrlTxt, Any.AlphabeticText(20));
+        Shop.Enabled := true;
+        Shop."Customer Template Code" := CreateCustomerTemplate();
+        Shop."Item Template Code" := CreateItemTemplate();
+        CreateVATPostingSetup(Shop."Customer Template Code", Shop."Item Template Code");
+        CreateVATPostingSetup(Shop."Customer Template Code", '');
+        Shop."Shipping Charges Account" := GLAccount."No.";
+        Shop."Customer Posting Group" := Shop."Customer Template Code";
+        Shop."Gen. Bus. Posting Group" := Shop."Customer Template Code";
+        Shop."VAT Bus. Posting Group" := Shop."Customer Template Code";
+        CreateCountryRegionCode(Shop."Customer Template Code");
+        Shop."VAT Country/Region Code" := Shop."Customer Template Code";
+        Shop.Insert();
         Commit();
-        ShpfyCommunicationMgt.SetShop(ShpfyShop);
-        ShpfyCommunicationMgt.SetTestInProgress(true);
-        CreateDummyCustomer(ShpfyShop."Customer Template Code");
-        CreateDummyItem(ShpfyShop."Item Template Code");
-        TempShpfyShop := ShpfyShop;
-        TempShpfyShop.Insert();
+        CommunicationMgt.SetShop(Shop);
+        CommunicationMgt.SetTestInProgress(true);
+        CreateDummyCustomer(Shop."Customer Template Code");
+        CreateDummyItem(Shop."Item Template Code");
+        TempShop := Shop;
+        TempShop.Insert();
         Commit();
-        exit(ShpfyShop);
+        exit(Shop);
     end;
 
     local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])

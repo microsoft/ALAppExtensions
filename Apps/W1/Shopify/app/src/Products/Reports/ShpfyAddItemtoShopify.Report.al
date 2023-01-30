@@ -52,15 +52,15 @@ report 30106 "Shpfy Add Item to Shopify"
 
                         trigger OnValidate()
                         var
-                            ShpfyShop: Record "Shpfy Shop";
-                            ShpfyLocation: Record "Shpfy Shop Location";
+                            Shop: Record "Shpfy Shop";
+                            ShopLocation: Record "Shpfy Shop Location";
                         begin
-                            if ShpfyShop.Get(ShopCode) then begin
-                                SyncImagesVisible := ShpfyShop."Sync Item Images" = ShpfyShop."Sync Item Images"::"To Shopify";
+                            if Shop.Get(ShopCode) then begin
+                                SyncImagesVisible := Shop."Sync Item Images" = Shop."Sync Item Images"::"To Shopify";
                                 SyncImages := SyncImagesVisible;
-                                ShpfyLocation.SetRange("Shop Code", ShpfyShop.Code);
-                                ShpfyLocation.SetFilter("Stock Calculation", '<>%1', ShpfyLocation."Stock Calculation"::Disabled);
-                                SyncInventoryVisible := not ShpfyLocation.IsEmpty();
+                                ShopLocation.SetRange("Shop Code", Shop.Code);
+                                ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
+                                SyncInventoryVisible := not ShopLocation.IsEmpty();
                                 SyncInventory := SyncInventoryVisible;
                             end else begin
                                 SyncImages := false;
@@ -90,15 +90,15 @@ report 30106 "Shpfy Add Item to Shopify"
 
         trigger OnOpenPage()
         var
-            ShpfyShop: Record "Shpfy Shop";
-            ShpfyLocation: Record "Shpfy Shop Location";
+            Shop: Record "Shpfy Shop";
+            ShopLocation: Record "Shpfy Shop Location";
         begin
-            if ShpfyShop.Get(ShopCode) then begin
-                SyncImagesVisible := ShpfyShop."Sync Item Images" = ShpfyShop."Sync Item Images"::"To Shopify";
+            if Shop.Get(ShopCode) then begin
+                SyncImagesVisible := Shop."Sync Item Images" = Shop."Sync Item Images"::"To Shopify";
                 SyncImages := SyncImagesVisible;
-                ShpfyLocation.SetRange("Shop Code", ShpfyShop.Code);
-                ShpfyLocation.SetFilter("Stock Calculation", '<>%1', ShpfyLocation."Stock Calculation"::Disabled);
-                SyncInventoryVisible := not ShpfyLocation.IsEmpty();
+                ShopLocation.SetRange("Shop Code", Shop.Code);
+                ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
+                SyncInventoryVisible := not ShopLocation.IsEmpty();
                 SyncInventory := SyncInventoryVisible;
             end else begin
                 SyncImages := false;

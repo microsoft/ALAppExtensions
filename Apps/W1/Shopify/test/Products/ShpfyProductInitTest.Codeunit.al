@@ -45,11 +45,11 @@ codeunit 139603 "Shpfy Product Init Test"
 
     internal procedure CreateItem(WithVariants: Boolean): Record Item
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
+        Shop: Record "Shpfy Shop";
+        InitializeTest: Codeunit "Shpfy Initialize Test";
     begin
-        ShpfyShop := ShpfyInitializeTest.CreateShop();
-        exit(CreateItem(ShpfyShop."Item Template Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2), WithVariants));
+        Shop := InitializeTest.CreateShop();
+        exit(CreateItem(Shop."Item Template Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2), WithVariants));
     end;
 
     internal procedure CreateItem(TemplateCode: code[10]; InitUnitCost: Decimal; InitPrice: Decimal): Record Item
@@ -62,7 +62,7 @@ codeunit 139603 "Shpfy Product Init Test"
         ConfigTemplateHeader: Record "Config. Template Header";
         ItemVendor: Record "Item Vendor";
         ConfigTemplateManagement: Codeunit "Config. Template Management";
-        ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
         RecordRef: RecordRef;
         Index: Integer;
     begin
@@ -86,7 +86,7 @@ codeunit 139603 "Shpfy Product Init Test"
         ItemVendor.Insert();
         CreateExtendedText(Item);
         CreateItemAttributes(Item);
-        ShpfyItemReferenceMgt.CreateItemBarCode(Item."No.", '', Item."Sales Unit of Measure", Any.AlphabeticText(10));
+        ItemReferenceMgt.CreateItemBarCode(Item."No.", '', Item."Sales Unit of Measure", Any.AlphabeticText(10));
         if WithVariants then
             for Index := 1 to Any.IntegerInRange(1, 5) do
                 CreateVariantForItem(Item);
@@ -95,15 +95,15 @@ codeunit 139603 "Shpfy Product Init Test"
     local procedure CreateVariantForItem(Item: Record Item)
     var
         ItemVariant: Record "Item Variant";
-        ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
     begin
         ItemVariant.Init();
         ItemVariant.Validate("Item No.", Item."No.");
         ItemVariant.Code := Any.AlphabeticText(MaxStrLen(ItemVariant.Code));
         ItemVariant.Description := Any.AlphanumericText(50);
         ItemVariant.Insert();
-        ShpfyItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure", Any.AlphabeticText(10));
-        ShpfyItemReferenceMgt.CreateItemReference(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure", "Item Reference Type"::Vendor, Item."Vendor No.", Any.AlphabeticText(10));
+        ItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure", Any.AlphabeticText(10));
+        ItemReferenceMgt.CreateItemReference(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure", "Item Reference Type"::Vendor, Item."Vendor No.", Any.AlphabeticText(10));
     end;
 
     local procedure CreateExtendedText(Item: Record Item)
@@ -213,65 +213,65 @@ codeunit 139603 "Shpfy Product Init Test"
     end;
 #endif
 
-    internal procedure CreateStandardProduct(ShpfyShop: Record "Shpfy Shop") ShpfyVariant: Record "Shpfy Variant"
+    internal procedure CreateStandardProduct(Shop: Record "Shpfy Shop") ShopifyVariant: Record "Shpfy Variant"
     var
-        ShpfyProduct: Record "Shpfy Product";
+        ShopifyProduct: Record "Shpfy Product";
     begin
-        ShpfyProduct := InitProduct(ShpfyShop);
-        ShpfyProduct.Insert();
+        ShopifyProduct := InitProduct(Shop);
+        ShopifyProduct.Insert();
 
-        exit(AddProductVariants(ShpfyShop, ShpfyProduct, 1));
+        exit(AddProductVariants(Shop, ShopifyProduct, 1));
     end;
 
-    internal procedure CreateProductWithMultiVariants(ShpfyShop: Record "Shpfy Shop") ShpfyVariant: Record "Shpfy Variant"
+    internal procedure CreateProductWithMultiVariants(Shop: Record "Shpfy Shop") ShopifyVariant: Record "Shpfy Variant"
     var
-        ShpfyProduct: Record "Shpfy Product";
+        ShopifyProduct: Record "Shpfy Product";
     begin
-        ShpfyProduct := InitProduct(ShpfyShop);
-        ShpfyProduct."Has Variants" := (ShpfyShop."SKU Mapping" = Enum::"Shpfy SKU Mappging"::"Item No. + Variant Code");
-        ShpfyProduct.Insert();
+        ShopifyProduct := InitProduct(Shop);
+        ShopifyProduct."Has Variants" := (Shop."SKU Mapping" = Enum::"Shpfy SKU Mappging"::"Item No. + Variant Code");
+        ShopifyProduct.Insert();
         Clear(LastItemNo);
-        exit(AddProductVariants(ShpfyShop, ShpfyProduct, Any.IntegerInRange(2, 5)));
+        exit(AddProductVariants(Shop, ShopifyProduct, Any.IntegerInRange(2, 5)));
     end;
 
-    internal procedure CreateProductWithVariantCode(ShpfyShop: Record "Shpfy Shop") ShpfyVariant: Record "Shpfy Variant"
+    internal procedure CreateProductWithVariantCode(Shop: Record "Shpfy Shop") ShopifyVariant: Record "Shpfy Variant"
     var
-        ShpfyProduct: Record "Shpfy Product";
+        ShopifyProduct: Record "Shpfy Product";
     begin
-        ShpfyProduct := InitProduct(ShpfyShop);
-        ShpfyProduct."Has Variants" := true;
-        ShpfyProduct.Insert();
+        ShopifyProduct := InitProduct(Shop);
+        ShopifyProduct."Has Variants" := true;
+        ShopifyProduct.Insert();
 
-        exit(AddProductVariants(ShpfyShop, ShpfyProduct, 1));
+        exit(AddProductVariants(Shop, ShopifyProduct, 1));
     end;
 
 
-    local procedure AddProductVariants(ShpfyShop: Record "Shpfy Shop"; ShpfyProduct: Record "Shpfy Product"; numberOfVariants: Integer) ShpfyVariant: Record "Shpfy Variant"
+    local procedure AddProductVariants(Shop: Record "Shpfy Shop"; ShopifyProduct: Record "Shpfy Product"; numberOfVariants: Integer) ShopifyVariant: Record "Shpfy Variant"
     var
         Index: Integer;
     begin
         for Index := 1 to numberOfVariants do begin
-            clear(ShpfyVariant);
-            ShpfyVariant."Shop Code" := ShpfyShop.Code;
-            ShpfyVariant.Id := GetShpfyVariantId();
-            ShpfyVariant."Product Id" := ShpfyProduct.Id;
-            ShpfyVariant.Barcode := Format(Any.IntegerInRange(1111111, 9999999));
-            ShpfyVariant."Unit Cost" := Any.DecimalInRange(10, 20, 2);
-            ShpfyVariant.SKU := CreateSKUValue(ShpfyShop);
-            if ShpfyProduct."Has Variants" then begin
-                ShpfyVariant."Option 1 Name" := 'Test Option';
-                ShpfyVariant."Option 1 Value" := Any.AlphabeticText(5);
+            clear(ShopifyVariant);
+            ShopifyVariant."Shop Code" := Shop.Code;
+            ShopifyVariant.Id := GetShpfyVariantId();
+            ShopifyVariant."Product Id" := ShopifyProduct.Id;
+            ShopifyVariant.Barcode := Format(Any.IntegerInRange(1111111, 9999999));
+            ShopifyVariant."Unit Cost" := Any.DecimalInRange(10, 20, 2);
+            ShopifyVariant.SKU := CreateSKUValue(Shop);
+            if ShopifyProduct."Has Variants" then begin
+                ShopifyVariant."Option 1 Name" := 'Test Option';
+                ShopifyVariant."Option 1 Value" := Any.AlphabeticText(5);
             end;
-            ShpfyVariant.Insert();
+            ShopifyVariant.Insert();
         end;
-        ShpfyVariant.SetRange("Product Id", ShpfyProduct.Id);
-        ShpfyVariant.FindFirst();
+        ShopifyVariant.SetRange("Product Id", ShopifyProduct.Id);
+        ShopifyVariant.FindFirst();
     end;
 
-    local procedure CreateSKUValue(ShpfyShop: Record "Shpfy Shop"): Text[50]
+    local procedure CreateSKUValue(Shop: Record "Shpfy Shop"): Text[50]
     var
     begin
-        case ShpfyShop."SKU Mapping" of
+        case Shop."SKU Mapping" of
             "Shpfy SKU Mappging"::" ":
                 exit('');
             "Shpfy SKU Mappging"::"Bar Code":
@@ -284,36 +284,36 @@ codeunit 139603 "Shpfy Product Init Test"
                 begin
                     if LastItemNo = '' then
                         LastItemNo := Any.AlphabeticText(10).ToUpper();
-                    exit(LastItemNo + ShpfyShop."SKU Field Separator" + ANy.AlphabeticText(5).ToUpper());
+                    exit(LastItemNo + Shop."SKU Field Separator" + ANy.AlphabeticText(5).ToUpper());
                 end;
         end;
     end;
 
-    local procedure InitProduct(var ShpfyShop: Record "Shpfy Shop") ShpfyProduct: Record "Shpfy Product"
+    local procedure InitProduct(var Shop: Record "Shpfy Shop") ShopifyProduct: Record "Shpfy Product"
     var
         ItemCategory: Record "Item Category";
         Vendor: Record Vendor;
     begin
         Any.SetDefaultSeed();
-        ShpfyProduct.Init();
-        ShpfyProduct.Id := Any.IntegerInRange(10000, 99999);
-        ShpfyProduct."Shop Code" := ShpfyShop.Code;
-        ShpfyProduct.Title := Any.AlphabeticText(100);
+        ShopifyProduct.Init();
+        ShopifyProduct.Id := Any.IntegerInRange(10000, 99999);
+        ShopifyProduct."Shop Code" := Shop.Code;
+        ShopifyProduct.Title := Any.AlphabeticText(100);
         if ItemCategory.FindFirst() then
             if ItemCategory.Description <> '' then
-                ShpfyProduct."Product Type" := ItemCategory.Description
+                ShopifyProduct."Product Type" := ItemCategory.Description
             else
-                ShpfyProduct."Product Type" := ItemCategory.Code;
+                ShopifyProduct."Product Type" := ItemCategory.Code;
         if Vendor.FindFirst() then
-            ShpfyProduct.Vendor := Vendor.Name;
+            ShopifyProduct.Vendor := Vendor.Name;
     end;
 
     local procedure GetShpfyVariantId(): BigInteger
     var
-        ShpfyVariant: Record "Shpfy Variant";
+        ShopifyVariant: Record "Shpfy Variant";
     begin
-        if ShpfyVariant.FindLast() then
-            exit(ShpfyVariant.Id + 1)
+        if ShopifyVariant.FindLast() then
+            exit(ShopifyVariant.Id + 1)
         else
             exit(10000);
     end;

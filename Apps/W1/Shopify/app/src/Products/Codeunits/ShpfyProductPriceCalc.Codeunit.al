@@ -114,11 +114,11 @@ codeunit 30182 "Shpfy Product Price Calc."
     /// <param name="Code">Parameter of type Code[20].</param>
     internal procedure SetShop(Code: Code[20])
     var
-        ShpfyShop: Record "Shpfy Shop";
+        ShopifyShop: Record "Shpfy Shop";
     begin
-        ShpfyShop.Get(Code);
-        if (Shop.Code <> ShpfyShop.Code) or (Shop.SystemModifiedAt < ShpfyShop.SystemModifiedAt) then begin
-            Shop := ShpfyShop;
+        ShopifyShop.Get(Code);
+        if (Shop.Code <> ShopifyShop.Code) or (Shop.SystemModifiedAt < ShopifyShop.SystemModifiedAt) then begin
+            Shop := ShopifyShop;
             Clear(TempSalesHeader);
             TempSalesHeader.DeleteAll();
             CreateTempSalesHeader();

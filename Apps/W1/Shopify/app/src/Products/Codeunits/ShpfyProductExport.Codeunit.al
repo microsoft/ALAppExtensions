@@ -57,7 +57,7 @@ codeunit 30178 "Shpfy Product Export"
         ItemAttributeTranslation: Record "Item Attribute Translation";
         ItemAttributeValue: Record "Item Attribute Value";
         ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
-        ShpfyTranslator: Report "Shpfy Translator";
+        Translator: Report "Shpfy Translator";
         IsHandled: Boolean;
         Result: TextBuilder;
     begin
@@ -111,7 +111,7 @@ codeunit 30178 "Shpfy Product Export"
                 if ItemAttributeValueMapping.FindSet() then begin
                     Result.Append('<div class="productAttributes">');
                     Result.Append('  <div class="productAttributesTitle">');
-                    Result.Append(ShpfyTranslator.GetAttributeTitle(Shop."Language Code"));
+                    Result.Append(Translator.GetAttributeTitle(Shop."Language Code"));
                     Result.Append('  </div>');
                     Result.Append('  <table>');
                     Repeat

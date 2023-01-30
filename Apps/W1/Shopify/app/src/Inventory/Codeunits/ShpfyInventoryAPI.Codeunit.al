@@ -99,7 +99,7 @@ codeunit 30195 "Shpfy Inventory API"
         Item: Record Item;
         DelShopInventory: Record "Shpfy Shop Inventory";
         ShopLocation: Record "Shpfy Shop Location";
-        ShpfyVariant: Record "Shpfy Variant";
+        ShopifyVariant: Record "Shpfy Variant";
         IGraphQL: Interface "Shpfy IGraphQL";
         Parameters: Dictionary of [Text, Text];
         DeltaQty: Integer;
@@ -108,15 +108,15 @@ codeunit 30195 "Shpfy Inventory API"
         Url: Text;
         Ishandled: Boolean;
     begin
-        ShpfyVariant.SetRange(Id, ShopInventory."Variant Id");
-        if ShpfyVariant.IsEmpty then begin
+        ShopifyVariant.SetRange(Id, ShopInventory."Variant Id");
+        if ShopifyVariant.IsEmpty then begin
             if DelShopInventory.GetBySystemId(ShopInventory.SystemId) then
                 DelShopInventory.Delete();
             exit;
         end;
 
-        if ShpfyVariant.Get(ShopInventory."Variant Id") then
-            if Item.GetBySystemId(ShpfyVariant."Item SystemId") then begin
+        if ShopifyVariant.Get(ShopInventory."Variant Id") then
+            if Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
                 ShopInventory.Validate(Stock, Round(GetStock(ShopInventory), 1, '<'));
                 ShopInventory.Modify();
                 DeltaQty := ShopInventory.Stock - ShopInventory."Shopify Stock";

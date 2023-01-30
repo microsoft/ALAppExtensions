@@ -40,11 +40,11 @@ table 30104 "Shpfy Tag"
 
     trigger OnInsert()
     var
-        ShpfyTag: Record "Shpfy Tag";
+        Tag: Record "Shpfy Tag";
         MaxTagsErr: Label 'You can only specify 250 tags.';
     begin
-        ShpfyTag.SetRange("Parent Id", "Parent Id");
-        if ShpfyTag.Count() >= 250 then
+        Tag.SetRange("Parent Id", "Parent Id");
+        if Tag.Count() >= 250 then
             Error(MaxTagsErr);
     end;
 
@@ -55,15 +55,15 @@ table 30104 "Shpfy Tag"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetCommaSeperatedTags(ParentId: BigInteger): Text
     var
-        ShpfyTag: Record "Shpfy Tag";
+        Tag: Record "Shpfy Tag";
         Tags: TextBuilder;
     begin
-        ShpfyTag.SetRange("Parent Id", ParentId);
-        if ShpfyTag.FindSet(false, false) then begin
+        Tag.SetRange("Parent Id", ParentId);
+        if Tag.FindSet(false, false) then begin
             repeat
                 Tags.Append(',');
-                Tags.Append(ShpfyTag.Tag);
-            until ShpfyTag.Next() = 0;
+                Tags.Append(Tag.Tag);
+            until Tag.Next() = 0;
             Tags.Remove(1, 1);
         end;
         exit(Tags.ToText());
@@ -77,22 +77,22 @@ table 30104 "Shpfy Tag"
     /// <param name="CommaSeperatedTags">Parameter of type Text.</param>
     internal procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; CommaSeperatedTags: Text)
     var
-        ShpfyTag: Record "Shpfy Tag";
+        Tag: Record "Shpfy Tag";
         Tags: List of [Text];
         TagTxt: Text;
     begin
-        ShpfyTag.SetRange("Parent Id", ParentId);
-        if not ShpfyTag.IsEmpty() then
-            ShpfyTag.DeleteAll();
+        Tag.SetRange("Parent Id", ParentId);
+        if not Tag.IsEmpty() then
+            Tag.DeleteAll();
         Tags := CommaSeperatedTags.Split(',');
         foreach TagTxt in Tags do begin
             TagTxt := TagTxt.Trim();
             if TagTxt <> '' then begin
-                Clear(ShpfyTag);
-                ShpfyTag."Parent Table No." := ParentTableNo;
-                ShpfyTag."Parent Id" := ParentId;
-                ShpfyTag.Tag := CopyStr(TagTxt, 1, MaxStrLen(ShpfyTag.Tag));
-                ShpfyTag.Insert();
+                Clear(Tag);
+                Tag."Parent Table No." := ParentTableNo;
+                Tag."Parent Id" := ParentId;
+                Tag.Tag := CopyStr(TagTxt, 1, MaxStrLen(Tag.Tag));
+                Tag.Insert();
             end;
         end;
     end;

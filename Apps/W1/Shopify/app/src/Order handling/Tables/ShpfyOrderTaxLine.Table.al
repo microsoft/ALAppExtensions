@@ -44,8 +44,13 @@ table 30122 "Shpfy Order Tax Line"
             Caption = 'Currency Code';
             DataClassification = SystemMetadata;
             Editable = false;
+#if CLEAN22
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#else
             ObsoleteState = Pending;
-            ObsoleteTag = '21.3.0.0';
+            ObsoleteTag = '22.0';
+#endif
             ObsoleteReason = 'Is available in Shopify Order Header table';
         }
         field(7; "Presentment Amount"; Decimal)

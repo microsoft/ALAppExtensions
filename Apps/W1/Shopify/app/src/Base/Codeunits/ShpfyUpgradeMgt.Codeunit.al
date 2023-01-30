@@ -24,68 +24,68 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
     local procedure MoveShpfyRegisteredStore()
     var
-        ShpfyRegisteredStore: Record "Shpfy Registered Store";
-        ShpfyRegisteredStoreNew: Record "Shpfy Registered Store New";
+        RegisteredStore: Record "Shpfy Registered Store";
+        RegisteredStoreNew: Record "Shpfy Registered Store New";
     begin
-        if ShpfyRegisteredStoreNew.IsEmpty then
-            if ShpfyRegisteredStore.FindSet() then
+        if RegisteredStoreNew.IsEmpty then
+            if RegisteredStore.FindSet() then
                 repeat
-                    ShpfyRegisteredStoreNew.TransferFields(ShpfyRegisteredStore, true);
-                    ShpfyRegisteredStoreNew.SystemId := ShpfyRegisteredStore.SystemId;
-                    ShpfyRegisteredStoreNew.Insert(true, true);
-                until ShpfyRegisteredStore.next() = 0;
+                    RegisteredStoreNew.TransferFields(RegisteredStore, true);
+                    RegisteredStoreNew.SystemId := RegisteredStore.SystemId;
+                    RegisteredStoreNew.Insert(true, true);
+                until RegisteredStore.next() = 0;
     end;
 #endif
 
     local procedure SetAllowOutgoingRequests()
     var
-        ShpfyShop: Record "Shpfy Shop";
+        Shop: Record "Shpfy Shop";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if UpgradeTag.HasUpgradeTag(GetAllowOutgoingRequestseUpgradeTag()) then
             exit;
 
-        ShpfyShop.SetFilter(SystemCreatedAt, '<%1', GetDateBeforeFeature());
-        if ShpfyShop.FindSet() then
+        Shop.SetFilter(SystemCreatedAt, '<%1', GetDateBeforeFeature());
+        if Shop.FindSet() then
             repeat
-                if not ShpfyShop."Allow Outgoing Requests" then begin
-                    ShpfyShop."Allow Outgoing Requests" := true;
-                    ShpfyShop.Modify();
+                if not Shop."Allow Outgoing Requests" then begin
+                    Shop."Allow Outgoing Requests" := true;
+                    Shop.Modify();
                 end;
-            until ShpfyShop.Next() = 0;
+            until Shop.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetAllowOutgoingRequestseUpgradeTag());
     end;
 
     local procedure PriceCalculationUpgrade()
     var
-        ShpfyShop: Record "Shpfy Shop";
+        Shop: Record "Shpfy Shop";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if UpgradeTag.HasUpgradeTag(GetPriceCalculationUpgradeTag()) then
             exit;
 
-        if ShpfyShop.FindSet(true, false) then
+        if Shop.FindSet(true, false) then
             repeat
-                ShpfyShop.CopyPriceCalculationFieldsFromCustomerTemplate(ShpfyShop."Customer Template Code");
-                ShpfyShop.Modify();
-            until ShpfyShop.Next() = 0;
+                Shop.CopyPriceCalculationFieldsFromCustomerTemplate(Shop."Customer Template Code");
+                Shop.Modify();
+            until Shop.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetPriceCalculationUpgradeTag());
     end;
 
     internal procedure SetShpfyStockCalculation()
     var
-        ShpfyShopLocation: Record "Shpfy Shop Location";
+        ShopLocation: Record "Shpfy Shop Location";
     begin
-        if ShpfyShopLocation.FindSet() then
+        if ShopLocation.FindSet() then
             repeat
-                if ShpfyShopLocation.Disabled then begin
-                    ShpfyShopLocation.Disabled := false;
-                    ShpfyShopLocation."Stock Calculation" := ShpfyShopLocation."Stock Calculation"::Disabled;
-                    ShpfyShopLocation.Modify();
+                if ShopLocation.Disabled then begin
+                    ShopLocation.Disabled := false;
+                    ShopLocation."Stock Calculation" := ShopLocation."Stock Calculation"::Disabled;
+                    ShopLocation.Modify();
                 end;
-            until ShpfyShopLocation.Next() = 0;
+            until ShopLocation.Next() = 0;
     end;
 
     internal procedure GetNewAvailabilityCalculationTag(): Code[250]

@@ -612,11 +612,11 @@ page 30101 "Shpfy Shop Card"
 
                     trigger OnAction();
                     var
-                        ShpfyShop: Record "Shpfy Shop";
+                        Shop: Record "Shpfy Shop";
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        ShpfyShop.SetFilter(Code, Rec.Code);
-                        BackgroundSyncs.OrderSync(ShpfyShop);
+                        Shop.SetFilter(Code, Rec.Code);
+                        BackgroundSyncs.OrderSync(Shop);
                     end;
                 }
                 action(SyncShipments)

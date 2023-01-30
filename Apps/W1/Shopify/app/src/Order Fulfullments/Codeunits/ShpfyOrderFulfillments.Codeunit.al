@@ -27,20 +27,20 @@ codeunit 30160 "Shpfy Order Fulfillments"
             exit(Enum::"Shpfy Shipment Status"::" ");
     end;
 
-    internal procedure GetFulfillments(ShpfyShop: Record "Shpfy Shop"; OrderId: BigInteger)
+    internal procedure GetFulfillments(Shop: Record "Shpfy Shop"; OrderId: BigInteger)
     var
         Parameters: Dictionary of [Text, Text];
-        ShpfyGraphQLType: Enum "Shpfy GraphQL Type";
+        GraphQLType: Enum "Shpfy GraphQL Type";
         JOrder: JsonObject;
         JFulfillments: JsonArray;
         JResponse: JsonToken;
     begin
         if CommunicationMgt.GetTestInProgress() then
             exit;
-        CommunicationMgt.SetShop(ShpfyShop);
+        CommunicationMgt.SetShop(Shop);
         Parameters.Add('OrderId', Format(OrderId));
-        ShpfyGraphQLType := "Shpfy GraphQL Type"::GetOrderFulfillment;
-        JResponse := CommunicationMgt.ExecuteGraphQL(ShpfyGraphQLType, Parameters);
+        GraphQLType := "Shpfy GraphQL Type"::GetOrderFulfillment;
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
         if JsonHelper.GetJsonObject(JResponse, JOrder, 'data.order') then
             if JsonHelper.GetValueAsBigInteger(JOrder, 'legacyResourceId') = OrderId then begin
                 JFulfillments := JsonHelper.GetJsonArray(JOrder, 'fulfillments');
@@ -70,13 +70,13 @@ codeunit 30160 "Shpfy Order Fulfillments"
     var
         DataCapture: Record "Shpfy Data Capture";
         OrderFulfillment: Record "Shpfy Order Fulfillment";
-        ShpfyGiftCards: Codeunit "Shpfy Gift Cards";
+        GiftCards: Codeunit "Shpfy Gift Cards";
         OrderFulfillmentRecordRef: RecordRef;
         Id: BigInteger;
         HasNextPage: Boolean;
         IsNew: Boolean;
         Parameters: Dictionary of [Text, Text];
-        ShpfyGraphQLType: Enum "Shpfy GraphQL Type";
+        GraphQLType: Enum "Shpfy GraphQL Type";
         JArray: JsonArray;
         JResponse: JsonToken;
         JTracking: JsonToken;
@@ -139,8 +139,8 @@ codeunit 30160 "Shpfy Order Fulfillments"
                     Parameters.Set('After', JsonHelper.GetValueAsText(JFulfillment, 'fulfillmentLineItems.pageInfo.endCursor'))
                 else
                     Parameters.Add('After', JsonHelper.GetValueAsText(JFulfillment, 'fulfillmentLineItems.pageInfo.endCursor'));
-                ShpfyGraphQLType := "Shpfy GraphQL Type"::GetNextOrderFulfillmentLines;
-                JResponse := CommunicationMgt.ExecuteGraphQL(ShpfyGraphQLType, Parameters);
+                GraphQLType := "Shpfy GraphQL Type"::GetNextOrderFulfillmentLines;
+                JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
                 JFulfillment := JsonHelper.GetJsonToken(JResponse, 'data.fulfillment');
             end;
         until not HasNextPage;
@@ -149,7 +149,7 @@ codeunit 30160 "Shpfy Order Fulfillments"
         OrderFulfillment.CalcFields("Contains Gift Cards");
         if OrderFulfillment."Contains Gift Cards" then
             if JsonHelper.GetJsonArray(JFulfillment, JArray, 'receipt.gift_cards') then
-                ShpfyGiftCards.AddSoldGiftCards(JArray);
+                GiftCards.AddSoldGiftCards(JArray);
 
         DataCapture.Add(Database::"Shpfy Order Fulfillment", OrderFulfillment.SystemId, JFulfillment);
         exit(id);
@@ -157,23 +157,23 @@ codeunit 30160 "Shpfy Order Fulfillments"
 
     local procedure FillInFulFillItemLines(OrderId: BigInteger; FulfillmentId: BigInteger; JFulfillmentLines: JsonArray)
     var
-        ShpfyFulfillmentLine: Record "Shpfy Fulfillment Line";
+        FulfillmentLine: Record "Shpfy Fulfillment Line";
         Id: BigInteger;
         JFulFillmentLine: JsonToken;
     begin
         foreach JFulfillmentLine in JFulfillmentLines do begin
             Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JFulFillmentLine, 'id'));
-            ShpfyFulfillmentLine.SetRange("Fulfillment Line Id", Id);
-            if not ShpfyFulfillmentLine.FindFirst() then begin
-                ShpfyFulfillmentLine."Fulfillment Line Id" := Id;
-                ShpfyFulfillmentLine.Insert();
+            FulfillmentLine.SetRange("Fulfillment Line Id", Id);
+            if not FulfillmentLine.FindFirst() then begin
+                FulfillmentLine."Fulfillment Line Id" := Id;
+                FulfillmentLine.Insert();
             end;
-            ShpfyFulfillmentLine."Order Id" := OrderId;
-            ShpfyFulfillmentLine."Fulfillment Id" := FulfillmentId;
-            ShpfyFulfillmentLine."Order Line Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JFulFillmentLine, 'lineItem.id'));
-            ShpfyFulfillmentLine.Quantity := JsonHelper.GetValueAsInteger(JFulFillmentLine, 'quantity');
-            ShpfyFulfillmentLine."Is Gift Card" := JsonHelper.GetValueAsBoolean(JFulfillmentLine, 'lineItem.product.isGiftCard');
-            ShpfyFulfillmentLine.Modify();
+            FulfillmentLine."Order Id" := OrderId;
+            FulfillmentLine."Fulfillment Id" := FulfillmentId;
+            FulfillmentLine."Order Line Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JFulFillmentLine, 'lineItem.id'));
+            FulfillmentLine.Quantity := JsonHelper.GetValueAsInteger(JFulFillmentLine, 'quantity');
+            FulfillmentLine."Is Gift Card" := JsonHelper.GetValueAsBoolean(JFulfillmentLine, 'lineItem.product.isGiftCard');
+            FulfillmentLine.Modify();
         end;
     end;
 }

@@ -192,7 +192,7 @@ codeunit 30201 "Shpfy Guided Experience"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnSetSignupContext', '', false, false)]
     local procedure SetShopifyContextOnSetSignupContext(SignupContext: Record "Signup Context"; var SignupContextValues: Record "Signup Context Values")
     var
-        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
+        AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         ShopifyHostname: Text[250];
     begin
         if not SignupContext.Get(SignupContextKeyNameTxt) then
@@ -208,7 +208,7 @@ codeunit 30201 "Shpfy Guided Experience"
         SignupContextValues."Signup Context" := SignupContextValues."Signup Context"::Shopify;
         if SignupContext.Get(ShopifyShopKeyNameTxt) then begin
             ShopifyHostname := CopyStr(SignupContext.Value, 1, MaxStrLen(SignupContextValues."Shpfy Signup Shop Url"));
-            if ShpfyAuthenticationMgt.IsValidHostName(ShopifyHostname) then
+            if AuthenticationMgt.IsValidHostName(ShopifyHostname) then
                 SignupContextValues."Shpfy Signup Shop Url" := ShopifyHostname;
         end;
         SignupContextValues.Insert();

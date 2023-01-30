@@ -63,8 +63,13 @@ table 30118 "Shpfy Order Header"
             Caption = 'Token';
             DataClassification = CustomerContent;
             Editable = false;
+#if CLEAN22
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#else
             ObsoleteState = Pending;
-            ObsoleteTag = '21.3';
+            ObsoleteTag = '22.0';
+#endif
             ObsoleteReason = 'Not available in GraphQL data';
         }
         field(13; Gateway; Text[50])

@@ -98,7 +98,7 @@ codeunit 30171 "Shpfy Create Item"
     local procedure CreateItemVariant(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item);
     var
         ItemVariant: Record "Item Variant";
-        ShpfyCreateItem: Codeunit "Shpfy Create Item";
+        CreateItem: Codeunit "Shpfy Create Item";
         IsHandled: Boolean;
         Codes: List of [Text];
         ItemNo: Text;
@@ -152,7 +152,7 @@ codeunit 30171 "Shpfy Create Item"
                 ShopifyVariant."Item SystemId" := Item.SystemId;
                 ShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
                 ShopifyVariant.Modify();
-                ShpfyCreateItem.CreateReferences(ShopifyProduct, ShopifyVariant, Item, ItemVariant);
+                CreateItem.CreateReferences(ShopifyProduct, ShopifyVariant, Item, ItemVariant);
                 ProductEvents.OnAfterCreateItemVariant(Shop, ShopifyProduct, ShopifyVariant, Item, ItemVariant);
             end;
         end;
@@ -161,16 +161,16 @@ codeunit 30171 "Shpfy Create Item"
     /// <summary> 
     /// Create New Variant Code.
     /// </summary>
-    /// <param name="ShpfyProduct">Parameter of type Record "Shpfy Product".</param>
-    /// <param name="ShpfyVariant">Parameter of type Record "Shpfy Variant".</param>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shpfy Product".</param>
+    /// <param name="ShopifyVariant">Parameter of type Record "Shpfy Variant".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <returns>Return variable "Result" of type Code[10].</returns>
-    local procedure CreateNewVariantCode(ShpfyProduct: Record "Shpfy Product"; ShpfyVariant: Record "Shpfy Variant"; Item: Record Item) Result: Code[10]
+    local procedure CreateNewVariantCode(ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; Item: Record Item) Result: Code[10]
     var
         ItemVariant: Record "Item Variant";
         IsHandled: Boolean;
     begin
-        ProductEvents.OnBeforeCreateItemVariantCode(Shop, ShpfyProduct, ShpfyVariant, Item, Result, IsHandled);
+        ProductEvents.OnBeforeCreateItemVariantCode(Shop, ShopifyProduct, ShopifyVariant, Item, Result, IsHandled);
         if not IsHandled then begin
             ItemVariant.SetRange("Item No.", Item."No.");
             ItemVariant.SetFilter(Code, Shop."Variant Prefix" + '*');
@@ -180,34 +180,34 @@ codeunit 30171 "Shpfy Create Item"
                 ItemVariant.FindLast();
                 Result := IncStr(ItemVariant.Code);
             end;
-            ProductEvents.OnAfterCreateItemVariantCode(Shop, ShpfyProduct, ShpfyVariant, Item, Result);
+            ProductEvents.OnAfterCreateItemVariantCode(Shop, ShopifyProduct, ShopifyVariant, Item, Result);
         end;
     end;
 
     /// <summary> 
     /// Create References.
     /// </summary>
-    /// <param name="ShpfyProduct">Parameter of type Record "Shpfy Product".</param>
-    /// <param name="ShpfyVariant">Parameter of type Record "Shpfy Variant".</param>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shpfy Product".</param>
+    /// <param name="ShopifyVariant">Parameter of type Record "Shpfy Variant".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
-    internal procedure CreateReferences(ShpfyProduct: Record "Shpfy Product"; ShpfyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant")
+    internal procedure CreateReferences(ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant")
     var
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
     begin
-        if ShpfyVariant.Barcode <> '' then
-            ItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.Barcode);
-        if ShpfyVariant.SKU <> '' then
+        if ShopifyVariant.Barcode <> '' then
+            ItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShopifyVariant), ShopifyVariant.Barcode);
+        if ShopifyVariant.SKU <> '' then
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":
-                    ItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.SKU);
+                    ItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShopifyVariant), ShopifyVariant.SKU);
                 Shop."SKU Mapping"::"Vendor Item No.":
                     if Item."Vendor No." <> '' then begin
                         if ItemVariant.code = '' then begin
-                            Item."Vendor Item No." := ShpfyVariant.SKU;
+                            Item."Vendor Item No." := ShopifyVariant.SKU;
                             Item.Modify();
                         end;
-                        ItemReferenceMgt.CreateItemReference(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), "Item Reference Type"::Vendor, Item."Vendor No.", ShpfyVariant.SKU);
+                        ItemReferenceMgt.CreateItemReference(Item."No.", ItemVariant.Code, FindUoMCode(ShopifyVariant), "Item Reference Type"::Vendor, Item."Vendor No.", ShopifyVariant.SKU);
                     end;
             end;
     end;
@@ -215,11 +215,11 @@ codeunit 30171 "Shpfy Create Item"
     /// <summary> 
     /// Do Create Item.
     /// </summary>
-    /// <param name="ShpfyProduct">Parameter of type Record "Shopify Product".</param>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <param name="ForVariant">Parameter of type Boolean.</param>
-    local procedure DoCreateItem(var ShpfyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; ForVariant: Boolean)
+    local procedure DoCreateItem(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; ForVariant: Boolean)
     var
         ConfigTemplateHeader: Record "Config. Template Header";
         DimensionsTemplate: Record "Dimensions Template";
@@ -233,7 +233,7 @@ codeunit 30171 "Shpfy Create Item"
         Code: Text;
     begin
         if TemplateCode = '' then
-            CurrentTemplateCode := FindItemTemplate(ShpfyProduct, ShopifyVariant)
+            CurrentTemplateCode := FindItemTemplate(ShopifyProduct, ShopifyVariant)
         else
             CurrentTemplateCode := TemplateCode;
         if ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
@@ -253,7 +253,7 @@ codeunit 30171 "Shpfy Create Item"
             ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecordRef);
             DimensionsTemplate.InsertDimensionsFromTemplates(ConfigTemplateHeader, Item."No.", Database::Item);
             RecordRef.SetTable(Item);
-            Item.Description := ShpfyProduct.Title;
+            Item.Description := ShopifyProduct.Title;
         end;
         case ShopifyVariant."UoM Option Id" of
             1:
@@ -283,14 +283,14 @@ codeunit 30171 "Shpfy Create Item"
         if ShopifyVariant.Price <> 0 then
             Item.Validate("Unit Price", ShopifyVariant.Price);
 
-        if ShpfyProduct."Product Type" <> '' then begin
-            ItemCategory.SetFilter(Description, FilterMgt.CleanFilterValue(ShpfyProduct."Product Type", MaxStrLen(ItemCategory.Description)));
+        if ShopifyProduct."Product Type" <> '' then begin
+            ItemCategory.SetFilter(Description, FilterMgt.CleanFilterValue(ShopifyProduct."Product Type", MaxStrLen(ItemCategory.Description)));
             if ItemCategory.FindFirst() then
                 Item."Item Category Code" := ItemCategory.Code;
         end;
 
-        if ShpfyProduct.Vendor <> '' then begin
-            Vendor.SetFilter(Name, FilterMgt.CleanFilterValue(ShpfyProduct.Vendor, MaxStrLen(Vendor.Name)));
+        if ShopifyProduct.Vendor <> '' then begin
+            Vendor.SetFilter(Name, FilterMgt.CleanFilterValue(ShopifyProduct.Vendor, MaxStrLen(Vendor.Name)));
             if Vendor.FindFirst() then
                 Item."Vendor No." := Vendor."No.";
         end;
@@ -300,12 +300,12 @@ codeunit 30171 "Shpfy Create Item"
             ShopifyVariant."Item SystemId" := Item.SystemId;
             ShopifyVariant.Modify();
         end else begin
-            ShpfyProduct."Item SystemId" := Item.SystemId;
-            ShpfyProduct.Modify();
+            ShopifyProduct."Item SystemId" := Item.SystemId;
+            ShopifyProduct.Modify();
         end;
 
         Clear(ItemVariant);
-        CreateReferences(ShpfyProduct, ShopifyVariant, Item, ItemVariant);
+        CreateReferences(ShopifyProduct, ShopifyVariant, Item, ItemVariant);
     end;
 
     /// <summary> 

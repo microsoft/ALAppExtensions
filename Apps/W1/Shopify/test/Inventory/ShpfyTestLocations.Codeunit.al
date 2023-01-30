@@ -10,67 +10,67 @@ codeunit 139577 "Shpfy Test Locations"
     var
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JData: JsonObject;
         KnownIds: List of [Integer];
 
     [Test]
     procedure UnitTestImportLocation()
     var
-        ShpfyShopLocation: Record "Shpfy Shop Location";
-        TempShpfyShopLocation: Record "Shpfy Shop Location" temporary;
-        ShpfySyncShopLocations: Codeunit "Shpfy Sync Shop Locations";
+        ShopLocation: Record "Shpfy Shop Location";
+        TempShopLocation: Record "Shpfy Shop Location" temporary;
+        SyncShopLocations: Codeunit "Shpfy Sync Shop Locations";
         JLocation: JsonObject;
     begin
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         // [SCENARIO] Import/Update Shopify locations from a Json location object into a "Shpfy Shop Location" with 
         // [GIVEN] A Shop
-        ShpfySyncShopLocations.SetShop(ShpfyCommunicationMgt.GetShopRecord());
+        SyncShopLocations.SetShop(CommunicationMgt.GetShopRecord());
         // [GIVEN] A Shopify Location as an Jsonobject. 
         JLocation := CreateShopifyLocation(false);
         // [GIVEN] TempShopLocation
         // [WHEN] Invode ImportLocation
-        ShpfySyncShopLocations.ImportLocation(JLocation, TempShpfyShopLocation);
+        SyncShopLocations.ImportLocation(JLocation, TempShopLocation);
         // [THEN] TempShopLocation.Count() = 1 WHERE TempShopLocation."Shop Code) = Shop.Code
-        ShpfyShopLocation.SetRange("Shop Code", ShpfyCommunicationMgt.GetShopRecord().Code);
-        LibraryAssert.RecordCount(ShpfyShopLocation, 1);
+        ShopLocation.SetRange("Shop Code", CommunicationMgt.GetShopRecord().Code);
+        LibraryAssert.RecordCount(ShopLocation, 1);
     end;
 
     [Test]
     procedure UnitTestGetShopifyLocations()
     var
-        ShpfyShopLocation: Record "Shpfy Shop Location";
-        ShpfySyncShopLocations: Codeunit "Shpfy Sync Shop Locations";
-        ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
+        ShopLocation: Record "Shpfy Shop Location";
+        SyncShopLocations: Codeunit "Shpfy Sync Shop Locations";
+        JsonHelper: Codeunit "Shpfy Json Helper";
         NumberOfLocations: Integer;
         JLocations: JsonObject;
     begin
-        ShpfyShopLocation.DeleteAll();
+        ShopLocation.DeleteAll();
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         // [SCENARIO] Invoke a REST API to get the locations from Shopify.
         // For the moking we will choose a random number between 1 and 5 to generate the number of locations that will be in the result set.
         // [GIVEN] A Shop
-        ShpfySyncShopLocations.SetShop(ShpfyCommunicationMgt.GetShopRecord());
+        SyncShopLocations.SetShop(CommunicationMgt.GetShopRecord());
         // [GIVEN] The number of locations we want to have in the moking data.
         NumberOfLocations := Any.IntegerInRange(1, 5);
         CreateShopifyLocationJson(NumberOfLocations);
         // [GIVEN] Locations as Json object
-        ShpfyJsonHelper.GetJsonObject(JData.AsToken(), JLocations, 'locations');
+        JsonHelper.GetJsonObject(JData.AsToken(), JLocations, 'locations');
         // [WHEN] Invoke Sync Locations.
-        ShpfySyncShopLocations.SyncLocations(JLocations);
+        SyncShopLocations.SyncLocations(JLocations);
         // [THEN] ShpfyShopLocation.Count = NumberOfLocations WHERE (Shop.Code = Field("Shop Code"))
-        ShpfyShopLocation.SetRange("Shop Code", ShpfyCommunicationMgt.GetShopRecord().Code);
-        LibraryAssert.RecordCount(ShpfyShopLocation, NumberOfLocations);
+        ShopLocation.SetRange("Shop Code", CommunicationMgt.GetShopRecord().Code);
+        LibraryAssert.RecordCount(ShopLocation, NumberOfLocations);
     end;
 
     [Test]
     procedure TestGetShopifyLocationsFullCycle()
     var
-        ShpfyShopLocation: Record "Shpfy Shop Location";
+        ShopLocation: Record "Shpfy Shop Location";
         NumberOfLocations: Integer;
     begin
 
-        ShpfyShopLocation.DeleteAll();
+        ShopLocation.DeleteAll();
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         // [SCENARIO] Invoke a REST API to get the locations from Shopify.
         // For the moking we will choose a random number between 1 and 5 to generate the number of locations that will be in the result set.
@@ -82,20 +82,20 @@ codeunit 139577 "Shpfy Test Locations"
         // [THEN] The function return true if it was succesfull.
         LibraryAssert.IsTrue(GetShopifyLocations(), GetLastErrorText());
         // [THEN] ShpfyShopLocation.Count = NumberOfLocations WHERE (Shop.Code = Field("Shop Code"))
-        ShpfyShopLocation.SetRange("Shop Code", ShpfyCommunicationMgt.GetShopRecord().Code);
-        LibraryAssert.RecordCount(ShpfyShopLocation, NumberOfLocations);
+        ShopLocation.SetRange("Shop Code", CommunicationMgt.GetShopRecord().Code);
+        LibraryAssert.RecordCount(ShopLocation, NumberOfLocations);
     end;
 
     local procedure GetShopifyLocations() Result: Boolean
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyLocationSubcriber: Codeunit "Shpfy Location Subcriber";
+        Shop: Record "Shpfy Shop";
+        LocationSubcriber: Codeunit "Shpfy Location Subcriber";
     begin
-        ShpfyLocationSubcriber.InitShopiyLocations(JData);
-        BindSubscription(ShpfyLocationSubcriber);
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-        Result := Codeunit.Run(Codeunit::"Shpfy Sync Shop Locations", ShpfyShop);
-        UnbindSubscription(ShpfyLocationSubcriber);
+        LocationSubcriber.InitShopiyLocations(JData);
+        BindSubscription(LocationSubcriber);
+        Shop := CommunicationMgt.GetShopRecord();
+        Result := Codeunit.Run(Codeunit::"Shpfy Sync Shop Locations", Shop);
+        UnbindSubscription(LocationSubcriber);
     end;
 
     local procedure CreateShopifyLocationJson(NumberOfLocations: Integer)

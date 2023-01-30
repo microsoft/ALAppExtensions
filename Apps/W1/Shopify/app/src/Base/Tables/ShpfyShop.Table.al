@@ -25,16 +25,16 @@ table 30102 "Shpfy Shop"
 
             trigger OnValidate()
             var
-                ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
+                AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
             begin
                 if ("Shopify URL" <> '') then begin
                     if not "Shopify URL".ToLower().StartsWith('https://') then
                         "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
 
-                    if not ShpfyAuthenticationMgt.IsValidShopUrl("Shopify URL") then
+                    if not AuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
                 end;
-                CalcShopId();
+                Rec.CalcShopId();
             end;
         }
         field(3; Enabled; Boolean)
@@ -491,37 +491,37 @@ table 30102 "Shpfy Shop"
     [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: Text
     var
-        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
+        AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         Store: Text;
     begin
         Rec.Testfield(Enabled, true);
         Store := GetStoreName();
         if Store <> '' then
-            exit(ShpfyAuthenticationMgt.GetAccessToken(Store));
+            exit(AuthenticationMgt.GetAccessToken(Store));
     end;
 
     [NonDebuggable]
     [Scope('OnPrem')]
     internal procedure RequestAccessToken()
     var
-        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
+        AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         Store: Text;
     begin
         Store := GetStoreName();
         if Store <> '' then
-            ShpfyAuthenticationMgt.InstallShopifyApp(Store);
+            AuthenticationMgt.InstallShopifyApp(Store);
     end;
 
     [NonDebuggable]
     [Scope('OnPrem')]
     internal procedure HasAccessToken(): Boolean
     var
-        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
+        AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         Store: Text;
     begin
         Store := GetStoreName();
         if Store <> '' then
-            exit(ShpfyAuthenticationMgt.AccessTokenExist(Store));
+            exit(AuthenticationMgt.AccessTokenExist(Store));
     end;
 
     local procedure GetStoreName() Store: Text
@@ -555,18 +555,18 @@ table 30102 "Shpfy Shop"
 
     internal procedure GetLastSyncTime(Type: enum "Shpfy Synchronization Type"): DateTime
     var
-        ShpfySynchronizationInfo: Record "Shpfy Synchronization Info";
+        SynchronizationInfo: Record "Shpfy Synchronization Info";
     begin
         if Type = "Shpfy Synchronization Type"::Orders then begin
             if Rec."Shop Id" = 0 then begin
-                CalcShopId();
+                Rec.CalcShopId();
                 Rec.Modify();
             end;
-            if ShpfySynchronizationInfo.Get(Format(Rec."Shop Id"), Type) then
-                exit(ShpfySynchronizationInfo."Last Sync Time");
+            if SynchronizationInfo.Get(Format(Rec."Shop Id"), Type) then
+                exit(SynchronizationInfo."Last Sync Time");
         end;
-        if ShpfySynchronizationInfo.Get(Rec.Code, Type) then
-            exit(ShpfySynchronizationInfo."Last Sync Time");
+        if SynchronizationInfo.Get(Rec.Code, Type) then
+            exit(SynchronizationInfo."Last Sync Time");
         exit(0DT);
     end;
 
@@ -575,24 +575,24 @@ table 30102 "Shpfy Shop"
         SetLastSyncTime(Type, CurrentDateTime);
     end;
 
-    internal procedure SetLastSyncTime(Type: enum "Shpfy Synchronization Type"; ToDateTime: DateTime)
+    internal procedure SetLastSyncTime(Type: enum "Shpfy Synchronization Type"; LastSyncTime: DateTime)
     var
-        ShpfySynchronizationInfo: Record "Shpfy Synchronization Info";
-        Code: Code[20];
+        SynchronizationInfo: Record "Shpfy Synchronization Info";
+        ShopCode: Code[20];
     begin
         if Type = "Shpfy Synchronization Type"::Orders then
-            Code := Format(Rec."Shop Id")
+            ShopCode := Format(Rec."Shop Id")
         else
-            Code := Rec.Code;
-        if ShpfySynchronizationInfo.Get(Code, Type) then begin
-            ShpfySynchronizationInfo."Last Sync Time" := ToDateTime;
-            ShpfySynchronizationInfo.Modify();
+            ShopCode := Rec.Code;
+        if SynchronizationInfo.Get(ShopCode, Type) then begin
+            SynchronizationInfo."Last Sync Time" := LastSyncTime;
+            SynchronizationInfo.Modify();
         end else begin
-            Clear(ShpfySynchronizationInfo);
-            ShpfySynchronizationInfo."Shop Code" := Code;
-            ShpfySynchronizationInfo."Synchronization Type" := Type;
-            ShpfySynchronizationInfo."Last Sync Time" := ToDateTime;
-            ShpfySynchronizationInfo.Insert();
+            Clear(SynchronizationInfo);
+            SynchronizationInfo."Shop Code" := ShopCode;
+            SynchronizationInfo."Synchronization Type" := Type;
+            SynchronizationInfo."Last Sync Time" := LastSyncTime;
+            SynchronizationInfo.Insert();
         end;
     end;
 
@@ -611,11 +611,11 @@ table 30102 "Shpfy Shop"
             Rec."Gen. Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Gen. Bus. Posting Group"));
             Rec."VAT Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("VAT Bus. Posting Group"));
             Rec."Tax Area Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Area Code"));
-            if Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable"))) then;
+            Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable")));
             Rec."VAT Country/Region Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Country/Region Code"));
             Rec."Customer Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Customer Posting Group"));
-            if Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT"))) then;
-            if Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc."))) then;
+            Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT")));
+            Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc.")));
             Rec.Modify();
         end;
     end;

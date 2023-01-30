@@ -8,14 +8,14 @@ codeunit 30198 "Shpfy Sync Shop Locations"
 
     trigger OnRun()
     begin
-        ShpfyShop := Rec;
-        ShpfyCommunicationMgt.SetShop(Rec);
+        Shop := Rec;
+        CommunicationMgt.SetShop(Rec);
         SyncLocations();
     end;
 
     var
-        ShpfyShop: record "Shpfy Shop";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        Shop: record "Shpfy Shop";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
 
     /// <summary> 
@@ -30,9 +30,9 @@ codeunit 30198 "Shpfy Sync Shop Locations"
         JValue: JsonValue;
     begin
         if JsonHelper.GetJsonValue(JLocation, JValue, 'node.legacyResourceId') then begin
-            if not ShopLocation.Get(ShpfyShop.Code, JValue.AsBigInteger()) then begin
+            if not ShopLocation.Get(Shop.Code, JValue.AsBigInteger()) then begin
                 ShopLocation.Init();
-                ShopLocation."Shop Code" := ShpfyShop.Code;
+                ShopLocation."Shop Code" := Shop.Code;
                 ShopLocation.Id := JValue.AsBigInteger();
                 IsNew := true;
             end;
@@ -65,7 +65,7 @@ codeunit 30198 "Shpfy Sync Shop Locations"
     begin
         GraphQLType := "Shpfy GraphQL Type"::GetLocations;
         repeat
-            JResponse := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             Clear(Cursor);
             if JsonHelper.GetJsonObject(JResponse, JLocations, 'data.locations') then begin
                 Cursor := SyncLocations(JLocations);
@@ -96,7 +96,7 @@ codeunit 30198 "Shpfy Sync Shop Locations"
         JLocations: JsonArray;
         JLocation: JsonToken;
     begin
-        ShopLocation.SetRange("Shop Code", ShpfyShop.Code);
+        ShopLocation.SetRange("Shop Code", Shop.Code);
         if ShopLocation.FindSet(false, false) then
             repeat
                 TempShopLocation := ShopLocation;
@@ -116,7 +116,7 @@ codeunit 30198 "Shpfy Sync Shop Locations"
 
     internal procedure SetShop(Shop: Record "Shpfy Shop")
     begin
-        ShpfyShop := Shop;
+        Shop := Shop;
     end;
 
 }

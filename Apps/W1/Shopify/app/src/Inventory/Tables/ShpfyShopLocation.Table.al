@@ -138,13 +138,13 @@ table 30113 "Shpfy Shop Location"
     internal procedure CreateLocationFilter()
     var
         Location: Record Location;
-        ShpfyCreateLocationFilter: Report "Shpfy Create Location Filter";
+        CreateLocationFilter: Report "Shpfy Create Location Filter";
     begin
         if "Location Filter" <> '' then
             Location.SetFilter(Code, "Location Filter");
-        ShpfyCreateLocationFilter.SetTableView(Location);
-        ShpfyCreateLocationFilter.RunModal();
-        "Location Filter" := CopyStr(ShpfyCreateLocationFilter.GetLocationFilter(), 1, MaxStrLen("Location Filter"));
+        CreateLocationFilter.SetTableView(Location);
+        CreateLocationFilter.RunModal();
+        "Location Filter" := CopyStr(CreateLocationFilter.GetLocationFilter(), 1, MaxStrLen("Location Filter"));
     end;
 
 }

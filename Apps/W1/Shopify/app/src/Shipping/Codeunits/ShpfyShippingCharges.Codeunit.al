@@ -41,22 +41,22 @@ codeunit 30191 "Shpfy Shipping Charges"
     internal procedure UpdateShippingCostInfos(OrderHeader: Record "Shpfy Order Header")
     var
         Parameters: Dictionary of [Text, Text];
-        ShpfyGraphQLType: Enum "Shpfy GraphQL Type";
+        GraphQLType: Enum "Shpfy GraphQL Type";
         JOrder: JsonObject;
         JShipmentLines: JsonArray;
         JResponse: JsonToken;
         Url: Text;
         JShippingCosts: JsonArray;
-        ORderShippingLinesUrlTxt: Label 'orders/%1.json?fields=shipping_lines', Comment = '%1 = Shopify order id', Locked = true;
+        OrderShippingLinesUrlTxt: Label 'orders/%1.json?fields=shipping_lines', Comment = '%1 = Shopify order id', Locked = true;
     begin
         if CommunicationMgt.GetTestInProgress() then
             exit;
         CommunicationMgt.SetShop(OrderHeader."Shop Code");
         Parameters.Add('OrderId', Format(OrderHeader."Shopify Order Id"));
-        ShpfyGraphQLType := "Shpfy GraphQL Type"::GetShipmentLines;
-        JResponse := CommunicationMgt.ExecuteGraphQL(ShpfyGraphQLType, Parameters);
+        GraphQLType := "Shpfy GraphQL Type"::GetShipmentLines;
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
         if JsonHelper.GetJsonObject(JResponse, JOrder, 'data.order') then begin
-            ShpfyGraphQLType := "Shpfy GraphQL Type"::GetNextShipmentLines;
+            GraphQLType := "Shpfy GraphQL Type"::GetNextShipmentLines;
             repeat
                 JShipmentLines := JsonHelper.GetJsonArray(JOrder, 'shippingLines.nodes');
                 UpdateShippingCostInfos(OrderHeader, JShipmentLines);
