@@ -1,5 +1,4 @@
 name: 'Pull Request Build'
-author: 'Microsoft'
 
 on:
   pull_request_target:

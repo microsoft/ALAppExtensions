@@ -1,5 +1,4 @@
 name: 'Official Build'
-author: 'Microsoft'
 
 on:
   workflow_dispatch:
