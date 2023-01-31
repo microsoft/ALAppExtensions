@@ -24,7 +24,7 @@ You can add more filter tokens by subscribing to the following events:
 
  Turns text that represents date formats into a valid date filter expression with respect to filter tokens and date formulas.
  Call this function from onValidate trigger of page field that should behave similar to system filters.
- The text from which the date filter should be extracted passed as VAR. For example: "%YESTERDAY", or " 01-01-2012 ".
+ The text from which the date filter should be extracted passed as VAR. For example: "%YESTERDAY", or "01-01-2012".
 
 #### Syntax
 ```
@@ -33,7 +33,7 @@ procedure MakeDateFilter(var DateFilterText: Text)
 #### Parameters
 *DateFilterText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
-The text from which the date filter should be extracted passed as VAR. For example: "%YESTERDAY", or " 01-01-2012 ".
+The text from which the date filter should be extracted passed as VAR. For example: "%YESTERDAY", or "01-01-2012".
 
 ### MakeTimeFilter (Method) <a name="MakeTimeFilter"></a> 
 
