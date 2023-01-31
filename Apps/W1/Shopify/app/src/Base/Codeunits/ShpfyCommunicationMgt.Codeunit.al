@@ -306,9 +306,9 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// Set Shop.
     /// </summary>
     /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
-    internal procedure SetShop(Shop: Record "Shpfy Shop")
+    internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
-        Shop := Shop;
+        Shop := ShopifyShop;
     end;
 
     /// <summary> 
@@ -498,10 +498,10 @@ codeunit 30103 "Shpfy Communication Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure GetShopRecord() Shop: Record "Shpfy Shop";
+    internal procedure GetShopRecord() ShopifyShop: Record "Shpfy Shop";
     begin
-        if not Shop.Get(Shop.Code) then
-            Clear(Shop);
+        if not ShopifyShop.Get(Shop.Code) then
+            Clear(ShopifyShop);
     end;
 
     internal procedure CheckOutgoingRequests(Url: Text; Method: Text; Request: Text)
