@@ -290,7 +290,7 @@ codeunit 1990 "Guided Experience"
     end;
 
     /// <summary>Adds the translation for the description of the setup object.</summary>
-    /// <param name="GuidedExperienceType">The type of setup object.</param>/// 
+    /// <param name="GuidedExperienceType">The type of setup object.</param>
     /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
     /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>
     /// <param name="LanguageID">The language ID for which the translation is made.</param>
@@ -300,6 +300,19 @@ codeunit 1990 "Guided Experience"
         GuidedExperienceItem: Record "Guided Experience Item";
     begin
         GuidedExperienceImpl.AddTranslationForSetupObject(GuidedExperienceType, ObjectType, ObjectID, LanguageID, Translation, GuidedExperienceItem.FieldNo(Description));
+    end;
+    
+    /// <summary>Adds the translation for the short title of the setup object.</summary>
+    /// <param name="GuidedExperienceType">The type of setup object.</param>
+    /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
+    /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>
+    /// <param name="LanguageID">The language ID for which the translation is made.</param>
+    /// <param name="Translation">The translated text of the short title.</param>
+    procedure AddTranslationForSetupObjectShortTitle(GuidedExperienceType: Enum "Guided Experience Type"; ObjectType: ObjectType; ObjectID: Integer; LanguageID: Integer; Translation: Text)
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+    begin
+        GuidedExperienceImpl.AddTranslationForSetupObject(GuidedExperienceType, ObjectType, ObjectID, LanguageID, Translation, GuidedExperienceItem.FieldNo("Short Title"));
     end;
 
     /// <summary>Checks whether a user has completed the setup corresponding to the object type and ID.</summary>
@@ -312,7 +325,7 @@ codeunit 1990 "Guided Experience"
     end;
 
     /// <summary>Checks whether a guided experience item exists for the given object type and ID.</summary>
-    /// <param name="GuidedExperienceType">The type of setup object.</param>/// /// 
+    /// <param name="GuidedExperienceType">The type of setup object.</param>
     /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
     /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>
     /// <returns>True if a guided experience item exists for the provided object type and ID; false otherwise.</returns>
@@ -322,7 +335,7 @@ codeunit 1990 "Guided Experience"
     end;
 
     /// <summary>Checks whether a guided experience item exists for the link.</summary>
-    /// <param name="GuidedExperienceType">The type of setup object.</param>/// /// 
+    /// <param name="GuidedExperienceType">The type of setup object.</param>
     /// <param name="Link">The link that identifies the guided experience item.</param>
     /// <returns>True if a guided experience item exists for the provided link; false otherwise.</returns>
     procedure Exists(GuidedExperienceType: Enum "Guided Experience Type"; Link: Text[250]): Boolean
@@ -357,7 +370,7 @@ codeunit 1990 "Guided Experience"
     end;
 
     /// <summary>Issues the call to start the guided experience item.</summary>
-    /// <param name="GuidedExperienceType">The type of setup object.</param>/// /// 
+    /// <param name="GuidedExperienceType">The type of setup object.</param>
     /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
     /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>
     procedure Run(GuidedExperienceType: Enum "Guided Experience Type"; ObjectType: ObjectType; ObjectID: Integer)
