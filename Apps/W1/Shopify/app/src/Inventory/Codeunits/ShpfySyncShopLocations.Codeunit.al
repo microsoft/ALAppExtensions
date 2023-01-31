@@ -114,9 +114,9 @@ codeunit 30198 "Shpfy Sync Shop Locations"
             until TempShopLocation.Next() = 0;
     end;
 
-    internal procedure SetShop(Shop: Record "Shpfy Shop")
+    internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
-        Shop := Shop;
+        Shop := ShopifyShop;
     end;
 
 }
