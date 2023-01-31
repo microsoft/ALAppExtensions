@@ -235,7 +235,7 @@ jobs:
         if: success() || failure()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          settings: ${{ env.Settings }}
+          settingsJson: ${{ env.Settings }}
           project: ${{ matrix.project }}
           buildMode: ${{ matrix.buildMode }}
           refName: ${{ github.ref_name }}
