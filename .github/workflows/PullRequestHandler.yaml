@@ -142,9 +142,9 @@ jobs:
         if: success() || failure()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          settings: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
           project: ${{ matrix.project }}
-          buildMode: ${{ matrix.project }}
+          buildMode: ${{ matrix.buildMode }}
           refName: ${{ github.ref_name }}
 
       - name: Upload thisbuild artifacts - apps
