@@ -83,7 +83,7 @@ jobs:
           shell: powershell
           projectsJson: ${{ steps.ReadSettings.outputs.ProjectsJson }}
           settingsJson: ${{ steps.ReadSettings.outputs.SettingsJson }}
-          workspace: ${{ env.GITHUB_WORKSPACE }}
+          workspace: ${{ github.workspace }}
           type: ${{ env.type }}
           refName: ${{ github.ref }}
 
