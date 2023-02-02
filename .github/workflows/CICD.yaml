@@ -78,14 +78,63 @@ jobs:
           secrets: ${{ steps.DetermineDeliveryTargetSecrets.outputs.Secrets }}
       
       - name: Determine Delivery Targets
-        uses: aholstrup1/AL-Go-Actions/DetermineDeliveryTargets@main
-        with:
-          shell: powershell
-          projectsJson: ${{ steps.ReadSettings.outputs.ProjectsJson }}
-          settingsJson: ${{ env.Settings }}
-          workspace: ${{ github.workspace }}
-          type: ${{ env.type }}
-          refName: ${{ github.ref }}
+        id: DetermineDeliveryTargets
+        run: |
+          $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
+          $deliveryTargets = @('GitHubPackages','NuGet','Storage')
+          if ($env:type -eq "AppSource App") {
+            $continuousDelivery = $false
+            # For multi-project repositories, we will add deliveryTarget AppSource if any project has AppSourceContinuousDelivery set to true
+            ('${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
+              $projectSettings = Get-Content (Join-Path $_ '.AL-Go/settings.json') -raw | ConvertFrom-Json
+              if ($projectSettings.PSObject.Properties.Name -eq 'AppSourceContinuousDelivery' -and $projectSettings.AppSourceContinuousDelivery) {
+                Write-Host "Project $_ is setup for Continuous Delivery"
+                $continuousDelivery = $true
+              }
+            }
+            if ($continuousDelivery) {
+              $deliveryTargets += @("AppSource")
+            }
+          }
+          $namePrefix = 'DeliverTo'
+          Get-Item -Path (Join-Path $ENV:GITHUB_WORKSPACE ".github/$($namePrefix)*.ps1") | ForEach-Object {
+            $deliveryTarget = [System.IO.Path]::GetFileNameWithoutExtension($_.Name.SubString($namePrefix.Length))
+            $deliveryTargets += @($deliveryTarget)
+          }
+          $deliveryTargets = @($deliveryTargets | Select-Object -unique | Where-Object {
+            $include = $false
+            Write-Host "Check DeliveryTarget $_"
+            $contextName = "$($_)Context"
+            $deliveryContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable($contextName)))
+            if ($deliveryContext) {
+              $settingName = "DeliverTo$_"
+              $settings = $env:Settings | ConvertFrom-Json
+              if (($settings.PSObject.Properties.Name -eq $settingName) -and ($settings."$settingName".PSObject.Properties.Name -eq "Branches")) {
+                Write-Host "Branches:"
+                $settings."$settingName".Branches | ForEach-Object {
+                  Write-Host "- $_"
+                  if ($ENV:GITHUB_REF_NAME -like $_) {
+                    $include = $true
+                  }
+                }
+              }
+              else {
+                $include = ($ENV:GITHUB_REF_NAME -eq 'main')
+              }
+            }
+            if ($include) {
+              Write-Host "DeliveryTarget $_ included"
+            }
+            $include
+          })
+          $deliveryTargetsJson = $deliveryTargets | ConvertTo-Json -Depth 99 -compress
+          if ($deliveryTargets.Count -lt 2) { $deliveryTargetsJson = "[$($deliveryTargetsJson)]" }
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "DeliveryTargetsJson=$deliveryTargetsJson"
+          Write-Host "DeliveryTargetsJson=$deliveryTargetsJson"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "DeliveryTargetCount=$($deliveryTargets.Count)"
+          Write-Host "DeliveryTargetCount=$($deliveryTargets.Count)"
+          Add-Content -Path $env:GITHUB_ENV -Value "DeliveryTargets=$deliveryTargetsJson"
 
       - name: Determine Build Order
         if: env.workflowDepth > 1
