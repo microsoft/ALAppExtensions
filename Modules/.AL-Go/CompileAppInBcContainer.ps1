@@ -28,10 +28,22 @@ if($app)
 
         $baselineVersion = $env:baselineVersion
 
-        Write-Host "Baseline version: $baselineVersion"
-        $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -select Closest -version $baselineVersion # W1 because Modules are not localized
+        if(-not $baselineVersion) {
+            Write-Host "Baseline version is not defined"
+        }
+        else {
+            Write-Host "Baseline version: $baselineVersion"
 
-        Write-Host "Baseline URL: $baselineURL"
+            $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -select Closest -version $baselineVersion # W1 because Modules are not localized
+            if(-not $baselineURL) {
+                throw "Unable to find URL for baseline version $baselineVersion; App: $appName; Version: $appVersion; Publisher: $appPublisher"
+            }
+           
+            Write-Host "Baseline URL: $baselineURL"
+
+            Write-Host "Downloading baseline artifacts for version $baselineVersion"
+            Download-Artifacts -artifactUrl $baselineURL -basePath (Join-Path $appProjectFolder '.alPackages')
+        }
     }
 }
 
