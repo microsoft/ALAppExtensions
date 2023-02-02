@@ -49,9 +49,6 @@ if($app)
 
 $appFile = Compile-AppInBcContainer @parameters
 
-#unpublish the app from the container 
-Unpublish-BcContainerApp -containerName $parameters.ContainerName -name $appName -unInstall -doNotSaveData -doNotSaveSchema -force
-
 $branchName = $ENV:GITHUB_REF_NAME
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
