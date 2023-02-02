@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Client Add-In Library",
     "description":  "Client Add-In Library for Microsoft Dynamics 365 Business Central",
-    "version":  "21.4.0.0",
+    "version":  "21.5.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
@@ -23,5 +23,5 @@
                                },
     "help":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "application":  "21.4.0.0"
+    "application":  "21.5.0.0"
 }

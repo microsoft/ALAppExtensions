@@ -3589,6 +3589,37 @@ codeunit 18196 "GST Sales Tests"
         LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 3)
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromSalesOrderWithPartialShipForRegisteredCustomerIntraStatePIT()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check if the system is handling Tax Value Calculation when Price is Inclusive of GST in case of Intra-state Sales of Goods through Sale Invoice.
+        // [FEATURE] [Sales Invoice] [Intra-State GST,Registered Customer]
+
+        // [GIVEN] Created GST Setup and tax rates for Registered Customer with Intrastate Jurisdiction and Price Incusive of Tax Setup
+        InitializeShareStep(false, true);
+        CreateGSTSetup(GSTCustomeType::Registered, GSTGroupType::Goods, true);
+        SalesWithPartialPriceInclusiveOfTax(true, true);
+
+        // [WHEN] Create and Post Sales Invoice with GST and Line Type as Item for Intrastate Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Order);
+
+        // [THEN] Verify G/L Entries
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 5);
+    end;
+
     local procedure CreateAndPostSalesDocumentForEInvoice(
             var SalesHeader: Record "Sales Header";
             var SalesLine: Record "Sales Line";
@@ -3695,6 +3726,12 @@ codeunit 18196 "GST Sales Tests"
     local procedure SalesWithPriceInclusiveOfTax(WithPIT: Boolean)
     begin
         StorageBoolean.Set(PriceInclusiveOfTaxLbl, WithPIT);
+    end;
+
+    local procedure SalesWithPartialPriceInclusiveOfTax(WithPIT: Boolean; ParitalShip: Boolean)
+    begin
+        StorageBoolean.Set(PriceInclusiveOfTaxLbl, WithPIT);
+        StorageBoolean.Set(PartialShipLbl, ParitalShip);
     end;
 
     local procedure CreateAndPostSalesDocumentFromCopyDocument(

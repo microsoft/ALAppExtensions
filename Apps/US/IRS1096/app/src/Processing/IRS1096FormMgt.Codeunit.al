@@ -19,6 +19,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         AssistedSetupDescriptionTxt: Label 'This feature provides functionality that enables an easy overview and reporting of the 1096 form to IRS.';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2204541', Locked = true;
         OneOrMoreFormsNotReleasedErr: Label 'One or more forms within the period are not released. You can only print released forms. Open the form card and click Release to release the form.';
+        NoFormsHaveBeenCreatedMsg: Label 'No IRS 1096 forms have been created';
 
     procedure IsFeatureEnabled() IsEnabled: Boolean
     var
@@ -62,6 +63,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
     var
         TempVendorLedgerEntry: Record "Vendor Ledger Entry" temporary;
         TempIRS1096FormHeader: Record "IRS 1096 Form Header" temporary;
+        TempCreatedIRS1096FormHeader: Record "IRS 1096 Form Header" temporary;
         TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary;
         IRS1096FormHeader: Record "IRS 1096 Form Header";
         IRS1096FormLine: Record "IRS 1096 Form Line";
@@ -73,6 +75,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         PeriodDate[2] := EndDate;
         EntryApplicationManagement.GetAppliedVendorEntries(
           TempVendorLedgerEntry, '', PeriodDate, true);
+        TempVendorLedgerEntry.SetFilter("Document Type", '%1|%2', TempVendorLedgerEntry."Document Type"::Invoice, TempVendorLedgerEntry."Document Type"::"Credit Memo");
         if not TempVendorLedgerEntry.FindSet() then begin
             Message(NoEntriesToCreateFormsMsg);
             exit;
@@ -90,10 +93,16 @@ codeunit 10016 "IRS 1096 Form Mgt."
         IRS1096FormHeader.LockTable();
         IRS1096FormLine.LockTable();
         repeat
-            AddVendLedgEntryToFormBuffer(TempIRS1096FormLine, TempIRS1096FormHeader, ConflictResolved, TempVendorLedgerEntry, PeriodDate, Replace);
+            AddVendLedgEntryToFormBuffer(TempIRS1096FormLine, TempIRS1096FormHeader, TempCreatedIRS1096FormHeader, ConflictResolved, TempVendorLedgerEntry, PeriodDate, Replace);
         until TempVendorLedgerEntry.Next() = 0;
-        InsertFromFormBuffer(TempIRS1096FormLine);
-        Message(FormsCreatedMsg);
+        InsertFromFormBuffer(TempCreatedIRS1096FormHeader, TempIRS1096FormLine);
+        if TempCreatedIRS1096FormHeader.IsEmpty() then begin
+            if GuiAllowed() then
+                Message(NoFormsHaveBeenCreatedMsg);
+            exit;
+        end;
+        if GuiAllowed() then
+            Message(FormsCreatedMsg);
     end;
 
     procedure PrintSingleForm(var IRS1096FormHeader: Record "IRS 1096 Form Header")
@@ -199,7 +208,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         IRS1096FormHeader.Modify(true);
     end;
 
-    local procedure AddVendLedgEntryToFormBuffer(var TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary; var TempIRS1096FormHeader: Record "IRS 1096 Form Header" temporary; var ConflictResolved: Boolean; VendLedgEntry: Record "Vendor Ledger Entry"; PeriodDate: array[2] of Date; Replace: Boolean)
+    local procedure AddVendLedgEntryToFormBuffer(var TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary; var TempIRS1096FormHeader: Record "IRS 1096 Form Header" temporary; var TempCreatedIRS1096FormHeader: Record "IRS 1096 Form Header" temporary; var ConflictResolved: Boolean; VendLedgEntry: Record "Vendor Ledger Entry"; PeriodDate: array[2] of Date; Replace: Boolean)
     var
         IRS1096FormHeader: Record "IRS 1096 Form Header";
         IRS1099Adjustment: Record "IRS 1099 Adjustment";
@@ -207,6 +216,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         General1099Code: Code[20];
         LineNo: Integer;
         AddToTotalNumberOfForms: Boolean;
+        CalculatedAmount: Decimal;
     begin
         If (VendLedgEntry."IRS 1099 Code" = '') or (VendLedgEntry."IRS 1099 Amount" = 0) then
             exit;
@@ -242,16 +252,20 @@ codeunit 10016 "IRS 1096 Form Mgt."
             IRS1096FormHeader."Ending Date" := PeriodDate[2];
             IRS1096FormHeader."IRS Code" := General1099Code;
             IRS1096FormHeader.Insert(true);
+            TempCreatedIRS1096FormHeader := IRS1096FormHeader;
+            TempCreatedIRS1096FormHeader.Insert();
         end;
 
+        VendLedgEntry.CalcFields(Amount);
+        CalculatedAmount := -VendLedgEntry."Amount to Apply" * VendLedgEntry."IRS 1099 Amount" / VendLedgEntry.Amount;
         TempIRS1096FormLine.SetRange("Form No.", IRS1096FormHeader."No.");
         TempIRS1096FormLine.SetRange("Vendor No.", VendLedgEntry."Vendor No.");
         TempIRS1096FormLine.SetRange("IRS Code", VendLedgEntry."IRS 1099 Code");
         if TempIRS1096FormLine.FindLast() then begin
-            TempIRS1096FormLine."Calculated Amount" += VendLedgEntry."IRS 1099 Amount";
+            TempIRS1096FormLine."Calculated Amount" += CalculatedAmount;
             TempIRS1096FormLine.Modify();
-            IRS1096FormHeader."Calc. Amount" += VendLedgEntry."IRS 1099 Amount";
-            IRS1096FormHeader."Total Amount To Report" += VendLedgEntry."IRS 1099 Amount";
+            IRS1096FormHeader."Calc. Amount" += CalculatedAmount;
+            IRS1096FormHeader."Total Amount To Report" += CalculatedAmount;
             IRS1096FormHeader.Modify();
             InsertLineRelation(TempIRS1096FormLine, VendLedgEntry);
             exit;
@@ -269,7 +283,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         TempIRS1096FormLine."Line No." := LineNo;
         TempIRS1096FormLine."Vendor No." := VendLedgEntry."Vendor No.";
         TempIRS1096FormLine."IRS Code" := VendLedgEntry."IRS 1099 Code";
-        TempIRS1096FormLine."Calculated Amount" := VendLedgEntry."IRS 1099 Amount";
+        TempIRS1096FormLine."Calculated Amount" := CalculatedAmount;
         IRS1099Adjustment.SetRange(Year, Date2DMY(IRS1096FormHeader."Starting Date", 3), Date2DMY(IRS1096FormHeader."Ending Date", 3));
         IRS1099Adjustment.SetRange("Vendor No.", TempIRS1096FormLine."Vendor No.");
         IRS1099Adjustment.SetRange("IRS 1099 Code", TempIRS1096FormLine."IRS Code");
@@ -296,7 +310,10 @@ codeunit 10016 "IRS 1096 Form Mgt."
         If IsHandled then
             exit(IRSCode);
 #pragma warning disable AA0139
-        IRSCode := CopyStr(VendLedgEntry."IRS 1099 Code", 1, StrPos(VendLedgEntry."IRS 1099 Code", '-') - 1);
+        if StrPos(VendLedgEntry."IRS 1099 Code", '-') = 0 then
+            IRSCode := VendLedgEntry."IRS 1099 Code"
+        else
+            IRSCode := CopyStr(VendLedgEntry."IRS 1099 Code", 1, StrPos(VendLedgEntry."IRS 1099 Code", '-') - 1);
 #pragma warning restore AA0139
         if not (UpperCase(IRSCode) in ['DIV', 'MISC', 'INT', 'NEC']) then
             exit('');
@@ -313,17 +330,38 @@ codeunit 10016 "IRS 1096 Form Mgt."
         IRS1096FormLineRelation.Insert(true);
     end;
 
-    local procedure InsertFromFormBuffer(var TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary)
+    local procedure InsertFromFormBuffer(var TempCreatedIRS1096FormHeader: Record "IRS 1096 Form Header" temporary; var TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary)
     var
+        IRS1096FormHeader: Record "IRS 1096 Form Header";
         IRS1096FormLine: Record "IRS 1096 Form Line";
+        IRS1099FormBox: Record "IRS 1099 Form-Box";
+        IncludeLine: Boolean;
+        TotalAmount: Decimal;
     begin
         TempIRS1096FormLine.Reset();
         TempIRS1096FormLine.FindSet();
         repeat
-            IRS1096FormLine := TempIRS1096FormLine;
-            IRS1096FormLine."Total Amount" := IRS1096FormLine."Calculated Amount" + IRS1096FormLine."Calculated Adjustment Amount";
-            IRS1096FormLine.Insert();
+            TotalAmount := TempIRS1096FormLine."Calculated Amount" + TempIRS1096FormLine."Calculated Adjustment Amount";
+            IRS1099FormBox.Get(TempIRS1096FormLine."IRS Code");
+            if IRS1099FormBox."Minimum Reportable" < 0 then
+                IncludeLine := TotalAmount <> 0
+            else
+                IncludeLine := (TotalAmount <> 0) and (TotalAmount >= IRS1099FormBox."Minimum Reportable");
+            if IncludeLine then begin
+                IRS1096FormLine := TempIRS1096FormLine;
+                IRS1096FormLine."Total Amount" := TotalAmount;
+                IRS1096FormLine.Insert();
+            end;
         until TempIRS1096FormLine.Next() = 0;
+        TempCreatedIRS1096FormHeader.FindSet();
+        repeat
+            IRS1096FormLine.SetRange("Form No.", TempCreatedIRS1096FormHeader."No.");
+            if IRS1096FormLine.IsEmpty() then begin
+                TempCreatedIRS1096FormHeader.Delete();
+                if IRS1096FormHeader.Get(TempCreatedIRS1096FormHeader."No.") then
+                    IRS1096FormHeader.Delete(true);
+            end;
+        until TempCreatedIRS1096FormHeader.Next() = 0;
     end;
 
     local procedure GetIRS1096FormFeatureKeyId(): Text[50]

@@ -1,4 +1,4 @@
-enum 40002 "Hist. Source Type"
+enum 40902 "Hist. Source Type"
 {
     value(0; "Other") { Caption = 'Other'; }
     value(1; "Receivables") { Caption = 'Receivables'; }
