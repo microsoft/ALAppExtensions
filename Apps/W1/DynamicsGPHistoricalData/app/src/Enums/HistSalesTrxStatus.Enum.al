@@ -1,4 +1,4 @@
-enum 40001 "Hist. Sales Trx. Status"
+enum 40901 "Hist. Sales Trx. Status"
 {
     value(0; "Blank") { Caption = ''; }
     value(1; New) { Caption = 'New'; }

@@ -1,4 +1,4 @@
-enum 40003 "Hist. Receivables Doc. Type"
+enum 40903 "Hist. Receivables Doc. Type"
 {
     value(0; Balance) { Caption = 'Balance'; }
     value(1; SaleOrInvoice) { Caption = 'Sale / Invoice'; }

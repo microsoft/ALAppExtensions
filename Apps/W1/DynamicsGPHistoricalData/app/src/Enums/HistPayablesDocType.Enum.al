@@ -1,4 +1,4 @@
-enum 40004 "Hist. Payables Doc. Type"
+enum 40904 "Hist. Payables Doc. Type"
 {
     value(0; "Blank") { Caption = ''; }
     value(1; Invoice) { Caption = 'Invoice'; }

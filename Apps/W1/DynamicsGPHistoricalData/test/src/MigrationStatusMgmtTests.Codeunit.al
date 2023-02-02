@@ -1,4 +1,4 @@
-codeunit 139700 "Migration Status Mgmt. Tests"
+codeunit 139410 "Migration Status Mgmt. Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;

@@ -12,13 +12,16 @@ tableextension 4811 "Intrastat Report Item" extends Item
             begin
                 if "Tariff No." <> '' then begin
                     TariffNumber.Get("Tariff No.");
-                    if not ItemUOM.Get("No.", TariffNumber."Suppl. Unit of Measure") then begin
-                        ItemUOM.Init();
-                        ItemUOM.Validate("Item No.", "No.");
-                        ItemUOM.Validate(Code, TariffNumber."Suppl. Unit of Measure");
-                        ItemUOM.Insert(true);
+                    if not (TariffNumber."Suppl. Unit of Measure" in ['', "Supplementary Unit of Measure"]) then begin
+                        if not ItemUOM.Get("No.", TariffNumber."Suppl. Unit of Measure") then begin
+                            ItemUOM.Init();
+                            ItemUOM.Validate("Item No.", "No.");
+                            ItemUOM.Validate(Code, TariffNumber."Suppl. Unit of Measure");
+                            ItemUOM.Insert(true);
+                        end;
+                        IntrastatReportMgt.UpdateItemUOM(ItemUOM, TariffNumber);
+                        IntrastatReportMgt.NotifyUserAboutSupplementaryUnitUpdate();
                     end;
-                    IntrastatReportMgt.UpdateItemUOM(ItemUOM, TariffNumber);
                     "Supplementary Unit of Measure" := TariffNumber."Suppl. Unit of Measure";
                 end else
                     "Supplementary Unit of Measure" := '';
