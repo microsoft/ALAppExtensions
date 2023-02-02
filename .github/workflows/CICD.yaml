@@ -1,11 +1,11 @@
-name: 'Official Build'
+name: 'CI/CD'
 
 on:
   workflow_dispatch:
   push:
     branches: [ 'main', 'release/*', 'feature/*' ]
 
-run-name: 'Official Build: ${{github.event.head_commit.message}}'
+run-name: 'CI/CD: ${{github.event.head_commit.message}}'
 
 defaults:
   run:
@@ -13,6 +13,8 @@ defaults:
 
 env:
   workflowDepth: 1
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
 
 jobs:
   Initialization:
@@ -76,7 +78,7 @@ jobs:
           shell: powershell
           settingsJson: ${{ env.Settings }}
           secrets: ${{ steps.DetermineDeliveryTargetSecrets.outputs.Secrets }}
-      
+
       - name: Determine Delivery Targets
         id: DetermineDeliveryTargets
         run: |
@@ -509,6 +511,7 @@ jobs:
           artifacts: '.artifacts'
 
   PostProcess:
+    if: (!cancelled())
     runs-on: [ windows-latest ]
     needs: [ Initialization, Build, Deploy, Deliver ]
     steps:
