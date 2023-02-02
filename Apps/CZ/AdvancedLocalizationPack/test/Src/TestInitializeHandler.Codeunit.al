@@ -24,7 +24,8 @@ codeunit 148115 "Test Initialize Handler CZA"
             137312, // "SCM Kitting - Item profit"
             137390, // "SCM Kitting -  Reports"
             137915, // "SCM Assembly Posting"
-            137927: // "SCM Assembly Copy"
+            137927, // "SCM Assembly Copy"
+			137163: // "SCM Orders VI"
                 UpdateAssemblySetup();
         end;
     end;

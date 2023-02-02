@@ -334,11 +334,11 @@ codeunit 10672 "SAF-T Mapping Helper"
         RecRef.GetTable(SourceCodeSetup);
         repeat
             FieldRef := RecRef.Field(TempNameValueBuffer.ID);
-            if Format(FieldRef.Value()) <> '' then begin
-                SourceCode.Get(FieldRef.Value());
-                SourceCode.Validate("SAF-T Source Code", TempNameValueBuffer.Name);
-                SourceCode.Modify(true);
-            end;
+            if Format(FieldRef.Value()) <> '' then
+                if SourceCode.Get(FieldRef.Value()) then begin
+                    SourceCode.Validate("SAF-T Source Code", TempNameValueBuffer.Name);
+                    SourceCode.Modify(true);
+                end;
         until TempNameValueBuffer.Next() = 0;
     end;
 

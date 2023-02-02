@@ -1,4 +1,4 @@
-enum 40006 "Hist. Purchase Recv. Doc. Type"
+enum 40906 "Hist. Purchase Recv. Doc. Type"
 {
     value(0; "Blank") { Caption = ''; }
     value(1; Shipment) { Caption = 'Shipment'; }
