@@ -1,6 +1,6 @@
 Param(
     [Hashtable] $parameters
-) 
+)
 
 function GenerateManifest
 (
