@@ -26,8 +26,12 @@ if($app)
     if($appBuildMode -eq 'Default') {
         $parameters["Features"] += @("lcgtranslationfile")
 
-        # Download the app from the container to use it as a baseline for breaking changes
-        Get-BcContainerApp -containerName $parameters.containerName -appName "$appName" -credential $parameters.credential -appVersion $appVersion -publisher $appPublisher -appFile (Join-Path $parameters.appSymbolsFolder "$appName.app") -skipVerification
+        $baselineVersion = $env:baselineVersion
+
+        Write-Host "Baseline version: $baselineVersion"
+        $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -select Closest -version $baselineVersion # W1 because Modules are not localized
+
+        Write-Host "Baseline URL: $baselineURL"
     }
 }
 
