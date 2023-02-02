@@ -8,6 +8,7 @@
   "buildModes": [
     "Default"
   ],
+  "repoVersion":  "21.4",
   "unusedALGoSystemFiles": [
     "AddExistingAppOrTestApp.yaml",
     "CreateApp.yaml",
