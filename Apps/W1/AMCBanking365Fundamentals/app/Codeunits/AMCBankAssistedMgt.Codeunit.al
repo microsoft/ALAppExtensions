@@ -62,7 +62,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBankImpBankListHndl: Codeunit "AMC Bank Imp.BankList Hndl";
         LongTimeout: Integer;
         ShortTimeout: Integer;
-        AMCBoughtModule: Boolean; //Hotfix AMC-JN
+        AMCBoughtModule: Boolean;
         AMCSolution: text;
         AMCSpecificURL: Text;
         AMCSignUpURL: Text;
