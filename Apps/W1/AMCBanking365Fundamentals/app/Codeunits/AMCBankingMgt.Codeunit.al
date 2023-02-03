@@ -665,7 +665,7 @@ codeunit 20105 "AMC Banking Mgt."
     internal procedure AMCTenantId(): Text //Hotfix AMC-JN
     var
     begin
-        Exit(CopyStr('fb79e895-7de3-4468-8184-cd181eb8b131', 1, 40)); //AMC Tenant Guid
+        Exit(CopyStr('fb79e895-7de3-4468-8184-cd181eb8b131', 1, 40));
     end;
 }
 
