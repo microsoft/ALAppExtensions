@@ -40,8 +40,6 @@ if($app)
             }
            
             Write-Host "Baseline URL: $baselineURL"
-
-            Write-Host "Downloading baseline artifacts for version $baselineVersion"
             Download-Artifacts -artifactUrl $baselineURL -basePath (Join-Path $appProjectFolder '.alPackages')
         }
     }
