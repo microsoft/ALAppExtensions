@@ -50,7 +50,7 @@ $appFile = Compile-AppInBcContainer @parameters
 $branchName = $ENV:GITHUB_REF_NAME
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
-if(($branchName -eq 'main') -or $branchName.StartsWith('release/')) {
+if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('release/'))) {
     Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
     # Determine the folder where the artifacts for the package will be stored
