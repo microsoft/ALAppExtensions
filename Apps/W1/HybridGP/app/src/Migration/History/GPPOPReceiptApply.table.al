@@ -267,6 +267,9 @@ table 4060 "GPPOPReceiptApply"
         {
             Clustered = false;
         }
+        key(Key2; POPRCTNM, RCPTLNNM)
+        {
+        }
     }
 
     fieldgroups

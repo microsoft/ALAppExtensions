@@ -56,13 +56,14 @@ permissionset 4029 "HybridGP - Objects"
                     table "GPSOPTrxHist" = X,
                     table "GPSOPUserDefinedWorkHist" = X,
                     table "GPSOPWorkflowWorkHist" = X,
-                    codeunit "Install GP SmartLists" = X,
                     codeunit "GPForecastHandler" = X,
                     codeunit "GP PO Migrator" = X,
+                    codeunit "GP Populate Hist. Tables" = X,
 #if not CLEAN21
 #pragma warning disable AL0432
 #endif
                     table "GPForecastTemp" = X,
+                    codeunit "Install GP SmartLists" = X,
 #if not CLEAN21
 #pragma warning restore AL0432
 #endif
@@ -133,6 +134,14 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP SY01100" = X,
                     table "GP SY01200" = X,
                     table "GP SY03300" = X,
+                    table "GP GL00105" = X,
+                    table "GP GL20000" = X,
+                    table "GP GL30000" = X,
+                    table "GP BM30200" = X,
+                    table "GP Hist. Source Progress" = X,
+                    table "GP Hist. Source Error" = X,
+                    page "Hist. Migration Errors" = X,
+                    page "Hist. Migration Status Factbox" = X,
                     table "GP POP10100" = X,
                     table "GP POP10110" = X;
 }

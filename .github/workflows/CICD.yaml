@@ -13,7 +13,7 @@ on:
       - '!.github/workflows/CICD.yaml'
     branches: [ 'main', 'release/*', 'feature/*' ]
 
-run-name: ${{ fromJson(format('["","Check pull request from {1}/{2}{0} {3}"]',':',github.event.workflow_run.head_repository.owner.login,github.event.workflow_run.head_branch,github.event.workflow_run.display_title))[github.event_name == 'workflow_run'] }}
+run-name: ${{ github.event_name != 'workflow_run' && 'CI/CD' || format('Check pull request from {1}/{2}{0} {3}',':',github.event.workflow_run.head_repository.owner.login,github.event.workflow_run.head_branch,github.event.workflow_run.display_title) }}
 
 permissions:
   contents: read
@@ -27,6 +27,8 @@ defaults:
 
 env:
   workflowDepth: 1
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
 
 jobs:
   Initialization:
@@ -146,14 +148,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.3
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
           shell: powershell
           eventId: "DO0091"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -174,7 +176,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "Secrets=$($deliveryTargetSecrets -join ',')"
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -289,14 +291,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           get: templateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.3
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@preview
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -450,14 +452,14 @@ jobs:
           Remove-Item -Path $prfolder -recurse -force
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -468,7 +470,7 @@ jobs:
 
       - name: Run pipeline
         id: RunPipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@v2.3
+        uses: microsoft/AL-Go-Actions/RunPipeline@preview
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
@@ -585,7 +587,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@v2.3
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -615,7 +617,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@v2.3
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -647,12 +649,12 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -735,7 +737,7 @@ jobs:
           Write-Host "projects=$projects"
 
       - name: Deploy
-        uses: microsoft/AL-Go-Actions/Deploy@v2.3
+        uses: microsoft/AL-Go-Actions/Deploy@preview
         env:
           AuthContext: ${{ steps.authContext.outputs.authContext }}
         with:
@@ -764,12 +766,12 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.3
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -788,7 +790,7 @@ jobs:
           Write-Host "deliveryContext=$deliveryContext"
 
       - name: Deliver
-        uses: microsoft/AL-Go-Actions/Deliver@v2.3
+        uses: microsoft/AL-Go-Actions/Deliver@preview
         env:
           deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
         with:
@@ -825,7 +827,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.3
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
           shell: powershell
           eventId: "DO0091"

@@ -18,15 +18,16 @@ $webClient.CachePolicy = New-Object System.Net.Cache.RequestCachePolicy -argumen
 $webClient.Encoding = [System.Text.Encoding]::UTF8
 Write-Host "Downloading GitHub Helper module"
 $GitHubHelperPath = "$([System.IO.Path]::GetTempFileName()).psm1"
-$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.3/Github-Helper.psm1', $GitHubHelperPath)
+$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/preview/Github-Helper.psm1', $GitHubHelperPath)
 Write-Host "Downloading AL-Go Helper script"
 $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
-$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.3/AL-Go-Helper.ps1', $ALGoHelperPath)
+$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/preview/AL-Go-Helper.ps1', $ALGoHelperPath)
 
 Import-Module $GitHubHelperPath
 . $ALGoHelperPath -local
     
-$baseFolder = Join-Path $PSScriptRoot ".." -Resolve
+$baseFolder = GetBaseFolder -folder $PSScriptRoot
+$project = GetProject -baseFolder $baseFolder -projectALGoFolder $PSScriptRoot
 
 Clear-Host
 Write-Host
@@ -51,7 +52,7 @@ if (Test-Path (Join-Path $PSScriptRoot "NewBcContainer.ps1")) {
     Write-Host -ForegroundColor Red "WARNING: The project has a NewBcContainer override defined. Typically, this means that you cannot run a cloud development environment"
 }
 
-$settings = ReadSettings -baseFolder $baseFolder -userName $env:USERNAME
+$settings = ReadSettings -baseFolder $baseFolder -project $project -userName $env:USERNAME
 
 Write-Host
 
@@ -59,10 +60,11 @@ if (-not $environmentName) {
     $environmentName = Enter-Value `
         -title "Environment name" `
         -question "Please enter the name of the environment to create" `
-        -default "$($env:USERNAME)-sandbox"
+        -default "$($env:USERNAME)-sandbox" `
+        -trimCharacters @('"',"'",' ')
 }
 
-if (-not $PSBoundParameters.ContainsKey('reuseExistingEnvironment')) {
+if ($PSBoundParameters.Keys -notcontains 'reuseExistingEnvironment') {
     $reuseExistingEnvironment = (Select-Value `
         -title "What if the environment already exists?" `
         -options @{ "Yes" = "Reuse existing environment"; "No" = "Recreate environment" } `
@@ -75,7 +77,8 @@ CreateDevEnv `
     -caller local `
     -environmentName $environmentName `
     -reuseExistingEnvironment:$reuseExistingEnvironment `
-    -baseFolder $baseFolder
+    -baseFolder $baseFolder `
+    -project $project
 }
 catch {
     Write-Host -ForegroundColor Red "Error: $($_.Exception.Message)`nStacktrace: $($_.scriptStackTrace)"

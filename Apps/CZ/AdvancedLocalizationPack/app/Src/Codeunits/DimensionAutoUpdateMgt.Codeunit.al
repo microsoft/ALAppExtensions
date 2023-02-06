@@ -8,6 +8,10 @@ codeunit 31395 "Dimension Auto.Update Mgt. CZA"
         TempChangeLogSetupTable: Record "Change Log Setup (Table)" temporary;
         TempDefaultDimension: Record "Default Dimension" temporary;
         DimChangeSetupRead: Boolean;
+        RunEmployeeOnAfterInsertEvent: Boolean;
+        RunCustomerOnAfterInsertEvent: Boolean;
+        RunVendorOnAfterInsertEvent: Boolean;
+        RunItemOnAfterInsertEvent: Boolean;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GlobalTriggerManagement", 'OnAfterGetDatabaseTableTriggerSetup', '', false, false)]
     local procedure GetDatabaseTableTriggerSetup(TableId: Integer; var OnDatabaseInsert: Boolean; var OnDatabaseModify: Boolean; var OnDatabaseDelete: Boolean; var OnDatabaseRename: Boolean)
@@ -143,6 +147,11 @@ codeunit 31395 "Dimension Auto.Update Mgt. CZA"
             until DefaultDimension.Next() = 0;
     end;
 
+    internal procedure ForceSetDimChangeSetupRead()
+    begin
+        ClearSetup();
+    end;
+
     local procedure ClearSetup()
     begin
         TempChangeLogSetupTable.Reset();
@@ -150,5 +159,45 @@ codeunit 31395 "Dimension Auto.Update Mgt. CZA"
         TempDefaultDimension.Reset();
         TempDefaultDimension.DeleteAll(false);
         DimChangeSetupRead := false;
+    end;
+
+    internal procedure SetRequestRunEmployeeOnAfterInsertEvent(SetRunEmployeeOnAfterInsertEvent: Boolean)
+    begin
+        RunEmployeeOnAfterInsertEvent := SetRunEmployeeOnAfterInsertEvent;
+    end;
+
+    internal procedure IsRequestRunEmployeeOnAfterInsertEventDefaultDim(): Boolean
+    begin
+        exit(RunEmployeeOnAfterInsertEvent);
+    end;
+
+    internal procedure SetRequestRunCustomerOnAfterInsertEvent(SetRunCustomerOnAfterInsertEvent: Boolean)
+    begin
+        RunCustomerOnAfterInsertEvent := SetRunCustomerOnAfterInsertEvent;
+    end;
+
+    internal procedure IsRequestRunCustomerOnAfterInsertEventDefaultDim(): Boolean
+    begin
+        exit(RunCustomerOnAfterInsertEvent);
+    end;
+
+    internal procedure SetRequestRunVendorOnAfterInsertEvent(SetRunVendorOnAfterInsertEvent: Boolean)
+    begin
+        RunVendorOnAfterInsertEvent := SetRunVendorOnAfterInsertEvent;
+    end;
+
+    internal procedure IsRequestRunVendorOnAfterInsertEventDefaultDim(): Boolean
+    begin
+        exit(RunVendorOnAfterInsertEvent);
+    end;
+
+    internal procedure SetRequestRunItemOnAfterInsertEvent(SetRunItemOnAfterInsertEvent: Boolean)
+    begin
+        RunItemOnAfterInsertEvent := SetRunItemOnAfterInsertEvent;
+    end;
+
+    internal procedure IsRequestRunItemOnAfterInsertEventDefaultDim(): Boolean
+    begin
+        exit(RunItemOnAfterInsertEvent);
     end;
 }

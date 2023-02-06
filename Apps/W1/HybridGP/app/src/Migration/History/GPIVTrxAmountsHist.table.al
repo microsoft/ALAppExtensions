@@ -136,7 +136,9 @@ table 4039 "GPIVTrxAmountsHist"
         {
             Clustered = false;
         }
-
+        key(Key3; TRXSORCE, DOCNUMBR)
+        {
+        }
     }
 
     fieldgroups

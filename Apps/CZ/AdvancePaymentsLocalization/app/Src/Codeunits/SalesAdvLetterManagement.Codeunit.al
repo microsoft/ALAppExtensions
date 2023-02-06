@@ -963,8 +963,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         if SalesAdvLetterHeaderCZZ."Automatic Post VAT Document" then
             ReverseAdvancePaymentVAT(SalesAdvLetterEntryCZZ, CustLedgerEntry."Source Code", CustLedgerEntry.Description, ReverseAmount, CustLedgerEntry."Original Currency Factor", DocumentNo, CustLedgerEntry."Posting Date", SalesAdvLetterEntryCZZGlob."Entry No.", CustLedgerEntry."Document No.", "Advance Letter Entry Type CZZ"::"VAT Usage", GenJnlPostLine, Preview);
 
-        if not Preview then
+        if not Preview then begin
+            SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
             UpdateStatus(SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ.Status::Closed);
+        end;
     end;
 
     local procedure ReverseAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; SourceCode: Code[10]; PostDescription: Text[100]; ReverseAmount: Decimal; CurrencyFactor: Decimal; DocumentNo: Code[20]; PostingDate: Date; UsageEntryNo: Integer; InvoiceNo: Code[20]; EntryType: enum "Advance Letter Entry Type CZZ"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; Preview: Boolean)
@@ -1479,7 +1481,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         VATDocumentNo: Code[20];
         PostingDate: Date;
         VATDate: Date;
-        OriginalDocumentVATDate: Date;
         CurrencyFactor: Decimal;
         RemAmount: Decimal;
         RemAmountLCY: Decimal;
@@ -1494,7 +1495,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
         AdvPaymentCloseDialogCZZ.SetValues(WorkDate(), WorkDate(), SalesAdvLetterHeaderCZZ."Currency Code", 0, '', false);
         if AdvPaymentCloseDialogCZZ.RunModal() = Action::OK then begin
-            AdvPaymentCloseDialogCZZ.GetValues(PostingDate, VATDate, OriginalDocumentVATDate, CurrencyFactor);
+            AdvPaymentCloseDialogCZZ.GetValues(PostingDate, VATDate, CurrencyFactor);
             if (PostingDate = 0D) or (VATDate = 0D) then
                 Error(DateEmptyErr);
             if SalesAdvLetterHeaderCZZ."Currency Code" = '' then
@@ -1526,7 +1527,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                         GenJournalLine."Posting Date" := PostingDate;
                         GenJournalLine."Document Date" := PostingDate;
                         GenJournalLine.Validate("VAT Date CZL", VATDate);
-                        GenJournalLine.Validate("Original Doc. VAT Date CZL", OriginalDocumentVATDate);
                         GenJournalLine."Adv. Letter No. (Entry) CZZ" := SalesAdvLetterEntryCZZ."Sales Adv. Letter No.";
                         GenJournalLine."Use Advance G/L Account CZZ" := true;
                         GenJournalLine.SetCurrencyFactor(SalesAdvLetterEntryCZZ."Currency Code", CurrencyFactor);
@@ -1580,6 +1580,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 until SalesAdvLetterEntryCZZ.Next() = 0;
 
             CancelInitEntry(SalesAdvLetterHeaderCZZ, PostingDate, false);
+            SalesAdvLetterHeaderCZZ.Find();
             UpdateStatus(SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ.Status::Closed);
 
             AdvanceLetterApplicationCZZ.SetRange("Advance Letter Type", AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales);
