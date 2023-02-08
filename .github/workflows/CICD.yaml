@@ -477,14 +477,14 @@ jobs:
           $buildMode = '${{ matrix.buildMode }}'
           
           $projectALGoFolder = Join-Path $project '.AL-Go'
-          $baselineScript = Join-Path $project 'FetchBaselines.ps1'
+          $baselineScript = Join-Path $projectALGoFolder 'FetchBaselines.ps1'
 
           if(-not (Test-Path $baselineScript)) {
             throw "Could not find baseline script for project $project"
           }
 
           Write-Host 'Executing script to fetch baselines'
-          . FetchBaselines.ps1 -project $project -buildMode $buildMode -settings $settings
+          . FetchBaselines.ps1 -Project $project -BuildMode $buildMode -Settings $settings
 
       - name: Run pipeline
         id: RunPipeline
