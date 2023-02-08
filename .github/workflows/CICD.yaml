@@ -484,7 +484,7 @@ jobs:
           }
 
           Write-Host 'Executing script to fetch baselines'
-          . FetchBaselines.ps1 -Project $project -BuildMode $buildMode -Settings $settings
+          . $baselineScript -Project $project -BuildMode $buildMode -Settings $settings
 
       - name: Run pipeline
         id: RunPipeline
