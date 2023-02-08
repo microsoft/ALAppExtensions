@@ -452,7 +452,7 @@ jobs:
           Remove-Item -Path $prfolder -recurse -force
 
       - name: Read settings
-        uses: microsoft/AL-Go/ReadSettings@baseline-version
+        uses: microsoft/AL-Go/Actions/ReadSettings@baseline-version
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
