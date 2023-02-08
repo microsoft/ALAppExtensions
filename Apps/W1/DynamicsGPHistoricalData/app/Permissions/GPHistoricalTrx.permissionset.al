@@ -1,4 +1,4 @@
-permissionset 4700 "GP Historical Trx."
+permissionset 40900 "GP Historical Trx."
 {
     Assignable = true;
     Access = Public;

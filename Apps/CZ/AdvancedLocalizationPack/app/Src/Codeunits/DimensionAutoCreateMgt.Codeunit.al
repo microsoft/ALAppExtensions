@@ -6,6 +6,11 @@ codeunit 31394 "Dimension Auto.Create Mgt. CZA"
         AutoDefaultDimension: Record "Default Dimension";
         NewDefaultDimension: Record "Default Dimension";
         NewDimensionValue: Record "Dimension Value";
+        Employee: Record Employee;
+        Item: Record Item;
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+        DimensionAutoUpdateMgtCZA: Codeunit "Dimension Auto.Update Mgt. CZA";
     begin
         GeneralLedgerSetup.Get();
         AutoDefaultDimension.SetRange("Table ID", TableID);
@@ -36,7 +41,22 @@ codeunit 31394 "Dimension Auto.Create Mgt. CZA"
                 NewDefaultDimension."Dimension Code" := AutoDefaultDimension."Dimension Code";
                 NewDefaultDimension."Dimension Value Code" := NewDimensionValue.Code;
                 NewDefaultDimension."Value Posting" := AutoDefaultDimension."Auto. Create Value Posting CZA";
-                if NewDefaultDimension.Insert() then;
+                if NewDefaultDimension.Insert(true) then;
+
+                case TableID of
+                    Database::Item:
+                        if not Item.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunItemOnAfterInsertEvent(true);
+                    Database::Customer:
+                        if not Customer.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunCustomerOnAfterInsertEvent(true);
+                    Database::Vendor:
+                        if not Vendor.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunVendorOnAfterInsertEvent(true);
+                    Database::Employee:
+                        if not Employee.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunEmployeeOnAfterInsertEvent(true);
+                end;
             until AutoDefaultDimension.Next() = 0;
     end;
 
@@ -107,9 +127,19 @@ codeunit 31394 "Dimension Auto.Create Mgt. CZA"
                             NewDefaultDimension."Dimension Code" := DefaultDimension."Dimension Code";
                             NewDefaultDimension."Dimension Value Code" := DimensionValue.Code;
                             NewDefaultDimension."Value Posting" := DefaultDimension."Auto. Create Value Posting CZA";
-                            if NewDefaultDimension.Insert() then;
+                            if NewDefaultDimension.Insert(true) then;
                         end;
                     until MasterRecordRef.Next() = 0;
             until DefaultDimension.Next() = 0;
+    end;
+
+    internal procedure CreateAndSendSignOutNotification()
+    var
+        SignOutDimensionNotification: Notification;
+        SignOutMsg: Label 'Changed settings will take effect for you immediately, for other users only after they log in again.';
+    begin
+        SignOutDimensionNotification.Message := SignOutMsg;
+        SignOutDimensionNotification.Scope := NotificationScope::LocalScope;
+        SignOutDimensionNotification.Send();
     end;
 }

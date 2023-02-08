@@ -302,6 +302,19 @@ codeunit 1990 "Guided Experience"
         GuidedExperienceImpl.AddTranslationForSetupObject(GuidedExperienceType, ObjectType, ObjectID, LanguageID, Translation, GuidedExperienceItem.FieldNo(Description));
     end;
 
+    /// <summary>Adds the translation for the short title of the setup object.</summary>
+    /// <param name="GuidedExperienceType">The type of setup object.</param> 
+    /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
+    /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>
+    /// <param name="LanguageID">The language ID for which the translation is made.</param>
+    /// <param name="Translation">The translated text of the short title.</param>
+    procedure AddTranslationForSetupObjectShortTitle(GuidedExperienceType: Enum "Guided Experience Type"; ObjectType: ObjectType; ObjectID: Integer; LanguageID: Integer; Translation: Text)
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+    begin
+        GuidedExperienceImpl.AddTranslationForSetupObject(GuidedExperienceType, ObjectType, ObjectID, LanguageID, Translation, GuidedExperienceItem.FieldNo("Short Title"));
+    end;
+
     /// <summary>Checks whether a user has completed the setup corresponding to the object type and ID.</summary>
     /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
     /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>

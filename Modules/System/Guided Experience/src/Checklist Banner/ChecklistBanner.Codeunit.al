@@ -160,7 +160,6 @@ codeunit 1996 "Checklist Banner"
     procedure ExecuteChecklistItem(var ChecklistItemBuffer: Record "Checklist Item Buffer"; Tour: DotNet Tour; IsLastChecklistItem: Boolean): Boolean
     var
         GuidedExperienceItem: Record "Guided Experience Item";
-        ChecklistItemStatus: Enum "Checklist Item Status";
         IsChecklistItemComplete: Boolean;
     begin
         if not GuidedExperienceItem.Get(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version) then
@@ -181,11 +180,6 @@ codeunit 1996 "Checklist Banner"
                     IsChecklistItemComplete := RunObject(GuidedExperienceItem, ChecklistItemBuffer);
             "Guided Experience Type"::Video:
                 RunVideo(GuidedExperienceItem."Video Url");
-        end;
-
-        if not (GuidedExperienceItem."Guided Experience Type" in ["Guided Experience Type"::Tour, "Guided Experience Type"::"Spotlight Tour"]) then begin
-            UpdateChecklistItemUserStatus(ChecklistItemBuffer, UserId(), ChecklistItemStatus::Completed);
-            exit(true);
         end;
 
         exit(IsChecklistItemComplete);

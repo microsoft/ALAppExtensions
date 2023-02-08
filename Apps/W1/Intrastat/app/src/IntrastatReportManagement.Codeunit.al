@@ -22,9 +22,13 @@ codeunit 4810 IntrastatReportManagement
         IntrastatAwarenessNotificationNameTxt: Label 'Notify the user about the Intrastat Report extension.';
         IntrastatAwarenessNotificationDescriptionTxt: Label 'Alert users about the capabilities of the Intrastat Report extension.';
         IntrastatAwarenessNotificationTxt: Label 'This version of Intrastat will be deprecated. We recommend that you enable the Intrastat Report extension.';
+        SupplementaryUnitUpdateNotificationNameTxt: Label 'Notify the user about the %1 update.', Comment = '%1 - Supplementary Unit of Measure caption';
+        SupplementaryUnitUpdateNotificationDescriptionTxt: Label 'Alert users about the update of %1 during %2 change.', Comment = '%1 - Supplementary Unit of Measure caption, %2 - Tariff Number caption';
+        SupplementaryUnitUpdateNotificationTxt: Label '%1 was updated, due to change of %2.', Comment = '%1 - Supplementary Unit of Measure caption, %2 - Tariff Number caption';
         UserDisabledNotificationTxt: Label 'The user disabled notification %1.', Locked = true;
         IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
         IntrastatFeatureAwarenessNotificationIdTok: Label 'dcd4e71a-8c6a-44fc-9642-54f931e5e7d9', Locked = true;
+        SupplementaryUnitUpdateNotificationIdTok: Label '52f2c034-1857-4922-99cb-448c09e01474', Locked = true;
         IntrastatCoreAppIdTok: Label '70912191-3c4c-49fc-a1de-bc6ea1ac9da6', Locked = true;
         IntrastatTelemetryCategoryTok: Label 'AL Intrastat', Locked = true;
         LearnMoreLinkTok: Label 'https://go.microsoft.com/fwlink/?linkid=2204541', Locked = true;
@@ -920,6 +924,36 @@ codeunit 4810 IntrastatReportManagement
         Session.LogMessage('0000I9Q', StrSubstNo(UserDisabledNotificationTxt, HostNotification.GetData('NotificationId')), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntrastatTelemetryCategoryTok);
     end;
 
+    internal procedure NotifyUserAboutSupplementaryUnitUpdate()
+    var
+        Item: Record Item;
+        MyNotifications: Record "My Notifications";
+        SupplementaryUnitUpdateNotification: Notification;
+    begin
+        if MyNotifications.IsEnabled(GetSupplementaryUnitUpdateNotificationId()) then begin
+            SupplementaryUnitUpdateNotification.Id(GetSupplementaryUnitUpdateNotificationId());
+            SupplementaryUnitUpdateNotification.SetData('NotificationId', GetSupplementaryUnitUpdateNotificationId());
+            SupplementaryUnitUpdateNotification.Message(StrSubstNo(SupplementaryUnitUpdateNotificationTxt, Item.FieldCaption("Supplementary Unit of Measure"), Item.FieldCaption("Tariff No.")));
+
+            SupplementaryUnitUpdateNotification.AddAction(DisableNotificationTxt, Codeunit::IntrastatReportManagement, 'DisableSupplementaryUnitUpdateNotification');
+            SupplementaryUnitUpdateNotification.Send();
+        end;
+    end;
+
+    internal procedure DisableSupplementaryUnitUpdateNotification(HostNotification: Notification)
+    var
+        Item: Record Item;
+        MyNotifications: Record "My Notifications";
+        NotificationId: Text;
+    begin
+        NotificationId := HostNotification.GetData('NotificationId');
+        if MyNotifications.Get(UserId(), NotificationId) then
+            MyNotifications.Disable(NotificationId)
+        else
+            MyNotifications.InsertDefault(NotificationId, StrSubstNo(SupplementaryUnitUpdateNotificationNameTxt, Item.FieldCaption("Supplementary Unit of Measure")),
+                StrSubstNo(SupplementaryUnitUpdateNotificationDescriptionTxt, Item.FieldCaption("Supplementary Unit of Measure"), Item.FieldCaption("Tariff No.")), false);
+    end;
+
     procedure ShowNotEnabledMessage(PageCaption: Text)
     begin
         Message(FeatureNotEnabledMessageTxt, PageCaption);
@@ -954,6 +988,11 @@ codeunit 4810 IntrastatReportManagement
     local procedure GetIntrastatFeatureAwarenessNotificationId(): Guid;
     begin
         exit(IntrastatFeatureAwarenessNotificationIdTok);
+    end;
+
+    local procedure GetSupplementaryUnitUpdateNotificationId(): Guid;
+    begin
+        exit(SupplementaryUnitUpdateNotificationIdTok);
     end;
 
     local procedure GetAppId(): Guid;
