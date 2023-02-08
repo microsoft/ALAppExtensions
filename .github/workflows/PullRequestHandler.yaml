@@ -22,8 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-        lfs: true
-        ref:  ${{ github.event.pull_request.head.sha }}
+          lfs: true
+          ref:  ${{ github.event.pull_request.head.sha }}
 
       - uses: aholstrup1/AL-Go-Actions/VerifyPRChanges@main
         with:
