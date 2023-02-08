@@ -25,24 +25,19 @@ if($app)
     # Setup compiler features to generate LCGs for the default build mode
     if($appBuildMode -eq 'Default') {
         $parameters["Features"] += @("lcgtranslationfile")
-
-        $baselineVersion = $env:baselineVersion
-
-        if(-not $baselineVersion) {
-            Write-Host "Baseline version is not defined"
-        }
-        else {
-            Write-Host "Baseline version: $baselineVersion"
-
-            $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -select Closest -version $baselineVersion # W1 because Modules are not localized
-            if(-not $baselineURL) {
-                throw "Unable to find URL for baseline version $baselineVersion; App: $appName; Version: $appVersion; Publisher: $appPublisher"
-            }
-           
-            Write-Host "Baseline URL: $baselineURL"
-            Download-Artifacts -artifactUrl $baselineURL -basePath (Join-Path $appProjectFolder '.alPackages')
-        }
     }
+
+    # Try get baseline
+    $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) 'baselines'
+
+    $baseline = Get-ChildItem -Path $baselineFolder -Filter "$appPublisher*$appName*.app" -Recurse | Select-Object -First 1
+
+    if($baselineFolder) {
+        Write-Host "Baseline found: $($baseline.Name)"
+
+        Copy-Item -Path $baseline.FullName -Destination (Join-Path $parameters.appProjectFolder '.alpackages' ) -Force | Out-Null
+    }
+
 }
 
 $appFile = Compile-AppInBcContainer @parameters

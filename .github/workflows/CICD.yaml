@@ -472,9 +472,11 @@ jobs:
         id: FetchBaselines
         if: ${{ env.baselineVersion != '' }}
         run: |
-          $settings = '${{ env.Settings }}' | ConvertFrom-Json
-          $project = '${{ matrix.project }}'
-          $buildMode = '${{ matrix.buildMode }}'
+          $params = @{
+            "settings" = '${{ env.Settings }}' | ConvertFrom-Json
+            "project" = '${{ matrix.project }}'
+            "buildMode" = '${{ matrix.buildMode }}'
+          }
           
           $projectALGoFolder = Join-Path $project '.AL-Go'
           $baselineScript = Join-Path $projectALGoFolder 'FetchBaselines.ps1'
@@ -484,7 +486,8 @@ jobs:
           }
 
           Write-Host 'Executing script to fetch baselines'
-          . $baselineScript -Project $project -BuildMode $buildMode -Settings $settings
+
+          Invoke-Command -ScriptBlock $baselineScript -ArgumentList $params
 
       - name: Run pipeline
         id: RunPipeline
