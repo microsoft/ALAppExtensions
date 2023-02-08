@@ -17,9 +17,14 @@ permissions:
 
 jobs:
   PregateCheck:
-    #if: ${{ github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name}}
+    if: ${{ github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name}}
     runs-on: [ windows-latest ]
     steps:
+      - uses: actions/checkout@v3
+        with:
+        lfs: true
+        ref:  ${{ github.event.pull_request.head.sha }}
+
       - uses: aholstrup1/AL-Go-Actions/VerifyPRChanges@main
         with:
           baseSHA: ${{ github.event.pull_request.base.sha }}
@@ -28,7 +33,8 @@ jobs:
           prheadRepository: ${{ github.event.pull_request.head.repo.full_name }}
 
   Initialization:
-    if: ${{ success() }}
+    needs: [ PregateCheck ]
+    if: ${{ !failure() }}
     runs-on: [ windows-latest ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -120,7 +126,7 @@ jobs:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
-          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId' #TODO: Update list of secrets to only fetch the needed ones 
+          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId'
 
       - name: Run pipeline
         id: RunPipeline
