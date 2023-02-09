@@ -152,7 +152,7 @@ jobs:
         with:
           shell: powershell
           projectsJson: '["P0","P1","P2","P3","P4"]'
-          buildOrderJson: '["P0","P1","P2","P3","P4"]'
+          buildOrderJson: '{"1":["P1"],"2":["P2","P3"],"3":["P0","P4"]}'
           buildOrderDepth: '3'
           workflowDepth: '3'
 
