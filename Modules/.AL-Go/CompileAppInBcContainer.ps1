@@ -37,7 +37,6 @@ if($app)
 
         Copy-Item -Path $baseline.FullName -Destination (Join-Path $parameters.appProjectFolder '.alpackages' ) -Force | Out-Null
     }
-
 }
 
 $appFile = Compile-AppInBcContainer @parameters
