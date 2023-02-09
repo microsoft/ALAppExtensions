@@ -32,7 +32,7 @@ if($app)
 
     $baseline = Get-ChildItem -Path $baselineFolder -Filter "$appPublisher*$appName*.app" -Recurse | Select-Object -First 1
 
-    if($baselineFolder) {
+    if($baseline) {
         Write-Host "Baseline found: $($baseline.Name)"
 
         Copy-Item -Path $baseline.FullName -Destination (Join-Path $parameters.appProjectFolder '.alpackages' ) -Force | Out-Null
