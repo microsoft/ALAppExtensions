@@ -152,10 +152,10 @@ jobs:
         uses: aholstrup1/AL-Go-Actions/DetermineBuildOrder@main
         with:
           shell: powershell
-          projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
-          buildOrder: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
-          buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-          workflowDepth: ${{ env.workflowDepth }}
+          projects: '["P0","P1","P2","P3","P4"]'
+          buildOrder: '["P0","P1","P2","P3","P4"]'
+          buildOrderDepth: '3'
+          workflowDepth: '3'
 
   CheckForUpdates:
     runs-on: [ windows-latest ]
