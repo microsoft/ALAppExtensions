@@ -19,12 +19,4 @@ enum 9046 "ABS Rehydrate Priority"
     {
         Caption = 'Standard', Locked = true;
     }
-
-    /// <summary>
-    /// High priority
-    /// </summary>
-    value(1; High)
-    {
-        Caption = 'High', Locked = true;
-    }
 }
