@@ -33,9 +33,13 @@ if($app)
     $baseline = Get-ChildItem -Path $baselineFolder -Filter "$appPublisher*$appName*.app" -Recurse | Select-Object -First 1
 
     if($baseline) {
-        Write-Host "Baseline found: $($baseline.Name)"
+        Write-Host "Using baseline: $($baseline.Name)"
 
-        Copy-Item -Path $baseline.FullName -Destination (Join-Path $parameters.appProjectFolder '.alpackages' ) -Force | Out-Null
+        Write-Host "Copying baseline to symbols folder $($parameters.appSymbolsFolder)"
+        Copy-Item -Path $baseline.FullName -Destination $parameters.appSymbolsFolder -Force | Out-Null
+    }
+    else {
+        Write-Host "No baseline found for $appName" // throw?
     }
 }
 
