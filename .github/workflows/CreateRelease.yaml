@@ -1,0 +1,88 @@
+name: ' Create release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      appVersion:
+        description: App version to promote to release (default is latest)
+        required: false
+        default: 'latest'
+      name:
+        description: Name of this release
+        required: true
+        default: ''
+      tag:
+        description: Tag of this release (needs to be semantic version string https://semver.org, ex. 1.0.0)
+        required: true
+        default: ''
+      prerelease:
+        description: Prerelease (Y/N)
+        required: false
+        default: 'N'
+      draft:
+        description: Draft (Y/N)
+        required: false
+        default: 'N'
+      createReleaseBranch:
+        description: Create Release Branch (Y/N)
+        required: false
+        default: 'N'
+      updateVersionNumber:
+        description: New Version Number in main branch. Use Major.Minor for absolute change, use +Major.Minor for incremental change.
+        required: false
+        default: ''
+      directCommit:
+        description: Direct COMMIT (Y/N)
+        required: false
+        default: 'N'
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency: release
+
+defaults:
+  run:
+    shell: powershell
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
+jobs:
+  CreateRelease:
+    runs-on: [ windows-latest ]
+    outputs:
+      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+      artifacts: ${{ steps.analyzeartifacts.outputs.artifacts }}
+      releaseId: ${{ steps.createrelease.outputs.releaseId }}
+      commitish: ${{ steps.analyzeartifacts.outputs.commitish }}
+      releaseBranch: ${{ steps.createreleasenotes.outputs.releaseBranch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Initialize the workflow
+        id: init
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@main
+        with:
+          shell: powershell
+          eventId: "DO0094"
+
+      - name: Read settings
+        id: ReadSettings
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
+        with:
+          shell: powershell
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          get: templateUrl,repoName
+          getProjects: 'Y'
+
+      - name: Check for updates to AL-Go system files
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@main
+        with:
+          shell: powershell
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          templateUrl: ${{ env.templateUrl }}
