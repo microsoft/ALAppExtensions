@@ -14,8 +14,6 @@ if(-not $baselineVersion) {
 else {
     Write-Host "Baseline version: $baselineVersion"
 
-    Import-Module BCContainerHelper -DisableNameChecking
-
     $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -select Closest -version $baselineVersion # W1 because Modules are not localized
     if(-not $baselineURL) {
         throw "Unable to find URL for baseline version $baselineVersion"
