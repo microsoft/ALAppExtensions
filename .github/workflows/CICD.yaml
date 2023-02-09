@@ -468,7 +468,7 @@ jobs:
           settingsJson: ${{ env.Settings }}
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,storageContext,gitHubPackagesContext'
 
-      - name: Read settings
+      - name: Fetch baselines
         uses: microsoft/AL-Go/Actions/FetchBaselines@baseline-version
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}

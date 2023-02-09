@@ -3,9 +3,7 @@ param (
     [Parameter(Mandatory=$true)]
     $Project,
     [Parameter(Mandatory=$true)]
-    $BuildMode,
-    [Parameter(Mandatory=$true)]
-    $Settings
+    $BuildMode
 )
 
 $baselineVersion = $env:baselineVersion
