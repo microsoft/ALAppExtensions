@@ -35,8 +35,13 @@ if($app)
     if($baseline) {
         Write-Host "Using baseline: $($baseline.Name)"
 
-        Write-Host "Copying baseline to symbols folder $($parameters.appSymbolsFolder)"
-        Copy-Item -Path $baseline.FullName -Destination $parameters.appSymbolsFolder -Force | Out-Null
+        $appSymbolsFolder = $($parameters.appSymbolsFolder)
+        if (!(Test-Path -Path $appSymbolsFolder -PathType Container)) {
+            New-Item -Path $appSymbolsFolder -ItemType Directory | Out-Null
+        }
+
+        Write-Host "Copying baseline to symbols folder $appSymbolsFolder"
+        Copy-Item -Path $baseline.FullName -Destination $appSymbolsFolder -Force | Out-Null
     }
     else {
         Write-Host "No baseline found for $appName" // throw?
