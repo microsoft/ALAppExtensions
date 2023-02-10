@@ -149,13 +149,41 @@ jobs:
       - name: Determine Build Order
         if: env.workflowDepth > 1
         id: BuildOrder
-        uses: aholstrup1/AL-Go-Actions/DetermineBuildOrder@main
-        with:
-          shell: powershell
-          projectsJson: ${{ steps.ReadSettings.outputs.ProjectsJson }}
-          buildOrderJson: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
-          buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-          workflowDepth: ${{ env.workflowDepth }}
+        run: |
+          $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
+          $projects = '${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json
+          $buildOrder = '${{ steps.ReadSettings.outputs.BuildOrderJson }}' | ConvertFrom-Json
+          $depth = ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
+          $workflowDepth = ${{ env.workflowDepth }}
+          if ($depth -lt $workflowDepth) {
+            Write-Host "::Error::Project Dependencies depth is $depth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
+            $host.SetShouldExit(1)
+          }
+          $step = $depth
+          $depth..1 | ForEach-Object {
+            $ps = @($buildOrder."$_" | Where-Object { $projects -contains $_ })
+            if ($ps.Count -eq 1) {
+              $projectsJSon = "[$($ps | ConvertTo-Json -compress)]"
+            }
+            else {
+              $projectsJSon = $ps | ConvertTo-Json -compress
+            }
+            if ($ps.Count -gt 0) {
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json=$projectsJson"
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=$($ps.count)"
+              Write-Host "projects$($step)Json=$projectsJson"
+              Write-Host "projects$($step)Count=$($ps.count)"
+              $step--
+            }
+          }
+          while ($step -ge 1) {
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json="
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=0"
+              Write-Host "projects$($step)Json="
+              Write-Host "projects$($step)Count=0"
+              $step--
+          }
 
   CheckForUpdates:
     runs-on: [ windows-latest ]
