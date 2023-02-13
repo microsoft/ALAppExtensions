@@ -10,6 +10,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         GraphURLTxt: label 'https://graph.microsoft.com', Locked = true;
         SendEmailErr: Label 'Could not send the email message. Try again later.';
         SendEmailCodeErr: Label 'Failed to send email with status code %1.', Comment = '%1 - Http status code', Locked = true;
+        SendEmailMessageErr: Label 'Failed to send email. Error:\\%1', Comment = '%1 = Error message';
         SendEmailExternalUserErr: Label 'Could not send the email because the user is external.';
         EmailSentTxt: Label 'Email sent.', Locked = true;
         DraftEmailCreatedTxt: Label 'Draft email created.', Locked = true;
@@ -138,8 +139,8 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     local procedure ProcessErrorMessageResponse(ErrorMessage: Text)
     begin
         if ErrorMessage.Contains(RestAPINotSupportedErr) then
-            ErrorMessage := TheMailboxIsNotValidErr;
-        Error(ErrorMessage);
+            Error(TheMailboxIsNotValidErr);
+        Error(StrSubstNo(SendEmailMessageErr, ErrorMessage));
     end;
 
     [NonDebuggable]

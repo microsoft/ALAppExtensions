@@ -12,6 +12,7 @@ PermissionSet 3900 "Retention Policy - Read"
                              "Field Selection - Read",
                              "Guided Experience - Read",
                              "Object Selection - Read",
+                             "Record Reference - Exec",
                              "Upgrade Tags - Read",
                              "System Initialization - Exec",
                              "Telemetry - Exec";

@@ -97,6 +97,12 @@ codeunit 11742 "VAT Date Handler CZL"
         GenJournalLine."Original Doc. VAT Date CZL" := 0D;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"G/L Entry-Edit", 'OnBeforeGLLedgEntryModify', '', false, false)]
+    local procedure MyProcedure(var GLEntry: Record "G/L Entry"; FromGLEntry: Record "G/L Entry")
+    begin
+        GLEntry."VAT Date CZL" := FromGLEntry."VAT Date CZL";
+    end;
+
     procedure VATDateNotAllowed(VATDate: Date): Boolean
     var
         SetupRecordID: RecordID;

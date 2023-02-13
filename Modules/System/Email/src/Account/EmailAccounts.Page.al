@@ -279,7 +279,6 @@ page 8887 "Email Accounts"
                 Image = CreateJobSalesInvoice;
                 Caption = 'Email Outbox';
                 ToolTip = 'View emails for the selected account that are either waiting to be sent, or could not be sent because something went wrong.';
-                RunObject = page "Email Outbox";
                 Visible = not LookupMode;
 
                 trigger OnAction()

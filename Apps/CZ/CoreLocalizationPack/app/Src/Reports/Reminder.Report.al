@@ -319,7 +319,7 @@ report 31182 "Reminder CZL"
                     column(GreetingLbl; GreetingLbl)
                     {
                     }
-                    column(AmtDueLbl; AmtDueLbl)
+                    column(AmtDueLbl; AmtDueTxt)
                     {
                     }
                     column(BodyLbl; BodyLbl)

@@ -33,12 +33,15 @@ tableextension 31266 "Default Dimension CZA" extends "Default Dimension"
             end;
 
             trigger OnValidate()
+            var
+                DimensionAutoCreateMgtCZA: Codeunit "Dimension Auto.Create Mgt. CZA";
             begin
                 if "Dim. Description Field ID CZA" = 0 then
                     "Dim. Description Update CZA" := "Dim. Description Update CZA"::" "
                 else begin
                     TestField("No.", '');
                     TestField("Automatic Create CZA", true);
+                    DimensionAutoCreateMgtCZA.CreateAndSendSignOutNotification();
                 end;
             end;
         }

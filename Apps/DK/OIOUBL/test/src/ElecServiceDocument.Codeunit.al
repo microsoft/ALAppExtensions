@@ -1205,7 +1205,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Editor is opened.
         // [THEN] ZIP file is created, it contains OIOUBL Electronic Document and PDF with printed copy of Posted Service Invoice.
         LibraryService.FindServiceInvoiceHeader(ServiceInvoiceHeader, ServiceHeader."No.");
-        FileNameLst.AddRange(GetFileName(ServiceInvoiceHeader."No.", 'Invoice', 'XML'), GetFileName(ServiceInvoiceHeader."No.", 'SM.Invoice', 'PDF'));
+        FileNameLst.AddRange(GetFileName(ServiceInvoiceHeader."No.", 'Invoice', 'XML'), GetFileName(ServiceInvoiceHeader."No.", 'Service Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
     end;
 
@@ -1297,11 +1297,11 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
         // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Editor is opened.
         // [THEN] Two ZIP files are created, each of them contains OIOUBL Electronic Document and PDF with printed copy of Posted Service Invoice.
-        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(1), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(1), 'SM.Invoice', 'PDF'));
+        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(1), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(1), 'Service Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
 
         Clear(FileNameLst);
-        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(2), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(2), 'SM.Invoice', 'PDF'));
+        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(2), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(2), 'Service Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
     end;
 

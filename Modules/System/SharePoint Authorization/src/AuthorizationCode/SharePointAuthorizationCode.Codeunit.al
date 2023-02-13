@@ -69,7 +69,6 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
                 ErrorText := AuthCodeErr
             else
                 ErrorText := GetLastErrorText();
-
         end;
 
         exit(IsSuccess);

@@ -21,6 +21,7 @@ permissionset 11792 "CZ Bank Documents - Obj. CZB"
                   Codeunit "Doc. Attachment Handler CZB" = X,
                   Codeunit "Exp. Launch Payment Order CZB" = X,
                   Codeunit "Export Launcher SEPA CZB" = X,
+                  Codeunit "Gen. Journal Line Handler CZB" = X,
                   Codeunit "G/L Acc.Where-Used Handler CZB" = X,
                   Codeunit "Guided Experience Handler CZB" = X,
                   Codeunit "Imp. Launch Bank Statement CZB" = X,

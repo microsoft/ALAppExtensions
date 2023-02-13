@@ -135,7 +135,7 @@ codeunit 139740 "VAT Group Submit To Repr. Test"
     begin
         ErrorMessage.SETRANGE("Context Record ID", VATReportHeader.RecordId());
         ErrorMessage.FindFirst();
-        Assert.ExpectedMessage(ExpectedError, ErrorMessage.Description);
+        Assert.ExpectedMessage(ExpectedError, ErrorMessage."Message");
 
         Assert.ExpectedMessage(HasErrorsMsg, LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();

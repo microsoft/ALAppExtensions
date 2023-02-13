@@ -208,10 +208,9 @@ codeunit 18243 "GST Journal Line Subscribers"
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'Currency Factor', false, false)]
     local procedure OnValidateCurrencyCode(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line")
-    var
-        CalculateTax: Codeunit "Calculate Tax";
     begin
-        CalculateTax.CallTaxEngineOnGenJnlLine(Rec, xRec);
+        if not Rec.GetSkipTaxCalculation() then
+            TaxEngineCallingHandler(Rec, xRec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'GST TDS/TCS Base Amount', false, false)]
@@ -367,6 +366,26 @@ codeunit 18243 "GST Journal Line Subscribers"
                     end;
     end;
 
+    [EventSubscriber(ObjectType::Report, Report::"Calculate Depreciation", 'OnBeforeGenJnlLineCreate', '', false, false)]
+    local procedure OnBeforeGenJnlLineCreate(var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        GenJournalLine.SetSkipTaxCalulation(true);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Event Handling", 'OnBeforeGenJnlLineUseCaseHandleEvent', '', false, false)]
+    local procedure OnBeforeGenJnlLineUseCaseHandleEvent(var Rec: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+        if Rec.GetSkipTaxCalculation() then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Insert G/L Account", 'OnBeforeCalculateNoOfEmptyLines', '', false, false)]
+    local procedure OnBeforeCalculateNoOfEmptyLines(var GenJnlLine: Record "Gen. Journal Line"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary)
+    begin
+        if (GenJnlLine."Source Type" = GenJnlLine."Source Type"::"Fixed Asset") and (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::Depreciation) then
+            GenJnlLine.SetSkipTaxCalulation(true);
+    end;
+
     local procedure GetCustomerAccount(CustomerNo: Code[20]): Code[20]
     var
         Customer: Record Customer;
@@ -375,5 +394,12 @@ codeunit 18243 "GST Journal Line Subscribers"
         if Customer.Get(CustomerNo) then
             if CustomerPotingGroup.Get(Customer."Customer Posting Group") then
                 exit(CustomerPotingGroup."Receivables Account");
+    end;
+
+    local procedure TaxEngineCallingHandler(var GenJnlLine: Record "Gen. Journal Line"; var xGenJnlLine: Record "Gen. Journal Line")
+    var
+        CalculateTax: Codeunit "Calculate Tax";
+    begin
+        CalculateTax.CallTaxEngineOnGenJnlLine(GenJnlLine, xGenJnlLine);
     end;
 }

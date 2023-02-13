@@ -15,7 +15,9 @@ PermissionSet 22 "System Application - Edit"
                              "Guided Experience - Edit",
                              "Language - Edit",
 #if not CLEAN19
+#pragma warning disable AL0432
                              "SL Designer Subscribers - Edit",
+#pragma warning restore AL0432
 #endif
                              "Translation - Edit",
                              "Word Templates - Edit";

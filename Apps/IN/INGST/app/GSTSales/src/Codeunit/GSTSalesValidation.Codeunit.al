@@ -467,6 +467,7 @@ codeunit 18143 "GST Sales Validation"
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterValidateEvent', 'Location Code', false, false)]
     local procedure OnAfterValidateEventLocationCode(var Rec: Record "Sales Line")
     begin
+        CheckHeaderLocation(Rec);
         UpdateGSTJurisdictionType(Rec);
     end;
 
@@ -1949,6 +1950,24 @@ codeunit 18143 "GST Sales Validation"
         end
     end;
 
+    local procedure CheckHeaderLocation(SalesLine: Record "Sales Line")
+    var
+        SalesHeader: Record "Sales Header";
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckHeaderLocation(SalesLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
+            exit;
+
+        if SalesHeader."GST Customer Type" = SalesHeader."GST Customer Type"::" " then
+            exit;
+
+        SalesLine.TestField("Location Code", SalesHeader."Location Code");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Correct Posted Sales Invoice", 'OnAfterCreateCorrectiveSalesCrMemo', '', false, false)]
     local procedure UpdateReferenceInvoiceNo(SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header"; var CancellingOnly: Boolean)
     begin
@@ -1962,6 +1981,24 @@ codeunit 18143 "GST Sales Validation"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterGetLineAmountToHandle', '', false, false)]
+    local procedure OnAfterGetLineAmountToHandle(SalesLine: Record "Sales Line"; QtyToHandle: Decimal; var LineDiscAmount: Decimal)
+    var
+        Currency: Record Currency;
+    begin
+        if not (SalesLine."Price Inclusive of Tax") then
+            exit;
+
+        if (SalesLine."Line Discount %" = 0) then
+            exit;
+
+        if QtyToHandle = SalesLine.Quantity then
+            exit;
+
+        GetCurrency(SalesLine, Currency);
+        LineDiscAmount := Round(SalesLine."Line Discount Amount" * QtyToHandle / SalesLine.Quantity, Currency."Amount Rounding Precision");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSalesLineHSNSACEditable(SalesLine: Record "Sales Line"; var IsEditable: Boolean; var IsHandled: Boolean)
     begin
@@ -1969,6 +2006,11 @@ codeunit 18143 "GST Sales Validation"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateReferenceInvoiceNo(var RecVar: Variant; var xRecVar: Variant; var FieldNo: Integer; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckHeaderLocation(SalesLine: Record "Sales Line"; var IsHandled: Boolean)
     begin
     end;
 }

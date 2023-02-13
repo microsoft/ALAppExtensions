@@ -417,6 +417,7 @@ codeunit 4022 "GP Vendor Migrator"
         Vendor: Record Vendor;
         VendorBankAccount: Record "Vendor Bank Account";
         GeneralLedgerSetup: Record "General Ledger Setup";
+        HelperFunctions: Codeunit "Helper Functions";
         VendorBankAccountExists: Boolean;
         CurrencyCode: Code[10];
     begin
@@ -427,7 +428,7 @@ codeunit 4022 "GP Vendor Migrator"
         repeat
             if Vendor.Get(GPSY06000.CustomerVendor_ID) then begin
                 CurrencyCode := CopyStr(GPSY06000.CURNCYID, 1, MaxStrLen(CurrencyCode));
-                CreateCurrencyIfNeeded(CurrencyCode);
+                HelperFunctions.CreateCurrencyIfNeeded(CurrencyCode);
                 CreateSwiftCodeIfNeeded(GPSY06000.SWIFTADDR);
 
                 VendorBankAccountExists := VendorBankAccount.Get(Vendor."No.", GPSY06000.EFTBankCode);
@@ -452,23 +453,6 @@ codeunit 4022 "GP Vendor Migrator"
                 SetPreferredBankAccountIfNeeded(GPSY06000, Vendor);
             end;
         until GPSY06000.Next() = 0;
-    end;
-
-    local procedure CreateCurrencyIfNeeded(CurrencyCode: Code[10])
-    var
-        Currency: Record Currency;
-        GPMC40200: Record "GP MC40200";
-    begin
-        if (CurrencyCode <> '') and not Currency.Get(CurrencyCode) then begin
-            GPMC40200.SetRange("CURNCYID", CurrencyCode);
-            if GPMC40200.FindFirst() then begin
-                Currency.Validate("Symbol", GPMC40200.CRNCYSYM);
-                Currency.Validate("Code", CurrencyCode);
-                Currency.Validate("Description", CopyStr(GPMC40200.CRNCYDSC, 1, 30));
-                Currency.Validate("Invoice Rounding Type", Currency."Invoice Rounding Type"::Nearest);
-                Currency.Insert();
-            end;
-        end;
     end;
 
     local procedure CreateSwiftCodeIfNeeded(SWIFTADDR: Text[11])

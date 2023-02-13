@@ -2,7 +2,6 @@ codeunit 4033 "Install GP SmartLists"
 {
     trigger OnRun();
     begin
-        InstallGPSmartListsExtension();
     end;
 
     procedure InstallGPSmartListsExtension()

@@ -9,6 +9,11 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 ApplicationArea = Basic, Suite;
                 Visible = FactBoxesVisible;
             }
+            part("Show Detail Snapshot Errors"; "Hist. Migration Status Factbox")
+            {
+                ApplicationArea = Basic, Suite;
+                Visible = FactBoxesVisible;
+            }
         }
     }
 
@@ -19,7 +24,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             action(ConfigureGPMigration)
             {
                 Enabled = HasCompletedSetupWizard;
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = All;
                 Caption = 'Configure GP Migration';
                 ToolTip = 'Configure migration settings for GP.';
                 Promoted = true;
@@ -36,6 +41,39 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                     GPMigrationConfiguration.Run();
                 end;
             }
+
+            action(ReRunHistoricalMigration)
+            {
+                Enabled = IsSuper and HasCompletedSetupWizard;
+                ApplicationArea = All;
+                Caption = 'Rerun GP Detail Snapshot';
+                ToolTip = 'Rerun the migration of GP historical transactions based on your company settings.';
+                Image = Process;
+
+                trigger OnAction()
+                var
+                    GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+                    HistMigrationCurrentStatus: Record "Hist. Migration Current Status";
+                    GPHistSourceProgress: Record "GP Hist. Source Progress";
+                    WizardIntegration: Codeunit "Wizard Integration";
+                begin
+                    if not GPCompanyAdditionalSettings.GetMigrateHistory() then begin
+                        Message(DetailSnapshotNotConfiguredMsg);
+                        exit;
+                    end;
+
+                    if Confirm(ConfirmRerunQst) then begin
+                        if not GPHistSourceProgress.IsEmpty() then begin
+                            HistMigrationCurrentStatus.EnsureInit();
+                            HistMigrationCurrentStatus."Reset Data" := Confirm(ResetPreviousRunQst);
+                            HistMigrationCurrentStatus.Modify();
+                        end;
+
+                        WizardIntegration.ScheduleGPHistoricalSnapshotMigration();
+                        Message(SnapshotJobRunningMsg);
+                    end;
+                end;
+            }
         }
     }
 
@@ -43,16 +81,54 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridCompany: Record "Hybrid Company";
+        GPConfiguration: Record "GP Configuration";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HybridGPWizard: Codeunit "Hybrid GP Wizard";
+        UserPermissions: Codeunit "User Permissions";
     begin
+        IsSuper := UserPermissions.IsSuper(UserSecurityId());
+
         if IntelligentCloudSetup.Get() then
             FactBoxesVisible := IntelligentCloudSetup."Product ID" = HybridGPWizard.ProductId();
 
         HybridCompany.SetRange(Replicate, true);
         HasCompletedSetupWizard := not HybridCompany.IsEmpty();
+
+        if GetHasCompletedMigration() then
+            if GPCompanyAdditionalSettings.GetMigrateHistory() then
+                if GPConfiguration.Get() then
+                    if not GPConfiguration.HasHistoricalJobRan() then
+                        ShowGPHistoricalJobNeedsToRunNotification();
+    end;
+
+    local procedure GetHasCompletedMigration(): Boolean
+    var
+        DataMigrationStatus: Record "Data Migration Status";
+    begin
+        DataMigrationStatus.SetFilter(Status, '%1|%2', DataMigrationStatus.Status::Completed, DataMigrationStatus.Status::"Completed with Errors");
+        exit(not DataMigrationStatus.IsEmpty());
+    end;
+
+    local procedure ShowGPHistoricalJobNeedsToRunNotification()
+    var
+        GPHistoricalSnapshotJobHasNotRanNotification: Notification;
+    begin
+        GPHistoricalSnapshotJobHasNotRanNotification.Id := '143A52DA-E9F8-4B2E-A3C2-2E42DD8B97D4';
+        GPHistoricalSnapshotJobHasNotRanNotification.Recall();
+        GPHistoricalSnapshotJobHasNotRanNotification.Message := HistoricalDataJobNotRanMsg;
+        GPHistoricalSnapshotJobHasNotRanNotification.Scope := NotificationScope::LocalScope;
+        GPHistoricalSnapshotJobHasNotRanNotification.AddAction(HistoricalDataStartJobMsg, Codeunit::"Wizard Integration", 'StartGPHistoricalJobMigrationAction');
+        GPHistoricalSnapshotJobHasNotRanNotification.Send();
     end;
 
     var
+        IsSuper: Boolean;
         FactBoxesVisible: Boolean;
         HasCompletedSetupWizard: Boolean;
+        DetailSnapshotNotConfiguredMsg: Label 'GP Historical Snapshot is not configured to migrate.';
+        ConfirmRerunQst: Label 'Are you sure you want to rerun the GP Historical Snapshot migration?';
+        ResetPreviousRunQst: Label 'Do you want to reset your previous GP Historical Snapshot migration? Choose No if you want to continue progress from the previous attempt.';
+        SnapshotJobRunningMsg: Label 'The GP Historical Snapshot job is running.';
+        HistoricalDataJobNotRanMsg: Label 'The GP Historical Snapshot job has not ran.';
+        HistoricalDataStartJobMsg: Label 'Start GP Historical Snapshot job.';
 }

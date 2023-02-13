@@ -150,6 +150,43 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specifies whether to migrate item classes.';
                     ApplicationArea = All;
                 }
+                field("Oldest Hist. Year to Migrate"; Rec."Oldest Hist. Year to Migrate")
+                {
+                    Caption = 'Oldest Hist. Year';
+                    ToolTip = 'Specify the oldest historical year to be migrated for GL summary information and historical snapshot records.';
+                    Width = 4;
+                    ApplicationArea = All;
+                }
+                field("Migrate Hist. GL Trx."; Rec."Migrate Hist. GL Trx.")
+                {
+                    Caption = 'Hist. GL Trx.';
+                    ToolTip = 'Specify whether to migrate historical GL transactions.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Hist. AR Trx."; Rec."Migrate Hist. AR Trx.")
+                {
+                    Caption = 'Hist. AR Trx.';
+                    ToolTip = 'Specify whether to migrate historical AR transactions.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Hist. AP Trx."; Rec."Migrate Hist. AP Trx.")
+                {
+                    Caption = 'Hist. AP Trx.';
+                    ToolTip = 'Specify whether to migrate historical AP transactions.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Hist. Inv. Trx."; Rec."Migrate Hist. Inv. Trx.")
+                {
+                    Caption = 'Hist. Inv. Trx.';
+                    ToolTip = 'Specify whether to migrate historical inventory transactions.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Hist. Purch. Trx."; Rec."Migrate Hist. Purch. Trx.")
+                {
+                    Caption = 'Hist. Purch. Trx.';
+                    ToolTip = 'Specify whether to migrate historical Purchase receivable transactions.';
+                    ApplicationArea = All;
+                }
             }
         }
     }

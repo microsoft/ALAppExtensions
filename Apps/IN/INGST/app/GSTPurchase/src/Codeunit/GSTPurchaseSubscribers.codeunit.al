@@ -84,6 +84,7 @@ codeunit 18080 "GST Purchase Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Location Code', false, false)]
     local procedure OnAfterValidateLocationCodePurchase(var Rec: Record "Purchase Line")
     begin
+        CheckHeaderLocation(Rec);
         UpdateGSTJurisdictionType(Rec);
     end;
 
@@ -1630,6 +1631,24 @@ codeunit 18080 "GST Purchase Subscribers"
             Error(ShipToOptionErr);
     end;
 
+    local procedure CheckHeaderLocation(PurchaseLine: Record "Purchase Line")
+    var
+        PurchaseHeader: Record "Purchase Header";
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckHeaderLocation(PurchaseLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.") then
+            exit;
+
+        if PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::" " then
+            exit;
+
+        PurchaseLine.TestField("Location Code", PurchaseHeader."Location Code");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Purchase Subscribers", 'OnBeforePurchaseLineHSNSACEditable', '', false, false)]
     local procedure SetGstHsnEditableforAllType(var IsEditable: Boolean; var IsHandled: Boolean)
     begin
@@ -1639,6 +1658,11 @@ codeunit 18080 "GST Purchase Subscribers"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePurchaseLineHSNSACEditable(PurchaseLine: Record "Purchase Line"; var IsEditable: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckHeaderLocation(PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
     begin
     end;
 }
