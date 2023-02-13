@@ -106,10 +106,15 @@ jobs:
               Write-Host "projects$($step)Count=0"
               $step--
           }
+      - name: Logging
+        if: env.workflowDepth > 1
+        id: BuildOrder
+        run: |
+          Write-Host '${{ steps.ReadSettings.outputs.ProjectCount }}'
 
   Build:
     needs: [ Initialization ]
-    if: ${{ needs.Initialization.outputs.projectCount > 0 }}
+    if: ${{ needs.Initialization.outputs.projectCount > 0 && !failure() }}
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
     defaults:
       run:
