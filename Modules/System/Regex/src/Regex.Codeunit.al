@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Provides functionality to use regular expressions to match text, split text, replace text etc.  
+/// Provides functionality to use regular expressions to match text, split text, replace text etc.  (test)
 /// </summary>
 codeunit 3960 Regex
 {
