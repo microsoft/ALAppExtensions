@@ -2,7 +2,7 @@ table 5678 "WebDAV Content"
 {
     Access = Public;
     DataClassification = SystemMetadata; // Data classification is SystemMetadata as the table is temporary
-    Caption = 'WebDAV Folder';
+    Caption = 'WebDAV Content';
     TableType = Temporary;
     Extensible = false;
 

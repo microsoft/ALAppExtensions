@@ -30,6 +30,7 @@ codeunit 5682 "WebDAV Content Parser"
     [NonDebuggable]
     procedure ParseSingle(XmlNode: XmlNode; var WebDAVContent: Record "WebDAV Content")
     begin
+        WebDAVContent.Init();
         WebDAVContent."Is Collection" := HasNode(XmlNode, 'dav:propstat/dav:prop/dav:resourcetype/dav:collection');
 
         if OnlyCollections then
@@ -39,23 +40,23 @@ codeunit 5682 "WebDAV Content Parser"
             if WebDAVContent."Is Collection" then
                 exit;
 
-        WebDAVContent."Full Url" := GetValueAsText(XmlNode, 'dav:href');
+        WebDAVContent."Full Url" := GetXmlNodePropertyInnerText(XmlNode, 'dav:href');
         WebDAVContent."Relative Url" := GetRelativeUrl(WebDAVContent."Full Url");
         WebDAVContent.Level := GetLevelFromPath(WebDAVContent."Relative Url");
 
-        WebDAVContent."Name" := GetValueAsText(XmlNode, 'dav:propstat/dav:prop/dav:displayname');
-        WebDAVContent."Content Type" := GetValueAsText(XmlNode, 'dav:propstat/dav:prop/dav:getcontenttype');
-        if Evaluate(WebDAVContent."Content Length", GetValueAsText(XmlNode, 'dav:propstat/dav:prop/dav:getcontentlength')) then;
+        WebDAVContent."Name" := GetXmlNodePropertyInnerText(XmlNode, 'dav:propstat/dav:prop/dav:displayname');
+        WebDAVContent."Content Type" := GetXmlNodePropertyInnerText(XmlNode, 'dav:propstat/dav:prop/dav:getcontenttype');
+        if Evaluate(WebDAVContent."Content Length", GetXmlNodePropertyInnerText(XmlNode, 'dav:propstat/dav:prop/dav:getcontentlength')) then;
 
-        if Evaluate(WebDAVContent."Creation Date", GetValueAsText(XmlNode, 'dav:propstat/dav:prop/dav:creationdate')) then;
-        if Evaluate(WebDAVContent."Last Modified Date", GetValueAsText(XmlNode, 'dav:propstat/dav:prop/dav:getlastmodified')) then;
+        if Evaluate(WebDAVContent."Creation Date", GetXmlNodePropertyInnerText(XmlNode, 'dav:propstat/dav:prop/dav:creationdate')) then;
+        if Evaluate(WebDAVContent."Last Modified Date", GetXmlNodePropertyInnerText(XmlNode, 'dav:propstat/dav:prop/dav:getlastmodified')) then;
 
         WebDAVContent."Entry No." := GetNextEntryNo();
         WebDAVContent.Insert();
     end;
 
     [NonDebuggable]
-    procedure GetValueAsText(XmlNode: XmlNode; PropertyName: Text): Text
+    procedure GetXmlNodePropertyInnerText(XmlNode: XmlNode; PropertyName: Text): Text
     var
         ChildNode: XmlNode;
         XmlElement: XmlElement;

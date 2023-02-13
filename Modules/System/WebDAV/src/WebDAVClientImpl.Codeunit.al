@@ -19,29 +19,29 @@ codeunit 5679 "WebDAV Client Impl."
     end;
 
     [NonDebuggable]
-    procedure MakeCollection(): Boolean
+    procedure MakeCollection(CollectionName: Text): Boolean
     var
         WebDAVRequestHelper: Codeunit "WebDAV Request Helper";
     begin
         WebDAVRequestHelper.SetAuthorization(Authorization);
-        WebDAVOperationResponse := WebDAVRequestHelper.MkCol(Uri);
+        WebDAVOperationResponse := WebDAVRequestHelper.MkCol(Uri, CollectionName);
 
         if not WebDAVOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
-            Error('%1: %2', WebDAVOperationResponse.GetDiagnostics().GetHttpStatusCode(), WebDAVOperationResponse.GetDiagnostics().GetResponseReasonPhrase());
+            Exit(false);
 
         Exit(true);
     end;
 
     [NonDebuggable]
-    procedure Delete(): Boolean
+    procedure Delete(MemberName: Text): Boolean
     var
         WebDAVRequestHelper: Codeunit "WebDAV Request Helper";
     begin
         WebDAVRequestHelper.SetAuthorization(Authorization);
-        WebDAVOperationResponse := WebDAVRequestHelper.Delete(Uri);
+        WebDAVOperationResponse := WebDAVRequestHelper.Delete(Uri, MemberName);
 
         if not WebDAVOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
-            Error('%1: %2', WebDAVOperationResponse.GetDiagnostics().GetHttpStatusCode(), WebDAVOperationResponse.GetDiagnostics().GetResponseReasonPhrase());
+            Exit(false);
 
         Exit(true);
     end;
@@ -74,7 +74,7 @@ codeunit 5679 "WebDAV Client Impl."
         WebDAVOperationResponse := WebDAVRequestHelper.Put(Uri, Content);
 
         if not WebDAVOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
-            Error('%1: %2', WebDAVOperationResponse.GetDiagnostics().GetHttpStatusCode(), WebDAVOperationResponse.GetDiagnostics().GetResponseReasonPhrase());
+            Exit(false);
 
         Exit(true);
     end;
@@ -88,7 +88,7 @@ codeunit 5679 "WebDAV Client Impl."
         WebDAVOperationResponse := WebDAVRequestHelper.Move(Uri, Destination);
 
         if not WebDAVOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
-            Error('%1: %2', WebDAVOperationResponse.GetDiagnostics().GetHttpStatusCode(), WebDAVOperationResponse.GetDiagnostics().GetResponseReasonPhrase());
+            Exit(false);
 
         Exit(true);
     end;
@@ -103,14 +103,14 @@ codeunit 5679 "WebDAV Client Impl."
         WebDAVOperationResponse := WebDAVRequestHelper.Copy(Uri, Destination);
 
         if not WebDAVOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
-            Error('%1: %2', WebDAVOperationResponse.GetDiagnostics().GetHttpStatusCode(), WebDAVOperationResponse.GetDiagnostics().GetResponseReasonPhrase());
+            Exit(false);
 
         Exit(true);
     end;
 
 
     [NonDebuggable]
-    procedure GetContent(var WebDAVContent: Record "WebDAV Content"; Recursive: Boolean): Boolean
+    procedure GetFilesAndCollections(var WebDAVContent: Record "WebDAV Content"; Recursive: Boolean): Boolean
     var
         WebDAVContentParser: Codeunit "WebDAV Content Parser";
         ResponseContent: Text;
@@ -157,10 +157,11 @@ codeunit 5679 "WebDAV Client Impl."
         WebDAVRequestHelper.SetAuthorization(Authorization);
         WebDAVOperationResponse := WebDAVRequestHelper.Propfind(Uri, Recursive);
 
+        // TODO Success??
         if not WebDAVOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             Error('%1: %2', WebDAVOperationResponse.GetDiagnostics().GetHttpStatusCode(), WebDAVOperationResponse.GetDiagnostics().GetResponseReasonPhrase());
 
-        WebDAVOperationResponse.GetResultAsText(ResponseContent);
+        WebDAVOperationResponse.GetResponseAsText(ResponseContent);
     end;
 
     [NonDebuggable]
@@ -172,11 +173,10 @@ codeunit 5679 "WebDAV Client Impl."
         WebDAVOperationResponse := WebDAVRequestHelper.Get(Uri);
 
         if not WebDAVOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
-            Error('%1: %2', WebDAVOperationResponse.GetDiagnostics().GetHttpStatusCode(), WebDAVOperationResponse.GetDiagnostics().GetResponseReasonPhrase());
+            Exit(false);
 
-        WebDAVOperationResponse.GetResultAsStream(ResponseInStream);
-
-        Exit(true);
+        if WebDAVOperationResponse.GetResponseAsStream(ResponseInStream) then
+            Exit(true);
     end;
 
     [NonDebuggable]
@@ -189,4 +189,20 @@ codeunit 5679 "WebDAV Client Impl."
         Exit(true);
     end;
 
+    procedure GetDiagnostics(): Interface "HTTP Diagnostics"
+    begin
+        exit(WebDAVOperationResponse.GetDiagnostics());
+    end;
+
+    [TryFunction]
+    procedure GetResponseAsText(var Response: Text)
+    begin
+        WebDAVOperationResponse.GetResponseAsText(Response);
+    end;
+
+    [TryFunction]
+    internal procedure GetResponseAsStream(var ResponseInStream: InStream)
+    begin
+        WebDAVOperationResponse.GetResponseAsStream(ResponseInStream);
+    end;
 }

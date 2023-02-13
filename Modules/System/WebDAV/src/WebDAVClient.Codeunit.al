@@ -11,15 +11,15 @@ codeunit 5678 "WebDAV Client"
     end;
 
     // [NonDebuggable]
-    procedure MakeCollection(): Boolean
+    procedure MakeCollection(CollectionName: Text): Boolean
     begin
-        Exit(WebDAVClientImpl.MakeCollection());
+        Exit(WebDAVClientImpl.MakeCollection(CollectionName));
     end;
 
     // [NonDebuggable]
-    procedure Delete(): Boolean
+    procedure Delete(MemberName: Text): Boolean
     begin
-        Exit(WebDAVClientImpl.Delete());
+        Exit(WebDAVClientImpl.Delete(MemberName));
     end;
 
     // [NonDebuggable]
@@ -53,9 +53,9 @@ codeunit 5678 "WebDAV Client"
     end;
 
     // [NonDebuggable]
-    procedure GetContent(var WebDAVContent: Record "WebDAV Content"; Recursive: Boolean): Boolean
+    procedure GetFilesAndCollections(var WebDAVContent: Record "WebDAV Content"; Recursive: Boolean): Boolean
     begin
-        Exit(WebDAVClientImpl.GetContent(WebDAVContent, Recursive));
+        Exit(WebDAVClientImpl.GetFilesAndCollections(WebDAVContent, Recursive));
     end;
 
     // [NonDebuggable]
@@ -81,4 +81,26 @@ codeunit 5678 "WebDAV Client"
     begin
         Exit(WebDAVClientImpl.GetFileContentAsText(ResponseText));
     end;
+
+    /// <summary>
+    /// Returns detailed information on last API call.
+    /// </summary>
+    /// <returns>Codeunit holding http resonse status, reason phrase, headers and possible error information for tha last API call</returns>
+    procedure GetDiagnostics(): Interface "HTTP Diagnostics"
+    begin
+        exit(WebDAVClientImpl.GetDiagnostics());
+    end;
+
+    [TryFunction]
+    procedure GetResponseAsText(var Response: Text)
+    begin
+        WebDAVClientImpl.GetResponseAsText(Response);
+    end;
+
+    [TryFunction]
+    internal procedure GetResponseAsStream(var ResponseInStream: InStream)
+    begin
+        WebDAVClientImpl.GetResponseAsStream(ResponseInStream);
+    end;
+
 }

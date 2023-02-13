@@ -9,19 +9,19 @@ codeunit 5684 "WebDAV Operation Response"
 
     [NonDebuggable]
     [TryFunction]
-    internal procedure GetResultAsText(var Result: Text);
+    internal procedure GetResponseAsText(var Response: Text);
     var
-        ResultInStream: InStream;
+        ResponseInStream: InStream;
     begin
-        TempBlobContent.CreateInStream(ResultInStream);
-        ResultInStream.Read(Result);
+        TempBlobContent.CreateInStream(ResponseInStream);
+        ResponseInStream.Read(Response);
     end;
 
     [NonDebuggable]
     [TryFunction]
-    internal procedure GetResultAsStream(var ResultInStream: InStream)
+    internal procedure GetResponseAsStream(var ResponseInStream: InStream)
     begin
-        TempBlobContent.CreateInStream(ResultInStream);
+        TempBlobContent.CreateInStream(ResponseInStream);
     end;
 
     [NonDebuggable]
@@ -75,13 +75,13 @@ codeunit 5684 "WebDAV Operation Response"
     [NonDebuggable]
     local procedure GetErrorDescription(): Text
     var
-        Result: Text;
+        Response: Text;
         JObject: JsonObject;
         JToken: JsonToken;
     begin
-        GetResultAsText(Result);
-        if Result <> '' then
-            if JObject.ReadFrom(Result) then
+        GetResponseAsText(Response);
+        if Response <> '' then
+            if JObject.ReadFrom(Response) then
                 if JObject.Get('error_description', JToken) then
                     exit(JToken.AsValue().AsText());
     end;

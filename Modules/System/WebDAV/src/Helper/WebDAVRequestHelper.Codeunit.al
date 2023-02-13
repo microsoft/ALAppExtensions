@@ -6,17 +6,15 @@ codeunit 5683 "WebDAV Request Helper"
         Authorization: Interface "WebDAV Authorization";
         OperationNotSuccessfulErr: Label 'An error has occurred';
 
-
     procedure SetAuthorization(InitAuthorization: Interface "WebDAV Authorization")
     begin
         Authorization := InitAuthorization;
     end;
 
-
     [NonDebuggable]
-    procedure MkCol(Uri: Text) WebDAVOperationResponse: Codeunit "WebDAV Operation Response";
+    procedure MkCol(Uri: Text; CollectionName: Text) WebDAVOperationResponse: Codeunit "WebDAV Operation Response";
     begin
-        WebDAVOperationResponse := SendRequest(PrepareRequestMsg('MKCOL', Uri))
+        WebDAVOperationResponse := SendRequest(PrepareRequestMsg('MKCOL', NormalizeUri(Uri) + CollectionName))
     end;
 
     [NonDebuggable]
@@ -36,9 +34,9 @@ codeunit 5683 "WebDAV Request Helper"
     end;
 
     [NonDebuggable]
-    procedure Delete(Uri: Text) WebDAVOperationResponse: Codeunit "WebDAV Operation Response";
+    procedure Delete(Uri: Text; MemberName: Text) WebDAVOperationResponse: Codeunit "WebDAV Operation Response";
     begin
-        WebDAVOperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::DELETE, Uri))
+        WebDAVOperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::DELETE, NormalizeUri(Uri) + MemberName));
     end;
 
     [NonDebuggable]
@@ -78,8 +76,9 @@ codeunit 5683 "WebDAV Request Helper"
         RequestMessage := PrepareRequestMsg('PROPFIND', Uri, WebDAVHttpContent);
         RequestMessage.GetHeaders(Headers);
 
+        // TODO Depth = 0?
         // Recursive
-        if Headers.Contains('Dephth') then
+        if Headers.Contains('Depth') then
             Headers.Remove('Depth');
         if Recursive then
             Headers.Add('Depth', 'infinity')
@@ -170,6 +169,15 @@ codeunit 5683 "WebDAV Request Helper"
 
         Propfind.Add(Prop);
         XMlDoc.Add(Propfind);
+    end;
+
+    local procedure NormalizeUri(Uri: Text) NewUri: Text
+    begin
+        NewUri := Uri;
+        if not Uri.EndsWith('/') then
+            NewUri += '/';
+        if NewUri = '/' then
+            NewUri := '';
     end;
 
     [InternalEvent(false, true)]
