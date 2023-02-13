@@ -93,6 +93,6 @@ jobs:
         run: |
           $nugetSource = https://api.nuget.org/v3/index.json
           Get-ChildItem -Path "$($env:packageOutputPath)/*nupkg" | % {
-            Write-Host "Pushing package: $($_.FullName)"
+            Write-Host "Pushing nuget package: $($_.FullName)"
             nuget push $nupkgName -Source $nugetSource
           }
