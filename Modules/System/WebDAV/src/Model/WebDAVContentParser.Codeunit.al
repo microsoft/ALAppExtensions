@@ -1,4 +1,7 @@
-
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 codeunit 5682 "WebDAV Content Parser"
 {
 
@@ -63,7 +66,7 @@ codeunit 5682 "WebDAV Content Parser"
     begin
         if XmlNode.SelectSingleNode(PropertyName, XmlNamespaceManager, ChildNode) then begin
             XmlElement := ChildNode.AsXmlElement();
-            Exit(XmlElement.InnerText());
+            exit(XmlElement.InnerText());
         end;
     end;
 
@@ -73,18 +76,18 @@ codeunit 5682 "WebDAV Content Parser"
         ChildNode: XmlNode;
         XmlElement: XmlElement;
     begin
-        Exit(XmlNode.SelectSingleNode(PropertyName, XmlNamespaceManager, ChildNode));
+        exit(XmlNode.SelectSingleNode(PropertyName, XmlNamespaceManager, ChildNode));
     end;
 
     local procedure GetNextEntryNo(): Integer;
     begin
         NextEntryNo += 1;
-        Exit(NextEntryNo);
+        exit(NextEntryNo);
     end;
 
     local procedure GetLevelFromPath(Path: Text): Integer
     begin
-        Exit(Path.Split('/').Count);
+        exit(Path.Split('/').Count);
     end;
 
     local procedure GetRelativeUrl(FullUrl: Text) RelativeUrl: Text

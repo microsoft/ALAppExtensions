@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 table 5678 "WebDAV Content"
 {
     Access = Public;
@@ -15,7 +20,7 @@ table 5678 "WebDAV Content"
         }
         field(10; Name; Text[250])
         {
-            Caption = 'Title';
+            Caption = 'Name';
         }
         field(11; "Full Url"; Text[2048])
         {
@@ -51,10 +56,6 @@ table 5678 "WebDAV Content"
             Caption = 'Last Modified Date';
         }
     }
-
-
-
-
 
     keys
     {

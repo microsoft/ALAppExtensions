@@ -1,3 +1,7 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 codeunit 5683 "WebDAV Request Helper"
 {
     Access = Internal;
@@ -78,19 +82,19 @@ codeunit 5683 "WebDAV Request Helper"
 
         // TODO Depth = 0?
         // Recursive
-        if Headers.Contains('Depth') then
-            Headers.Remove('Depth');
+        if Headers.Contains(GetDepth()) then
+            Headers.Remove(GetDepth());
         if Recursive then
-            Headers.Add('Depth', 'infinity')
+            Headers.Add(GetDepth(), 'infinity')
         else
-            Headers.Add('Depth', '1');
+            Headers.Add(GetDepth(), '1');
 
         WebDAVOperationResponse := SendRequest(RequestMessage);
     end;
 
     local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; Uri: Text): HttpRequestMessage
     begin
-        Exit(PrepareRequestMsg(Format(HttpRequestType), Uri));
+        exit(PrepareRequestMsg(Format(HttpRequestType), Uri));
     end;
 
     local procedure PrepareRequestMsg(HttpRequestType: Text; Uri: Text) RequestMessage: HttpRequestMessage
@@ -101,7 +105,7 @@ codeunit 5683 "WebDAV Request Helper"
 
     local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; Uri: Text; WebDAVHttpContent: Codeunit "WebDAV Http Content") RequestMessage: HttpRequestMessage
     begin
-        Exit(PrepareRequestMsg(Format(HttpRequestType), Uri, WebDAVHttpContent));
+        exit(PrepareRequestMsg(Format(HttpRequestType), Uri, WebDAVHttpContent));
     end;
 
     local procedure PrepareRequestMsg(HttpRequestType: Text; Uri: Text; var WebDAVHttpContent: Codeunit "WebDAV Http Content") RequestMessage: HttpRequestMessage
@@ -111,21 +115,21 @@ codeunit 5683 "WebDAV Request Helper"
     begin
         RequestMessage.Method(HttpRequestType);
         RequestMessage.SetRequestUri(Uri);
-
         RequestMessage.GetHeaders(Headers);
-        if WebDAVHttpContent.GetContentLength() > 0 then begin
 
-            HttpContent := WebDAVHttpContent.GetContent();
-            HttpContent.GetHeaders(Headers);
+        if WebDAVHttpContent.GetContentLength() = 0 then
+            exit;
 
-            if Headers.Contains('Content-Type') then
-                Headers.Remove('Content-Type');
+        HttpContent := WebDAVHttpContent.GetContent();
+        HttpContent.GetHeaders(Headers);
 
-            if WebDAVHttpContent.GetContentType() <> '' then
-                Headers.Add('Content-Type', WebDAVHttpContent.GetContentType());
+        if Headers.Contains(GetContentType) then
+            Headers.Remove(GetContentType);
 
-            RequestMessage.Content(HttpContent);
-        end;
+        if WebDAVHttpContent.GetContentType() <> '' then
+            Headers.Add(GetContentType, WebDAVHttpContent.GetContentType());
+
+        RequestMessage.Content(HttpContent);
     end;
 
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "WebDAV Operation Response"
@@ -135,15 +139,14 @@ codeunit 5683 "WebDAV Request Helper"
         IsHandled: Boolean;
     begin
         OnBeforeSendRequest(HttpRequestMessage, OperationResponse, IsHandled, HttpRequestMessage.Method());
+        if IsHandled then
+            exit;
 
-        if not IsHandled then begin
-            Authorization.Authorize(HttpRequestMessage);
-            if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
-                Error(OperationNotSuccessfulErr);
+        Authorization.Authorize(HttpRequestMessage);
+        if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
+            Error(OperationNotSuccessfulErr);
 
-            OperationResponse.SetHttpResponse(HttpResponseMessage);
-
-        end;
+        OperationResponse.SetHttpResponse(HttpResponseMessage);
     end;
 
     local procedure PreparePropfindRequest() XMLDoc: XmlDocument
@@ -166,7 +169,6 @@ codeunit 5683 "WebDAV Request Helper"
         Prop.Add(XmlElement.Create('creationdate', 'DAV:'));
         Prop.Add(XmlElement.Create('getlastmodified', 'DAV:'));
 
-
         Propfind.Add(Prop);
         XMlDoc.Add(Propfind);
     end;
@@ -180,9 +182,18 @@ codeunit 5683 "WebDAV Request Helper"
             NewUri := '';
     end;
 
+    local procedure GetContentType(): Text
+    begin
+        exit('Content-Type');
+    end;
+
+    local procedure GetDepth(): Text
+    begin
+        exit('Depth');
+    end;
+
     [InternalEvent(false, true)]
     local procedure OnBeforeSendRequest(HttpRequestMessage: HttpRequestMessage; var WebDAVOperationResponse: Codeunit "WebDAV Operation Response"; var IsHandled: Boolean; Method: Text)
     begin
     end;
-
 }
