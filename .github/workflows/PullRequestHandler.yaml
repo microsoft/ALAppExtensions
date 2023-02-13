@@ -107,7 +107,6 @@ jobs:
               $step--
           }
       - name: Logging
-        if: env.workflowDepth > 1
         id: Logging
         run: |
           Write-Host '${{ steps.ReadSettings.outputs.ProjectCount }}'
