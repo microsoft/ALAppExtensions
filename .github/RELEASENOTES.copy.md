@@ -2,6 +2,8 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+## v2.4
+
 ### Issues
 - Issue [#171](https://github.com/microsoft/AL-Go/issues/171) create a workspace file when creating a project
 - Issue [#356](https://github.com/microsoft/AL-Go/issues/356) Publish to AppSource fails in multi project repo
@@ -24,7 +26,7 @@ This version contains a number of bug fixes to release branches, to ensure that 
 
 Recommended branching strategy:
 
-![Branching Strategy](Scenarios/images/branchingstrategy.png)
+![Branching Strategy](https://raw.githubusercontent.com/microsoft/AL-Go/main/Scenarios/images/branchingstrategy.png)
 
 ### New Settings
 New Project setting: EnableTaskScheduler in container executing tests and when setting up local development environment
