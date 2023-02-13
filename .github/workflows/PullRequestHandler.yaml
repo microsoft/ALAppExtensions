@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           lfs: true
-          ref:  ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: microsoft/AL-Go-Actions/VerifyPRChanges@main
         with:
@@ -106,11 +106,6 @@ jobs:
               Write-Host "projects$($step)Count=0"
               $step--
           }
-      - name: Logging
-        if: env.workflowDepth > 1
-        id: BuildOrder
-        run: |
-          Write-Host '${{ steps.ReadSettings.outputs.ProjectCount }}'
 
   Build:
     needs: [ Initialization ]
@@ -182,7 +177,7 @@ jobs:
           settingsJson: ${{ env.Settings }}
           project: ${{ matrix.project }}
           buildMode: ${{ matrix.buildMode }}
-          refName: ${{ github.ref_name }}
+          branchName: ${{ github.ref_name }}
 
       - name: Upload thisbuild artifacts - apps
         if: env.workflowDepth > 1
