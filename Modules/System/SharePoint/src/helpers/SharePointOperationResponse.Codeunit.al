@@ -53,6 +53,8 @@ codeunit 9108 "SharePoint Operation Response"
     var
         Values: array[100] of Text;
     begin
+        if not HttpHeaders.Contains(HeaderName) then
+            exit('');
         if not HttpHeaders.GetValues(HeaderName, Values) then
             exit('');
         exit(Values[1]);
