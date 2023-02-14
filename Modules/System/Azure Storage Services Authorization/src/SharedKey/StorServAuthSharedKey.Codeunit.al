@@ -108,11 +108,12 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     begin
         foreach HeaderKey in Headers.Keys() do
             if HeaderKey.StartsWith('x-ms-') then
-                if Headers.GetValues(HeaderKey, HeaderValue) then begin
-                    if CanonicalizedHeaders <> '' then
-                        CanonicalizedHeaders += NewLine();
-                    CanonicalizedHeaders += StrSubstNo(KeyValuePairLbl, HeaderKey.ToLower(), HeaderValue[1])
-                end;
+                if Headers.Contains(HeaderKey) then
+                    if Headers.GetValues(HeaderKey, HeaderValue) then begin
+                        if CanonicalizedHeaders <> '' then
+                            CanonicalizedHeaders += NewLine();
+                        CanonicalizedHeaders += StrSubstNo(KeyValuePairLbl, HeaderKey.ToLower(), HeaderValue[1])
+                    end;
 
         exit(CanonicalizedHeaders);
     end;
