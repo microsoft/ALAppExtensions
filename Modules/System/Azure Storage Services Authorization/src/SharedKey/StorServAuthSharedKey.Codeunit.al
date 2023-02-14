@@ -85,6 +85,9 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     var
         ReturnValue: array[1] of Text;
     begin
+        if not Headers.Contains(HeaderKey) then
+            exit('');
+            
         if not Headers.GetValues(HeaderKey, ReturnValue) then
             exit('');
 
