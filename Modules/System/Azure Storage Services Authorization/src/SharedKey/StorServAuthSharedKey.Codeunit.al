@@ -16,8 +16,8 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
         Headers: HttpHeaders;
     begin
         HttpRequest.GetHeaders(Headers);
-
-        Headers.Remove('Authorization');
+        if Headers.Contains('Authorization') then
+            Headers.Remove('Authorization');
         Headers.Add('Authorization', GetSharedKeySignature(HttpRequest, StorageAccount));
     end;
 
