@@ -21,5 +21,11 @@
     "NextMajor.yaml",
     "NextMinor.yaml",
     "PublishToEnvironment.yaml"
+  ],
+  "CICDPushBranches": [
+    "main"
+  ],
+  "CICDPullRequestBranches": [
+    "main"
   ]
 }
