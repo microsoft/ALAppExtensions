@@ -109,7 +109,7 @@ jobs:
 
   Build:
     needs: [ Initialization ]
-    if: ${{ needs.Initialization.outputs.projectCount > 0 }}
+    if: ${{ needs.Initialization.outputs.projectCount > 0 && !failure() }}
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
     defaults:
       run:
@@ -177,7 +177,7 @@ jobs:
           settingsJson: ${{ env.Settings }}
           project: ${{ matrix.project }}
           buildMode: ${{ matrix.buildMode }}
-          refName: ${{ github.ref_name }}
+          branchName: ${{ github.ref_name }}
 
       - name: Upload thisbuild artifacts - apps
         if: env.workflowDepth > 1
