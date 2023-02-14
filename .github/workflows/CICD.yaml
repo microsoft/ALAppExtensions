@@ -7,7 +7,7 @@ on:
       - '**.md'
       - '.github/workflows/*.yaml'
       - '!.github/workflows/CICD.yaml'
-    branches: [ 'main', 'release/*', 'feature/*' ]
+    branches: [ 'main' ]
 
 run-name: 'CI/CD: ${{github.event.head_commit.message}}'
 
