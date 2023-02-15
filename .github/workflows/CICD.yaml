@@ -216,7 +216,7 @@ jobs:
         shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
-        include: [ { project: "./Modules"}, { buildMode: "Default"}]
+        include: ${{ fromJson(needs.Initialization.outputs.buildDimensions) }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
