@@ -1250,6 +1250,108 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportPage.Close();
     end;
 
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestNonEmptyCountryOfOriginIsBlockingReceipts()
+    var
+        Country: Record "Country/Region";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportChecklist: Record "Intrastat Report Checklist";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of non empty "Country Of Origin" in receipt line
+        // [GIVEN] Posted Purchase Order for intrastat
+        // [GIVEN] Intrastat Report
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, InvoiceDate);
+        Commit();
+
+        Country.SetFilter("Intrastat Code", '<>%1', '');
+        Country.FindFirst();
+
+        // [GIVEN] A Intrastat Report with non - empty "Country/Region of Origin Code" line
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.ModifyAll("Country/Region of Origin Code", Country.Code);
+
+        // Adding rule for "must be blank" for all receipts
+        IntrastatReportChecklist.Get(IntrastatReportLine.FieldNo("Country/Region of Origin Code"));
+        IntrastatReportChecklist.Validate("Must Be Blank For Filter Expr.", 'Type: Receipt');
+        IntrastatReportChecklist.Modify(true);
+
+        // [WHEN] Running Checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldCaption("Country/Region of Origin Code"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldCaption("Country/Region of Origin Code"));
+        IntrastatReportPage.Close();
+
+        // Resetting rule for "must be blank" for all receipts
+        IntrastatReportChecklist.Get(IntrastatReportLine.FieldNo("Country/Region of Origin Code"));
+        IntrastatReportChecklist.Validate("Must Be Blank For Filter Expr.", '');
+        IntrastatReportChecklist.Modify(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure TestEmptyNonEmptyCountryOfOriginConflict()
+    var
+        Country: Record "Country/Region";
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportChecklist: Record "Intrastat Report Checklist";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 219210] Deliverable 219210:Reporting - Error in case of rules conflict on "Country Of Origin"
+        // [GIVEN] Posted Sales Order for intrastat
+        // [GIVEN] Intrastat Report
+        Initialize();
+        InvoiceDate := CalcDate('<5Y>');
+        LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+        Commit();
+
+        Country.SetFilter("Intrastat Code", '<>%1', '');
+        Country.FindFirst();
+
+        // [GIVEN] A Intrastat Report with non - empty "Country/Region of Origin Code" line
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.ModifyAll("Country/Region of Origin Code", Country.Code);
+
+        // Adding conflicting rule for "must be blank" for all receipts
+        IntrastatReportChecklist.Get(IntrastatReportLine.FieldNo("Country/Region of Origin Code"));
+        IntrastatReportChecklist.Validate("Must Be Blank For Filter Expr.", 'Type: Shipment');
+        IntrastatReportChecklist.Modify(true);
+
+        // [WHEN] Running Checklist
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage.ChecklistReport.Invoke();
+
+        // [THEN] You got a error in error part
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldCaption("Country/Region of Origin Code"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldCaption("Country/Region of Origin Code"));
+        IntrastatReportPage.Close();
+
+        // Resetting rule for "must be blank" for all receipts
+        IntrastatReportChecklist.Get(IntrastatReportLine.FieldNo("Country/Region of Origin Code"));
+        IntrastatReportChecklist.Validate("Must Be Blank For Filter Expr.", '');
+        IntrastatReportChecklist.Modify(true);
+    end;
+
     [MessageHandler]
     [Scope('OnPrem')]
     procedure CreateFileMessageHandler(Message: Text)
@@ -1283,6 +1385,7 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] A Intrastat Report
         IntrastatReportPage.OpenEdit();
         IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage."Currency Identifier".Value := 'EUR';
 
         // [WHEN] Running Checklist
         IntrastatReportPage.ChecklistReport.Invoke();
@@ -1342,6 +1445,7 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] A Intrastat Report
         IntrastatReportPage.OpenEdit();
         IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage."Currency Identifier".Value := 'EUR';
 
         TransactionType.Code := CopyStr(LibraryUtility.GenerateGUID(), 3, 2);
         TransactionType.Insert();

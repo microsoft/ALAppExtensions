@@ -102,8 +102,10 @@ page 40021 "Cloud Migration Status API"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         NewRunID: Text;
     begin
+        FeatureTelemetry.LogUsage('0000JMN', HybridCloudManagement.GetFeatureTelemetryName(), 'Cloud migration API Replication');
         HybridCloudManagement.VerifyCanStartReplication();
         NewRunID := HybridCloudManagement.RunReplicationAPI(Rec.ReplicationType::Normal);
         Commit();
@@ -117,7 +119,9 @@ page 40021 "Cloud Migration Status API"
     procedure RunDataUpgrade(var ActionContext: WebServiceActionContext)
     var
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUsage('0000JMO', HybridCloudManagement.GetFeatureTelemetryName(), 'Cloud migration API Upgrade');
         HybridCloudManagement.RunDataUpgrade(Rec);
         SetActionResponseToThisPage(ActionContext, Rec);
     end;
@@ -149,11 +153,13 @@ page 40021 "Cloud Migration Status API"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         HybridCloudManagement.DisableMigrationAPI();
         HybridReplicationSummary.SetCurrentKey("Start Time");
         HybridReplicationSummary.FindLast();
         SetActionResponseToThisPage(ActionContext, HybridReplicationSummary);
+        FeatureTelemetry.LogUsage('0000JMP', HybridCloudManagement.GetFeatureTelemetryName(), 'Cloud migration API Disabled');
     end;
 
     local procedure SetActionResponseToThisPage(var ActionContext: WebServiceActionContext; HybridReplicationSummary: Record "Hybrid Replication Summary")

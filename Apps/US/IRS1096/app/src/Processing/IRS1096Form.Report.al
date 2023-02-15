@@ -182,6 +182,17 @@ report 10020 "IRS 1096 Form"
                 }
             }
         }
+        trigger OnOpenPage()
+        var
+            Employee: Record Employee;
+        begin
+            CompanyInfo.Get();
+            if IdentificationNumber = '' then
+                IdentificationNumber := CompanyInfo."EIN Number";
+            if ContactName = '' then
+                if Employee.get(CompanyInfo."IRS Contact No.") then
+                    ContactName := CopyStr(Employee.FullName(), 1, MaxStrLen(ContactName));
+        end;
     }
 
     var
