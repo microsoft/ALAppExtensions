@@ -239,6 +239,17 @@ codeunit 9044 "ABS Format Helper"
             exit(NewBoolean);
     end;
 
+    procedure ConvertToEnum(FieldName: Text; PropertyValue: Text): Variant
+    begin
+        if FieldName = 'Resource Type' then
+            case PropertyValue of
+                Text.LowerCase(Format(Enum::"ABS Blob Resource Type"::File)):
+                    exit(Enum::"ABS Blob Resource Type"::File);
+                Text.LowerCase(Format(Enum::"ABS Blob Resource Type"::Directory)):
+                    exit(Enum::"ABS Blob Resource Type"::Directory);
+            end;
+    end;
+
     procedure GetNewLineCharacter(): Text
     var
         LF: Char;

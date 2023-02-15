@@ -634,7 +634,9 @@ page 4000 "Hybrid Cloud Setup Wizard"
     trigger OnOpenPage()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000JMS', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         IsSaas := EnvironmentInformation.IsSaaS();
 
         if GetFilter("Product ID") = 'TM' then begin

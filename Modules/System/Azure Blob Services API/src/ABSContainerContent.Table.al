@@ -73,6 +73,12 @@ table 9043 "ABS Container Content"
             Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210588#response-body';
         }
 #pragma warning restore AS0086
+        field(16; "Resource Type"; Enum "ABS Blob Resource Type")
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'ResourceType', Locked = true;
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210588#response-body';
+        }
         field(100; "XML Value"; Blob)
         {
             DataClassification = SystemMetadata;

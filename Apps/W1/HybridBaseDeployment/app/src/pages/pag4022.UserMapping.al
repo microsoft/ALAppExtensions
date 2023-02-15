@@ -89,7 +89,12 @@ page 4022 "Migration User Mapping"
                 InFooterBar = true;
 
                 trigger OnAction()
+                var
+                    FeatureTelemetry: Codeunit "Feature Telemetry";
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                 begin
+                    FeatureTelemetry.LogUptake('0000JMG', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+                    FeatureTelemetry.LogUsage('0000JMH', HybridCloudManagement.GetFeatureTelemetryName(), 'Mapping OnPrem users');
                     ValidateAndProcess();
                 end;
             }

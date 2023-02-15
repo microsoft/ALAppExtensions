@@ -77,6 +77,8 @@ codeunit 11736 "Sales Handler CZP"
 
     local procedure CheckCashDeskUserRights(var SalesHeader: Record "Sales Header")
     begin
+        if not SalesHeader.Invoice then
+            exit;
         if SalesHeader."Cash Document Action CZP".AsInteger() > SalesHeader."Cash Document Action CZP"::" ".AsInteger() then
             CashDeskManagementCZP.CheckUserRights(SalesHeader."Cash Desk Code CZP", SalesHeader."Cash Document Action CZP"::Create);
         if (SalesHeader."Cash Document Action CZP" = SalesHeader."Cash Document Action CZP"::Release) or

@@ -55,7 +55,7 @@ codeunit 11426 "Intrastat Report Management NL"
         IntrastatReportChecklist.Init();
         IntrastatReportChecklist.Validate("Field No.", 7);
         IntrastatReportChecklist.Insert(true);
-        
+
         IntrastatReportChecklist.Init();
         IntrastatReportChecklist.Validate("Field No.", 8);
         IntrastatReportChecklist.Insert(true);
@@ -79,12 +79,14 @@ codeunit 11426 "Intrastat Report Management NL"
         IntrastatReportChecklist.Init();
         IntrastatReportChecklist.Validate("Field No.", 24);
         IntrastatReportChecklist.Validate("Filter Expression", 'Type: Shipment');
+        IntrastatReportChecklist.Validate("Must Be Blank For Filter Expr.", 'Type: Receipt');
         IntrastatReportChecklist.Insert(true);
 
 
         IntrastatReportChecklist.Init();
         IntrastatReportChecklist.Validate("Field No.", 29);
         IntrastatReportChecklist.Validate("Filter Expression", 'Type: Shipment');
+        IntrastatReportChecklist.Validate("Must Be Blank For Filter Expr.", 'Type: Receipt');
         IntrastatReportChecklist.Insert(true);
     end;
 
