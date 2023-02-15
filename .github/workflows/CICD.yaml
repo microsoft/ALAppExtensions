@@ -31,7 +31,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
       projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
-      buildDimensions: ${{ steps.ReadSettings.outputs.BuildDimensions }}
+      buildDimensions: ${{ steps.BuildDimensions.outputs.BuildDimensions }}
       projectCount: ${{ steps.ReadSettings.outputs.ProjectCount }}
       environments: ${{ steps.ReadSettings.outputs.EnvironmentsJson }}
       environmentCount: ${{ steps.ReadSettings.outputs.EnvironmentCount }}
@@ -43,7 +43,6 @@ jobs:
       projectDependenciesJson: ${{ steps.ReadSettings.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
       buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-      buildModes: ${{ steps.ReadSettings.outputs.BuildModes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -65,6 +64,13 @@ jobs:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getProjects: 'Y'
           getEnvironments: '*'
+
+      - name: Determine Build Dimensions
+        id: BuildDimensions
+        if: steps.ReadSettings.outputs.ProjectCount > 0
+        uses: mazhelez/AL-Go/Actions/GenerateBuildDimensions@build-modes-per-project
+        with:
+          projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
