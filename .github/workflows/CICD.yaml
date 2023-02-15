@@ -70,7 +70,7 @@ jobs:
         if: steps.ReadSettings.outputs.ProjectCount > 0
         uses: mazhelez/AL-Go/Actions/GenerateBuildDimensions@build-modes-per-project
         with:
-          projects: ${{ fromJson(steps.ReadSettings.outputs.ProjectsJson) }}
+          projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
