@@ -31,6 +31,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
       projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
+      buildDimensions: ${{ steps.ReadSettings.outputs.BuildDimensions }}
       projectCount: ${{ steps.ReadSettings.outputs.ProjectCount }}
       environments: ${{ steps.ReadSettings.outputs.EnvironmentsJson }}
       environmentCount: ${{ steps.ReadSettings.outputs.EnvironmentCount }}
@@ -58,7 +59,7 @@ jobs:
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@main
+        uses: mazhelez/AL-Go/Actions/ReadSettings@build-modes-per-project
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -215,8 +216,7 @@ jobs:
         shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
-        project: ${{ fromJson(needs.Initialization.outputs.projects) }}
-        buildMode: ${{ fromJson(needs.Initialization.outputs.buildModes) }}
+        include: ${{ fromJson(needs.Initialization.outputs.buildDimensions }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
