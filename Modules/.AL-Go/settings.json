@@ -13,7 +13,6 @@
                         "System Tests"
     ],
     "buildModes": [
-        "Default",
         "Clean",
         "Translated"
     ],
