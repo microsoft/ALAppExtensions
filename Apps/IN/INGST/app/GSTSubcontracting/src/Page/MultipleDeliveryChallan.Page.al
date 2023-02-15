@@ -2,6 +2,8 @@ page 18474 "Multiple Delivery Challan"
 {
     Caption = 'Multiple Delivery Challan';
     PageType = Document;
+    DeleteAllowed = false;
+    Editable = false;
     SourceTable = "Delivery Challan Header";
 
     layout

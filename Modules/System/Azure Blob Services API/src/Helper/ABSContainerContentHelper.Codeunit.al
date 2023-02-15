@@ -83,7 +83,6 @@ codeunit 9054 "ABS Container Content Helper"
                 ABSContainerContent.Name := ParentEntryName;
                 ABSContainerContent."Full Name" := ParentEntryFullName;
                 ABSContainerContent."Parent Directory" := CurrentParent;
-                ABSContainerContent."Content Type" := 'Directory';
 
                 ABSContainerContent."Entry No." := EntryNo;
                 ABSContainerContent.Insert(true);
@@ -120,6 +119,8 @@ codeunit 9054 "ABS Container Content Helper"
                             FieldRef.Value := ABSFormatHelper.ConvertToDateTime(PropertyValue);
                         FieldRef.Type::Integer:
                             FieldRef.Value := ABSFormatHelper.ConvertToInteger(PropertyValue);
+                        FieldRef.Type::Option:
+                            FieldRef.Value := ABSFormatHelper.ConvertToEnum(FieldRef.Name, PropertyValue);
                         else
                             FieldRef.Value := PropertyValue;
                     end;

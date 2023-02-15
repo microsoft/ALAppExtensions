@@ -1,4 +1,4 @@
-enum 40007 "Hist. Migration Step Type"
+enum 40907 "Hist. Migration Step Type"
 {
     value(0; "Not Started") { Caption = 'Not Started'; }
     value(1; "Started") { Caption = 'Started'; }

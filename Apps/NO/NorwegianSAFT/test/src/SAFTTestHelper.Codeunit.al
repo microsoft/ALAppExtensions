@@ -154,7 +154,7 @@ codeunit 148099 "SAF-T Test Helper"
         // Make debit amount more than credit amount to make sure we have positive closing balance for all G/L accounts
         Amount := LibraryRandom.RandDec(100, 2);
         for i := 1 to NumberOfMasterDataRecords do begin
-            MockCustLedgEntry(PostingDate, Customer."No.", Amount);
+            MockCustLedgEntrySimple(PostingDate, Customer."No.", Amount);
             MockVendLedgEntrySimple(PostingDate, Vendor."No.", -Amount);
             MockGLEntry(PostingDate, LibraryUtility.GenerateGUID(), GLAccount."No.", i, 0, '', '', 0, '', GetGLSourceCode(), Amount, 0);
             GLAccount.Next();
@@ -179,8 +179,8 @@ codeunit 148099 "SAF-T Test Helper"
         Customer.FindFirst();
         Vendor.FindFirst();
         MockGLEntry(PostingDate, LibraryUtility.GenerateGUID(), GLAccount."No.", 1, 0, '', '', 0, '', GetGLSourceCode(), GLAccAmount, 0);
-        MockCustLedgEntry(PostingDate, Customer."No.", CustAmount);
-        MockCustLedgEntry(PostingDate, Vendor."No.", VendAmount);
+        MockCustLedgEntrySimple(PostingDate, Customer."No.", CustAmount);
+        MockCustLedgEntrySimple(PostingDate, Vendor."No.", VendAmount);
     end;
 
     procedure MockGLEntryNoVAT(PostingDate: Date; GLAccNo: Code[20]; TransactionNo: Integer; DimSetID: Integer; SourceType: Integer; SourceNo: Code[20]; SourceCode: Code[10]; DebitAmount: Decimal; CreditAmount: Decimal): Integer
@@ -253,23 +253,40 @@ codeunit 148099 "SAF-T Test Helper"
         GLEntryVATEntryLink.InsertLink(GLEntryNo, VATEntryNo);
     end;
 
-    local procedure MockCustLedgEntry(PostingDate: Date; CustNo: Code[20]; Amount: Decimal)
+    local procedure MockCustLedgEntrySimple(PostingDate: Date; CustNo: Code[20]; Amount: Decimal)
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
-        MockCustLedgEntry(PostingDate, CustNo, Amount, Amount, "Gen. Journal Document Type"::" ");
+        MockCustLedgEntryCustom(LibraryUtility.GetNewRecNo(CustLedgerEntry, CustLedgerEntry.FieldNo("Entry No.")), PostingDate, CustNo, 0, '', Amount, Amount, Amount, 0, "Gen. Journal Document Type"::" ");
     end;
 
     procedure MockCustLedgEntry(PostingDate: Date; CustNo: Code[20]; Amount: Decimal; AmountDtldCustLedgEntry: Decimal; DocumentType: Enum "Gen. Journal Document Type")
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        MockCustLedgEntryCustom(LibraryUtility.GetNewRecNo(CustLedgerEntry, CustLedgerEntry.FieldNo("Entry No.")), PostingDate, CustNo, 0, '', Amount, Amount, AmountDtldCustLedgEntry, 0, DocumentType);
+    end;
+
+    procedure MockCustLedgEntry(EntryNo: Integer; PostingDate: Date; CustNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; SalesAmount: Decimal; Amount: Decimal; AmountDtldVendLedgEntry: Decimal; CurrencyFactor: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    begin
+        MockCustLedgEntryCustom(EntryNo, PostingDate, CustNo, TransactionNo, CurrencyCode, SalesAmount, Amount, AmountDtldVendLedgEntry, CurrencyFactor, DocumentType);
+    end;
+
+    procedure MockCustLedgEntryCustom(EntryNo: Integer; PostingDate: Date; CustNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; SalesAmount: Decimal; Amount: Decimal; AmountLCY: Decimal; CurrencyFactor: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
     begin
         CustLedgerEntry.Init();
-        CustLedgerEntry."Entry No." := LibraryUtility.GetNewRecNo(CustLedgerEntry, CustLedgerEntry.FieldNo("Entry No."));
+        CustLedgerEntry."Entry No." := EntryNo;
         CustLedgerEntry."Posting Date" := PostingDate;
         CustLedgerEntry."Customer No." := CustNo;
         if not (DocumentType in ["Gen. Journal Document Type"::Payment, "Gen. Journal Document Type"::Refund]) then
-            CustLedgerEntry."Sales (LCY)" := Amount;
+            CustLedgerEntry."Sales (LCY)" := SalesAmount;
         CustLedgerEntry."Document Type" := DocumentType;
+        CustLedgerEntry."Transaction No." := TransactionNo;
+        CustLedgerEntry."Currency Code" := CurrencyCode;
+        CustLedgerEntry."Original Currency Factor" := CurrencyFactor;
         CustLedgerEntry.Insert();
         DetailedCustLedgEntry.Init();
         DetailedCustLedgEntry."Entry No." :=
@@ -277,7 +294,9 @@ codeunit 148099 "SAF-T Test Helper"
         DetailedCustLedgEntry."Cust. Ledger Entry No." := CustLedgerEntry."Entry No.";
         DetailedCustLedgEntry."Posting Date" := CustLedgerEntry."Posting Date";
         DetailedCustLedgEntry."Customer No." := CustLedgerEntry."Customer No.";
-        DetailedCustLedgEntry."Amount (LCY)" := AmountDtldCustLedgEntry;
+        DetailedCustLedgEntry.Amount := Amount;
+        DetailedCustLedgEntry."Ledger Entry Amount" := true;
+        DetailedCustLedgEntry."Amount (LCY)" := AmountLCY;
         DetailedCustLedgEntry.Insert();
     end;
 
@@ -290,15 +309,15 @@ codeunit 148099 "SAF-T Test Helper"
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
-        MockVendLedgEntryLocal(LibraryUtility.GetNewRecNo(VendorLedgerEntry, VendorLedgerEntry.FieldNo("Entry No.")), PostingDate, VendNo, 0, '', Amount, AmountDtldVendLedgEntry, AmountDtldVendLedgEntry, DocumentType);
+        MockVendLedgEntryCustom(LibraryUtility.GetNewRecNo(VendorLedgerEntry, VendorLedgerEntry.FieldNo("Entry No.")), PostingDate, VendNo, 0, '', Amount, AmountDtldVendLedgEntry, AmountDtldVendLedgEntry, 0, DocumentType);
     end;
 
-    procedure MockVendLedgEntry(EntryNo: Integer; PostingDate: Date; VendNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; PurchAmount: Decimal; Amount: Decimal; AmountDtldVendLedgEntry: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    procedure MockVendLedgEntry(EntryNo: Integer; PostingDate: Date; VendNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; PurchAmount: Decimal; Amount: Decimal; AmountDtldVendLedgEntry: Decimal; CurrencyFactor: Decimal; DocumentType: Enum "Gen. Journal Document Type")
     begin
-        MockVendLedgEntryLocal(EntryNo, PostingDate, VendNo, TransactionNo, CurrencyCode, PurchAmount, Amount, AmountDtldVendLedgEntry, DocumentType);
+        MockVendLedgEntryCustom(EntryNo, PostingDate, VendNo, TransactionNo, CurrencyCode, PurchAmount, Amount, AmountDtldVendLedgEntry, CurrencyFactor, DocumentType);
     end;
 
-    local procedure MockVendLedgEntryLocal(EntryNo: Integer; PostingDate: Date; VendNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; PurchAmount: Decimal; Amount: Decimal; AmountLCY: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    local procedure MockVendLedgEntryCustom(EntryNo: Integer; PostingDate: Date; VendNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; PurchAmount: Decimal; Amount: Decimal; AmountLCY: Decimal; CurrencyFactor: Decimal; DocumentType: Enum "Gen. Journal Document Type")
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
@@ -312,6 +331,7 @@ codeunit 148099 "SAF-T Test Helper"
         VendorLedgerEntry."Document Type" := DocumentType;
         VendorLedgerEntry."Transaction No." := TransactionNo;
         VendorLedgerEntry."Currency Code" := CurrencyCode;
+        VendorLedgerEntry."Original Currency Factor" := CurrencyFactor;
         VendorLedgerEntry.Insert();
         DetailedVendorLedgEntry.Init();
         DetailedVendorLedgEntry."Entry No." :=
@@ -323,7 +343,22 @@ codeunit 148099 "SAF-T Test Helper"
         DetailedVendorLedgEntry."Ledger Entry Amount" := true;
         DetailedVendorLedgEntry."Amount (LCY)" := AmountLCY;
         DetailedVendorLedgEntry.Insert();
+    end;
 
+    procedure MockBankLedgEntry(EntryNo: Integer; PostingDate: Date; BankAccNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; Amount: Decimal; AmountLCY: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    var
+        BankAccLedgerEntry: Record "Bank Account Ledger Entry";
+    begin
+        BankAccLedgerEntry.Init();
+        BankAccLedgerEntry."Entry No." := EntryNo;
+        BankAccLedgerEntry."Posting Date" := PostingDate;
+        BankAccLedgerEntry."Bank Account No." := BankAccNo;
+        BankAccLedgerEntry."Document Type" := DocumentType;
+        BankAccLedgerEntry."Transaction No." := TransactionNo;
+        BankAccLedgerEntry."Currency Code" := CurrencyCode;
+        BankAccLedgerEntry.Amount := Amount;
+        BankAccLedgerEntry."Amount (LCY)" := AmountLCY;
+        BankAccLedgerEntry.Insert();
     end;
 
     procedure GetGLSourceCode(): Code[10]

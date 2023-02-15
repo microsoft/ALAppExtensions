@@ -29,12 +29,17 @@ page 4814 "Intrastat Report Checklist"
                 field("Filter Expression"; Rec."Filter Expression")
                 {
                     ApplicationArea = BasicEU, BasicNO, BasicCH;
-                    ToolTip = 'Specifies the filter expression that must be applied to the Intrastat line. The check for fields is run only on those lines that are passes the filter expression.';
+                    ToolTip = 'Specifies the filter expression that must be applied to the Intrastat line. The check for fields is run only on the lines that meet the filter criteria.';
                 }
                 field("Reversed Filter Expression"; Rec."Reversed Filter Expression")
                 {
                     ApplicationArea = BasicEU, BasicNO, BasicCH;
                     ToolTip = 'Specifies that the check for fields is run only on those lines that do not match the filter expression. If the line is not filtered, this field is ignored.';
+                }
+                field("Must Be Blank For Filter Expr."; Rec."Must Be Blank For Filter Expr.")
+                {
+                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ToolTip = 'Specifies the filter expression that must be applied to the Intrastat line where field must be blank. The check for fields is run only on the lines that meet the filter criteria.';
                 }
             }
         }

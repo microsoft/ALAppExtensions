@@ -1,4 +1,4 @@
-enum 40005 "Hist. Inventory Doc. Type"
+enum 40905 "Hist. Inventory Doc. Type"
 {
     value(0; "Blank") { Caption = ''; }
     value(1; "Inventory Adjustment") { Caption = 'Inventory Adjustment'; }

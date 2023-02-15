@@ -1,4 +1,4 @@
-enum 40000 "Hist. Sales Trx. Type"
+enum 40900 "Hist. Sales Trx. Type"
 {
     value(0; "Blank") { Caption = ''; }
     value(1; "Quote") { Caption = 'Quote'; }

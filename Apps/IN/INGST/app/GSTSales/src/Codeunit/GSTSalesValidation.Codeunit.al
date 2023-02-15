@@ -1981,6 +1981,24 @@ codeunit 18143 "GST Sales Validation"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterGetLineAmountToHandle', '', false, false)]
+    local procedure OnAfterGetLineAmountToHandle(SalesLine: Record "Sales Line"; QtyToHandle: Decimal; var LineDiscAmount: Decimal)
+    var
+        Currency: Record Currency;
+    begin
+        if not (SalesLine."Price Inclusive of Tax") then
+            exit;
+
+        if (SalesLine."Line Discount %" = 0) then
+            exit;
+
+        if QtyToHandle = SalesLine.Quantity then
+            exit;
+
+        GetCurrency(SalesLine, Currency);
+        LineDiscAmount := Round(SalesLine."Line Discount Amount" * QtyToHandle / SalesLine.Quantity, Currency."Amount Rounding Precision");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSalesLineHSNSACEditable(SalesLine: Record "Sales Line"; var IsEditable: Boolean; var IsHandled: Boolean)
     begin

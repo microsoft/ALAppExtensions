@@ -242,25 +242,21 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
 
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnAfterInsertEvent', '', false, false)]
     local procedure OnInsertRetentionPolicySetupLine(var Rec: Record "Retention Policy Setup Line"; RunTrigger: Boolean)
-    var
-        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
         if Rec.IsTemporary then
             exit;
         Session.LogSecurityAudit(RetentionPolicySetupLbl, SecurityOperationResult::Success,
-            StrSubstNo(RetentionPolicySetupLineValuesLbl, Rec.Enabled, Rec."Table Id", Rec."Retention Period", RetentionPolicySetupImpl.GetTableFilterText(Rec)),
+            StrSubstNo(RetentionPolicySetupLineValuesLbl, Rec.Enabled, Rec."Table Id", Rec."Retention Period", Rec."Table Filter Text"),
             AuditCategory::PolicyManagement);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnAfterDeleteEvent', '', false, false)]
     local procedure OnDeleteRetentionPolicySetupLine(var Rec: Record "Retention Policy Setup Line"; RunTrigger: Boolean)
-    var
-        RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
         if Rec.IsTemporary then
             exit;
         Session.LogSecurityAudit(RetentionPolicySetupLbl, SecurityOperationResult::Success,
-            StrSubstNo(RetentionPolicySetupLineValuesLbl, EntryDeletedLbl, Rec."Table Id", Rec."Retention Period", RetentionPolicySetupImpl.GetTableFilterText(Rec)),
+            StrSubstNo(RetentionPolicySetupLineValuesLbl, EntryDeletedLbl, Rec."Table Id", Rec."Retention Period", Rec."Table Filter Text"),
             AuditCategory::PolicyManagement);
     end;
 }
