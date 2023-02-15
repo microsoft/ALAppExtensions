@@ -19,6 +19,5 @@
     ],
     "enablePerTenantExtensionCop":  false,
     "enableCodeCop": true, 
-    "doNotRunTests": true,
-    "cleanModePreprocessorSymbols":  ["CLEAN17", "CLEAN18", "CLEAN19", "CLEAN20", "CLEAN21", "CLEAN22"]
+    "doNotRunTests": true
 }
