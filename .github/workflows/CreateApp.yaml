@@ -1,4 +1,4 @@
-﻿name: 'Create a new app'
+name: 'Create a new app'
 
 on:
   workflow_dispatch:
@@ -33,6 +33,10 @@ defaults:
   run:
     shell: powershell
 
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
 jobs:
   CreateApp:
     runs-on: [ windows-latest ]
@@ -42,20 +46,20 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.4
         with:
           shell: powershell
           eventId: "DO0092"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.4
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           get: type
 
       - name: Creating a new app
-        uses: microsoft/AL-Go-Actions/CreateApp@preview
+        uses: microsoft/AL-Go-Actions/CreateApp@v2.4
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -69,7 +73,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.4
         with:
           shell: powershell
           eventId: "DO0092"

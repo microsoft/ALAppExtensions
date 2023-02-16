@@ -2,13 +2,66 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+## v2.4
+
+### Issues
+- Issue [#171](https://github.com/microsoft/AL-Go/issues/171) create a workspace file when creating a project
+- Issue [#356](https://github.com/microsoft/AL-Go/issues/356) Publish to AppSource fails in multi project repo
+- Issue [#358](https://github.com/microsoft/AL-Go/issues/358) Publish To Environment Action stopped working in v2.3
+- Issue [#362](https://github.com/microsoft/AL-Go/issues/362) Support for EnableTaskScheduler
+- Issue [#360](https://github.com/microsoft/AL-Go/issues/360) Creating a release and deploying from a release branch
+- Issue [#371](https://github.com/microsoft/AL-Go/issues/371) 'No previous release found' for builds on release branches
+- Issue [#376](https://github.com/microsoft/AL-Go/issues/376) CICD jobs that are triggered by the pull request trigger run directly to an error if title contains quotes
+
+### Release Branches
+**NOTE:** Release Branches are now only named after major.minor if the patch value is 0 in the release tag (which must be semver compatible)
+
+This version contains a number of bug fixes to release branches, to ensure that the recommended branching strategy is fully supported. Bugs fixed includes:
+- Release branches was named after the full tag (1.0.0), even though subsequent hotfixes released from this branch would be 1.0.x
+- Release branches named 1.0 wasn't picked up as a release branch
+- Release notes contained the wrong changelog
+- The previous release was always set to be the first release from a release branch
+- SemVerStr could not have 5 segments after the dash
+- Release was created on the right SHA, but the release branch was created on the wrong SHA
+
+Recommended branching strategy:
+
+![Branching Strategy](https://raw.githubusercontent.com/microsoft/AL-Go/main/Scenarios/images/branchingstrategy.png)
+
+### New Settings
+New Project setting: EnableTaskScheduler in container executing tests and when setting up local development environment
+
+### Support for GitHub variables: ALGoOrgSettings and ALGoRepoSettings
+Recently, GitHub added support for variables, which you can define on your organization or your repository.
+AL-Go now supports that you can define a GitHub variable called ALGoOrgSettings, which will work for all repositories (with access to the variable)
+Org Settings will be applied before Repo settings and local repository settings files will override values in the org settings
+You can also define a variable called ALGoRepoSettings on the repository, which will be applied after reading the Repo Settings file in the repo
+Example for usage could be setup of branching strategies, versioning or an appDependencyProbingPaths to repositories which all repositories share.
+appDependencyProbingPaths from settings variables are merged together with appDependencyProbingPaths defined in repositories
+
+### Refactoring and tests
+ReadSettings has been refactored to allow organization wide settings to be added as well. CI Tests have been added to cover ReadSettings.
+
+## v2.3
+
 ### Issues
 - Issue #312 Branching enhancements
 - Issue #229 Create Release action tags wrong commit
 - Issue #283 Create Release workflow uses deprecated actions
+- Issue #319 Support for AssignPremiumPlan
+- Issue #328 Allow multiple projects in AppSource App repo
+- Issue #344 Deliver To AppSource on finding app.json for the app
+- Issue #345 LocalDevEnv.ps1 can't Dowload the file license file
+
+### New Settings
+New Project setting: AssignPremiumPlan on user in container executing tests and when setting up local development environment
+New Repo setting: unusedALGoSystemFiles is an array of AL-Go System Files, which won't be updated during Update AL-Go System Files. They will instead be removed. Use with care, as this can break the AL-Go for GitHub functionality and potentially leave your repo no longer functional.
 
 ### Build modes support
 AL-Go projects can now be built in different modes, by specifying the _buildModes_ setting in AL-Go-Settings.json. Read more about build modes in the [Basic Repository settings](https://github.com/microsoft/AL-Go/blob/main/Scenarios/settings.md#basic-repository-settings).
+
+### LocalDevEnv / CloudDevEnv
+With the support for PowerShell 7 in BcContainerHelper, the scripts LocalDevEnv and CloudDevEnv (placed in the .AL-Go folder) for creating development environments have been modified to run inside VS Code instead of spawning a new powershell 5.1 session.
 
 ### Continuous Delivery
 Continuous Delivery can now run from other branches than main. By specifying a property called branches, containing an array of branches in the deliveryContext json construct, the artifacts generated from this branch are also delivered. The branch specification can include wildcards (like release/*). Default is main, i.e. no changes to functionality.
