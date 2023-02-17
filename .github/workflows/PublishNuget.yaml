@@ -7,10 +7,8 @@ on:
     branches: ['main']
 
 permissions:
-  contents: read
-  actions: read
-  pull-requests: read
-  checks: read
+  contents: write
+  packages: write
 
 defaults:
   run:
@@ -80,19 +78,18 @@ jobs:
 
       - name: Setup NuGet.exe
         uses: nuget/setup-nuget@v1
-        with:
-          nuget-api-key: ${{ secrets.BCFEEDCONTEXT.Token }}
 
       - name: Prepare Package
         run: |
-          $NuspecPath = $env:GITHUB_WORKSPACE\Build\ALAppExtensions.template.nuspec
-          $LicenseFilePath = $env:GITHUB_WORKSPACE/LICENSE
+          $NuspecPath = Join-Path $env:GITHUB_WORKSPACE "Build\ALAppExtensions.template.nuspec"
+          $LicenseFilePath = Join-Path $env:GITHUB_WORKSPACE "LICENSE"
           Build\Scripts\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -NuspecPath $NuspecPath -LicensePath $LicenseFilePath
 
       - name: Push Package
         run: |
-          $nugetSource = https://api.nuget.org/v3/index.json
+          $nugetSource = "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          nuget sources add -Name "Github" -Source $nugetSource -Username NotUsed -Password ${{ secrets.GITHUB_TOKEN }}
           Get-ChildItem -Path "$($env:packageOutputPath)/*nupkg" | % {
-            Write-Host "Pushing nuget package: $($_.FullName)"
-            nuget push $nupkgName -Source $nugetSource
+            Write-Host "Pushing package $($_.Name) to $nugetSource"
+            nuget push $($_.FullName) -Source "Github" -ApiKey ${{ secrets.GITHUB_TOKEN }}
           }
