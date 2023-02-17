@@ -16,6 +16,8 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
 
             trigger OnPreDataItem();
             begin
+                FulfillmentOrdersAPI.GetShopifyFulFillmentOrders();
+
                 SetFilter("Shpfy Order Id", '<>%1', 0);
                 SetRange("Shpfy Fulfillment Id", 0);
             end;
@@ -29,4 +31,5 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
 
     var
         ExportShipments: Codeunit "Shpfy Export Shipments";
+        FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
 }

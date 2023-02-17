@@ -508,6 +508,24 @@ page 30101 "Shpfy Shop Card"
                         Rec.RequestAccessToken();
                     end;
                 }
+                action(CreateFulfillmentService)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Create Shopify Fulfillment Service';
+                    Image = CreateInventoryPickup;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
+                    ToolTip = 'Create Shopify Fulfillment Service';
+
+                    trigger OnAction()
+                    var
+                        FullfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
+                    begin
+                        FullfillmentOrdersAPI.RegisterFulfillmentService(Rec);
+                    end;
+                }
 
 
             }

@@ -19,22 +19,23 @@ codeunit 139606 "Shpfy Shipping Test"
         JLineItems: JsonArray;
         JLineItem: JsonToken;
         ShopifyOrderId: BigInteger;
+        ShopifyFulfillmentOrderId: BigInteger;
         LocationId: BigInteger;
         LocationCode: Code[10];
-        GidLocationLbl: Label 'gid://shopify/Location/%1', Locked = true, Comment = '%1 = Location Id';
     begin
         // [SCENARIO] Export a Sales Shipment record into a Json token that contains the shipping info
         // [GIVEN] A random Sales Shipment, a random LocationId, a random LocationCode
         LocationId := Any.IntegerInRange(10000, 99999);
         LocationCode := Any.AlphanumericText(MaxStrLen(LocationCode));
         ShopifyOrderId := CreateRandomShopifyOrder();
+        ShopifyFulfillmentOrderId := CreateShopifyFulfillmentOrder(ShopifyOrderId);
         CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId, LocationCode);
 
         // [WHEN] Invoke the function CreateFulfillmentRequest()
-        FulfillmentRequest := ExportShipments.CreateFulfillmentRequest(SalesShipmentHeader, LocationId, LocationCode);
+        FulfillmentRequest := ExportShipments.CreateFulfillmentOrderRequest(SalesShipmentHeader, LocationId, LocationCode);
 
         // [THEN] We must find the correct fulfilment data in the json token
-        LibraryAssert.IsTrue(FulFillmentRequest.Contains(StrSubstNo(GidLocationLbl, LocationId)), 'location Id check');
+        LibraryAssert.IsTrue(FulfillmentRequest.Contains(Format(ShopifyFulfillmentOrderId)), 'Fulfillmentorder Id Check');
         LibraryAssert.IsTrue(FulFillmentRequest.Contains(SalesShipmentHeader."Package Tracking No."), 'tracking number check');
 
         // [THEN] We must find the fulfilment lines in the json token
@@ -46,7 +47,7 @@ codeunit 139606 "Shpfy Shipping Test"
         end;
     end;
 
-    local procedure CreateRandomShopifyOrder(): BigInteger;
+    local procedure CreateRandomShopifyOrder(): BigInteger
     var
         OrderHeader: Record "Shpfy Order Header";
         OrderLine: Record "Shpfy Order Line";
@@ -57,10 +58,39 @@ codeunit 139606 "Shpfy Shipping Test"
 
         Clear(OrderLine);
         OrderLine."Shopify Order Id" := OrderHeader."Shopify Order Id";
+        OrderLine."Shopify Product Id" := Any.IntegerInRange(10000, 99999);
+        OrderLine."Shopify Variant Id" := Any.IntegerInRange(10000, 99999);
         OrderLine."Line Id" := Any.IntegerInRange(10000, 99999);
         OrderLine.Insert();
 
         exit(OrderHeader."Shopify Order Id");
+    end;
+
+    local procedure CreateShopifyFulfillmentOrder(ShopifyOrderId: BigInteger): BigInteger
+    var
+        OrderLine: Record "Shpfy Order Line";
+        FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
+        FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
+    begin
+        Clear(FulfillmentOrderHeader);
+        FulfillmentOrderHeader."Shopify Fulfillment Order Id" := Any.IntegerInRange(10000, 99999);
+        FulfillmentOrderHeader."Shopify Order Id" := ShopifyOrderId;
+        FulfillmentOrderHeader.Insert();
+
+        OrderLine.Reset();
+        OrderLine.SetRange("Shopify Order Id", ShopifyOrderId);
+        if OrderLine.FindSet() then
+            repeat
+                Clear(FulfillmentOrderLine);
+                FulfillmentOrderLine."Shopify Fulfillment Order Id" := FulfillmentOrderHeader."Shopify Fulfillment Order Id";
+                FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id" := Any.IntegerInRange(10000, 99999);
+                FulfillmentOrderLine."Shopify Order Id" := FulfillmentOrderHeader."Shopify Order Id";
+                FulfillmentOrderLine."Shopify Product Id" := OrderLine."Shopify Product Id";
+                FulfillmentOrderLine."Shopify Variant Id" := OrderLine."Shopify Variant Id";
+                FulfillmentOrderLine.Insert();
+            until OrderLine.Next() = 0;
+
+        exit(FulfillmentOrderHeader."Shopify Fulfillment Order Id");
     end;
 
     local procedure CreateRandomSalesShipment(var SalesShipmentHeader: record "Sales Shipment Header"; ShopifyOrderId: BigInteger; LocationCode: Code[10])

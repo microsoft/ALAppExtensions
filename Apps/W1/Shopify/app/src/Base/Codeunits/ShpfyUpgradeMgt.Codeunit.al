@@ -19,6 +19,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 #endif
         SetAllowOutgoingRequests();
         PriceCalculationUpgrade();
+        ActivateFulfillmentServices();
     end;
 #if not CLEAN21
 
@@ -74,6 +75,23 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         UpgradeTag.SetUpgradeTag(GetPriceCalculationUpgradeTag());
     end;
 
+    local procedure ActivateFulfillmentServices()
+    var
+        Shop: Record "Shpfy Shop";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetActivateFulfillmentServiceUpgradeTag()) then
+            exit;
+
+        if Shop.FindSet(true, false) then
+            repeat
+                FulfillmentOrdersAPI.RegisterFulfillmentService(Shop);
+            until Shop.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(GetActivateFulfillmentServiceUpgradeTag());
+    end;
+
     internal procedure SetShpfyStockCalculation()
     var
         ShopLocation: Record "Shpfy Shop Location";
@@ -101,6 +119,11 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     internal procedure GetPriceCalculationUpgradeTag(): Code[250]
     begin
         exit('PriceCalculationUpgradeTag-20221201');
+    end;
+
+    internal procedure GetActivateFulfillmentServiceUpgradeTag(): Code[250]
+    begin
+        exit('ActivateFulfillmentServiceUpgradeTag-20230201');
     end;
 
     local procedure GetDateBeforeFeature(): DateTime

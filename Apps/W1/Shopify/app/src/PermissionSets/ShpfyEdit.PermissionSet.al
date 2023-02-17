@@ -54,5 +54,7 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Tax Area" = IMD,
         tabledata "Shpfy Transaction Gateway" = IMD,
         tabledata "Shpfy Variant" = IMD,
-        tabledata "Shpfy Fulfillment Line" = IMD;
+        tabledata "Shpfy Fulfillment Line" = IMD,
+        tabledata "Shpfy FulFillment Order Header" = IMD,
+        tabledata "Shpfy FulFillment Order Line" = IMD;
 }

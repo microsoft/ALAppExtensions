@@ -215,4 +215,29 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Update Product Image';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL UpdateProductImage";
     }
+    value(41; CreateFulfillmentService)
+    {
+        Caption = 'Create Fullfilment Service';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreateFulfillmentSvc";
+    }
+    value(42; GetOpenFulfillmentOrders)
+    {
+        Caption = 'Get Open Fullfilment Orders';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OpenFulfillmOrders";
+    }
+    value(43; GetNextOpenFulfillmentOrders)
+    {
+        Caption = 'Get Next Open Fullfilment Orders';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOpenFFOrders";
+    }
+    value(44; GetOpenFulfillmentOrderLines)
+    {
+        Caption = 'Get Open Fullfilment Orders Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OpenFulfillmOrdLines";
+    }
+    value(45; GetNextOpenFulfillmentOrderLines)
+    {
+        Caption = 'Get Open Fullfilment Orders Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOpenFFOrderLines";
+    }
 }
