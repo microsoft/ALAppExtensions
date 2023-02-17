@@ -393,9 +393,13 @@ page 4003 "Intelligent Cloud Management"
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         EnvironmentInformation: Codeunit "Environment Information";
         IntelligentCloudNotifier: Codeunit "Intelligent Cloud Notifier";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000JMI', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
+
         IsSuper := UserPermissions.IsSuper(UserSecurityId());
         if not IsSuper then
             SendUserIsNotSuperNotification();

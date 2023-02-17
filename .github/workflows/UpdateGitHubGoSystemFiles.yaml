@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/microsoft/AL-Go-PTE@preview)
+        description: Template Repository URL (current is https://github.com/microsoft/AL-Go-PTE@main)
         required: false
         default: ''
       directCommit:
@@ -32,20 +32,20 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@main
         with:
           shell: powershell
           eventId: "DO0098"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           get: keyVaultName,ghTokenWorkflowSecretName,templateUrl
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -82,7 +82,7 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "DirectCommit=$directCommit"
 
       - name: Update AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@preview
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@main
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -93,7 +93,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@main
         with:
           shell: powershell
           eventId: "DO0098"
