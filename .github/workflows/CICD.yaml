@@ -62,7 +62,6 @@ jobs:
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          getProjects: 'Y'
           getEnvironments: '*'
 
       - name: Load Build Projects
