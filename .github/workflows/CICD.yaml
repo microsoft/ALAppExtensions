@@ -30,9 +30,9 @@ jobs:
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
-      projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
+      projects: ${{ steps.LoadProjects.outputs.ProjectsJson }}
+      projectCount: ${{ steps.LoadProjects.outputs.ProjectCount }}
       buildDimensions: ${{ steps.BuildDimensions.outputs.BuildDimensions }}
-      projectCount: ${{ steps.ReadSettings.outputs.ProjectCount }}
       environments: ${{ steps.ReadSettings.outputs.EnvironmentsJson }}
       environmentCount: ${{ steps.ReadSettings.outputs.EnvironmentCount }}
       deliveryTargets: ${{ steps.DetermineDeliveryTargets.outputs.DeliveryTargetsJson }}
