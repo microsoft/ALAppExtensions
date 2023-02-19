@@ -65,12 +65,18 @@ jobs:
           getProjects: 'Y'
           getEnvironments: '*'
 
-      - name: Determine Build Dimensions
-        id: BuildDimensions
-        if: steps.ReadSettings.outputs.ProjectCount > 0
-        uses: mazhelez/AL-Go/Actions/GenerateBuildDimensions@build-modes-per-project
+      - name: Load Build Projects
+        id: loadProjects
+        uses: mazhelez/AL-Go/Actions/LoadProjects@build-modes-per-project
         with:
-          projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
+          shell: powershell
+
+      - name: Determine Build Dimensions
+        id: DetermineBuildDimensions
+        if: steps.ReadSettings.outputs.ProjectCount > 0
+        uses: mazhelez/AL-Go/Actions/DetermineBuildDimensions@build-modes-per-project
+        with:
+          projects: ${{ steps.loadProjects.outputs.ProjectsJson }}
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
@@ -222,7 +228,7 @@ jobs:
         shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
-        include: ${{ fromJson(needs.Initialization.outputs.buildDimensions) }}
+        include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[1] }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
