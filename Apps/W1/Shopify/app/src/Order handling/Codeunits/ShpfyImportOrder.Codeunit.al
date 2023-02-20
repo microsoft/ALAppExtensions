@@ -65,6 +65,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         ShippingCharges: Codeunit "Shpfy Shipping Charges";
         Transactions: Codeunit "Shpfy Transactions";
+        ICountyFromJson: Interface "Shpfy ICounty From Json";
         OrderHeaderRecordRef: RecordRef;
         OrderId: BigInteger;
         IsNew: Boolean;
@@ -84,6 +85,11 @@ codeunit 30161 "Shpfy Import Order"
             OrderHeader.Insert();
             IsNew := true;
         end;
+
+        if OrderHeader."Shop Code" <> Shop.Code then
+            Shop.Get(OrderHeader."Shop Code");
+
+        ICountyFromJson := Shop."County Source";
 
         OrderHeaderRecordRef.GetTable(OrderHeader);
 
@@ -118,7 +124,7 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrder, 'displayAddress.city', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to City"));
             JsonHelper.GetValueIntoField(JOrder, 'displayAddress.countryCode', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Country/Region Code"));
             JsonHelper.GetValueIntoField(JOrder, 'displayAddress.country', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Country/Region Name"));
-            JsonHelper.GetValueIntoField(JOrder, 'displayAddress.province', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to County"));
+            OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to County")).Value := ICountyFromJson.County(JsonHelper.GetJsonObject(JOrder, 'displayAddress'));
             JsonHelper.GetValueIntoField(JOrder, 'displayAddress.zip', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Post Code"));
             if EMail = '' then begin
                 EMail := JsonHelper.GetValueAsText(JOrder, 'customer.email');
@@ -149,7 +155,7 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrder, 'shippingAddress.city', OrderHeaderRecordRef, OrderHeader.FieldNo("Ship-to City"));
             JsonHelper.GetValueIntoField(JOrder, 'shippingAddress.countryCode', OrderHeaderRecordRef, OrderHeader.FieldNo("Ship-to Country/Region Code"));
             JsonHelper.GetValueIntoField(JOrder, 'shippingAddress.country', OrderHeaderRecordRef, OrderHeader.FieldNo("Ship-to Country/Region Name"));
-            JsonHelper.GetValueIntoField(JOrder, 'shippingAddress.province', OrderHeaderRecordRef, OrderHeader.FieldNo("Ship-to County"));
+            OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Ship-to County")).Value := ICountyFromJson.County(JsonHelper.GetJsonObject(JOrder, 'shippingAddress'));
             JsonHelper.GetValueIntoField(JOrder, 'shippingAddress.zip', OrderHeaderRecordRef, OrderHeader.FieldNo("Ship-to Post Code"));
             JsonHelper.GetValueIntoField(JOrder, 'shippingAddress.latitude', OrderHeaderRecordRef, OrderHeader.FieldNo("Ship-to Latitude"));
             JsonHelper.GetValueIntoField(JOrder, 'shippingAddress.longitude', OrderHeaderRecordRef, OrderHeader.FieldNo("Ship-to Longitude"));
@@ -173,7 +179,7 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrder, 'billingAddress.city', OrderHeaderRecordRef, OrderHeader.FieldNo("Bill-to City"));
             JsonHelper.GetValueIntoField(JOrder, 'billingAddress.countryCode', OrderHeaderRecordRef, OrderHeader.FieldNo("Bill-to Country/Region Code"));
             JsonHelper.GetValueIntoField(JOrder, 'billingAddress.country', OrderHeaderRecordRef, OrderHeader.FieldNo("Bill-to Country/Region Name"));
-            JsonHelper.GetValueIntoField(JOrder, 'billingAddress.province', OrderHeaderRecordRef, OrderHeader.FieldNo("Bill-to County"));
+            OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Bill-to County")).Value := ICountyFromJson.County(JsonHelper.GetJsonObject(JOrder, 'billingAddress'));
             JsonHelper.GetValueIntoField(JOrder, 'billingAddress.zip', OrderHeaderRecordRef, OrderHeader.FieldNo("Bill-to Post Code"));
             if Phone = '' then begin
                 Phone := JsonHelper.GetValueAsText(JOrder, 'billingAddress.phone');

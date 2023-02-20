@@ -34,7 +34,6 @@ permissionset 30104 "Shpfy - Objects"
         table "Shpfy Payment Transaction" = X,
         table "Shpfy Payout" = X,
         table "Shpfy Product" = X,
-        table "Shpfy Province" = X,
 #if not CLEAN21
 #pragma warning disable AL0432
         table "Shpfy Registered Store" = X,
@@ -62,6 +61,8 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy Communication Mgt." = X,
         codeunit "Shpfy County Code" = X,
         codeunit "Shpfy County Name" = X,
+        codeunit "Shpfy County From Json Code" = X,
+        codeunit "Shpfy County From Json Name" = X,
         codeunit "Shpfy Create Customer" = X,
         codeunit "Shpfy Create Item" = X,
         codeunit "Shpfy CreateProdStatusActive" = X,

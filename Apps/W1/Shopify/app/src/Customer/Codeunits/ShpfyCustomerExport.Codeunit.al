@@ -147,9 +147,11 @@ codeunit 30116 "Shpfy Customer Export"
                 Shop."County Source"::Code:
                     begin
                         TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
-                        TaxArea.SetRange("County Code", CustomerAddress."Province Code");
-                        if TaxArea.FindFirst() then
+                        TaxArea.SetRange("County Code", Customer.County);
+                        if TaxArea.FindFirst() then begin
+                            CustomerAddress."Province Code" := TaxArea."County Code";
                             CustomerAddress."Province Name" := TaxArea.County;
+                        end;
                     end;
                 Shop."County Source"::Name:
                     begin

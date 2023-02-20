@@ -137,6 +137,7 @@ codeunit 30111 "Shpfy Cust. By Bill-to" implements "Shpfy ICustomer Mapping"
     local procedure FindCustomer(Name: Text; Name2: Text; var CustomerAddress: Record "Shpfy Customer Address"): Boolean
     var
         Customer: Record Customer;
+        ICounty: Interface "Shpfy ICounty";
     begin
         Customer.SetRange(Name, Name);
         Customer.SetRange("Name 2", Name2);
@@ -144,7 +145,8 @@ codeunit 30111 "Shpfy Cust. By Bill-to" implements "Shpfy ICustomer Mapping"
         Customer.SetRange("Address 2", CopyStr(CustomerAddress."Address 2", 1, MaxStrLen(Customer."Address 2")));
         Customer.SetRange("Post Code", CustomerAddress.Zip);
         Customer.SetRange(City, CustomerAddress.City);
-        Customer.SetRange(County, CustomerAddress."Province Code");
+        ICounty := Shop."County Source";
+        Customer.SetRange(County, ICounty.County(CustomerAddress));
         Customer.SetRange("Country/Region Code", CustomerAddress."Country/Region Code");
         if Customer.FindFirst() then begin
             CustomerAddress.CustomerSystemId := Customer.SystemId;
