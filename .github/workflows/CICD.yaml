@@ -20,7 +20,7 @@ permissions:
   actions: read
 
 env:
-  workflowDepth: 1
+  workflowDepth: 0
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
 
