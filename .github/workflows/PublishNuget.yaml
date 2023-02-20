@@ -92,4 +92,7 @@ jobs:
           Get-ChildItem -Path "$($env:packageOutputPath)/*nupkg" | % {
             Write-Host "Pushing package $($_.Name) to $nugetSource"
             nuget push $($_.FullName) -Source "Github" -ApiKey ${{ secrets.GITHUB_TOKEN }}
+            
+            Write-Host "Pushing package $($_.Name) to nuget.org"
+            nuget push $($_.FullName) -Source "https://api.nuget.org/v3/index.json" -ApiKey ${{ secrets.BCFEEDCONTEXT.Token }}
           }
