@@ -192,11 +192,12 @@ codeunit 30101 "Shpfy Background Syncs"
                 else
                     FilterStrings.Add(OrdersToImport."Shop Code", Format(OrdersToImport.Id));
             until OrdersToImport.Next() = 0;
-
         foreach ShopCode in FilterStrings.Keys do begin
             Clear(Shop);
             Shop.Get(ShopCode);
             Shop.SetRecFilter();
+            Clear(OrdersToImport);
+            OrdersToImport.SetFilter(OrdersToImport.Id, FilterStrings.Get(ShopCode));
             Parameters := StrSubstNo(ImportOrderParametersTxt, Shop.GetView(), OrdersToImport.GetView());
             EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", Parameters, StrSubstNo(SyncDescriptionMsg, Shop.Code), Shop."Allow Background Syncs", true);
         end;

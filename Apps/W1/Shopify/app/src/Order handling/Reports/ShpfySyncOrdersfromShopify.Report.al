@@ -25,7 +25,7 @@ report 30104 "Shpfy Sync Orders from Shopify"
                 var
                     OrdersToImport: Record "Shpfy Orders to Import";
                 begin
-                    OrdersToImport.SetView(OrdersToImport.GetView(false));
+                    OrdersToImport.SetView(ToImportView);
                     OrdersToImport.SetRange("Shop Id", Shop."Shop Id");
                     OrdersToImport.SetRange("Shop Code", '');
                     OrdersToImport.ModifyAll("Shop Code", Shop.Code);
@@ -91,6 +91,12 @@ report 30104 "Shpfy Sync Orders from Shopify"
         Dialog: Dialog;
         ToProcess: Integer;
         ProcessMsg: Label 'To Process: #1###########', Comment = '#1 = ToPrgress';
+        ToImportView: Text;
+
+    trigger OnPreReport()
+    begin
+        ToImportView := OrdersToImport.GetView(false);
+    end;
 
     /// <summary> 
     /// Description for CreateSalesDocument.

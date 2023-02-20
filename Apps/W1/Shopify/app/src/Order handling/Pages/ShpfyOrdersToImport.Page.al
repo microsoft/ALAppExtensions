@@ -10,7 +10,7 @@ page 30121 "Shpfy Orders to Import"
     SourceTable = "Shpfy Orders to Import";
     UsageCategory = Lists;
     InsertAllowed = false;
-    ModifyAllowed = false;
+    ModifyAllowed = true;
     DeleteAllowed = true;
 
     layout
@@ -28,6 +28,7 @@ page 30121 "Shpfy Orders to Import"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Shopify Shop from which the order originated.';
+                    Importance = Promoted;
                 }
                 field(OrderNo; Rec."Order No.")
                 {
