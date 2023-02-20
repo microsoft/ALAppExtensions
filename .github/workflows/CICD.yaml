@@ -78,8 +78,8 @@ jobs:
           $buildDepth = $buildOrder.Count
           $workflowDepth = ${{ env.workflowDepth }}
 
-          if ($buildDepth -lt $workflowDepth) {
-            Write-Host "::Error::Project Dependencies depth is $depth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
+          if ($buildDepth -gt $workflowDepth) {
+            Write-Host "::Error::Project Dependencies depth is $buildDepth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
             $host.SetShouldExit(1)
           }
 
