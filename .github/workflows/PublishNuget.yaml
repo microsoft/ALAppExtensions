@@ -88,11 +88,9 @@ jobs:
       - name: Push Package
         run: |
           $githubPackagesSource = "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-          $nugetOrgSource = "https://api.nuget.org/v3/index.json"
           nuget sources add -Name "Github" -Source $githubPackagesSource -Username NotUsed -Password ${{ secrets.GITHUB_TOKEN }}
-          nuget sources add -Name "NuGet" -Source $nugetOrgSource
           Get-ChildItem -Path "$($env:packageOutputPath)/*nupkg" | % {
             Write-Host "Pushing package $($_.Name) to $githubPackagesSource"
             nuget push $($_.FullName) -Source "Github" -ApiKey ${{ secrets.GITHUB_TOKEN }}
-            nuget push $($_.FullName) -Source "NuGet" -ApiKey ${{ secrets.BCFEEDCONTEXT.Token }}
+            nuget push $($_.FullName) -Source "https://api.nuget.org/v3/index.json" -ApiKey ${{ secrets.BCFEEDCONTEXT.Token }}
           }
