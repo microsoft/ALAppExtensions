@@ -30,9 +30,6 @@ jobs:
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
-      projects: ${{ steps.LoadProjects.outputs.ProjectsJson }}
-      projectCount: ${{ steps.LoadProjects.outputs.ProjectCount }}
-      buildDimensions: ${{ steps.BuildDimensions.outputs.BuildDimensions }}
       environments: ${{ steps.ReadSettings.outputs.EnvironmentsJson }}
       environmentCount: ${{ steps.ReadSettings.outputs.EnvironmentCount }}
       deliveryTargets: ${{ steps.DetermineDeliveryTargets.outputs.DeliveryTargetsJson }}
@@ -40,7 +37,8 @@ jobs:
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
       githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
       checkRunId: ${{ steps.CreateCheckRun.outputs.checkRunId }}
-      projectDependenciesJson: ${{ steps.ReadSettings.outputs.ProjectDependenciesJson }}
+      projects: ${{ steps.LoadProjects.outputs.ProjectsJson }}
+      projectDependenciesJson: ${{ steps.LoadProjects.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.LoadProjects.outputs.BuildOrderJson }}
       buildOrderDepth: ${{ steps.LoadProjects.outputs.BuildOrderDepth }}
     steps:
@@ -70,12 +68,20 @@ jobs:
         with:
           shell: powershell
 
-      - name: Determine Build Dimensions
-        id: DetermineBuildDimensions
-        if: steps.ReadSettings.outputs.ProjectCount > 0
-        uses: mazhelez/AL-Go/Actions/DetermineBuildDimensions@build-modes-per-project
-        with:
-          projects: ${{ steps.loadProjects.outputs.ProjectsJson }}
+      - name: Verify workflow depth
+        id: verifyWorkflowDepth
+        run: |
+          $ErrorActionPreference = "STOP"
+          Set-StrictMode -version 2.0
+
+          $buildOrder = '${{ steps.loadProjects.outputs.BuildOrderJson }}' | ConvertFrom-Json
+          $buildDepth = $buildOrder.Count
+          $workflowDepth = ${{ env.workflowDepth }}
+
+          if ($buildDepth -lt $workflowDepth) {
+            Write-Host "::Error::Project Dependencies depth is $depth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
+            $host.SetShouldExit(1)
+          }
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
@@ -108,7 +114,7 @@ jobs:
           if ($env:type -eq "AppSource App") {
             $continuousDelivery = $false
             # For multi-project repositories, we will add deliveryTarget AppSource if any project has AppSourceContinuousDelivery set to true
-            ('${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
+            ('${{ steps.LoadProjects.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
               $projectSettings = Get-Content (Join-Path $_ '.AL-Go/settings.json') -raw | ConvertFrom-Json
               if ($projectSettings.PSObject.Properties.Name -eq 'AppSourceContinuousDelivery' -and $projectSettings.AppSourceContinuousDelivery) {
                 Write-Host "Project $_ is setup for Continuous Delivery"
@@ -158,44 +164,6 @@ jobs:
           Write-Host "DeliveryTargetCount=$($deliveryTargets.Count)"
           Add-Content -Path $env:GITHUB_ENV -Value "DeliveryTargets=$deliveryTargetsJson"
 
-      - name: Determine Build Order
-        if: env.workflowDepth > 1
-        id: BuildOrder
-        run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
-          $projects = '${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json
-          $buildOrder = '${{ steps.ReadSettings.outputs.BuildOrderJson }}' | ConvertFrom-Json
-          $depth = ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-          $workflowDepth = ${{ env.workflowDepth }}
-          if ($depth -lt $workflowDepth) {
-            Write-Host "::Error::Project Dependencies depth is $depth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
-            $host.SetShouldExit(1)
-          }
-          $step = $depth
-          $depth..1 | ForEach-Object {
-            $ps = @($buildOrder."$_" | Where-Object { $projects -contains $_ })
-            if ($ps.Count -eq 1) {
-              $projectsJSon = "[$($ps | ConvertTo-Json -compress)]"
-            }
-            else {
-              $projectsJSon = $ps | ConvertTo-Json -compress
-            }
-            if ($ps.Count -gt 0) {
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json=$projectsJson"
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=$($ps.count)"
-              Write-Host "projects$($step)Json=$projectsJson"
-              Write-Host "projects$($step)Count=$($ps.count)"
-              $step--
-            }
-          }
-          while ($step -ge 1) {
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json="
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=0"
-              Write-Host "projects$($step)Json="
-              Write-Host "projects$($step)Count=0"
-              $step--
-          }
 
   CheckForUpdates:
     runs-on: [ windows-latest ]
@@ -220,7 +188,7 @@ jobs:
 
   Build:
     needs: [ Initialization ]
-    if: ${{ needs.Initialization.outputs.projectCount > 0 }}
+    if: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0 }}
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
     defaults:
       run:
