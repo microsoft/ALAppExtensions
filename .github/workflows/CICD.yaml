@@ -227,7 +227,7 @@ jobs:
         shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
-        include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[1] }}
+        include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[0].value }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
