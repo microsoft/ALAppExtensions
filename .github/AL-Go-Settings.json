@@ -29,6 +29,7 @@
     "NextMinor.yaml",
     "PublishToEnvironment.yaml"
   ],
+  "useProjectDependencies": true,
   "repoVersion": "21.5",
   "CICDPushBranches": [
     "main"
