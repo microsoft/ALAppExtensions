@@ -149,10 +149,10 @@ codeunit 40108 "GP PO Migrator"
 
             QtyShipped := GPPOPReceiptApply.GetSumQtyShipped(GPPOP10110.PONUMBER, GPPOP10110.ORD);
 
-            PurchaseLine.Validate("Quantity (Base)", GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE);
             PurchaseLine."Quantity Received" := QtyShipped;
             PurchaseLine."Qty. Received (Base)" := QtyShipped;
             PurchaseLine."Quantity Invoiced" := GPPOPReceiptApply.GetSumQtyInvoiced(GPPOP10110.PONUMBER, GPPOP10110.ORD);
+            PurchaseLine.Validate("Quantity (Base)", GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE);
             PurchaseLine."Outstanding Quantity" := PurchaseLine."Quantity (Base)" - QtyShipped;
             PurchaseLine.Validate("Direct Unit Cost", GPPOP10110.UNITCOST);
             PurchaseLine.Validate(Amount, GPPOP10110.EXTDCOST);
@@ -168,6 +168,7 @@ codeunit 40108 "GP PO Migrator"
                 ProcessOverReceipt(PurchaseLine, QtyShipped - (GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE));
 
             PurchaseLine.Validate("Qty. to Receive (Base)", PurchaseLine."Outstanding Quantity");
+            PurchaseLine.Validate("Qty. Invoiced (Base)", PurchaseLine."Quantity Invoiced");
             PurchaseLine.Validate("Outstanding Qty. (Base)", PurchaseLine."Outstanding Quantity");
             PurchaseLine.Validate("Qty. to Invoice (Base)", PurchaseLine."Quantity (Base)" - PurchaseLine."Quantity Invoiced");
 
