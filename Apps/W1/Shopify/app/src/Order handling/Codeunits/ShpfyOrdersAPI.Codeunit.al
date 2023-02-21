@@ -83,8 +83,8 @@ codeunit 30165 "Shpfy Orders API"
             OrderAttribute."Order Id" := OrderId;
 #pragma warning disable AA0139
             OrderAttribute."Key" := JsonHelper.GetValueAsText(JItem, 'key', MaxStrLen(OrderAttribute."Key"));
-            OrderAttribute.Value := JsonHelper.GetValueAsText(JItem, 'value', MaxStrLen(OrderAttribute.Value));
 #pragma warning restore AA0139
+            OrderAttribute.Value := CopyStr(JsonHelper.GetValueAsText(JItem, 'value').Replace('\\', '\').Replace('\"', '"'), 1, MaxStrLen(OrderAttribute.Value));
             OrderAttribute.Insert();
         end;
     end;
