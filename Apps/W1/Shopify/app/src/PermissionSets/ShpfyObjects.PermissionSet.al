@@ -181,6 +181,8 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL OpenFulfillmOrdLines" = X,
         codeunit "Shpfy GQL ShipmentLines" = X,
         codeunit "Shpfy GQL UpdateProductImage" = X,
+        codeunit "Shpfy GQL AllCustomerIds" = X,
+        codeunit "Shpfy GQL NextAllCustomerIds" = X,
         codeunit "Shpfy Suppress Asm Warning" = X,
         page "Shpfy Activities" = X,
         page "Shpfy Authentication" = X,

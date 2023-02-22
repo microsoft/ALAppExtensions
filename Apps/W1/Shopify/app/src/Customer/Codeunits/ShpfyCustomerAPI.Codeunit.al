@@ -457,4 +457,42 @@ codeunit 30114 "Shpfy Customer API"
             end;
         end;
     end;
+
+    internal procedure FillInMissingShopIds()
+    var
+        ShopCounter: Record "Shpfy Shop";
+        ShopifyCustomer: Record "Shpfy Customer";
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+        JResult: JsonToken;
+        JArray: JsonArray;
+        FilterString: Text;
+    begin
+        ShopifyCustomer.SetRange("Shop Id", 0);
+        ShopifyCustomer.SetCurrentKey("Shop Id");
+        if ShopifyCustomer.IsEmpty then
+            exit;
+
+        if ShopCounter.Count = 1 then
+            ShopifyCustomer.ModifyAll("Shop Id", Shop."Shop Id", false)
+        else begin
+            GraphQLType := "Shpfy GraphQL Type"::GetAllCustomerIds;
+            repeat
+                JResult := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+                GraphQLType := "Shpfy GraphQL Type"::GetNextAllCustomerIds;
+                if JsonHelper.GetJsonArray(JResult, JArray, 'data.customers.nodes') then begin
+                    FilterString := Format(JArray).TrimStart('[').TrimEnd(']').Replace('{"legacyResourceId":"', '').Replace('"}', '').Replace(',', '|');
+                    ShopifyCustomer.SetFilter(Id, FilterString);
+                    if not ShopifyCustomer.IsEmpty() then
+                        ShopifyCustomer.ModifyAll("Shop Id", Shop."Shop Id", false);
+                end;
+                if Parameters.ContainsKey('After') then
+                    Parameters.Set('After', JsonHelper.GetValueAsText(JResult, 'data.customers.pageInfo.endCursor'))
+                else
+                    Parameters.Add('After', JsonHelper.GetValueAsText(JResult, 'data.customers.pageInfo.endCursor'));
+            until not JsonHelper.GetValueAsBoolean(JResult, 'data.customers.pageInfo.hasNextPage');
+        end;
+        Commit();
+    end;
+
 }

@@ -12,6 +12,8 @@ codeunit 30116 "Shpfy Customer Export"
         CustomerMapping: Codeunit "Shpfy Customer Mapping";
         CustomerId: BigInteger;
     begin
+        CustomerAPI.FillInMissingShopIds();
+
         Customer.CopyFilters(Rec);
         if Shop."Export Customer To Shopify" and Customer.FindSet(false, false) then begin
             CustomerMapping.SetShop(Shop);
@@ -86,6 +88,7 @@ codeunit 30116 "Shpfy Customer Export"
             if CustomerApi.CreateCustomer(ShopifyCustomer, CustomerAddress) then begin
                 ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                 ShopifyCustomer."Last Updated by BC" := CurrentDateTime;
+                ShopifyCustomer."Shop Id" := Shop."Shop Id";
                 ShopifyCustomer.Insert();
                 CustomerAddress.Insert();
             end;

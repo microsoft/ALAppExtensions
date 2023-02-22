@@ -68,6 +68,7 @@ codeunit 30117 "Shpfy Customer Import"
             ShopifyCustomer.SetRange(Id, Id);
             if not ShopifyCustomer.FindFirst() then begin
                 ShopifyCustomer.Id := Id;
+                ShopifyCustomer."Shop Id" := Shop."Shop Id";
                 ShopifyCustomer.Insert(false);
                 if not CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer) then
                     ShopifyCustomer.Delete();

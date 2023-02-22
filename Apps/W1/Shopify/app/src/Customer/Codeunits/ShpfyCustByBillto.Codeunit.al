@@ -51,6 +51,7 @@ codeunit 30111 "Shpfy Cust. By Bill-to" implements "Shpfy ICustomer Mapping"
         if not ShopifyCustomer.Get(CustomerId) then begin
             Clear(ShopifyCustomer);
             ShopifyCustomer.Id := CustomerId;
+            ShopifyCustomer."Shop Id" := Shop."Shop Id";
             ShopifyCustomer.Insert();
             CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer);
         end;

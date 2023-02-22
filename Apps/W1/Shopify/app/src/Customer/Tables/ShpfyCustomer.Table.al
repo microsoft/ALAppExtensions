@@ -111,6 +111,12 @@ table 30105 "Shpfy Customer"
             Caption = 'Customer No.';
             FieldClass = FlowField;
         }
+        field(103; "Shop Id"; Integer)
+        {
+            Caption = 'Shop ID';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
 
     keys
@@ -121,6 +127,8 @@ table 30105 "Shpfy Customer"
         }
 
         key(Idx1; "Customer SystemId") { }
+
+        key(Idx2; "Shop Id") { }
     }
 
     trigger OnDelete()

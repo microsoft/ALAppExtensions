@@ -64,6 +64,7 @@ codeunit 30123 "Shpfy Sync Customers"
             end else begin
                 Clear(TempCustomer);
                 TempCustomer.Id := Id;
+                TempCustomer."Shop Id" := Shop."Shop Id";
                 TempCustomer.Insert(false);
             end;
         end;

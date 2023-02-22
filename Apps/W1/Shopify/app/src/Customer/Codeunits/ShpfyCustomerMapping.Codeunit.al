@@ -121,6 +121,7 @@ codeunit 30118 "Shpfy Customer Mapping"
             Direction::BCToShopify:
                 begin
                     FindShopifyCustomer.SetRange("Customer SystemId", Customer.SystemId);
+                    FindShopifyCustomer.SetRange("Shop Id", Shop."Shop Id");
                     if FindShopifyCustomer.FindFirst() then begin
                         ShopifyCustomer := FindShopifyCustomer;
                         exit(true);
@@ -135,6 +136,7 @@ codeunit 30118 "Shpfy Customer Mapping"
                     else begin
                         Clear(ShopifyCustomer);
                         ShopifyCustomer.Id := ShopifyCustomerId;
+                        ShopifyCustomer."Shop Id" := Shop."Shop Id";
                         ShopifyCustomer.Insert(false);
                         if CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer) then begin
                             ShopifyCustomer."Customer SystemId" := Customer.SystemId;
