@@ -59,7 +59,7 @@ function PreparePackageFolder
         {
             Copy-Item -Path "$appsToPackage/*" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
         } else {
-            throw "No apps found in $appsToPackage" 
+            throw "No apps found in: $appsToPackage" 
         }
     }
 
