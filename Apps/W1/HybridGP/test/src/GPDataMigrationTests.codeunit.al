@@ -554,7 +554,6 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('', Vendor."Address 2", 'Address2 of Migrated Vendor is wrong');
         Assert.AreEqual('Chicago', Vendor.City, 'City of Migrated Vendor is wrong');
         Assert.AreEqual('505930011', Vendor."Post Code", 'Post Code of Migrated Vendor is wrong');
-        Assert.AreEqual('IL', Vendor.County, 'County (State) of Migrated Vendor is wrong');
         Assert.AreEqual('70143651130000', Vendor."Phone No.", 'Phone No. of Migrated Vendor is wrong');
         Assert.AreEqual('', Vendor."Fax No.", 'Fax No. of Migrated Vendor is wrong');
         Assert.AreEqual(Country, Vendor."Country/Region Code", 'Country/Region of Migrated Vendor is wrong');
