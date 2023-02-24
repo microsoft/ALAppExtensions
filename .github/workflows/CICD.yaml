@@ -62,7 +62,7 @@ jobs:
           
       - name: Load Build Projects
         id: loadProjects
-        uses: mazhelez/AL-Go/Actions/LoadProjects@build-modes-per-project
+        uses: mazhelez/AL-Go/Actions/LoadProjects@separate-load-projects
         with:
           shell: powershell
 
