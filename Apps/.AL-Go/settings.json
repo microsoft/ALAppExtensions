@@ -83,5 +83,6 @@
     "enableCodeCop": true, 
     "repoVersion":  "21.5",
     "doNotRunTests": true,
+    "installTestLibraries": true,
     "cleanModePreprocessorSymbols":  ["CLEAN17", "CLEAN18", "CLEAN19", "CLEAN20", "CLEAN21", "CLEAN22"]
 }
