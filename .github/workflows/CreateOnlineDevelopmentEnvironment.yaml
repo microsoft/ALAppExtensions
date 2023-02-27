@@ -36,19 +36,19 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.4
+        uses: mazhelez/AL-Go-Actions/WorkflowInitialize@separate-load-projects
         with:
           shell: powershell
           eventId: "DO0093"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSecrets@separate-load-projects
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -69,7 +69,7 @@ jobs:
             Write-Host "AdminCenterApiCredentials not provided, initiating Device Code flow"
             $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
             $webClient = New-Object System.Net.WebClient
-            $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.4/AL-Go-Helper.ps1', $ALGoHelperPath)
+            $webClient.DownloadFile('https://raw.githubusercontent.com/mazhelez/AL-Go-Actions/separate-load-projects/AL-Go-Helper.ps1', $ALGoHelperPath)
             . $ALGoHelperPath
             $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE
             $authContext = New-BcAuthContext -includeDeviceLogin -deviceLoginTimeout ([TimeSpan]::FromSeconds(0))
@@ -80,7 +80,7 @@ jobs:
           }
 
       - name: Create Development Environment
-        uses: microsoft/AL-Go-Actions/CreateDevelopmentEnvironment@v2.4
+        uses: mazhelez/AL-Go-Actions/CreateDevelopmentEnvironment@separate-load-projects
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -91,7 +91,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.4
+        uses: mazhelez/AL-Go-Actions/WorkflowPostProcess@separate-load-projects
         with:
           shell: powershell
           eventId: "DO0093"

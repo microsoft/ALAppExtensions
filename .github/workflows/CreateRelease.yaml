@@ -66,14 +66,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.4
+        uses: mazhelez/AL-Go-Actions/WorkflowInitialize@separate-load-projects
         with:
           shell: powershell
           eventId: "DO0094"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -81,7 +81,7 @@ jobs:
           getProjects: 'Y'
 
       - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.4
+        uses: mazhelez/AL-Go-Actions/CheckForUpdates@separate-load-projects
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -166,7 +166,7 @@ jobs:
 
       - name: Prepare release notes
         id: createreleasenotes
-        uses: microsoft/AL-Go-Actions/CreateReleaseNotes@v2.4
+        uses: mazhelez/AL-Go-Actions/CreateReleaseNotes@separate-load-projects
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -208,13 +208,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSecrets@separate-load-projects
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -266,7 +266,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "nuGetContext=$nuGetContext"
 
       - name: Deliver to NuGet
-        uses: microsoft/AL-Go-Actions/Deliver@v2.4
+        uses: mazhelez/AL-Go-Actions/Deliver@separate-load-projects
         if: ${{ steps.nuGetContext.outputs.nuGetContext }}
         env:
           deliveryContext: ${{ steps.nuGetContext.outputs.nuGetContext }}
@@ -291,7 +291,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "storageContext=$storageContext"
 
       - name: Deliver to Storage
-        uses: microsoft/AL-Go-Actions/Deliver@v2.4
+        uses: mazhelez/AL-Go-Actions/Deliver@separate-load-projects
         if: ${{ steps.storageContext.outputs.storageContext }}
         env:
           deliveryContext: ${{ steps.storageContext.outputs.storageContext }}
@@ -329,7 +329,7 @@ jobs:
     needs: [ CreateRelease, UploadArtifacts ]
     steps:
       - name: Update Version Number
-        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@v2.4
+        uses: mazhelez/AL-Go-Actions/IncrementVersionNumber@separate-load-projects
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.CreateRelease.outputs.telemetryScopeJson }}
@@ -346,7 +346,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.4
+        uses: mazhelez/AL-Go-Actions/WorkflowPostProcess@separate-load-projects
         with:
           shell: powershell
           eventId: "DO0094"

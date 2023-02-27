@@ -38,14 +38,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.4
+        uses: mazhelez/AL-Go-Actions/WorkflowInitialize@separate-load-projects
         with:
           shell: powershell
           eventId: "DO0101"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -117,14 +117,14 @@ jobs:
           path: '${{ github.workspace }}\.dependencies'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSecrets@separate-load-projects
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -134,7 +134,7 @@ jobs:
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
 
       - name: Run pipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@v2.4
+        uses: mazhelez/AL-Go-Actions/RunPipeline@separate-load-projects
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -212,7 +212,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@v2.4
+        uses: mazhelez/AL-Go-Actions/AnalyzeTests@separate-load-projects
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -220,7 +220,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@v2.4
+        uses: mazhelez/AL-Go-Actions/PipelineCleanup@separate-load-projects
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -253,14 +253,14 @@ jobs:
           path: '${{ github.workspace }}\.dependencies'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.4
+        uses: mazhelez/AL-Go-Actions/ReadSecrets@separate-load-projects
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -270,7 +270,7 @@ jobs:
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
 
       - name: Run pipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@v2.4
+        uses: mazhelez/AL-Go-Actions/RunPipeline@separate-load-projects
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -348,7 +348,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@v2.4
+        uses: mazhelez/AL-Go-Actions/AnalyzeTests@separate-load-projects
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -356,7 +356,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@v2.4
+        uses: mazhelez/AL-Go-Actions/PipelineCleanup@separate-load-projects
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -372,7 +372,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.4
+        uses: mazhelez/AL-Go-Actions/WorkflowPostProcess@separate-load-projects
         with:
           shell: powershell
           eventId: "DO0101"
