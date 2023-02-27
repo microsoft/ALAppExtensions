@@ -2118,7 +2118,16 @@ procedure AddXmlDsigExcC14NTransformToReference()
 
 #### Syntax
 ```
-procedure AddXmlDsigEnvelopedSignatureTransform()
+procedure AddReferenceToSignedXML()
+```
+### AddReferenceToSignedXML (Method) <a name="AddReferenceToSignedXML"></a> 
+
+ Adds a Reference object to the Signed XML and clears Reference object.
+ 
+
+#### Syntax
+```
+procedure AddReferenceToSignedXML()
 ```
 ### ComputeSignature (Method) <a name="ComputeSignature"></a> 
 
