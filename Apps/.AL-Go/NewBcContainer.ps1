@@ -16,7 +16,8 @@ $installedApps = Get-BcContainerAppInfo -containerName $containerName -tenantSpe
 $installedApps | ForEach-Object {
     $ApplicationName = $_.Name
     $removeData = $ApplicationName -ne "Base Application"
-    if ($ApplicationName -notin @("Base Application", "System Application", "Application")) {
+    $keepApplications = @("Base Application", "System Application", "Application", "Tests-TestLibraries", "System Application Test Library", "Library Variable Storage", "Any", "Library Assert", "Permissions Mock", "Library Variable Storage")
+    if ($ApplicationName -notin $keepApplications) {
         Write-Host "Uninstalling $ApplicationName"
         Unpublish-BcContainerApp -containerName $containerName -name $ApplicationName -unInstall -doNotSaveData:$removeData -doNotSaveSchema:$removeData -force
     } else {
