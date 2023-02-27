@@ -252,11 +252,19 @@ jobs:
           buildMode: ${{ matrix.buildMode }}
           branchName: ${{ github.ref_name }}
 
+      - name: Calculate Sanitized Project name
+        id: sanitizedProjectName
+        run: |
+          $project = '${{ matrix.project }}'
+          $projectName = $project.Replace('\','_').Replace('/','_')
+          Write-Host "Sanitized project name: $projectName"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "sanitizedProjectName=$projectName"
+
       - name: Upload thisbuild artifacts - apps
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}Apps'
+          name: 'thisbuild-${{ steps.sanitizedProjectName.outputs.sanitizedProjectName }}-${{ env.BuildMode }}Apps'
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -265,7 +273,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}TestApps'
+          name: 'thisbuild-${{ steps.sanitizedProjectName.outputs.sanitizedProjectName }}-${{ env.BuildMode }}TestApps'
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -414,11 +422,19 @@ jobs:
           buildMode: ${{ matrix.buildMode }}
           branchName: ${{ github.ref_name }}
 
+      - name: Calculate Sanitized Project name
+        id: sanitizedProjectName
+        run: |
+          $project = '${{ matrix.project }}'
+          $projectName = $project.Replace('\','_').Replace('/','_')
+          Write-Host "Sanitized project name: $projectName"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "sanitizedProjectName=$projectName"
+
       - name: Upload thisbuild artifacts - apps
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}Apps'
+          name: 'thisbuild-${{ steps.sanitizedProjectName.outputs.sanitizedProjectName }}-${{ env.BuildMode }}Apps'
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -427,7 +443,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}TestApps'
+          name: 'thisbuild-${{ steps.sanitizedProjectName.outputs.sanitizedProjectName }}-${{ env.BuildMode }}TestApps'
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
