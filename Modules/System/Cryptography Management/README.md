@@ -2118,7 +2118,7 @@ procedure AddXmlDsigExcC14NTransformToReference()
 
 #### Syntax
 ```
-procedure AddReferenceToSignedXML()
+procedure AddXmlDsigEnvelopedSignatureTransform()
 ```
 ### AddReferenceToSignedXML (Method) <a name="AddReferenceToSignedXML"></a> 
 
