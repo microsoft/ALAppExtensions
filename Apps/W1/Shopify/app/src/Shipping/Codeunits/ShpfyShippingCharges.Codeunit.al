@@ -62,7 +62,7 @@ codeunit 30191 "Shpfy Shipping Charges"
                 UpdateShippingCostInfos(OrderHeader, JShipmentLines);
                 if Parameters.ContainsKey('After') then
                     Parameters.Set('After', JsonHelper.GetValueAsText(JOrder, 'shippingLines.pageInfo.endCursor'));
-            until not JsonHelper.GetValueAsBoolean(JOrder, 'shippingLines.pageInfo.ha  sNextPage')
+            until not JsonHelper.GetValueAsBoolean(JOrder, 'shippingLines.pageInfo.hasNextPage')
         end;
     end;
 
@@ -82,7 +82,7 @@ codeunit 30191 "Shpfy Shipping Charges"
         IsNew: Boolean;
     begin
         foreach JToken in JShippingLines do begin
-            Id := JsonHelper.GetValueAsBigInteger(JToken, 'id');
+            Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JToken, 'id'));
             IsNew := not OrderShippingCharges.Get(Id);
             if IsNew then begin
                 Clear(OrderShippingCharges);
