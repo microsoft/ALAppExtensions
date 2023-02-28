@@ -17,9 +17,11 @@ codeunit 30117 "Shpfy Customer Import"
         CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer);
         ClearLastError();
         Commit();
-        if CustomerMapping.FindMapping(ShopifyCustomer) and Shop."Shopify Can Update Customer" then begin
-            UpdateCustomer.SetShop(Shop);
-            UpdateCustomer.Run(ShopifyCustomer);
+        if CustomerMapping.FindMapping(ShopifyCustomer) then begin
+            if Shop."Shopify Can Update Customer" then begin
+                UpdateCustomer.SetShop(Shop);
+                UpdateCustomer.Run(ShopifyCustomer);
+            end;
         end else
             if Shop."Auto Create Unknown Customers" or AllowCreate then begin
                 CreateCustomer.SetShop(Shop);
