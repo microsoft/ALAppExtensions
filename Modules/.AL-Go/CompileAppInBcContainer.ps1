@@ -2,6 +2,35 @@ Param(
     [Hashtable] $parameters
 )
 
+
+function Get-Baselines {
+    Param(
+    [string] $BaselineVersion = "21.4.52563.53749",
+    [string] $ApplicationName = "System Application",
+    [string] $PackageCacheFolder
+)
+    if(-not $BaselineVersion) {
+        Write-Host "Baseline version is not defined"
+    }
+    else {
+        Write-Host "Baseline version: $BaselineVersion"
+
+        $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $BaselineVersion # W1 because Modules are not localized
+        if(-not $baselineURL) {
+            throw "Unable to find URL for baseline version $BaselineVersion"
+        }
+        $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) 'baselines'
+        
+        Write-Host "Baseline URL: $baselineURL"
+        Write-Host "Downloading to: $baselineFolder"
+        
+        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
+        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ApplicationName*" -Filter "*.app"
+        Copy-Item -Path $baselineApp.FullName -Destination $PackageCacheFolder -Force -Verbose
+    }
+}
+
+
 Write-Host "BuildMode - $ENV:BuildMode"
 $appBuildMode = $ENV:BuildMode
 
@@ -19,6 +48,16 @@ if($app)
         $parameters["Features"] += @("lcgtranslationfile")
     }
 }
+
+Write-Host $parameters
+Write-Host $parameters["appSymbolsFolder"]
+Write-Host $parameters['appProjectFolder']
+
+if (!$parameters.ContainsKey("appSymbolsFolder")) {
+    $parameters["appSymbolsFolder"] = Join-Path $parameters['appProjectFolder'] ".alpackages"
+}
+
+Get-Baselines -PackageCacheFolder $parameters["appSymbolsFolder"]
 
 $appFile = Compile-AppInBcContainer @parameters
 
