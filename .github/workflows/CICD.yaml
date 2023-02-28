@@ -254,7 +254,7 @@ jobs:
 
       - name: Run pipeline
         id: RunPipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@preview
+        uses: aholstrup/AL-Go-Actions/RunPipeline@main
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
