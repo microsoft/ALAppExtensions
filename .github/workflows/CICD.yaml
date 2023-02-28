@@ -38,7 +38,6 @@ jobs:
       projects: ${{ steps.LoadProjects.outputs.ProjectsJson }}
       projectDependenciesJson: ${{ steps.LoadProjects.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.LoadProjects.outputs.BuildOrderJson }}
-      buildOrderDepth: ${{ steps.LoadProjects.outputs.BuildOrderDepth }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -236,13 +235,14 @@ jobs:
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
-          ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
+          project: ${{ matrix.project }}
+          projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
           settingsJson: ${{ env.Settings }}
-          SecretsJson: ${{ env.RepoSecrets }}
+          secretsJson: ${{ env.RepoSecrets }}
           buildMode: ${{ matrix.buildMode }}
 
       - name: Calculate Artifact names
+        id: calculateArtifactsNames
         uses: mazhelez/AL-Go-Actions/CalculateArtifactNames@separate-load-projects
         if: success() || failure()
         with:
@@ -252,19 +252,11 @@ jobs:
           buildMode: ${{ matrix.buildMode }}
           branchName: ${{ github.ref_name }}
 
-      - name: Calculate Sanitized Project name
-        id: sanitizedProjectName
-        run: |
-          $project = '${{ matrix.project }}'
-          $projectName = $project.Replace('\','_').Replace('/','_')
-          Write-Host "Sanitized project name: $projectName"
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "sanitizedProjectName=$projectName"
-
       - name: Upload thisbuild artifacts - apps
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ steps.sanitizedProjectName.outputs.sanitizedProjectName }}-${{ env.BuildMode }}Apps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -273,7 +265,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ steps.sanitizedProjectName.outputs.sanitizedProjectName }}-${{ env.BuildMode }}TestApps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -406,13 +398,14 @@ jobs:
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
-          ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
+          project: ${{ matrix.project }}
+          projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
           settingsJson: ${{ env.Settings }}
-          SecretsJson: ${{ env.RepoSecrets }}
+          secretsJson: ${{ env.RepoSecrets }}
           buildMode: ${{ matrix.buildMode }}
 
       - name: Calculate Artifact names
+        id: calculateArtifactsNames
         uses: mazhelez/AL-Go-Actions/CalculateArtifactNames@separate-load-projects
         if: success() || failure()
         with:
@@ -422,19 +415,11 @@ jobs:
           buildMode: ${{ matrix.buildMode }}
           branchName: ${{ github.ref_name }}
 
-      - name: Calculate Sanitized Project name
-        id: sanitizedProjectName
-        run: |
-          $project = '${{ matrix.project }}'
-          $projectName = $project.Replace('\','_').Replace('/','_')
-          Write-Host "Sanitized project name: $projectName"
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "sanitizedProjectName=$projectName"
-
       - name: Upload thisbuild artifacts - apps
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ steps.sanitizedProjectName.outputs.sanitizedProjectName }}-${{ env.BuildMode }}Apps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -443,7 +428,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ steps.sanitizedProjectName.outputs.sanitizedProjectName }}-${{ env.BuildMode }}TestApps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
