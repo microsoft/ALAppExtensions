@@ -95,13 +95,13 @@ codeunit 30191 "Shpfy Shipping Charges"
             JsonHelper.GetValueIntoField(JToken, 'source', RecordRef, OrderShippingCharges.FieldNo(Source));
             JsonHelper.GetValueIntoField(JToken, 'originalPriceSet.shopMoney.amount', RecordRef, OrderShippingCharges.FieldNo(Amount));
             JsonHelper.GetValueIntoField(JToken, 'originalPriceSet.presentmentMoney.amount', RecordRef, OrderShippingCharges.FieldNo("Presentment Amount"));
-            JsonHelper.GetValueIntoField(JToken, 'discountedPriceSet.shopMoney.amount', RecordRef, OrderShippingCharges.FieldNo("Discount Amount"));
-            JsonHelper.GetValueIntoField(JToken, 'discountedPriceSet.presentmentMoney.amount', RecordRef, OrderShippingCharges.FieldNo("Presentment Discount Amount"));
-            if IsNew then
-                RecordRef.Insert()
-            else
-                RecordRef.Modify();
             RecordRef.SetTable(OrderShippingCharges);
+            OrderShippingCharges."Discount Amount" := GetShippingDiscountAmount(JsonHelper.GetJsonArray(JToken, 'discountAllocations'), 'shopMoney');
+            OrderShippingCharges."Presentment Discount Amount" := GetShippingDiscountAmount(JsonHelper.GetJsonArray(JToken, 'discountAllocations'), 'presentmentMoney');
+            if IsNew then
+                OrderShippingCharges.Insert()
+            else
+                OrderShippingCharges.Modify();
             RecordRef.Close();
             DataCapture.Add(Database::"Shpfy Order Shipping Charges", OrderShippingCharges.SystemId, JToken);
             if not ShipmentMethodMapping.Get(OrderHeader."Shop Code", OrderShippingCharges.Title) then begin
@@ -111,5 +111,15 @@ codeunit 30191 "Shpfy Shipping Charges"
                 ShipmentMethodMapping.Insert();
             end;
         end;
+    end;
+
+    local procedure GetShippingDiscountAmount(JDiscountAllocations: JsonArray; MoneyType: Text) Result: Decimal
+    var
+        JAllocationAmountSet: JsonToken;
+        amountLbl: Label 'allocatedAmountSet.%1.amount', Locked = true, Comment = '%1 = MoneyType (shopMoney or presentmentMoney)';
+    begin
+        Result := 0;
+        foreach JAllocationAmountSet in JDiscountAllocations do
+            Result += JsonHelper.GetValueAsDecimal(JAllocationAmountSet, StrSubstNo(amountLbl, MoneyType));
     end;
 }
