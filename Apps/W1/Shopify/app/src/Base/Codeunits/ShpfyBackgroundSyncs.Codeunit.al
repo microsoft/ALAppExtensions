@@ -214,6 +214,7 @@ codeunit 30101 "Shpfy Background Syncs"
         OrderParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Sync Orders from Shopify" id="30104"><DataItems><DataItem name="Shop">%1</DataItem><DataItem name="OrdersToImport">VERSION(1) SORTING(Field1)</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View', Locked = true;
         StartDataItemShopTxt: Label '<DataItem name="Shop">', Locked = true;
         EndDataItemShopTxt: Label '</DataItem><DataItem name="OrdersToImport">', Locked = true;
+        NameShopTxt: Label 'name="Shop">', Locked = true;
         ShopView: Text;
     begin
         Parameters := Report.RunRequestPage(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(OrderParametersTxt, Shop.GetView()));
@@ -221,15 +222,15 @@ codeunit 30101 "Shpfy Background Syncs"
             exit;
         ShopView := Parameters.Substring(Parameters.IndexOf(StartDataItemShopTxt) + StrLen(StartDataItemShopTxt));
         ShopView := ShopView.Substring(1, ShopView.IndexOf(EndDataItemShopTxt) - 1);
-        Parameters := Parameters.Replace(ShopView, '%1');
+        Parameters := Parameters.Replace(NameShopTxt + ShopView, NameShopTxt + '%1');
         Clear(Shop);
         Shop.SetView(ShopView);
         Shop.SetRange("Allow Background Syncs", true);
         if not Shop.IsEmpty then
-            EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(Parameters, Shop.GetView()), StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, Shop.GetFilter(Code)), true, true);
+            EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(Parameters, Shop.GetView(false)), StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, Shop.GetFilter(Code)), true, true);
         Shop.SetRange("Allow Background Syncs", false);
         if not Shop.IsEmpty then
-            EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(Parameters, Shop.GetView()), StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, Shop.GetFilter(Code)), false, true);
+            EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(Parameters, Shop.GetView(false)), StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, Shop.GetFilter(Code)), false, true);
     end;
 
     internal procedure PayoutsSync(ShopCode: Code[20])
