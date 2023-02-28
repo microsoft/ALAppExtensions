@@ -254,7 +254,7 @@ jobs:
 
       - name: Run pipeline
         id: RunPipeline
-        uses: aholstrup/AL-Go-Actions/RunPipeline@main
+        uses: aholstrup1/AL-Go-Actions/RunPipeline@main
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
