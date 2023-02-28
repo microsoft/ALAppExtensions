@@ -42,4 +42,37 @@ codeunit 9142 "SharePoint Auth."
     begin
         exit(SharePointAuthImpl.CreateAuthorizationCode(AadTenantId, ClientId, ClientSecret, Scopes));
     end;
+
+    /// <summary>
+    /// Creates an authorization mechanism with the Client Credentials Grant Flow.
+    /// </summary>
+    /// <param name="AadTenantId">Azure Active Directory tenant ID</param>
+    /// <param name="ClientId">The Application (client) ID that the Azure portal - App registrations experience assigned to your app.</param>        
+    /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
+    /// <param name="Scope">A scope that you want the user to consent to.</param>
+    /// <returns>Codeunit instance implementing authorization interface</returns>
+    [NonDebuggable]
+    procedure CreateClientCredentials(AadTenantId: Text; ClientId: Text; Certificate: Text; Scope: Text): Interface "SharePoint Authorization";
+    var
+        Scopes: List of [Text];
+    begin
+        Scopes.Add(Scope);
+        exit(CreateAuthorizationCode(AadTenantId, ClientId, Certificate, Scopes));
+    end;
+
+    /// <summary>
+    /// Creates an authorization mechanism with the Client Credentials Grant Flow.
+    /// </summary>
+    /// <param name="AadTenantId">Azure Active Directory tenant ID</param>
+    /// <param name="ClientId">The Application (client) ID that the Azure portal - App registrations experience assigned to your app.</param>        
+    /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <returns>Codeunit instance implementing authorization interface</returns>
+    [NonDebuggable]
+    procedure CreateClientCredentials(AadTenantId: Text; ClientId: Text; Certificate: Text; Scopes: List of [Text]): Interface "SharePoint Authorization";
+    var
+        SharePointAuthImpl: Codeunit "SharePoint Auth. - Impl.";
+    begin
+        exit(SharePointAuthImpl.CreateAuthorizationCode(AadTenantId, ClientId, Certificate, Scopes));
+    end;
 }
