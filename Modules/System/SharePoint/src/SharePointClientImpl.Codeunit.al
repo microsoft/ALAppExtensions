@@ -494,6 +494,21 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
+    procedure DeleteFile(OdataId: Text): Boolean
+    var
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+    begin
+        SharePointUriBuilder.ResetPath(OdataId);
+        SharePointHttpContent.SetXHTTPMethod('DELETE');
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        exit(true);
+    end;
+
     procedure GetDocumentLibraryRootFolder(OdataID: Text; var SharePointFolder: Record "SharePoint Folder"): Boolean
     var
         SharePointFolderParser: Codeunit "SharePoint Folder";

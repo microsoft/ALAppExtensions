@@ -266,6 +266,15 @@ codeunit 9100 "SharePoint Client"
     procedure DownloadFileContent(OdataId: Text; FileName: Text): Boolean
     begin
         exit(SharePointClientImpl.DownloadFileContent(OdataId, FileName));
+
+    /// <summary>
+    /// Delete a file.
+    /// </summary>
+    /// <param name="OdataId">The odata.id parameter of the file entity.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DeleteFile(OdataId: Text): Boolean
+    begin
+        exit(SharePointClientImpl.DeleteFile(OdataId));
     end;
 
     /// <summary>
