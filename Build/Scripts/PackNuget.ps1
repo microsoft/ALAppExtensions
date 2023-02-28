@@ -59,7 +59,7 @@ function PreparePackageFolder
         {
             Copy-Item -Path "$appsToPackage/*" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
         } else {
-            throw "No apps found in $appsToPackage" 
+            throw "No apps found in: $appsToPackage" 
         }
     }
 
@@ -71,7 +71,7 @@ New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
 
 $appsFolders = Get-ChildItem $BuildArtifactsPath -Directory 
 $packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
-$packageId = "$($RepoOwner).$($RepoName).Modules"
+$packageId = "$RepoOwner-$RepoName-Modules-preview"
 
 Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
 Write-Host "Package folder: $OutputPackageFolder" -ForegroundColor Magenta
