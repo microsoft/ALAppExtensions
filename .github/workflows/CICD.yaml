@@ -58,12 +58,19 @@ jobs:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getEnvironments: '*'
+
+      - name: Fetch PR changes
+        id: fetchChangedFiles
+        uses: mazhelez/AL-Go-Actions/FetchChangedFiles@separate-load-projects
+        with:
+          shell: ${{ inputs.shell }}
           
       - name: Load Build Projects
         id: loadProjects
         uses: mazhelez/AL-Go-Actions/LoadProjects@separate-load-projects
         with:
           shell: powershell
+          changedFiles: ${{ steps.fetchChangedFiles.outputs.changedFiles }}
 
       - name: Verify workflow depth
         id: verifyWorkflowDepth
