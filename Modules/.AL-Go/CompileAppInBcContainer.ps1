@@ -2,7 +2,7 @@ Param(
     [Hashtable] $parameters
 )
 
-
+<#
 function Get-Baselines {
     Param(
     [string] $BaselineVersion = "21.4.52563.53749",
@@ -29,7 +29,7 @@ function Get-Baselines {
         Copy-Item -Path $baselineApp.FullName -Destination $PackageCacheFolder -Force -Verbose
     }
 }
-
+#>
 
 Write-Host "BuildMode - $ENV:BuildMode"
 $appBuildMode = $ENV:BuildMode
@@ -53,11 +53,11 @@ Write-Host $parameters
 Write-Host $parameters["appSymbolsFolder"]
 Write-Host $parameters['appProjectFolder']
 
-if (!$parameters.ContainsKey("appSymbolsFolder")) {
+<#if (!$parameters.ContainsKey("appSymbolsFolder")) {
     $parameters["appSymbolsFolder"] = Join-Path $parameters['appProjectFolder'] ".alpackages"
-}
+}#>
 
-Get-Baselines -PackageCacheFolder $parameters["appSymbolsFolder"]
+#Get-Baselines -PackageCacheFolder $parameters["appSymbolsFolder"]
 
 $appFile = Compile-AppInBcContainer @parameters
 
