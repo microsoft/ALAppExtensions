@@ -27,6 +27,18 @@ function Get-Baselines {
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
         $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ApplicationName*" -Filter "*.app"
 
+
+        Write-Host "Container Name: $($parameters.ContainerName)"
+        Write-Host "appSymbolsFolder: $($parameters["appSymbolsFolder"])"
+
+        $containerSymbolsFolder = Get-BcContainerPath -containerName $parameters.ContainerName -path $parameters["appSymbolsFolder"]
+
+        Write-Host "Container Symbols Folder: $containerSymbolsFolder"
+
+        Write-Host "Copying $($baselineApp.FullName) to $containerSymbolsFolder in container $($parameters.ContainerName)"
+
+        Copy-FileToBcContainer -containerName $parameters.ContainerName -localPath $baselineApp.FullName -containerPath $containerSymbolsFolder
+
         if (!(Test-Path $PackageCacheFolder)) {
             Write-Host "Creating $PackageCacheFolder"
             New-Item -Path $PackageCacheFolder -ItemType Directory -Force
