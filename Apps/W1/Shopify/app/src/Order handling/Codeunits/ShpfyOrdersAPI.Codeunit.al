@@ -118,12 +118,12 @@ codeunit 30165 "Shpfy Orders API"
             repeat
                 Clear(JAttrib);
                 JAttrib.Add('key', OrderAttribute."Key");
-                JAttrib.Add('value', OrderAttribute.Value.Replace('\', '\\').Replace('"', '\"'));
+                JAttrib.Add('value', OrderAttribute.Value);
                 JAttributes.Add(JAttrib);
             until OrderAttribute.Next() = 0;
 
         Parameters.Add('OrderId', Format(OrderHeader."Shopify Order Id"));
-        Parameters.add('CustomAttributes', Format(JAttributes).Replace('"key"', 'key').Replace('"value"', 'value').Replace('\', '\\').Replace('"', '\"'));
+        Parameters.Add('CustomAttributes', Format(JAttributes).Replace('"key"', 'key').Replace('"value"', 'value').Replace('\', '\\').Replace('"', '\"'));
         CommunicationMgt.ExecuteGraphQL(GraphQLType::UpdateOrderAttributes, Parameters);
     end;
 

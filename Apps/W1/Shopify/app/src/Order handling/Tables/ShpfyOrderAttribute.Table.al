@@ -19,7 +19,7 @@ table 30116 "Shpfy Order Attribute"
             Caption = 'Key';
             DataClassification = CustomerContent;
         }
-        field(3; Value; Text[250])
+        field(3; Value; Text[500])
         {
             Caption = 'Value';
             DataClassification = CustomerContent;
