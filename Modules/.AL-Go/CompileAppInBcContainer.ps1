@@ -5,10 +5,11 @@ Param(
 
 function Get-Baselines {
     Param(
-    [string] $BaselineVersion = "21.4.52563.53749",
-    [string] $ApplicationName = "System Application",
-    [string] $PackageCacheFolder
-)
+    [string] $BaselineVersion,
+    [string] $ApplicationName,
+    [string] $ContainerName,
+    [string] $AppSymbolsFolder
+    )
     if(-not $BaselineVersion) {
         Write-Host "Baseline version is not defined"
     }
@@ -27,29 +28,17 @@ function Get-Baselines {
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
         $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ApplicationName*" -Filter "*.app"
 
+        Write-Host "Container Name: $($ContainerName)"
+        Write-Host "appSymbolsFolder: $($AppSymbolsFolder)"
 
-        Write-Host "Container Name: $($parameters.ContainerName)"
-        Write-Host "appSymbolsFolder: $($parameters["appSymbolsFolder"])"
-
-        $containerSymbolsFolder = Get-BcContainerPath -containerName $parameters.ContainerName -path $parameters["appSymbolsFolder"]
+        $containerSymbolsFolder = Get-BcContainerPath -containerName $ContainerName -path $AppSymbolsFolder
 
         Write-Host "Container Symbols Folder: $containerSymbolsFolder"
+        Write-Host "Copying $($baselineApp.FullName) to $containerSymbolsFolder in container $($ContainerName)"
 
-        Write-Host "Copying $($baselineApp.FullName) to $containerSymbolsFolder in container $($parameters.ContainerName)"
+        Copy-FileToBcContainer -containerName $ContainerName -localPath $baselineApp.FullName -containerPath $containerSymbolsFolder
 
-        Copy-FileToBcContainer -containerName $parameters.ContainerName -localPath $baselineApp.FullName -containerPath $containerSymbolsFolder
-
-        if (!(Test-Path $PackageCacheFolder)) {
-            Write-Host "Creating $PackageCacheFolder"
-            New-Item -Path $PackageCacheFolder -ItemType Directory -Force
-        }
-
-        Copy-Item -Path $baselineApp.FullName -Destination $PackageCacheFolder -Force -Verbose
-        $Items = Get-ChildItem -Path $PackageCacheFolder -Recurse
-        Write-host "Child Items:"
-        Write-host $Items
-
-        Remove-Item -Path $baselineFolder -Recurse -Force -Verbose
+        Remove-Item -Path $baselineFolder -Recurse -Force
     }
 }
 
@@ -72,15 +61,7 @@ if($app)
     }
 }
 
-Write-Host $parameters
-Write-Host $parameters["appSymbolsFolder"]
-Write-Host $parameters['appProjectFolder']
-
-<#if (!$parameters.ContainsKey("appSymbolsFolder")) {
-    $parameters["appSymbolsFolder"] = Join-Path $parameters['appProjectFolder'] ".alpackages"
-}#>
-
-Get-Baselines -PackageCacheFolder $parameters["appSymbolsFolder"]
+Get-Baselines -ContainerName $parameters.ContainerName -AppSymbolsFolder $parameters["appSymbolsFolder"] -ApplicationName "System Application" -BaselineVersion "21.4.52563.53749"
 
 $appFile = Compile-AppInBcContainer @parameters
 
