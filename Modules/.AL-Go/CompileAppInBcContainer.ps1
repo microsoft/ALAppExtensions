@@ -2,7 +2,7 @@ Param(
     [Hashtable] $parameters
 )
 
-<#
+
 function Get-Baselines {
     Param(
     [string] $BaselineVersion = "21.4.52563.53749",
@@ -27,9 +27,11 @@ function Get-Baselines {
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
         $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ApplicationName*" -Filter "*.app"
         Copy-Item -Path $baselineApp.FullName -Destination $PackageCacheFolder -Force -Verbose
+        $Items = Get-ChildItem -Path $baselineFolder -Recurse
+        Write-host $Items
     }
 }
-#>
+
 
 Write-Host "BuildMode - $ENV:BuildMode"
 $appBuildMode = $ENV:BuildMode
@@ -57,7 +59,12 @@ Write-Host $parameters['appProjectFolder']
     $parameters["appSymbolsFolder"] = Join-Path $parameters['appProjectFolder'] ".alpackages"
 }#>
 
-#Get-Baselines -PackageCacheFolder $parameters["appSymbolsFolder"]
+if (!Test-Path $parameters["appSymbolsFolder"]) {
+    Write-Host "Creating $($parameters["appSymbolsFolder"])"
+    New-Item -Path $parameters["appSymbolsFolder"] -ItemType Directory -Force | Out-Null
+}
+
+Get-Baselines -PackageCacheFolder $parameters["appSymbolsFolder"]
 
 $appFile = Compile-AppInBcContainer @parameters
 
