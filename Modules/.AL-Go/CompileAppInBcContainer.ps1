@@ -27,8 +27,10 @@ function Get-Baselines {
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
         $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ApplicationName*" -Filter "*.app"
         Copy-Item -Path $baselineApp.FullName -Destination $PackageCacheFolder -Force -Verbose
-        $Items = Get-ChildItem -Path $baselineFolder -Recurse
+        $Items = Get-ChildItem -Path $PackageCacheFolder -Recurse
         Write-host $Items
+
+        Remove-Item -Path $baselineFolder -Recurse -Force -Verbose
     }
 }
 
