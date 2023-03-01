@@ -59,11 +59,6 @@ Write-Host $parameters['appProjectFolder']
     $parameters["appSymbolsFolder"] = Join-Path $parameters['appProjectFolder'] ".alpackages"
 }#>
 
-if (!Test-Path $parameters["appSymbolsFolder"]) {
-    Write-Host "Creating $($parameters["appSymbolsFolder"])"
-    New-Item -Path $parameters["appSymbolsFolder"] -ItemType Directory -Force | Out-Null
-}
-
 Get-Baselines -PackageCacheFolder $parameters["appSymbolsFolder"]
 
 $appFile = Compile-AppInBcContainer @parameters
