@@ -3,11 +3,11 @@
     "rules": [
         {
             "id": "AL0627",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AD0001",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0014",
@@ -43,7 +43,7 @@
         },
         {
             "id": "PTE0008",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "PTE0012",
@@ -91,43 +91,43 @@
         },
         {
             "id": "AA0001",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0002",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0003",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0005",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0008",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0013",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0018",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0021",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0022",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0040",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0050",
@@ -151,91 +151,91 @@
         },
         {
             "id": "AA0074",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0100",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0136",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0137",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0139",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0161",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0175",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0194",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0215",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0202",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0206",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0228",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0244",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AA0246",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AL0601",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AL0640",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AL0659",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AL0660",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AL0677",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AL0697",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AL0711",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AL0715",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0051",
@@ -271,23 +271,23 @@
         },
         {
             "id": "AS0072",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0073",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0074",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0075",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0076",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0081",
@@ -303,11 +303,11 @@
         },
         {
             "id": "AS0086",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0087",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0092",
@@ -335,7 +335,7 @@
         },
         {
             "id": "AS0109",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0110",
@@ -359,15 +359,15 @@
         },
         {
             "id": "AS0077",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0078",
-            "action": "Error"
+            "action": "Warning"
         },
         {
             "id": "AS0102",
-            "action": "Error"
+            "action": "Warning"
         }
     ]
 }
