@@ -290,14 +290,6 @@
             "action": "Error"
         },
         {
-            "id": "AS0077",
-            "action": "Warning"
-        },
-        {
-            "id": "AS0078",
-            "action": "Warning"
-        },
-        {
             "id": "AS0081",
             "action": "None"
         },
@@ -332,10 +324,6 @@
         {
             "id": "AS0100",
             "action": "None"
-        },
-        {
-            "id": "AS0102",
-            "action": "Warning"
         },
         {
             "id": "AS0103",
