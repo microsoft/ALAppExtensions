@@ -32,11 +32,12 @@ function Get-Baselines {
         Write-Host "appSymbolsFolder: $($AppSymbolsFolder)"
 
         $containerSymbolsFolder = Get-BcContainerPath -containerName $ContainerName -path $AppSymbolsFolder
+        $baselineAppName = $baselineApp.Name
+        $containerPath = Join-Path $containerSymbolsFolder $baselineAppName
 
-        Write-Host "Container Symbols Folder: $containerSymbolsFolder"
-        Write-Host "Copying $($baselineApp.FullName) to $containerSymbolsFolder in container $($ContainerName)"
+        Write-Host "Copying $($baselineApp.FullName) to $containerPath"
 
-        Copy-FileToBcContainer -containerName $ContainerName -localPath $baselineApp.FullName -containerPath $containerSymbolsFolder
+        Copy-FileToBcContainer -containerName $ContainerName -localPath $baselineApp.FullName -containerPath $containerPath
 
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
@@ -63,7 +64,7 @@ if($app)
 
 Get-Baselines -ContainerName $parameters.ContainerName -AppSymbolsFolder $parameters["appSymbolsFolder"] -ApplicationName "System Application" -BaselineVersion "21.4.52563.53749"
 
-$appFile = Compile-AppInBcContainer @parameters
+$appFile = Compile-AppInBcContainer @parameters #-CopySymbolsFromContainer 
 
 $branchName = $ENV:GITHUB_REF_NAME
 
