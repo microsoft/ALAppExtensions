@@ -250,7 +250,7 @@ codeunit 8900 "Email Impl"
         EmailMessageId := EmailMessage.GetId(); // Prevent different email message from being sent if overwritten in event
         LastModifiedNo := EmailMessage.GetNoOfModifies();
 
-        Email.OnBeforeSendEmail(EmailMessage);
+        Email.OnBeforeSendEmail(EmailMessage, false);
 
         EmailMessage.Get(EmailMessageId); // Get any latest changes
         if LastModifiedNo < EmailMessage.GetNoOfModifies() then begin
