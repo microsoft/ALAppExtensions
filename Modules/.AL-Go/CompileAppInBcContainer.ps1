@@ -36,7 +36,7 @@ function Get-Baselines {
         Write-Host "Container Symbols Folder: $containerSymbolsFolder"
         Write-Host "Copying $($baselineApp.FullName) to $containerSymbolsFolder in container $($ContainerName)"
 
-        #Copy-FileToBcContainer -containerName $ContainerName -localPath $baselineApp.FullName -containerPath $containerSymbolsFolder
+        Copy-FileToBcContainer -containerName $ContainerName -localPath $baselineApp.FullName -containerPath $containerSymbolsFolder
 
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
