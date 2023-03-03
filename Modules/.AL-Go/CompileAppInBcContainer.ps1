@@ -2,48 +2,6 @@ Param(
     [Hashtable] $parameters
 )
 
-
-function Get-Baselines {
-    Param(
-    [string] $BaselineVersion,
-    [string] $ApplicationName,
-    [string] $ContainerName,
-    [string] $AppSymbolsFolder
-    )
-    if(-not $BaselineVersion) {
-        Write-Host "Baseline version is not defined"
-    }
-    else {
-        Write-Host "Baseline version: $BaselineVersion"
-
-        $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $BaselineVersion # W1 because Modules are not localized
-        if(-not $baselineURL) {
-            throw "Unable to find URL for baseline version $BaselineVersion"
-        }
-        $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) 'baselines'
-        
-        Write-Host "Baseline URL: $baselineURL"
-        Write-Host "Downloading to: $baselineFolder"
-        
-        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ApplicationName*" -Filter "*.app"
-
-        Write-Host "Container Name: $($ContainerName)"
-        Write-Host "appSymbolsFolder: $($AppSymbolsFolder)"
-
-        $containerSymbolsFolder = Get-BcContainerPath -containerName $ContainerName -path $AppSymbolsFolder
-        $baselineAppName = $baselineApp.Name
-        $containerPath = Join-Path $containerSymbolsFolder $baselineAppName
-
-        Write-Host "Copying $($baselineApp.FullName) to $containerPath"
-
-        Copy-FileToBcContainer -containerName $ContainerName -localPath $baselineApp.FullName -containerPath $containerPath
-
-        Remove-Item -Path $baselineFolder -Recurse -Force
-    }
-}
-
-
 Write-Host "BuildMode - $ENV:BuildMode"
 $appBuildMode = $ENV:BuildMode
 
@@ -62,9 +20,12 @@ if($app)
     }
 }
 
-Get-Baselines -ContainerName $parameters.ContainerName -AppSymbolsFolder $parameters["appSymbolsFolder"] -ApplicationName "System Application" -BaselineVersion "21.4.52563.53749"
+Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
 
-$appFile = Compile-AppInBcContainer @parameters #-CopySymbolsFromContainer 
+Get-BaselinesFromContainer -ContainerName $parameters.ContainerName -AppSymbolsFolder $parameters["appSymbolsFolder"] -ApplicationName "System Application" -BaselineVersion "21.4.52563.53749"
+Update-AppSourceCopVersionInContainer -ContainerName $parameters.ContainerName -AppProjectFolder $parameters["appProjectFolder"] -Version "21.4.52563.53749" -ExtensionName "System Application" -Publisher "Microsoft"
+
+$appFile = Compile-AppInBcContainer @parameters
 
 $branchName = $ENV:GITHUB_REF_NAME
 
