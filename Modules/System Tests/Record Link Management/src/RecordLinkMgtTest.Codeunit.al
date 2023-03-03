@@ -13,6 +13,7 @@ codeunit 132508 "Record Link Mgt. Test"
         Assert: Codeunit "Library Assert";
         Any: Codeunit Any;
         PermissionsMock: Codeunit "Permissions Mock";
+        WrongLinkTestErr: Label 'Mismatch in the text read.';
 
     trigger OnRun()
     begin
@@ -66,7 +67,7 @@ codeunit 132508 "Record Link Mgt. Test"
         Text := RecordLinkManagement.ReadNote(RecordLink);
 
         // [THEN] The text matches what was put into the record link
-        Assert.AreEqual('My note for the link', Text, 'Mismatch in the text read.');
+        Assert.AreEqual('My note for the link', Text, WrongLinkTestErr);
     end;
 
     [Test]
@@ -118,10 +119,48 @@ codeunit 132508 "Record Link Mgt. Test"
         // [THEN] The record link on the other instance has the same text
         NewRecordLink.SetRange("Record ID", ToRecordLinkRecordTest.RecordId());
         NewRecordLink.FindFirst();
-        Assert.AreEqual('', RecordLinkManagement.ReadNote(NewRecordLink), 'Mismatch in the text read.');
+        Assert.AreEqual('', RecordLinkManagement.ReadNote(NewRecordLink), WrongLinkTestErr);
 
         // [THEN] The record link on the other instance has Notify set to False
         Assert.IsFalse(NewRecordLink.Notify, 'Notify should have been unset.');
+    end;
+
+    [Test]
+    procedure CopyMultipleLinks()
+    var
+        FromRecordLinkRecordTest: Record "Record Link Record Test";
+        ToRecordLinkRecordTest: Record "Record Link Record Test";
+        FromRecordLink: Record "Record Link";
+        ToRecordLink: Record "Record Link";
+        NoteText: Text;
+        I: Integer;
+    begin
+        // [SCENARIO] CopyLinks can copy multiple record links in one call
+
+        // [GIVEN] A record 'RecordA' to assign links to
+        CreateRecordLinkRecTest(FromRecordLinkRecordTest);
+
+        // [GIVEN] Record links assigned the RecordA
+        for I := 1 to Any.IntegerInRange(3, 6) do
+            CreateRecordLink(FromRecordLinkRecordTest.RecordId);
+
+        // [GIVEN] New record RecordB is created to receive the records
+        CreateRecordLinkRecTest(ToRecordLinkRecordTest);
+
+        // [WHEN] Copy links from RecordA to RecordB
+        RecordLinkManagement.CopyLinks(FromRecordLinkRecordTest, ToRecordLinkRecordTest);
+
+        // [THEN] Copies of all records from RecordA are created for RecordB
+        FromRecordLink.SetRange("Record ID", FromRecordLinkRecordTest.RecordId);
+        ToRecordLink.SetRange("Record ID", ToRecordLinkRecordTest.RecordId);
+        Assert.RecordCount(ToRecordLink, FromRecordLink.Count());
+
+        FromRecordLink.FindSet();
+        ToRecordLink.FindSet();
+        repeat
+            NoteText := RecordLinkManagement.ReadNote(FromRecordLink);
+            Assert.AreEqual(NoteText, RecordLinkManagement.ReadNote(ToRecordLink), WrongLinkTestErr);
+        until (FromRecordLink.Next() = 0) or (ToRecordLink.Next() = 0);
     end;
 
     [Test]
@@ -198,6 +237,19 @@ codeunit 132508 "Record Link Mgt. Test"
 
         asserterror RecordLinkManagement.RemoveLinks(DummyText);
         Assert.ExpectedError(NotARecordErr);
+    end;
+
+    local procedure CreateRecordLink(RecId: RecordId)
+    var
+        RecordLink: Record "Record Link";
+    begin
+        RecordLink.Validate(Type, RecordLink.Type::Note);
+        RecordLink.Validate("Record ID", RecId);
+        RecordLinkManagement.WriteNote(RecordLink, Any.AlphanumericText(10));
+        RecordLink.Validate(Created, CurrentDateTime());
+        RecordLink.Validate("User ID", UserId());
+        RecordLink.Validate(Company, CompanyName());
+        RecordLink.Insert(true);
     end;
 
     local procedure CreateRecordLinkRecTest(var RecordLinkRecTest: Record "Record Link Record Test")
