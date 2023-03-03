@@ -35,9 +35,9 @@ jobs:
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
       githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
       checkRunId: ${{ steps.CreateCheckRun.outputs.checkRunId }}
-      projects: ${{ steps.LoadProjects.outputs.ProjectsJson }}
-      projectDependenciesJson: ${{ steps.LoadProjects.outputs.ProjectDependenciesJson }}
-      buildOrderJson: ${{ steps.LoadProjects.outputs.BuildOrderJson }}
+      projects: ${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}
+      projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
+      buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -59,9 +59,9 @@ jobs:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getEnvironments: '*'
           
-      - name: Load Build Projects
-        id: loadProjects
-        uses: mazhelez/AL-Go-Actions/LoadProjects@separate-load-projects
+      - name: Determine Projects To Build
+        id: determineProjectsToBuild
+        uses: mazhelez/AL-Go-Actions/DetermineProjectsToBuild@separate-load-projects
         with:
           shell: powershell
 
@@ -70,7 +70,7 @@ jobs:
         run: |
           $ErrorActionPreference = "STOP"
           Set-StrictMode -version 2.0
-          $buildOrder = '${{ steps.loadProjects.outputs.BuildOrderJson }}' | ConvertFrom-Json
+          $buildOrder = '${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}' | ConvertFrom-Json
           $buildDepth = $buildOrder.Count
           $workflowDepth = ${{ env.workflowDepth }}
           if ($buildDepth -gt $workflowDepth) {
@@ -109,7 +109,7 @@ jobs:
           if ($env:type -eq "AppSource App") {
             $continuousDelivery = $false
             # For multi-project repositories, we will add deliveryTarget AppSource if any project has AppSourceContinuousDelivery set to true
-            ('${{ steps.LoadProjects.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
+            ('${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
               $projectSettings = Get-Content (Join-Path $_ '.AL-Go/settings.json') -raw | ConvertFrom-Json
               if ($projectSettings.PSObject.Properties.Name -eq 'AppSourceContinuousDelivery' -and $projectSettings.AppSourceContinuousDelivery) {
                 Write-Host "Project $_ is setup for Continuous Delivery"

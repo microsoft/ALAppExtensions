@@ -47,14 +47,11 @@ jobs:
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
-      projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
-      projectCount: ${{ steps.ReadSettings.outputs.ProjectCount }}
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
       githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
-      projectDependenciesJson: ${{ steps.ReadSettings.outputs.ProjectDependenciesJson }}
-      buildOrderJson: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
-      buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-      buildModes: ${{ steps.ReadSettings.outputs.BuildModes }}
+      projects: ${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}
+      projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
+      buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -74,46 +71,25 @@ jobs:
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          getProjects: 'Y'
           getEnvironments: '*'
-      
-      - name: Determine Build Order
-        if: env.workflowDepth > 1
-        id: BuildOrder
+          
+      - name: Determine Projects To Build
+        id: determineProjectsToBuild
+        uses: mazhelez/AL-Go-Actions/determineProjectsToBuild@separate-load-projects
+        with:
+          shell: powershell
+
+      - name: Verify workflow depth
+        id: verifyWorkflowDepth
         run: |
           $ErrorActionPreference = "STOP"
           Set-StrictMode -version 2.0
-          $projects = '${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json
-          $buildOrder = '${{ steps.ReadSettings.outputs.BuildOrderJson }}' | ConvertFrom-Json
-          $depth = ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
+          $buildOrder = '${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}' | ConvertFrom-Json
+          $buildDepth = $buildOrder.Count
           $workflowDepth = ${{ env.workflowDepth }}
-          if ($depth -lt $workflowDepth) {
-            Write-Host "::Error::Project Dependencies depth is $depth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
+          if ($buildDepth -gt $workflowDepth) {
+            Write-Host "::Error::Project Dependencies depth is $buildDepth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
             $host.SetShouldExit(1)
-          }
-          $step = $depth
-          $depth..1 | ForEach-Object {
-            $ps = @($buildOrder."$_" | Where-Object { $projects -contains $_ })
-            if ($ps.Count -eq 1) {
-              $projectsJSon = "[$($ps | ConvertTo-Json -compress)]"
-            }
-            else {
-              $projectsJSon = $ps | ConvertTo-Json -compress
-            }
-            if ($ps.Count -gt 0) {
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json=$projectsJson"
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=$($ps.count)"
-              Write-Host "projects$($step)Json=$projectsJson"
-              Write-Host "projects$($step)Count=$($ps.count)"
-              $step--
-            }
-          }
-          while ($step -ge 1) {
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json="
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=0"
-              Write-Host "projects$($step)Json="
-              Write-Host "projects$($step)Count=0"
-              $step--
           }
 
   Build1:
@@ -125,8 +101,7 @@ jobs:
         shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
-        project: ${{ fromJson(needs.Initialization.outputs.projects) }}
-        buildMode: ${{ fromJson(needs.Initialization.outputs.buildModes) }}
+        include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[0].buildDimensions }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
@@ -162,7 +137,7 @@ jobs:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
-          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId'
+          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
 
       - name: Run pipeline
         id: RunPipeline
@@ -172,13 +147,14 @@ jobs:
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
-          ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
+          project: ${{ matrix.project }}
+          projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
           settingsJson: ${{ env.Settings }}
-          SecretsJson: ${{ env.RepoSecrets }}
+          secretsJson: ${{ env.RepoSecrets }}
           buildMode: ${{ matrix.buildMode }}
 
       - name: Calculate Artifact names
+        id: calculateArtifactsNames
         uses: mazhelez/AL-Go-Actions/CalculateArtifactNames@separate-load-projects
         if: success() || failure()
         with:
@@ -192,7 +168,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}Apps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -201,7 +177,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}TestApps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -248,8 +224,7 @@ jobs:
         shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
-        project: ${{ fromJson(needs.Initialization.outputs.projects) }}
-        buildMode: ${{ fromJson(needs.Initialization.outputs.buildModes) }}
+        include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[1].buildDimensions }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
@@ -285,7 +260,7 @@ jobs:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
-          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId'
+          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
 
       - name: Run pipeline
         id: RunPipeline
@@ -295,13 +270,14 @@ jobs:
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
-          ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
+          project: ${{ matrix.project }}
+          projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
           settingsJson: ${{ env.Settings }}
-          SecretsJson: ${{ env.RepoSecrets }}
+          secretsJson: ${{ env.RepoSecrets }}
           buildMode: ${{ matrix.buildMode }}
 
       - name: Calculate Artifact names
+        id: calculateArtifactsNames
         uses: mazhelez/AL-Go-Actions/CalculateArtifactNames@separate-load-projects
         if: success() || failure()
         with:
@@ -315,7 +291,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}Apps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -324,7 +300,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}TestApps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
