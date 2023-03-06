@@ -65,6 +65,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         ShippingCharges: Codeunit "Shpfy Shipping Charges";
         Transactions: Codeunit "Shpfy Transactions";
+        FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
         ICountyFromJson: Interface "Shpfy ICounty From Json";
         OrderHeaderRecordRef: RecordRef;
         OrderId: BigInteger;
@@ -231,6 +232,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderHeader.UpdateTags(JsonHelper.GetArrayAsText(JOrder, 'tags'));
         ImportRisks(OrderHeader, JsonHelper.GetJsonArray(JOrder, 'risks'));
         OrderFulfillments.GetFulfillments(Shop, OrderHeader."Shopify Order Id");
+        FulfillmentOrdersAPI.GetShopifyFulfillmentOrdersFromShopifyOrder(Shop, OrderHeader."Shopify Order Id");
         ShippingCharges.UpdateShippingCostInfos(OrderHeader);
         Transactions.UpdateTransactionInfos(OrderHeader."Shopify Order Id");
         if IsNew then begin
@@ -326,6 +328,7 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Discount Amount"));
             JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Discount Amount"));
             OrderLineRecordRef.SetTable(OrderLine);
+            UpdateLocationIdOnOrderLine(OrderLine);
             OrderLine.Modify();
             OrderLineRecordRef.Close();
             AddTaxLines(OrderLine."Line Id", JsonHelper.GetJsonArray(JOrderLine, 'taxLines'));
@@ -551,5 +554,16 @@ codeunit 30161 "Shpfy Import Order"
     begin
         Shop := ShopifyShop;
         CommunicationMgt.SetShop(Shop);
+    end;
+
+    local procedure UpdateLocationIdOnOrderLine(OrderLine: Record "Shpfy Order Line")
+    var
+        FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
+    begin
+        FulfillmentOrderLine.Reset();
+        FulfillmentOrderLine.SetRange("Shopify Order Id", OrderLine."Shopify Order Id");
+        FulfillmentOrderLine.SetRange("Shopify Variant Id", OrderLine."Shopify Variant Id");
+        if FulfillmentOrderLine.FindFirst() then
+            OrderLine."Location Id" := FulfillmentOrderLine."Shopify Location Id";
     end;
 }

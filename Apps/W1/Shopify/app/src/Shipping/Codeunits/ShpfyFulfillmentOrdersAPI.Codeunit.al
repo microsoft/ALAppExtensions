@@ -85,31 +85,51 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
 
     internal procedure ExtractFulfillmentOrders(var ShopifyShop: Record "Shpfy Shop"; JResponse: JsonObject; var Cursor: Text): Boolean
     var
-        FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
-        Id: BigInteger;
         JFulfillmentOrders: JsonArray;
-        JNode: JsonObject;
         JItem: JsonToken;
     begin
         if JsonHelper.GetJsonArray(JResponse, JFulfillmentOrders, 'data.fulfillmentOrders.edges') then begin
-            foreach JItem in JFulfillmentOrders do begin
-                Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
-                if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
-                    Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+            foreach JItem in JFulfillmentOrders do
+                ExtractFulfillmentOrder(ShopifyShop, JItem, Cursor);
 
-                    FulfillmentOrderHeader.SetRange("Shopify Fulfillment Order Id", Id);
-                    if not FulfillmentOrderHeader.FindFirst() then
-                        Clear(FulfillmentOrderHeader);
-                    FulfillmentOrderHeader."Shopify Fulfillment Order Id" := Id;
-                    FulfillmentOrderHeader."Shop Id" := ShopifyShop."Shop Id";
-                    FulfillmentOrderHeader."Shop Code" := ShopifyShop.Code;
-                    FulfillmentOrderHeader."Shopify Order Id" := JsonHelper.GetValueAsBigInteger(JNode, 'order.legacyResourceId');
-                    if not FulfillmentOrderHeader.Insert() then
-                        FulfillmentOrderHeader.Modify();
-                    GetFulfillmentOrderLines(ShopifyShop, FulfillmentOrderHeader);
-                end;
-            end;
             exit(true);
+        end;
+    end;
+
+    internal procedure ExtractFulfillmentOrdersFromOrder(var ShopifyShop: Record "Shpfy Shop"; JResponse: JsonObject; var Cursor: Text): Boolean
+    var
+        JFulfillmentOrders: JsonArray;
+        JItem: JsonToken;
+    begin
+        if JsonHelper.GetJsonArray(JResponse, JFulfillmentOrders, 'data.order.fulfillmentOrders.edges') then begin
+            foreach JItem in JFulfillmentOrders do
+                ExtractFulfillmentOrder(ShopifyShop, JItem, Cursor);
+
+            exit(true);
+        end;
+    end;
+
+    internal procedure ExtractFulfillmentOrder(var ShopifyShop: Record "Shpfy Shop"; JFulfillmentOrder: JsonToken; var Cursor: Text)
+    var
+        FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
+        Id: BigInteger;
+        JNode: JsonObject;
+    begin
+        Cursor := JsonHelper.GetValueAsText(JFulfillmentOrder.AsObject(), 'cursor');
+        if JsonHelper.GetJsonObject(JFulfillmentOrder.AsObject(), JNode, 'node') then begin
+            Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+
+            FulfillmentOrderHeader.SetRange("Shopify Fulfillment Order Id", Id);
+            if not FulfillmentOrderHeader.FindFirst() then
+                Clear(FulfillmentOrderHeader);
+            FulfillmentOrderHeader."Shopify Fulfillment Order Id" := Id;
+            FulfillmentOrderHeader."Shop Id" := ShopifyShop."Shop Id";
+            FulfillmentOrderHeader."Shop Code" := ShopifyShop.Code;
+            FulfillmentOrderHeader."Shopify Order Id" := JsonHelper.GetValueAsBigInteger(JNode, 'order.legacyResourceId');
+            FulfillmentOrderHeader."Shopify Location Id" := JsonHelper.GetValueAsBigInteger(JNode, 'assignedLocation.location.legacyResourceId');
+            if not FulfillmentOrderHeader.Insert() then
+                FulfillmentOrderHeader.Modify();
+            GetFulfillmentOrderLines(ShopifyShop, FulfillmentOrderHeader);
         end;
     end;
 
@@ -134,6 +154,7 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
                     FulfillmentOrderLine."Shopify Fulfillment Order Id" := FulfillmentOrderHeader."Shopify Fulfillment Order Id";
                     FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id" := Id;
                     FulfillmentOrderLine."Shopify Order Id" := FulfillmentOrderHeader."Shopify Order Id";
+                    FulfillmentOrderLine."Shopify Location Id" := FulfillmentOrderHeader."Shopify Location Id";
                     FulfillmentOrderLine."Shopify Product Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.product.legacyResourceId');
                     FulfillmentOrderLine."Shopify Variant Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.variant.legacyResourceId');
                     FulfillmentOrderLine."Total Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'totalQuantity');
@@ -145,5 +166,36 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
             end;
             exit(true);
         end;
+    end;
+
+    internal procedure GetShopifyFulfillmentOrdersFromShopifyOrder(Shop: Record "Shpfy Shop"; OrderId: BigInteger)
+    var
+        Cursor: Text;
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+    begin
+        CommunicationMgt.SetShop(Shop);
+
+        if not Shop."Fulfillmentservice Activated" then
+            RegisterFulfillmentService(Shop);
+
+        GraphQLType := "Shpfy GraphQL Type"::GetFulfillmentOrdersFromOrder;
+        repeat
+            if Parameters.ContainsKey('OrderId') then
+                Parameters.Set('OrderId', Format(OrderId))
+            else
+                Parameters.Add('OrderId', Format(OrderId));
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            if JResponse.IsObject() then
+                if ExtractFulfillmentOrdersFromOrder(Shop, JResponse.AsObject(), Cursor) then begin
+                    if Parameters.ContainsKey('After') then
+                        Parameters.Set('After', Cursor)
+                    else
+                        Parameters.Add('After', Cursor);
+                    GraphQLType := "Shpfy GraphQL Type"::GetNextFulfillmentOrdersFromOrder;
+                end else
+                    break;
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.order.fulfillmentOrders.pageInfo.hasNextPage');
+        Commit();
     end;
 }

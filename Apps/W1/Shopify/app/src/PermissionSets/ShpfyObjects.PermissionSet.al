@@ -184,6 +184,8 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL AllCustomerIds" = X,
         codeunit "Shpfy GQL NextAllCustomerIds" = X,
         codeunit "Shpfy Suppress Asm Warning" = X,
+        codeunit "Shpfy GQL FFOrdersFromOrder" = X,
+        codeunit "Shpfy GQL NextFFOrdersFromOrd" = X,
         page "Shpfy Activities" = X,
         page "Shpfy Authentication" = X,
         page "Shpfy Connector Guide" = X,

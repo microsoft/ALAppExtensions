@@ -105,6 +105,8 @@ codeunit 30182 "Shpfy Product Price Calc."
 
     internal procedure PricesIncludingVAT(ShopCode: Code[20]): Boolean
     begin
+        if Shop.Code <> ShopCode then
+            shop.Get(ShopCode);
         exit(Shop."Prices Including VAT");
     end;
 

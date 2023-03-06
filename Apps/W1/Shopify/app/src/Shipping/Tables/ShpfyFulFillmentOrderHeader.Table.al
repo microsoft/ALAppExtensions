@@ -30,6 +30,11 @@ table 30143 "Shpfy FulFillment Order Header"
             DataClassification = CustomerContent;
             TableRelation = "Shpfy Shop".Code;
         }
+        field(6; "Shopify Location Id"; BigInteger)
+        {
+            Caption = 'Shopify Location Id';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
