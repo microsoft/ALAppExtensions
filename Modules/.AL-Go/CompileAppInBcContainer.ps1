@@ -2,8 +2,12 @@ Param(
     [Hashtable] $parameters
 )
 
-Write-Host "BuildMode - $ENV:BuildMode"
-$appBuildMode = $ENV:BuildMode
+Import-Module $PSScriptRoot\..\..\Build\Scripts\GuardingV2ExtensionsHelper.psm1
+Import-Module $PSScriptRoot\..\..\Build\Scripts\EnlistmentHelperFunctions.psm1
+
+$branchName = Get-GitBranchName
+$RepoRootFolder = Get-BaseFolder
+$appBuildMode = Get-BuildMode
 
 # $app is a variable that determine whether the current app is a normal app (not test app, for instance)
 if($app)
@@ -20,14 +24,10 @@ if($app)
     }
 }
 
-Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
-
-Get-BaselinesFromContainer -ContainerName $parameters.ContainerName -AppSymbolsFolder $parameters["appSymbolsFolder"] -ApplicationName "System Application" -BaselineVersion "21.4.52563.53749"
-Update-AppSourceCopVersionInContainer -ContainerName $parameters.ContainerName -AppProjectFolder $parameters["appProjectFolder"] -Version "21.4.52563.53749" -ExtensionName "System Application" -Publisher "Microsoft"
+# Restore the baseline app and generate the AppSourceCop.json file
+Set-BreakingChangesCheck -ContainerName $parameters["containerName"] -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode
 
 $appFile = Compile-AppInBcContainer @parameters
-
-$branchName = $ENV:GITHUB_REF_NAME
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
 if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('release/'))) {
@@ -44,14 +44,14 @@ if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('releas
         $holderFolder = 'TestApps'
     }
 
-    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
+    $packageArtifactsFolder = "$RepoRootFolder/Modules/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
 
     $buildArtifactsFolder = "$packageArtifactsFolder/BuildArtifacts"
     $sourceCodeFolder = "$packageArtifactsFolder/SourceCode"
 
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
-        New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
+        New-Item -Path "$RepoRootFolder/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
     }
 
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
