@@ -75,7 +75,7 @@ jobs:
           
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: mazhelez/AL-Go-Actions/determineProjectsToBuild@separate-load-projects
+        uses: mazhelez/AL-Go-Actions/DetermineProjectsToBuild@separate-load-projects
         with:
           shell: powershell
 
