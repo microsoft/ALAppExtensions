@@ -9,6 +9,9 @@
     ],
     "testFolders":  [
     ],
+    "buildModes": [
+        "Clean"
+    ],
     "enablePerTenantExtensionCop":  false,
     "enableCodeCop": true, 
     "doNotRunTests": true
