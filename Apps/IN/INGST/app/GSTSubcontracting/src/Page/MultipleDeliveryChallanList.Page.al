@@ -1,5 +1,9 @@
+#if not CLEAN22
 page 18475 "Multiple Delivery Challan List"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by New Page Multi. Delivery Challan List';
+    ObsoleteTag = '22.0';
     ApplicationArea = Basic, Suite;
     Caption = 'Multiple Delivery Challan List';
     CardPageID = "Multiple Delivery Challan";
@@ -133,6 +137,11 @@ page 18475 "Multiple Delivery Challan List"
         }
     }
 
+    trigger OnOpenPage()
+    begin
+        Error(UnusedPageLbl);
+    end;
+
     trigger OnAfterGetRecord()
     begin
         Rec.CalcFields("Remaining Quantity");
@@ -234,4 +243,7 @@ page 18475 "Multiple Delivery Challan List"
         DtFilter: Date;
         DtParam: Text[10];
         RemainingQuantity: Boolean;
+
+        UnusedPageLbl: Label 'This Page has been marked as obsolete and will be removed from version 22.0. Instead of this Page use ‘Multi. Delivery Challan List';
 }
+#endif

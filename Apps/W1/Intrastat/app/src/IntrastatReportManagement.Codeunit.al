@@ -48,7 +48,8 @@ codeunit 4810 IntrastatReportManagement
 
         case ItemLedgEntry."Document Type" of
             ItemLedgEntry."Document Type"::"Sales Shipment":
-                if SalesShptHeader.Get(ItemLedgEntry."Document No.") then
+                begin
+                    SalesShptHeader.Get(ItemLedgEntry."Document No.");
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                             CountryCode := SalesShptHeader."Ship-to Country/Region Code";
@@ -57,8 +58,10 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := SalesShptHeader."Bill-to Country/Region Code";
                     end;
+                end;
             ItemLedgEntry."Document Type"::"Sales Return Receipt":
-                if ReturnRcptHeader.Get(ItemLedgEntry."Document No.") then
+                begin
+                    ReturnRcptHeader.Get(ItemLedgEntry."Document No.");
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                             CountryCode := ReturnRcptHeader."Sell-to Country/Region Code";
@@ -67,8 +70,10 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := ReturnRcptHeader."Bill-to Country/Region Code";
                     end;
+                end;
             ItemLedgEntry."Document Type"::"Purchase Receipt":
-                if PurchRcptHeader.Get(ItemLedgEntry."Document No.") then
+                begin
+                    PurchRcptHeader.Get(ItemLedgEntry."Document No.");
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                             CountryCode := PurchRcptHeader."Buy-from Country/Region Code";
@@ -77,8 +82,10 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := PurchRcptHeader."Pay-to Country/Region Code";
                     end;
+                end;
             ItemLedgEntry."Document Type"::"Purchase Return Shipment":
-                if ReturnShptHeader.Get(ItemLedgEntry."Document No.") then
+                begin
+                    ReturnShptHeader.Get(ItemLedgEntry."Document No.");
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                             CountryCode := ReturnShptHeader."Ship-to Country/Region Code";
@@ -87,6 +94,7 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := ReturnShptHeader."Pay-to Country/Region Code";
                     end;
+                end;
         end;
     end;
 

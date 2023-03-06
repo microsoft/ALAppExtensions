@@ -531,6 +531,12 @@ codeunit 31038 "Sales Posting Handler CZL"
     end;
 #pragma warning restore AL0432
 #endif
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnPostItemJnlLineOnAfterPrepareItemJnlLine', '', false, false)]
+    local procedure SetGLCorrectionOnPostItemJnlLineOnBeforeInitAmount(var ItemJournalLine: Record "Item Journal Line"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    begin
+        ItemJournalLine."G/L Correction CZL" := SalesHeader.Correction xor SalesLine."Negative CZL";
+    end;
+
     [EventSubscriber(ObjectType::Report, Report::"Sales Document - Test", 'OnAfterCheckSalesDoc', '', false, false)]
     local procedure CheckIntrastatMandatoryFieldsOnAfterCheckSalesDoc(SalesHeader: Record "Sales Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
     var

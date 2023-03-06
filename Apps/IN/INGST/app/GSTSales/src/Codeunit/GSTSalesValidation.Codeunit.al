@@ -1460,14 +1460,15 @@ codeunit 18143 "GST Sales Validation"
 
         if Customer."GST Registration No." <> '' then begin
             Customer.TestField("State Code");
-            if (Customer."P.A.N. No." <> '') and (Customer."P.A.N. Status" = Customer."P.A.N. Status"::" ") then
-                GSTBaseValidation.CheckGSTRegistrationNo(
-                    Customer."State Code",
-                    Customer."GST Registration No.",
-                    Customer."P.A.N. No.")
-            else
-                if Customer."GST Registration No." <> '' then
-                    Error(PANErr);
+            if Customer."GST Registration Type" = Customer."GST Registration Type"::GSTIN then
+                if (Customer."P.A.N. No." <> '') and (Customer."P.A.N. Status" = Customer."P.A.N. Status"::" ") then
+                    GSTBaseValidation.CheckGSTRegistrationNo(
+                        Customer."State Code",
+                        Customer."GST Registration No.",
+                        Customer."P.A.N. No.")
+                else
+                    if Customer."GST Registration No." <> '' then
+                        Error(PANErr);
         end;
     end;
 

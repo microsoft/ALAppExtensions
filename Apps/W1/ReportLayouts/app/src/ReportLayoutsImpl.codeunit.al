@@ -234,6 +234,10 @@ codeunit 9660 "Report Layouts Impl."
         if TenantReportLayout."Layout Format" <> TenantReportLayout."Layout Format"::Custom then
             FileManagement.ValidateFileExtension(UploadFileName, FileFilterTxt);
 
+        // If the current layout is being replaced using the ReplaceLayout action
+        if TenantReportLayout.Get(TenantReportLayout."Report ID", TenantReportLayout."Name", TenantReportLayout."App ID") then
+            TenantReportLayout.Delete(true);
+
         TenantReportLayout."Layout".ImportStream(NVInStream, TenantReportLayout."Description");
         TenantReportLayout."MIME Type" := CreateLayoutMime(UploadFileName);
         TenantReportLayout.Insert(true);
@@ -250,9 +254,7 @@ codeunit 9660 "Report Layouts Impl."
         TenantReportLayout."Name" := LayoutName;
 
         if TenantReportLayout.Get(ReportID, LayoutName, TenantReportLayout."App ID") then
-            TenantReportLayout.Delete(true);
-
-        InsertNewLayout(ReportID, LayoutName, LayoutDescription, LayoutFormat, TenantReportLayout."Company Name" = '', ReturnReportID, ReturnLayoutName);
+            InsertNewLayout(ReportID, LayoutName, LayoutDescription, LayoutFormat, TenantReportLayout."Company Name" = '', ReturnReportID, ReturnLayoutName);
     end;
 
     local procedure CreateLayoutMime(FileNameWithExtension: Text) MimeType: Text[255]
@@ -273,33 +275,39 @@ codeunit 9660 "Report Layouts Impl."
         NewLayoutName: Text[250];
         CompanyName: Text[30];
         CreateCopy: Boolean;
-        ForceCopy: Boolean;
         NewLayoutInStream: InStream;
         SourceLayoutOutStream: OutStream;
         AllCompaniesTxt: Label '';
+        AvailableInAllCompanies: Boolean;
     begin
-        ForceCopy := false; // Default behavior is not to create a copy.
-        if not SelectedReportLayoutList."User Defined" then
-            ForceCopy := true;
-
-        CompanyName := AllCompaniesTxt;
-        if SelectedReportLayoutList."User Defined" then
+        if SelectedReportLayoutList."User Defined" then begin
             if TenantReportLayout.Get(SelectedReportLayoutList."Report ID", SelectedReportLayoutList.Name, EmptyGuid) then
                 CompanyName := TenantReportLayout."Company Name";
+        end else
+            CompanyName := SelectedCompany;
 
-        ReportLayoutEditDialog.SetupDialog(SelectedReportLayoutList, ForceCopy);
+        ReportLayoutEditDialog.SetupDialog(SelectedReportLayoutList, SelectedCompany);
         if ReportLayoutEditDialog.RunModal() = Action::OK then begin
 
             NewDescription := ReportLayoutEditDialog.SelectedLayoutDescription();
             NewLayoutName := ReportLayoutEditDialog.SelectedLayoutName();
             CreateCopy := ReportLayoutEditDialog.CopyOperationEnabled();
+            AvailableInAllCompanies := ReportLayoutEditDialog.SelectedAvailableInAllCompanies();
 
             // Check if a layout having NewLayoutName already exists
             if TenantReportLayout.Get(SelectedReportLayoutList."Report ID", NewLayoutName, EmptyGuid) then
                 if CreateCopy or (SelectedReportLayoutList.Name <> NewLayoutName) then
                     Error(LayoutAlreadyExistsErr, NewLayoutName);
 
+            // Check if the layout should be made available for all companies
+            if AvailableInAllCompanies then
+                CompanyName := AllCompaniesTxt;
+
             if CreateCopy then begin
+                // If create-copy is used to create a layout bound to the current company
+                if SelectedReportLayoutList."User Defined" and (not AvailableInAllCompanies) and (CompanyName = '') then
+                    CompanyName := SelectedCompany;
+
                 TenantReportLayout.Init();
                 TenantReportLayout.Name := NewLayoutName;
                 TenantReportLayout.Description := NewDescription;
@@ -317,6 +325,7 @@ codeunit 9660 "Report Layouts Impl."
                 TenantReportLayout.Insert(true);
             end else begin
                 TenantReportLayout.Get(SelectedReportLayoutList."Report ID", SelectedReportLayoutList."Name", EmptyGuid);
+                TenantReportLayout."Company Name" := CompanyName;
                 TenantReportLayout.Rename(SelectedReportLayoutList."Report ID", NewLayoutName, EmptyGuid);
                 TenantReportLayout.Description := NewDescription;
 
