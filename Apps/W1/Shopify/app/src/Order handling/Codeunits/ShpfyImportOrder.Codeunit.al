@@ -24,6 +24,7 @@ codeunit 30161 "Shpfy Import Order"
         DataCapture: Record "Shpfy Data Capture";
         OrderHeader: Record "Shpfy Order Header";
         OrderLine: Record "Shpfy Order Line";
+        OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         Paramters: Dictionary of [Text, Text];
         GraphQLType: Enum "Shpfy GraphQL Type";
         JOrderLines: JsonArray;
@@ -62,7 +63,6 @@ codeunit 30161 "Shpfy Import Order"
     internal procedure ImportOrderHeader(OrdersToImport: Record "Shpfy Orders to Import"; var OrderHeader: Record "Shpfy Order Header"; JOrder: JsonObject)
     var
         OrderTransaction: Record "Shpfy Order Transaction";
-        OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         ShippingCharges: Codeunit "Shpfy Shipping Charges";
         Transactions: Codeunit "Shpfy Transactions";
         FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
@@ -231,7 +231,6 @@ codeunit 30161 "Shpfy Import Order"
         ImportCustomAttributtes(OrderHeader."Shopify Order Id", JsonHelper.GetJsonArray(JOrder, 'customAttributes'));
         OrderHeader.UpdateTags(JsonHelper.GetArrayAsText(JOrder, 'tags'));
         ImportRisks(OrderHeader, JsonHelper.GetJsonArray(JOrder, 'risks'));
-        OrderFulfillments.GetFulfillments(Shop, OrderHeader."Shopify Order Id");
         FulfillmentOrdersAPI.GetShopifyFulfillmentOrdersFromShopifyOrder(Shop, OrderHeader."Shopify Order Id");
         ShippingCharges.UpdateShippingCostInfos(OrderHeader);
         Transactions.UpdateTransactionInfos(OrderHeader."Shopify Order Id");
