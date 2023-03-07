@@ -9,6 +9,16 @@ Note that when using the preview version of AL-Go for GitHub, you need to Update
 In v2.4 and earlier, the PullRequestHandler would trigger the CI/CD workflow to run the PR build.
 Now, the PullRequestHandler will perform the build and the CI/CD workflow is only run on push (or manual dispatch)
 
+### Build modes per project
+Build modes can now be specified per project
+
+### _DetermineProjectsToBuild_ action
+A new action has been added to determine the projects to build.
+
+The functionality was stripped from _ReadSettings_ action.
+
+Note that if `useProjectDependencies` is set to `true`, you may need to run _Update AL-Go System Files_ workflow twice.
+
 ## v2.4
 
 ### Issues

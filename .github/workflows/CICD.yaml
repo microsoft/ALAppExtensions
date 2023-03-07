@@ -64,19 +64,7 @@ jobs:
         uses: mazhelez/AL-Go-Actions/DetermineProjectsToBuild@separate-load-projects
         with:
           shell: powershell
-
-      - name: Verify workflow depth
-        id: verifyWorkflowDepth
-        run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
-          $buildOrder = '${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}' | ConvertFrom-Json
-          $buildDepth = $buildOrder.Count
-          $workflowDepth = ${{ env.workflowDepth }}
-          if ($buildDepth -gt $workflowDepth) {
-            Write-Host "::Error::Project Dependencies depth is $buildDepth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
-            $host.SetShouldExit(1)
-          }
+          maxBuildDepth: ${{ env.workflowDepth }}
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
