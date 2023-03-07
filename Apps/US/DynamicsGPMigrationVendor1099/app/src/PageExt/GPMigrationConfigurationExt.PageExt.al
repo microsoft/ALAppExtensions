@@ -7,7 +7,7 @@ pageextension 41103 "GP Migration Configuration Ext" extends "GP Migration Confi
             group(Vendor1099)
             {
                 Caption = 'Vendor 1099';
-                InstructionalText = 'Choose whether Vendor 1099 information from GP should be migrated in Business Central.';
+                InstructionalText = 'Choose whether Vendor 1099 information from GP should be migrated to Business Central.';
 
                 field("Migrate Vendor 1099"; Rec."Migrate Vendor 1099")
                 {
