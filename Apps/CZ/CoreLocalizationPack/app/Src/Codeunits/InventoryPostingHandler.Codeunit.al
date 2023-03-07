@@ -245,6 +245,8 @@ codeunit 31073 "Inventory Posting Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnAfterInitTempInvtPostBuf', '', false, false)]
     local procedure SetGLCorrectionOnAfterInitTempInvtPostBuf(var TempInvtPostBuf: array[20] of Record "Invt. Posting Buffer"; ValueEntry: Record "Value Entry"; PostBufDimNo: Integer)
     begin
+        TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL" := ValueEntry."G/L Correction CZL";
+
         if ValueEntry."Expected Cost" then
             exit;
 
@@ -252,14 +254,14 @@ codeunit 31073 "Inventory Posting Handler CZL"
            (ValueEntry."Entry Type" in [ValueEntry."Entry Type"::"Direct Cost", ValueEntry."Entry Type"::Revaluation])
         then begin
             InventorySetup.Get();
-            TempInvtPostBuf[PostBufDimNo].Negative := TempInvtPostBuf[PostBufDimNo].Negative xor InventorySetup."Post Exp.Cost Conv.As Corr.CZL"; // set "G/L Correction"
+            TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL" := TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL" xor InventorySetup."Post Exp.Cost Conv.As Corr.CZL";
         end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnPostInvtPostBufProcessGlobalInvtPostBufOnAfterSetDesc', '', false, false)]
     local procedure GetCorrectionOnPostInvtPostBufProcessGlobalInvtPostBufOnAfterSetDesc(var GenJournalLine: Record "Gen. Journal Line"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer")
     begin
-        GenJournalLine.Correction := (GenJournalLine.Amount < 0) xor GlobalInvtPostBuf.Negative; // get "G/L Correction"
+        GenJournalLine.Correction := GlobalInvtPostBuf."G/L Correction CZL";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnAfterBufferGLItemLedgRelation', '', false, false)]

@@ -15,6 +15,8 @@ codeunit 20375 "Vendor Payment Signal" implements "Onboarding Signal"
     begin
         OnboardingThreshold := 5;
 
+        VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Payment);
+
         exit(VendorLedgerEntry.Count() >= OnboardingThreshold);
     end;
 }

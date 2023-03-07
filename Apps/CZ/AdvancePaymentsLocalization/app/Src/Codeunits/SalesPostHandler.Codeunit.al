@@ -61,4 +61,32 @@ codeunit 31008 "Sales-Post Handler CZZ"
         IsHandled := true;
     end;
 #endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnRunOnBeforeMakeInventoryAdjustment', '', false, false)]
+    local procedure SuppressInventoryAdjustmentOnRunOnBeforeMakeInventoryAdjustment(SalesInvHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header"; var SkipInventoryAdjustment: Boolean)
+    var
+        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ";
+    begin
+        if SkipInventoryAdjustment then
+            exit;
+
+        if (not SalesHeader.Invoice) or (not (SalesHeader."Document Type" in [SalesHeader."Document Type"::Order, SalesHeader."Document Type"::Invoice])) then
+            exit;
+
+        if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
+            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Sales Order"
+        else
+            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Sales Invoice";
+
+        CustLedgerEntry.Get(SalesInvHeader."Cust. Ledger Entry No.");
+        CustLedgerEntry.CalcFields("Remaining Amount");
+        if CustLedgerEntry."Remaining Amount" = 0 then
+            exit;
+
+        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvLetterUsageDocTypeCZZ);
+        AdvanceLetterApplicationCZZ.SetRange("Document No.", SalesHeader."No.");
+        SkipInventoryAdjustment := not AdvanceLetterApplicationCZZ.IsEmpty();
+    end;
 }

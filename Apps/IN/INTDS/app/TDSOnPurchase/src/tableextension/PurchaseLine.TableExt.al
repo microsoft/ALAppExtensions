@@ -66,6 +66,17 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
+        modify(Quantity)
+        {
+            trigger OnAfterValidate()
+            var
+            begin
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("Quantity")))
+                then
+                    UpdateTaxAmountOnCurrentDocument();
+            end;
+        }
     }
     procedure OnAfterTDSSectionCodeLookupPurchLine(var PurchLine: Record "Purchase Line"; VendorNo: Code[20]; SetTDSSection: boolean)
     var

@@ -106,9 +106,6 @@ report 18716 "TDS 194Q Opening"
 
                             if TDSSectionCode = '' then
                                 Error(TDSSectionCodeErr);
-
-                            if PostingDate >= EffectiveDate then
-                                Error(PostingDateErr, EffectiveDate);
                         end;
                     }
                     field(PurchaseAmount; PurchaseAmount)
@@ -441,9 +438,6 @@ report 18716 "TDS 194Q Opening"
 
         if not CalcOverThreshold then
             Error(CalcOverThresholdErr);
-
-        if EffectiveDate <> 0D then
-            PostingDate := CalcDate('<-1D>', EffectiveDate);
     end;
 
     local procedure GetColumnID(ColumnName: Text): Integer

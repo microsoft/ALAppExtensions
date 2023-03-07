@@ -522,8 +522,15 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
         exit(FindVendorBankAccountWithGivenIBAN(VendorBankAccount, SwissQRBillMgt.FormatIBAN(IBAN)));
     end;
 
-    local procedure FindVendorBankAccountWithGivenIBAN(var VendorBankAccount: Record "Vendor Bank Account"; SearchIBAN: Code[50]): Boolean
+    local procedure FindVendorBankAccountWithGivenIBAN(var VendorBankAccount: Record "Vendor Bank Account"; SearchIBAN: Code[50]) Result: Boolean
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeFindVendorBankAccountWithGivenIBAN(VendorBankAccount, SearchIBAN, Result, IsHandled);
+        if IsHandled then
+            exit;
+
         with VendorBankAccount do begin
             Reset();
             SetRange(IBAN, SearchIBAN);
@@ -621,6 +628,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
         else
             sender.Status := sender.Status::Failed;
         sender.Modify();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFindVendorBankAccountWithGivenIBAN(var VendorBankAccount: Record "Vendor Bank Account"; SearchIBAN: Code[50]; var Result: Boolean; var IsHandled: Boolean)
+    begin
     end;
 
     [IntegrationEvent(false, false)]

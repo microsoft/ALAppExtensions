@@ -54,4 +54,32 @@ codeunit 31022 "Purch.-Post Handler CZZ"
         IsHandled := true;
     end;
 #endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnRunOnBeforeMakeInventoryAdjustment', '', false, false)]
+    local procedure SuppressInventoryAdjustmentOnRunOnBeforeMakeInventoryAdjustment(PurchInvHeader: Record "Purch. Inv. Header"; var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
+    var
+        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ";
+    begin
+        if IsHandled then
+            exit;
+
+        if (not PurchaseHeader.Invoice) or (not (PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::Order, PurchaseHeader."Document Type"::Invoice])) then
+            exit;
+
+        if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
+            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Purchase Order"
+        else
+            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Purchase Invoice";
+
+        VendorLedgerEntry.Get(PurchInvHeader."Vendor Ledger Entry No.");
+        VendorLedgerEntry.CalcFields("Remaining Amount");
+        if VendorLedgerEntry."Remaining Amount" = 0 then
+            exit;
+
+        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvLetterUsageDocTypeCZZ);
+        AdvanceLetterApplicationCZZ.SetRange("Document No.", PurchaseHeader."No.");
+        IsHandled := not AdvanceLetterApplicationCZZ.IsEmpty();
+    end;
 }

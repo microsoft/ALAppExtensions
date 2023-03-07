@@ -228,7 +228,7 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
         BankAccountLedgerEntry.SetRange("Bank Account No.", BankAccountNo);
         BankAccountLedgerEntry.SetRange("Statement No.", StatementNo);
         BankAccountLedgerEntry.SetRange(Open, true);
-        if not BankAccountLedgerEntry.IsEmpty() then
+        if not BankAccountLedgerEntry.IsEmpty() then begin
             BankAccountLedgerEntry.FindSet();
             repeat
                 BankAccountLedgerEntry."Statement Status" := BankAccountLedgerEntry."Statement Status"::Open;
@@ -248,6 +248,7 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
                 end;
                 BankAccountLedgerEntry.Modify();
             until BankAccountLedgerEntry.Next() = 0;
+        end;
         Clear(CheckLedgerEntry);
         CheckLedgerEntry.ChangeCompany(CurrentCompanyName);
         CheckLedgerEntry.SetRange("Bank Account No.", BankAccountNo);

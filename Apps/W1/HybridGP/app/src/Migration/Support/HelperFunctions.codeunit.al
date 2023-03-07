@@ -2026,4 +2026,9 @@ Codeunit 4037 "Helper Functions"
         Currency.Validate("Invoice Rounding Type", Currency."Invoice Rounding Type"::Nearest);
         Currency.Insert(true);
     end;
+
+    procedure StringEqualsCaseInsensitive(Text1: Text; Text2: Text): Boolean
+    begin
+        exit(UpperCase(Text1) = UpperCase(Text2));
+    end;
 }

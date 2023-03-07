@@ -57,11 +57,13 @@ report 30106 "Shpfy Add Item to Shopify"
                         begin
                             if ShpfyShop.Get(ShopCode) then begin
                                 SyncImagesVisible := ShpfyShop."Sync Item Images" = ShpfyShop."Sync Item Images"::"To Shopify";
-                                SyncImages := SyncImagesVisible;
+                                if not SyncImagesVisible or GuiAllowed then
+                                    SyncImages := SyncImagesVisible;
                                 ShpfyLocation.SetRange("Shop Code", ShpfyShop.Code);
                                 ShpfyLocation.SetFilter("Stock Calculation", '<>%1', ShpfyLocation."Stock Calculation"::Disabled);
                                 SyncInventoryVisible := not ShpfyLocation.IsEmpty();
-                                SyncInventory := SyncInventoryVisible;
+                                if not SyncInventoryVisible or GuiAllowed then
+                                    SyncInventory := SyncInventoryVisible;
                             end else begin
                                 SyncImages := false;
                                 SyncImagesVisible := false;
@@ -95,11 +97,13 @@ report 30106 "Shpfy Add Item to Shopify"
         begin
             if ShpfyShop.Get(ShopCode) then begin
                 SyncImagesVisible := ShpfyShop."Sync Item Images" = ShpfyShop."Sync Item Images"::"To Shopify";
-                SyncImages := SyncImagesVisible;
+                if not SyncImagesVisible then
+                    SyncImages := SyncImagesVisible;
                 ShpfyLocation.SetRange("Shop Code", ShpfyShop.Code);
                 ShpfyLocation.SetFilter("Stock Calculation", '<>%1', ShpfyLocation."Stock Calculation"::Disabled);
                 SyncInventoryVisible := not ShpfyLocation.IsEmpty();
-                SyncInventory := SyncInventoryVisible;
+                if not SyncInventoryVisible then
+                    SyncInventory := SyncInventoryVisible;
             end else begin
                 SyncImages := false;
                 SyncImagesVisible := false;

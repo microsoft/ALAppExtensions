@@ -11,7 +11,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         TempItemJnlLine: Record "Item Journal Line" temporary;
         GSTTransferOrderShipment: Codeunit "GST Transfer order Shipment";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
-#if not clean23
+#if not CLEAN22      
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         ReserveTransLine: Codeunit "Transfer Line-Reserve";
 #endif
@@ -988,8 +988,8 @@ codeunit 18390 "GST Transfer Order Receipt"
             RunGenJnlPostLine(GenJournalLine);
     end;
 
-#if not clean23
-    [Obsolete('Replaced by InitRevaluationEntryUnrealizedProfit', '23.0')]
+#if not CLEAN22
+    [Obsolete('Replaced by InitRevaluationEntryUnrealizedProfit', '22.0')]
     local procedure PostRevaluationEntryunrealizedProfit(
         var TransferLine3: Record "Transfer Line";
         TransferReceiptHeader2: Record "Transfer Receipt Header";
