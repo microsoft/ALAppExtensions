@@ -5,9 +5,6 @@
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "buildModes": [
-    "Default"
-  ],
   "cleanModePreprocessorSymbols": [
     "CLEAN17",
     "CLEAN18",
