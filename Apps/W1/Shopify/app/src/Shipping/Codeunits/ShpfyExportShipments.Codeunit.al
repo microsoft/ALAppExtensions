@@ -109,7 +109,8 @@ codeunit 30190 "Shpfy Export Shipments"
                     GraphQuery.Append('url: \"');
                     ShippingEvents.BeforeRetrieveTrackingUrl(SalesShipmentHeader, TrackingUrl, IsHandled);
                     if not IsHandled then
-                        TrackingUrl := ShippingAgent.GetTrackingInternetAddr(SalesShipmentHeader."Package Tracking No.");
+                        if ShippingAgent."Internet Address" <> '' then
+                            TrackingUrl := ShippingAgent.GetTrackingInternetAddr(SalesShipmentHeader."Package Tracking No.");
                     GraphQuery.Append(TrackingUrl);
                     GraphQuery.Append('\"');
                     GraphQuery.Append('}');
