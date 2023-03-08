@@ -268,7 +268,7 @@ jobs:
 
       - name: Calculate Artifact names
         uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
-        if: success() || failure()
+        if: success() || failure() || cancelled()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           settingsJson: ${{ env.Settings }}
