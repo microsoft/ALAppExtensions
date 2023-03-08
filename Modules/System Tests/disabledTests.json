@@ -1,27 +1,27 @@
 [
     {
-      "CodeunitName": "ABS Container Client Test",
-      "Method": "*"
+      "codeunitName": "ABS Container Client Test",
+      "method": "*"
     },
     {
-      "CodeunitName": "ABS Blob Client Test",
-      "Method": "*"
+      "codeunitName": "ABS Blob Client Test",
+      "method": "*"
     },
     {
-      "CodeunitName": "Azure AD User Management Test",
-      "Method": "TestOfficeSyncWizard"
+      "codeunitName": "Azure AD User Management Test",
+      "method": "TestOfficeSyncWizard"
     },
     {
-      "CodeunitName": "Extension Management Test",
-      "Method": "*"
+      "codeunitName": "Extension Management Test",
+      "method": "*"
     },
     {
-      "CodeunitName": "Retention Policy Log Test",
-      "Method": "*"
+      "codeunitName": "Retention Policy Log Test",
+      "method": "*"
     },
     {
-      "CodeunitName": "X509Certificate2 Test",
-      "Method": "VerifyCertificateExpirationFromBase64Cert"
+      "codeunitName": "X509Certificate2 Test",
+      "method": "VerifyCertificateExpirationFromBase64Cert"
     },
     {
       "codeunitName": "Azure AD User Management Test",
@@ -36,7 +36,7 @@
       "method": "VerifyCertificateNotBeforeFromBase64Cert"
     },
     {
-      "codeunitName": "Retention Policy Log Test",
+      "codeunitName": "Retention Policy Test",
       "method": "*"
     },
     {
