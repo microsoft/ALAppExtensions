@@ -310,3 +310,6 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+#Translation files
+*.xlf
+*.lcg
