@@ -27,7 +27,15 @@ if($app)
 # Restore the baseline app and generate the AppSourceCop.json file
 Set-BreakingChangesCheck -ContainerName $parameters["containerName"] -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode
 
+
+$SourceCopJsonPath = "C:\Users\aholstrup\Documents\Github\Microsoft\ALAppExtensions\Modules\System\AppSourceCop.json"
+$pathExists = Test-Path $SourceCopJsonPath
+
+Write-Host "Running Compile-AppInBcContainer - Test-Path $SourceCopJsonPath ($pathExists)" -ForegroundColor Green
+
 $appFile = Compile-AppInBcContainer @parameters
+
+Write-Host "Done Compile-AppInBcContainer - Test-Path $SourceCopJsonPath ($pathExists)" -ForegroundColor Green
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
 if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('release/'))) {
@@ -92,5 +100,6 @@ if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('releas
         }
     }
 }
+
 
 $appFile

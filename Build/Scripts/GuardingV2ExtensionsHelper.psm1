@@ -72,14 +72,15 @@ function Update-AppSourceCopVersionInContainer
     Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -Version $BaselineVersion -ExtensionName $ExtensionName -Publisher $Publisher
 
     $appSourceCopJsonPath = Join-Path $AppProjectFolder "AppSourceCop.json"
-    $containerPath = Join-Path (Get-BcContainerPath -containerName $ContainerName -path $AppProjectFolder) "AppSourceCop.json"
 
     if (-not (Test-Path $appSourceCopJsonPath)) {
         throw "AppSourceCop.json does not exist in path: $appSourceCopJsonPath"
     }
-
+    <#
+    $containerPath = Join-Path (Get-BcContainerPath -containerName $ContainerName -path $AppProjectFolder) "AppSourceCop.json"
     Write-Host "Copy-FileToBcContainer -containerName $ContainerName -localPath $appSourceCopJsonPath -containerPath $containerPath"
     Copy-FileToBcContainer -containerName $ContainerName -localPath $appSourceCopJsonPath -containerPath $containerPath
+    #>
 }
 
 <#
@@ -116,6 +117,10 @@ function Restore-BaselinesFromContainer {
     Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
     $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ExtensionName*" -Filter "*.app"
 
+    Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+    Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder -Force
+
+    <#
     $containerSymbolsFolder = Get-BcContainerPath -containerName $ContainerName -path $AppSymbolsFolder
     $baselineAppName = $baselineApp.Name
     $containerPath = Join-Path $containerSymbolsFolder $baselineAppName
@@ -125,6 +130,7 @@ function Restore-BaselinesFromContainer {
     Copy-FileToBcContainer -containerName $ContainerName -localPath $baselineApp.FullName -containerPath $containerPath
 
     Remove-Item -Path $baselineFolder -Recurse -Force
+    #>
 }
 
 <#
@@ -182,7 +188,7 @@ function Update-AppSourceCopVersion
 
     # All major versions greater than current but less or equal to master should be allowed
     $Current = [int] $buildVersion.Split('.')[0]
-    $Master = 22 #[int](Get-CurrentBuildVersionFromMaster)
+    $Master = 22 #[int](Get-CurrentBuildVersionFromMaster) #TODO 
     $obsoleteTagAllowedVersions = @()
 
     for ($i = $Current + 1; $i -le $Master; $i++) {
