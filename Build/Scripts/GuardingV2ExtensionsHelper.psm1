@@ -39,7 +39,7 @@ function Set-BreakingChangesCheck {
     Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
 
     # Generate the app source cop json file
-    Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -Version $BaselineVersion -ExtensionName $ExtensionName -Publisher $Publisher
+    Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion -Publisher $Publisher
 }
 
 <#
@@ -99,16 +99,16 @@ function Update-AppSourceCopVersion
     [Parameter(Mandatory = $true)] 
     [string] $ExtensionFolder, 
     [Parameter(Mandatory = $true)] 
-    [string] $Version,
-    [Parameter(Mandatory = $true)] 
     [string] $ExtensionName,
+    [Parameter(Mandatory = $true)] 
+    [string] $BaselineVersion,
     [Parameter(Mandatory = $false)] 
     [string] $Publisher = "Microsoft"
 ) {
     $appSourceCopJsonPath = Join-Path $ExtensionFolder AppSourceCop.json
 
     if (!(Test-Path $appSourceCopJsonPath)) {
-        Write-Host "Creating AppSourceCop.json with version $Version in path $appSourceCopJsonPath" -ForegroundColor Yellow
+        Write-Host "Creating AppSourceCop.json with version $BaselineVersion in path $appSourceCopJsonPath" -ForegroundColor Yellow
         New-Item $appSourceCopJsonPath -type file
         $appSourceJson = @{version = '' }
     }
@@ -118,12 +118,12 @@ function Update-AppSourceCopVersion
         $json.psobject.properties | Foreach-Object { $appSourceJson[$_.Name] = $_.Value }
     }
 
-    if (-not ($Version -and $Version -match "([0-9]+.){3}[0-9]+" )) {
+    if (-not ($BaselineVersion -and $BaselineVersion -match "([0-9]+.){3}[0-9]+" )) {
         throw "Extension Compatibile Version cannot be null or invalid format. Valid format should be like '1.0.2.0'"
     }
 
-    Write-Host "Setting 'version:$Version' in AppSourceCop.json" -ForegroundColor Yellow
-    $appSourceJson.version = $Version
+    Write-Host "Setting 'version:$BaselineVersion' in AppSourceCop.json" -ForegroundColor Yellow
+    $appSourceJson.version = $BaselineVersion
 
     Write-Host "Setting 'name:$ExtensionName' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["name"] = $ExtensionName
