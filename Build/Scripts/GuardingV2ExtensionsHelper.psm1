@@ -36,51 +36,10 @@ function Set-BreakingChangesCheck {
     Write-Host "Restoring baselines for $applicationName from $BaselineVersion"
 
     # Restore the baseline package and place it in the app symbols folder
-    Restore-BaselinesFromContainer -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+    Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
 
     # Generate the app source cop json file
-    Update-AppSourceCopVersionInContainer -ContainerName $ContainerName -AppProjectFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
-}
-
-<#
-.Synopsis
-    Restore the baseline package and place it in the app symbols folder
-.Parameter ContainerName
-    Name of the container
-.Parameter AppProjectFolder
-    Local AppProject folder
-.Parameter BaselineVersion
-    Baseline version
-.Parameter ExtensionName
-    Name of the extension
-.Parameter Publisher
-    Publisher of the extension
-#>
-function Update-AppSourceCopVersionInContainer
-(
-    [Parameter(Mandatory = $true)] 
-    [string] $ContainerName, 
-    [Parameter(Mandatory = $true)] 
-    [string] $AppProjectFolder, 
-    [Parameter(Mandatory = $true)] 
-    [string] $BaselineVersion,
-    [Parameter(Mandatory = $true)] 
-    [string] $ExtensionName,
-    [Parameter(Mandatory = $false)] 
-    [string] $Publisher = "Microsoft"
-) {
     Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -Version $BaselineVersion -ExtensionName $ExtensionName -Publisher $Publisher
-
-    $appSourceCopJsonPath = Join-Path $AppProjectFolder "AppSourceCop.json"
-
-    if (-not (Test-Path $appSourceCopJsonPath)) {
-        throw "AppSourceCop.json does not exist in path: $appSourceCopJsonPath"
-    }
-    <#
-    $containerPath = Join-Path (Get-BcContainerPath -containerName $ContainerName -path $AppProjectFolder) "AppSourceCop.json"
-    Write-Host "Copy-FileToBcContainer -containerName $ContainerName -localPath $appSourceCopJsonPath -containerPath $containerPath"
-    Copy-FileToBcContainer -containerName $ContainerName -localPath $appSourceCopJsonPath -containerPath $containerPath
-    #>
 }
 
 <#
@@ -95,7 +54,7 @@ function Update-AppSourceCopVersionInContainer
 .Parameter AppSymbolsFolder
     Local AppSymbols folder 
 #>
-function Restore-BaselinesFromContainer {
+function Restore-BaselinesFromArtifacts {
     Param(
         [Parameter(Mandatory = $true)] 
         [string] $BaselineVersion,
@@ -120,17 +79,7 @@ function Restore-BaselinesFromContainer {
     Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
     Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder -Force
 
-    <#
-    $containerSymbolsFolder = Get-BcContainerPath -containerName $ContainerName -path $AppSymbolsFolder
-    $baselineAppName = $baselineApp.Name
-    $containerPath = Join-Path $containerSymbolsFolder $baselineAppName
-
-    Write-Host "Copying $($baselineApp.FullName) to $containerPath"
-
-    Copy-FileToBcContainer -containerName $ContainerName -localPath $baselineApp.FullName -containerPath $containerPath
-
     Remove-Item -Path $baselineFolder -Recurse -Force
-    #>
 }
 
 <#
@@ -200,6 +149,10 @@ function Update-AppSourceCopVersion
 
     Write-Host "Updating AppSourceCop.json done successfully" -ForegroundColor Green
     $appSourceJson | ConvertTo-Json | Out-File $appSourceCopJsonPath -Encoding ASCII -Force
+
+    if (-not (Test-Path $appSourceCopJsonPath)) {
+        throw "AppSourceCop.json does not exist in path: $appSourceCopJsonPath"
+    }
 
     return $appSourceCopJsonPath
 }
