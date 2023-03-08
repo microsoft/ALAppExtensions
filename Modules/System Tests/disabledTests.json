@@ -1,0 +1,46 @@
+[
+    {
+      "CodeunitName": "ABS Container Client Test",
+      "Method": "*"
+    },
+    {
+      "CodeunitName": "ABS Blob Client Test",
+      "Method": "*"
+    },
+    {
+      "CodeunitName": "Azure AD User Management Test",
+      "Method": "TestOfficeSyncWizard"
+    },
+    {
+      "CodeunitName": "Extension Management Test",
+      "Method": "*"
+    },
+    {
+      "CodeunitName": "Retention Policy Log Test",
+      "Method": "*"
+    },
+    {
+      "CodeunitName": "X509Certificate2 Test",
+      "Method": "VerifyCertificateExpirationFromBase64Cert"
+    },
+    {
+      "codeunitName": "Azure AD User Management Test",
+      "method": "TestOfficeSyncWizard"
+    },
+    {
+      "codeunitName": "X509Certificate2 Test",
+      "method": "VerifyCertificateExpirationFromBase64Cert"
+    },
+    {
+      "codeunitName": "X509Certificate2 Test",
+      "method": "VerifyCertificateNotBeforeFromBase64Cert"
+    },
+    {
+      "codeunitName": "Retention Policy Log Test",
+      "method": "*"
+    },
+    {
+        "codeunitName": "Navigation Bar Sub. Test",
+        "method": "TestAssistedSetupShowsUpOnOpenRoleBasedSetupExperience"
+    }
+]
