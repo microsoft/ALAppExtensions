@@ -30,7 +30,7 @@
     "Default"
   ],
   "useProjectDependencies": true,
-  "repoVersion": "21.5",
+  "repoVersion": "21.6",
   "CICDPushBranches": [
     "main"
   ]
