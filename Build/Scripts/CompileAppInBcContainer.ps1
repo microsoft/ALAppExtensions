@@ -41,7 +41,7 @@ if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('releas
         $holderFolder = 'TestApps'
     }
 
-    $packageArtifactsFolder = "$currentProjectFolder/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
+    $packageArtifactsFolder = Join-Path "$currentProjectFolder" ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
 
     $buildArtifactsFolder = "$packageArtifactsFolder/BuildArtifacts"
     $sourceCodeFolder = "$packageArtifactsFolder/SourceCode"
