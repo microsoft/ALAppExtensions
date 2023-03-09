@@ -8,6 +8,7 @@ codeunit 31038 "Sales Posting Handler CZL"
         Currency: Record Currency;
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
+        VATCalcTypeErr: Label 'Relation Exch. Rate Amount for the Currency Code and for the VAT Currency Code must be the same if Normal VAT is used.';
 
 #if not CLEAN20
 #pragma warning disable AL0432
@@ -18,7 +19,8 @@ codeunit 31038 "Sales Posting Handler CZL"
     begin
         if SalesHeader."Currency Factor" <> SalesHeader."VAT Currency Factor CZL" then begin
             VATPostingSetup.Get(GenJnlLine."VAT Bus. Posting Group", GenJnlLine."VAT Prod. Posting Group");
-            VATPostingSetup.TestField("VAT Calculation Type", VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT");
+            if VATPostingSetup."VAT Calculation Type" <> VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT" then
+                Error(VATCalcTypeErr);
             VATPostingSetup.TestField("Sales VAT Curr. Exch. Acc CZL");
             SourceCodeSetup.Get();
             SourceCodeSetup.TestField("Sales VAT Delay CZL");
@@ -111,7 +113,8 @@ codeunit 31038 "Sales Posting Handler CZL"
     begin
         if SalesHeader."Currency Factor" <> SalesHeader."VAT Currency Factor CZL" then begin
             VATPostingSetup.Get(GenJnlLine."VAT Bus. Posting Group", GenJnlLine."VAT Prod. Posting Group");
-            VATPostingSetup.TestField("VAT Calculation Type", VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT");
+            if VATPostingSetup."VAT Calculation Type" <> VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT" then
+                Error(VATCalcTypeErr);
             VATPostingSetup.TestField("Sales VAT Curr. Exch. Acc CZL");
             SourceCodeSetup.Get();
             SourceCodeSetup.TestField("Sales VAT Delay CZL");

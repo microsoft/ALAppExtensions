@@ -29,7 +29,11 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
 #if not CLEAN21
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', false, false)]
     local procedure HandleOnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
+    var
+        BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
     begin
+        if FeatureKey.ID <> BankDepositFeatureMgt.GetFeatureKeyId() then
+            exit;
         UpgradeToBankDeposits();
     end;
 
