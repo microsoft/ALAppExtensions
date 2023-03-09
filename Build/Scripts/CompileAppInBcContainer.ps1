@@ -1,4 +1,6 @@
 Param(
+    [Parameter(Mandatory=$true)]
+    [string] $currentProjectFolder,
     [Hashtable] $parameters
 )
 
@@ -39,7 +41,6 @@ if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('releas
         $holderFolder = 'TestApps'
     }
 
-    $currentProjectFolder = $parameters["CurrentProjectFolder"]
     $packageArtifactsFolder = "$currentProjectFolder/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
 
     $buildArtifactsFolder = "$packageArtifactsFolder/BuildArtifacts"
