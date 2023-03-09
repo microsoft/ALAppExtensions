@@ -36,7 +36,11 @@ function Set-BreakingChangesCheck {
     Write-Host "Restoring baselines for $applicationName from $BaselineVersion"
 
     # Restore the baseline package and place it in the app symbols folder
-    Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+    if ($BuildMode -eq 'Clean') {
+        Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+    } else {
+        Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+    }
 
     # Generate the app source cop json file
     Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion -Publisher $Publisher
@@ -86,6 +90,37 @@ function Restore-BaselinesFromArtifacts {
     Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
 
     Remove-Item -Path $baselineFolder -Recurse -Force
+}
+
+function Restore-BaselinesFromNuget {
+    Param(
+        [Parameter(Mandatory = $true)] 
+        [string] $BaselineVersion,
+        [Parameter(Mandatory = $true)] 
+        [string] $ExtensionName,
+        [Parameter(Mandatory = $true)] 
+        [string] $AppSymbolsFolder
+    )
+
+    $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+
+    try {
+        Write-Host "Downloading from nuget to $baselineFolder"
+    
+        $packagePath = Get-PackageFromNuget -PackageId "microsoft-ALAppExtensions-Modules-preview" -Version $BaselineVersion -OutputPath $baselineFolder
+        $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app"
+    
+        if (-not (Test-Path $AppSymbolsFolder)) {
+            Write-Host "Creating folder $AppSymbolsFolder"
+            New-Item -ItemType Directory -Path $AppSymbolsFolder
+        }
+    
+        Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+    
+        Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+    } finally {
+        Remove-Item -Path $baselineFolder -Recurse -Force
+    }
 }
 
 <#
@@ -178,9 +213,10 @@ function Get-BaselineVersion {
     Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 
     if ($BuildMode -eq "Clean") {
-        Write-Host "This should take the latest version out of 21.x - Perhaps use the github packages?"
+        $BaselineVersion = (Find-Package -Name "microsoft-ALAppExtensions-Modules-preview" -Source "https://nuget.org/api/v2/").Version
+    } else {
+        $BaselineVersion = Get-BuildConfigValue -Key "BaselineVersion"
     }
-    $BaselineVersion = Get-BuildConfigValue -Key "BaselineVersion"
 
     return $BaselineVersion
 }

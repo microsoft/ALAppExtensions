@@ -25,4 +25,44 @@ function Get-BuildConfigValue($Key) {
     return $BuildConfig.Config.$Key.Value
 }
 
+function Get-NugetExe() {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$OutputPath
+    )
+
+    if (!(Test-Path $OutputPath)) {
+        New-Item -ItemType Directory -Path $OutputPath | Out-Null
+    }
+
+    $NugetExePath = Join-Path $OutputPath "nuget.exe"
+    if (!(Test-Path $NugetExePath)) {
+        Write-Host "Downloading nuget.exe"
+        Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile $NugetExePath | Out-Null
+    }
+    return $NugetExePath
+}
+
+function Get-PackageFromNuget() {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$PackageId,
+        [Parameter(Mandatory=$true)]
+        [string]$Version,
+        [Parameter(Mandatory=$true)]
+        [string]$OutputPath
+    )
+
+    $NugetExePath = Get-NugetExe -OutputPath $OutputPath
+
+    $NugetPackagePath = Join-Path $OutputPath "$PackageId.$Version"
+    if (!(Test-Path $NugetPackagePath)) {
+        Write-Host "install $PackageId -Version $Version -OutputDirectory $OutputPath -Source https://api.nuget.org/v3/index.json"
+        $NugetExeArguments = "install $PackageId -Version $Version -OutputDirectory $OutputPath -Source https://api.nuget.org/v3/index.json"
+        Invoke-Expression "$NugetExePath $NugetExeArguments" | Out-Null
+    }
+
+    return $NugetPackagePath
+}
+
 Export-ModuleMember -Function *-*
