@@ -8,6 +8,7 @@
 /// </summary>
 codeunit 3960 Regex
 {
+    This should not compile
     Access = Public;
 
     var
