@@ -34,7 +34,7 @@ jobs:
           lfs: true
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - uses: mazhelez/AL-Go-Actions/VerifyPRChanges@separate-load-projects
+      - uses: microsoft/AL-Go-Actions/VerifyPRChanges@preview
         with:
           baseSHA: ${{ github.event.pull_request.base.sha }}
           headSHA: ${{ github.event.pull_request.head.sha }}
@@ -60,14 +60,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go-Actions/WorkflowInitialize@separate-load-projects
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
           shell: powershell
           eventId: "DO0104"
 
       - name: Read settings
         id: ReadSettings
-        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -75,7 +75,7 @@ jobs:
           
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: mazhelez/AL-Go-Actions/DetermineProjectsToBuild@separate-load-projects
+        uses: microsoft/AL-Go-Actions/DetermineProjectsToBuild@preview
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -111,14 +111,14 @@ jobs:
           path: '.dependencies'
 
       - name: Read settings
-        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: mazhelez/AL-Go-Actions/ReadSecrets@separate-load-projects
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -129,7 +129,7 @@ jobs:
 
       - name: Run pipeline
         id: RunPipeline
-        uses: mazhelez/AL-Go-Actions/RunPipeline@separate-load-projects
+        uses: microsoft/AL-Go-Actions/RunPipeline@preview
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
@@ -143,7 +143,7 @@ jobs:
 
       - name: Calculate Artifact names
         id: calculateArtifactsNames
-        uses: mazhelez/AL-Go-Actions/CalculateArtifactNames@separate-load-projects
+        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
         if: success() || failure()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
@@ -170,6 +170,22 @@ jobs:
           if-no-files-found: ignore
           retention-days: 1
 
+      - name: Publish artifacts - build output
+        uses: actions/upload-artifact@v3
+        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
+        with:
+          name: ${{ env.BuildOutputArtifactsName }}
+          path: '${{ matrix.project }}/BuildOutput.txt'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - container event log
+        uses: actions/upload-artifact@v3
+        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
+        with:
+          name: ${{ env.ContainerEventLogArtifactsName }}
+          path: '${{ matrix.project }}/ContainerEventLog.evtx'
+          if-no-files-found: ignore
+
       - name: Publish artifacts - test results
         uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
@@ -189,7 +205,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: mazhelez/AL-Go-Actions/AnalyzeTests@separate-load-projects
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -197,7 +213,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: mazhelez/AL-Go-Actions/PipelineCleanup@separate-load-projects
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -234,14 +250,14 @@ jobs:
           path: '.dependencies'
 
       - name: Read settings
-        uses: mazhelez/AL-Go-Actions/ReadSettings@separate-load-projects
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: mazhelez/AL-Go-Actions/ReadSecrets@separate-load-projects
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -252,7 +268,7 @@ jobs:
 
       - name: Run pipeline
         id: RunPipeline
-        uses: mazhelez/AL-Go-Actions/RunPipeline@separate-load-projects
+        uses: microsoft/AL-Go-Actions/RunPipeline@preview
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
@@ -266,7 +282,7 @@ jobs:
 
       - name: Calculate Artifact names
         id: calculateArtifactsNames
-        uses: mazhelez/AL-Go-Actions/CalculateArtifactNames@separate-load-projects
+        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
         if: success() || failure()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
@@ -293,6 +309,22 @@ jobs:
           if-no-files-found: ignore
           retention-days: 1
 
+      - name: Publish artifacts - build output
+        uses: actions/upload-artifact@v3
+        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
+        with:
+          name: ${{ env.BuildOutputArtifactsName }}
+          path: '${{ matrix.project }}/BuildOutput.txt'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - container event log
+        uses: actions/upload-artifact@v3
+        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
+        with:
+          name: ${{ env.ContainerEventLogArtifactsName }}
+          path: '${{ matrix.project }}/ContainerEventLog.evtx'
+          if-no-files-found: ignore
+
       - name: Publish artifacts - test results
         uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
@@ -312,7 +344,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: mazhelez/AL-Go-Actions/AnalyzeTests@separate-load-projects
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -320,7 +352,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: mazhelez/AL-Go-Actions/PipelineCleanup@separate-load-projects
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -336,7 +368,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: mazhelez/AL-Go-Actions/WorkflowPostProcess@separate-load-projects
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
           shell: powershell
           eventId: "DO0104"
