@@ -1,16 +1,15 @@
 {
     "country":  "base",
     "appFolders":  [
-                       "System"
-                   ],
-    "testFolders":  [
-                        "System Test Libraries",
-                        "System Tests"
+        "System\\*"
     ],
-    "buildModes": [
-        "Translated"
+    "testFolders":  [
+        "DevTools\\TestFramework\\TestLibraries\\*",
+        "DevTools\\TestFramework\\TestRunner",
+        "DevTools\\TestFramework\\TestStabilityTool",
+        "System Test Libraries\\*",
+        "System Tests\\*"
     ],
     "enablePerTenantExtensionCop":  false,
-    "enableCodeCop": true, 
-    "doNotRunTests": true
+    "doNotPublishApps": true
 }

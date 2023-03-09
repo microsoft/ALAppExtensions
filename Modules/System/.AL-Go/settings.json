@@ -1,11 +1,14 @@
 {
     "country":  "base",
     "appFolders":  [
-        "TestFramework\\TestLibraries\\*",
-        "TestFramework\\TestRunner",
-        "TestFramework\\TestStabilityTool"
+        "..\\System"
     ],
     "testFolders":  [
+        "..\\System Test Libraries",
+        "..\\System Tests"
+    ],
+    "buildModes": [
+        "Translated"
     ],
     "enablePerTenantExtensionCop":  false,
     "enableCodeCop": true, 
