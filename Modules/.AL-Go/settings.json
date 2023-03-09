@@ -4,9 +4,6 @@
         "System\\*"
     ],
     "testFolders":  [
-        "DevTools\\TestFramework\\TestLibraries\\*",
-        "DevTools\\TestFramework\\TestRunner",
-        "DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates",
         "System Test Libraries\\*",
         "System Tests\\*"
     ],
