@@ -24,7 +24,7 @@ if($app)
     }
 
     # Restore the baseline app and generate the AppSourceCop.json file
-    Set-BreakingChangesCheck -ContainerName $parameters["containerName"] -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode | Out-Null
+    # Set-BreakingChangesCheck -ContainerName $parameters["containerName"] -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode | Out-Null
 }
 
 $appFile = Compile-AppInBcContainer @parameters

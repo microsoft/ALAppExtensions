@@ -36,7 +36,7 @@ function Set-BreakingChangesCheck {
     Write-Host "Restoring baselines for $applicationName from $BaselineVersion"
 
     # Restore the baseline package and place it in the app symbols folder
-    # Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+    Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
 
     # Generate the app source cop json file
     Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion -Publisher $Publisher
