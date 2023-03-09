@@ -1033,6 +1033,20 @@ codeunit 18143 "GST Sales Validation"
         UpdateGSTJurisdictionType(SalesLine);
     end;
 
+    procedure UpdateGSTJurisdictionTypeFromPlaceOfSupply(SalesHeader: Record "Sales Header")
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.LoadFields("Document Type", "Document No.");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        if SalesLine.FindSet() then
+            repeat
+                GSTPlaceOfSupply(SalesLine);
+                SalesLine.Modify();
+            until SalesLine.Next() = 0;
+    end;
+
     local procedure GSTGroupCode(var SalesLine: Record "Sales Line")
     var
         GSTGroup: Record "GST Group";
@@ -1460,14 +1474,15 @@ codeunit 18143 "GST Sales Validation"
 
         if Customer."GST Registration No." <> '' then begin
             Customer.TestField("State Code");
-            if (Customer."P.A.N. No." <> '') and (Customer."P.A.N. Status" = Customer."P.A.N. Status"::" ") then
-                GSTBaseValidation.CheckGSTRegistrationNo(
-                    Customer."State Code",
-                    Customer."GST Registration No.",
-                    Customer."P.A.N. No.")
-            else
-                if Customer."GST Registration No." <> '' then
-                    Error(PANErr);
+            if Customer."GST Registration Type" = Customer."GST Registration Type"::GSTIN then
+                if (Customer."P.A.N. No." <> '') and (Customer."P.A.N. Status" = Customer."P.A.N. Status"::" ") then
+                    GSTBaseValidation.CheckGSTRegistrationNo(
+                        Customer."State Code",
+                        Customer."GST Registration No.",
+                        Customer."P.A.N. No.")
+                else
+                    if Customer."GST Registration No." <> '' then
+                        Error(PANErr);
         end;
     end;
 
@@ -1592,8 +1607,9 @@ codeunit 18143 "GST Sales Validation"
         SalesHeader: Record "Sales Header";
     begin
         if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then begin
-            if SalesHeader."Ship-to Code" <> '' then begin
-                UpdateGSTJurisdictionShiptoAdddress(SalesLine);
+            if SalesLine."GST Place Of Supply" = SalesLine."GST Place Of Supply"::"Ship-to Address" then begin
+                if SalesHeader."Ship-to Code" <> '' then
+                    UpdateGSTJurisdictionShiptoAdddress(SalesLine);
                 exit;
             end;
 
@@ -1660,7 +1676,6 @@ codeunit 18143 "GST Sales Validation"
 
                     SalesHeader."GST-Ship to Invoice Type"::Export:
                         SalesLine."GST Jurisdiction Type" := SalesLine."GST Jurisdiction Type"::Interstate;
-
                 end;
     end;
 

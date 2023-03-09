@@ -913,6 +913,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         if not Preview then begin
             ApplId := CopyStr(CustLedgerEntry."Document No." + Format(CustLedgerEntry."Entry No.", 0, '<Integer>'), 1, MaxStrLen(ApplId));
             CustLedgerEntry.CalcFields("Remaining Amount");
+            CustLedgerEntry."Adv. Letter Template Code CZZ" := SalesAdvLetterHeaderCZZ."Advance Letter Code";
             CustLedgerEntry."Amount to Apply" := CustLedgerEntry."Remaining Amount";
             CustLedgerEntry."Applies-to ID" := ApplId;
             Codeunit.Run(Codeunit::"Cust. Entry-Edit", CustLedgerEntry);

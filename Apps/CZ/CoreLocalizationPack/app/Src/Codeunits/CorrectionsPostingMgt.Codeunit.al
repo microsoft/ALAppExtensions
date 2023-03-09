@@ -304,6 +304,22 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
             Rec."G/L Correction CZL" := (Rec.Quantity < 0) or (Rec."Invoiced Quantity" < 0);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Invt. Doc.-Post Shipment", 'OnAfterFillItemJournalLineQtyFromInvtShipmentLine', '', false, false)]
+    local procedure ItemJnlLineSetCorrectionOnAfterFillItemJournalLineQtyFromInvtShipmentLine(var ItemJournalLine: Record "Item Journal Line")
+    begin
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Mark Neg. Qty as Correct. CZL" then
+            ItemJournalLine."G/L Correction CZL" := (ItemJournalLine.Quantity < 0) or (ItemJournalLine."Invoiced Quantity" < 0);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Invt. Doc.-Post Receipt", 'OnAfterFillItemJournalLineQtyFromInvtShipmentLine', '', false, false)]
+    local procedure ItemJnlLineSetCorrectionOnAfterFillItemJournalLineQtyFromInvtShipmentLine2(var ItemJournalLine: Record "Item Journal Line")
+    begin
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Mark Neg. Qty as Correct. CZL" then
+            ItemJournalLine."G/L Correction CZL" := (ItemJournalLine.Quantity < 0) or (ItemJournalLine."Invoiced Quantity" < 0);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Job Journal Line", 'OnAfterValidateEvent', 'Quantity', false, false)]
     local procedure JobJnlLineSetCorrectionOnAfterValidateQuantity(var Rec: Record "Job Journal Line"; var xRec: Record "Job Journal Line"; CurrFieldNo: Integer)
     begin
@@ -366,6 +382,33 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
     end;
 #pragma warning restore AL0432
 #endif
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareSales', '', false, false)]
+    local procedure SetCorrectionOnAfterPrepareSales(var SalesLine: Record "Sales Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        InvoicePostingBuffer."Correction CZL" := SalesHeader.Correction xor SalesLine."Negative CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPreparePurchase', '', false, false)]
+    local procedure SetCorrectionOnAfterPreparePurchase(var PurchaseLine: Record "Purchase Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+        InvoicePostingBuffer."Correction CZL" := PurchaseHeader.Correction xor PurchaseLine."Negative CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareService', '', false, false)]
+    local procedure SetCorrectionOnAfterPrepareService(var ServiceLine: Record "Service Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.");
+        InvoicePostingBuffer."Correction CZL" := ServiceHeader.Correction xor ServiceLine."Negative CZL";
+    end;
+
     local procedure GetInvtPostBufferAccTypeForGLCorrection(ForValueEntry: Record "Value Entry"; BalAccType: Enum "Invt. Posting Buffer Account Type") BalAccTypeForGLCorr: Enum "Invt. Posting Buffer Account Type"
     begin
         BalAccTypeForGLCorr := BalAccType;

@@ -780,6 +780,12 @@ codeunit 31039 "Purchase Posting Handler CZL"
     end;
 #pragma warning restore AL0432
 #endif
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnBeforeInitAmount', '', false, false)]
+    local procedure SetGLCorrectionOnPostItemJnlLineOnBeforeInitAmount(var ItemJnlLine: Record "Item Journal Line"; PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line")
+    begin
+        ItemJnlLine."G/L Correction CZL" := PurchHeader.Correction xor PurchLine."Negative CZL";
+    end;
+
     local procedure Increment(var Number: Decimal; Number2: Decimal)
     begin
         Number := Number + Number2;

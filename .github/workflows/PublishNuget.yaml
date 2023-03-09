@@ -2,7 +2,7 @@ name: 'Publish Nuget'
 
 on:
   workflow_run:
-    workflows: ['CI/CD']
+    workflows: [' CI/CD']
     types: [completed]
     branches: ['main']
 
@@ -94,5 +94,5 @@ jobs:
             nuget push $($_.FullName) -Source "Github" -ApiKey ${{ secrets.GITHUB_TOKEN }}
             
             Write-Host "Pushing package $($_.Name) to nuget.org"
-            nuget push $($_.FullName) -Source "https://api.nuget.org/v3/index.json" -ApiKey ${{ secrets.BCFEEDCONTEXT.Token }}
+            nuget push $($_.FullName) -Source "https://api.nuget.org/v3/index.json" -ApiKey ${{ secrets.NUGETTOKEN }}
           }

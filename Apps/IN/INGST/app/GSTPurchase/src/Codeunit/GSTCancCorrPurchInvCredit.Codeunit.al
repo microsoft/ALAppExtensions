@@ -62,8 +62,13 @@ codeunit 18153 "GST Canc Corr Purch Inv Credit"
         IsHandled := true;
         PurchInvHeader.CalcFields("Amount Including VAT");
         PurchInvHeader.CalcFields("Remaining Amount");
-        if (PurchInvHeader."Amount Including VAT" + TaxTransactionValue) <> PurchInvHeader."Remaining Amount" then
-            Error(PostedInvoiceIsPaidCancelErr);
+
+        if not PurchInvLine."GST Reverse Charge" then begin
+            if (PurchInvHeader."Amount Including VAT" + TaxTransactionValue) <> PurchInvHeader."Remaining Amount" then
+                Error(PostedInvoiceIsPaidCancelErr);
+        end else
+            if (PurchInvHeader."Amount Including VAT") <> PurchInvHeader."Remaining Amount" then
+                Error(PostedInvoiceIsPaidCancelErr);
     end;
 
 

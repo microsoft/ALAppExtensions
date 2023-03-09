@@ -15,6 +15,8 @@ codeunit 20370 "Customer Payment Signal" implements "Onboarding Signal"
     begin
         OnboardingThreshold := 5;
 
+        CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Payment);
+
         exit(CustLedgerEntry.Count() >= OnboardingThreshold);
     end;
 }

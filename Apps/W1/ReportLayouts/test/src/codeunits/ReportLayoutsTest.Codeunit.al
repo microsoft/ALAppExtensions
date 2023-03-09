@@ -76,14 +76,14 @@ codeunit 139595 "Report Layouts Test"
     [HandlerFunctions('NewLayoutModalHandler,EditLayoutModalHandler')]
     procedure TestReportLayoutsEditLayoutActuallyEditsTheLayout()
     begin
-        EditLayoutTestCore('');
+        EditLayoutTestCore('', '');
     end;
 
     [Test]
     [HandlerFunctions('NewLayoutModalHandlerCurrentCompany,EditLayoutModalHandler')]
     procedure TestReportLayoutsEditLayoutPreservesCompanyOnTheLayout()
     begin
-        EditLayoutTestCore(CompanyName());
+        EditLayoutTestCore(CompanyName(), CompanyName());
     end;
 
     [Test]
@@ -181,7 +181,7 @@ codeunit 139595 "Report Layouts Test"
         Assert.AreEqual(EditedLayoutNameTxt, TenantReportLayoutSelection."Layout Name", 'The inserted layout name does not match the layout.');
     end;
 
-    local procedure EditLayoutTestCore(ExpectedCompanyName: Text)
+    local procedure EditLayoutTestCore(InitialCompanyName: Text; EditedCompanyName: Text)
     var
         TenantReportLayout: Record "Tenant Report Layout";
         ReportLayoutsTest: Codeunit "Report Layouts Test";
@@ -203,7 +203,7 @@ codeunit 139595 "Report Layouts Test"
 
         Assert.AreEqual(NewLayoutNameTxt, TenantReportLayout.Name, 'Incorrect layout name.');
 
-        Assert.AreEqual(ExpectedCompanyName, TenantReportLayout."Company Name", 'Layout should exist for all companies.');
+        Assert.AreEqual(InitialCompanyName, TenantReportLayout."Company Name", 'Layout should exist for all companies.');
 
         // Act - Layout is edited
 
@@ -217,7 +217,36 @@ codeunit 139595 "Report Layouts Test"
 
         Assert.AreEqual(EditedLayoutNameTxt, TenantReportLayout.Name, 'Name was not edited properly.');
 
-        Assert.AreEqual(ExpectedCompanyName, TenantReportLayout."Company Name", 'The company should have been empty (available for all companies) but had a different value.');
+        Assert.AreEqual(EditedCompanyName, TenantReportLayout."Company Name", 'The company should have been empty (available for all companies) but had a different value.');
+    end;
+
+    [Test]
+    [HandlerFunctions('NewLayoutModalHandlerCurrentCompany,EditLayoutModalHandlerNoCopyMakeAvailableAll')]
+    procedure TestReportLayouts_MakePrivateLayoutPublicWithoutCopy()
+    begin
+        EditLayoutTestCore(CompanyName(), '');
+    end;
+
+    [Test]
+    [HandlerFunctions('NewLayoutModalHandlerCurrentCompany,EditLayoutModalHandlerCopyMakeAvailableAll')]
+    procedure TestReportLayouts_MakePrivateLayoutPublicWithCopy()
+    begin
+        EditLayoutTestCore(CompanyName(), '');
+    end;
+
+    [Test]
+    [HandlerFunctions('NewLayoutModalHandler,EditLayoutModalHandlerNoCopyMakePrivate')]
+    procedure TestReportLayouts_MakePublicLayoutPrivateWithoutCopy()
+    begin
+        // Note that this operation is not allowed.
+        EditLayoutTestCore('', '');
+    end;
+
+    [Test]
+    [HandlerFunctions('NewLayoutModalHandler,EditLayoutModalHandlerCopyMakePrivate')]
+    procedure TestReportLayouts_MakePublicLayoutPrivateWithCopy()
+    begin
+        EditLayoutTestCore('', CompanyName());
     end;
 
     /// <summary>
@@ -257,6 +286,49 @@ codeunit 139595 "Report Layouts Test"
 
         ReportLayoutNewDialog.ReportID.Value := '139595';
         ReportLayoutNewDialog.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure EditLayoutModalHandlerNoCopyMakeAvailableAll(var ReportLayoutEditDialog: TestPage "Report Layout Edit Dialog")
+    var
+    begin
+        ReportLayoutEditDialog.LayoutName.Value := EditedLayoutNameTxt;
+        ReportLayoutEditDialog.Description.Value := EditedLayoutNameTxt;
+        ReportLayoutEditDialog.AvailableInAllCompanies.SetValue(true);
+        ReportLayoutEditDialog.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure EditLayoutModalHandlerCopyMakeAvailableAll(var ReportLayoutEditDialog: TestPage "Report Layout Edit Dialog")
+    var
+    begin
+        ReportLayoutEditDialog.LayoutName.Value := EditedLayoutNameTxt;
+        ReportLayoutEditDialog.Description.Value := EditedLayoutNameTxt;
+        ReportLayoutEditDialog.CreateCopy.SetValue(true);
+        ReportLayoutEditDialog.AvailableInAllCompanies.SetValue(true);
+        ReportLayoutEditDialog.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure EditLayoutModalHandlerNoCopyMakePrivate(var ReportLayoutEditDialog: TestPage "Report Layout Edit Dialog")
+    var
+    begin
+        ReportLayoutEditDialog.LayoutName.Value := EditedLayoutNameTxt;
+        ReportLayoutEditDialog.Description.Value := EditedLayoutNameTxt;
+        ReportLayoutEditDialog.AvailableInAllCompanies.SetValue(false);
+        ReportLayoutEditDialog.CreateCopy.SetValue(false);
+        ReportLayoutEditDialog.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure EditLayoutModalHandlerCopyMakePrivate(var ReportLayoutEditDialog: TestPage "Report Layout Edit Dialog")
+    var
+    begin
+        ReportLayoutEditDialog.LayoutName.Value := EditedLayoutNameTxt;
+        ReportLayoutEditDialog.Description.Value := EditedLayoutNameTxt;
+        ReportLayoutEditDialog.AvailableInAllCompanies.SetValue(false);
+        ReportLayoutEditDialog.CreateCopy.SetValue(true);
+        ReportLayoutEditDialog.OK().Invoke();
     end;
 
     [ModalPageHandler]
