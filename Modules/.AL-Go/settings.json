@@ -8,7 +8,6 @@
                         "System Tests"
     ],
     "buildModes": [
-        "Clean",
         "Translated"
     ],
     "enablePerTenantExtensionCop":  false,

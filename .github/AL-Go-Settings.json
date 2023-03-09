@@ -27,7 +27,8 @@
     "PublishToEnvironment.yaml"
   ],
   "buildModes": [
-    "Default"
+    "Default",
+    "Clean"
   ],
   "useProjectDependencies": true,
   "repoVersion": "21.6",
