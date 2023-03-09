@@ -148,6 +148,8 @@ function Update-AppSourceCopVersion
     [Parameter(Mandatory = $false)] 
     [string] $Publisher = $null
 ) {
+    Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
+
     $appSourceCopJsonPath = Join-Path $ExtensionFolder AppSourceCop.json
 
     if (!(Test-Path $appSourceCopJsonPath)) {
@@ -161,7 +163,13 @@ function Update-AppSourceCopVersion
         $json.psobject.properties | Foreach-Object { $appSourceJson[$_.Name] = $_.Value }
     }
 
-    if (-not ($BaselineVersion -and $BaselineVersion -match "([0-9]+.){3}[0-9]+" )) {
+
+    if ($BaselineVersion -match "^(\d+)\.(\d+)\.(\d+)$") {
+        Write-Host "Baseline version is missing revision number. Adding revision number 0 to the baseline version" -ForegroundColor Yellow
+        $BaselineVersion = $BaselineVersion + ".0"
+    }
+
+    if (-not ($BaselineVersion -and $BaselineVersion -match "^([0-9]+\.){3}[0-9]+$" )) {
         throw "Extension Compatibile Version cannot be null or invalid format. Valid format should be like '1.0.2.0'"
     }
 
@@ -182,7 +190,7 @@ function Update-AppSourceCopVersion
 
     # All major versions greater than current but less or equal to master should be allowed
     $Current = [int] $buildVersion.Split('.')[0]
-    $Master = 22 #[int](Get-CurrentBuildVersionFromMaster) #TODO 
+    $Master = [int] (Get-BuildConfigValue -Key "CurrentBuildVersionInMaster")
     $obsoleteTagAllowedVersions = @()
 
     for ($i = $Current + 1; $i -le $Master; $i++) {
@@ -222,10 +230,6 @@ function Get-BaselineVersion {
         $BaselineVersion = Get-BuildConfigValue -Key "BaselineVersion"
     }
 
-    if (($BaselineVersion.Split(".")).Count -ne 4) {
-        Write-Host "Baseline version is missing revision number. Adding revision number 0 to the baseline version" -ForegroundColor Yellow
-        $BaselineVersion = $BaselineVersion + ".0"
-    }
 
     return $BaselineVersion
 }

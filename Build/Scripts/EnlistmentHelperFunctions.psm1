@@ -20,9 +20,9 @@ function Get-BuildMode() {
 }
 
 function Get-BuildConfigValue($Key) {
-    $BuildConfigPath = Join-Path (Get-BaseFolder) "Build/BuildConfig.xml" -Resolve
-    [xml] $BuildConfig = Get-Content $BuildConfigPath
-    return $BuildConfig.Config.$Key.Value
+    $BuildConfigPath = Join-Path (Get-BaseFolder) "Build/BuildConfig.json" -Resolve
+    $BuildConfig = Get-Content -Path $BuildConfigPath -Raw | ConvertFrom-Json
+    return $BuildConfig.$Key
 }
 
 function Get-NugetExe() {
