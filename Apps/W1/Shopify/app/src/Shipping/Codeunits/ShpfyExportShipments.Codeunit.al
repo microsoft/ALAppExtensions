@@ -76,9 +76,17 @@ codeunit 30190 "Shpfy Export Shipments"
         if SalesShipmentLine.FindSet() then begin
             repeat
                 if FindFulfillmentOrderLine(SalesShipmentHeader, SalesShipmentLine, FulfillmentOrderLine) then begin
-                    TempFulfillmentOrderLine := FulfillmentOrderLine;
-                    TempFulfillmentOrderLine."Quantity to Fulfill" := Round(SalesShipmentLine.Quantity, 1, '=');
-                    TempFulfillmentOrderLine.Insert();
+                    FulfillmentOrderLine."Quantity to Fulfill" += Round(SalesShipmentLine.Quantity, 1, '=');
+                    FulfillmentOrderLine."Remaining Quantity" := FulfillmentOrderLine."Remaining Quantity" - Round(SalesShipmentLine.Quantity, 1, '=');
+                    FulfillmentOrderLine.Modify();
+                    if TempFulfillmentOrderLine.Get(FulfillmentOrderLine."Shopify Fulfillment Order Id", FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id") then begin
+                        TempFulfillmentOrderLine."Quantity to Fulfill" += FulfillmentOrderLine."Quantity to Fulfill";
+                        TempFulfillmentOrderLine.Modify();
+                    end else begin
+                        TempFulfillmentOrderLine := FulfillmentOrderLine;
+                        TempFulfillmentOrderLine."Quantity to Fulfill" := Round(SalesShipmentLine.Quantity, 1, '=');
+                        TempFulfillmentOrderLine.Insert();
+                    end;
                 end;
             until SalesShipmentLine.Next() = 0;
 
@@ -151,8 +159,8 @@ codeunit 30190 "Shpfy Export Shipments"
         if OrderLine.Get(SalesShipmentHeader."Shpfy Order Id", SalesShipmentLine."Shpfy Order Line Id") then begin
             FulfillmentOrderLine.Reset();
             FulfillmentOrderLine.SetRange("Shopify Order Id", OrderLine."Shopify Order Id");
-            FulfillmentOrderLine.SetRange("Shopify Product Id", OrderLine."Shopify Product Id");
             FulfillmentOrderLine.SetRange("Shopify Variant Id", OrderLine."Shopify Variant Id");
+            FulfillmentOrderLine.SetFilter("Remaining Quantity", '>=%1', Round(SalesShipmentLine.Quantity, 1, '='));
             if FulfillmentOrderLine.FindFirst() then
                 exit(true);
         end;
