@@ -45,7 +45,7 @@ function Set-BreakingChangesCheck {
     }
 
     # Generate the app source cop json file
-    # Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion -Publisher $Publisher
+    Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion -Publisher $Publisher
 }
 
 <#
@@ -220,6 +220,11 @@ function Get-BaselineVersion {
         $BaselineVersion = (Find-Package -Name "microsoft-ALAppExtensions-Modules-preview" -Source "https://nuget.org/api/v2/").Version
     } else {
         $BaselineVersion = Get-BuildConfigValue -Key "BaselineVersion"
+    }
+
+    if (($BaselineVersion.Split(".")).Count -ne 4) {
+        Write-Host "Baseline version is missing revision number. Adding revision number 0 to the baseline version" -ForegroundColor Yellow
+        $BaselineVersion = $BaselineVersion + ".0"
     }
 
     return $BaselineVersion
