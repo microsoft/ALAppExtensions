@@ -2,6 +2,12 @@ name: ' CI/CD'
 
 on:
   workflow_dispatch:
+    inputs:
+      outputArtifacts:
+        description: 'Publish Artifacts'
+        required: true
+        default: false
+        type: boolean
   push:
     paths-ignore:
       - '**.md'
@@ -260,7 +266,7 @@ jobs:
 
       - name: Publish artifacts - apps
         uses: actions/upload-artifact@v3
-        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: ${{ github.event.inputs.outputArtifacts }} || github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.AppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
@@ -268,7 +274,7 @@ jobs:
 
       - name: Publish artifacts - dependencies
         uses: actions/upload-artifact@v3
-        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: ${{ github.event.inputs.outputArtifacts }} || github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.DependenciesArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Dependencies/'
@@ -276,7 +282,7 @@ jobs:
 
       - name: Publish artifacts - test apps
         uses: actions/upload-artifact@v3
-        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: ${{ github.event.inputs.outputArtifacts }} || github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.TestAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
@@ -284,7 +290,7 @@ jobs:
 
       - name: Publish artifacts - build output
         uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
+        if: ${{ github.event.inputs.outputArtifacts }} && (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
         with:
           name: ${{ env.BuildOutputArtifactsName }}
           path: '${{ matrix.project }}/BuildOutput.txt'
@@ -292,7 +298,7 @@ jobs:
 
       - name: Publish artifacts - container event log
         uses: actions/upload-artifact@v3
-        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
+        if: ${{ github.event.inputs.outputArtifacts }} && (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
         with:
           name: ${{ env.ContainerEventLogArtifactsName }}
           path: '${{ matrix.project }}/ContainerEventLog.evtx'
@@ -300,7 +306,7 @@ jobs:
 
       - name: Publish artifacts - test results
         uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
+        if: ${{ github.event.inputs.outputArtifacts }} && (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
         with:
           name: ${{ env.TestResultsArtifactsName }}
           path: '${{ matrix.project }}/TestResults.xml'
@@ -308,7 +314,7 @@ jobs:
 
       - name: Publish artifacts - bcpt test results
         uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',matrix.project)) != '')
+        if: ${{ github.event.inputs.outputArtifacts }} && (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',matrix.project)) != '')
         with:
           name: ${{ env.BcptTestResultsArtifactsName }}
           path: '${{ matrix.project }}/bcptTestResults.json'
@@ -316,7 +322,7 @@ jobs:
 
       - name: Analyze Test Results
         id: analyzeTestResults
-        if: success() || failure()
+        if: ${{ github.event.inputs.outputArtifacts }} && (success() || failure())
         uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
