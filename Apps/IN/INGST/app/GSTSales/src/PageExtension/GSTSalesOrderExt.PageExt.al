@@ -29,6 +29,17 @@ pageextension 18150 "GST Sales Order Ext" extends "Sales Order"
                 GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
             end;
         }
+        modify("Ship-to Code")
+        {
+            trigger OnAfterValidate()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                CurrPage.SaveRecord();
+                GSTSalesValidation.UpdateGSTJurisdictionTypeFromPlaceOfSupply(Rec);
+                GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
+            end;
+        }
         addafter("Ship-to Code")
         {
             field("Ship-to Customer"; Rec."Ship-to Customer")

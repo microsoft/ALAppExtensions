@@ -29,6 +29,17 @@ pageextension 18153 "GST Sales Quote Ext" extends "Sales Quote"
                 GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
             end;
         }
+        modify("Ship-to Code")
+        {
+            trigger OnAfterValidate()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                CurrPage.SaveRecord();
+                GSTSalesValidation.UpdateGSTJurisdictionTypeFromPlaceOfSupply(Rec);
+                GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
+            end;
+        }
         addfirst("Tax Info")
         {
             field("Invoice Type"; Rec."Invoice Type")

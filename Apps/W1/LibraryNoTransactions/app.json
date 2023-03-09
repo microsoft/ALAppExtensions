@@ -4,7 +4,7 @@
     "brief":  "Used for testing that no transactions are invoked",
     "description":  "This app is used for testing that the transactions are not executed. If any transaction is detected with this extension published we will throw an error.",
     "publisher":  "Microsoft",
-    "version":  "21.5.0.0",
+    "version":  "21.6.0.0",
     "platform":  "21.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
