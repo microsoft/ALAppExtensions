@@ -170,6 +170,22 @@ jobs:
           if-no-files-found: ignore
           retention-days: 1
 
+      - name: Publish artifacts - build output
+        uses: actions/upload-artifact@v3
+        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
+        with:
+          name: ${{ env.BuildOutputArtifactsName }}
+          path: '${{ matrix.project }}/BuildOutput.txt'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - container event log
+        uses: actions/upload-artifact@v3
+        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
+        with:
+          name: ${{ env.ContainerEventLogArtifactsName }}
+          path: '${{ matrix.project }}/ContainerEventLog.evtx'
+          if-no-files-found: ignore
+
       - name: Publish artifacts - test results
         uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
