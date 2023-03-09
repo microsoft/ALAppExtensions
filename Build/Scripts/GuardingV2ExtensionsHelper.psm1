@@ -77,7 +77,13 @@ function Restore-BaselinesFromArtifacts {
     $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ExtensionName*" -Filter "*.app"
 
     Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
-    Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder -Force
+
+    if (-not (Test-Path $AppSymbolsFolder)) {
+        Write-Host "Creating folder $AppSymbolsFolder"
+        New-Item -ItemType Directory -Path $AppSymbolsFolder
+    }
+
+    Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
 
     Remove-Item -Path $baselineFolder -Recurse -Force
 }
