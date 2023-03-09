@@ -38,12 +38,14 @@ function Set-BreakingChangesCheck {
     # Restore the baseline package and place it in the app symbols folder
     if ($BuildMode -eq 'Clean') {
         Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+        Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
     } else {
         Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+        Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion -Publisher "Microsoft"
     }
 
     # Generate the app source cop json file
-    Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion -Publisher $Publisher
+    # Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion -Publisher $Publisher
 }
 
 <#
@@ -144,7 +146,7 @@ function Update-AppSourceCopVersion
     [Parameter(Mandatory = $true)] 
     [string] $BaselineVersion,
     [Parameter(Mandatory = $false)] 
-    [string] $Publisher = "Microsoft"
+    [string] $Publisher = $null
 ) {
     $appSourceCopJsonPath = Join-Path $ExtensionFolder AppSourceCop.json
 
@@ -169,8 +171,10 @@ function Update-AppSourceCopVersion
     Write-Host "Setting 'name:$ExtensionName' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["name"] = $ExtensionName
 
-    Write-Host "Setting 'publisher:$Publisher' value in AppSourceCop.json" -ForegroundColor Yellow
-    $appSourceJson["publisher"] = $Publisher
+    if ($Publisher) {
+        Write-Host "Setting 'publisher:$Publisher' value in AppSourceCop.json" -ForegroundColor Yellow
+        $appSourceJson["publisher"] = $Publisher
+    }
 
     $buildVersion = Get-BuildConfigValue -Key "BuildVersion"
     Write-Host "Setting 'obsoleteTagVersion:$buildVersion' value in AppSourceCop.json" -ForegroundColor Yellow
