@@ -27,7 +27,7 @@ $appFile = Compile-AppInBcContainer @parameters
 $branchName = $ENV:GITHUB_REF_NAME
 
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
-if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('release/'))) {
+if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.StartsWith('release/'))) {
     $appProjectFolder = $parameters.appProjectFolder
     
     # Extract app name from app.json
