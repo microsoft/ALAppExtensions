@@ -34,7 +34,7 @@ jobs:
           lfs: true
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - uses: aholstrup1/AL-Go-Actions/VerifyPRChanges@main
+      - uses: microsoft/AL-Go-Actions/VerifyPRChanges@main
         with:
           baseSHA: ${{ github.event.pull_request.base.sha }}
           headSHA: ${{ github.event.pull_request.head.sha }}
@@ -47,86 +47,50 @@ jobs:
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
-      projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
-      projectCount: ${{ steps.ReadSettings.outputs.ProjectCount }}
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
       githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
-      projectDependenciesJson: ${{ steps.ReadSettings.outputs.ProjectDependenciesJson }}
-      buildOrderJson: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
-      buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-      buildModes: ${{ steps.ReadSettings.outputs.BuildModes }}
+      projects: ${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}
+      projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
+      buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           lfs: true
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Initialize the workflow
         id: init
-        uses: aholstrup1/AL-Go-Actions/WorkflowInitialize@main
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@main
         with:
           shell: powershell
           eventId: "DO0104"
 
       - name: Read settings
         id: ReadSettings
-        uses: aholstrup1/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          getProjects: 'Y'
           getEnvironments: '*'
-      
-      - name: Determine Build Order
-        if: env.workflowDepth > 1
-        id: BuildOrder
-        run: |
-          $ErrorActionPreference = "STOP"
-          Set-StrictMode -version 2.0
-          $projects = '${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json
-          $buildOrder = '${{ steps.ReadSettings.outputs.BuildOrderJson }}' | ConvertFrom-Json
-          $depth = ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
-          $workflowDepth = ${{ env.workflowDepth }}
-          if ($depth -lt $workflowDepth) {
-            Write-Host "::Error::Project Dependencies depth is $depth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
-            $host.SetShouldExit(1)
-          }
-          $step = $depth
-          $depth..1 | ForEach-Object {
-            $ps = @($buildOrder."$_" | Where-Object { $projects -contains $_ })
-            if ($ps.Count -eq 1) {
-              $projectsJSon = "[$($ps | ConvertTo-Json -compress)]"
-            }
-            else {
-              $projectsJSon = $ps | ConvertTo-Json -compress
-            }
-            if ($ps.Count -gt 0) {
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json=$projectsJson"
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=$($ps.count)"
-              Write-Host "projects$($step)Json=$projectsJson"
-              Write-Host "projects$($step)Count=$($ps.count)"
-              $step--
-            }
-          }
-          while ($step -ge 1) {
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Json="
-              Add-Content -Path $env:GITHUB_OUTPUT -Value "projects$($step)Count=0"
-              Write-Host "projects$($step)Json="
-              Write-Host "projects$($step)Count=0"
-              $step--
-          }
+          
+      - name: Determine Projects To Build
+        id: determineProjectsToBuild
+        uses: microsoft/AL-Go-Actions/DetermineProjectsToBuild@preview
+        with:
+          shell: powershell
+          maxBuildDepth: ${{ env.workflowDepth }}
 
   Build:
     needs: [ Initialization ]
-    if: (!failure()) && (!cancelled()) && needs.Initialization.outputs.projectCount > 0
+    if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
     defaults:
       run:
         shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
-        project: ${{ fromJson(needs.Initialization.outputs.projects) }}
-        buildMode: ${{ fromJson(needs.Initialization.outputs.buildModes) }}
+        include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[0].buildDimensions }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
@@ -140,6 +104,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           lfs: true
+          ref: ${{ github.event.pull_request.head.sha }}
     
       - name: Download thisbuild artifacts
         if: env.workflowDepth > 1
@@ -148,38 +113,39 @@ jobs:
           path: '.dependencies'
 
       - name: Read settings
-        uses: aholstrup1/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: aholstrup1/AL-Go-Actions/ReadSecrets@main
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
-          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId'
+          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
 
       - name: Run pipeline
         id: RunPipeline
-        uses: aholstrup1/AL-Go-Actions/RunPipeline@main
+        uses: microsoft/AL-Go-Actions/RunPipeline@main
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
-          ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
+          project: ${{ matrix.project }}
+          projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
           settingsJson: ${{ env.Settings }}
-          SecretsJson: ${{ env.RepoSecrets }}
+          secretsJson: ${{ env.RepoSecrets }}
           buildMode: ${{ matrix.buildMode }}
 
       - name: Calculate Artifact names
-        uses: aholstrup1/AL-Go-Actions/CalculateArtifactNames@main
+        id: calculateArtifactsNames
+        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
         if: success() || failure()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
@@ -192,7 +158,7 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}Apps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -201,10 +167,26 @@ jobs:
         if: env.workflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-${{ env.BuildMode }}TestApps'
+          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
+
+      - name: Publish artifacts - build output
+        uses: actions/upload-artifact@v3
+        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
+        with:
+          name: ${{ env.BuildOutputArtifactsName }}
+          path: '${{ matrix.project }}/BuildOutput.txt'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - container event log
+        uses: actions/upload-artifact@v3
+        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
+        with:
+          name: ${{ env.ContainerEventLogArtifactsName }}
+          path: '${{ matrix.project }}/ContainerEventLog.evtx'
+          if-no-files-found: ignore
 
       - name: Publish artifacts - test results
         uses: actions/upload-artifact@v3
@@ -225,7 +207,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: aholstrup1/AL-Go-Actions/AnalyzeTests@main
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@main
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -233,7 +215,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: aholstrup1/AL-Go-Actions/PipelineCleanup@main
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@main
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -246,10 +228,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          lfs: true
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: aholstrup1/AL-Go-Actions/WorkflowPostProcess@main
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@main
         with:
           shell: powershell
           eventId: "DO0104"

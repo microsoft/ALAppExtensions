@@ -295,10 +295,16 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
     end;
 
     procedure ConfirmVATCurrencyFactorUpdateCZL(): Boolean
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        ReplacePostingDate: Boolean;
+        ReplaceVATDate: Boolean;
     begin
         OnBeforeConfirmUpdateVATCurrencyFactorCZL(Rec, HideValidationDialog);
 
-        if GetHideValidationDialog() or not GuiAllowed then
+        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, "Batch Posting Parameter Type"::"Replace Posting Date", ReplacePostingDate);
+        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate);
+        if GetHideValidationDialog() or not GuiAllowed or ReplacePostingDate or ReplaceVATDate then
             IsConfirmedCZL := true
         else
             IsConfirmedCZL := ConfirmManagement.GetResponseOrDefault(UpdateExchRateQst, true);

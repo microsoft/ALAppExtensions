@@ -2,12 +2,23 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+### **NOTE:** When upgrading to this version
+When upgrading to this version form earlier versions of AL-Go for GitHub, you will need to run the _Update AL-Go System Files_ workflow twice if you have the `useProjectDependencies` setting set to _true_.
+
 ### Issues
 - Issue [#391](https://github.com/microsoft/AL-Go/issues/391) Create release action - CreateReleaseBranch error
 
 ### Changes to Pull Request Process
 In v2.4 and earlier, the PullRequestHandler would trigger the CI/CD workflow to run the PR build.
-Now, the PullRequestHandler will perform the build and the CI/CD workflow is only run on push (or manual dispatch)
+Now, the PullRequestHandler will perform the build and the CI/CD workflow is only run on push (or manual dispatch) and will perform a complete build.
+
+### Build modes per project
+Build modes can now be specified per project
+
+### New Actions
+- **DetermineProjectsToBuild** is used to determine which projects to build in PullRequestHandler, CI/CD, Current, NextMinor and NextMajor workflows.
+- **CalculateArtifactNames** is used to calculate artifact names in PullRequestHandler, CI/CD, Current, NextMinor and NextMajor workflows.
+- **VerifyPRChanges** is used to verify whether a PR contains changes, which are not allowed from a fork.
 
 ## v2.4
 

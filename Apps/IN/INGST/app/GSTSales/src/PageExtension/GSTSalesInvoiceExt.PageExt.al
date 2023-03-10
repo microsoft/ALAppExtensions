@@ -29,6 +29,17 @@ pageextension 18148 "GST Sales Invoice Ext" extends "Sales Invoice"
                 GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
             end;
         }
+        modify("Ship-to Code")
+        {
+            trigger OnAfterValidate()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                CurrPage.SaveRecord();
+                GSTSalesValidation.UpdateGSTJurisdictionTypeFromPlaceOfSupply(Rec);
+                GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
+            end;
+        }
         addafter("Foreign Trade")
         {
             group(Application)

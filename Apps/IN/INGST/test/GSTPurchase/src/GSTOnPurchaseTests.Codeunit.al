@@ -966,6 +966,46 @@ codeunit 18131 "GST On Purchase Tests"
         CreateAndPostDistributionDocument(DocType::"Credit Memo", DistGSTCredit::"Non-Availment", RcptGSTCredit::"Non-Availment", true);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,PurchCredMemoPageHandler')]
+    procedure PostedPurchDocumentWithRCMForCancelFeature()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        //[Scenario] [463547] Check if the system is cancelling Posted Purchase Invoice with RCM and posting purchase credit memo to reverse posted purchase invoice.
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, true, true);
+        InitializeShareStep(true, false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Post Purchase Order with GST and Line Type as G/L Account for Intrastate Transactions.
+        CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        //[WHEN] Use Action Cancel On Posted Purchase Invoice To Create Posted Credit Memo to reverse posted purchase invoice. 
+        CancelPostedPurchaseInvoiceToCreatePostedCreditMemo(PurchInvHeader, PurchaseHeader."No.");
+
+        //[THEN] Verify Posted Credit Memo is created after cancelling Posted Purchase Invoice
+        VerifyPostedCreditMemoCreatedAfterPosInvoiceCancelled(PurchInvHeader."No.");
+    end;
+
+    local procedure CancelPostedPurchaseInvoiceToCreatePostedCreditMemo(PurchInvHeader: Record "Purch. Inv. Header"; PurchaseOrderNo: Code[20])
+    var
+        PostedPurchInvoice: TestPage "Posted Purchase Invoice";
+    begin
+        PurchInvHeader.SetRange("Order No.", PurchaseOrderNo);
+        PurchInvHeader.FindFirst();
+        PostedPurchInvoice.OpenEdit();
+        PostedPurchInvoice.GoToRecord(PurchInvHeader);
+        PostedPurchInvoice.CancelInvoice.Invoke();
+    end;
+
     local procedure InitializeShareStep(InputCreditAvailment: Boolean; Exempted: Boolean; LineDiscount: Boolean)
     begin
         StorageBoolean.Set(InputCreditAvailmentLbl, InputCreditAvailment);
@@ -1670,6 +1710,16 @@ codeunit 18131 "GST On Purchase Tests"
         Vendor.Modify(true);
     end;
 
+    local procedure VerifyPostedCreditMemoCreatedAfterPosInvoiceCancelled(InvoiceNo: Code[20])
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+    begin
+        PurchCrMemoHdr.SetRange("Applies-to Doc. No.", InvoiceNo);
+        PurchCrMemoHdr.FindFirst();
+
+        Assert.RecordIsNotEmpty(PurchCrMemoHdr);
+    end;
+
     [ModalPageHandler]
     procedure ReferenceInvoiceNoPageHandler(var VendorLedgerEntries: TestPage "Vendor Ledger Entries")
     begin
@@ -1746,5 +1796,10 @@ codeunit 18131 "GST On Purchase Tests"
     procedure NoSeriesHandler(var NoSeriesList: TestPage "No. Series")
     begin
         NoSeriesList.Cancel().Invoke();
+    end;
+
+    [PageHandler]
+    procedure PurchCredMemoPageHandler(var PostedPurchaseCreditMemo: TestPage "Posted Purchase Credit Memo")
+    begin
     end;
 }

@@ -886,6 +886,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         if not Preview then begin
             ApplId := CopyStr(VendorLedgerEntry."Document No." + Format(VendorLedgerEntry."Entry No.", 0, '<Integer>'), 1, MaxStrLen(ApplId));
             VendorLedgerEntry.CalcFields("Remaining Amount");
+            VendorLedgerEntry."Adv. Letter Template Code CZZ" := PurchAdvLetterHeaderCZZ."Advance Letter Code";
             VendorLedgerEntry."Amount to Apply" := VendorLedgerEntry."Remaining Amount";
             VendorLedgerEntry."Applies-to ID" := ApplId;
             Codeunit.Run(Codeunit::"Vend. Entry-Edit", VendorLedgerEntry);

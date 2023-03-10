@@ -719,9 +719,9 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=IIf(sum(Fields!Total.Value) &gt; Fields!Balance.Value, 
-        Parameters!CashDeficiencyLbl.Value, 
-        Parameters!CashSurplusLbl.Value)</Value>
+                                                    <Value>=IIf(sum(Fields!Total.Value) &gt; Fields!Balance.Value,
+Parameters!CashSurplusLbl.Value,
+Parameters!CashDeficiencyLbl.Value)</Value>
                                                     <Style>
                                                       <FontFamily>Segoe UI</FontFamily>
                                                       <FontSize>8pt</FontSize>
@@ -1512,7 +1512,6 @@
                             </Border>
                           </Style>
                         </Rectangle>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
