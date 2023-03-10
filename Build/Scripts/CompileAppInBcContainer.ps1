@@ -76,6 +76,7 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
         'Translated' { 
             # Add the source code for non-test apps to the artifacts folder
             if($app) {
+                Write-Host "Copying source code for app $appName to source code folder: $sourceCodeFolder"
                 Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             }
 
