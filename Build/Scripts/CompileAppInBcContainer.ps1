@@ -26,7 +26,7 @@ $appFile = Compile-AppInBcContainer @parameters
 
 $branchName = $ENV:GITHUB_REF_NAME
 
-# Only add the source code to the build artifacts if the delivering is allowed on the branch 
+# Only add the source code and other artifacts to the build artifacts if the delivering is allowed on the branch 
 if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.StartsWith('release/'))) {
     $appProjectFolder = $parameters.appProjectFolder
     
@@ -43,8 +43,8 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
 
     $packageArtifactsFolder = "$currentProjectFolder/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
 
-    $buildArtifactsFolder = "$packageArtifactsFolder/BuildArtifacts"
-    $sourceCodeFolder = "$packageArtifactsFolder/SourceCode"
+    $buildArtifactsFolder = Join-Path "$packageArtifactsFolder" "BuildArtifacts"
+    $sourceCodeFolder = Join-Path "$packageArtifactsFolder" "SourceCode"
 
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
@@ -57,7 +57,7 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
     {
         'Default' { 
             # Add the generated Translations folder to the artifacts folder
-            $TranslationsFolder = "$appProjectFolder/Translations"
+            $TranslationsFolder = Join-Path "$appProjectFolder" "Translations"
             if (Test-Path $TranslationsFolder) {
                 Write-Host "Translations were generated for app $appName"
                 Copy-Item -Path $TranslationsFolder -Destination "$buildArtifactsFolder" -Recurse -Force | Out-Null
@@ -65,30 +65,22 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
                 Write-Host "Translations were not generated for app $appName"
             }
 
-            # Add the source code for test apps to the artifacts folder
-            if(-not $app) {
-                Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
-            }
+            # Add the source code to the artifacts folder
+            Write-Host "Copying source code for app $appName to source code folder: $sourceCodeFolder"
 
-            # Add  the app file for every built app to a folder
-            Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
+            Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
          }
         'Translated' { 
-            # Add the source code for non-test apps to the artifacts folder
+            # Add the source code for non-test apps to the artifacts folder as it contains the translations
             if($app) {
                 Write-Host "Copying source code for app $appName to source code folder: $sourceCodeFolder"
                 Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             }
-
-            # Add the app file for every built app to a folder
-            Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
-        }
-
-        'Clean' {
-              # Add  the app file for every built app to a folder
-              Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
         }
     }
+    
+    # Add the app file for every built app to a folder
+    Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
 }
 
 $appFile
