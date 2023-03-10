@@ -13,7 +13,7 @@
                         "System Tests"
     ],
     "artifact":  "bcinsider//21.5/base/latest/{INSIDERSASTOKEN}",
-    "enablePerTenantExtensionCop":  false,
+    "enableAppSourceCop": true,
     "enableCodeCop": true, 
     "repoVersion":  "21.6",
     "doNotRunTests": true,
