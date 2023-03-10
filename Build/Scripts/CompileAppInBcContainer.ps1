@@ -41,7 +41,7 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
         $holderFolder = 'TestApps'
     }
 
-    $packageArtifactsFolder = Join-Path "$currentProjectFolder" ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
+    $packageArtifactsFolder = "$currentProjectFolder/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
 
     $buildArtifactsFolder = "$packageArtifactsFolder/BuildArtifacts"
     $sourceCodeFolder = "$packageArtifactsFolder/SourceCode"
@@ -67,7 +67,7 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
 
             # Add the source code for test apps to the artifacts folder
             if(-not $app) {
-                Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+                Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             }
 
             # Add  the app file for every built app to a folder
@@ -76,7 +76,7 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
         'Translated' { 
             # Add the source code for non-test apps to the artifacts folder
             if($app) {
-                Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+                Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             }
 
             # Add the app file for every built app to a folder
