@@ -103,7 +103,7 @@ codeunit 30190 "Shpfy Export Shipments"
                                 if ShippingAgent.Name = '' then
                                     GraphQuery.Append(ShippingAgent.Code)
                                 else
-                                    GraphQuery.Append(ShippingAgent.Code)
+                                    GraphQuery.Append(ShippingAgent.Name)
                             end else
                                 GraphQuery.Append(TrackingCompany.Names.Get(TrackingCompany.Ordinals.IndexOf(ShippingAgent."Shpfy Tracking Company".AsInteger())));
                         end else
@@ -114,13 +114,18 @@ codeunit 30190 "Shpfy Export Shipments"
                     GraphQuery.Append('number: \"');
                     GraphQuery.Append(SalesShipmentHeader."Package Tracking No.");
                     GraphQuery.Append('\",');
-                    GraphQuery.Append('url: \"');
+
                     ShippingEvents.BeforeRetrieveTrackingUrl(SalesShipmentHeader, TrackingUrl, IsHandled);
                     if not IsHandled then
                         if ShippingAgent."Internet Address" <> '' then
                             TrackingUrl := ShippingAgent.GetTrackingInternetAddr(SalesShipmentHeader."Package Tracking No.");
-                    GraphQuery.Append(TrackingUrl);
-                    GraphQuery.Append('\"');
+
+                    if TrackingUrl <> '' then begin
+                        GraphQuery.Append('url: \"');
+                        GraphQuery.Append(TrackingUrl);
+                        GraphQuery.Append('\"');
+                    end;
+
                     GraphQuery.Append('}');
                 end;
                 GraphQuery.Append('lineItemsByFulfillmentOrder: [');
