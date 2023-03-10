@@ -31,19 +31,19 @@ function Set-BreakingChangesCheck {
     $applicationName = (Get-Content -Path $appJson | ConvertFrom-Json).Name
     
     # Get the baseline version
-    $BaselineVersion = Get-BaselineVersion -BuildMode $BuildMode
+    $baselineVersion = Get-BaselineVersion -BuildMode $BuildMode
 
-    Write-Host "Restoring baselines for $applicationName from $BaselineVersion"
+    Write-Host "Restoring baselines for $applicationName from $baselineVersion"
 
     # Restore the baseline package and place it in the app symbols folder
     if ($BuildMode -eq 'Clean') {
-        Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+        Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     } else {
-        Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+        Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     }
 
     # Generate the app source cop json file
-    Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $BaselineVersion
+    Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
 }
 
 <#
@@ -69,27 +69,32 @@ function Restore-BaselinesFromArtifacts {
         [Parameter(Mandatory = $true)] 
         [string] $AppSymbolsFolder
     )
-    $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $BaselineVersion
-    if (-not $baselineURL) {
-        throw "Unable to find URL for baseline version $BaselineVersion"
+    $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+
+    try {
+        $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'base' -version $BaselineVersion
+        if (-not $baselineURL) {
+            throw "Unable to find URL for baseline version $BaselineVersion"
+        }
+
+        Write-Host "Downloading from $baselineURL to $baselineFolder"
+
+        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
+        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ExtensionName*" -Filter "*.app"
+
+        Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+
+        if (-not (Test-Path $AppSymbolsFolder)) {
+            Write-Host "Creating folder $AppSymbolsFolder"
+            New-Item -ItemType Directory -Path $AppSymbolsFolder
+        }
+
+        Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+    } finally {
+        Remove-Item -Path $baselineFolder -Recurse -Force
     }
-    $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) 'baselines'
-        
-    Write-Host "Downloading from $baselineURL to $baselineFolder"
-        
-    Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
-    $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ExtensionName*" -Filter "*.app"
+    
 
-    Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
-
-    if (-not (Test-Path $AppSymbolsFolder)) {
-        Write-Host "Creating folder $AppSymbolsFolder"
-        New-Item -ItemType Directory -Path $AppSymbolsFolder
-    }
-
-    Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
-
-    Remove-Item -Path $baselineFolder -Recurse -Force
 }
 
 function Restore-BaselinesFromNuget {
@@ -148,6 +153,15 @@ function Update-AppSourceCopVersion
 ) {
     Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 
+    if ($BaselineVersion -match "^(\d+)\.(\d+)\.(\d+)$") {
+        Write-Host "Baseline version is missing revision number. Adding revision number 0 to the baseline version" -ForegroundColor Yellow
+        $BaselineVersion = $BaselineVersion + ".0"
+    }
+
+    if (-not ($BaselineVersion -and $BaselineVersion -match "^([0-9]+\.){3}[0-9]+$" )) {
+        throw "Extension Compatibile Version cannot be null or invalid format. Valid format should be like '1.0.2.0'"
+    }
+
     $appSourceCopJsonPath = Join-Path $ExtensionFolder AppSourceCop.json
 
     if (!(Test-Path $appSourceCopJsonPath)) {
@@ -161,18 +175,8 @@ function Update-AppSourceCopVersion
         $json.psobject.properties | Foreach-Object { $appSourceJson[$_.Name] = $_.Value }
     }
 
-
-    if ($BaselineVersion -match "^(\d+)\.(\d+)\.(\d+)$") {
-        Write-Host "Baseline version is missing revision number. Adding revision number 0 to the baseline version" -ForegroundColor Yellow
-        $BaselineVersion = $BaselineVersion + ".0"
-    }
-
-    if (-not ($BaselineVersion -and $BaselineVersion -match "^([0-9]+\.){3}[0-9]+$" )) {
-        throw "Extension Compatibile Version cannot be null or invalid format. Valid format should be like '1.0.2.0'"
-    }
-
     Write-Host "Setting 'version:$BaselineVersion' in AppSourceCop.json" -ForegroundColor Yellow
-    $appSourceJson.version = $BaselineVersion
+    $appSourceJson["version"] = $BaselineVersion
 
     Write-Host "Setting 'name:$ExtensionName' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["name"] = $ExtensionName
@@ -184,12 +188,12 @@ function Update-AppSourceCopVersion
     Write-Host "Setting 'obsoleteTagVersion:$buildVersion' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["obsoleteTagVersion"] = $buildVersion
 
-    # All major versions greater than current but less or equal to master should be allowed
-    $Current = [int] $buildVersion.Split('.')[0]
-    $Master = [int] (Get-BuildConfigValue -Key "CurrentBuildVersionInMaster")
+    # All major versions greater than current but less or equal to main should be allowed
+    $currentBuildVersion = [int] $buildVersion.Split('.')[0]
+    $maxAllowedObsoleteVersion = [int] (Get-BuildConfigValue -Key "MaxAllowedObsoleteVersion")
     $obsoleteTagAllowedVersions = @()
 
-    for ($i = $Current + 1; $i -le $Master; $i++) {
+    for ($i = $currentBuildVersion + 1; $i -le $maxAllowedObsoleteVersion; $i++) {
         $obsoleteTagAllowedVersions += "$i.0"
     }
 
@@ -221,13 +225,11 @@ function Get-BaselineVersion {
     Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 
     if ($BuildMode -eq "Clean") {
-        $BaselineVersion = (Find-Package -Name "microsoft-ALAppExtensions-Modules-preview" -Source "https://nuget.org/api/v2/").Version
+        # Use latest available version from nuget if build mode is clean
+        return (Find-Package -Name "microsoft-ALAppExtensions-Modules-preview" -Source "https://nuget.org/api/v2/").Version
     } else {
-        $BaselineVersion = Get-BuildConfigValue -Key "BaselineVersion"
+        return Get-BuildConfigValue -Key "BaselineVersion"
     }
-
-
-    return $BaselineVersion
 }
 
 Export-ModuleMember -Function *-*

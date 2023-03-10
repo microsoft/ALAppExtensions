@@ -93,5 +93,4 @@ if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('releas
     }
 }
 
-
 $appFile
