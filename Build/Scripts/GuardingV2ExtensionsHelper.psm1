@@ -71,16 +71,16 @@ function Restore-BaselinesFromArtifacts {
     )
     $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
 
-    try {
-        $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'base' -version $BaselineVersion
-        if (-not $baselineURL) {
-            throw "Unable to find URL for baseline version $BaselineVersion"
-        }
+    $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $BaselineVersion
+    if (-not $baselineURL) {
+        throw "Unable to find URL for baseline version $BaselineVersion"
+    }
 
+    try {
         Write-Host "Downloading from $baselineURL to $baselineFolder"
 
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/base/Extensions/*$ExtensionName*" -Filter "*.app"
+        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions/*$ExtensionName*" -Filter "*.app"
 
         Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
 
