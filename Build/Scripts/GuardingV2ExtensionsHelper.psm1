@@ -170,9 +170,7 @@ function Update-AppSourceCopVersion
         $appSourceJson = @{version = '' }
     }
     else {
-        $json = Get-Content $appSourceCopJsonPath -Raw | ConvertFrom-Json
-        $appSourceJson = @{}
-        $json.psobject.properties | Foreach-Object { $appSourceJson[$_.Name] = $_.Value }
+        $appSourceJson = Get-Content $appSourceCopJsonPath -Raw | ConvertFrom-Json
     }
 
     Write-Host "Setting 'version:$BaselineVersion' in AppSourceCop.json" -ForegroundColor Yellow
