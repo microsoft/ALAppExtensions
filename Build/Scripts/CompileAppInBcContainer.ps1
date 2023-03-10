@@ -60,7 +60,7 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
             # Add the generated Translations folder to the artifacts folder
             $TranslationsFolder = Join-Path "$appProjectFolder" "Translations"
             if (Test-Path $TranslationsFolder) {
-                Write-Host "Translations were generated for app $appName"
+                Write-Host "Copying translation for app $appName from $TranslationsFolder to $buildArtifactsFolder"
                 Copy-Item -Path $TranslationsFolder -Destination "$buildArtifactsFolder" -Recurse -Force | Out-Null
             } else {
                 Write-Host "Translations were not generated for app $appName"
@@ -80,6 +80,7 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
     }
     
     # Add the app file for every built app to a folder for all built modes
+    Write-Host "Copying app file for app '$appName' from '$appFile' to build artifacts folder: $packageArtifactsFolder"
     Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
 }
 
