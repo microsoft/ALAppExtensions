@@ -80,7 +80,7 @@ function Restore-BaselinesFromArtifacts {
         Write-Host "Downloading from $baselineURL to $baselineFolder"
 
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/w1/Extensions/*$ExtensionName*" -Filter "*.app"
+        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/base/Extensions/*$ExtensionName*" -Filter "*.app"
 
         Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
 
