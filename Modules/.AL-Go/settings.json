@@ -19,5 +19,5 @@
     "repoVersion":  "21.6",
     "doNotRunTests": true,
     "cleanModePreprocessorSymbols":  ["CLEAN17", "CLEAN18", "CLEAN19", "CLEAN20", "CLEAN21", "CLEAN22"],
-    "rulesetFile": "module.ruleset.json"
+    "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json"
 }
