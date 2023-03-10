@@ -1,11 +1,11 @@
 {
     "country":  "base",
     "appFolders":  [
-        "..\\System"
+        "..\\Modules\\System"
     ],
     "testFolders":  [
-        "..\\System Test Libraries",
-        "..\\System Tests"
+        "..\\Modules\\System Test Libraries",
+        "..\\Modules\\System Tests"
     ],
     "buildModes": [
         "Translated"
