@@ -557,7 +557,6 @@ codeunit 8901 "Email"
     /// Integration event that allows updating of the email message before the email is queued for sending.
     /// </summary>
     /// <param name="EmailMessage">Email message codeunit which is linked to the current email.</param>
-    //internal procedure OnBeforeSendEmail(var EmailMessage1: Codeunit "Email Message")
     [IntegrationEvent(false, false)]
     internal procedure OnBeforeSendEmail(var EmailMessage: Codeunit "Email Message")
     begin
