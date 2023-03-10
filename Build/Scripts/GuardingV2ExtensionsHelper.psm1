@@ -193,7 +193,7 @@ function Update-AppSourceCopVersion
         $obsoleteTagAllowedVersions += "$i.0"
     }
 
-    Write-Host "Setting 'obsoleteTagVersion:$obsoleteTagAllowedVersions' value in AppSourceCop.json" -ForegroundColor Yellow
+    Write-Host "Setting 'obsoleteTagAllowedVersions:$obsoleteTagAllowedVersions' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["obsoleteTagAllowedVersions"] = $obsoleteTagAllowedVersions -join ','
 
     Write-Host "Updating AppSourceCop.json done successfully" -ForegroundColor Green
