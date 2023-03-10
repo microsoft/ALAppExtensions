@@ -42,16 +42,17 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
     }
 
     $packageArtifactsFolder = "$currentProjectFolder/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
-
-    $buildArtifactsFolder = Join-Path "$packageArtifactsFolder" "BuildArtifacts"
-    $sourceCodeFolder = Join-Path "$packageArtifactsFolder" "SourceCode"
-
+    
+    
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
         New-Item -Path "$currentProjectFolder" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
     }
-
+    
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
+    
+    $buildArtifactsFolder = Join-Path "$packageArtifactsFolder" "BuildArtifacts"
+    $sourceCodeFolder = Join-Path "$packageArtifactsFolder" "SourceCode"
 
     switch ( $appBuildMode )
     {
@@ -66,20 +67,19 @@ if($branchName -and (($branchName -eq 'build-app-modules') -or $branchName.Start
             }
 
             # Add the source code to the artifacts folder
-            Write-Host "Copying source code for app $appName to source code folder: $sourceCodeFolder"
-
+            Write-Host "Copying source code for app '$appName' from '$appProjectFolder' to source code folder: $sourceCodeFolder"
             Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
          }
         'Translated' { 
             # Add the source code for non-test apps to the artifacts folder as it contains the translations
             if($app) {
-                Write-Host "Copying source code for app $appName to source code folder: $sourceCodeFolder"
+                Write-Host "Copying source code for app '$appName' from '$appProjectFolder' to source code folder: $sourceCodeFolder"
                 Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             }
         }
     }
     
-    # Add the app file for every built app to a folder
+    # Add the app file for every built app to a folder for all built modes
     Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
 }
 
