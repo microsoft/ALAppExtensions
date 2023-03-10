@@ -10,11 +10,12 @@ table 1807 "Assisted Setup Log"
     ReplicateData = false;
 #if CLEAN18
     ObsoleteState = Removed;
+    ObsoleteTag = '23.0';
 #else
     ObsoleteState = Pending;
+    ObsoleteTag = '18.0';
 #endif
     ObsoleteReason = 'The logs are not used.';
-    ObsoleteTag = '18.0';
 
     fields
     {
