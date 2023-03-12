@@ -1,0 +1,10 @@
+{
+    "appFolders":  [
+        "..\\Modules\\TestFramework\\TestLibraries\\*",
+        "..\\Modules\\TestFramework\\TestRunner",
+        "..\\Modules\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
+    ],
+    "testFolders":  [
+    ],
+    "doNotRunTests": true
+}

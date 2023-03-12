@@ -5,6 +5,10 @@
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
+  "artifact": "bcinsider//21.5/base/latest/{INSIDERSASTOKEN}",
+  "country":  "base",
+  "useProjectDependencies": true,
+  "repoVersion": "21.6",
   "cleanModePreprocessorSymbols": [
     "CLEAN17",
     "CLEAN18",
@@ -13,7 +17,6 @@
     "CLEAN21",
     "CLEAN22"
   ],
-  "artifact": "bcinsider//21.5/base/latest/{INSIDERSASTOKEN}",
   "unusedALGoSystemFiles": [
     "AddExistingAppOrTestApp.yaml",
     "CreateApp.yaml",
@@ -30,8 +33,8 @@
     "Default",
     "Clean"
   ],
-  "useProjectDependencies": true,
-  "repoVersion": "21.6",
+  "enablePerTenantExtensionCop":  false,
+  "enableCodeCop": true, 
   "CICDPushBranches": [
     "main"
   ]

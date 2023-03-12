@@ -1,0 +1,10 @@
+{
+    "appFolders":  [
+        "..\\Modules\\System\\*"
+    ],
+    "testFolders":  [
+        "..\\Modules\\System Test Libraries\\*",
+        "..\\Modules\\System Tests\\*"
+    ],
+    "doNotPublishApps": true
+}
