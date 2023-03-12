@@ -1,8 +1,8 @@
 {
     "appFolders":  [
-        "..\\Modules\\TestFramework\\TestLibraries\\*",
-        "..\\Modules\\TestFramework\\TestRunner",
-        "..\\Modules\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
+        "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\*",
+        "..\\Modules\\DevTools\\TestFramework\\TestRunner",
+        "..\\Modules\\DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
     ],
     "testFolders":  [
     ],
