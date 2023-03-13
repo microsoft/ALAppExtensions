@@ -50,5 +50,9 @@
     {
       "codeunitName": "Data Class. Worksheet Tests",
       "method": "TestLastModifiedBy"
+    },
+    {
+      "codeunitName": "Azure AD User Sync Test",
+      "method": "*"
     }
 ]
