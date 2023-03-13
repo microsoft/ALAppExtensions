@@ -33,8 +33,10 @@ function Enable-BreakingChangesCheck {
 
     # Restore the baseline package and place it in the app symbols folder
     if ($BuildMode -eq 'Clean') {
+        Write-Host "Enabling breaking changes check in Clean mode. Setting up $baselineVersion as a baseline as this is the latest version of AlAppExtensions"
         Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     } else {
+        Write-Host "Enabling breaking changes check in Default mode. Setting up $baselineVersion version as a baseline"
         Restore-BaselinesFromArtifacts -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     }
 
