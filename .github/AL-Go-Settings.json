@@ -39,5 +39,5 @@
   "CICDPushBranches": [
     "main"
   ],
-  "rulesetFile": "Build\\Rulesets\\module.ruleset.json"
+  "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json"
 }
