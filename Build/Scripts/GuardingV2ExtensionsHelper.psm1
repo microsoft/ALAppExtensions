@@ -80,7 +80,7 @@ function Restore-BaselinesFromArtifacts {
         Write-Host "Downloading from $baselineURL to $baselineFolder"
 
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions/*$ExtensionName*" -Filter "*.app"
+        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Name "*$($ExtensionName)_$($BaselineVersion).app"
 
         Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
 
@@ -182,13 +182,13 @@ function Update-AppSourceCopVersion
     Write-Host "Setting 'publisher:$Publisher' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["publisher"] = $Publisher
 
-    $buildVersion = Get-BuildConfigValue -Key "BuildVersion"
+    $buildVersion = Get-ConfigValueFromKey -Key "repoVersion"
     Write-Host "Setting 'obsoleteTagVersion:$buildVersion' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["obsoleteTagVersion"] = $buildVersion
 
     # All major versions greater than current but less or equal to main should be allowed
     $currentBuildVersion = [int] $buildVersion.Split('.')[0]
-    $maxAllowedObsoleteVersion = [int] (Get-BuildConfigValue -Key "MaxAllowedObsoleteVersion")
+    $maxAllowedObsoleteVersion = [int] (Get-ConfigValueFromKey -ConfigType "BuildConfig" -Key "MaxAllowedObsoleteVersion")
     $obsoleteTagAllowedVersions = @()
 
     for ($i = $currentBuildVersion + 1; $i -le $maxAllowedObsoleteVersion; $i++) {
@@ -226,7 +226,7 @@ function Get-BaselineVersion {
         # Use latest available version from nuget if build mode is clean
         return (Find-Package -Name "microsoft-ALAppExtensions-Modules-preview" -Source "https://nuget.org/api/v2/").Version
     } else {
-        return Get-BuildConfigValue -Key "BaselineVersion"
+        return Get-ConfigValueFromKey -Key "BaselineVersion" -ConfigType "BuildConfig"
     }
 }
 

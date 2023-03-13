@@ -26,7 +26,10 @@ if($app)
     }
 
     # Restore the baseline app and generate the AppSourceCop.json file
-    Set-BreakingChangesCheck -ContainerName $parameters["containerName"] -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode | Out-Null
+    if (($parameters.ContainsKey("EnableAppSourceCop") -and $parameters["EnableAppSourceCop"]) -or ($parameters.ContainsKey("EnablePerTenantExtensionCop") -and $parameters["EnablePerTenantExtensionCop"])) {
+        Set-BreakingChangesCheck -ContainerName $parameters["containerName"] -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode | Out-Null
+    }
+    
 }
 
 $appFile = Compile-AppInBcContainer @parameters

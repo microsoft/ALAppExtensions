@@ -19,9 +19,21 @@ function Get-BuildMode() {
     return 'Default'
 }
 
-function Get-BuildConfigValue($Key) {
-    $BuildConfigPath = Join-Path (Get-BaseFolder) "Build/BuildConfig.json" -Resolve
-    $BuildConfig = Get-Content -Path $BuildConfigPath -Raw | ConvertFrom-Json
+function Get-ConfigValueFromKey() {
+    param(
+        [Parameter(Mandatory=$false)]
+        [ValidateSet("BuildConfig","AL-GO")]
+        [string]$ConfigType = "AL-GO",
+        [Parameter(Mandatory=$true)]
+        [string]$Key
+    )
+
+    if ($ConfigType -eq "BuildConfig") {
+        $ConfigPath = Join-Path (Get-BaseFolder) "Build/BuildConfig.json" -Resolve
+    } else {
+        $ConfigPath = Join-Path (Get-BaseFolder) ".github/AL-Go-Settings.json" -Resolve
+    }
+    $BuildConfig = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
     return $BuildConfig.$Key
 }
 

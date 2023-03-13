@@ -33,8 +33,6 @@
     "Default",
     "Clean"
   ],
-  "enableAppSourceCop": true,
-  "enablePerTenantExtensionCop":  true,
   "enableCodeCop": true, 
   "CICDPushBranches": [
     "main"

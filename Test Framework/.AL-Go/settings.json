@@ -1,10 +1,12 @@
 {
     "appFolders":  [
         "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\*",
-        "..\\Modules\\DevTools\\TestFramework\\TestRunner",
-        "..\\Modules\\DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
+        "..\\Modules\\DevTools\\TestFramework\\TestRunner"
     ],
     "testFolders":  [
+        "..\\Modules\\DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
     ],
-    "doNotRunTests": true
+    "doNotRunTests": true,
+    "enableAppSourceCop": true,
+    "enablePerTenantExtensionCop":  true
 }
