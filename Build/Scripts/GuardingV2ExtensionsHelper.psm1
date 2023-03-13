@@ -17,8 +17,6 @@
 function Set-BreakingChangesCheck {
     Param(
         [Parameter(Mandatory = $true)] 
-        [string] $ContainerName,
-        [Parameter(Mandatory = $true)] 
         [string] $AppSymbolsFolder,
         [Parameter(Mandatory = $true)] 
         [string] $AppProjectFolder,
@@ -39,7 +37,7 @@ function Set-BreakingChangesCheck {
     if ($BuildMode -eq 'Clean') {
         Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     } else {
-        Restore-BaselinesFromArtifacts -ContainerName $ContainerName -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
+        Restore-BaselinesFromArtifacts -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     }
 
     # Generate the app source cop json file
@@ -65,8 +63,6 @@ function Restore-BaselinesFromArtifacts {
         [Parameter(Mandatory = $true)] 
         [string] $ExtensionName,
         [Parameter(Mandatory = $true)] 
-        [string] $ContainerName,
-        [Parameter(Mandatory = $true)] 
         [string] $AppSymbolsFolder
     )
     $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
@@ -80,7 +76,11 @@ function Restore-BaselinesFromArtifacts {
         Write-Host "Downloading from $baselineURL to $baselineFolder"
 
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Name "*$($ExtensionName)_$($BaselineVersion).app"
+        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app"
+
+        if (-not $baselineApp) {
+            throw "Unable to find baseline app for $ExtensionName in $baselineURL"
+        }
 
         Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
 
