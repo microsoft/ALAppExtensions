@@ -12,7 +12,7 @@
 .Parameter BuildMode
     Build mode
 #>
-function Set-BreakingChangesCheck {
+function Enable-BreakingChangesCheck {
     Param(
         [Parameter(Mandatory = $true)] 
         [string] $AppSymbolsFolder,

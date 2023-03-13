@@ -27,7 +27,7 @@ if($app)
 
     # Restore the baseline app and generate the AppSourceCop.json file
     if (($parameters.ContainsKey("EnableAppSourceCop") -and $parameters["EnableAppSourceCop"]) -or ($parameters.ContainsKey("EnablePerTenantExtensionCop") -and $parameters["EnablePerTenantExtensionCop"])) {
-        Set-BreakingChangesCheck -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode | Out-Null
+        Enable-BreakingChangesCheck -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode | Out-Null
     }
     
 }
@@ -49,11 +49,12 @@ if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('releas
         $holderFolder = 'TestApps'
     }
 
-    $packageArtifactsFolder = "$RepoRootFolder/Modules/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
-
+    $packageArtifactsFolder = "$currentProjectFolder/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
+    
+    
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
-        New-Item -Path "$RepoRootFolder/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
+        New-Item -Path "$currentProjectFolder" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
     }
     
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
