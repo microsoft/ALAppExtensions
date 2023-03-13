@@ -1,5 +1,7 @@
 codeunit 42003 "GP Populate Vendor 1099 Data"
 {
+    EventSubscriberInstance = Manual;
+
     var
         VendorTaxBatchNameTxt: Label 'GPVENDTAX', Locked = true;
         VendorTaxNoSeriesTxt: Label 'VENDTAX', Locked = true;
@@ -8,44 +10,29 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
         DefaultPayablesAccountCode: Code[20];
         PostingDate: Date;
 
-    [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Data Migration Mgt.", 'OnAfterMigrationFinished', '', false, false)]
-    local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post", 'OnBeforeCode', '', false, false)]
+    local procedure OnBeforeCode(var GenJournalLine: Record "Gen. Journal Line"; var HideDialog: Boolean)
+    begin
+        HideDialog := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post", 'OnBeforeShowPostResultMessage', '', false, false)]
+    local procedure OnBeforeShowPostResultMessage(var GenJnlLine: Record "Gen. Journal Line"; TempJnlBatchName: Code[10]; var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
+
+    trigger OnRun()
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
-        if not (DataMigrationStatus."Migration Type" = HelperFunctions.GetMigrationTypeTxt()) then
-            exit;
-
         if not GPCompanyAdditionalSettings.GetMigrateVendor1099Enabled() then
             exit;
 
         UpdateAllVendorTaxInfo();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post", 'OnBeforeCode', '', false, false)]
-    local procedure OnBeforeCode(var GenJournalLine: Record "Gen. Journal Line"; var HideDialog: Boolean)
-    var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-    begin
-        if not GPCompanyAdditionalSettings.GetMigrateVendor1099Enabled() then
-            exit;
-
-        HideDialog := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post", 'OnBeforeShowPostResultMessage', '', false, false)]
-    local procedure OnBeforeShowPostResultMessage(var GenJnlLine: Record "Gen. Journal Line"; TempJnlBatchName: Code[10]; var IsHandled: Boolean)
-    var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-    begin
-        if not GPCompanyAdditionalSettings.GetMigrateVendor1099Enabled() then
-            exit;
-
-        IsHandled := true;
-    end;
-
-    procedure UpdateAllVendorTaxInfo()
+    local procedure UpdateAllVendorTaxInfo()
     begin
         Initialize();
         UpdateVendorTaxInfo();
@@ -74,40 +61,49 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
 
     local procedure UpdateVendorTaxInfo()
     var
-        Vendor: Record Vendor;
         GPPM00200: Record "GP PM00200";
-        GPVendor1099MappingHelpers: Codeunit "GP Vendor 1099 Mapping Helpers";
-        IRS1099Code: Code[10];
     begin
         GPPM00200.SetRange(TEN99TYPE, 2, 5);
         if not GPPM00200.FindSet() then
             exit;
 
         repeat
-            if Vendor.Get(GPPM00200.VENDORID) then
-                if Vendor."IRS 1099 Code" = '' then begin
-                    IRS1099Code := GPVendor1099MappingHelpers.GetIRS1099BoxCode(System.Date2DMY(System.Today(), 3), GPPM00200.TEN99TYPE, GPPM00200.TEN99BOXNUMBER);
-
-                    if IRS1099Code <> '' then
-                        Vendor.Validate("IRS 1099 Code", IRS1099Code);
-
-                    if GPPM00200.TXIDNMBR <> '' then
-                        Vendor.Validate("Federal ID No.", GPPM00200.TXIDNMBR);
-
-                    if (IRS1099Code <> '') or (GPPM00200.TXIDNMBR <> '') then begin
-                        Vendor.Validate("Tax Identification Type", Vendor."Tax Identification Type"::"Legal Entity");
-                        if Vendor.Modify() then
-                            AddVendor1099Values(Vendor)
-                        else
-                            LogLastError(Vendor."No.");
-                    end else
-                        LogVendorSkipped(Vendor."No.");
-                end else
-                    LogVendorSkipped(Vendor."No.");
+            ProcessVendorTaxInfo(GPPM00200);
         until GPPM00200.Next() = 0;
     end;
 
-    local procedure AddVendor1099Values(Vendor: Record Vendor)
+    local procedure ProcessVendorTaxInfo(var GPPM00200: Record "GP PM00200")
+    var
+        Vendor: Record Vendor;
+        GPVendor1099MappingHelpers: Codeunit "GP Vendor 1099 Mapping Helpers";
+        IRS1099Code: Code[10];
+    begin
+        if not Vendor.Get(GPPM00200.VENDORID) then
+            exit;
+
+        if Vendor."IRS 1099 Code" <> '' then begin
+            LogVendorSkipped(Vendor."No.");
+            exit;
+        end;
+
+        IRS1099Code := GPVendor1099MappingHelpers.GetIRS1099BoxCode(System.Date2DMY(System.Today(), 3), GPPM00200.TEN99TYPE, GPPM00200.TEN99BOXNUMBER);
+        if IRS1099Code <> '' then
+            Vendor.Validate("IRS 1099 Code", IRS1099Code);
+
+        if GPPM00200.TXIDNMBR <> '' then
+            Vendor.Validate("Federal ID No.", GPPM00200.TXIDNMBR);
+
+        if (IRS1099Code <> '') or (GPPM00200.TXIDNMBR <> '') then begin
+            Vendor.Validate("Tax Identification Type", Vendor."Tax Identification Type"::"Legal Entity");
+            if Vendor.Modify() then
+                AddVendor1099Values(Vendor)
+            else
+                LogLastError(Vendor."No.");
+        end else
+            LogVendorSkipped(Vendor."No.");
+    end;
+
+    local procedure AddVendor1099Values(var Vendor: Record Vendor)
     var
         InvoiceGenJournalLine: Record "Gen. Journal Line";
         PaymentGenJournalLine: Record "Gen. Journal Line";
@@ -118,6 +114,8 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
         VendorPayablesAccountCode: Code[20];
         InvoiceDocumentNo: Code[20];
         PaymentDocumentNo: Code[20];
+        InvoiceExternalDocumentNo: Code[35];
+        PaymentExternalDocumentNo: Code[35];
         InvoiceCreated: Boolean;
         PaymentCreated: Boolean;
     begin
@@ -136,6 +134,7 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
 
             if TaxAmount > 0 then begin
                 // Invoice
+                InvoiceExternalDocumentNo := CopyStr(Vendor."No." + '-' + IRS1099Code + '-INV', 1, MaxStrLen(InvoiceExternalDocumentNo));
                 InvoiceDocumentNo := NoSeriesManagement.GetNextNo(VendorTaxNoSeriesTxt, 0D, true);
                 InvoiceCreated := CreateGeneralJournalLine(InvoiceGenJournalLine,
                                     Vendor."No.",
@@ -146,9 +145,10 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
                                     -TaxAmount,
                                     VendorPayablesAccountCode,
                                     IRS1099Code,
-                                    Vendor."No." + '-' + IRS1099Code + '-INV');
+                                    InvoiceExternalDocumentNo);
 
                 // Payment
+                PaymentExternalDocumentNo := CopyStr(Vendor."No." + '-' + IRS1099Code + '-PMT', 1, MaxStrLen(PaymentExternalDocumentNo));
                 PaymentDocumentNo := NoSeriesManagement.GetNextNo(VendorTaxNoSeriesTxt, 0D, true);
                 PaymentCreated := CreateGeneralJournalLine(PaymentGenJournalLine,
                                     Vendor."No.",
@@ -159,18 +159,18 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
                                     TaxAmount,
                                     VendorPayablesAccountCode,
                                     IRS1099Code,
-                                    Vendor."No." + '-' + IRS1099Code + '-PMT');
+                                    PaymentExternalDocumentNo);
 
                 if InvoiceCreated and PaymentCreated then begin
                     InvoiceGenJournalLine.SendToPosting(Codeunit::"Gen. Jnl.-Post");
                     PaymentGenJournalLine.SendToPosting(Codeunit::"Gen. Jnl.-Post");
-                    ApplyEntries(Vendor."No.", InvoiceDocumentNo, PaymentDocumentNo, Vendor."No." + '-' + IRS1099Code + '-INV');
+                    ApplyEntries(Vendor."No.", InvoiceDocumentNo, PaymentDocumentNo, InvoiceExternalDocumentNo);
                 end;
             end;
         end;
     end;
 
-    local procedure GetPostingAccountNo(Vendor: Record Vendor): Code[20]
+    local procedure GetPostingAccountNo(var Vendor: Record Vendor): Code[20]
     var
         VendorPostingGroup: Record "Vendor Posting Group";
         GLAccount: Record "G/L Account";
@@ -212,16 +212,8 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
             until GPPM00204.Next() = 0;
     end;
 
-    local procedure CreateGeneralJournalLine(var GenJournalLine: Record "Gen. Journal Line";
-                                                 VendorNo: Code[20];
-                                                 DocumentType: enum "Gen. Journal Document Type";
-                                                 DocumentNo: Code[20];
-                                                 Description: Text[50];
-                                                 AccountNo: Code[20];
-                                                 Amount: Decimal;
-                                                 BalancingAccount: Code[20];
-                                                 IRS1099Code: Code[10];
-                                                 ExternalDocumentNo: Code[35]): boolean
+    local procedure CreateGeneralJournalLine(var GenJournalLine: Record "Gen. Journal Line"; VendorNo: Code[20]; DocumentType: enum "Gen. Journal Document Type"; DocumentNo: Code[20];
+        Description: Text[50]; AccountNo: Code[20]; Amount: Decimal; BalancingAccount: Code[20]; IRS1099Code: Code[10]; ExternalDocumentNo: Code[35]): boolean
     var
         GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLineCurrent: Record "Gen. Journal Line";
@@ -282,7 +274,7 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
         GenJournalTemplate.SetRange(Type, GenJournalTemplate.Type::General);
         GenJournalTemplate.SetRange(Recurring, false);
         if not GenJournalTemplate.FindFirst() then begin
-            GenJournalTemplate.Init();
+            Clear(GenJournalTemplate);
             GenJournalTemplate.Validate(Name, GenJournalBatchCode);
             GenJournalTemplate.Validate(Type, GenJournalTemplate.Type::General);
             GenJournalTemplate.Validate(Recurring, false);
@@ -310,12 +302,12 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
             if InvoiceVendorLedgerEntry.FindFirst() then begin
                 PaymentVendorLedgerEntry.CalcFields(Amount);
                 InvoiceVendorLedgerEntry.CalcFields(Amount);
+
                 InvoiceVendorLedgerEntry.Validate("Applying Entry", true);
                 InvoiceVendorLedgerEntry.Validate("Applies-to ID", PaymentVendorLedgerEntry."Document No.");
                 InvoiceVendorLedgerEntry.CalcFields("Remaining Amount");
                 InvoiceVendorLedgerEntry.Validate("Amount to Apply", InvoiceVendorLedgerEntry.Amount);
                 Codeunit.Run(Codeunit::"Vend. Entry-Edit", InvoiceVendorLedgerEntry);
-                Commit();
 
                 VendEntrySetApplID.SetApplId(PaymentVendorLedgerEntry, InvoiceVendorLedgerEntry, PaymentVendorLedgerEntry."Document No.");
 

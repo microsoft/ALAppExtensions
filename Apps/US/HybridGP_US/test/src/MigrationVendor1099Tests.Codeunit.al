@@ -147,7 +147,7 @@ codeunit 139701 "Migration Vendor 1099 Tests"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         GP1099MigrationLog: Record "GP 1099 Migration Log";
-        GPPopulateVendor1099Data: Codeunit "GP Populate Vendor 1099 Data";
+        GPCloudMigrationUS: Codeunit "GP Cloud Migration US";
         DocumentNo: Code[20];
     begin
         Initialize();
@@ -161,8 +161,8 @@ codeunit 139701 "Migration Vendor 1099 Tests"
         GPCompanyAdditionalSettings.Validate("1099 Tax Year", 2022);
         GPCompanyAdditionalSettings.Modify();
 
-        // [WHEN] The Vendor 1099 migration is started
-        GPPopulateVendor1099Data.UpdateAllVendorTaxInfo();
+        // [WHEN] The main migration is finished and the Vendor 1099 migration is started
+        GPCloudMigrationUS.RunPostMigration();
 
         // [THEN] The Vendor record will have correct 1099 data
         Assert.IsTrue(Vendor.Get(TestVendorNoLbl), 'Vendor not found.');

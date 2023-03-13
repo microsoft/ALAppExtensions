@@ -1,4 +1,4 @@
-pageextension 41101 "Intelligent Cloud Ext. 1099" extends "Intelligent Cloud Management"
+pageextension 41101 "Intelligent Cloud Ext." extends "Intelligent Cloud Management"
 {
     layout
     {

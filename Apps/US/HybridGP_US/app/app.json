@@ -1,10 +1,10 @@
 {
   "id": "abe5dab1-9b38-44fc-a5f2-747ca8f4551e",
-  "name": "Dynamics GP Migration - Vendor 1099",
+  "name": "Dynamics GP Intelligent Cloud - US",
   "publisher": "Microsoft",
   "version": "21.5.0.0",
-  "brief": "This extension adds the capability to migrate GP Vendor 1099 information during the GP migration.",
-  "description": "This extension adds the capability to migrate GP Vendor 1099 information during the GP migration.",
+  "brief": "This extension migrates US specific information during a GP migration.",
+  "description": "This extension migrates US specific information during a GP migration, such as Vendor 1099 data.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2009037",
