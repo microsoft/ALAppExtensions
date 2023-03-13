@@ -19,6 +19,14 @@ function Get-BuildMode() {
     return 'Default'
 }
 
+<#
+.Synopsis
+    Get the value of a key from the BuildConfig.json or AL-GO-Settings file
+.Parameter ConfigType
+    The type of config file to read from. Can be either "BuildConfig" or "AL-GO"
+.Parameter Key
+    The key to read the value from
+#>
 function Get-ConfigValueFromKey() {
     param(
         [Parameter(Mandatory=$false)]
@@ -37,6 +45,10 @@ function Get-ConfigValueFromKey() {
     return $BuildConfig.$Key
 }
 
+<#
+.Synopsis
+    Get the nuget.exe if it doesn't exist
+#>
 function Get-NugetExe() {
     param(
         [Parameter(Mandatory=$true)]
@@ -55,6 +67,16 @@ function Get-NugetExe() {
     return $NugetExePath
 }
 
+<#
+.Synopsis
+    Get a package from Nuget.org
+.Parameter PackageId
+    The package id
+.Parameter Version
+    The package version
+.Parameter OutputPath
+    The path where the package will be downloaded
+#>
 function Get-PackageFromNuget() {
     param(
         [Parameter(Mandatory=$true)]

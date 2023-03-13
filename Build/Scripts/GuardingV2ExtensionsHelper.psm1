@@ -5,8 +5,6 @@
     Configure breaking changes check by:
     - Restoring the baseline package and placing it in the app symbols folder
     - Generating an AppSourceCop.json with version and name of the extension
-.Parameter ContainerName
-    Name of the container
 .Parameter AppSymbolsFolder
     Local AppSymbols folder
 .Parameter AppProjectFolder
@@ -51,8 +49,6 @@ function Set-BreakingChangesCheck {
     Baseline version of the extension
 .Parameter ExtensionName
     Name of the extension
-.Parameter ContainerName
-    Name of the container
 .Parameter AppSymbolsFolder
     Local AppSymbols folder 
 #>
