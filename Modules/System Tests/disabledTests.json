@@ -42,5 +42,9 @@
     {
         "codeunitName": "Navigation Bar Sub. Test",
         "method": "TestAssistedSetupShowsUpOnOpenRoleBasedSetupExperience"
-    }
+    },
+    {
+      "codeunitName": "User Permissions Test",
+      "method": "*"
+  }
 ]
