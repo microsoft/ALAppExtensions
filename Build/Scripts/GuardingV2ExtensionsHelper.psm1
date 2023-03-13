@@ -89,8 +89,6 @@ function Restore-BaselinesFromArtifacts {
     } finally {
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
-    
-
 }
 
 function Restore-BaselinesFromNuget {
