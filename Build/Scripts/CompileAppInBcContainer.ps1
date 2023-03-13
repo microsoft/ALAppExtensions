@@ -1,4 +1,6 @@
 Param(
+    [Parameter(Mandatory=$true)]
+    [string] $currentProjectFolder,
     [Hashtable] $parameters
 )
 
@@ -39,53 +41,47 @@ if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('releas
         $holderFolder = 'TestApps'
     }
 
-    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
-
-    $buildArtifactsFolder = "$packageArtifactsFolder/BuildArtifacts"
-    $sourceCodeFolder = "$packageArtifactsFolder/SourceCode"
-
+    $packageArtifactsFolder = "$currentProjectFolder/.buildartifacts/$holderFolder/Package/$appName/$appBuildMode" # manually construct the artifacts folder
+    
+    
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
-        New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
+        New-Item -Path "$currentProjectFolder" -Name ".buildartifacts/$holderFolder/Package/$appName/$appBuildMode" -ItemType Directory | Out-Null
     }
-
+    
     Write-Host "Package artifacts folder: $packageArtifactsFolder"
+    
+    $buildArtifactsFolder = Join-Path "$packageArtifactsFolder" "BuildArtifacts"
+    $sourceCodeFolder = Join-Path "$packageArtifactsFolder" "SourceCode"
 
     switch ( $appBuildMode )
     {
         'Default' { 
             # Add the generated Translations folder to the artifacts folder
-            $TranslationsFolder = "$appProjectFolder/Translations"
+            $TranslationsFolder = Join-Path "$appProjectFolder" "Translations"
             if (Test-Path $TranslationsFolder) {
-                Write-Host "Translations were generated for app $appName"
+                Write-Host "Copying translation for app $appName from $TranslationsFolder to $buildArtifactsFolder"
                 Copy-Item -Path $TranslationsFolder -Destination "$buildArtifactsFolder" -Recurse -Force | Out-Null
             } else {
                 Write-Host "Translations were not generated for app $appName"
             }
 
-            # Add the source code for test apps to the artifacts folder
-            if(-not $app) {
-                Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
-            }
-
-            # Add  the app file for every built app to a folder
-            Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
+            # Add the source code to the artifacts folder
+            Write-Host "Copying source code for app '$appName' from '$appProjectFolder' to source code folder: $sourceCodeFolder"
+            Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
          }
         'Translated' { 
-            # Add the source code for non-test apps to the artifacts folder
+            # Add the source code for non-test apps to the artifacts folder as it contains the translations
             if($app) {
-                Copy-Item -Path $appProjectFolder -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+                Write-Host "Copying source code for app '$appName' from '$appProjectFolder' to source code folder: $sourceCodeFolder"
+                Copy-Item -Path "$appProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
             }
-
-            # Add the app file for every built app to a folder
-            Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
-        }
-
-        'Clean' {
-              # Add  the app file for every built app to a folder
-              Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
         }
     }
+    
+    # Add the app file for every built app to a folder for all built modes
+    Write-Host "Copying app file for app '$appName' from '$appFile' to build artifacts folder: $packageArtifactsFolder"
+    Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
 }
 
 $appFile
