@@ -47,6 +47,38 @@ function Get-ConfigValueFromKey() {
 
 <#
 .Synopsis
+    Get the value of a key from the BuildConfig.json or AL-GO-Settings file
+.Parameter ConfigType
+    The type of config file to read from. Can be either "BuildConfig" or "AL-GO"
+.Parameter Key
+    The key to write to
+.Parameter Value
+    The value to set the key to
+#>
+function Set-ConfigValueFromKey() {
+    param(
+        [Parameter(Mandatory=$false)]
+        [ValidateSet("BuildConfig","AL-GO")]
+        [string]$ConfigType = "AL-GO",
+        [Parameter(Mandatory=$true)]
+        [string]$Key,
+        [Parameter(Mandatory=$true)]
+        [string]$Value
+    )
+
+    if ($ConfigType -eq "BuildConfig") {
+        $ConfigPath = Join-Path (Get-BaseFolder) "Build/BuildConfig.json" -Resolve
+    } else {
+        $ConfigPath = Join-Path (Get-BaseFolder) ".github/AL-Go-Settings.json" -Resolve
+    }
+    $BuildConfig = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
+    $BuildConfig.$Key = $Value
+    $BuildConfig | ConvertTo-Json -Depth 100 | Set-Content -Path $ConfigPath
+}
+
+<#
+.Synopsis
+    Get the nuget.exe if it doesn't exist
     Downloads the nuget.exe if it doesn't exist
 .Parameter OutputPath
     The path where the nuget.exe will be downloaded to
@@ -99,6 +131,36 @@ function Get-PackageFromNuget() {
     }
 
     return $NugetPackagePath
+}
+
+<#
+.Synopsis
+    Downloads the AL-Go Helper script
+#>
+function Get-ALGOHelper() 
+{
+    $webClient = New-Object System.Net.WebClient
+    $webClient.CachePolicy = New-Object System.Net.Cache.RequestCachePolicy -argumentList ([System.Net.Cache.RequestCacheLevel]::NoCacheNoStore)
+    $webClient.Encoding = [System.Text.Encoding]::UTF8
+    Write-Host "Downloading AL-Go Helper script"
+    $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
+    $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/preview/AL-Go-Helper.ps1', $ALGoHelperPath)
+    return $ALGoHelperPath
+}
+
+<#
+.Synopsis
+    Downloads the AL-Go Helper script
+#>
+function Get-GithubHelper() 
+{
+    $webClient = New-Object System.Net.WebClient
+    $webClient.CachePolicy = New-Object System.Net.Cache.RequestCachePolicy -argumentList ([System.Net.Cache.RequestCacheLevel]::NoCacheNoStore)
+    $webClient.Encoding = [System.Text.Encoding]::UTF8
+    Write-Host "Downloading GitHub Helper module"
+    $GitHubHelperPath = "$([System.IO.Path]::GetTempFileName()).psm1"
+    $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/preview/Github-Helper.psm1', $GitHubHelperPath)
+    return $GitHubHelperPath
 }
 
 Export-ModuleMember -Function *-*
