@@ -542,13 +542,13 @@ page 130455 "Command Line Test Tool"
             TestMethodLine.ModifyAll(Run, false);
 
 
-            TestMethodLine.SETRANGE(Name);
-            TestMethodLine.SETRANGE(Run, TRUE);
+            TestMethodLine.SetRange(Name);
+            TestMethodLine.SetRange(Run, true);
             if TestMethodLine.IsEmpty() then begin
-                CodeunitTestMethodLine.VALIDATE(Run, FALSE);
-                CodeunitTestMethodLine.Modify(TRUE);
+                CodeunitTestMethodLine.Validate(Run, false);
+                CodeunitTestMethodLine.Modify(true);
             end;
-        until CodeunitTestMethodLine.Next = 0;
+        until CodeunitTestMethodLine.Next() = 0;
         
         CurrPage.Update();
     end;
