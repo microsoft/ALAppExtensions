@@ -479,7 +479,7 @@ codeunit 9101 "SharePoint Client Impl."
     var
         FileInStream: InStream;
     begin
-        //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
+        //GET https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')/$value
         SharePointUriBuilder.ResetPath(OdataId);
         SharePointUriBuilder.SetObject('$value');
 
