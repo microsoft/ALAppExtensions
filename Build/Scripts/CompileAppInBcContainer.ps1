@@ -7,7 +7,6 @@ Param(
 Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
 Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 
-$branchName = Get-GitBranchName
 $RepoRootFolder = Get-BaseFolder
 $appBuildMode = Get-BuildMode
 
@@ -34,8 +33,11 @@ if($app)
 
 $appFile = Compile-AppInBcContainer @parameters
 
-# Only add the source code to the build artifacts if the delivering is allowed on the branch 
-if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('release/'))) {
+$CICDBuild = $env::CICDBUILD -eq 'true'
+
+Write-Host "CICDBuild: $CICDBuild"
+
+if($CICDBuild) {
     $appProjectFolder = $parameters["appProjectFolder"]
     
     # Extract app name from app.json
