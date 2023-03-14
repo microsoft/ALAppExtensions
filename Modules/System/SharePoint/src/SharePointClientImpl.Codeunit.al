@@ -494,6 +494,32 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
+    procedure DownloadFileContent(OdataId: Text; var FileInStream: InStream): Boolean
+    begin
+        //GET https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')/$value
+        SharePointUriBuilder.ResetPath(OdataId);
+        SharePointUriBuilder.SetObject('$value');
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        SharePointOperationResponse.GetResultAsStream(FileInStream);
+        exit(true);
+    end;
+
+    procedure DownloadFileContent(OdataId: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        FileInStream: InStream;
+        OS: OutStream;
+    begin
+        DownloadFileContent(OdataId, FileInStream);
+        TempBlob.CreateOutStream(OS);
+        CopyStream(OS, FileInStream);
+        exit(true);
+    end;
+
     procedure GetDocumentLibraryRootFolder(OdataID: Text; var SharePointFolder: Record "SharePoint Folder"): Boolean
     var
         SharePointFolderParser: Codeunit "SharePoint Folder";

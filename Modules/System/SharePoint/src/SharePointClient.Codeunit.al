@@ -269,6 +269,28 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
+    /// Downloads a file to an InStream.
+    /// </summary>
+    /// <param name="OdataId">The odata.id parameter of the file entity.</param>
+    /// <param name="FileInStream">The InStream that will be populated with the file content.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DownloadFileContent(OdataId: Text; var FileInStream: InStream): Boolean
+    begin
+        exit(SharePointClientImpl.DownloadFileContent(OdataId, FileInStream));
+    end;
+
+    /// <summary>
+    /// Downloads a file to a TempBlob.
+    /// </summary>
+    /// <param name="OdataId">The odata.id parameter of the file entity.</param>
+    /// <param name="TempBlob">The TempBlob that will be populated with the file content.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DownloadFileContent(OdataId: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
+    begin
+        exit(SharePointClientImpl.DownloadFileContent(OdataId, TempBlob));
+    end;
+
+    /// <summary>
     /// Gets root folder for the list entity (Document Library).
     /// </summary>    
     /// <remarks>See "Is Catalog" parameter of the list.</remarks>
