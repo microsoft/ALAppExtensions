@@ -8,48 +8,17 @@
       "method": "*"
     },
     {
-      "codeunitName": "Azure AD User Management Test",
-      "method": "TestOfficeSyncWizard"
-    },
-    {
-      "codeunitName": "Extension Management Test",
-      "method": "*"
-    },
-    {
-      "codeunitName": "Retention Policy Log Test",
-      "method": "*"
-    },
-    {
-      "codeunitName": "X509Certificate2 Test",
-      "method": "VerifyCertificateExpirationFromBase64Cert"
+      "codeunitName": "Azure AD Graph User Test",
+      "method": [
+        "TestUpdateUserFromAzureGraphForAValidUserWithUpdatedFullName",
+        "TestEnsureAuthenticationEmailIsNotInUse",
+        "TestUpdateUserFromAzureGraphForAValidUserWithUpdatedContactEmail",
+        "TestUpdateUserFromAzureGraphForAValidUserWithUpdatedAuthenticationEmail"
+      ]
     },
     {
       "codeunitName": "Azure AD User Management Test",
       "method": "TestOfficeSyncWizard"
-    },
-    {
-      "codeunitName": "X509Certificate2 Test",
-      "method": "VerifyCertificateExpirationFromBase64Cert"
-    },
-    {
-      "codeunitName": "X509Certificate2 Test",
-      "method": "VerifyCertificateNotBeforeFromBase64Cert"
-    },
-    {
-      "codeunitName": "Retention Policy Test",
-      "method": "*"
-    },
-    {
-        "codeunitName": "Navigation Bar Sub. Test",
-        "method": "TestAssistedSetupShowsUpOnOpenRoleBasedSetupExperience"
-    },
-    {
-      "codeunitName": "User Permissions Test",
-      "method": "*"
-    },
-    {
-      "codeunitName": "Data Class. Worksheet Tests",
-      "method": "TestLastModifiedBy"
     },
     {
       "codeunitName": "Azure AD User Sync Test",
@@ -58,5 +27,83 @@
     {
       "codeunitName": "Checklist Administration Test",
       "method": "*"
+    },
+    {
+      "codeunitName": "Checklist Banner Test",
+      "method": "TestChecklistBannerVisibilityAfterDelete"
+    },
+    {
+      "codeunitName": "Checklist Facade Test",
+      "method": [ 
+        "TestInsertDuplicateAssistedSetupChecklistItemWithUsers",
+        "TestUpdateAssistedSetupChecklistItemWithUsers",
+        "TestUpdateUsersForAssistedSetupChecklistItem",
+        "TestInsertManualSetupChecklistItemWithUsers",
+        "TestInsertDuplicateManualSetupChecklistItemWithUsers",
+        "TestUpdateManualSetupChecklistItemWithUsers",
+        "TestUpdateUsersForManualSetupChecklistItem",
+        "TestInsertLearnChecklistItemWithUsers",
+        "TestInsertDuplicateLearnChecklistItemWithUsers",
+        "TestUpdateLearnChecklistItemWithUsers",
+        "TestUpdateUsersForLearnChecklistItem",
+        "TestInsertVideoChecklistItemWithUsers",
+        "TestInsertSpotlightTourChecklistItemWithUsers",
+        "TestDeleteAssistedSetupChecklistItemWithUsers",
+        "TestDeleteManualSetupChecklistItemWithUsers",
+        "TestDeleteLearnChecklistItemWithUsers"
+      ]
+    },
+    {
+      "codeunitName": "Cues And KPIs Test",
+      "method": [ 
+        "CueUserPageShowsRecordsInsertedForCurrentUser",
+        "CueSetupAdminPageCanInsertForDifferentUsers",
+        "ChangeUsersForSetupEntries",
+        "TestPersonalizedCueSetupExistsForCurrentUser"
+      ]
+    },
+    {
+      "codeunitName": "Data Class. Worksheet Tests",
+      "method": "TestLastModifiedBy"
+    },
+    {
+      "codeunitName": "Extension Management Test",
+      "method": "*"
+    },
+    {
+      "codeunitName":  "Feature Key Test",
+      "method":  [
+        "T004_CannotEnableOneWayFeatureAsNotImplemented",
+        "T005_EnableOneWayFeatureReviewData",
+        "T006_EnableOneWayFeatureRunUpdateData"
+      ]
+    },
+    {
+        "codeunitName": "Navigation Bar Sub. Test",
+        "method": "TestAssistedSetupShowsUpOnOpenRoleBasedSetupExperience"
+    },
+    {
+      "codeunitName": "Retention Policy Log Test",
+      "method": "*"
+    },
+    {
+      "codeunitName": "Retention Policy Test",
+      "method": "*"
+    },
+    {
+      "codeunitName": "User Permissions Test",
+      "method": "*"
+    },
+    {
+      "codeunitName": "User Selection Test",
+      "method": "*"
+    },
+    {
+      "codeunitName": "X509Certificate2 Test",
+      "method": "VerifyCertificateExpirationFromBase64Cert"
+    },
+    {
+      "codeunitName": "X509Certificate2 Test",
+      "method": "VerifyCertificateNotBeforeFromBase64Cert"
     }
 ]
