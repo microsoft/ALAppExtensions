@@ -121,6 +121,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetMethod('Lists', ListId);
         SharePointUriBuilder.SetObject('items');
 
+
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
         if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
@@ -456,7 +457,7 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
-    procedure GetFolderFilesByServerRelativeUrl(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary): Boolean
+    procedure GetFolderFilesByServerRelativeUrl(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
     var
         SharePointFileParser: Codeunit "SharePoint File";
         Result: Text;
@@ -464,6 +465,8 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.ResetPath();
         SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
         SharePointUriBuilder.SetObject('Files');
+        if ListAllFields then
+            SharePointUriBuilder.AddQueryParameter('$expand', 'ListItemAllFields');
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
@@ -539,7 +542,7 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
-    procedure AddFileToFolder(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary): Boolean
+    procedure AddFileToFolder(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
     var
         SharePointFileParser: Codeunit "SharePoint File";
         SharePointHttpContent: Codeunit "SharePoint Http Content";
@@ -555,6 +558,8 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
         SharePointUriBuilder.SetObject('Files');
         SharePointUriBuilder.SetMethod('add', 'url', '''' + FileName + '''');
+        if ListAllFields then
+            SharePointUriBuilder.AddQueryParameter('$expand', 'ListItemAllFields');
 
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
@@ -567,7 +572,7 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
-    procedure AddFileToFolder(ServerRelativeUrl: Text; FileName: Text; var FileInStream: InStream; var SharePointFile: Record "SharePoint File" temporary): Boolean
+    procedure AddFileToFolder(ServerRelativeUrl: Text; FileName: Text; var FileInStream: InStream; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
     var
         SharePointFileParser: Codeunit "SharePoint File";
         SharePointHttpContent: Codeunit "SharePoint Http Content";
@@ -578,6 +583,8 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
         SharePointUriBuilder.SetObject('Files');
         SharePointUriBuilder.SetMethod('add', 'url', '''' + FileName + '''');
+        if ListAllFields then
+            SharePointUriBuilder.AddQueryParameter('$expand', 'ListItemAllFields');
 
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
@@ -587,6 +594,68 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointOperationResponse.GetResultAsText(Result);
         SharePointFileParser.ParseSingleReturnValue(Result, SharePointFile);
+        exit(true);
+    end;
+
+    procedure UpdateListItemMetaDataField(ListTitle: Text; ItemId: Integer; ListItemEntityTypeFullName: Text; FieldName: Text; FieldValue: Text): Boolean
+    var
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+        Metadata, Payload : JsonObject;
+        Txt: Text;
+    begin
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetObject('lists');
+        SharePointUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SharePointUriBuilder.SetMethod('items', ItemId);
+
+        Metadata.Add('type', ListItemEntityTypeFullName);
+        Payload.Add('__metadata', Metadata);
+        Payload.Add(FieldName, FieldValue);
+
+        SharePointHttpContent.FromJson(Payload);
+
+        SharePointHttpContent.GetContent().ReadAs(Txt);
+
+        SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));
+        SharePointHttpContent.SetXHttpMethod('MERGE');
+        SharePointHttpContent.SetIfMatch('*');
+
+        SharePointOperationResponse := SharePointRequestHelper.Patch(SharePointUriBuilder, SharePointHttpContent);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        SharePointOperationResponse.GetResultAsText(Txt);
+        Message(Txt);
+        exit(true);
+    end;
+
+    procedure UpdateListItemMetaDataField(ListId: Guid; ItemId: Integer; ListItemEntityTypeFullName: Text; FieldName: Text; FieldValue: Text): Boolean
+    var
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+        Metadata, Payload : JsonObject;
+        Txt: Text;
+    begin
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('Lists', ListId);
+        SharePointUriBuilder.SetMethod('items', ItemId);
+
+        Metadata.Add('type', ListItemEntityTypeFullName);
+        Payload.Add('__metadata', Metadata);
+        Payload.Add(FieldName, FieldValue);
+
+        SharePointHttpContent.FromJson(Payload);
+
+        SharePointHttpContent.GetContent().ReadAs(Txt);
+
+        SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));
+        SharePointHttpContent.SetXHttpMethod('MERGE');
+        SharePointHttpContent.SetIfMatch('*');
+
+        SharePointOperationResponse := SharePointRequestHelper.Patch(SharePointUriBuilder, SharePointHttpContent);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        SharePointOperationResponse.GetResultAsText(Txt);
         exit(true);
     end;
     #endregion

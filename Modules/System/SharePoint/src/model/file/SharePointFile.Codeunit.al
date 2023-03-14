@@ -100,5 +100,19 @@ codeunit 9106 "SharePoint File"
             if Payload.Get('type', JToken) then
                 SharePointFile.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.OdataType));
         end;
+
+        if Payload.Get('ListItemAllFields', JToken) then begin
+            Payload := JToken.AsObject();
+
+            if Payload.Get('Id', JToken) then
+                SharePointFile.Id := JToken.AsValue().AsInteger();
+
+            ProcessSharePointFileMetadata(JToken, SharePointFile);
+        end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure ProcessSharePointFileMetadata(Metadata: JsonToken; SharePointFile: Record "SharePoint File" temporary)
+    begin
     end;
 }

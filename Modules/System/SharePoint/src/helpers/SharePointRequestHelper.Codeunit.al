@@ -35,6 +35,11 @@ codeunit 9109 "SharePoint Request Helper"
         OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::POST, SharePointUriBuilder, SharePointHttpContent));
     end;
 
+    procedure Patch(SharePointUriBuilder: Codeunit "SharePoint Uri Builder"; SharePointHttpContent: Codeunit "SharePoint Http Content") OperationResponse: Codeunit "SharePoint Operation Response"
+    begin
+        OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::PATCH, SharePointUriBuilder, SharePointHttpContent));
+    end;
+
     [NonDebuggable]
     local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; SharePointUriBuilder: Codeunit "SharePoint Uri Builder") RequestMessage: HttpRequestMessage
     var
@@ -60,6 +65,15 @@ codeunit 9109 "SharePoint Request Helper"
         Headers.Add('Accept', 'application/json;odata=verbose');
         Headers.Add('User-Agent', GetUserAgentString());
 
+        if SharePointHttpContent.GetIfMatch() <> '' then
+            Headers.Add('If-Match', SharePointHttpContent.GetIfMatch());
+
+        if SharePointHttpContent.GetRequestDigest() <> '' then
+            Headers.Add('X-RequestDigest', SharePointHttpContent.GetRequestDigest());
+
+        if SharePointHttpContent.GetXHttpMethod() <> '' then
+            Headers.Add('X-HTTP-Method', SharePointHttpContent.GetXHttpMethod());
+
         if SharePointHttpContent.GetContentLength() > 0 then begin
             HttpContent := SharePointHttpContent.GetContent();
             HttpContent.GetHeaders(Headers);
@@ -70,12 +84,11 @@ codeunit 9109 "SharePoint Request Helper"
             if SharePointHttpContent.GetContentType() <> '' then
                 Headers.Add('Content-Type', SharePointHttpContent.GetContentType());
 
-            Headers.Add('X-RequestDigest', SharePointHttpContent.GetRequestDigest());
             RequestMessage.Content(HttpContent);
         end;
     end;
 
-    [NonDebuggable]
+    //[NonDebuggable]
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "SharePoint Operation Response"
     var
         HttpResponseMessage: HttpResponseMessage;
