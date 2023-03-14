@@ -33,7 +33,7 @@ if($app)
 
 $appFile = Compile-AppInBcContainer @parameters
 
-Write-Host "OfficialBuild: $(env:OfficialBuild)"
+Write-Host "OfficialBuild: $($env:OfficialBuild)"
 $OfficialBuild = $env:OfficialBuild -eq 'true'
 
 if($OfficialBuild) {
