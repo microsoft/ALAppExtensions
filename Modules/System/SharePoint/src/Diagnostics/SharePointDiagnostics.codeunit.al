@@ -16,7 +16,7 @@ codeunit 9111 "SharePoint Diagnostics" implements "HTTP Diagnostics"
         SuccessStatusCode: Boolean;
 
     /// <summary>
-    /// Gets reponse details.
+    /// Gets response details.
     /// </summary>
     /// <returns>HttpResponseMessage.IsSuccessStatusCode</returns>
     [NonDebuggable]
@@ -46,7 +46,7 @@ codeunit 9111 "SharePoint Diagnostics" implements "HTTP Diagnostics"
     end;
 
     /// <summary>
-    /// Gets reponse details
+    /// Gets response details
     /// </summary>
     /// <returns>Error message</returns>
     [NonDebuggable]

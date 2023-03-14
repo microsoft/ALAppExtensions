@@ -11,7 +11,7 @@ interface "HTTP Diagnostics"
     Access = Public;
 
     /// <summary>
-    /// Gets reponse details.
+    /// Gets response details.
     /// </summary>
     /// <returns>HttpResponseMessage.IsSuccessStatusCode</returns>
     procedure IsSuccessStatusCode(): Boolean;
@@ -29,7 +29,7 @@ interface "HTTP Diagnostics"
     procedure GetHttpRetryAfter(): Integer;
 
     /// <summary>
-    /// Gets reponse details
+    /// Gets response details
     /// </summary>
     /// <returns>Error message</returns>
     procedure GetErrorMessage(): Text;
