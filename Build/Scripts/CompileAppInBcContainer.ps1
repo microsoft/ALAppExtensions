@@ -33,11 +33,10 @@ if($app)
 
 $appFile = Compile-AppInBcContainer @parameters
 
-$CICDBuild = $env::CICDBUILD -eq 'true'
+Write-Host "OfficialBuild: $(env:OfficialBuild)"
+$OfficialBuild = $env:OfficialBuild -eq 'true'
 
-Write-Host "CICDBuild: $CICDBuild"
-
-if($CICDBuild) {
+if($OfficialBuild) {
     $appProjectFolder = $parameters["appProjectFolder"]
     
     # Extract app name from app.json
