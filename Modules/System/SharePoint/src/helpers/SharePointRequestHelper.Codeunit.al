@@ -60,8 +60,8 @@ codeunit 9109 "SharePoint Request Helper"
         Headers.Add('Accept', 'application/json;odata=verbose');
         Headers.Add('User-Agent', GetUserAgentString());
 
-        if SharePointHttpContent.GetXHTTPMethod() <> '' then begin
-            Headers.Add('X-HTTP-Method', SharePointHttpContent.GetXHTTPMethod());
+        if SharePointHttpContent.GetXHttpMethod() <> '' then begin
+            Headers.Add('X-HTTP-Method', SharePointHttpContent.GetXHttpMethod());
             Headers.Add('X-RequestDigest', SharePointHttpContent.GetRequestDigest());
         end;
 

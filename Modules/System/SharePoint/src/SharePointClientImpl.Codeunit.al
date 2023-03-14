@@ -498,8 +498,9 @@ codeunit 9101 "SharePoint Client Impl."
     var
         SharePointHttpContent: Codeunit "SharePoint Http Content";
     begin
+        //POST https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')
         SharePointUriBuilder.ResetPath(OdataId);
-        SharePointHttpContent.SetXHTTPMethod('DELETE');
+        SharePointHttpContent.SetXHttpMethod('DELETE');
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);

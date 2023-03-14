@@ -269,7 +269,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Delete a file.
+    /// Deletes a file.
     /// </summary>
     /// <param name="OdataId">The odata.id parameter of the file entity.</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
