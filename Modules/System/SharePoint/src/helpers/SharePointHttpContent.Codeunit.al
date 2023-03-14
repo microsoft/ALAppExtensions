@@ -12,7 +12,7 @@ codeunit 9107 "SharePoint Http Content"
         ContentLength: Integer;
         ContentType: Text;
         RequestDigest: Text;
-        XHTTPMethod: Text;
+        XHttpMethod: Text;
 
     procedure FromFileInStream(var FileInStream: InStream)
     begin
@@ -56,14 +56,14 @@ codeunit 9107 "SharePoint Http Content"
         exit(RequestDigest);
     end;
 
-    procedure SetXHTTPMethod(XHTTPMethodValue: Text)
+    procedure SetXHttpMethod(XHttpMethodValue: Text)
     begin
-        XHTTPMethod := XHTTPMethodValue;
+        XHttpMethod := XHttpMethodValue;
     end;
 
-    procedure GetXHTTPMethod(): Text;
+    procedure GetXHttpMethod(): Text;
     begin
-        exit(XHTTPMethod);
+        exit(XHttpMethod);
     end;
 
     local procedure GetContentLength(var SourceInStream: InStream) Length: Integer
@@ -75,5 +75,4 @@ codeunit 9107 "SharePoint Http Content"
         Length := MemoryStream.Length;
         Clear(SourceInStream);
     end;
-
 }
