@@ -4,8 +4,12 @@ Param(
     [Hashtable] $parameters
 )
 
-Write-Host "BuildMode - $ENV:BuildMode"
-$appBuildMode = $ENV:BuildMode
+Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
+Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
+
+$branchName = Get-GitBranchName
+$RepoRootFolder = Get-BaseFolder
+$appBuildMode = Get-BuildMode
 
 # $app is a variable that determine whether the current app is a normal app (not test app, for instance)
 if($app)
@@ -20,15 +24,19 @@ if($app)
     if($appBuildMode -eq 'Default') {
         $parameters["Features"] += @("lcgtranslationfile")
     }
+
+    # Restore the baseline app and generate the AppSourceCop.json file
+    if (($parameters.ContainsKey("EnableAppSourceCop") -and $parameters["EnableAppSourceCop"]) -or ($parameters.ContainsKey("EnablePerTenantExtensionCop") -and $parameters["EnablePerTenantExtensionCop"])) {
+        Enable-BreakingChangesCheck -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode | Out-Null
+    }
+    
 }
 
 $appFile = Compile-AppInBcContainer @parameters
 
-$branchName = $ENV:GITHUB_REF_NAME
-
 # Only add the source code to the build artifacts if the delivering is allowed on the branch 
 if($branchName -and (($branchName -eq 'main') -or $branchName.StartsWith('release/'))) {
-    $appProjectFolder = $parameters.appProjectFolder
+    $appProjectFolder = $parameters["appProjectFolder"]
     
     # Extract app name from app.json
     $appName = (Get-ChildItem -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name

@@ -6,5 +6,7 @@
         "..\\Modules\\System Test Libraries\\*",
         "..\\Modules\\System Tests\\*"
     ],
-    "doNotPublishApps": true
+    "doNotPublishApps": true,
+    "enableAppSourceCop": false,
+    "enablePerTenantExtensionCop":  false
 }

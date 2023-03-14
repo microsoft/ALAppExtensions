@@ -33,9 +33,9 @@
     "Default",
     "Clean"
   ],
-  "enablePerTenantExtensionCop":  false,
   "enableCodeCop": true, 
   "CICDPushBranches": [
     "main"
-  ]
+  ],
+  "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json"
 }
