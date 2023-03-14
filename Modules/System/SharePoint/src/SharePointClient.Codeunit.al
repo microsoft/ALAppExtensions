@@ -258,17 +258,6 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Downloads a file to the client.
-    /// </summary>
-    /// <param name="OdataId">The odata.id parameter of the file entity.</param>
-    /// <param name="FileName">Name to be given to the file on the client side. Does not need to match the server side name.</param>
-    /// <returns>True if the operation was successful; otherwise - false.</returns>
-    procedure DownloadFileContent(OdataId: Text; FileName: Text): Boolean
-    begin
-        exit(SharePointClientImpl.DownloadFileContent(OdataId, FileName));
-    end;
-
-    /// <summary>
     /// Downloads a file to an InStream.
     /// </summary>
     /// <param name="OdataId">The odata.id parameter of the file entity.</param>
@@ -277,6 +266,17 @@ codeunit 9100 "SharePoint Client"
     procedure DownloadFileContent(OdataId: Text; var FileInStream: InStream): Boolean
     begin
         exit(SharePointClientImpl.DownloadFileContent(OdataId, FileInStream));
+    end;
+
+    /// <summary>
+    /// Downloads a file to the client.
+    /// </summary>
+    /// <param name="OdataId">The odata.id parameter of the file entity.</param>
+    /// <param name="FileName">Name to be given to the file on the client side. Does not need to match the server side name.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DownloadFileContent(OdataId: Text; FileName: Text): Boolean
+    begin
+        exit(SharePointClientImpl.DownloadFileContent(OdataId, FileName));
     end;
 
     /// <summary>
