@@ -19,9 +19,11 @@ page 1901 "C5 InvenTable List"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
+                    Caption = 'Error Message';
                     Enabled = false;
                 }
                 field(ItemNumber; ItemNumber) { ApplicationArea = All; }
@@ -85,6 +87,7 @@ page 1901 "C5 InvenTable List"
                 field(LastMovementDate; LastMovementDate) { ApplicationArea = All; }
                 field(VatGroup; VatGroup) { ApplicationArea = All; }
                 field(StdItemNumber; StdItemNumber) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

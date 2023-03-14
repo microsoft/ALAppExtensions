@@ -26,18 +26,24 @@ PermissionSet 21 "System Application - Read"
                              "Language - Read",
                              "Object Selection - Read",
                              "Page Summary Provider - Read",
+                             "Page Action Provider - Read",
                              "Password - Exec",
                              "Printer Management - Read",
                              "Record Link Management - Read",
+                             "Record Reference - Exec",
                              "Recurrence Schedule - Read",
                              "Retention Policy - Read",
 #if not CLEAN20
+#pragma warning disable AL0432
                              "Sandbox Cleanup - Read",
+#pragma warning restore AL0432
 #endif
                              "Environment Cleanup - Read",
                              "Satisfaction Survey - Read",
 #if not CLEAN19
+#pragma warning disable AL0432
                              "SL Designer Subscribers - Read",
+#pragma warning restore AL0432
 #endif
                              "System Initialization - Exec",
                              "Table Information - Read",

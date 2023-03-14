@@ -375,23 +375,11 @@ codeunit 148060 "VAT Statements CZL"
         VATStatementLine.Reset();
         VATStatementLine.SetRange("Statement Template Name", VATStmTemplCode);
         VATStatementLine.SetRange("Statement Name", VATStmName);
-        ConvertVATStatementLineDeprEnumValues(VATStatementLine);
         VATStatementLine.SetRange(Type, VATStatementLine.Type::"Formula CZL");
         VATStatementLine.SetRange(Print, true);
         VATStatementLine.FindFirst();
     end;
 
-    [Obsolete('Will be removed once verified that VAT Statement Line do not contain obsoleted Type::"Formula".', '18.0')]
-    local procedure ConvertVATStatementLineDeprEnumValues(var VATStatementLine: Record "VAT Statement Line");
-    begin
-#if CLEAN17
-        VATStatementLine.SetRange(Type, 4); // VATStatementLine.Type::"Formula"
-#else
-        VATStatementLine.SetRange(Type, VATStatementLine.Type::"Formula");
-#endif
-        if not VATStatementLine.IsEmpty() then
-            VATStatementLine.ModifyAll(Type, VATStatementLine.Type::"Formula CZL", true);
-    end;
 
     local procedure SelectVATStatementRowTotalingLines(var VATStatementLine: Record "VAT Statement Line"; VATStmTemplCode: Code[10]; VATStmName: Code[10]; RowTotaling: Text[50])
     begin

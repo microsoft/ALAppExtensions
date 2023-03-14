@@ -424,7 +424,7 @@ page 30042 "APIV2 - Purchase Invoices"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(10);
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const("Purchase Invoice");
                 }
                 part(purchaseInvoiceLines; "APIV2 - Purchase Invoice Lines")
                 {
@@ -439,7 +439,7 @@ page 30042 "APIV2 - Purchase Invoices"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(6);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Purchase Invoice");
                 }
                 field(discountAmount; "Invoice Discount Amount")
                 {
@@ -494,7 +494,7 @@ page 30042 "APIV2 - Purchase Invoices"
                     Caption = 'Attachments';
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(6);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Purchase Invoice");
                 }
             }
         }
@@ -590,6 +590,7 @@ page 30042 "APIV2 - Purchase Invoices"
 
     local procedure SetCalculatedFields()
     begin
+        Rec.LoadFields("Currency Code");
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;
 

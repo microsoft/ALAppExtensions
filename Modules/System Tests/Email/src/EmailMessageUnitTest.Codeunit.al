@@ -162,7 +162,7 @@ codeunit 134689 "Email Message Unit Test"
         // Exercise
         Message.Create(Recipients, 'Test subject', 'Test body', true);
         Message.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
-        Message.AddAttachment('Attachment1', 'text/plain', InStream);
+        Message.AddAttachment('Attachment2', 'text/plain', InStream);
 
         // Verify
         Assert.IsTrue(Message.Attachments_First(), 'First attachment was not found');
@@ -173,15 +173,17 @@ codeunit 134689 "Email Message Unit Test"
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
         Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+        Assert.AreEqual(7, Message.Attachments_GetLength(), 'A different attachment length was expected');
 
         Assert.IsTrue(Message.Attachments_Next() <> 0, 'Second attachment was not found');
         Message.Attachments_GetContent(InStream);
         InStream.ReadText(Result);
-        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachment name was expected');
+        Assert.AreEqual('Attachment2', Message.Attachments_GetName(), 'A different attachment name was expected');
         Assert.AreEqual('Content', Result, 'A different attachment content was expected');
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
         Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+        Assert.AreEqual(7, Message.Attachments_GetLength(), 'A different attachment length was expected');
 
         Assert.IsTrue(Message.Attachments_Next() = 0, 'A third attachment was found.');
     end;
@@ -209,7 +211,7 @@ codeunit 134689 "Email Message Unit Test"
         // Exercise
         Message.Create(Recipients, 'Test subject', 'Test body', true);
         Message.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
-        Message.AddAttachment('Attachment1', 'text/plain', InStream);
+        Message.AddAttachment('Attachment2', 'text/plain', InStream);
 
         // Verify
         Assert.IsTrue(Message.Attachments_Next() <> 0, 'First attachment was not found');
@@ -220,15 +222,17 @@ codeunit 134689 "Email Message Unit Test"
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
         Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+        Assert.AreEqual(7, Message.Attachments_GetLength(), 'A different attachment length was expected');
 
         Assert.IsTrue(Message.Attachments_Next() <> 0, 'Second attachment was not found');
         Message.Attachments_GetContent(InStream);
         InStream.ReadText(Result);
-        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachment name was expected');
+        Assert.AreEqual('Attachment2', Message.Attachments_GetName(), 'A different attachment name was expected');
         Assert.AreEqual('Content', Result, 'A different attachment content was expected');
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
         Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+        Assert.AreEqual(7, Message.Attachments_GetLength(), 'A different attachment length was expected');
 
         Assert.IsTrue(Message.Attachments_Next() = 0, 'A third attachment was found.');
     end;
@@ -502,7 +506,6 @@ codeunit 134689 "Email Message Unit Test"
     var
         TempAccount: Record "Email Account" temporary;
         EmailRecipient: Record "Email Recipient";
-        Email: Codeunit Email;
         Message: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
     begin
@@ -522,10 +525,733 @@ codeunit 134689 "Email Message Unit Test"
         Assert.ExpectedError(EmailMessageSentCannotDeleteRecipientErr);
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetBodyTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+        Recipients.Add('recipient@test.com');
+
+
+        // [GIVEN] We create a message and change its body        
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.SetBody('Changed test body');
+
+        // [THEN] The GetBody returns the changed body and not the original
+        Assert.AreEqual('Changed test body', Message.GetBody(), 'A different body was expected');
+        Assert.AreEqual(true, Message.IsBodyHTMLFormatted(), 'The email body should be HTML formatted');
+        Assert.AreEqual('Test subject', Message.GetSubject(), 'The email subject should not be changed');
+
+        Message.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+
+        Assert.AreEqual(1, Recipients.Count(), 'The number of recipients should not change');
+        Assert.AreEqual('recipient@test.com', Recipients.Get(1), 'The number of recipients should not change');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AppendToBodyTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+        Recipients.Add('recipient@test.com');
+
+        // [GIVEN] We create a message and append to its body
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.AppendToBody(' extended');
+
+        // [THEN] The GetBody returns the body with the appended text
+        Assert.AreEqual('Test body extended', Message.GetBody(), 'A different body was expected');
+        Assert.AreEqual(true, Message.IsBodyHTMLFormatted(), 'The email body should be HTML formatted');
+        Assert.AreEqual('Test subject', Message.GetSubject(), 'The email subject should not be changed');
+
+        Message.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+
+        Assert.AreEqual(1, Recipients.Count(), 'The number of recipients should not change');
+        Assert.AreEqual('recipient@test.com', Recipients.Get(1), 'The number of recipients should not change');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AppendToBodyEmptyTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+        Recipients.Add('recipient@test.com');
+
+        // [GIVEN] We create a message and append nothing to its body
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.AppendToBody('');
+
+        // [THEN] The GetBody returns the original body
+        Assert.AreEqual('Test body', Message.GetBody(), 'A different body was expected');
+        Assert.AreEqual(true, Message.IsBodyHTMLFormatted(), 'The email body should be HTML formatted');
+        Assert.AreEqual('Test subject', Message.GetSubject(), 'The email subject should not be changed');
+
+        Message.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+
+        Assert.AreEqual(1, Recipients.Count(), 'The number of recipients should not change');
+        Assert.AreEqual('recipient@test.com', Recipients.Get(1), 'The number of recipients should not change');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetSubjectTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+        Recipients.Add('recipient@test.com');
+
+        // [GIVEN] We create a message and change the subject
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.SetSubject('Changed test subject');
+
+        // [THEN] The GetSubject returns the changed subject
+        Assert.AreEqual('Changed test subject', Message.GetSubject(), 'A different subject was expected');
+        Assert.AreEqual('Test body', Message.GetBody(), 'A different body was expected');
+        Assert.AreEqual(true, Message.IsBodyHTMLFormatted(), 'The email body should be HTML formatted');
+
+        Message.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+
+        Assert.AreEqual(1, Recipients.Count(), 'The number of recipients should not change');
+        Assert.AreEqual('recipient@test.com', Recipients.Get(1), 'The number of recipients should not change');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetBodyHTMLFormattedTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+        Recipients.Add('recipient@test.com');
+
+
+        // [GIVEN] We create a message and set HTML format to false
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.SetBodyHTMLFormatted(false);
+
+        // [THEN] The IsBodyHTMLFormatted returns false
+        Assert.IsFalse(Message.IsBodyHTMLFormatted(), 'Body was expected not to be HTML formatted');
+        Assert.AreEqual('Test subject', Message.GetSubject(), 'A different subject was expected');
+        Assert.AreEqual('Test body', Message.GetBody(), 'A different subject was expected');
+
+        Message.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+
+        Assert.AreEqual(1, Recipients.Count(), 'The number of recipients should not change');
+        Assert.AreEqual('recipient@test.com', Recipients.Get(1), 'The number of recipients should not change');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetToRecipientsTest()
+    var
+        EmailMessage: Codeunit "Email Message";
+        ToRecipients, CcRecipients, BccRecipients : List of [Text];
+        ToRecipientsResult, CcRecipientsResult, BccRecipientsResult : List of [Text];
+        NewRecipients: List of [Text];
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        ToRecipients.Add('toRecipient1@test.com');
+        ToRecipients.Add('toRecipient2@test.com');
+        ToRecipients.Add('toRecipient3@test.com');
+
+        CcRecipients.Add('ccRecipient1@test.com');
+        CcRecipients.Add('ccRecipient2@test.com');
+
+        BccRecipients.Add('bccRecipient@test.com');
+
+        // Exercise
+        EmailMessage.Create(ToRecipients, 'Test subject', 'Test body', true, CcRecipients, BccRecipients);
+
+        NewRecipients.Add('newRecipient1@test.com');
+        NewRecipients.Add('newRecipient2@test.com');
+        NewRecipients.Add('newRecipient3@test.com');
+
+        EmailMessage.SetRecipients(Enum::"Email Recipient Type"::"To", NewRecipients);
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", ToRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"Cc", CcRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"BCc", BccRecipientsResult);
+
+        // Verify
+        AssertExpectedRecipients(NewRecipients, ToRecipientsResult);
+        AssertExpectedRecipients(CcRecipients, CcRecipientsResult);
+        AssertExpectedRecipients(BccRecipients, BccRecipientsResult);
+
+        Assert.AreEqual('Test subject', EmailMessage.GetSubject(), 'Wrong subject');
+        Assert.AreEqual('Test body', EmailMessage.GetBody(), 'Wrong body');
+        Assert.AreEqual(true, EmailMessage.IsBodyHTMLFormatted(), 'Body should be HMTL formatted');
+
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetCCRecipientsTest()
+    var
+        EmailMessage: Codeunit "Email Message";
+        ToRecipients, CcRecipients, BccRecipients : List of [Text];
+        ToRecipientsResult, CcRecipientsResult, BccRecipientsResult : List of [Text];
+        NewRecipients: List of [Text];
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        ToRecipients.Add('toRecipient1@test.com');
+        ToRecipients.Add('toRecipient2@test.com');
+        ToRecipients.Add('toRecipient3@test.com');
+
+        CcRecipients.Add('ccRecipient1@test.com');
+        CcRecipients.Add('ccRecipient2@test.com');
+
+        BccRecipients.Add('bccRecipient@test.com');
+
+        // Exercise
+        EmailMessage.Create(ToRecipients, 'Test subject', 'Test body', true, CcRecipients, BccRecipients);
+
+        NewRecipients.Add('newRecipient1@test.com');
+        NewRecipients.Add('newRecipient2@test.com');
+        NewRecipients.Add('newRecipient3@test.com');
+
+        EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Cc, NewRecipients);
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", ToRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"Cc", CcRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"BCc", BccRecipientsResult);
+
+        // Verify
+        AssertExpectedRecipients(ToRecipients, ToRecipientsResult);
+        AssertExpectedRecipients(NewRecipients, CcRecipientsResult);
+        AssertExpectedRecipients(BccRecipients, BccRecipientsResult);
+
+        Assert.AreEqual('Test subject', EmailMessage.GetSubject(), 'Wrong subject');
+        Assert.AreEqual('Test body', EmailMessage.GetBody(), 'Wrong body');
+        Assert.AreEqual(true, EmailMessage.IsBodyHTMLFormatted(), 'Body should be HMTL formatted');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetBccRecipientsTest()
+    var
+        EmailMessage: Codeunit "Email Message";
+        ToRecipients, CcRecipients, BccRecipients : List of [Text];
+        ToRecipientsResult, CcRecipientsResult, BccRecipientsResult : List of [Text];
+        NewRecipients: List of [Text];
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        ToRecipients.Add('toRecipient1@test.com');
+        ToRecipients.Add('toRecipient2@test.com');
+        ToRecipients.Add('toRecipient3@test.com');
+
+        CcRecipients.Add('ccRecipient1@test.com');
+        CcRecipients.Add('ccRecipient2@test.com');
+
+        BccRecipients.Add('bccRecipient@test.com');
+
+        // Exercise
+        EmailMessage.Create(ToRecipients, 'Test subject', 'Test body', true, CcRecipients, BccRecipients);
+
+        NewRecipients.Add('newRecipient1@test.com');
+        NewRecipients.Add('newRecipient2@test.com');
+        NewRecipients.Add('newRecipient3@test.com');
+
+        EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Bcc, NewRecipients);
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", ToRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"Cc", CcRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"BCc", BccRecipientsResult);
+
+        // Verify 
+        AssertExpectedRecipients(ToRecipients, ToRecipientsResult);
+        AssertExpectedRecipients(CcRecipients, CcRecipientsResult);
+        AssertExpectedRecipients(NewRecipients, BccRecipientsResult);
+
+        Assert.AreEqual('Test subject', EmailMessage.GetSubject(), 'Wrong subject');
+        Assert.AreEqual('Test body', EmailMessage.GetBody(), 'Wrong body');
+        Assert.AreEqual(true, EmailMessage.IsBodyHTMLFormatted(), 'Body should be HMTL formatted');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AddToRecipientTest()
+    var
+        EmailMessage: Codeunit "Email Message";
+        ToRecipients, CcRecipients, BccRecipients : List of [Text];
+        ToRecipientsResult, CcRecipientsResult, BccRecipientsResult : List of [Text];
+        NewRecipient, Recipient : Text;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        ToRecipients.Add('toRecipient1@test.com');
+        ToRecipients.Add('toRecipient2@test.com');
+        ToRecipients.Add('toRecipient3@test.com');
+
+        CcRecipients.Add('ccRecipient1@test.com');
+        CcRecipients.Add('ccRecipient2@test.com');
+
+        BccRecipients.Add('bccRecipient@test.com');
+
+        // Exercise
+        EmailMessage.Create(ToRecipients, 'Test subject', 'Test body', true, CcRecipients, BccRecipients);
+
+        NewRecipient := 'newRecipient@test.com';
+
+        EmailMessage.AddRecipient(Enum::"Email Recipient Type"::"To", NewRecipient);
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", ToRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"Cc", CcRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"BCc", BccRecipientsResult);
+
+        // Verify 
+        Assert.AreEqual(ToRecipients.Count() + 1, ToRecipientsResult.Count(), 'Wrong number of recipients');
+        foreach Recipient in ToRecipients do
+            Assert.IsTrue(ToRecipientsResult.Contains(Recipient), 'Recipient missing: ' + Recipient);
+
+        Assert.IsTrue(ToRecipientsResult.Contains(NewRecipient.ToLower()), 'Recipient missing: ' + NewRecipient);
+
+        AssertExpectedRecipients(CcRecipients, CcRecipientsResult);
+        AssertExpectedRecipients(BccRecipients, BccRecipientsResult);
+
+        Assert.AreEqual('Test subject', EmailMessage.GetSubject(), 'Wrong subject');
+        Assert.AreEqual('Test body', EmailMessage.GetBody(), 'Wrong body');
+        Assert.AreEqual(true, EmailMessage.IsBodyHTMLFormatted(), 'Body should be HMTL formatted');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AddCcRecipientTest()
+    var
+        EmailMessage: Codeunit "Email Message";
+        ToRecipients, CcRecipients, BccRecipients : List of [Text];
+        ToRecipientsResult, CcRecipientsResult, BccRecipientsResult : List of [Text];
+        NewRecipient, Recipient : Text;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        ToRecipients.Add('toRecipient1@test.com');
+        ToRecipients.Add('toRecipient2@test.com');
+        ToRecipients.Add('toRecipient3@test.com');
+
+        CcRecipients.Add('ccRecipient1@test.com');
+        CcRecipients.Add('ccRecipient2@test.com');
+
+        BccRecipients.Add('bccRecipient@test.com');
+
+        // Exercise
+        EmailMessage.Create(ToRecipients, 'Test subject', 'Test body', true, CcRecipients, BccRecipients);
+
+        NewRecipient := 'newRecipient@test.com';
+
+        EmailMessage.AddRecipient(Enum::"Email Recipient Type"::Cc, NewRecipient);
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", ToRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"Cc", CcRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"BCc", BccRecipientsResult);
+
+        // Verify 
+        AssertExpectedRecipients(ToRecipients, ToRecipientsResult);
+
+        Assert.AreEqual(CcRecipients.Count() + 1, CcRecipientsResult.Count(), 'Wrong number of recipients');
+        foreach Recipient in CcRecipients do
+            Assert.IsTrue(CcRecipientsResult.Contains(Recipient), 'Recipient missing: ' + Recipient);
+
+        Assert.IsTrue(CcRecipientsResult.Contains(NewRecipient.ToLower()), 'Recipient missing: ' + NewRecipient);
+
+        AssertExpectedRecipients(BccRecipientsResult, BccRecipientsResult);
+
+        Assert.AreEqual('Test subject', EmailMessage.GetSubject(), 'Wrong subject');
+        Assert.AreEqual('Test body', EmailMessage.GetBody(), 'Wrong body');
+        Assert.AreEqual(true, EmailMessage.IsBodyHTMLFormatted(), 'Body should be HMTL formatted');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AddBccRecipientTest()
+    var
+        EmailMessage: Codeunit "Email Message";
+        ToRecipients, CcRecipients, BccRecipients : List of [Text];
+        ToRecipientsResult, CcRecipientsResult, BccRecipientsResult : List of [Text];
+        NewRecipient, Recipient : Text;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        ToRecipients.Add('toRecipient1@test.com');
+        ToRecipients.Add('toRecipient2@test.com');
+        ToRecipients.Add('toRecipient3@test.com');
+
+        CcRecipients.Add('ccRecipient1@test.com');
+        CcRecipients.Add('ccRecipient2@test.com');
+
+        BccRecipients.Add('bccRecipient@test.com');
+
+        // Exercise
+        EmailMessage.Create(ToRecipients, 'Test subject', 'Test body', true, CcRecipients, BccRecipients);
+
+        NewRecipient := 'newRecipient@test.com';
+
+        EmailMessage.AddRecipient(Enum::"Email Recipient Type"::Bcc, NewRecipient);
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", ToRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"Cc", CcRecipientsResult);
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"BCc", BccRecipientsResult);
+
+        // Verify 
+        AssertExpectedRecipients(ToRecipients, ToRecipientsResult);
+        AssertExpectedRecipients(CcRecipients, CcRecipientsResult);
+
+        Assert.AreEqual(BccRecipients.Count() + 1, BccRecipientsResult.Count(), 'Wrong number of recipients');
+        foreach Recipient in BccRecipients do
+            Assert.IsTrue(BccRecipientsResult.Contains(Recipient), 'Recipient missing: ' + Recipient);
+
+        Assert.IsTrue(BccRecipientsResult.Contains(NewRecipient.ToLower()), 'Recipient missing: ' + NewRecipient);
+
+        Assert.AreEqual('Test subject', EmailMessage.GetSubject(), 'Wrong subject');
+        Assert.AreEqual('Test body', EmailMessage.GetBody(), 'Wrong body');
+        Assert.AreEqual(true, EmailMessage.IsBodyHTMLFormatted(), 'Body should be HMTL formatted');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('CloseEmailEditorHandler')]
+    procedure TestEmailOnBeforeOpenEditorEventChangeSubject()
+    var
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        EmailEditor: TestPage "Email Editor";
+        LastModifiedNo: Integer;
+    begin
+        // [SCENARIO] Change the subject before the email editor opens and ensure the last modified no. has changed
+
+        // [GIVEN] Email message and subject will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifySubject(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Assert.AreEqual('Current Subject', EmailMessage.GetSubject(), 'The subjects are not equal.');
+
+        // [WHEN] Open email editor
+        EmailEditor.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email editor is opened, the subject and last modified no. should be different
+        Assert.AreNotEqual('Current Subject', EmailMessage.GetSubject(), 'The subjects are equal.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('CloseEmailEditorHandler')]
+    procedure TestEmailOnBeforeOpenEditorEventChangeBody()
+    var
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        EmailEditor: TestPage "Email Editor";
+        LastModifiedNo: Integer;
+    begin
+        // [SCENARIO] Change the body before the email editor opens and ensure the last modified no has changed
+
+        // [GIVEN] Email message and body will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyBody(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Assert.AreEqual('Current Body', EmailMessage.GetBody(), 'The bodies are not equal.');
+
+        // [WHEN] Open email editor
+        EmailEditor.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email editor is opened, the body and last modified no should be different
+        Assert.AreNotEqual('Current Body', EmailMessage.GetBody(), 'The bodies are equal.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('CloseEmailEditorHandler')]
+    procedure TestEmailOnBeforeOpenEditorEventChangeRecipient()
+    var
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        EmailEditor: TestPage "Email Editor";
+        LastModifiedNo: Integer;
+        Recipients: List of [Text];
+    begin
+        // [SCENARIO] Change the recipient before the email editor opens and ensure the last modified no has changed
+
+        // [GIVEN] Email message and recipient will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyRecipients(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Assert.AreEqual(1, Recipients.Count(), 'Recipient count is not 1.');
+        Assert.AreEqual('test@email.com', Recipients.Get(1), 'The recipient is not the same.');
+
+        // [WHEN] Open email editor
+        EmailEditor.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email editor is opened, the recipient and last modified no should be different
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Assert.AreEqual(2, Recipients.Count(), 'Recipient count is not 2.');
+        Assert.AreEqual('test@newemail.com', Recipients.Get(2), 'The recipient is not the same.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('CloseEmailEditorHandler')]
+    procedure TestEmailOnBeforeOpenEditorEventChangeAttachment()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: Codeunit "Email Message Events Mock";
+        EmailEditor: TestPage "Email Editor";
+        LastModifiedNo: Integer;
+        OutStream: OutStream;
+        InStream: InStream;
+        Count: Integer;
+        Name: Text;
+    begin
+        // [SCENARIO] Change the attachment before the email editor opens and ensure the last modified no has changed
+
+        // [GIVEN] Email message and attachment that will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyAttachments(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+
+        TempBlob.CreateOutStream(OutStream);
+        OutStream.WriteText('Attachment');
+        TempBlob.CreateInStream(InStream);
+
+        EmailMessage.AddAttachment('test.txt', 'text/plain', InStream);
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Assert.IsTrue(EmailMessage.Attachments_First(), 'Does not have an attachment');
+
+        // [WHEN] Open email editor
+        EmailEditor.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email editor is opened, there should be two attachments and last modified no. should be different
+        EmailMessage.Attachments_First();
+        Count := 0;
+        repeat
+            Count += 1;
+            Name := EmailMessage.Attachments_GetName();
+        until EmailMessage.Attachments_Next() = 0;
+
+        Assert.AreEqual(2, Count, 'Number of attachments is not 2');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailOnBeforeSendEventChangeSubject()
+    var
+        TempAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        ConnectorMock: Codeunit "Connector Mock";
+        LastModifiedNo: Integer;
+    begin
+        // [SCENARIO] Change the subject before the email is queued and ensure the last modified no has changed
+
+        // [GIVEN] Email message and subject will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifySubject(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        Assert.AreEqual('Current Subject', EmailMessage.GetSubject(), 'The subjects are not equal.');
+
+        // [WHEN] Enqueue the email
+        Email.Enqueue(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After the email is queued, the subject and last modified date time should be different
+        Assert.AreNotEqual('Current Subject', EmailMessage.GetSubject(), 'The subjects are equal.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailOnBeforeSendEventChangeBody()
+    var
+        TempAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        ConnectorMock: Codeunit "Connector Mock";
+        LastModifiedNo: Integer;
+    begin
+        // [SCENARIO] Change the body before the email is queued and ensure the last modified no has changed
+
+        // [GIVEN] Email message and body will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyBody(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        Assert.AreEqual('Current Body', EmailMessage.GetBody(), 'The bodies are not equal.');
+
+        // [WHEN] Enqueue the email
+        Email.Enqueue(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email is queued, the body and last modified no should be different
+        Assert.AreNotEqual('Current Body', EmailMessage.GetBody(), 'The bodies are equal.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailOnBeforeSendEventChangeRecipient()
+    var
+        TempAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        ConnectorMock: Codeunit "Connector Mock";
+        LastModifiedNo: Integer;
+        Recipients: List of [Text];
+    begin
+        // [SCENARIO] Change the recipient before the email is queued and ensure the last modified no has changed
+
+        // [GIVEN] Email message and recipient will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyRecipients(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Assert.AreEqual(1, Recipients.Count(), 'Recipient count is not 1.');
+        Assert.AreEqual('test@email.com', Recipients.Get(1), 'The recipient is not the same.');
+
+        // [WHEN] Enqueue the email
+        Email.Enqueue(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email is queued, the recipient and last modified no should be different
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Assert.AreEqual(2, Recipients.Count(), 'Recipient count is not 2.');
+        Assert.AreEqual('test@newemail.com', Recipients.Get(2), 'The recipient is not the same.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailOnBeforeSendEventChangeAttachment()
+    var
+        TempAccount: Record "Email Account" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        ConnectorMock: Codeunit "Connector Mock";
+        LastModifiedNo: Integer;
+        OutStream: OutStream;
+        InStream: InStream;
+        Count: Integer;
+        Name: Text;
+    begin
+        // [SCENARIO] Change the attachment before the email is queued and ensure the last modified no has changed
+
+        // [GIVEN] Email message and attachment that will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyAttachments(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+
+        TempBlob.CreateOutStream(OutStream);
+        OutStream.WriteText('Attachment');
+        TempBlob.CreateInStream(InStream);
+
+        EmailMessage.AddAttachment('test.txt', 'text/plain', InStream);
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        Assert.IsTrue(EmailMessage.Attachments_First(), 'Does not have an attachment');
+
+        // [WHEN] Enqueue the email
+        Email.Enqueue(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email is queued, there should be two attachments and last modified no should be different
+        EmailMessage.Attachments_First();
+        Count := 0;
+        repeat
+            Count += 1;
+            Name := EmailMessage.Attachments_GetName();
+        until EmailMessage.Attachments_Next() = 0;
+
+        Assert.AreEqual(2, Count, 'Number of attachments is not 2');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
     [StrMenuHandler]
     [Scope('OnPrem')]
     procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
     begin
         Choice := 1;
+    end;
+
+    local procedure AssertExpectedRecipients(ExpectedRecipients: List of [Text]; ActualRecipient: List of [Text])
+    var
+        Recipient: Text;
+    begin
+        Assert.AreEqual(ExpectedRecipients.Count(), ActualRecipient.Count(), 'Wrong number of recipients');
+
+        foreach Recipient in ExpectedRecipients do
+            Assert.IsTrue(ActualRecipient.Contains(Recipient), 'Recipient missing: ' + Recipient);
     end;
 }

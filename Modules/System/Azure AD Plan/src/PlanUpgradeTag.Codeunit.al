@@ -8,7 +8,6 @@
 /// </summary>
 codeunit 9058 "Plan Upgrade Tag"
 {
-
     Access = Public;
 
     trigger OnRun()
@@ -21,6 +20,8 @@ codeunit 9058 "Plan Upgrade Tag"
         PerDatabaseUpgradeTags.Add(GetAddDeviceISVEmbUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetRenamePlansUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetRenameTeamMemberPlanUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetPlanfigurationsUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetMicrosoft365UpgradeTag());
     end;
 
     /// <summary>
@@ -38,7 +39,7 @@ codeunit 9058 "Plan Upgrade Tag"
     /// <returns>The rename plans upgrade tag.</returns>
     internal procedure GetRenamePlansUpgradeTag(): Code[250]
     begin
-        exit('MS-329421-RenamePlans-20211028'); // Renamed tag - MS-329421-RenamePlans-20191009 to run upgrade again.
+        exit('MS-329421-RenamePlans-20211028');
     end;
 
     /// <summary>
@@ -57,6 +58,29 @@ codeunit 9058 "Plan Upgrade Tag"
     internal procedure GetRenameDevicePlanUpgradeTag(): Code[250]
     begin
         exit('MS-394628-RenameDevicePlan-20210325');
+    end;
+
+    /// <summary>
+    /// Returns the Premium Partner Sandbox upgrade tag.
+    /// </summary>
+    /// <returns>The Premium Partner Sandbox upgrade tag.</returns>
+    internal procedure GetPremiumPartnerSandboxUpgradeTag(): Code[250]
+    begin
+        exit('MS-426983-AddPremiumPartnerSandbox-20220218');
+    end;
+
+    /// <summary>
+    /// Returns the Microsoft 365 upgrade tag.
+    /// </summary>
+    /// <returns>The Microsoft365 upgrade tag.</returns>
+    internal procedure GetMicrosoft365UpgradeTag(): Code[250]
+    begin
+        exit('MS-410756-AddMicrosoft365-20220825');
+    end;
+
+    internal procedure GetPlanfigurationsUpgradeTag(): Code[250]
+    begin
+        exit('MS-430587-AddPlanConfigurations-20220321');
     end;
 }
 

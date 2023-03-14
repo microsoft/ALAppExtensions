@@ -29,6 +29,17 @@ pageextension 18148 "GST Sales Invoice Ext" extends "Sales Invoice"
                 GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
             end;
         }
+        modify("Ship-to Code")
+        {
+            trigger OnAfterValidate()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                CurrPage.SaveRecord();
+                GSTSalesValidation.UpdateGSTJurisdictionTypeFromPlaceOfSupply(Rec);
+                GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
+            end;
+        }
         addafter("Foreign Trade")
         {
             group(Application)
@@ -266,7 +277,48 @@ pageextension 18148 "GST Sales Invoice Ext" extends "Sales Invoice"
                 end;
             }
         }
+        modify(Post)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(PostAndSend)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(Preview)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(Dimensions)
+        {
+            trigger OnAfterAction()
+            var
+                PostingNoSeries: Record "Posting No. Series";
+                Record: Variant;
+            begin
+                Record := Rec;
+                PostingNoSeries.GetPostingNoSeriesCode(Record);
+                Rec := Record;
+                Rec.Modify(true);
+            end;
+        }
     }
+
     var
         UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';
 }

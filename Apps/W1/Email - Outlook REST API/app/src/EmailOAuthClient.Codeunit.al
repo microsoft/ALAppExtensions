@@ -33,6 +33,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
     begin
         Initialize();
 
+        ClearLastError();
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
             AccessToken := AzureAdMgt.GetAccessToken(UrlHelper.GetGraphUrl(), '', false);
             if AccessToken = '' then begin
@@ -40,11 +41,15 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
                 if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;
             end;
         end else
-            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, Scopes, AccessToken)) or (AccessToken = '') then
-                OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, Scopes, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
+            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, GetOAuthAuthorityUrl(), Scopes, AccessToken)) or (AccessToken = '') then
+                OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, GetOAuthAuthorityUrl(), RedirectURL, Scopes, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
 
-        if AccessToken = '' then
+        if AccessToken = '' then begin
+            if AzureADMgt.GetLastErrorMessage() <> '' then
+                Error(AzureADMgt.GetLastErrorMessage());
+
             Error(CouldNotGetAccessTokenErr);
+        end
     end;
 
     internal procedure GetLastAuthorizationErrorMessage(): Text
@@ -77,7 +82,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         AccessToken: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, Scopes, AccessToken) and (AccessToken <> ''))
+        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, GetOAuthAuthorityUrl(), Scopes, AccessToken) and (AccessToken <> ''))
     end;
 
     internal procedure SignInUsingAuthorizationCode(): Boolean
@@ -87,12 +92,20 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         OAuthErr: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, Scopes, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
+        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, GetOAuthAuthorityUrl(), RedirectURL, Scopes, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
+    end;
+
+    local procedure GetOAuthAuthorityUrl(): Text
+    var
+        UrlHelper: Codeunit "Url Helper";
+        AuthUrl: Text;
+    begin
+        AuthUrl := UrlHelper.GetAzureADAuthEndpoint();
+        exit(AuthUrl.Replace('/authorize', ''));
     end;
 
     var
         OAuth2: Codeunit OAuth2;
-
         [NonDebuggable]
         ClientId: Text;
         [NonDebuggable]
@@ -100,9 +113,8 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         RedirectURL: Text;
         IsInitialized: Boolean;
         Scopes: List of [Text];
-        OAuthAuthorityUrlTxt: Label 'https://login.microsoftonline.com/common/oauth2', Locked = true;
         GraphScopesLbl: Label 'https://graph.microsoft.com/.default', Locked = true;
-        CouldNotGetAccessTokenErr: Label 'Could not get access token. Please, try to log out and log in again.';
+        CouldNotGetAccessTokenErr: Label 'Could not get access token.';
         EmailCategoryLbl: Label 'EmailOAuth', Locked = true;
         CouldNotAcquireAccessTokenErr: Label 'Failed to acquire access token.', Locked = true;
 }

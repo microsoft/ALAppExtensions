@@ -219,7 +219,7 @@ codeunit 139855 "APIV2 - Opportunities E2E"
     procedure TestCannotPatchSPCodeOfWonOpportunity()
     var
         Opportunity: Record Opportunity;
-        Salesperson: Record "Salesperson/Purchaser";
+        SalespersonPurchaser: Record "Salesperson/Purchaser";
         SalesPersonCode: Code[20];
         ContactNo: Code[20];
         OpportunityJSON: Text;
@@ -229,7 +229,7 @@ codeunit 139855 "APIV2 - Opportunities E2E"
     begin
         // [SCENARIO] Use a PATCH method to change the salesperson code of a Won opportunity
         // [GIVEN] An won opportunity
-        SalesPersonCode := CreateSalesperson(Salesperson);
+        SalesPersonCode := CreateSalesperson(SalespersonPurchaser);
         ContactNo := LibraryMarketing.CreateCompanyContactNo();
         CreateWonOpportunity(Opportunity, ContactNo);
         Commit();
@@ -313,7 +313,7 @@ codeunit 139855 "APIV2 - Opportunities E2E"
     var
         OpportunityJson: Text;
     begin
-        OpportunityDescription := LibraryRandom.RandText(5);
+        OpportunityDescription := CopyStr(LibraryRandom.RandText(5), 1, 100);
         OpportunityJson := LibraryGraphMgt.AddPropertytoJSON('', 'description', OpportunityDescription);
 
         exit(OpportunityJson);

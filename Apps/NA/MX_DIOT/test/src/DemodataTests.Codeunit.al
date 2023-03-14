@@ -45,11 +45,22 @@ codeunit 148044 "DIOT Demodata Tests"
     [Test]
     procedure DIOTWizardExistsInAssistedSetup()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
+        AssistedSetup: TestPage "Assisted Setup";
     begin
+        // [SCENARIO] Assisted setup entry for DIOT exists when you open Assisted Setup page
         Initialize();
-        Assert.IsTrue(AssistedSetup.Exists(Page::"DIOT Setup Wizard"), 'Assisted Setup for DIOT must exist');
+
+        // [WHEN] Open Assisted Setup page
+        AssistedSetup.OpenView();
+
+        // [THEN] DIOT Entry is there
+        Assert.IsTrue(GuidedExperience.Exists("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"DIOT Setup Wizard"), 'Guided Experience for DIOT must exist');
+
+        // Clean-up
+        AssistedSetup.Close();
     end;
+
 
     local procedure Initialize()
     begin

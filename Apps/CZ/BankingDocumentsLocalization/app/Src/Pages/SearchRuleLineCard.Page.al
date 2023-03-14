@@ -74,6 +74,11 @@ page 31243 "Search Rule Line Card CZB"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'In the case of multiple search results, determines which record to select for automatic payment applying.';
                 }
+                field("Match Related Party Only"; Rec."Match Related Party Only")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the match related party only';
+                }
             }
             group(FilterPart)
             {

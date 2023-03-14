@@ -14,5 +14,16 @@ tableextension 31242 "Transfer Shipment Line CZA" extends "Transfer Shipment Lin
             TableRelation = "Gen. Business Posting Group";
             DataClassification = CustomerContent;
         }
+        field(31040; "Correction CZA"; Boolean)
+        {
+            Caption = 'Correction';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(31041; "Transfer Order Line No. CZA"; Integer)
+        {
+            Caption = 'Transfer Order Line No.';
+            DataClassification = CustomerContent;
+        }
     }
 }

@@ -3,6 +3,7 @@ report 31023 "Sales Advance Letters VAT CZZ"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
     Caption = 'Sales Advance Letters VAT';
+    DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/SalesAdvanceLettersVAT.rdl';
 
     dataset

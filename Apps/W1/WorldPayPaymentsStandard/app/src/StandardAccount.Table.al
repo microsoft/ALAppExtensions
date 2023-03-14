@@ -45,10 +45,10 @@ table 1360 "MS - WorldPay Standard Account"
                 IF NOT GUIALLOWED() THEN
                     EXIT;
 
-                SalesHeader.SETFILTER("Document Type", STRSUBSTNO('%1|%2|%3',
+                SalesHeader.SETFILTER("Document Type", '%1|%2|%3',
                     SalesHeader."Document Type"::Invoice,
                     SalesHeader."Document Type"::Order,
-                    SalesHeader."Document Type"::Quote));
+                    SalesHeader."Document Type"::Quote);
 
                 IF NOT SalesHeader.IsEmpty() AND NOT HideDialogs THEN
                     MESSAGE(UpdateOpenInvoicesManuallyMsg);
@@ -75,6 +75,9 @@ table 1360 "MS - WorldPay Standard Account"
     keys
     {
         key(Key1; "Primary Key")
+        {
+        }
+        key(Key2; "Always Include on Documents")
         {
         }
     }

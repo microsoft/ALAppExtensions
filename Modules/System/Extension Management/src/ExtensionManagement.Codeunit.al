@@ -13,9 +13,7 @@ codeunit 2504 "Extension Management"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
-#if not CLEAN17
         ExtensionMarketplace: Codeunit "Extension Marketplace";
-#endif
 
     /// <summary>
     /// Installs an extension, based on its PackageId and Locale Identifier.
@@ -129,6 +127,7 @@ codeunit 2504 "Extension Management"
     end;
 
 #if not CLEAN17
+#pragma warning disable AL0432
     /// <summary>
     /// Retrieves a list of all the Deployment Status Entries
     /// </summary>
@@ -138,6 +137,7 @@ codeunit 2504 "Extension Management"
     begin
         ExtensionOperationImpl.GetAllExtensionDeploymentStatusEntries(NavAppTenantOperation);
     end;
+#pragma warning restore
 #endif
 
     /// <summary>
@@ -223,35 +223,35 @@ codeunit 2504 "Extension Management"
     /// Gets the logo of an extension.
     /// </summary>
     /// <param name="AppId">The App ID of the extension.</param>
-    /// <param name="Logo">Out parameter holding the logo of the extension.</param> 
-    procedure GetExtensionLogo(AppId: Guid; var Logo: Codeunit "Temp Blob")
+    /// <param name="LogoTempBlob">Out parameter holding the logo of the extension.</param> 
+    procedure GetExtensionLogo(AppId: Guid; var LogoTempBlob: Codeunit "Temp Blob")
     begin
-        ExtensionOperationImpl.GetExtensionLogo(AppId, Logo);
+        ExtensionOperationImpl.GetExtensionLogo(AppId, LogoTempBlob);
     end;
 
     /// <summary>
     /// Uploads an extension to current version, next minor or next major, using a File Stream and based on the Locale Identifier.
     /// This method is only applicable in SaaS environment.
     /// </summary>
-    /// <param name="FileStream">The File Stream containing the extension to be uploaded.</param>
+    /// <param name="FileInStream">The File Stream containing the extension to be uploaded.</param>
     /// <param name="lcid">The Locale Identifier.</param>
     /// <param name="DeployTo">The version that the extension will be deployed to.</param>
-    procedure UploadExtensionToVersion(FileStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To")
+    procedure UploadExtensionToVersion(FileInStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To")
     begin
-        UploadExtensionToVersion(FileStream, lcid, DeployTo, "Extension Sync Mode"::Add);
+        UploadExtensionToVersion(FileInStream, lcid, DeployTo, "Extension Sync Mode"::Add);
     end;
 
     /// <summary>
     /// Uploads an extension to current version, next minor or next major, using a File Stream and based on the Locale Identifier.
     /// This method is only applicable in SaaS environment.
     /// </summary>
-    /// <param name="FileStream">The File Stream containing the extension to be uploaded.</param>
+    /// <param name="FileInStream">The File Stream containing the extension to be uploaded.</param>
     /// <param name="lcid">The Locale Identifier.</param>
     /// <param name="DeployTo">The version that the extension will be deployed to.</param>
     /// <param name="SyncMode">The desired sync mode.</param>
-    procedure UploadExtensionToVersion(FileStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To"; SyncMode: Enum "Extension Sync Mode")
+    procedure UploadExtensionToVersion(FileInStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To"; SyncMode: Enum "Extension Sync Mode")
     begin
-        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, lcid, DeployTo, SyncMode);
+        ExtensionOperationImpl.DeployAndUploadExtension(FileInStream, lcid, DeployTo, SyncMode);
     end;
 
 #if not CLEAN17
@@ -322,6 +322,15 @@ codeunit 2504 "Extension Management"
 #endif
 
     /// <summary>
+    /// Installs an extension, based on its extension id.
+    /// </summary>
+    /// <param name="AppId">The ID of the extension package.</param>
+    procedure InstallMarketplaceExtension(AppId: Guid)
+    begin
+        ExtensionMarketplace.InstallAppsourceExtensionWithRefreshSession(AppId, '');
+    end;
+
+    /// <summary>
     /// Returns the Name of the app given the App Id.
     /// </summary>
     /// <param name="AppId">The unique identifier of the app.</param>
@@ -329,6 +338,27 @@ codeunit 2504 "Extension Management"
     procedure GetAppName(AppId: Guid): Text
     begin
         exit(ExtensionOperationImpl.GetAppName(AppId))
+    end;
+
+    /// <summary>
+    /// Returns the detailed message from a deployment operation.
+    /// </summary>
+    /// <param name="OperationId">The Id of the operation to get the detailed message from.</param>
+    /// <returns>The detailed message as text.</returns>
+    procedure GetDeploymentDetailedStatusMessage(OperationId: Guid): Text
+    begin
+        exit(ExtensionOperationImpl.GetDeploymentDetailedStatusMessage(OperationId));
+    end;
+
+    /// <summary>
+    /// Writes the detailed message from a deployment operation to a stream.
+    /// </summary>
+    /// <param name="OperationId">The Id of the operation to get the detailed message from.</param>
+    /// <param name="OutStream">An OutStream to write the message to.</param>
+    /// <returns></returns>
+    procedure GetDeploymentDetailedStatusMessageAsStream(OperationId: Guid; OutStream: OutStream)
+    begin
+        ExtensionOperationImpl.GetDeploymentDetailedStatusMessageAsStream(OperationId, OutStream);
     end;
 }
 

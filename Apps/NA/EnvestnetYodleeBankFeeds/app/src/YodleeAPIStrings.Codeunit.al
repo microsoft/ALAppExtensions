@@ -2,6 +2,12 @@ codeunit 1458 "Yodlee API Strings"
 {
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
+        AuthHeaderCobSessionTok: Label '{cobSession=%1}', Locked = true;
+        AuthHeaderUserSessionTok: Label '{cobSession=%1,userSession=%2}', Locked = true;
+        TransactionSearchURLTok: Label '/transactions?accountId=%1&fromDate=%2&toDate=%3&skip=0&top=500', Locked = true;
+        LinkedBankAccountsURLTok: Label '/accounts?status=ACTIVE&providerAccountId=%1&include=holder,autoRefresh', Locked = true;
+        LinkedBankAccountURLTok: Label '/accounts?accountId=%1&include=holder,autoRefresh', Locked = true;
+        UnlinkBankAccountURLTok: Label '/accounts/%1', Locked = true;
 
     [Scope('OnPrem')]
     procedure GetCobrandTokenURL(): Text;
@@ -30,9 +36,9 @@ codeunit 1458 "Yodlee API Strings"
             exit('');
 
         if UserSessionToken = '' then
-            exit(StrSubstno('{cobSession=%1}', CobrandSessionToken));
+            exit(StrSubstno(AuthHeaderCobSessionTok, CobrandSessionToken));
 
-        exit(StrSubstno('{cobSession=%1,userSession=%2}', CobrandSessionToken, UserSessionToken))
+        exit(StrSubstno(AuthHeaderUserSessionTok, CobrandSessionToken, UserSessionToken))
     end;
 
     [Scope('OnPrem')]
@@ -142,7 +148,7 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetTransactionSearchURL(OnlineBankAccountId: Text; FromDate: Date; ToDate: Date): Text;
     begin
-        exit(GetFullURL(StrSubstNo('/transactions?accountId=%1&fromDate=%2&toDate=%3&skip=0&top=500', OnlineBankAccountId, FORMAT(FromDate, 0, 9), FORMAT(ToDate, 0, 9))));
+        exit(GetFullURL(StrSubstNo(TransactionSearchURLTok, OnlineBankAccountId, FORMAT(FromDate, 0, 9), FORMAT(ToDate, 0, 9))));
     end;
 
     [Scope('OnPrem')]
@@ -178,13 +184,13 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetLinkedBankAccountsURL(ProviderAccountId: Text): Text;
     begin
-        exit(GetFullURL(StrSubstNo('/accounts?status=ACTIVE&providerAccountId=%1&include=holder,autoRefresh', ProviderAccountId)));
+        exit(GetFullURL(StrSubstNo(LinkedBankAccountsURLTok, ProviderAccountId)));
     end;
 
     [Scope('OnPrem')]
     procedure GetLinkedBankAccountURL(AccountId: Text): Text;
     begin
-        exit(GetFullURL(StrSubstNo('/accounts?accountId=%1&include=holder,autoRefresh', AccountId)));
+        exit(GetFullURL(StrSubstNo(LinkedBankAccountURLTok, AccountId)));
     end;
 
     [Scope('OnPrem')]
@@ -202,7 +208,7 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure GetUnlinkBankAccountURL(AccountId: Text): Text;
     begin
-        exit(GetFullUrl(StrSubstNo('/accounts/%1', AccountId)));
+        exit(GetFullUrl(StrSubstNo(UnlinkBankAccountURLTok, AccountId)));
     end;
 
     [Scope('OnPrem')]

@@ -10,11 +10,12 @@ table 1803 "Assisted Setup"
     ReplicateData = false;
 #if CLEAN18
     ObsoleteState = Removed;
+    ObsoleteTag = '23.0';
 #else
     ObsoleteState = Pending;
+    ObsoleteTag = '18.0';
 #endif
     ObsoleteReason = 'The Assisted Setup module and its objects have been consolidated in the Guided Experience module. Use the Guided Experience Item table instead.';
-    ObsoleteTag = '18.0';
 
     fields
     {

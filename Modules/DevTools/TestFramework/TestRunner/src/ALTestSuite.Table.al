@@ -15,13 +15,15 @@ table 130451 "AL Test Suite"
         field(1; Name; Code[10])
         {
             NotBlank = true;
+            DataClassification = CustomerContent;
         }
         field(2; Description; Text[30])
         {
+            DataClassification = CustomerContent;
         }
         field(3; "Tests to Execute"; Integer)
         {
-            CalcFormula = Count ("Test Method Line" WHERE("Test Suite" = FIELD(Name),
+            CalcFormula = Count("Test Method Line" WHERE("Test Suite" = FIELD(Name),
                                                           "Line Type" = CONST(Function),
                                                           Run = CONST(true)));
             Editable = false;
@@ -29,7 +31,7 @@ table 130451 "AL Test Suite"
         }
         field(4; "Tests not Executed"; Integer)
         {
-            CalcFormula = Count ("Test Method Line" WHERE("Test Suite" = FIELD(Name),
+            CalcFormula = Count("Test Method Line" WHERE("Test Suite" = FIELD(Name),
                                                           "Line Type" = CONST(Function),
                                                           Run = CONST(true),
                                                           Result = CONST(" ")));
@@ -38,7 +40,7 @@ table 130451 "AL Test Suite"
         }
         field(5; Failures; Integer)
         {
-            CalcFormula = Count ("Test Method Line" WHERE("Test Suite" = FIELD(Name),
+            CalcFormula = Count("Test Method Line" WHERE("Test Suite" = FIELD(Name),
                                                           "Line Type" = CONST(Function),
                                                           Run = CONST(true),
                                                           Result = CONST(Failure)));
@@ -47,16 +49,39 @@ table 130451 "AL Test Suite"
         }
         field(6; "Last Run"; DateTime)
         {
+            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(7; "Run Type"; Option)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = SystemMetadata;
             OptionMembers = " ",All,"Active Codeunit","Active Test";
         }
         field(8; "Test Runner Id"; Integer)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = SystemMetadata;
+        }
+        field(9; "Stability Run"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+        }
+        field(10; "CC Tracking Type"; Option)
+        {
+            DataClassification = SystemMetadata;
+            OptionMembers = "Disabled","Per Run","Per Codeunit","Per Test";
+        }
+        field(11; "CC Track All Sessions"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+        }
+        field(12; "CC Exporter ID"; Integer)
+        {
+            DataClassification = SystemMetadata;
+        }
+        field(13; "CC Coverage Map"; Option)
+        {
+            DataClassification = SystemMetadata;
+            OptionMembers = "Disabled","Per Codeunit","Per Test";
         }
     }
 

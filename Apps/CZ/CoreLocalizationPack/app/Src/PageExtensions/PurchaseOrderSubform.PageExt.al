@@ -9,7 +9,7 @@ pageextension 11787 "Purchase Order Subform CZL" extends "Purchase Order Subform
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the origin country/region code.';
                 Visible = false;
-            }            
+            }
             field("Tariff No. CZL"; Rec."Tariff No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -23,15 +23,14 @@ pageextension 11787 "Purchase Order Subform CZL" extends "Purchase Order Subform
                 Visible = false;
             }
         }
+        addafter("FA Posting Date")
+        {
+            field("Maintenance Code CZL"; Rec."Maintenance Code")
+            {
+                ApplicationArea = Suite;
+                ToolTip = 'Specifies a maintenance code.';
+                Visible = false;
+            }
+        }
     }
-
-    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
-    begin
-        ForceTotalsCalculation();
-    end;
-
-    trigger OnModifyRecord(): Boolean
-    begin
-        ForceTotalsCalculation();
-    end;
 }

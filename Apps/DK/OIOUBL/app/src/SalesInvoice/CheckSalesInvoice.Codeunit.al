@@ -8,6 +8,7 @@ codeunit 13632 "OIOUBL-Check Sales Invoice"
     TableNo = "Sales Invoice Header";
     trigger OnRun();
     var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         IsHandled: Boolean;
     begin
@@ -27,7 +28,9 @@ codeunit 13632 "OIOUBL-Check Sales Invoice"
 
         CompanyInfo.OIOUBLVerifyAndSetInfo();
 
-        TESTFIELD("External Document No.");
+        SalesReceivablesSetup.Get();
+        if not SalesReceivablesSetup."Document No. as Ext. Doc. No." then
+            TESTFIELD("External Document No.");
         TESTFIELD("Payment Terms Code");
 
         OIOUBLDocumentEncode.IsValidCountryCode("Sell-to Country/Region Code");

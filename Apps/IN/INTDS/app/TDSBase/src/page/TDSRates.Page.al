@@ -387,6 +387,36 @@ page 18697 "TDS Rates"
                     TaxRatesImportMgmt.ReadAndImportTaxRates(GlobalTaxType);
                 end;
             }
+            action(FilterRates)
+            {
+                Caption = 'Filter By Attributes';
+                Image = FilterLines;
+                ApplicationArea = Basic, Suite;
+                PromotedCategory = Process;
+                Promoted = true;
+                PromotedOnly = true;
+                ToolTip = 'Filter Tax Rates by attributes.';
+
+                trigger OnAction()
+                begin
+                    TaxRatesfilterMgmt.OpenTaxRateFilter(Rec);
+                end;
+            }
+            action(ClearFilter)
+            {
+                Caption = 'Clear Filter';
+                Image = ClearFilter;
+                ApplicationArea = Basic, Suite;
+                PromotedCategory = Process;
+                Promoted = true;
+                PromotedOnly = true;
+                ToolTip = 'Clears Filter on Tax Rates.';
+
+                trigger OnAction()
+                begin
+                    TaxRatesfilterMgmt.ClearTaxRateFilter(Rec);
+                end;
+            }
         }
     }
 
@@ -402,6 +432,7 @@ page 18697 "TDS Rates"
 
     trigger OnOpenPage()
     begin
+        ColumnCount := 0;
         GlobalTaxType := '';
         TDSSetup.Get();
         TDSSetup.TestField(TDSSetup."Tax Type");
@@ -450,7 +481,7 @@ page 18697 "TDS Rates"
         UpdateRecord := true;
 
         if IsLookup then
-            UpdateRecord := AttributeManagement.GetTaxRateAttributeLookupValue(AttributeCaption[ColumnIndex], AttributeValue[ColumnIndex]);
+            UpdateRecord := AttributeManagement.GetTaxRateAttributeLookupValue(GlobalTaxType, AttributeCaption[ColumnIndex], AttributeValue[ColumnIndex]);
 
         if UpdateRecord then
             TaxSetupMatrixMgmt.UpdateTaxConfigurationValue(ID, GlobalTaxType, AttributeID, ColumnIndex, AttributeValue, RangeAttribute);
@@ -462,6 +493,7 @@ page 18697 "TDS Rates"
     var
         TDSSetup: Record "TDS Setup";
         TaxSetupMatrixMgmt: Codeunit "Tax Setup Matrix Mgmt.";
+        TaxRatesfilterMgmt: Codeunit "Tax Rate Filter Mgmt.";
         AttributeManagement: Codeunit "Tax Attribute Management";
         RangeAttribute: array[1000] of Boolean;
         AttributeValue: array[1000] of Text;

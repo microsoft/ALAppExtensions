@@ -2,7 +2,7 @@ report 31253 "FA Physical Inventory List CZF"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/FAPhysicalInventoryList.rdl';
-    ApplicationArea = Basic, Suite;
+    ApplicationArea = FixedAssets;
     Caption = 'FA Physical Inventory List';
     UsageCategory = ReportsAndAnalysis;
 
@@ -94,6 +94,12 @@ report 31253 "FA Physical Inventory List CZF"
             column(FADeprBook_BookValue; FADepreciationBook."Book Value")
             {
             }
+            column(FADeprBook_WriteDown; -FADepreciationBook."Write-Down")
+            {
+            }
+            column(FADeprBook_Appreciation; FADepreciationBook.Appreciation)
+            {
+            }
             column(LineNo; LineNo)
             {
             }
@@ -118,7 +124,7 @@ report 31253 "FA Physical Inventory List CZF"
                 if not FADepreciationBook.Get("No.", DeprBookCode) then
                     CurrReport.Skip();
                 FADepreciationBook.SetRange("FA Posting Date Filter", 0D, DocumentDate);
-                FADepreciationBook.CalcFields("Acquisition Cost", Depreciation, "Book Value");
+                FADepreciationBook.CalcFields("Acquisition Cost", Depreciation, "Book Value", "Write-Down", Appreciation);
                 if (FADepreciationBook."Disposal Date" > 0D) and (FADepreciationBook."Disposal Date" < DocumentDate) then
                     FADepreciationBook."Book Value" := 0;
                 if (FADepreciationBook."Book Value" = 0) and (not PrintZeroBookValue) then
@@ -174,51 +180,51 @@ report 31253 "FA Physical Inventory List CZF"
                     Caption = 'Options';
                     field(DeprBookCodeCZF; DeprBookCode)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Depreciation Book';
                         TableRelation = "Depreciation Book";
                         ToolTip = 'Specifies the depreciation book for the printing of entries.';
                     }
                     field(DocumentNoCZF; DocumentNo)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Document No.';
                         ToolTip = 'Specifies the document number for the document.';
                     }
                     field(DocumentDateCZF; DocumentDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Document Date';
                         ToolTip = 'Specifies a document date for the document.';
                     }
                     field(PrintFAValuesCZF; PrintFAValues)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Print FA Values';
                         ToolTip = 'Specifies to print fixed asset values.';
                     }
                     field(PrintZeroBookValueCZF; PrintZeroBookValue)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Print FA with Zero Book Value';
                         ToolTip = 'Specifies to print fixed assets with zero book values.';
                     }
                     field(GroupByCZF; GroupBy)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Group By';
                         OptionCaption = 'None,FA Location Code Only,Responsible Employee Only,FA Location and Responsible,Responsible and Location';
                         ToolTip = 'Specifies how fixed assets should be grouped.';
                     }
                     field(NewPagePerGroupCZF; NewPagePerGroup)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'New Page Per Group';
                         ToolTip = 'Specifies if you want the report to print a new page for each group.';
                     }
                     field(Member1; Member[1])
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = '1. Persona';
                         TableRelation = "Company Official CZL";
                         ToolTip = 'Specifies an employee name from the company official table. Each persona will print on the report with a corresponding signature line for authorization.';
@@ -232,7 +238,7 @@ report 31253 "FA Physical Inventory List CZF"
                     }
                     field(Member2; Member[2])
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = '2. Persona';
                         ToolTip = 'Specifies an employee name from the company official table. Each persona will print on the report with a corresponding signature line for authorization.';
 
@@ -245,7 +251,7 @@ report 31253 "FA Physical Inventory List CZF"
                     }
                     field(Member3; Member[3])
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = '3. Persona';
                         ToolTip = 'Specifies an employee name from the company official table. Each persona will print on the report with a corresponding signature line for authorization.';
 
@@ -259,12 +265,6 @@ report 31253 "FA Physical Inventory List CZF"
                 }
             }
         }
-
-        trigger OnOpenPage()
-        begin
-            FASetup.Get();
-            DeprBookCode := FASetup."Default Depr. Book";
-        end;
     }
 
     labels
@@ -284,6 +284,8 @@ report 31253 "FA Physical Inventory List CZF"
         AcquisitionCostLbl = 'Acquisition Cost';
         DepreciationLbl = 'Depreciation';
         BookValueLbl = 'Book Value';
+        WriteDownLbl = 'Write-Down';
+        AppreciationLbl = 'Appreciation';
         LineNoLbl = 'Line No.';
         QtyInvLbl = 'Quantity Inventored';
         TotalQuantityAmountLbl = 'Total (Quantity, Amount):';
@@ -298,7 +300,6 @@ report 31253 "FA Physical Inventory List CZF"
 
     var
         CompanyOfficialCZL: Record "Company Official CZL";
-        FASetup: Record "FA Setup";
         FADepreciationBook: Record "FA Depreciation Book";
         PrintFAValues, PrintZeroBookValue : Boolean;
         DocumentNo, DeprBookCode : Code[10];

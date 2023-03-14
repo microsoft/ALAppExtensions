@@ -7,7 +7,7 @@
 /// Table with options to use with Regular Expressions
 /// </summary>
 /// <remark>
-/// For more information, visit https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.regexoptions?view=netcore-3.1.
+/// For more information, visit https://go.microsoft.com/fwlink/?linkid=2209848.
 /// </remark>
 table 3966 "Regex Options"
 {
@@ -36,7 +36,7 @@ table 3966 "Regex Options"
         field(4; Compiled; Boolean)
         {
             DataClassification = SystemMetadata;
-            Description = 'Specifies that the regular expression is compiled to an assembly';
+            Description = 'Specifies that the regular expression is compiled to Microsoft intermediate language (MSIL) code.';
         }
         field(5; Singleline; Boolean)
         {

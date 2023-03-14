@@ -10,6 +10,7 @@ codeunit 148089 "Check User Setup Dim. CZL"
 
     var
         Assert: Codeunit Assert;
+        DocumentErrorsMgt: Codeunit "Document Errors Mgt.";
         LibraryApplicationArea: Codeunit "Library - Application Area";
         LibraryDimension: Codeunit "Library - Dimension";
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
@@ -20,7 +21,6 @@ codeunit 148089 "Check User Setup Dim. CZL"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         IsInitialized: Boolean;
         MustEnterDimErr: Label 'You must enter dimension %1.', Comment = '%1 = dimension code';
-        NothingToPostErr: Label 'There is nothing to post.';
         DimCodeMustBeErr: Label 'Dimension Value Code %1 must match the filter %2.', Comment = '%1 = dimension value code, %2 = filter';
 
     [Test]
@@ -232,18 +232,18 @@ codeunit 148089 "Check User Setup Dim. CZL"
         Assert.RecordCount(TempErrorMessage, 3);
         TempErrorMessage.FindFirst();
         TempErrorMessage.TestField("Message Type", TempErrorMessage."Message Type"::Error);
-        TempErrorMessage.TestField(Description, ExpectedErrorMessage[1]);
+        TempErrorMessage.TestField("Message", ExpectedErrorMessage[1]);
         TempErrorMessage.TestField("Context Record ID", ContextRecID);
         TempErrorMessage.TestField("Record ID", SourceRecID);
         // second line
         TempErrorMessage.Next();
         TempErrorMessage.TestField("Message Type", TempErrorMessage."Message Type"::Error);
-        TempErrorMessage.TestField(Description, ExpectedErrorMessage[2]);
+        TempErrorMessage.TestField("Message", ExpectedErrorMessage[2]);
         TempErrorMessage.TestField("Context Record ID", ContextRecID);
         TempErrorMessage.TestField("Record ID", SourceRecID);
         // the last error is "There is nothing to post."
         TempErrorMessage.FindLast();
-        TempErrorMessage.TestField(Description, NothingToPostErr);
+        TempErrorMessage.TestField("Message", DocumentErrorsMgt.GetNothingToPostErrorMsg());
     end;
 
     [ModalPageHandler]

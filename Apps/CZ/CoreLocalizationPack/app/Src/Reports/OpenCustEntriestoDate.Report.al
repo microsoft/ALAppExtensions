@@ -279,8 +279,8 @@ report 11715 "Open Cust. Entries to Date CZL"
                     trigger OnPreDataItem()
                     begin
                         SetRange("Customer No.", SecondCustomer."No.");
-                        SetFilter("Posting Date", SecondCustomer.GetFilter("Date Filter"));
-                        SetFilter("Date Filter", SecondCustomer.GetFilter("Date Filter"));
+                        SetFilter("Posting Date", CustDateFilter);
+                        SetFilter("Date Filter", CustDateFilter);
                         Clear(Balance);
                     end;
                 }
@@ -451,22 +451,13 @@ report 11715 "Open Cust. Entries to Date CZL"
                 column(greGLAcc_Name; GLAccount.Name)
                 {
                 }
-                column(greTGLAccBuffer__Balance_after_Posting_; TempGLAccountNetChange."Balance after Posting")
+                column(BalanceToDate_GLAccDetail; TempGLAccountNetChange."Balance after Posting")
                 {
                 }
-                column(greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_; TempGLAccountNetChange."Balance after Posting" - GLAccount."Net Change")
+                column(Difference_GLAccDetail; TempGLAccountNetChange."Balance after Posting" - GLAccount."Balance at Date")
                 {
                 }
-                column(greGLAcc__Net_Change_; GLAccount."Net Change")
-                {
-                }
-                column(greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change__Control1100170000; TempGLAccountNetChange."Balance after Posting" - GLAccount."Net Change")
-                {
-                }
-                column(greGLAcc__Net_Change__Control1100170001; GLAccount."Net Change")
-                {
-                }
-                column(greTGLAccBuffer__Balance_after_Posting__Control1100170002; TempGLAccountNetChange."Balance after Posting")
+                column(BalanceToDateByGL_GLAccDetail; GLAccount."Balance at Date")
                 {
                 }
                 column(General_Ledger_SpecificationCaption; General_Ledger_SpecificationCaptionLbl)
@@ -494,7 +485,8 @@ report 11715 "Open Cust. Entries to Date CZL"
                             CurrReport.Break();
 
                     GLAccount.Get(TempGLAccountNetChange."No.");
-                    GLAccount.CalcFields("Net Change");
+                    GLAccount.SetFilter("Date Filter", CustDateFilter);
+                    GLAccount.CalcFields("Balance at Date");
                 end;
 
                 trigger OnPreDataItem()
@@ -507,7 +499,6 @@ report 11715 "Open Cust. Entries to Date CZL"
                         CurrReport.Break();
 
                     SetRange(Number, 1, TempGLAccountNetChange.Count);
-                    GLAccount.SetFilter("Date Filter", SecondCustomer.GetFilter("Date Filter"));
                 end;
             }
             trigger OnPreDataItem()

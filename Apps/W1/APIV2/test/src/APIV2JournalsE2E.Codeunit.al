@@ -18,7 +18,6 @@ codeunit 139827 "APIV2 - Journals E2E"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryAPIGeneralJournal: Codeunit "Library API - General Journal";
         Assert: Codeunit "Assert";
-        TypeHelper: Codeunit "Type Helper";
         GraphMgtJournal: Codeunit "Graph Mgt - Journal";
         IsInitialized: Boolean;
         ServiceNameTxt: Label 'journals';
@@ -234,7 +233,7 @@ codeunit 139827 "APIV2 - Journals E2E"
         GLAccount.Get(JournalBalAccountNo);
         JournalJSON := LibraryGraphMgt.AddPropertytoJSON('', JournalNameTxt, JournalName);
         JournalJSON := LibraryGraphMgt.AddPropertytoJSON(JournalJSON, JournalDescriptionNameTxt, JournalDescription);
-        JournalJSON := LibraryGraphMgt.AddPropertytoJSON(JournalJSON, JournalBalAccountIdTxt, TypeHelper.GetGuidAsString(GLAccount.SystemId));
+        JournalJSON := LibraryGraphMgt.AddPropertytoJSON(JournalJSON, JournalBalAccountIdTxt, LowerCase(Format(GLAccount.SystemId, 0, 4)));
 
         exit(JournalJSON);
     end;

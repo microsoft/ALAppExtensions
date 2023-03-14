@@ -7,6 +7,7 @@ codeunit 18931 "Gen. Jnl. Post Line Subscriber"
         GeneralLedgerSetup: Record "General Ledger Setup";
         DocumentNo: Code[20];
     begin
+        DocumentNo := '';
         GeneralLedgerSetup.Get();
         GenJournalLine.TestField("Check Printed", true);
         CheckLedgerEntry.LockTable();
@@ -100,5 +101,23 @@ codeunit 18931 "Gen. Jnl. Post Line Subscriber"
 
         if CheckLedgerEntry."Check Date" <> 0D then
             CheckLedgerEntry."Stale Cheque Expiry Date" := CalcDate(BankAccount."Stale Cheque Stipulated Period", CheckLedgerEntry."Check Date");
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::Check, 'OnAfterAssignGenJnlLineDocNoAndAccountType', '', false, false)]
+    local procedure OnAfterAssignGenJnlLineDocNoAndAccountType(var GenJnlLine: Record "Gen. Journal Line"; PreviousDocumentNo: Code[20])
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        ChequeNo: Code[20];
+    begin
+        if not GeneralLedgerSetup.Get() then
+            exit;
+
+        if not GeneralLedgerSetup."Activate Cheque No." then
+            exit;
+
+        ChequeNo := GenJnlLine."Document No.";
+        GenJnlLine."Document No." := PreviousDocumentNo;
+        GenJnlLine."Cheque No." := CopyStr(ChequeNo, 1, 10);
+        GenJnlLine."Cheque Date" := GenJnlLine."Posting Date";
     end;
 }

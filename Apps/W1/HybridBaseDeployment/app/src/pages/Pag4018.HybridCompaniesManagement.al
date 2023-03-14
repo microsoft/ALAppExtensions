@@ -84,6 +84,7 @@ page 4018 "Hybrid Companies Management"
                 trigger OnAction()
                 var
                     HybridCompany: Record "Hybrid Company";
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                 begin
                     if not VerifyCompanySelection() then
                         exit;
@@ -91,7 +92,9 @@ page 4018 "Hybrid Companies Management"
                     Rec.FindSet();
                     repeat
                         HybridCompany := Rec;
+#pragma warning disable AA0214
                         HybridCompany.Modify();
+#pragma warning restore
                     until Rec.Next() = 0;
                     CurrPage.Close();
 
@@ -117,12 +120,6 @@ page 4018 "Hybrid Companies Management"
         }
     }
 
-    trigger OnInit()
-    begin
-        if not HybridCloudManagement.CanSetupIntelligentCloud() then
-            Error(RunWizardPermissionErr);
-    end;
-
     trigger OnOpenPage()
     var
         HybridCompany: Record "Hybrid Company";
@@ -136,11 +133,9 @@ page 4018 "Hybrid Companies Management"
     end;
 
     var
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         ChooseAll: Boolean;
         DisplayDatabaseSize: Boolean;
         NoCompaniesSelectedErr: Label 'You must select at least one company to migrate to continue.';
-        RunWizardPermissionErr: Label 'You do not have permissions to execute this task. Contact your system administrator.';
         UpdatedReplicationCompaniesMsg: Label 'Company selection changes will be reflected on your next migration.';
         CancelConfirmMsg: Label 'Exit without saving company selection changes?';
 

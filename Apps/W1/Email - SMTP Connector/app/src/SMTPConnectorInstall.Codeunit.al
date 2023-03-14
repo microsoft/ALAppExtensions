@@ -5,8 +5,6 @@ codeunit 4515 "SMTP Connector Install"
     trigger OnInstallAppPerCompany()
     begin
         ApplyEvaluationClassificationsForPrivacy();
-
-        MigrateSMTPAccount();
     end;
 
     local procedure ApplyEvaluationClassificationsForPrivacy()
@@ -21,106 +19,10 @@ codeunit 4515 "SMTP Connector Install"
 
         DataClassificationMgt.SetFieldToPersonal(Database::"SMTP Account", Account.FieldNo(Name));
         DataClassificationMgt.SetFieldToPersonal(Database::"SMTP Account", Account.FieldNo("Email Address"));
-#if not CLEAN17
-        DataClassificationMgt.SetFieldToPersonal(Database::"SMTP Account", Account.FieldNo("Created By"));
-#endif
         DataClassificationMgt.SetFieldToPersonal(Database::"SMTP Account", Account.FieldNo("User Name"));
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo("Secure Connection"));
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo(Server));
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo("Server Port"));
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo(Authentication));
-    end;
-
-    [Obsolete('Temporary solution. SMTP Mail Setup is being deprecated itself.', '17.0')]
-    local procedure MigrateSMTPAccount()
-    var
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if UpgradeTag.HasUpgradeTag(GetEmailSMTPUpgradeTag()) then
-            exit;
-
-        CreateDefaultSMTPAccount();
-
-        UpgradeTag.SetUpgradeTag(GetEmailSMTPUpgradeTag());
-    end;
-
-    [Obsolete('Temporary solution. SMTP Mail Setup is being deprecated itself.', '17.0')]
-    [NonDebuggable]
-    local procedure CreateDefaultSMTPAccount()
-    var
-        OldSMTPAccount: Record "SMTP Mail Setup";
-        NewSMTPAccount: Record "SMTP Account";
-        EmailAccount: Record "Email Account";
-        EmailScenario: Codeunit "Email Scenario";
-    begin
-        // Create an SMTP account if the legacy SMTP Mail Setup has an entry.
-
-        if not (NewSMTPAccount.WritePermission() and OldSMTPAccount.ReadPermission()) then
-            exit; // no permissions, do nothing;
-
-        if not NewSMTPAccount.IsEmpty() then
-            exit; // if there's an SMTP account already, don't create another
-
-        if not OldSMTPAccount.FindFirst() then
-            exit; // no account, nothing to do
-
-        if OldSMTPAccount."User ID" = '' then
-            exit; // Unsupported case
-
-        // Set ID
-        NewSMTPAccount.Id := CreateGuid();
-
-        // Set Name
-        NewSMTPAccount.Name := OldSMTPAccount."User ID";
-
-        // Set Server
-        NewSMTPAccount.Server := OldSMTPAccount."SMTP Server";
-
-        // Set Server Port
-        NewSMTPAccount."Server Port" := OldSMTPAccount."SMTP Server Port";
-
-        // Set Email Address
-        NewSMTPAccount."Email Address" := OldSMTPAccount."User ID";
-
-        // Set User Name
-        NewSMTPAccount."User Name" := OldSMTPAccount."User ID";
-
-        // Set Password
-        NewSMTPAccount.SetPassword(OldSMTPAccount.GetPassword());
-
-        // Set Authentication
-        if OldSMTPAccount.Authentication = OldSMTPAccount.Authentication::Anonymous then
-            NewSMTPAccount.Authentication := NewSMTPAccount.Authentication::Anonymous;
-
-        if OldSMTPAccount.Authentication = OldSMTPAccount.Authentication::Basic then
-            NewSMTPAccount.Authentication := NewSMTPAccount.Authentication::Basic;
-
-        if OldSMTPAccount.Authentication = OldSMTPAccount.Authentication::OAuth2 then
-            NewSMTPAccount.Authentication := NewSMTPAccount.Authentication::"OAuth 2.0";
-
-        if OldSMTPAccount.Authentication = OldSMTPAccount.Authentication::NTLM then
-            NewSMTPAccount.Authentication := NewSMTPAccount.Authentication::NTLM;
-
-        // Set Secure Connection 
-        NewSMTPAccount."Secure Connection" := OldSMTPAccount."Secure Connection";
-
-#if not CLEAN17
-        // Set Created By
-        NewSMTPAccount."Created By" := CopyStr(UserId(), 1, MaxStrLen(NewSMTPAccount."Created By"));
-#endif
-
-        if NewSMTPAccount.Insert() then begin
-            // Set the newly added account as default
-
-            EmailAccount."Account Id" := NewSMTPAccount.Id;
-            EmailAccount.Connector := enum::"Email Connector"::SMTP;
-
-            EmailScenario.SetEmailAccount(Enum::"Email Scenario"::Default, EmailAccount);
-        end;
-    end;
-
-    local procedure GetEmailSMTPUpgradeTag(): Code[250];
-    begin
-        exit('MS-368162-EmailSMTP-20200815');
     end;
 }

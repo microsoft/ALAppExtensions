@@ -7,6 +7,18 @@ pageextension 10538 "MTD OAuth 2.0 Setup" extends "OAuth 2.0 Setup"
 {
     layout
     {
+        modify(General)
+        {
+            Editable = true;
+        }
+        modify(Description)
+        {
+            Editable = false;
+        }
+        modify("Service URL")
+        {
+            Editable = false;
+        }
         addafter("Request URL Paths")
         {
             group("HMRC VAT Client Tokens")
@@ -49,10 +61,10 @@ pageextension 10538 "MTD OAuth 2.0 Setup" extends "OAuth 2.0 Setup"
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
     begin
-        IsSaas := EnvironmentInfo.IsSaaS();
+        IsSaas := EnvironmentInformation.IsSaaS();
         IsMTD := MTDOAuth20Mgt.IsMTDOAuthSetup(Rec);
         ClientID := "Client ID";
         ClientSecret := "Client Secret";

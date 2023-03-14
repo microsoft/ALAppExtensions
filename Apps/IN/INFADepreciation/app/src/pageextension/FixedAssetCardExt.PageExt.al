@@ -74,7 +74,7 @@ pageextension 18636 "Fixed Asset Card Ext" extends "Fixed Asset Card"
                     FixedAssetShifts.Reset();
                     FixedAssetShifts.SetRange("FA No.", FADeprBook."FA No.");
                     FixedAssetShifts.SetRange("Depreciation Book Code", FADeprBook."Depreciation Book Code");
-                    FixedAssetShifts.SetRange("FA Posting Group", FADeprBook."FA Posting Group");
+                    FixedAssetShifts.SetRange("Fixed Asset Posting Group", FADeprBook."FA Posting Group");
                     if not FixedAssetShifts.FindLast() then begin
                         FixedAssetShifts."FA No." := FADeprBook."FA No.";
                         FixedAssetShifts."Depreciation Book Code" := FixedAssetShifts."Depreciation Book Code";

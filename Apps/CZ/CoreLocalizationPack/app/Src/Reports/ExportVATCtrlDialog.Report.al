@@ -122,7 +122,7 @@ report 31104 "Export VAT Ctrl. Dialog CZL"
         PeriodNo: Integer;
         Year: Integer;
         Selection: Enum "VAT Statement Report Selection";
-        DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL";
+        DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL";
         FilledByEmployeeNo: Code[20];
         PrintInIntegers: Boolean;
         [InDataSet]

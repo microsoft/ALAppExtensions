@@ -37,6 +37,62 @@ codeunit 18131 "GST On Purchase Tests"
         NotPostedErr: Label 'The entries were not posted.', locked = true;
         VendLedgerEntryVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
 
+    // [SCENARIO] User can Apply Vendor Payments to invoice with different currency exchange rates
+    // [FEATURE] [Adjust Exchange Rate] [FCY] [Post Application-Vendor]    
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostApplicationFromPurchInvImportVendorWithNormalPayment()
+    var
+        Currency: Record Currency;
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        GenJournalLine: Record "Gen. Journal Line";
+        VendorLedgerEntryPayment: Record "Vendor Ledger Entry";
+        VendorLedgerEntryInvoice: Record "Vendor Ledger Entry";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocumentType: Enum "Purchase Document Type";
+        LineType: Enum "Sales Line Type";
+        TemplateType: Enum "Gen. Journal Template Type";
+        DocumentNo: Code[20];
+        VendorNo: Code[20];
+    begin
+        // [GIVEN] Create Currency, GST Setup, and tax rates for Import Vendor with input Tax Credit is availment where Jurisdiction type is Interstate
+        InitializeShareStep(true, false, false);
+        CreateGSTSetup(GSTVendorType::Import, GSTGroupType::Service, false, true);
+        Storage.Set(NoOfLineLbl, '1');
+        PrepareCurrency(Currency, 0);
+        CreateExchangeRate(Currency.Code, DMY2Date(1, 1, 2022), 2, 2);
+        Evaluate(VendorNo, Storage.Get(VendorNoLbl));
+        UpdateVendorCurrencyAndLocation(VendorNo, Currency.Code);
+
+        // [WHEN] Create and Post Purchase Invoice with GST and Line type as G/L Account
+        DocumentNo := CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Invoice);
+
+        // [THEN] Create new Exchange rate to Currency and and Post Bank Payment Voucher with Currency
+        CreateExchangeRate(Currency.Code, WorkDate(), 3, 3);
+        CreateGenJnlLineForVoucher(GenJournalLine, TemplateType::"Bank Payment Voucher");
+        Storage.Set(PaymentDocNoLbl, GenJournalLine."Document No.");
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [THEN] Post Apply Payment to Invoice
+        VendorLedgerEntryInvoice.SetRange("Vendor No.", VendorNo);
+        VendorLedgerEntryInvoice.SetRange("Document Type", VendorLedgerEntryInvoice."Document Type"::Invoice);
+
+        LibraryERM.SetAppliestoIdVendor(VendorLedgerEntryInvoice);
+
+        VendorLedgerEntryPayment.SetRange("Vendor No.", VendorNo);
+        LibraryERM.FindVendorLedgerEntry(
+          VendorLedgerEntryPayment, VendorLedgerEntryPayment."Document Type"::Payment, GenJournalLine."Document No.");
+
+        LibraryERM.SetAppliestoIdVendor(VendorLedgerEntryPayment);
+
+        LibraryERM.PostVendLedgerApplication(VendorLedgerEntryInvoice);
+
+        // [THEN] GST ledger entries are created and Verified
+        LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::Invoice, DocumentNo, 12);
+    end;
+
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
     procedure PostFromIntraStatePurchInvServicesForRegVendorWithAdvPayment()
@@ -910,6 +966,46 @@ codeunit 18131 "GST On Purchase Tests"
         CreateAndPostDistributionDocument(DocType::"Credit Memo", DistGSTCredit::"Non-Availment", RcptGSTCredit::"Non-Availment", true);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,PurchCredMemoPageHandler')]
+    procedure PostedPurchDocumentWithRCMForCancelFeature()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        //[Scenario] [463547] Check if the system is cancelling Posted Purchase Invoice with RCM and posting purchase credit memo to reverse posted purchase invoice.
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, true, true);
+        InitializeShareStep(true, false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Post Purchase Order with GST and Line Type as G/L Account for Intrastate Transactions.
+        CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        //[WHEN] Use Action Cancel On Posted Purchase Invoice To Create Posted Credit Memo to reverse posted purchase invoice. 
+        CancelPostedPurchaseInvoiceToCreatePostedCreditMemo(PurchInvHeader, PurchaseHeader."No.");
+
+        //[THEN] Verify Posted Credit Memo is created after cancelling Posted Purchase Invoice
+        VerifyPostedCreditMemoCreatedAfterPosInvoiceCancelled(PurchInvHeader."No.");
+    end;
+
+    local procedure CancelPostedPurchaseInvoiceToCreatePostedCreditMemo(PurchInvHeader: Record "Purch. Inv. Header"; PurchaseOrderNo: Code[20])
+    var
+        PostedPurchInvoice: TestPage "Posted Purchase Invoice";
+    begin
+        PurchInvHeader.SetRange("Order No.", PurchaseOrderNo);
+        PurchInvHeader.FindFirst();
+        PostedPurchInvoice.OpenEdit();
+        PostedPurchInvoice.GoToRecord(PurchInvHeader);
+        PostedPurchInvoice.CancelInvoice.Invoke();
+    end;
+
     local procedure InitializeShareStep(InputCreditAvailment: Boolean; Exempted: Boolean; LineDiscount: Boolean)
     begin
         StorageBoolean.Set(InputCreditAvailmentLbl, InputCreditAvailment);
@@ -1571,6 +1667,59 @@ codeunit 18131 "GST On Purchase Tests"
         Storage.Set(ReverseDocumentNoLbl, ReverseDocumentNo);
     end;
 
+    local procedure PrepareCurrency(var Currency: Record Currency; ApplnRoundingPrecision: Decimal)
+    begin
+        LibraryERM.CreateCurrency(Currency);
+        LibraryERM.SetCurrencyGainLossAccounts(Currency);
+        with Currency do begin
+            Validate("Residual Gains Account", "Realized Gains Acc.");
+            Validate("Residual Losses Account", "Realized Losses Acc.");
+            Validate("Appln. Rounding Precision", ApplnRoundingPrecision);
+            Modify(true);
+        end;
+    end;
+
+    local procedure CreateExchangeRate(CurrencyCode: Code[10]; StartingDate: Date; RelExchangeRateAmount: Decimal; RelAdjustmentExchangeRateAmount: Decimal)
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+    begin
+        with CurrencyExchangeRate do begin
+            Init();
+            Validate("Currency Code", CurrencyCode);
+            Validate("Starting Date", StartingDate);
+            Insert(true);
+
+            Validate("Exchange Rate Amount", 1);
+            Validate("Adjustment Exch. Rate Amount", 1);
+
+            Validate("Relational Exch. Rate Amount", RelExchangeRateAmount);
+            Validate("Relational Adjmt Exch Rate Amt", RelAdjustmentExchangeRateAmount);
+            Modify(true);
+        end;
+    end;
+
+    local procedure UpdateVendorCurrencyAndLocation(VendorNo: Code[20]; CurrencyCode: Code[10])
+    var
+        Vendor: Record Vendor;
+        LocationCode: Code[10];
+    begin
+        Evaluate(LocationCode, Storage.Get(LocationCodeLbl));
+        Vendor.Get(VendorNo);
+        Vendor.Validate("Currency Code", CurrencyCode);
+        Vendor.Validate("Location Code", LocationCode);
+        Vendor.Modify(true);
+    end;
+
+    local procedure VerifyPostedCreditMemoCreatedAfterPosInvoiceCancelled(InvoiceNo: Code[20])
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+    begin
+        PurchCrMemoHdr.SetRange("Applies-to Doc. No.", InvoiceNo);
+        PurchCrMemoHdr.FindFirst();
+
+        Assert.RecordIsNotEmpty(PurchCrMemoHdr);
+    end;
+
     [ModalPageHandler]
     procedure ReferenceInvoiceNoPageHandler(var VendorLedgerEntries: TestPage "Vendor Ledger Entries")
     begin
@@ -1644,8 +1793,13 @@ codeunit 18131 "GST On Purchase Tests"
     end;
 
     [ModalPageHandler]
-    procedure NoSeriesHandler(var NoSeriesList: TestPage "No. Series List")
+    procedure NoSeriesHandler(var NoSeriesList: TestPage "No. Series")
     begin
         NoSeriesList.Cancel().Invoke();
+    end;
+
+    [PageHandler]
+    procedure PurchCredMemoPageHandler(var PostedPurchaseCreditMemo: TestPage "Posted Purchase Credit Memo")
+    begin
     end;
 }

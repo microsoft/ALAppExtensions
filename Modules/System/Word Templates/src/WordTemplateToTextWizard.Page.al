@@ -75,14 +75,14 @@ page 9999 "Word Template To Text Wizard"
                 var
                     RecordRef: RecordRef;
                     FieldRef: FieldRef;
-                    SystemId: Guid;
+                    SystemIdFilter: Text;
                 begin
 
                     if not DataIntialized then begin
-                        DictOfRecords.Get(Rec."Table ID", SystemId);
+                        DictOfRecords.Get(Rec."Table ID", SystemIdFilter);
                         RecordRef.Open(Rec."Table ID");
-                        FieldRef := RecordRef.Field(RecordRef.SystemIdNo);
-                        FieldRef.SetRange(SystemId);
+                        FieldRef := RecordRef.Field(RecordRef.SystemIdNo());
+                        FieldRef.SetFilter(SystemIdFilter);
                         DataIntialized := true;
                     end;
 
@@ -139,8 +139,8 @@ page 9999 "Word Template To Text Wizard"
     /// <summary>
     /// Set the entities that user can select to create the word template.
     /// </summary>
-    /// <param name="Dict">Dictionary of TableId to SystemId entries.</param>
-    internal procedure SetData(Dict: Dictionary of [Integer, Guid]; PrimarySource: Integer)
+    /// <param name="Dict">Dictionary of TableId to SystemId filters.</param>
+    internal procedure SetData(Dict: Dictionary of [Integer, Text]; PrimarySource: Integer)
     var
         I: Integer;
         FilterBuilder: TextBuilder;
@@ -190,7 +190,7 @@ page 9999 "Word Template To Text Wizard"
 
     var
         WordTemplates: Codeunit "Word Template";
-        DictOfRecords: Dictionary of [Integer, Guid];
+        DictOfRecords: Dictionary of [Integer, Text];
         DataIntialized: Boolean;
         WordTemplatesExist: Boolean;
         FinishedWizard: Boolean;

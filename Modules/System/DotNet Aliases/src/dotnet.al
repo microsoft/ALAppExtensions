@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -7,7 +7,6 @@ dotnet
 {
     assembly("DocumentFormat.OpenXml")
     {
-        PublicKeyToken = '8fb06cb64d019a17';
 
         type("DocumentFormat.OpenXml.BooleanValue"; "BooleanValue")
         {
@@ -265,28 +264,6 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Dynamics.Framework.UI.WinForms.DataVisualization.Timeline")
-    {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Framework.UI.WinForms.DataVisualization.TimelineVisualization.DataModel+TransactionChangesDataTable"; "DataModel_TransactionChangesDataTable")
-        {
-        }
-
-        type("Microsoft.Dynamics.Framework.UI.WinForms.DataVisualization.TimelineVisualization.DataModel+TransactionChangesRow"; "DataModel_TransactionChangesRow")
-        {
-        }
-
-        type("Microsoft.Dynamics.Framework.UI.WinForms.DataVisualization.TimelineVisualization.DataModel+TransactionDataTable"; "DataModel_TransactionDataTable")
-        {
-        }
-
-        type("Microsoft.Dynamics.Framework.UI.WinForms.DataVisualization.TimelineVisualization.DataModel+TransactionRow"; "DataModel_TransactionRow")
-        {
-        }
-    }
-
     assembly("Microsoft.Dynamics.Nav.AzureADGraphClient")
     {
 
@@ -317,16 +294,6 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.AzureMLWrapper.AzureMLHelper"; "AzureMLHelper")
-        {
-        }
-    }
-
-    assembly("Microsoft.Dynamics.Nav.Client.BusinessChart")
-    {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.Client.BusinessChart.BusinessChartAddIn"; "BusinessChartAddIn")
         {
         }
     }
@@ -375,21 +342,6 @@ dotnet
         type("Microsoft.Dynamics.Nav.Client.PageReady.IPageReady"; "Microsoft.Dynamics.Nav.Client.PageReady")
         {
             IsControlAddin = true;
-        }
-    }
-
-    assembly("Microsoft.Dynamics.Nav.Client.TimelineVisualization")
-    {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.Client.TimelineVisualization.VisualizationScenarios"; "VisualizationScenarios")
-        {
-        }
-
-        type("Microsoft.Dynamics.Nav.Client.TimelineVisualization.InteractiveTimelineVisualizationAddIn"; "Microsoft.Dynamics.Nav.Client.TimelineVisualization")
-        {
-            IsControlAddIn = true;
         }
     }
 
@@ -667,6 +619,14 @@ dotnet
         {
         }
 
+        type("Microsoft.Dynamics.Nav.NavUserAccount.NavPermissionSetRelation[]"; "NavPermissionSetRelationArray")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.NavUserAccount.NavPermissionSetRelation"; "NavPermissionSetRelation")
+        {
+        }
+
         type("Microsoft.Dynamics.Nav.NavUserAccount.NavTenantSettingsHelper"; "NavTenantSettingsHelper")
         {
         }
@@ -686,6 +646,9 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.Runtime.CompoundTokenInfo"; "CompoundTokenInfo")
+        {
+        }
+        type("Microsoft.Dynamics.Nav.Runtime.NavSqlConnectionTelemetry"; "NavSqlConnectionTelemetry")
         {
         }
 
@@ -830,8 +793,6 @@ dotnet
 
     assembly("Microsoft.Dynamics.Nav.OpenXml")
     {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
 
         type("Microsoft.Dynamics.Nav.OpenXml.Spreadsheet.CellData"; "CellData")
         {
@@ -1043,9 +1004,9 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Exchange.WebServices")
+    assembly("Microsoft.Exchange.WebServices.NETStandard")
     {
-        Version = '15.0.0.0';
+        Version = '2.2.1.0';
         Culture = 'neutral';
         PublicKeyToken = '31bf3856ad364e35';
 
@@ -1117,396 +1078,6 @@ dotnet
         }
     }
 
-    assembly("mscorlib")
-    {
-#if not CLEAN17
-        type("Microsoft.Win32.Registry"; "Registry")
-        {
-        }
-#endif
-        type("System.Activator"; "Activator")
-        {
-        }
-
-        type("System.ArgumentNullException"; "ArgumentNullException")
-        {
-        }
-
-        type("System.Array"; "Array")
-        {
-        }
-
-        type("System.Base64FormattingOptions"; "Base64FormattingOptions")
-        {
-        }
-
-        type("System.BitConverter"; "BitConverter")
-        {
-        }
-
-        type("System.Boolean"; "Boolean")
-        {
-        }
-
-        type("System.Buffer"; "Buffer")
-        {
-        }
-
-        type("System.Byte"; "Byte")
-        {
-        }
-
-        type("System.Char"; "Char")
-        {
-        }
-
-        type("System.Collections.ArrayList"; "ArrayList")
-        {
-        }
-
-        type("System.Collections.Generic.Dictionary`2"; "GenericDictionary2")
-        {
-        }
-
-        type("System.Collections.Generic.Dictionary`2+KeyCollection"; "GenericDictionary2_KeyCollection")
-        {
-        }
-
-        type("System.Collections.Generic.IEnumerable`1"; "GenericIEnumerable1")
-        {
-        }
-
-        type("System.Collections.Generic.IEnumerator`1"; "GenericIEnumerator1")
-        {
-        }
-
-        type("System.Collections.Generic.IReadOnlyList`1"; "GenericIReadOnlyList1")
-        {
-        }
-
-        type("System.Collections.Generic.KeyValuePair`2"; "GenericKeyValuePair2")
-        {
-        }
-
-        type("System.Collections.Generic.List`1"; "GenericList1")
-        {
-        }
-
-        type("System.Collections.Hashtable"; "Hashtable")
-        {
-        }
-
-        type("System.String[]"; "StringArray")
-        {
-        }
-
-        type("System.Collections.IDictionaryEnumerator"; "IDictionaryEnumerator")
-        {
-        }
-
-        type("System.Collections.IEnumerable"; "IEnumerable")
-        {
-        }
-
-        type("System.Collections.IEnumerator"; "IEnumerator")
-        {
-        }
-
-        type("System.Collections.IList"; "IList")
-        {
-        }
-
-        type("System.Collections.Queue"; "Queue")
-        {
-        }
-
-        type("System.Convert"; "Convert")
-        {
-        }
-
-        type("System.DateTime"; "DateTime")
-        {
-        }
-
-        type("System.DateTimeKind"; "DateTimeKind")
-        {
-        }
-
-        type("System.DateTimeOffset"; "DateTimeOffset")
-        {
-        }
-
-        type("System.Decimal"; "Decimal")
-        {
-        }
-
-        type("System.Enum"; "Enum")
-        {
-        }
-
-        type("System.Environment"; "Environment")
-        {
-        }
-
-        type("System.EventArgs"; "EventArgs")
-        {
-        }
-
-        type("System.Exception"; "Exception")
-        {
-        }
-
-        type("System.FormatException"; "FormatException")
-        {
-        }
-
-        type("System.Globalization.CultureInfo"; "CultureInfo")
-        {
-        }
-
-        type("System.Globalization.DateTimeFormatInfo"; "DateTimeFormatInfo")
-        {
-        }
-
-        type("System.Globalization.DateTimeStyles"; "DateTimeStyles")
-        {
-        }
-
-        type("System.Globalization.NumberFormatInfo"; "NumberFormatInfo")
-        {
-        }
-
-        type("System.Globalization.NumberStyles"; "NumberStyles")
-        {
-        }
-
-        type("System.Globalization.TextInfo"; "TextInfo")
-        {
-        }
-
-        type("System.Guid"; "Guid")
-        {
-        }
-
-        type("System.Int32"; "Int32")
-        {
-        }
-
-        type("System.IntPtr"; "IntPtr")
-        {
-        }
-
-        type("System.IO.BinaryReader"; "BinaryReader")
-        {
-        }
-
-        type("System.IO.BinaryWriter"; "BinaryWriter")
-        {
-        }
-
-        type("System.IO.Directory"; "Directory")
-        {
-        }
-
-        type("System.IO.DirectoryInfo"; "DirectoryInfo")
-        {
-        }
-
-        type("System.IO.File"; "File")
-        {
-        }
-
-        type("System.IO.FileAttributes"; "FileAttributes")
-        {
-        }
-
-        type("System.IO.FileInfo"; "FileInfo")
-        {
-        }
-
-        type("System.IO.FileMode"; "FileMode")
-        {
-        }
-
-        type("System.IO.FileNotFoundException"; "FileNotFoundException")
-        {
-        }
-
-        type("System.IO.FileStream"; "FileStream")
-        {
-        }
-
-        type("System.IO.MemoryStream"; "MemoryStream")
-        {
-        }
-
-        type("System.IO.Path"; "Path")
-        {
-        }
-
-        type("System.IO.SearchOption"; "SearchOption")
-        {
-        }
-
-        type("System.IO.SeekOrigin"; "SeekOrigin")
-        {
-        }
-
-        type("System.IO.Stream"; "Stream")
-        {
-        }
-
-        type("System.IO.StreamReader"; "StreamReader")
-        {
-        }
-
-        type("System.IO.StreamWriter"; "StreamWriter")
-        {
-        }
-
-        type("System.IO.StringReader"; "StringReader")
-        {
-        }
-
-        type("System.IO.StringWriter"; "StringWriter")
-        {
-        }
-
-        type("System.Math"; "Math")
-        {
-        }
-
-        type("System.Nullable`1"; "Nullable1")
-        {
-        }
-
-        type("System.Object"; "Object")
-        {
-        }
-
-        type("System.Security.Claims.Claim"; "Claim")
-        {
-        }
-
-        type(System.Security.Cryptography.SymmetricAlgorithm; "SymmetricAlgorithm")
-        {
-        }
-
-        type(System.Security.Cryptography.AsymmetricAlgorithm; "AsymmetricAlgorithm")
-        {
-        }
-
-        type("System.Security.Cryptography.HashAlgorithm"; "HashAlgorithm")
-        {
-        }
-        type("System.Security.Cryptography.HashAlgorithmName"; "HashAlgorithmName")
-        {
-        }
-
-        type("System.Security.Cryptography.KeyedHashAlgorithm"; "KeyedHashAlgorithm")
-        {
-        }
-
-        type("System.Security.Cryptography.MD5"; "MD5")
-        {
-        }
-
-        type("System.Security.Cryptography.RSACryptoServiceProvider"; "RSACryptoServiceProvider")
-        {
-        }
-        type("System.Security.Cryptography.DSACryptoServiceProvider"; "DSACryptoServiceProvider")
-        {
-        }
-
-        type("System.Security.Cryptography.SHA1"; "SHA1")
-        {
-        }
-
-        type("System.Security.Cryptography.SHA512Managed"; "SHA512Managed")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509ContentType"; "X509ContentType")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509KeyStorageFlags"; "X509KeyStorageFlags")
-        {
-        }
-
-        type("System.Security.SecureString"; "SecureString")
-        {
-        }
-
-        type("System.String"; "String")
-        {
-        }
-
-        type("System.StringComparison"; "StringComparison")
-        {
-        }
-
-        type("System.Text.Encoding"; "Encoding")
-        {
-        }
-
-        type("System.Text.NormalizationForm"; "NormalizationForm")
-        {
-        }
-
-        type("System.Text.StringBuilder"; "StringBuilder")
-        {
-        }
-
-        type("System.Text.UTF8Encoding"; "UTF8Encoding")
-        {
-        }
-
-        type("System.Threading.Tasks.Task`1"; "Task1")
-        {
-        }
-
-        type("System.Threading.Thread"; "Thread")
-        {
-        }
-
-        type("System.Threading.CancellationToken"; "CancellationToken")
-        {
-        }
-
-        type("System.TimeSpan"; "TimeSpan")
-        {
-        }
-
-        type("System.TimeZoneInfo"; "TimeZoneInfo")
-        {
-        }
-
-        type("System.Type"; "Type")
-        {
-        }
-
-        type("System.Version"; "Version")
-        {
-        }
-
-        type("System.Reflection.FieldInfo"; "FieldInfo")
-        {
-        }
-
-        type("System.Reflection.PropertyInfo"; "PropertyInfo")
-        {
-        }
-
-        type("System.Security.Cryptography.CryptoConfig"; "CryptoConfig")
-        {
-        }
-
-        type("System.Security.Cryptography.RSA"; "RSA")
-        {
-        }
-    }
-
     assembly("Newtonsoft.Json")
     {
 
@@ -1515,6 +1086,10 @@ dotnet
         }
 
         type("Newtonsoft.Json.JsonConvert"; "JsonConvert")
+        {
+        }
+
+        type("Newtonsoft.Json.JsonSerializer"; "JsonSerializer")
         {
         }
 
@@ -1547,227 +1122,6 @@ dotnet
         }
     }
 
-    assembly("System")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.Collections.Specialized.NameValueCollection"; "NameValueCollection")
-        {
-        }
-
-        type("System.Collections.Specialized.StringCollection"; "StringCollection")
-        {
-        }
-
-        type("System.Collections.Generic.SortedDictionary`2"; "GenericSortedDictionary2")
-        {
-        }
-
-        type("System.Diagnostics.FileVersionInfo"; "FileVersionInfo")
-        {
-        }
-#if not CLEAN17
-        type("System.Diagnostics.Process"; "Process")
-        {
-        }
-#endif
-        type("System.Diagnostics.Stopwatch"; "Stopwatch")
-        {
-        }
-
-        type("System.IO.Compression.CompressionMode"; "CompressionMode")
-        {
-        }
-
-        type("System.IO.Compression.GZipStream"; "GZipStream")
-        {
-        }
-
-        type("System.Net.Cookie"; "Cookie")
-        {
-        }
-
-        type("System.Net.CookieCollection"; "CookieCollection")
-        {
-        }
-
-        type("System.Net.CookieContainer"; "CookieContainer")
-        {
-        }
-
-        type("System.Net.CredentialCache"; "CredentialCache")
-        {
-        }
-
-        type("System.Net.DecompressionMethods"; "DecompressionMethods")
-        {
-        }
-
-        type("System.Net.HttpStatusCode"; "HttpStatusCode")
-        {
-        }
-
-        type("System.Net.HttpWebRequest"; "HttpWebRequest")
-        {
-        }
-
-        type("System.Net.HttpWebResponse"; "HttpWebResponse")
-        {
-        }
-
-        type("System.Net.Mail.MailAddress"; "MailAddress")
-        {
-        }
-
-        type("System.Net.Mime.ContentType"; "HttpContentType")
-        {
-        }
-
-        type("System.Net.NetworkCredential"; "NetworkCredential")
-        {
-        }
-
-        type("System.Net.SecurityProtocolType"; "SecurityProtocolType")
-        {
-        }
-
-        type("System.Net.ServicePointManager"; "ServicePointManager")
-        {
-        }
-
-        type("System.Net.WebClient"; "WebClient")
-        {
-        }
-
-        type("System.Net.WebException"; "WebException")
-        {
-        }
-
-        type("System.Net.WebExceptionStatus"; "WebExceptionStatus")
-        {
-        }
-
-        type("System.Net.WebProxy"; "WebProxy")
-        {
-        }
-
-        type("System.Net.WebRequest"; "WebRequest")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.OpenFlags"; "OpenFlags")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.StoreLocation"; "StoreLocation")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.StoreName"; "StoreName")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509Certificate2"; "X509Certificate2")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509Certificate2Collection"; "X509Certificate2Collection")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509Chain"; "X509Chain")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509FindType"; "X509FindType")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509NameType"; "X509NameType")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509RevocationMode"; "X509RevocationMode")
-        {
-        }
-
-        type("System.Security.Cryptography.X509Certificates.X509Store"; "X509Store")
-        {
-        }
-
-        type("System.Text.RegularExpressions.Capture"; "Capture")
-        {
-        }
-
-        type("System.Text.RegularExpressions.CaptureCollection"; "CaptureCollection")
-        {
-        }
-
-        type("System.Text.RegularExpressions.Group"; "Group")
-        {
-        }
-
-        type("System.Text.RegularExpressions.GroupCollection"; "GroupCollection")
-        {
-        }
-
-        type("System.Text.RegularExpressions.Match"; "Match")
-        {
-        }
-
-        type("System.Text.RegularExpressions.MatchCollection"; "MatchCollection")
-        {
-        }
-
-        type("System.Text.RegularExpressions.Regex"; "Regex")
-        {
-        }
-
-        type("System.Text.RegularExpressions.RegexOptions"; "RegexOptions")
-        {
-        }
-    }
-
-    assembly("System.Core")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.IO.MemoryMappedFiles.MemoryMappedFile"; "MemoryMappedFile")
-        {
-        }
-
-        type("System.IO.MemoryMappedFiles.MemoryMappedViewStream"; "MemoryMappedViewStream")
-        {
-        }
-    }
-
-    assembly("System.Data")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.Data.DataColumn"; "DataColumn")
-        {
-        }
-
-        type("System.Data.DataRow"; "DataRow")
-        {
-        }
-
-        type("System.Data.DataSet"; "DataSet")
-        {
-        }
-
-        type("System.Data.DataTable"; "DataTable")
-        {
-        }
-    }
-
     assembly("System.Data.Entity.Design")
     {
         Version = '4.0.0.0';
@@ -1781,15 +1135,14 @@ dotnet
 
     assembly("System.Drawing")
     {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b03f5f7f11d50a3a';
-
-        type("System.Drawing.Bitmap"; "Bitmap")
+        type("System.Drawing.ImageFormatConverter"; "ImageFormatConverter")
         {
         }
+    }
 
-        type("System.Drawing.Color"; "Color")
+    assembly("System.Drawing.Common")
+    {
+        type("System.Drawing.Bitmap"; "Bitmap")
         {
         }
 
@@ -1829,11 +1182,11 @@ dotnet
         {
         }
 
-        type("System.Drawing.ImageFormatConverter"; "ImageFormatConverter")
+        type("System.Drawing.Imaging.ImageFormat"; "ImageFormat")
         {
         }
 
-        type("System.Drawing.Imaging.ImageFormat"; "ImageFormat")
+        type("System.Drawing.Imaging.PropertyItem"; "PropertyItem")
         {
         }
 
@@ -1842,10 +1195,6 @@ dotnet
         }
 
         type("System.Drawing.Printing.PrinterSettings+StringCollection"; "PrinterSettings_StringCollection")
-        {
-        }
-
-        type(System.Drawing.Rectangle; "Rectangle")
         {
         }
 
@@ -1866,26 +1215,8 @@ dotnet
         }
     }
 
-    assembly("System.IO.Compression.FileSystem")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.IO.Compression.ZipFile"; "ZipFile")
-        {
-        }
-
-        type("System.IO.Compression.ZipFileExtensions"; "ZipFileExtensions")
-        {
-        }
-    }
-
     assembly("System.Management.Automation")
     {
-        Version = '3.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
 
         type("System.Management.Automation.ErrorRecord"; "ErrorRecord")
         {
@@ -1896,69 +1227,8 @@ dotnet
         }
     }
 
-    assembly("System.Net.Http")
+    assembly("System.Security.Cryptography.Xml")
     {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b03f5f7f11d50a3a';
-
-        type("System.Net.Http.Headers.HttpContentHeaders"; "HttpContentHeaders")
-        {
-        }
-
-        type("System.Net.Http.Headers.HttpHeaderValueCollection`1"; "HttpHeaderValueCollection1")
-        {
-        }
-
-        type("System.Net.Http.Headers.HttpRequestHeaders"; "HttpRequestHeaders")
-        {
-        }
-
-        type("System.Net.Http.Headers.MediaTypeWithQualityHeaderValue"; "MediaTypeWithQualityHeaderValue")
-        {
-        }
-
-        type("System.Net.Http.HttpClient"; "HttpClient")
-        {
-        }
-
-        type("System.Net.Http.HttpContent"; "HttpContent")
-        {
-        }
-
-        type("System.Net.Http.HttpMessageHandler"; "HttpMessageHandler")
-        {
-        }
-
-        type("System.Net.Http.HttpResponseMessage"; "HttpResponseMessage")
-        {
-        }
-
-        type("System.Net.Http.StreamContent"; "StreamContent")
-        {
-        }
-    }
-
-    assembly("System.Runtime.Serialization")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.Xml.XmlDictionaryReader"; "XmlDictionaryReader")
-        {
-        }
-
-        type("System.Xml.XmlDictionaryReaderQuotas"; "XmlDictionaryReaderQuotas")
-        {
-        }
-    }
-
-    assembly("System.Security")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b03f5f7f11d50a3a';
 
         type("System.Security.Cryptography.Xml.DataObject"; DataObject)
         {
@@ -2024,12 +1294,8 @@ dotnet
         }
     }
 
-    assembly("System.ServiceModel")
+    assembly("System.ServiceModel.Primitives")
     {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
         type("System.ServiceModel.FaultException"; "FaultException")
         {
         }
@@ -2041,192 +1307,7 @@ dotnet
         Culture = 'neutral';
         PublicKeyToken = 'b03f5f7f11d50a3a';
 
-        type("System.Web.HttpUtility"; "HttpUtility")
-        {
-        }
-
         type("System.Web.MimeMapping"; "MimeMapping")
-        {
-        }
-    }
-
-    assembly("System.Windows.Forms")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.Resources.ResXDataNode"; "ResXDataNode")
-        {
-        }
-
-        type("System.Windows.Forms.DialogResult"; "DialogResult")
-        {
-        }
-
-        type("System.Windows.Forms.FolderBrowserDialog"; "FolderBrowserDialog")
-        {
-        }
-
-        type("System.Windows.Forms.OpenFileDialog"; "OpenFileDialog")
-        {
-        }
-
-        type("System.Windows.Forms.PrintDialog"; "PrintDialog")
-        {
-        }
-
-        type("System.Windows.Forms.SaveFileDialog"; "SaveFileDialog")
-        {
-        }
-    }
-
-    assembly("System.Xml")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.Xml.DtdProcessing"; "DtdProcessing")
-        {
-        }
-
-        type("System.Xml.Schema.ValidationEventArgs"; "ValidationEventArgs")
-        {
-        }
-
-        type("System.Xml.Schema.ValidationEventHandler"; "ValidationEventHandler")
-        {
-        }
-
-        type("System.Xml.Schema.XmlSchemaValidationFlags"; "XmlSchemaValidationFlags")
-        {
-        }
-
-        type("System.Xml.ValidationType"; "ValidationType")
-        {
-        }
-
-        type("System.Xml.XmlAttribute"; "XmlAttribute")
-        {
-        }
-
-        type("System.Xml.XmlAttributeCollection"; "XmlAttributeCollection")
-        {
-        }
-
-        type("System.Xml.XmlCDataSection"; "XmlCDataSection")
-        {
-        }
-
-        type("System.Xml.XmlConvert"; "XmlConvert")
-        {
-        }
-
-        type("System.Xml.XmlDeclaration"; "XmlDeclaration")
-        {
-        }
-
-        type("System.Xml.XmlDocument"; "XmlDocument")
-        {
-        }
-
-        type("System.Xml.XmlDocumentType"; "XmlDocumentType")
-        {
-        }
-
-        type("System.Xml.XmlDateTimeSerializationMode"; "XmlDateTimeSerializationMode")
-        {
-        }
-
-        type("System.Xml.XmlElement"; "XmlElement")
-        {
-        }
-
-        type("System.Xml.XmlNamedNodeMap"; "XmlNamedNodeMap")
-        {
-        }
-
-        type("System.Xml.XmlNamespaceManager"; "XmlNamespaceManager")
-        {
-        }
-
-        type("System.Xml.XmlNode"; "XmlNode")
-        {
-        }
-
-        type("System.Xml.XmlNodeList"; "XmlNodeList")
-        {
-        }
-
-        type("System.Xml.XmlNodeType"; "XmlNodeType")
-        {
-        }
-
-        type("System.Xml.XmlProcessingInstruction"; "XmlProcessingInstruction")
-        {
-        }
-
-        type("System.Xml.XmlReader"; "XmlReader")
-        {
-        }
-
-        type("System.Xml.XmlReaderSettings"; "XmlReaderSettings")
-        {
-        }
-
-        type("System.Xml.XmlText"; "XmlText")
-        {
-        }
-
-        type("System.Xml.XmlTextReader"; "XmlTextReader")
-        {
-        }
-
-        type("System.Xml.XmlTextWriter"; "XmlTextWriter")
-        {
-        }
-
-        type("System.Xml.XmlUrlResolver"; "XmlUrlResolver")
-        {
-        }
-
-        type("System.Xml.XmlWriter"; "XmlWriter")
-        {
-        }
-
-        type("System.Xml.XmlWriterSettings"; "XmlWriterSettings")
-        {
-        }
-
-        type("System.Xml.XPath.IXPathNavigable"; "IXPathNavigable")
-        {
-        }
-
-        type("System.Xml.XPath.XPathNavigator"; "XPathNavigator")
-        {
-        }
-
-        type("System.Xml.XPath.XPathExpression"; "XPathExpression")
-        {
-        }
-
-        type("System.Xml.Xsl.XslCompiledTransform"; "XslCompiledTransform")
-        {
-        }
-
-        type("System.Xml.Xsl.XsltArgumentList"; "XsltArgumentList")
-        {
-        }
-    }
-
-    assembly("System.Xml.Linq")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.Xml.Linq.XDocument"; "XDocument")
         {
         }
     }
@@ -2401,4 +1482,791 @@ dotnet
         {
         }
     }
+
+    assembly("netstandard")
+    {
+        type("System.Collections.Generic.Dictionary`2+KeyCollection"; "GenericDictionary2_KeyCollection")
+        {
+        }
+
+        type("System.String[]"; "StringArray")
+        {
+        }
+        type("System.ArgumentNullException"; "ArgumentNullException")
+        {
+        }
+
+        type("System.Array"; "Array")
+        {
+        }
+
+        type("System.Base64FormattingOptions"; "Base64FormattingOptions")
+        {
+        }
+
+        type("System.BitConverter"; "BitConverter")
+        {
+        }
+
+        type("System.Boolean"; "Boolean")
+        {
+        }
+
+        type("System.Buffer"; "Buffer")
+        {
+        }
+
+        type("System.Byte"; "Byte")
+        {
+        }
+
+        type("System.Char"; "Char")
+        {
+        }
+
+        type("System.Collections.ArrayList"; "ArrayList")
+        {
+        }
+
+        type("System.Collections.Hashtable"; "Hashtable")
+        {
+        }
+
+        type("System.Collections.IDictionaryEnumerator"; "IDictionaryEnumerator")
+        {
+        }
+
+        type("System.Collections.IEnumerable"; "IEnumerable")
+        {
+        }
+
+        type("System.Collections.IEnumerator"; "IEnumerator")
+        {
+        }
+
+        type("System.Collections.IList"; "IList")
+        {
+        }
+
+        type("System.Collections.Queue"; "Queue")
+        {
+        }
+
+        type("System.Collections.Stack"; "Stack")
+        {
+        }
+
+        type("System.Convert"; "Convert")
+        {
+        }
+
+        type("System.DateTime"; "DateTime")
+        {
+        }
+
+        type("System.DateTimeKind"; "DateTimeKind")
+        {
+        }
+
+        type("System.DateTimeOffset"; "DateTimeOffset")
+        {
+        }
+
+        type("System.Decimal"; "Decimal")
+        {
+        }
+
+        type("System.Enum"; "Enum")
+        {
+        }
+
+        type("System.Environment"; "Environment")
+        {
+        }
+
+        type("System.EventArgs"; "EventArgs")
+        {
+        }
+
+        type("System.Exception"; "Exception")
+        {
+        }
+
+        type("System.FormatException"; "FormatException")
+        {
+        }
+
+        type("System.Globalization.CultureInfo"; "CultureInfo")
+        {
+        }
+
+        type("System.Globalization.DateTimeFormatInfo"; "DateTimeFormatInfo")
+        {
+        }
+
+        type("System.Globalization.DateTimeStyles"; "DateTimeStyles")
+        {
+        }
+
+        type("System.Globalization.NumberFormatInfo"; "NumberFormatInfo")
+        {
+        }
+
+        type("System.Globalization.NumberStyles"; "NumberStyles")
+        {
+        }
+
+        type("System.Globalization.TextInfo"; "TextInfo")
+        {
+        }
+
+        type("System.Guid"; "Guid")
+        {
+        }
+
+        type("System.Int32"; "Int32")
+        {
+        }
+
+        type("System.IntPtr"; "IntPtr")
+        {
+        }
+
+        type("System.IO.BinaryReader"; "BinaryReader")
+        {
+        }
+
+        type("System.IO.BinaryWriter"; "BinaryWriter")
+        {
+        }
+
+        type("System.IO.Directory"; "Directory")
+        {
+        }
+
+        type("System.IO.DirectoryInfo"; "DirectoryInfo")
+        {
+        }
+
+        type("System.IO.File"; "File")
+        {
+        }
+
+        type("System.IO.FileAttributes"; "FileAttributes")
+        {
+        }
+
+        type("System.IO.FileInfo"; "FileInfo")
+        {
+        }
+
+        type("System.IO.FileMode"; "FileMode")
+        {
+        }
+
+        type("System.IO.FileNotFoundException"; "FileNotFoundException")
+        {
+        }
+
+        type("System.IO.FileStream"; "FileStream")
+        {
+        }
+
+        type("System.IO.MemoryStream"; "MemoryStream")
+        {
+        }
+
+        type("System.IO.Path"; "Path")
+        {
+        }
+
+        type("System.IO.SearchOption"; "SearchOption")
+        {
+        }
+
+        type("System.IO.SeekOrigin"; "SeekOrigin")
+        {
+        }
+
+        type("System.IO.Stream"; "Stream")
+        {
+        }
+
+        type("System.IO.StreamReader"; "StreamReader")
+        {
+        }
+
+        type("System.IO.StreamWriter"; "StreamWriter")
+        {
+        }
+
+        type("System.IO.StringReader"; "StringReader")
+        {
+        }
+
+        type("System.IO.StringWriter"; "StringWriter")
+        {
+        }
+
+        type("System.Math"; "Math")
+        {
+        }
+
+        type("System.Object"; "Object")
+        {
+        }
+
+        type("System.Security.Claims.Claim"; "Claim")
+        {
+        }
+
+        type(System.Security.Cryptography.SymmetricAlgorithm; "SymmetricAlgorithm")
+        {
+        }
+
+        type(System.Security.Cryptography.AsymmetricAlgorithm; "AsymmetricAlgorithm")
+        {
+        }
+
+        type("System.Security.Cryptography.HashAlgorithm"; "HashAlgorithm")
+        {
+        }
+        type("System.Security.Cryptography.HashAlgorithmName"; "HashAlgorithmName")
+        {
+        }
+
+        type("System.Security.Cryptography.KeyedHashAlgorithm"; "KeyedHashAlgorithm")
+        {
+        }
+
+        type("System.Security.Cryptography.MD5"; "MD5")
+        {
+        }
+
+        type("System.Security.Cryptography.RSACryptoServiceProvider"; "RSACryptoServiceProvider")
+        {
+        }
+        type("System.Security.Cryptography.DSACryptoServiceProvider"; "DSACryptoServiceProvider")
+        {
+        }
+
+        type("System.Security.Cryptography.SHA1"; "SHA1")
+        {
+        }
+
+        type("System.Security.Cryptography.SHA512Managed"; "SHA512Managed")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509ContentType"; "X509ContentType")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509KeyStorageFlags"; "X509KeyStorageFlags")
+        {
+        }
+
+        type("System.Security.SecureString"; "SecureString")
+        {
+        }
+
+        type("System.String"; "String")
+        {
+        }
+
+        type("System.StringComparison"; "StringComparison")
+        {
+        }
+
+        type("System.Text.Encoding"; "Encoding")
+        {
+        }
+
+        type("System.Text.NormalizationForm"; "NormalizationForm")
+        {
+        }
+
+        type("System.Text.StringBuilder"; "StringBuilder")
+        {
+        }
+
+        type("System.Text.UTF8Encoding"; "UTF8Encoding")
+        {
+        }
+
+        type("System.Threading.Thread"; "Thread")
+        {
+        }
+
+        type("System.Threading.CancellationToken"; "CancellationToken")
+        {
+        }
+
+        type("System.TimeSpan"; "TimeSpan")
+        {
+        }
+
+        type("System.TimeZoneInfo"; "TimeZoneInfo")
+        {
+        }
+
+        type("System.Type"; "Type")
+        {
+        }
+
+        type("System.Version"; "Version")
+        {
+        }
+
+        type("System.Reflection.FieldInfo"; "FieldInfo")
+        {
+        }
+
+        type("System.Reflection.PropertyInfo"; "PropertyInfo")
+        {
+        }
+
+        type("System.Security.Cryptography.CryptoConfig"; "CryptoConfig")
+        {
+        }
+
+        type("System.Security.Cryptography.RSA"; "RSA")
+        {
+        }
+        type("System.Collections.Specialized.NameValueCollection"; "NameValueCollection")
+        {
+        }
+
+        type("System.Collections.Specialized.StringCollection"; "StringCollection")
+        {
+        }
+
+        type("System.Diagnostics.FileVersionInfo"; "FileVersionInfo")
+        {
+        }
+#if not CLEAN17
+        type("System.Diagnostics.Process"; "Process")
+        {
+        }
+#endif
+        type("System.Diagnostics.Stopwatch"; "Stopwatch")
+        {
+        }
+
+        type("System.IO.Compression.CompressionMode"; "CompressionMode")
+        {
+        }
+
+        type("System.IO.Compression.GZipStream"; "GZipStream")
+        {
+        }
+
+        type("System.Net.Cookie"; "Cookie")
+        {
+        }
+
+        type("System.Net.CookieCollection"; "CookieCollection")
+        {
+        }
+
+        type("System.Net.CookieContainer"; "CookieContainer")
+        {
+        }
+
+        type("System.Net.CredentialCache"; "CredentialCache")
+        {
+        }
+
+        type("System.Net.DecompressionMethods"; "DecompressionMethods")
+        {
+        }
+
+        type("System.Net.HttpStatusCode"; "HttpStatusCode")
+        {
+        }
+
+        type("System.Net.HttpWebRequest"; "HttpWebRequest")
+        {
+        }
+
+        type("System.Net.HttpWebResponse"; "HttpWebResponse")
+        {
+        }
+
+        type("System.Net.Mail.MailAddress"; "MailAddress")
+        {
+        }
+
+        type("System.Net.Mime.ContentType"; "HttpContentType")
+        {
+        }
+
+        type("System.Net.NetworkCredential"; "NetworkCredential")
+        {
+        }
+
+        type("System.Net.SecurityProtocolType"; "SecurityProtocolType")
+        {
+        }
+
+        type("System.Net.ServicePointManager"; "ServicePointManager")
+        {
+        }
+
+        type("System.Net.WebClient"; "WebClient")
+        {
+        }
+
+        type("System.Net.WebException"; "WebException")
+        {
+        }
+
+        type("System.Net.WebExceptionStatus"; "WebExceptionStatus")
+        {
+        }
+
+        type("System.Net.WebProxy"; "WebProxy")
+        {
+        }
+
+        type("System.Net.WebRequest"; "WebRequest")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.OpenFlags"; "OpenFlags")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.StoreLocation"; "StoreLocation")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.StoreName"; "StoreName")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509Certificate2"; "X509Certificate2")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509Certificate2Collection"; "X509Certificate2Collection")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509Chain"; "X509Chain")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509FindType"; "X509FindType")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509NameType"; "X509NameType")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509RevocationMode"; "X509RevocationMode")
+        {
+        }
+
+        type("System.Security.Cryptography.X509Certificates.X509Store"; "X509Store")
+        {
+        }
+
+        type("System.Text.RegularExpressions.Capture"; "Capture")
+        {
+        }
+
+        type("System.Text.RegularExpressions.CaptureCollection"; "CaptureCollection")
+        {
+        }
+
+        type("System.Text.RegularExpressions.Group"; "Group")
+        {
+        }
+
+        type("System.Text.RegularExpressions.GroupCollection"; "GroupCollection")
+        {
+        }
+
+        type("System.Text.RegularExpressions.Match"; "Match")
+        {
+        }
+
+        type("System.Text.RegularExpressions.MatchCollection"; "MatchCollection")
+        {
+        }
+
+        type("System.Text.RegularExpressions.Regex"; "Regex")
+        {
+        }
+
+        type("System.Text.RegularExpressions.RegexOptions"; "RegexOptions")
+        {
+        }
+        type("System.IO.MemoryMappedFiles.MemoryMappedFile"; "MemoryMappedFile")
+        {
+        }
+
+        type("System.IO.MemoryMappedFiles.MemoryMappedViewStream"; "MemoryMappedViewStream")
+        {
+        }
+        type("System.Data.DataColumn"; "DataColumn")
+        {
+        }
+
+        type("System.Data.DataRow"; "DataRow")
+        {
+        }
+
+        type("System.Data.DataSet"; "DataSet")
+        {
+        }
+
+        type("System.Data.DataTable"; "DataTable")
+        {
+        }
+        type("System.Drawing.Color"; "Color")
+        {
+        }
+
+        type(System.Drawing.Rectangle; "Rectangle")
+        {
+        }
+
+        type("System.IO.Compression.ZipFile"; "ZipFile")
+        {
+        }
+
+        type("System.IO.Compression.ZipFileExtensions"; "ZipFileExtensions")
+        {
+        }
+        type("System.Net.Http.Headers.HttpContentHeaders"; "HttpContentHeaders")
+        {
+        }
+
+        type("System.Net.Http.Headers.HttpRequestHeaders"; "HttpRequestHeaders")
+        {
+        }
+
+        type("System.Net.Http.Headers.MediaTypeWithQualityHeaderValue"; "MediaTypeWithQualityHeaderValue")
+        {
+        }
+
+        type("System.Net.Http.HttpClient"; "HttpClient")
+        {
+        }
+
+        type("System.Net.Http.HttpContent"; "HttpContent")
+        {
+        }
+
+        type("System.Net.Http.HttpMessageHandler"; "HttpMessageHandler")
+        {
+        }
+
+        type("System.Net.Http.HttpResponseMessage"; "HttpResponseMessage")
+        {
+        }
+
+        type("System.Net.Http.StreamContent"; "StreamContent")
+        {
+        }
+        type("System.Xml.XmlDictionaryReader"; "XmlDictionaryReader")
+        {
+        }
+
+        type("System.Xml.XmlDictionaryReaderQuotas"; "XmlDictionaryReaderQuotas")
+        {
+        }
+        type("System.Web.HttpUtility"; "HttpUtility")
+        {
+        }
+
+        type("System.Xml.DtdProcessing"; "DtdProcessing")
+        {
+        }
+
+        type("System.Xml.Schema.ValidationEventArgs"; "ValidationEventArgs")
+        {
+        }
+
+        type("System.Xml.Schema.ValidationEventHandler"; "ValidationEventHandler")
+        {
+        }
+
+        type("System.Xml.Schema.XmlSchemaValidationFlags"; "XmlSchemaValidationFlags")
+        {
+        }
+
+        type("System.Xml.ValidationType"; "ValidationType")
+        {
+        }
+
+        type("System.Xml.XmlAttribute"; "XmlAttribute")
+        {
+        }
+
+        type("System.Xml.XmlAttributeCollection"; "XmlAttributeCollection")
+        {
+        }
+
+        type("System.Xml.XmlCDataSection"; "XmlCDataSection")
+        {
+        }
+
+        type("System.Xml.XmlConvert"; "XmlConvert")
+        {
+        }
+
+        type("System.Xml.XmlDeclaration"; "XmlDeclaration")
+        {
+        }
+
+        type("System.Xml.XmlDocument"; "XmlDocument")
+        {
+        }
+
+        type("System.Xml.XmlDocumentType"; "XmlDocumentType")
+        {
+        }
+
+        type("System.Xml.XmlDateTimeSerializationMode"; "XmlDateTimeSerializationMode")
+        {
+        }
+
+        type("System.Xml.XmlElement"; "XmlElement")
+        {
+        }
+
+        type("System.Xml.XmlNamedNodeMap"; "XmlNamedNodeMap")
+        {
+        }
+
+        type("System.Xml.XmlNamespaceManager"; "XmlNamespaceManager")
+        {
+        }
+
+        type("System.Xml.XmlNode"; "XmlNode")
+        {
+        }
+
+        type("System.Xml.XmlNodeList"; "XmlNodeList")
+        {
+        }
+
+        type("System.Xml.XmlNodeType"; "XmlNodeType")
+        {
+        }
+
+        type("System.Xml.XmlProcessingInstruction"; "XmlProcessingInstruction")
+        {
+        }
+
+        type("System.Xml.XmlReader"; "XmlReader")
+        {
+        }
+
+        type("System.Xml.XmlReaderSettings"; "XmlReaderSettings")
+        {
+        }
+
+        type("System.Xml.XmlText"; "XmlText")
+        {
+        }
+
+        type("System.Xml.XmlTextReader"; "XmlTextReader")
+        {
+        }
+
+        type("System.Xml.XmlTextWriter"; "XmlTextWriter")
+        {
+        }
+
+        type("System.Xml.XmlUrlResolver"; "XmlUrlResolver")
+        {
+        }
+
+        type("System.Xml.XmlWriter"; "XmlWriter")
+        {
+        }
+
+        type("System.Xml.XmlWriterSettings"; "XmlWriterSettings")
+        {
+        }
+
+        type("System.Xml.XPath.IXPathNavigable"; "IXPathNavigable")
+        {
+        }
+
+        type("System.Xml.XPath.XPathNavigator"; "XPathNavigator")
+        {
+        }
+
+        type("System.Xml.XPath.XPathExpression"; "XPathExpression")
+        {
+        }
+
+        type("System.Xml.Xsl.XslCompiledTransform"; "XslCompiledTransform")
+        {
+        }
+
+        type("System.Xml.Xsl.XsltArgumentList"; "XsltArgumentList")
+        {
+        }
+
+        type("System.Xml.Linq.XDocument"; "XDocument")
+        {
+        }
+
+        type("System.Collections.Generic.Dictionary`2"; "GenericDictionary2")
+        {
+        }
+
+        type("System.Collections.Generic.IEnumerable`1"; "GenericIEnumerable1")
+        {
+        }
+
+        type("System.Collections.Generic.IEnumerator`1"; "GenericIEnumerator1")
+        {
+        }
+
+        type("System.Collections.Generic.IReadOnlyList`1"; "GenericIReadOnlyList1")
+        {
+        }
+
+        type("System.Collections.Generic.KeyValuePair`2"; "GenericKeyValuePair2")
+        {
+        }
+
+        type("System.Collections.Generic.List`1"; "GenericList1")
+        {
+        }
+
+        type("System.Nullable`1"; "Nullable1")
+        {
+        }
+
+        type("System.Threading.Tasks.Task`1"; "Task1")
+        {
+        }
+
+        type("System.Collections.Generic.SortedDictionary`2"; "GenericSortedDictionary2")
+        {
+        }
+
+        type("System.Collections.Generic.HashSet`1"; "GenericHashSet1")
+        {
+        }
+
+        type("System.Net.Http.Headers.HttpHeaderValueCollection`1"; "HttpHeaderValueCollection1")
+        {
+        }
+
+        type("System.Activator"; "Activator")
+        {
+        }
+    }
+
 }
+

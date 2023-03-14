@@ -49,8 +49,22 @@ codeunit 3910 "Apply Retention Policy"
     procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"): Integer;
     var
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
+        ExpiredRecordExpirationDate: Date;
     begin
-        Exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup))
+        Exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate))
+    end;
+
+    /// <summary>
+    /// Returns the number of expired records for the given Retention Policy Setup record. These records would be deleted if the Retention Policy was applied.
+    /// </summary>
+    /// <param name="RetentionPolicySetup">This is the setup record which defines the retention policy for which the expired records will be counted.</param>
+    /// <param name="ExpiredRecordExpirationDate">The earliest expiration date for which there are more expired records than the maximum to be deleted in a single run.</param>
+    /// <returns>The number of records which are expired.</returns>
+    procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"; var ExpiredRecordExpirationDate: Date): Integer;
+    var
+        ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
+    begin
+        Exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate))
     end;
 
     /// <summary>
@@ -58,15 +72,14 @@ codeunit 3910 "Apply Retention Policy"
     /// </summary>
     /// <param name="DateFieldNo">The date or datetime field the filter will be placed on.</param>
     /// <param name="ExpirationDate">The expiration date used in the filter.</param>
-    /// <param name="RecRef">The record reference on which the filter will be placed.</param>
+    /// <param name="RecordRef">The record reference on which the filter will be placed.</param>
     /// <param name="FilterGroup">The filtergroup in which the filter will be placed.</param>
-    /// <param name="NullDateFilterGroup">The filtergroup in which the null date filter will be placed.</param>
     /// <param name="NullDateReplacementValue">The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.</param>
-    procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+    procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
     var
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
     begin
-        ApplyRetentionPolicyImpl.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecRef, FilterGroup, NullDateReplacementValue);
+        ApplyRetentionPolicyImpl.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, FilterGroup, NullDateReplacementValue);
     end;
 
     /// <summary>
@@ -74,15 +87,29 @@ codeunit 3910 "Apply Retention Policy"
     /// </summary>
     /// <param name="DateFieldNo">The date or datetime field the filter will be placed on.</param>
     /// <param name="ExpirationDate">The expiration date used in the filter.</param>
-    /// <param name="RecRef">The record reference on whic the filter will be placed.</param>
+    /// <param name="RecordRef">The record reference on whic the filter will be placed.</param>
     /// <param name="FilterGroup">The filtergroup in which the filter will be placed.</param>
-    /// <param name="NullDateFilterGroup">The filtergroup in which the null date filter will be placed.</param>
     /// <param name="NullDateReplacementValue">The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.</param>
-    procedure SetWhereNewerExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+    procedure SetWhereNewerExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
     var
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
     begin
-        ApplyRetentionPolicyImpl.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecRef, FilterGroup, NullDateReplacementValue);
+        ApplyRetentionPolicyImpl.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, FilterGroup, NullDateReplacementValue);
+    end;
+
+    /// <summary>
+    /// This method places a filter on the record reference where records are expired one day at the expiration date. The filter excludes any record where the date field specified in DateFieldNo has no value.
+    /// </summary>
+    /// <param name="DateFieldNo">The date or datetime field the filter will be placed on.</param>
+    /// <param name="ExpirationDate">The expiration date used in the filter.</param>
+    /// <param name="RecordRef">The record reference on whic the filter will be placed.</param>
+    /// <param name="FilterGroup">The filtergroup in which the filter will be placed.</param>
+    /// <param name="NullDateReplacementValue">The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.</param>
+    procedure SetSingleDateExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+    var
+        ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
+    begin
+        ApplyRetentionPolicyImpl.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, FilterGroup, NullDateReplacementValue);
     end;
 
     /// <summary>
@@ -103,8 +130,10 @@ codeunit 3910 "Apply Retention Policy"
     /// </summary>
     /// <param name="RecRef">The record reference which contains the expired records to be deleted.</param>
     /// <param name="Handled">Indicates whether the event has been handled.</param>
+#pragma warning disable AA0072
     [IntegrationEvent(false, false)]
     internal procedure OnApplyRetentionPolicyIndirectPermissionRequired(var RecRef: RecordRef; var Handled: Boolean)
     begin
     end;
+#pragma warning restore
 }

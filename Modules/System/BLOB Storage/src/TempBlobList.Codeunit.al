@@ -68,6 +68,19 @@ codeunit 4102 "Temp Blob List"
     end;
 
     /// <summary>
+    /// Remove a number of elements starting from a specified location from a non-empty list.
+    /// </summary>
+    /// <error>The index is larger than the number of elements in the list or less than one.</error>
+    /// <error>The element count is less than one.</error>
+    /// <param name="Index">The index of the first element to be deleted.</param>
+    /// <param name="ElementCount">The number of elements to be deleted.</param>
+    /// <returns>True if successful.</returns>
+    procedure RemoveRange(Index: Integer; ElementCount: Integer): Boolean
+    begin
+        exit(TempBlobListImpl.RemoveRange(Index, ElementCount));
+    end;
+
+    /// <summary>
     /// Return true if the list is empty, otherwise return false.
     /// </summary>
     /// <returns>True if the list is empty.</returns>

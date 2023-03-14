@@ -129,6 +129,24 @@ page 31170 "Sales Advance Letters CZZ"
                     ToolTip = 'Specifies whether VAT document will be posted automatically.';
                     Visible = false;
                 }
+                field("Payment Method Code"; Rec."Payment Method Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies how to make payment, such as with bank transfer, cash, or check.';
+                    Visible = false;
+                }
+                field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the code for Shortcut Dimension 1, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
+                    Visible = false;
+                }
+                field("Shortcut Dimension 2 Code"; Rec."Shortcut Dimension 2 Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the code for Shortcut Dimension 2, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
+                    Visible = false;
+                }
             }
         }
         area(FactBoxes)
@@ -299,8 +317,27 @@ page 31170 "Sales Advance Letters CZZ"
                 var
                     SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
                 begin
+                    SalesAdvLetterHeaderCZZ := Rec;
                     CurrPage.SetSelectionFilter(SalesAdvLetterHeaderCZZ);
-                    SalesAdvLetterHeaderCZZ.PrintRecord(true);
+                    SalesAdvLetterHeaderCZZ.PrintRecords(true);
+                end;
+            }
+            action(Email)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = '&Send by Email';
+                Image = Email;
+                Promoted = true;
+                PromotedCategory = Report;
+                ToolTip = 'Prepare to email the document. The Send Email window opens prefilled with the customer''s email address so you can add or edit information.';
+
+                trigger OnAction()
+                var
+                    SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+                begin
+                    SalesAdvLetterHeaderCZZ := Rec;
+                    CurrPage.SetSelectionFilter(SalesAdvLetterHeaderCZZ);
+                    SalesAdvLetterHeaderCZZ.EmailRecords(true);
                 end;
             }
             action(PrintToAttachment)
@@ -314,8 +351,12 @@ page 31170 "Sales Advance Letters CZZ"
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
+                var
+                    SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
                 begin
-                    Rec.PrintToDocumentAttachment();
+                    SalesAdvLetterHeaderCZZ := Rec;
+                    CurrPage.SetSelectionFilter(SalesAdvLetterHeaderCZZ);
+                    SalesAdvLetterHeaderCZZ.PrintToDocumentAttachment();
                 end;
             }
             action(AdvanceLetters)
@@ -347,11 +388,4 @@ page 31170 "Sales Advance Letters CZZ"
             }
         }
     }
-
-    trigger OnOpenPage()
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-    begin
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-    end;
 }

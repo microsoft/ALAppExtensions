@@ -186,13 +186,19 @@ page 18480 "Order Subcon. Details Delivery"
 
                 trigger OnAction()
                 begin
-                    MakeConfirmation(Rec."Document No.");
-                    Rec.SubConSend := true;
-                    Codeunit.Run(Codeunit::"Subcontracting Post", Rec);
+                    Codeunit.Run(Codeunit::"Subcontracting Confirm-Post", Rec);
                 end;
             }
         }
     }
+
+    trigger OnDeleteRecord(): Boolean
+    var
+        UpdateSubcontractDetails: Codeunit "Update Subcontract Details";
+    begin
+        UpdateSubcontractDetails.ValidateOrUpdateBeforeSubConOrderLineDelete(Rec);
+    end;
+
     local procedure DeliverCompForOnAfterValidate()
     begin
         CurrPage.Update();

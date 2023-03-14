@@ -2,7 +2,26 @@ pageextension 11771 "Sales Quote Archive CZL" extends "Sales Quote Archive"
 {
     layout
     {
-        addafter("Area")
+        addlast(Invoicing)
+        {
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
+            field("Registration No. CZL"; Rec."Registration No. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the registration number of customer.';
+            }
+            field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the secondary VAT registration number for the customer.';
+                Importance = Additional;
+            }
+        }
+        addlast("Foreign Trade")
         {
             field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
             {

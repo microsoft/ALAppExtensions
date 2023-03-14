@@ -47,7 +47,6 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         ConnectorMock.AddAccount(EmailAccount); // Create an email account
         EmailScenario.SetDefaultEmailAccount(EmailAccount); // Set the email account as default
 
-        CreateSMTPMailSetup();
         DeleteJobQueueEntry(CODEUNIT::"Document-Mailing");
         DeleteJobQueueEntry(CODEUNIT::"O365 Sales Cancel Invoice");
     end;
@@ -352,7 +351,9 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("No."), DATABASE::"Sales Header");
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Posting Description"), DATABASE::"Sales Header");
+#pragma warning disable AL0432
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO(Id), DATABASE::"Sales Header");
+#pragma warning restore AL0432
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Order Date"), DATABASE::"Sales Header");    // it is always set as Today() in API
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Shipment Date"), DATABASE::"Sales Header"); // it is always set as Today() in API
         // Special ignore case for ES
@@ -547,7 +548,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         SetCustomerEmail(SalesHeader."Sell-to Customer No.");
         DocumentId := SalesHeader.SystemId;
         Commit();
-        VerifySalesQuote(DocumentId, TempSalesQuoteEntityBuffer.Status::Draft);
+        VerifySalesQuote(DocumentId, TempSalesQuoteEntityBuffer.Status::Draft.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -558,7 +559,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         Assert.AreEqual('', ResponseText, NotEmptyResponseErr);
 
         // [THEN] Quote is sent
-        VerifySalesQuote(DocumentId, TempSalesQuoteEntityBuffer.Status::Sent);
+        VerifySalesQuote(DocumentId, TempSalesQuoteEntityBuffer.Status::Sent.AsInteger());
 
         // [THEN] Mailing job is created
         CheckJobQueueEntry(CODEUNIT::"Document-Mailing");
@@ -594,7 +595,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         Commit();
         Assert.IsTrue(QuoteEmailAddress <> '', StrSubstNo(EmptyParameterErr, 'Address'));
         Assert.IsTrue(QuoteEmailSubject <> '', StrSubstNo(EmptyParameterErr, 'Subject'));
-        VerifySalesQuote(DocumentId, TempSalesQuoteEntityBuffer.Status::Draft);
+        VerifySalesQuote(DocumentId, TempSalesQuoteEntityBuffer.Status::Draft.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -613,7 +614,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         SalesHeader.SetRange("Quote No.", DocumentNo);
         Assert.IsTrue(SalesHeader.FindFirst(), CannotFindDraftInvoiceErr);
         Assert.AreNotEqual(DocumentId, SalesHeader.SystemId, InvoiceIdErr);
-        VerifyDraftSalesInvoice(SalesHeader.SystemId, TempSalesInvoiceEntityAggregate.Status::Draft);
+        VerifyDraftSalesInvoice(SalesHeader.SystemId, TempSalesInvoiceEntityAggregate.Status::Draft.AsInteger());
 
         // [THEN] Email parameters are deleted
         InvoiceRecordRef.GetTable(SalesHeader);
@@ -652,7 +653,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         Commit();
         Assert.IsTrue(QuoteEmailAddress <> '', StrSubstNo(EmptyParameterErr, 'Address'));
         Assert.IsTrue(QuoteEmailSubject <> '', StrSubstNo(EmptyParameterErr, 'Subject'));
-        VerifySalesQuote(DocumentId, TempSalesQuoteEntityBuffer.Status::Draft);
+        VerifySalesQuote(DocumentId, TempSalesQuoteEntityBuffer.Status::Draft.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -671,7 +672,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         SalesHeader.SetRange("Quote No.", DocumentNo);
         Assert.IsTrue(SalesHeader.FindFirst(), CannotFindOrderErr);
         Assert.AreNotEqual(DocumentId, SalesHeader.SystemId, InvoiceIdErr);
-        VerifySalesOrder(SalesHeader.SystemId, TempSalesOrderEntityBuffer.Status::Draft);
+        VerifySalesOrder(SalesHeader.SystemId, TempSalesOrderEntityBuffer.Status::Draft.AsInteger());
 
         // [THEN] Email parameters are deleted
         OrderRecordRef.GetTable(SalesHeader);
@@ -782,38 +783,17 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         EXIT(SalesHeader.FindFirst());
     end;
 
-    local procedure CreateSMTPMailSetup()
-    var
-        SMTPMailSetup: Record "SMTP Mail Setup";
-        IsNew: Boolean;
-    begin
-        IsNew := not SMTPMailSetup.FindFirst();
-
-        if IsNew then
-            SMTPMailSetup.Init();
-        SMTPMailSetup."SMTP Server" := 'SomeServer';
-        SMTPMailSetup."SMTP Server Port" := 1000;
-        SMTPMailSetup."Secure Connection" := true;
-        SMTPMailSetup.Authentication := SMTPMailSetup.Authentication::Basic;
-        SMTPMailSetup."User ID" := 'somebody@somewhere.com';
-        SMTPMailSetup.SetPassword('Some Password');
-        if IsNew then
-            SMTPMailSetup.Insert(true)
-        else
-            SMTPMailSetup.Modify(true);
-    end;
-
     local procedure CreateEmailParameters(var SalesHeader: Record "Sales Header")
     var
         EmailParameter: Record "Email Parameter";
     begin
         EmailParameter.SaveParameterValue(
-          SalesHeader."No.", SalesHeader."Document Type",
-          EmailParameter."Parameter Type"::Address,
+          SalesHeader."No.", SalesHeader."Document Type".AsInteger(),
+          EmailParameter."Parameter Type"::Address.AsInteger(),
           StrSubstNo('%1@home.local', CopyStr(CreateGuid(), 2, 8)));
         EmailParameter.SaveParameterValue(
-          SalesHeader."No.", SalesHeader."Document Type",
-          EmailParameter."Parameter Type"::Subject, Format(CreateGuid()));
+          SalesHeader."No.", SalesHeader."Document Type".AsInteger(),
+          EmailParameter."Parameter Type"::Subject.AsInteger(), Format(CreateGuid()));
     end;
 
     local procedure GetEmailParameters(var RecordRef: RecordRef; var Email: Text; var Subject: Text)
@@ -829,11 +809,11 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
                 begin
                     RecordRef.SetTable(SalesHeader);
                     if EmailParameter.GetEntryWithReportUsage(
-                         SalesHeader."No.", SalesHeader."Document Type", EmailParameter."Parameter Type"::Address)
+                         SalesHeader."No.", SalesHeader."Document Type".AsInteger(), EmailParameter."Parameter Type"::Address.AsInteger())
                     then
                         Email := EmailParameter.GetParameterValue();
                     if EmailParameter.GetEntryWithReportUsage(
-                         SalesHeader."No.", SalesHeader."Document Type", EmailParameter."Parameter Type"::Subject)
+                         SalesHeader."No.", SalesHeader."Document Type".AsInteger(), EmailParameter."Parameter Type"::Subject.AsInteger())
                     then
                         Subject := EmailParameter.GetParameterValue();
                 end;
@@ -841,11 +821,11 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
                 begin
                     RecordRef.SetTable(SalesInvoiceHeader);
                     if EmailParameter.GetEntryWithReportUsage(
-                         SalesInvoiceHeader."No.", SalesHeader."Document Type"::Invoice, EmailParameter."Parameter Type"::Address)
+                         SalesInvoiceHeader."No.", SalesHeader."Document Type"::Invoice.AsInteger(), EmailParameter."Parameter Type"::Address.AsInteger())
                     then
                         Email := EmailParameter.GetParameterValue();
                     if EmailParameter.GetEntryWithReportUsage(
-                         SalesInvoiceHeader."No.", SalesHeader."Document Type"::Invoice, EmailParameter."Parameter Type"::Subject)
+                         SalesInvoiceHeader."No.", SalesHeader."Document Type"::Invoice.AsInteger(), EmailParameter."Parameter Type"::Subject.AsInteger())
                     then
                         Subject := EmailParameter.GetParameterValue();
                 end;

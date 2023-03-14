@@ -89,6 +89,7 @@ page 1801 "Assisted Setup"
                     Caption = 'Translated Name';
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name translated locally.';
+                    Visible = false;
 
                     trigger OnDrillDown()
                     var
@@ -153,12 +154,16 @@ page 1801 "Assisted Setup"
         GuidedExperience: Codeunit "Guided Experience";
         ChecklistImplementation: Codeunit "Checklist Implementation";
 #if not CLEAN18
+#pragma warning disable AL0432
         AssistedSetup: Codeunit "Assisted Setup";
+#pragma warning restore
 #endif
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
     begin
 #if not CLEAN18
+#pragma warning disable AL0432
         AssistedSetup.OnRegister();
+#pragma warning restore
 #endif
         GuidedExperience.OnRegisterAssistedSetup();
         GuidedExperienceImpl.GetContentForAssistedSetup(Rec);

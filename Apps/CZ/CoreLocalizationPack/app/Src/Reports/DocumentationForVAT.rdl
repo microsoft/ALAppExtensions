@@ -2832,7 +2832,7 @@
                       <Value>=Globals!ExecutionTime</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
-                        <Format>d</Format>
+                        <Format>g</Format>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -3215,6 +3215,8 @@ Public Function BlankNegAndZero(ByVal Value As Decimal)
     Return Value
 End Function
 </Code>
+  <Language>=User!Language</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>3cbcb070-2c8c-4a92-a5f9-e15f302bb684</rd:ReportID>
   <DataSets>

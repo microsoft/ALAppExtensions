@@ -3,12 +3,13 @@ codeunit 4018 "GP Customer Migrator"
     TableNo = "GP Customer";
 
     var
-        DocumentNo: Text[30];
+        GlobalDocumentNo: Text[30];
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
     procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -47,6 +48,7 @@ codeunit 4018 "GP Customer Migrator"
     var
         MigrationGPCustomer: Record "GP Customer";
         MigrationGPCustTrans: Record "GP Customer Transactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
@@ -55,6 +57,9 @@ codeunit 4018 "GP Customer Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
             exit;
 
         MigrationGPCustomer.Get(RecordIdToMigrate);
@@ -144,10 +149,12 @@ codeunit 4018 "GP Customer Migrator"
                 Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR, 1, 20) + '-' + CopyStr(MigrationGPCustTrans.GLDocNo, 1, 14));
             until MigrationGPCustTrans.Next() = 0;
     end;
+#pragma warning restore AA0207
 
     local procedure MigrateCustomerDetails(MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
+        HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
         Country: Code[10];
         AddressFormatToSet: Option "Post Code+City","City+Post Code","City+County+Post Code","Blank Line+Post Code+City";
@@ -168,15 +175,17 @@ codeunit 4018 "GP Customer Migrator"
             CustomerDataMigrationFacade.CreatePostCodeIfNeeded(CopyStr(MigrationGPCustomer.ZIPCODE, 1, 20),
                 CopyStr(MigrationGPCustomer.CITY, 1, 30), CopyStr(MigrationGPCustomer.STATE, 1, 20), Country);
 
-
         CustomerDataMigrationFacade.SetAddress(CopyStr(MigrationGPCustomer.ADDRESS1, 1, 50),
             CopyStr(MigrationGPCustomer.ADDRESS2, 1, 50), Country, CopyStr(MigrationGPCustomer.ZIPCODE, 1, 20),
             CopyStr(MigrationGPCustomer.CITY, 1, 30));
+
         CustomerDataMigrationFacade.SetContact(CopyStr(MigrationGPCustomer.CNTCPRSN, 1, 50));
+        MigrationGPCustomer.PHONE1 := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.PHONE1);
+        MigrationGPCustomer.FAX := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.FAX);
         CustomerDataMigrationFacade.SetPhoneNo(MigrationGPCustomer.PHONE1);
+        CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
         CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
         CustomerDataMigrationFacade.SetEmail(COPYSTR(MigrationGPCustomer.INET1, 1, 80));
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
 
@@ -228,17 +237,27 @@ codeunit 4018 "GP Customer Migrator"
             until GPCustomerAddress.Next() = 0;
     end;
 
+#if not CLEAN22
+    [Obsolete('Method is not supported, it was using files', '22.0')]
     procedure GetAll()
+#if not CLEAN21
     var
         MigrationGPCustomer: Record "GP Customer";
         HelperFunctions: Codeunit "Helper Functions";
         JArray: JsonArray;
     begin
+#pragma warning disable AL0432        
         HelperFunctions.GetEntities('Customer', JArray);
         MigrationGPCustomer.DeleteAll();
         GetCustomersFromJson(JArray);
         GetTransactions();
+#pragma warning restore AL0432               
     end;
+#else
+    begin
+    end;
+#endif
+#endif
 
     procedure PopulateStagingTable(JArray: JsonArray)
     begin
@@ -247,7 +266,7 @@ codeunit 4018 "GP Customer Migrator"
 
     procedure PopulateRMTRxStagingTable(JArray: JsonArray)
     begin
-        DocumentNo := 'C00000';
+        GlobalDocumentNo := 'C00000';
         GetRMTrxFromJson(JArray);
     end;
 
@@ -313,17 +332,26 @@ codeunit 4018 "GP Customer Migrator"
         HelperFunctions.UpdateFieldValue(RecordVariant, MigrationGPCustomer.FieldNo(TAXEXMT1), JToken.AsObject(), 'TAXEXMT1');
     end;
 
+#if not CLEAN22
+    [Obsolete('Method is not supported, it was using files', '22.0')]
     local procedure GetTransactions()
+#if not CLEAN21    
     var
         MigrationGPCustTrans: Record "GP Customer Transactions";
         HelperFunctions: Codeunit "Helper Functions";
         JArray: JsonArray;
+#endif
     begin
+#if not CLEAN21
         MigrationGPCustTrans.DeleteAll();
-        DocumentNo := 'C00000';
+        GlobalDocumentNo := 'C00000';
+#pragma warning disable AL0432
         if (HelperFunctions.GetEntities('RMTrx', JArray)) then
             GetRMTrxFromJson(JArray);
+#pragma warning restore AL0432            
+#endif
     end;
+#endif
 
     local procedure GetRMTrxFromJson(JArray: JsonArray);
     var
@@ -346,8 +374,8 @@ codeunit 4018 "GP Customer Migrator"
             end;
 
             RecordVariant := MigrationGPCustTrans;
-            DocumentNo := CopyStr(IncStr(DocumentNo), 1, 30);
-            UpdateRMTraxFromJson(RecordVariant, ChildJToken, DocumentNo);
+            GlobalDocumentNo := CopyStr(IncStr(GlobalDocumentNo), 1, 30);
+            UpdateRMTraxFromJson(RecordVariant, ChildJToken, GlobalDocumentNo);
             MigrationGPCustTrans := RecordVariant;
             HelperFunctions.SetCustomerTransType(MigrationGPCustTrans);
             MigrationGPCustTrans.Modify(true);
@@ -372,4 +400,89 @@ codeunit 4018 "GP Customer Migrator"
         HelperFunctions.UpdateFieldWithValue(RecordVariant, MigrationGPCustTrans.FieldNo(GLDocNo), DocumentNo);
     end;
 
+    procedure MigrateCustomerClasses()
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPRM00101: Record "GP RM00101";
+        GPRM00201: Record "GP RM00201";
+        CustomerPostingGroup: Record "Customer Posting Group";
+        Customer: Record Customer;
+        HelperFunctions: Codeunit "Helper Functions";
+        ClassId: Text[20];
+        AccountNumber: Code[20];
+    begin
+        if not GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+            exit;
+
+        if not GPRM00101.FindSet() then
+            exit;
+
+        if not GPRM00201.FindSet() then
+            exit;
+
+        // Create the Customer Posting Groups
+        repeat
+            Clear(CustomerPostingGroup);
+#pragma warning disable AA0139
+            ClassId := GPRM00201.CLASSID.Trim();
+#pragma warning restore AA0139
+
+            if ClassId <> '' then
+                if not CustomerPostingGroup.Get(ClassId) then begin
+                    CustomerPostingGroup.Validate("Code", ClassId);
+                    CustomerPostingGroup.Validate("Description", GPRM00201.CLASDSCR);
+
+                    // Receivables Account
+                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMARACC);
+                    if AccountNumber <> '' then begin
+                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                        CustomerPostingGroup.Validate("Receivables Account", AccountNumber);
+                    end;
+
+                    // Payment Disc. Debit Acc.
+                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMTAKACC);
+                    if AccountNumber <> '' then begin
+                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                        CustomerPostingGroup.Validate("Payment Disc. Debit Acc.", AccountNumber);
+                    end;
+
+                    // Additional Fee Account
+                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMFCGACC);
+                    if AccountNumber <> '' then begin
+                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                        CustomerPostingGroup.Validate("Additional Fee Account", AccountNumber);
+                    end;
+
+                    // Payment Disc. Credit Acc.
+                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMAVACC);
+                    if AccountNumber <> '' then begin
+                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                        CustomerPostingGroup.Validate("Payment Disc. Credit Acc.", AccountNumber);
+                    end;
+
+                    // Payment Tolerance Debit Acc.
+                    // Payment Tolerance Credit Acc.
+                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMWRACC);
+                    if AccountNumber <> '' then begin
+                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                        CustomerPostingGroup.Validate("Payment Tolerance Debit Acc.", AccountNumber);
+                        CustomerPostingGroup.Validate("Payment Tolerance Credit Acc.", AccountNumber);
+                    end;
+
+                    CustomerPostingGroup.Insert();
+                end;
+        until GPRM00201.Next() = 0;
+
+        // Assign the Customer Posting Groups to the Customers
+        repeat
+#pragma warning disable AA0139
+            ClassId := GPRM00101.CUSTCLAS.Trim();
+#pragma warning restore AA0139
+            if ClassId <> '' then
+                if Customer.Get(GPRM00101.CUSTNMBR) then begin
+                    Customer.Validate("Customer Posting Group", ClassId);
+                    Customer.Modify(true);
+                end;
+        until GPRM00101.Next() = 0;
+    end;
 }

@@ -46,7 +46,7 @@ codeunit 18142 "GST Sales Posting No. Series"
         Rec := Record;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Sell-to Customer Template Code', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Sell-to Customer Templ. Code', false, false)]
     local procedure SelltoCustomerTemplateCode(var Rec: Record "Sales Header")
     var
         Record: Variant;
@@ -66,7 +66,7 @@ codeunit 18142 "GST Sales Posting No. Series"
         Rec := Record;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Bill-to Customer Template Code', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Bill-to Customer Templ. Code', false, false)]
     local procedure BilltoCustomerTemplateCode(var Rec: Record "Sales Header")
     var
         Record: Variant;
@@ -104,5 +104,25 @@ codeunit 18142 "GST Sales Posting No. Series"
         Record := Rec;
         PostingNoSeries.GetPostingNoSeriesCode(Record);
         Rec := Record;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Shortcut Dimension 1 Code', false, false)]
+    local procedure DepartmentCode(var Rec: Record "Sales Header")
+    var
+        Record: Variant;
+    begin
+        Record := Rec;
+        PostingNoSeries.GetPostingNoSeriesCode(Record);
+        Rec := Record;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopyFieldsFromOldSalesHeader', '', false, false)]
+    local procedure OnAfterCopyFieldsFromOldSalesHeader(var ToSalesHeader: Record "Sales Header")
+    var
+        Record: Variant;
+    begin
+        Record := ToSalesHeader;
+        PostingNoSeries.GetPostingNoSeriesCode(Record);
+        ToSalesHeader := Record;
     end;
 }

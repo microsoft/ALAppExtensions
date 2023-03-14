@@ -6,15 +6,15 @@ pageextension 31044 "Vendor Ledger Entries CZZ" extends "Vendor Ledger Entries"
 #pragma warning disable AL0432
         modify(Prepayment)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Prepayment Type")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Open For Advance Letter")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -25,14 +25,12 @@ pageextension 31044 "Vendor Ledger Entries CZZ" extends "Vendor Ledger Entries"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies advance letter no.';
                 Editable = false;
-                Visible = AdvancePaymentsEnabledCZZ;
             }
             field("Adv. Letter Template Code CZZ"; Rec."Adv. Letter Template Code CZZ")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies advance letter template';
                 Editable = false;
-                Visible = AdvancePaymentsEnabledCZZ;
             }
         }
     }
@@ -43,11 +41,11 @@ pageextension 31044 "Vendor Ledger Entries CZZ" extends "Vendor Ledger Entries"
 #pragma warning disable AL0432
         modify("Link Advances")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("U&nlink Advances")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -65,7 +63,6 @@ pageextension 31044 "Vendor Ledger Entries CZZ" extends "Vendor Ledger Entries"
                     Ellipsis = true;
                     Image = Link;
                     Enabled = (Rec."Document Type" = Rec."Document Type"::Payment) and (Rec."Advance Letter No. CZZ" = '');
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -81,7 +78,6 @@ pageextension 31044 "Vendor Ledger Entries CZZ" extends "Vendor Ledger Entries"
                     ApplicationArea = Basic, Suite;
                     Image = UnApply;
                     Enabled = (Rec."Document Type" = Rec."Document Type"::" ") and (Rec."Advance Letter No. CZZ" <> '');
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -93,13 +89,4 @@ pageextension 31044 "Vendor Ledger Entries CZZ" extends "Vendor Ledger Entries"
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

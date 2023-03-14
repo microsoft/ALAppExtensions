@@ -483,12 +483,12 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                             // Close current VAT entries
                             if PostSettlement then begin
                                 VATEntry.ModifyAll("VAT Settlement No. CZL", DocNo);
-                                VATEntry.ModifyAll(Closed, true);
                                 if VATEntry2.Get(NextVATEntryNo) then begin
                                     VATEntry.ModifyAll("Closed by Entry No.", NextVATEntryNo);
                                     VATEntry2."VAT Settlement No. CZL" := DocNo;
                                     VATEntry2.Modify();
                                 end;
+                                VATEntry.ModifyAll(Closed, true);
                             end;
                         end;
                     }
@@ -508,6 +508,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                             VATEntry.SetFilter("Advance Letter No.", '<>%1', '');
 #pragma warning restore AL0432
 #endif
+                        OnClosingGLAndVATEntryOnAfterGetRecordOnAfterSetVATEntryFilters("VAT Posting Setup", VATEntry, "VAT Entry");
 
                         case "VAT Posting Setup"."VAT Calculation Type" of
                             "VAT Posting Setup"."VAT Calculation Type"::"Normal VAT",
@@ -830,17 +831,12 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     local procedure PostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var
         DimensionManagement: Codeunit DimensionManagement;
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
-        TableID[1] := Database::"G/L Account";
-        TableID[2] := Database::"G/L Account";
-        No[1] := GenJournalLine."Account No.";
-        No[2] := GenJournalLine."Bal. Account No.";
-        GenJournalLine."Dimension Set ID" :=
-          DimensionManagement.GetRecDefaultDimID(
-            GenJournalLine, 0, TableID, No, GenJournalLine."Source Code",
-            GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code", 0, 0);
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"G/L Account", GenJournalLine."Account No.");
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"G/L Account", GenJournalLine."Bal. Account No.");
+        GenJournalLine."Dimension Set ID" := DimensionManagement.GetRecDefaultDimID(GenJournalLine, 0, DefaultDimSource, GenJournalLine."Source Code",
+                                               GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code", 0, 0);
         GenJnlPostLine.Run(GenJournalLine);
     end;
 
@@ -977,6 +973,11 @@ report 11971 "Calc. and Post VAT Settl. CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; var VATAccountNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnClosingGLAndVATEntryOnAfterGetRecordOnAfterSetVATEntryFilters(VATPostingSetup: Record "VAT Posting Setup"; var VATEntry: Record "VAT Entry"; var VATEntry2: Record "VAT Entry")
     begin
     end;
 }

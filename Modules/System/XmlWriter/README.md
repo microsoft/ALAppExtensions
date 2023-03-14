@@ -33,11 +33,11 @@ This function reinitializes the XML Writer.
 procedure WriteProcessingInstruction(Name: Text; "Text": Text)
 ```
 #### Parameters
-*Name ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Name ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the processing instruction.
 
-*Text ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Text ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to include in the processing instruction.
 
@@ -51,7 +51,7 @@ The text to include in the processing instruction.
 procedure WriteStartElement(LocalName: Text)
 ```
 #### Parameters
-*LocalName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*LocalName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The local name of the element.
 
@@ -65,15 +65,15 @@ The local name of the element.
 procedure WriteStartElement(Prefix: Text; LocalName: Text; NameSpace: Text)
 ```
 #### Parameters
-*Prefix ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Prefix ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The namespace prefix of the element.
 
-*LocalName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*LocalName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The local name of the element.
 
-*NameSpace ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*NameSpace ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The namespace URI to associate with the element. If this namespace is already in scope and has an associated prefix, the writer automatically writes that prefix also.
 
@@ -87,11 +87,11 @@ The namespace URI to associate with the element. If this namespace is already in
 procedure WriteElementString(LocalName: Text; ElementValue: Text)
 ```
 #### Parameters
-*LocalName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*LocalName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The local name of the element.
 
-*ElementValue ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ElementValue ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The value of the element.
 
@@ -105,7 +105,7 @@ The value of the element.
 procedure WriteString(ElementText: Text)
 ```
 #### Parameters
-*ElementText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ElementText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text to write.
 
@@ -128,19 +128,19 @@ procedure WriteEndElement()
 procedure WriteAttributeString(Prefix: Text; LocalName: Text; Namespace: Text; ElementValue: Text)
 ```
 #### Parameters
-*Prefix ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Prefix ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The namespace prefix of the attribute.
 
-*LocalName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*LocalName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The local name of the attribute.
 
-*Namespace ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Namespace ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The namespace URI of the attribute.
 
-*ElementValue ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ElementValue ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The value of the attribute.
 
@@ -154,11 +154,11 @@ The value of the attribute.
 procedure WriteAttributeString(LocalName: Text; ElementValue: Text)
 ```
 #### Parameters
-*LocalName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*LocalName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The local name of the attribute.
 
-*ElementValue ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ElementValue ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The value of the attribute.
 
@@ -172,7 +172,7 @@ The value of the attribute.
 procedure WriteComment(Comment: Text)
 ```
 #### Parameters
-*Comment ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Comment ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text to place inside the comment.
 

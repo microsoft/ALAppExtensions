@@ -74,13 +74,7 @@ codeunit 18431 "GST Sales Application Mgt."
             CustLedgerEntry."Document Type",
             CustLedgerEntry."Customer No.");
 
-        CustLedgerEntry.TestField("GST Customer Type", ApplyingCustLedgerEntry."GST Customer Type");
-        CustLedgerEntry.TestField("GST Jurisdiction Type", ApplyingCustLedgerEntry."GST Jurisdiction Type");
-        CustLedgerEntry.TestField("Location State Code", ApplyingCustLedgerEntry."Location State Code");
-        CustLedgerEntry.TestField("Location GST Reg. No.", ApplyingCustLedgerEntry."Location GST Reg. No.");
-        CustLedgerEntry.TestField("Seller GST Reg. No.", ApplyingCustLedgerEntry."Seller GST Reg. No.");
-        CustLedgerEntry.TestField("Currency Code", ApplyingCustLedgerEntry."Currency Code");
-        CustLedgerEntry.TestField("Seller State Code", ApplyingCustLedgerEntry."Seller State Code");
+        CheckCustLedgerEntry(CustLedgerEntry, ApplyingCustLedgerEntry);
 
         GSTApplicationLibrary.FillAppBufferInvoiceOffline(
             GenJournalLine,
@@ -92,6 +86,19 @@ codeunit 18431 "GST Sales Application Mgt."
             0);
 
         FillSalesAppBufferPaymentOfflline(ApplyingCustLedgerEntry, CustLedgerEntry);
+    end;
+
+    local procedure CheckCustLedgerEntry(
+        var CustLedgerEntry: Record "Cust. Ledger Entry";
+        var ApplyingCustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        CustLedgerEntry.TestField("GST Customer Type", ApplyingCustLedgerEntry."GST Customer Type");
+        CustLedgerEntry.TestField("GST Jurisdiction Type", ApplyingCustLedgerEntry."GST Jurisdiction Type");
+        CustLedgerEntry.TestField("Location State Code", ApplyingCustLedgerEntry."Location State Code");
+        CustLedgerEntry.TestField("Location GST Reg. No.", ApplyingCustLedgerEntry."Location GST Reg. No.");
+        CustLedgerEntry.TestField("Seller GST Reg. No.", ApplyingCustLedgerEntry."Seller GST Reg. No.");
+        CustLedgerEntry.TestField("Currency Code", ApplyingCustLedgerEntry."Currency Code");
+        CustLedgerEntry.TestField("Seller State Code", ApplyingCustLedgerEntry."Seller State Code");
     end;
 
     local procedure FillSalesAppBufferPaymentOfflline(

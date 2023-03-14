@@ -46,6 +46,7 @@ codeunit 11725 "Cash Document-Release CZP"
         GenJournalLine: Record "Gen. Journal Line";
         CashDeskCZP: Record "Cash Desk CZP";
         ConfirmManagement: Codeunit "Confirm Management";
+        CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
         LinesNotExistsErr: Label 'There are no Cash Document Lines to release.';
         AmountExceededLimitErr: Label 'Cash Document Amount exceeded maximal limit (%1).', Comment = '%1 = maximal limit';
@@ -56,6 +57,7 @@ codeunit 11725 "Cash Document-Release CZP"
         EmptyFieldQst: Label '%1 or %2 is empty.\\Do you want to continue?', Comment = '%1 = fieldcaption, %2 = fieldcaption';
         ApprovalProcessReleaseErr: Label 'This document can only be released when the approval process is complete.';
         ApprovalProcessReopenErr: Label 'The approval process must be cancelled or completed to reopen this document.';
+        NotEqualErr: Label '%1 is not equal %2.', Comment = '%1 = Amount Including VAT FieldCaption, %2 = Released Amount FieldCaption';
         MustBePositiveErr: Label 'must be positive';
         CashPaymentLimitErr: Label 'The maximum daily limit of cash payments of %1 was exceeded for the partner %2.', Comment = '%1 = amount of limit of cash payment; %2 = number of partner';
 
@@ -105,12 +107,20 @@ codeunit 11725 "Cash Document-Release CZP"
         GetCashDesk(CashDocumentHeaderCZP."Cash Desk No.");
         CashDeskCZP.TestField("Bank Acc. Posting Group");
         CashDeskCZP.TestField(Blocked, false);
+        if CashDocumentHeaderCZP.Status <> CashDocumentHeaderCZP.Status::Released then
+            CashDeskManagementCZP.CheckUserRights(CashDeskCZP."No.", Enum::"Cash Document Action CZP"::Release);
     end;
 
     local procedure CheckCashDocumentAmount(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
         GetCashDesk(CashDocumentHeaderCZP."Cash Desk No.");
         CashDocumentHeaderCZP.CalcFields(CashDocumentHeaderCZP."Amount Including VAT");
+
+        if CashDocumentHeaderCZP."Released Amount" <> 0 then
+            if CashDocumentHeaderCZP."Amount Including VAT" <> CashDocumentHeaderCZP."Released Amount" then
+                Error(NotEqualErr,
+                    CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Amount Including VAT"),
+                    CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Released Amount"));
 
         if CashDocumentHeaderCZP."Amount Including VAT" < 0 then
             CashDocumentHeaderCZP.FieldError(CashDocumentHeaderCZP."Amount Including VAT", MustBePositiveErr);
@@ -213,6 +223,9 @@ codeunit 11725 "Cash Document-Release CZP"
     end;
 
     local procedure CheckCashDocumentLines(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    var
+        SuggestedAmountToApplyQst: Label '%1 Ledger Entry %2 %3 is suggested to application on other documents in the system.\Do you want to use it for this Cash Document?', Comment = '%1 = Account Type, %2 = Applies-To Doc. Type, %3 = Applies-To Doc. No.';
+        IsHandled: Boolean;
     begin
         CashDocumentLineCZP.Reset();
         CashDocumentLineCZP.SetRange("Cash Desk No.", CashDocumentHeaderCZP."Cash Desk No.");
@@ -230,6 +243,18 @@ codeunit 11725 "Cash Document-Release CZP"
         CashDocumentLineCZP.SetRange(Amount, 0);
         if CashDocumentLineCZP.FindFirst() then
             CashDocumentLineCZP.FieldError(Amount);
+
+        CashDocumentLineCZP.SetRange(Amount);
+        if CashDocumentLineCZP.Findset() then
+            repeat
+                IsHandled := false;
+                OnBeforeCheckCashDocumentLine(CashDocumentLineCZP, IsHandled);
+                if not IsHandled then
+                    if CashDocumentLineCZP."Applies-To Doc. No." <> '' then
+                        if CashDocumentLineCZP.CalcRelatedAmountToApply() <> 0 then
+                            if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(SuggestedAmountToApplyQst, CashDocumentLineCZP."Account Type", CashDocumentLineCZP."Applies-To Doc. Type", CashDocumentLineCZP."Applies-To Doc. No."), false) then
+                                Error('');
+            until CashDocumentLineCZP.Next() = 0;
     end;
 
     local procedure CheckCashPaymentLimit(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
@@ -297,6 +322,11 @@ codeunit 11725 "Cash Document-Release CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterReopenCashDocument(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckCashDocumentLine(CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
     begin
     end;
 }

@@ -16,6 +16,7 @@ page 1884 "C5 ProcCode"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Type;Type) { ApplicationArea=All; }
                 field(Code;Code) { ApplicationArea=All; }
                 field(Name;Name) { ApplicationArea=All; }
@@ -24,6 +25,7 @@ page 1884 "C5 ProcCode"
                 field(Int3;Int3) { ApplicationArea=All; }
                 field(Int4;Int4) { ApplicationArea=All; }
                 field(NoYes1;NoYes1) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }

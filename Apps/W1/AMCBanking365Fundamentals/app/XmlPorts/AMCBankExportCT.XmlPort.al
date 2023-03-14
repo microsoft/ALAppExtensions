@@ -1396,7 +1396,9 @@ xmlport 20101 "AMC Bank Export CT"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         EmployeeLedgerEntry: Record "Employee Ledger Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000H4K', 'AMC Banking 365 Fundamentals', Enum::"Feature Uptake Status"::Used);
         Clear(CopyCVLedgerEntryBuffer);
         clear(VATEntry);
         if (CreditTransferEntry."Account Type" = CreditTransferEntry."Account Type"::Vendor) then begin
@@ -1441,6 +1443,7 @@ xmlport 20101 "AMC Bank Export CT"
             VATEntry.CalcSums(VATEntry.Amount);
         end;
         //<- V17.5
+        FeatureTelemetry.LogUsage('0000H4L', 'AMC Banking 365 Fundamentals', 'Export CT applied');
     end;
 
     local procedure GetValue(RecordRef: RecordRef; FieldNo: Integer): Text;

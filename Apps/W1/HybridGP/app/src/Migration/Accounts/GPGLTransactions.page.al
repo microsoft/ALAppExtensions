@@ -10,21 +10,81 @@ page 4091 "GP GLTransactions"
         {
             repeater(General)
             {
-                field(ACTINDX; ACTINDX) { ApplicationArea = All; ToolTip = 'Account Index'; }
-                field(YEAR1; YEAR1) { ApplicationArea = All; ToolTip = 'Year'; }
-                field(PERIODID; PERIODID) { ApplicationArea = All; ToolTip = 'Period ID'; }
-                field(DEBITAMT; DEBITAMT) { ApplicationArea = All; ToolTip = 'Debit Amount'; }
-                field(CRDTAMNT; CRDTAMNT) { ApplicationArea = All; ToolTip = 'Credit Amount'; }
-                field(PERDBLNC; PERDBLNC) { ApplicationArea = All; ToolTip = 'PERDBLNC'; }
-                field(MNACSGMT; MNACSGMT) { ApplicationArea = All; ToolTip = 'Main account segment'; }
-                field(ACTNUMBR_1; ACTNUMBR_1) { ApplicationArea = All; ToolTip = 'Account Segment 1'; }
-                field(ACTNUMBR_2; ACTNUMBR_2) { ApplicationArea = All; ToolTip = 'Account Segment 2'; }
-                field(ACTNUMBR_3; ACTNUMBR_3) { ApplicationArea = All; ToolTip = 'Account Segment 3'; }
-                field(ACTNUMBR_4; ACTNUMBR_4) { ApplicationArea = All; ToolTip = 'Account Segment 4'; }
-                field(ACTNUMBR_5; ACTNUMBR_5) { ApplicationArea = All; ToolTip = 'Account Segment 5'; }
-                field(ACTNUMBR_6; ACTNUMBR_6) { ApplicationArea = All; ToolTip = 'Account Segment 6'; }
-                field(ACTNUMBR_7; ACTNUMBR_7) { ApplicationArea = All; ToolTip = 'Account Segment 7'; }
-                field(ACTNUMBR_8; ACTNUMBR_8) { ApplicationArea = All; ToolTip = 'Account Segment 8'; }
+                field(ACTINDX; Rec.ACTINDX)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Index';
+                }
+                field(YEAR1; Rec.YEAR1)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Year';
+                }
+                field(PERIODID; Rec.PERIODID)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Period ID';
+                }
+                field(DEBITAMT; Rec.DEBITAMT)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Debit Amount';
+                }
+                field(CRDTAMNT; Rec.CRDTAMNT)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Credit Amount';
+                }
+                field(PERDBLNC; Rec.PERDBLNC)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'PERDBLNC';
+                }
+                field(MNACSGMT; Rec.MNACSGMT)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Main account segment';
+                }
+                field(ACTNUMBR_1; Rec.ACTNUMBR_1)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Segment 1';
+                }
+                field(ACTNUMBR_2; Rec.ACTNUMBR_2)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Segment 2';
+                }
+                field(ACTNUMBR_3; Rec.ACTNUMBR_3)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Segment 3';
+                }
+                field(ACTNUMBR_4; Rec.ACTNUMBR_4)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Segment 4';
+                }
+                field(ACTNUMBR_5; Rec.ACTNUMBR_5)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Segment 5';
+                }
+                field(ACTNUMBR_6; Rec.ACTNUMBR_6)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Segment 6';
+                }
+                field(ACTNUMBR_7; Rec.ACTNUMBR_7)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Segment 7';
+                }
+                field(ACTNUMBR_8; Rec.ACTNUMBR_8)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Account Segment 8';
+                }
             }
         }
     }

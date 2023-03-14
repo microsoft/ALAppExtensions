@@ -29,6 +29,17 @@ pageextension 18150 "GST Sales Order Ext" extends "Sales Order"
                 GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
             end;
         }
+        modify("Ship-to Code")
+        {
+            trigger OnAfterValidate()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                CurrPage.SaveRecord();
+                GSTSalesValidation.UpdateGSTJurisdictionTypeFromPlaceOfSupply(Rec);
+                GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
+            end;
+        }
         addafter("Ship-to Code")
         {
             field("Ship-to Customer"; Rec."Ship-to Customer")
@@ -245,7 +256,57 @@ pageextension 18150 "GST Sales Order Ext" extends "Sales Order"
                 end;
             }
         }
+        modify(PreviewPosting)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(Post)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(PostAndNew)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(PostAndSend)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(Dimensions)
+        {
+            trigger OnAfterAction()
+            var
+                PostingNoSeries: Record "Posting No. Series";
+                Record: Variant;
+            begin
+                Record := Rec;
+                PostingNoSeries.GetPostingNoSeriesCode(Record);
+                Rec := Record;
+                Rec.Modify(true);
+            end;
+        }
     }
+
     var
         UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';
 }

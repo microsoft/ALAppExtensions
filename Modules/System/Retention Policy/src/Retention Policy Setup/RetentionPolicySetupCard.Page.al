@@ -69,6 +69,11 @@ page 3901 "Retention Policy Setup Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether the retention policy applies to all records in the table. If you want to specify criteria for the records to delete, this toggle must be turned off.';
+
+                    trigger OnValidate()
+                    begin
+                        ShowExpiredRecordExpirationDate := not Rec."Apply to all records";
+                    end;
                 }
                 field("Expired Record Count"; ExpiredRecordCount)
                 {
@@ -76,6 +81,15 @@ page 3901 "Retention Policy Setup Card"
                     Caption = 'Expired Records';
                     ToolTip = 'Displays the number of expired records.';
                     Editable = false;
+                    StyleExpr = ExpiredRecordCountStyleTxt;
+                }
+                field("Expired Record Expiration Date"; ExpiredRecordExpirationDate)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Expired Records Expiration Date';
+                    ToolTip = 'Displays the earliest expiration date for which there are more expired records than the maximum to be deleted in a single run.';
+                    Editable = false;
+                    Visible = ShowExpiredRecordExpirationDate;
                     StyleExpr = ExpiredRecordCountStyleTxt;
                 }
                 field("Date Field No."; Rec."Date Field No.")
@@ -160,22 +174,42 @@ page 3901 "Retention Policy Setup Card"
                     ApplyRetentionPolicy.ApplyRetentionPolicy(Rec, true);
                 end;
             }
+            action(RestoreAllowedTables)
+            {
+                Caption = 'Refresh allowed tables';
+                ApplicationArea = All;
+                Image = Refresh;
+                ToolTip = 'Refreshes the list of tables that can be selected.';
+
+                trigger OnAction()
+                var
+                    RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
+                begin
+                    RetenPolAllowedTables.OnRefreshAllowedTables();
+                end;
+            }
         }
     }
 
     var
+        PBTNotification: Notification;
         PolicyNotEnabledQst: Label 'The retention policy is not enabled. Would you like to enable it now?';
         PrevEnabledState: Boolean;
+        ExpiredRecordExpirationDate: Date;
         ExpiredRecordCount: Integer;
         BackgroundTaskId: Integer;
         ExpiredRecordCountStyleTxt: Text;
         ReadPermissionNotificationId: Guid;
+        ShowExpiredRecordExpirationDate: Boolean;
+        PBTNotificationMsg: Label 'The number of expired records is being calculated in the background. This may take a while.';
+        PBTNotificationId: Guid;
 
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         FeatureTelemetry.LogUptake('0000FVZ', 'Retention policies', Enum::"Feature Uptake Status"::Discovered);
+        ShowExpiredRecordExpirationDate := not Rec."Apply to all records";
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -192,9 +226,13 @@ page 3901 "Retention Policy Setup Card"
             exit;
 
         PageBackgroundParameters.Add(Rec.FieldName(SystemId), format(Rec.SystemId));
+        RecallPBTNotification();
         CurrPage.EnqueueBackgroundTask(BackgroundTaskId, Codeunit::"PBT Expired Record Count", PageBackgroundParameters, PageBackgroundTaskTimeout());
+        ShowPBTNotification();
         ExpiredRecordCount := 0;
+        ExpiredRecordExpirationDate := 0D;
         ExpiredRecordCountStyleTxt := 'Subordinate';
+        ShowExpiredRecordExpirationDate := not Rec."Apply to all records";
         PrevEnabledState := Rec.Enabled;
 
         if not IsNullGuid(ReadPermissionNotificationId) then begin
@@ -205,14 +243,28 @@ page 3901 "Retention Policy Setup Card"
     end;
 
     trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
+    var
+        ExpiredRecordExpirationDateText: Text;
+        ExpiredRecordCountText: Text;
     begin
         if BackgroundTaskId <> TaskId then
             exit;
 
-        if not Evaluate(ExpiredRecordCount, Results.Get(format(Rec.SystemId))) then
+        Results.Keys.Get(1, ExpiredRecordExpirationDateText);
+        if not Evaluate(ExpiredRecordExpirationDate, ExpiredRecordExpirationDateText) then
+            ExpiredRecordExpirationDate := 0D;
+        Results.Values.Get(1, ExpiredRecordCountText);
+        if not Evaluate(ExpiredRecordCount, ExpiredRecordCountText) then
             ExpiredRecordCount := 0;
 
-        ExpiredRecordCountStyleTxt := 'None'
+        ExpiredRecordCountStyleTxt := 'None';
+        RecallPBTNotification();
+    end;
+
+    trigger OnPageBackgroundTaskError(TaskId: Integer; ErrorCode: Text; ErrorText: Text; ErrorCallStack: Text; var IsHandled: Boolean)
+    begin
+        RecallPBTNotification();
+        Error(ErrorText);
     end;
 
     local procedure PageBackgroundTaskTimeout(): Integer
@@ -238,5 +290,22 @@ page 3901 "Retention Policy Setup Card"
                     CurrPage.SaveRecord();
                 end;
         exit(true);
+    end;
+
+    local procedure ShowPBTNotification()
+    begin
+        if IsNullGuid(PBTNotificationId) then
+            PBTNotificationId := CreateGuid();
+        PBTNotification.Id := PBTNotificationId;
+        PBTNotification.Message(PBTNotificationMsg);
+        PBTNotification.Send();
+    end;
+
+    local procedure RecallPBTNotification()
+    begin
+        if IsNullGuid(PBTNotificationId) then
+            exit;
+        PBTNotification.Id := PBTNotificationId;
+        PBTNotification.Recall();
     end;
 }

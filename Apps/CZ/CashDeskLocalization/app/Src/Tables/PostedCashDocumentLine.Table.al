@@ -272,7 +272,7 @@ table 11738 "Posted Cash Document Line CZP"
             Caption = 'Use Tax';
             DataClassification = CustomerContent;
         }
-        field(90; "FA Posting Type"; Enum "Cash Document FA Post.Type CZP")
+        field(90; "FA Posting Type"; Enum "Cash Document FA Post.Type CZP")
         {
             Caption = 'FA Posting Type';
             DataClassification = CustomerContent;

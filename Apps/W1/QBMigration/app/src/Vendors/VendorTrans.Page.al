@@ -10,11 +10,13 @@ page 1915 "MigrationQB VendorTrans"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field(TransType; TransType) { ApplicationArea = All; }
                 field(DocNumber; DocNumber) { ApplicationArea = All; }
                 field(GLDocNo; GLDocNo) { ApplicationArea = All; }
                 field(TxnDate; TxnDate) { ApplicationArea = All; }
                 field(Amount; Amount) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }
@@ -31,6 +33,7 @@ page 1915 "MigrationQB VendorTrans"
                 {
                     ApplicationArea = All;
                     Caption = 'Posting Accounts';
+                    ToolTip = 'View QuickBooks posting accounts.';
                     Promoted = true;
                     PromotedIsBig = true;
                     PromotedOnly = true;

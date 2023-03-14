@@ -33,6 +33,7 @@ codeunit 4703 "VAT Group Retrieve From Sub."
                     VATGroupSubmissionLine.SetRange("VAT Group Submission ID", VATGroupSubmissionHeader.ID);
                     if VATGroupSubmissionLine.FindSet() then
                         repeat
+                            VATStatementReportLine.SetRange("Row No.", VATGroupSubmissionLine."Row No.");
                             VATStatementReportLine.SetRange("Box No.", VATGroupSubmissionLine."Box No.");
                             if VATStatementReportLine.FindFirst() then begin
                                 VATStatementReportLine.Amount += VATGroupSubmissionLine.Amount;
@@ -43,6 +44,7 @@ codeunit 4703 "VAT Group Retrieve From Sub."
             until VATGroupApprovedMember.Next() = 0;
         end;
 
+        VATStatementReportLine.SetRange("Row No.");
         VATStatementReportLine.SetRange("Box No.");
         VATStatementReportLine.CalcSums(Amount);
         SumAfter := VATStatementReportLine.Amount;

@@ -1,13 +1,12 @@
 codeunit 148092 "Identification Numbers CZL"
 {
-    // // [FEATURE] [Registration No.] [Tax Registration No.]
-
+    // [FEATURE] [Registration No.] [Tax Registration No.]
     Subtype = Test;
     TestPermissions = NonRestrictive;
 
     var
         Assert: Codeunit Assert;
-        LibraryERM: Codeunit "Library - ERM";
+        LibraryRandom: Codeunit "Library - Random";
         LibraryMarketing: Codeunit "Library - Marketing";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySales: Codeunit "Library - Sales";
@@ -113,8 +112,8 @@ codeunit 148092 "Identification Numbers CZL"
         Initialize();
 
         // [GIVEN] Generate unique Registration No. and Tax Registration No.
-        RegNo := GenerateRegistrationNo(TableID);
-        TaxRegNo := GenerateTaxRegistrationNo(TableID);
+        RegNo := GenerateRegistrationNo();
+        TaxRegNo := GenerateTaxRegistrationNo();
 
         // [GIVEN] Create Contact, Customer or Vendor with generated identification no.
         case TableID of
@@ -216,8 +215,8 @@ codeunit 148092 "Identification Numbers CZL"
         Initialize();
 
         // [GIVEN] Generate unique Registration No. and Tax Registration No.
-        RegNo := GenerateRegistrationNo(TableID);
-        TaxRegNo := GenerateTaxRegistrationNo(TableID);
+        RegNo := GenerateRegistrationNo();
+        TaxRegNo := GenerateTaxRegistrationNo();
 
         // [GIVEN] Create Contact, Customer or Vendor with generated identification no.
         case TableID of
@@ -263,6 +262,7 @@ codeunit 148092 "Identification Numbers CZL"
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Identification Numbers CZL");
 
+        LibraryRandom.SetSeed(1);  // Use Random Number Generator to generate the seed for RANDOM function.
         LibraryVariableStorage.Clear();
 
         if IsInitialized then
@@ -342,14 +342,14 @@ codeunit 148092 "Identification Numbers CZL"
         end;
     end;
 
-    local procedure GenerateRegistrationNo(TableID: Integer): Text[20]
+    local procedure GenerateRegistrationNo(): Text[20]
     begin
-        exit(LibraryERM.GenerateRegistrationNo(TableID));
+        exit(CopyStr(LibraryRandom.RandText(20), 1, 20));
     end;
 
-    local procedure GenerateTaxRegistrationNo(TableID: Integer): Text[20]
+    local procedure GenerateTaxRegistrationNo(): Text[20]
     begin
-        exit(LibraryERM.GenerateTaxRegistrationNo(TableID));
+        exit(CopyStr(LibraryRandom.RandText(20), 1, 20));
     end;
 
     [MessageHandler]
@@ -361,4 +361,3 @@ codeunit 148092 "Identification Numbers CZL"
         Assert.AreEqual(ExpectedMessage, Message, '');
     end;
 }
-

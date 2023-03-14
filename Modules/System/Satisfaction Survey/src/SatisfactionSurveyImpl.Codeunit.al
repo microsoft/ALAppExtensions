@@ -6,7 +6,7 @@
 codeunit 1432 "Satisfaction Survey Impl."
 {
     Access = Internal;
-    Permissions = tabledata "Net Promoter Score" =  rimd,
+    Permissions = tabledata "Net Promoter Score" = rimd,
                   tabledata "Net Promoter Score Setup" = rimd,
                   tabledata "User Property" = r;
 
@@ -165,17 +165,18 @@ codeunit 1432 "Satisfaction Survey Impl."
             exit(false);
         end;
 
-        if not NetPromoterScore."Send Request" then begin
-            Session.LogMessage('000098T', ActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
-            NetPromoterScore."Last Request Time" := CurrentDateTime();
-            NetPromoterScore."Send Request" := true;
-            if NetPromoterScore.Modify() then
-                exit(true)
-            else begin
+        if not NetPromoterScore."Send Request" then
+            if NetPromoterScore.Find() then begin
+                NetPromoterScore."Last Request Time" := CurrentDateTime();
+                NetPromoterScore."Send Request" := true;
+                if NetPromoterScore.Modify() then begin
+                    Session.LogMessage('000098T', ActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
+                    exit(true);
+                end;
+
                 Session.LogMessage('00009N5', CouldNotModifySetupRecordTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
                 exit(false);
             end;
-        end;
 
         Session.LogMessage('00009FW', AlreadyActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
         exit(false);
@@ -298,18 +299,18 @@ codeunit 1432 "Satisfaction Survey Impl."
 
     local procedure IsSupported(): Boolean
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
         if not GuiAllowed() then
             exit(false);
 
-        if not EnvironmentInfo.IsSaaS() then
+        if not EnvironmentInformation.IsSaaS() then
             exit(false);
 
-        if EnvironmentInfo.IsSandbox() then
+        if EnvironmentInformation.IsSandbox() then
             exit(false);
 
-        if EnvironmentInfo.IsFinancials() then
+        if EnvironmentInformation.IsFinancials() then
             exit(not IsMobileDevice())
         else
             exit(false);
@@ -613,9 +614,9 @@ codeunit 1432 "Satisfaction Survey Impl."
 
     local procedure GetApplicationUriSegment(): Text
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if EnvironmentInfo.IsFinancials() then
+        if EnvironmentInformation.IsFinancials() then
             exit(FinancialsUriSegmentTxt)
         else
             exit('');
@@ -751,6 +752,12 @@ codeunit 1432 "Satisfaction Survey Impl."
     local procedure MillisecondsInMinute(): Integer
     begin
         exit(60000);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+    local procedure HandleOnAfterLogin()
+    begin
+        ActivateSurvey();
     end;
 }
 

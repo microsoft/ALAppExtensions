@@ -7,19 +7,22 @@ codeunit 4034 "GPForecastHandler"
 
     var
         TempGPTimeSeriesBuffer: Record "Time Series Buffer" temporary;
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
         TempGPForecastTemp: Record "GPForecastTemp" temporary;
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
         CashFlowSetup: Record "Cash Flow Setup";
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
         TimeSeriesManagement: Codeunit "Time Series Management";
         SalesForecastHandler: Codeunit "Sales Forecast Handler";
         GPStatus: Option " ","Missing API","Not enough historical data","Out of limit";
-        ApiUrl: Text[250];
-        ApiKey: Text[200];
-        UsingStandardCredentials: Boolean;
-        LimitValue: Decimal;
         TimeSeriesLibState: Option Uninitialized,Initialized,"Data Prepared",Done;
         XINVOICETxt: Label 'INVOICE', Locked = true;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cash Flow Forecast Handler", 'OnAfterHasMinimumHistoricalData', '', true, true)]
     procedure OnAfterHasMinimumHistoricalData(var HasMinimumHistoryLoc: Boolean; var NumberOfPeriodsWithHistoryLoc: integer; PeriodType: Integer; ForecastStartDate: Date)
     var
@@ -269,6 +272,7 @@ codeunit 4034 "GPForecastHandler"
             MSSalesForecastSetup."Period Type",
             ForecastStartDate);
     end;
+#pragma warning restore AA0207
 
     local procedure PrepareData(var TempTimeSeriesBuffer: Record "Time Series Buffer" temporary; RecordVariant: Variant; GroupIdFieldNo: Integer; DateFieldNo: Integer; ValueFieldNo: Integer; InvoiceOption: Text; CreditMemoOption: Text; PeriodType: Integer; ForecastStartDate: Date; NumberOfPeriodsWithHistory: Integer)
     var
@@ -315,14 +319,8 @@ codeunit 4034 "GPForecastHandler"
 
         TempGPTimeSeriesBuffer.DeleteAll();
         TempGPForecastTemp.DeleteAll();
-        CashFlowSetup.GetMLCredentials(ApiUrl, ApiKey, LimitValue, UsingStandardCredentials);
-        TimeSeriesManagement.Initialize(ApiUrl, ApiKey, CashFlowSetup.TimeOut, UsingStandardCredentials);
-        TimeSeriesManagement.SetMaximumHistoricalPeriods(CashFlowSetup."Historical Periods");
-        TimeSeriesManagement.GetState(TimeSeriesLibState);
-        if not (TimeSeriesLibState = TimeSeriesLibState::Initialized) then
-            exit(false);
 
-        exit(true);
+        exit(TimeSeriesManagement.InitializeFromCashFlowSetup(TimeSeriesLibState));
     end;
 
     local procedure ComparePeriods(var NumberOfPeriodsWithHistoryLoc: integer; NumberOfPeriodsWithHistory: integer)

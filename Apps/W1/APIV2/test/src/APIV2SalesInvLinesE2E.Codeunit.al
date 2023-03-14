@@ -387,7 +387,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Array[2] of Text;
-        LineNo: Integer;
         InvoiceLineID: Text;
         NewSequence: Integer;
     begin
@@ -399,7 +398,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         SalesLine.SetRange("Document Type", SalesHeader."Document Type"::Invoice);
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.FindFirst();
-        LineNo := SalesLine."Line No.";
 
         NewSequence := SalesLine."Line No." + 1;
         InvoiceLineJSON[1] := LibraryGraphMgt.AddPropertytoJSON('', 'sequence', NewSequence);
@@ -1020,12 +1018,10 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         GLAccount: Record "G/L Account";
         SalesLine: Record "Sales Line";
         VATPostingSetup: Record "VAT Posting Setup";
-        IntegrationManagement: Codeunit "Integration Management";
         TargetURL: Text;
         ResponseText: Text;
         InvoiceLineJSON: Text;
         InvoiceLineID: Text;
-        LineNo: Integer;
     begin
         // [SCENARIO] PATCH a Type on a line of an unposted Invoice
         // [GIVEN] An unposted invoice with lines and a valid JSON describing the fields that we want to change
@@ -1033,12 +1029,11 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         InvoiceLineID := CreateSalesInvoiceWithLines(SalesHeader);
         Assert.AreNotEqual('', InvoiceLineID, 'ID should not be empty');
         FindFirstSalesLine(SalesHeader, SalesLine);
-        LineNo := SalesLine."Line No.";
 
         CreateVATPostingSetup(VATPostingSetup, SalesLine."VAT Bus. Posting Group", SalesLine."VAT Prod. Posting Group");
         GetGLAccountWithVATPostingGroup(GLAccount, SalesLine."VAT Bus. Posting Group", SalesLine."VAT Prod. Posting Group");
 
-        InvoiceLineJSON := StrSubstNo('{"accountId":"%1"}', IntegrationManagement.GetIdWithoutBrackets(GLAccount.SystemId));
+        InvoiceLineJSON := StrSubstNo('{"accountId":"%1"}', LibraryGraphMgt.StripBrackets(GLAccount.SystemId));
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt
@@ -1062,20 +1057,17 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         SalesHeader: Record "Sales Header";
         Item: Record "Item";
         SalesLine: Record "Sales Line";
-
-        IntegrationManagement: Codeunit "Integration Management";
         ExpectedNumberOfLines: Integer;
         TargetURL: Text;
         ResponseText: Text;
         InvoiceLineJSON: Text;
         InvoiceLineID: Text;
-        LineNo: Integer;
     begin
         // [SCENARIO] PATCH a Type on a line of an unposted Invoice
         // [GIVEN] An unposted invoice with lines and a valid JSON describing the fields that we want to change
         Initialize();
         CreateInvoiceWithAllPossibleLineTypes(SalesHeader, ExpectedNumberOfLines);
-        InvoiceLineID := IntegrationManagement.GetIdWithoutBrackets(SalesHeader.SystemId);
+        InvoiceLineID := LibraryGraphMgt.StripBrackets(SalesHeader.SystemId);
         SalesLine.SetRange(Type, SalesLine.Type::"G/L Account");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
@@ -1083,10 +1075,9 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         SalesLine.SetRange(Type);
 
         Assert.AreNotEqual('', InvoiceLineID, 'ID should not be empty');
-        LineNo := SalesLine."Line No.";
         LibraryInventory.CreateItem(Item);
 
-        InvoiceLineJSON := StrSubstNo('{"itemId":"%1"}', IntegrationManagement.GetIdWithoutBrackets(Item.SystemId));
+        InvoiceLineJSON := StrSubstNo('{"itemId":"%1"}', LibraryGraphMgt.StripBrackets(Item.SystemId));
         Commit();
 
         // [WHEN] we PATCH the line
@@ -1115,7 +1106,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         ResponseText: Text;
         InvoiceLineJSON: Text;
         InvoiceLineID: Text;
-        LineNo: Integer;
     begin
         // [SCENARIO] PATCH a Type on a line of an unposted Invoice
         // [GIVEN] An unposted invoice with lines and a valid JSON describing the fields that we want to change
@@ -1123,7 +1113,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         InvoiceLineID := CreateSalesInvoiceWithLines(SalesHeader);
         Assert.AreNotEqual('', InvoiceLineID, 'ID should not be empty');
         FindFirstSalesLine(SalesHeader, SalesLine);
-        LineNo := SalesLine."Line No.";
 
         InvoiceLineJSON := StrSubstNo('{"%1":"%2"}', LineTypeFieldNameTxt, Format(SalesInvoiceLineAggregate."API Type"::Account));
 
@@ -1197,9 +1186,7 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         Item2: Record "Item";
         ItemVariant: Record "Item Variant";
         SalesHeader: Record "Sales Header";
-        ItemNo1: Code[20];
         ItemNo2: Code[20];
-        ItemVariantCode: Code[10];
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Text;
@@ -1209,9 +1196,9 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         // [GIVEN] An existing unposted invoice and a valid JSON describing the new invoice line with item variant
         Initialize();
         InvoiceID := CreateSalesInvoiceWithLines(SalesHeader);
-        ItemNo1 := LibraryInventory.CreateItem(Item1);
+        LibraryInventory.CreateItem(Item1);
         ItemNo2 := LibraryInventory.CreateItem(Item2);
-        ItemVariantCode := LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
+        LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
         Commit();
 
         // [WHEN] we POST the JSON to the web service
@@ -1290,21 +1277,19 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
     [Normal]
     local procedure CreateInvoiceLineJSON(ItemId: Guid; Quantity: Integer): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSON: Text;
     begin
-        LineJSON := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', IntegrationManagement.GetIdWithoutBrackets(ItemId));
+        LineJSON := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', LibraryGraphMgt.StripBrackets(ItemId));
         LineJSON := LibraryGraphMgt.AddComplexTypetoJSON(LineJSON, 'quantity', Format(Quantity));
         exit(LineJSON);
     end;
 
     local procedure CreateInvoiceLineJSONWithItemVariantId(ItemId: Guid; Quantity: Integer; ItemVariantId: Guid): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSON: Text;
     begin
         LineJSON := CreateInvoiceLineJSON(ItemId, Quantity);
-        LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'itemVariantId', IntegrationManagement.GetIdWithoutBrackets(ItemVariantId));
+        LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'itemVariantId', LibraryGraphMgt.StripBrackets(ItemVariantId));
         exit(LineJSON);
     end;
 
@@ -1435,13 +1420,12 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
 
     local procedure VerifyIdsAreBlank(JsonObjectTxt: Text)
     var
-        IntegrationManagement: Codeunit "Integration Management";
         itemId: Text;
         accountId: Text;
         ExpectedId: Text;
         BlankGuid: Guid;
     begin
-        ExpectedId := IntegrationManagement.GetIdWithoutBrackets(BlankGuid);
+        ExpectedId := LibraryGraphMgt.StripBrackets(BlankGuid);
 
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'itemId', itemId), 'Could not find itemId');
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'accountId', accountId), 'Could not find accountId');

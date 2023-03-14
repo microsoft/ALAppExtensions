@@ -30,6 +30,25 @@ tableextension 11735 "Service Invoice Header CZL" extends "Service Invoice Heade
             TableRelation = "Bank Account";
             Editable = false;
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                BankAccount: Record "Bank Account";
+            begin
+                if "Bank Account Code CZL" = '' then begin
+                    UpdateBankInfoCZL('', '', '', '', '', '', '');
+                    exit;
+                end;
+                BankAccount.Get("Bank Account Code CZL");
+                UpdateBankInfoCZL(
+                  BankAccount."No.",
+                  BankAccount."Bank Account No.",
+                  BankAccount."Bank Branch No.",
+                  BankAccount.Name,
+                  BankAccount."Transit No.",
+                  BankAccount.IBAN,
+                  BankAccount."SWIFT Code");
+            end;
         }
         field(11721; "Bank Account No. CZL"; Text[30])
         {
@@ -114,4 +133,21 @@ tableextension 11735 "Service Invoice Header CZL" extends "Service Invoice Heade
             DataClassification = CustomerContent;
         }
     }
+
+    procedure UpdateBankInfoCZL(BankAccountCode: Code[20]; BankAccountNo: Text[30]; BankBranchNo: Text[20]; BankName: Text[100]; TransitNo: Text[20]; IBANCode: Code[50]; SWIFTCode: Code[20])
+    begin
+        "Bank Account Code CZL" := BankAccountCode;
+        "Bank Account No. CZL" := BankAccountNo;
+        "Bank Branch No. CZL" := BankBranchNo;
+        "Bank Name CZL" := BankName;
+        "Transit No. CZL" := TransitNo;
+        "IBAN CZL" := IBANCode;
+        "SWIFT Code CZL" := SWIFTCode;
+        OnAfterUpdateBankInfoCZL(Rec);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateBankInfoCZL(var ServiceInvoiceHeader: Record "Service Invoice Header")
+    begin
+    end;
 }

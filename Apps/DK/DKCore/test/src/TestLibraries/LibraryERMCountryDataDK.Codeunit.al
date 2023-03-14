@@ -51,7 +51,6 @@ codeunit 131307 "Library - ERM Country Data DK"
     procedure SetupReportSelections()
     var
         DummyReportSelections: Record "Report Selections";
-        LibraryERM: Codeunit "Library - ERM";
     begin
         LibraryERM.SetupReportSelection(DummyReportSelections.Usage::"S.Quote", REPORT::"Standard Sales - Quote");
         LibraryERM.SetupReportSelection(DummyReportSelections.Usage::"S.Invoice", REPORT::"Standard Sales - Invoice");
@@ -249,7 +248,6 @@ codeunit 131307 "Library - ERM Country Data DK"
     procedure CompanyInfoSetVATRegistrationNo()
     var
         CompanyInformation: Record "Company Information";
-        LibraryERM: Codeunit "Library - ERM";
     begin
         CompanyInformation.Get();
         CompanyInformation."VAT Registration No." := LibraryERM.GenerateVATRegistrationNo(CompanyInformation."Country/Region Code");
@@ -299,8 +297,8 @@ codeunit 131307 "Library - ERM Country Data DK"
         UnitofMeasure: Record "Unit of Measure";
     begin
         UnitofMeasure.Init();
-        UnitofMeasure.Code := Code;
-        UnitofMeasure.Description := Code;
+        UnitofMeasure.Code := COPYSTR(Code, 1, 10);
+        UnitofMeasure.Description := COPYSTR(Code, 1, 50);
         UnitofMeasure.Insert();
     end;
 }

@@ -1,6 +1,7 @@
 codeunit 10684 "Elec. VAT Create Content"
 {
     TableNo = "VAT Report Header";
+    Permissions = TableData "VAT Report Archive" = d;
 
     var
         CannotIdentifyMonthNumberErr: Label 'Cannot identify month number';
@@ -68,7 +69,9 @@ codeunit 10684 "Elec. VAT Create Content"
         TempVATStatementReportLine.FindSet();
         repeat
             GetVATCodeFromVATStatementLine(VATCode, TempVATStatementReportLine);
-            if not ElecVATDataMgt.IsReverseChargeVATCode(GetVATCodeOriginalNumber(VATCode)) then
+            if ElecVATDataMgt.IsReverseChargeVATCode(GetVATCodeOriginalNumber(VATCode)) then
+                TotalAmount += TempVATStatementReportLine."Non-Deductible Amount"
+            else
                 TotalAmount += TempVATStatementReportLine.Amount;
         until TempVATStatementReportLine.Next() = 0;
         ElecVATXMLHelper.AppendXMLNode('fastsattMerverdiavgift', GetAmountTextRounded(TotalAmount));
@@ -89,10 +92,14 @@ codeunit 10684 "Elec. VAT Create Content"
                 ElecVATXMLHelper.AppendXMLNode('sats', Format(VATCode."VAT Rate For Reporting", 0, '<Integer><Decimals><Comma,,>'));
             end;
             ElecVATXMLHelper.AppendXMLNode('merverdiavgift', GetAmountTextRounded(TempVATStatementReportLine.Amount));
-            if VATCode."VAT Note Code" <> '' then begin
-                VATNote.Get(VATCode."VAT Note Code");
+            if (VATCode."VAT Note Code" <> '') or (TempVATStatementReportLine.Note <> '') then begin
                 ElecVATXMLHelper.AddNewXMLNode('merknad', '');
-                ElecVATXMLHelper.AppendXMLNode('utvalgtMerknad', VATNote."VAT Report Value");
+                if VATCode."VAT Note Code" = '' then
+                    ElecVATXMLHelper.AppendXMLNode('beskrivelse', TempVATStatementReportLine.Note)
+                else begin
+                    VATNote.Get(VATCode."VAT Note Code");
+                    ElecVATXMLHelper.AppendXMLNode('utvalgtMerknad', VATNote."VAT Report Value");
+                end;
                 ElecVATXMLHelper.FinalizeXMLNode();
             end;
             ElecVATXMLHelper.FinalizeXMLNode();
@@ -104,7 +111,10 @@ codeunit 10684 "Elec. VAT Create Content"
                     ElecVATXMLHelper.AppendXMLNode('spesifikasjon', VATSpecification."VAT Report Value");
                 end;
                 ElecVATXMLHelper.AppendXMLNode('mvaKodeRegnskapsystem', TempVATStatementReportLine.Description);
-                ElecVATXMLHelper.AppendXMLNode('merverdiavgift', GetAmountTextRounded(-TempVATStatementReportLine.Amount));
+                ElecVATXMLHelper.AppendXMLNode(
+                    'merverdiavgift',
+                    GetAmountTextRounded(
+                        -TempVATStatementReportLine.Amount + TempVATStatementReportLine."Non-Deductible Amount"));
                 if VATCode."VAT Note Code" <> '' then begin
                     VATNote.Get(VATCode."VAT Note Code");
                     ElecVATXMLHelper.AddNewXMLNode('merknad', '');

@@ -127,10 +127,10 @@ page 19010 "Finalize India Migration"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
         if CloseAction = Action::OK then
-            if AssistedSetup.ExistsAndIsNotComplete(Page::"Tax Engine Setup Wizard") then
+            if not GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Tax Engine Setup Wizard") then
                 if not Confirm(NAVNotSetUpQst, false) then
                     Error('');
     end;
@@ -163,11 +163,11 @@ page 19010 "Finalize India Migration"
 
     local procedure FinishAction()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
         CallTaxEngine: Codeunit "Call Tax Engine";
     begin
         CallTaxEngine.CalculateTax();
-        AssistedSetup.Complete(Page::"Tax Engine Setup Wizard");
+        GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Tax Engine Setup Wizard");
         CurrPage.Close();
     end;
 

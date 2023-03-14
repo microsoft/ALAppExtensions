@@ -20,6 +20,10 @@ codeunit 9057 "Plan Upgrade"
         RenamePlansAndDeleteOldPlans();
         RenameTeamMemberPlan();
         RenameDevicePlan();
+        AddPremiumPartnerSandbox();
+        AddMicrosoft365();
+
+        AddDefaultPlanConfigurations();
     end;
 
     [NonDebuggable]
@@ -115,6 +119,72 @@ codeunit 9057 "Plan Upgrade"
         RenameOrCreatePlan(PlanIds.GetDevicePlanId(), 'Dynamics 365 Business Central Device - Embedded');
 
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetRenameDevicePlanUpgradeTag());
+    end;
+
+    [NonDebuggable]
+    local procedure AddPremiumPartnerSandbox()
+    var
+        Plan: Record "Plan";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PlanUpgradeTag: Codeunit "Plan Upgrade Tag";
+        PlanIds: Codeunit "Plan Ids";
+        PlanId: Guid;
+        PlanName: Text[50];
+        RoleCenterId: Integer;
+    begin
+        if UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetPremiumPartnerSandboxUpgradeTag()) then
+            exit;
+
+        PlanId := PlanIds.GetPremiumPartnerSandboxPlanId();
+        PlanName := 'Dynamics 365 BC Premium Partner Sandbox';
+        RoleCenterId := 9022; // PAGE::"Business Manager Role Center"
+
+        if Plan.Get(PlanId) then
+            exit;
+
+        CreatePlan(PlanId, PlanName, RoleCenterId);
+
+        UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetPremiumPartnerSandboxUpgradeTag());
+    end;
+
+    [NonDebuggable]
+    local procedure AddMicrosoft365()
+    var
+        Plan: Record "Plan";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PlanUpgradeTag: Codeunit "Plan Upgrade Tag";
+        PlanIds: Codeunit "Plan Ids";
+        PlanId: Guid;
+        PlanName: Text[50];
+        RoleCenterId: Integer;
+    begin
+        if UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetMicrosoft365UpgradeTag()) then
+            exit;
+
+        PlanId := PlanIds.GetMicrosoft365PlanId();
+        PlanName := 'Microsoft 365';
+        RoleCenterId := 8999; // Blank Role Center
+
+        if Plan.Get(PlanId) then
+            exit;
+
+        CreatePlan(PlanId, PlanName, RoleCenterId);
+
+        UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetMicrosoft365UpgradeTag());
+    end;
+
+    local procedure AddDefaultPlanConfigurations()
+    var
+        PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PlanUpgradeTag: Codeunit "Plan Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetPlanfigurationsUpgradeTag()) then
+            exit;
+
+        PlanConfigurationImpl.CreateDefaultPlanConfigurations();
+
+        UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetPlanfigurationsUpgradeTag());
     end;
 
     [NonDebuggable]

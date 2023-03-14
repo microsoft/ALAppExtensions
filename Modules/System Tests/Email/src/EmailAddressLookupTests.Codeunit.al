@@ -20,7 +20,7 @@ codeunit 134699 "Email Address Lookup Tests"
     [HandlerFunctions('EmailRecipientLookupHandler')]
     procedure EmailAddresssLookupTest()
     var
-        TempAccount: Record "Email Account";
+        EmailAccount: Record "Email Account";
         SentEmail: Record "Sent Email";
         Outbox: Record "Email Outbox";
         ConnectorMock: Codeunit "Connector Mock";
@@ -38,18 +38,18 @@ codeunit 134699 "Email Address Lookup Tests"
         Outbox.DeleteAll();
         SentEmail.DeleteAll();
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(TempAccount);
+        ConnectorMock.AddAccount(EmailAccount);
         BindSubscription(EmailAccConnMock);
         BindSubscription(EmailAddressLookupMock);
         PermissionsMock.Set('Email Edit');
 
         // [GIVEN] An email message with a recipient, subject, body and related record
         Message.Create('test@test.com', 'Subject', 'Body');
-        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
         // [WHEN] Opening the email message in the email editor and performing a Lookup on ToRecipient field
         EditorPage.Trap();
-        Email.OpenInEditor(Message, TempAccount);
+        Email.OpenInEditor(Message, EmailAccount);
 
         EditorPage.ToField.Lookup();
 
@@ -80,8 +80,8 @@ codeunit 134699 "Email Address Lookup Tests"
         SentEmail.SetRange("Message Id", Message.GetId());
         Assert.IsTrue(SentEmail.FindFirst(), 'A Sent Email record should have been inserted.');
         Assert.AreEqual('Test Subject', SentEmail.Description, 'The email subject should be "Subject"');
-        Assert.AreEqual(TempAccount."Account Id", SentEmail."Account Id", 'A different account was expected');
-        Assert.AreEqual(TempAccount."Email Address", SentEmail."Sent From", 'A different sent from was expected');
+        Assert.AreEqual(EmailAccount."Account Id", SentEmail."Account Id", 'A different account was expected');
+        Assert.AreEqual(EmailAccount."Email Address", SentEmail."Sent From", 'A different sent from was expected');
         Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", SentEmail.Connector, 'A different connector was expected');
 
         Message.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
@@ -109,7 +109,7 @@ codeunit 134699 "Email Address Lookup Tests"
     [HandlerFunctions('EmailRecipientLookupCancelHandler')]
     procedure EmailAddressLookupCancelTest()
     var
-        TempAccount: Record "Email Account";
+        EmailAccount: Record "Email Account";
         SentEmail: Record "Sent Email";
         Outbox: Record "Email Outbox";
         ConnectorMock: Codeunit "Connector Mock";
@@ -125,18 +125,18 @@ codeunit 134699 "Email Address Lookup Tests"
         Outbox.DeleteAll();
         SentEmail.DeleteAll();
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(TempAccount);
+        ConnectorMock.AddAccount(EmailAccount);
         BindSubscription(EmailAccConnMock);
         BindSubscription(EmailAddressLookupMock);
         PermissionsMock.Set('Email Edit');
 
         // [GIVEN] An email message with a recipient, subject, body and related record
         Message.Create('test@test.com', 'Subject', 'Body');
-        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
         // [WHEN] Opening the email message in the email editor and performing a Lookup on ToRecipient field
         EditorPage.Trap();
-        Email.OpenInEditor(Message, TempAccount);
+        Email.OpenInEditor(Message, EmailAccount);
 
         EditorPage.ToField.Lookup();
 
@@ -156,7 +156,7 @@ codeunit 134699 "Email Address Lookup Tests"
     var
         SentEmail: Record "Sent Email";
         Outbox: Record "Email Outbox";
-        TempAccount: Record "Email Account";
+        EmailAccount: Record "Email Account";
         ConnectorMock: Codeunit "Connector Mock";
         Message: Codeunit "Email Message";
         Email: Codeunit Email;
@@ -170,18 +170,18 @@ codeunit 134699 "Email Address Lookup Tests"
         Outbox.DeleteAll();
         SentEmail.DeleteAll();
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(TempAccount);
+        ConnectorMock.AddAccount(EmailAccount);
         BindSubscription(EmailAccConnMock);
         BindSubscription(EmailAddressLookupMock);
         PermissionsMock.Set('Email Edit');
 
         // [GIVEN] An email message with a recipient, subject, body and related record
         Message.Create('test@test.com', 'Subject', 'Body');
-        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
         // [WHEN] Opening the email message in the email editor and performing a Lookup on ToRecipient field
         EditorPage.Trap();
-        Email.OpenInEditor(Message, TempAccount);
+        Email.OpenInEditor(Message, EmailAccount);
 
         EditorPage.ToField.Lookup();
 

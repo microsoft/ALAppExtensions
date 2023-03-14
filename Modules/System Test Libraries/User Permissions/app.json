@@ -4,9 +4,9 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Library functions to initialize test data for User Permissions module",
-    "version":  "19.3.0.0",
+    "version":  "21.6.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
@@ -15,14 +15,24 @@
                              "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
                              "name":  "User Permissions",
                              "publisher":  "Microsoft",
-                             "version":  "19.3.0.0"
+                             "version":  "21.6.0.0"
+                         },
+                         {
+                             "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
+                             "name":  "Environment Information",
+                             "publisher":  "Microsoft",
+                             "version":  "21.6.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "21.0.0.0",
     "idRanges":  [
+                     {
+                         "from":  130017,
+                         "to":  130017
+                     },
                      {
                          "from":  130019,
                          "to":  130019

@@ -23,7 +23,7 @@ codeunit 148087 "MTDTestReturns"
         LibraryERM: Codeunit "Library - ERM";
         IsInitialized: Boolean;
         ConfirmSubmitQst: Label 'When you submit this VAT information you are making a legal declaration that the information is true and complete. A false declaration can result in prosecution. Do you want to continue?';
-        WrongVATSatementSetupErr: Label 'VAT statement template %1 name %2 has a wrong setup. There must be nine rows, each with a value between 1 and 9 for the Box No. field.';
+        WrongVATSatementSetupErr: Label 'VAT statement template %1 name %2 has a wrong setup. There must be nine rows, each with a value between 1 and 9 for the Box No. field.', Comment = '%1 - statement template name, %2 - statement name';
         PeriodLinkErr: Label 'There is no return period linked to this VAT return.\\Use the Create From VAT Return Period action on the VAT Returns page or the Create VAT Return action on the VAT Return Periods page.';
 
     [Test]
@@ -124,23 +124,23 @@ codeunit 148087 "MTDTestReturns"
     var
         VATReturnPeriod: Record "VAT Return Period";
         VATReportHeader: Record "VAT Report Header";
-        VATReturnPage: TestPage "VAT Report";
+        VATReportPage: TestPage "VAT Report";
     begin
         // [FEATURE] [UI]
         // [SCENARIO 258181] Release VAT Return
         InitSubmitReturnScenario(VATReturnPeriod, VATReportHeader, VATReportHeader.Status::Open);
-        VATReturnPage.Trap();
+        VATReportPage.Trap();
         Page.Run(Page::"VAT Report", VATReportHeader);
 
-        VATReturnPage.Status.AssertEquals(VATReportHeader.Status::Open);
-        Assert.IsFalse(VATReturnPage.Submit.Enabled(), 'Submit.Enabled');
+        VATReportPage.Status.AssertEquals(VATReportHeader.Status::Open);
+        Assert.IsFalse(VATReportPage.Submit.Enabled(), 'Submit.Enabled');
 
-        VATReturnPage.Release.Invoke();
+        VATReportPage.Release.Invoke();
 
-        VATReturnPage.Status.AssertEquals(VATReportHeader.Status::Released);
-        Assert.IsTrue(VATReturnPage.Submit.Enabled(), 'Submit.Enabled');
+        VATReportPage.Status.AssertEquals(VATReportHeader.Status::Released);
+        Assert.IsTrue(VATReportPage.Submit.Enabled(), 'Submit.Enabled');
 
-        VATReturnPage.Close();
+        VATReportPage.Close();
     end;
 
     [Test]
@@ -450,7 +450,7 @@ codeunit 148087 "MTDTestReturns"
     begin
         TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         Outstream.Write(MessageText);
-        VATReportArchive.ArchiveSubmissionMessage(VATReportHeader."VAT Report Config. Code", VATReportHeader."No.", TempBlob, DummyGUID);
+        VATReportArchive.ArchiveSubmissionMessage(VATReportHeader."VAT Report Config. Code".AsInteger(), VATReportHeader."No.", TempBlob, DummyGUID);
     end;
 
     local procedure MockVATReportWithStatementSetup(var VATReportHeader: Record "VAT Report Header")

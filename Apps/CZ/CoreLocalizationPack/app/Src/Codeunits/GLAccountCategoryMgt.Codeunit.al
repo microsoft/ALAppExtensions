@@ -1213,4 +1213,37 @@ codeunit 31036 "G/L Account Category Mgt. CZL"
         SetAccountCategory(TableNo, FieldNo, AccountCategory);
         SetAccountSubcategory(TableNo, FieldNo, AccountSubcategory);
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"G/L Account Category", 'OnBeforeUpdatePresentationOrder', '', false, false)]
+    local procedure UpdatePresentationOrder(var GLAccountCategory: Record "G/L Account Category"; var IsHandled: Boolean)
+    var
+        ParentGLAccountCategory: Record "G/L Account Category";
+        PresentationOrder: Text;
+    begin
+        if IsHandled then
+            exit;
+        if GLAccountCategory."Entry No." = 0 then
+            exit;
+        ParentGLAccountCategory := GLAccountCategory;
+        if GLAccountCategory."Sibling Sequence No." = 0 then
+            GLAccountCategory."Sibling Sequence No." := GLAccountCategory."Entry No." * 10000 mod 2000000000;
+        GLAccountCategory.Indentation := 0;
+        PresentationOrder := Format(1000000 + GLAccountCategory."Sibling Sequence No.");
+        while ParentGLAccountCategory."Parent Entry No." <> 0 do begin
+            GLAccountCategory.Indentation += 1;
+            ParentGLAccountCategory.Get(ParentGLAccountCategory."Parent Entry No.");
+            PresentationOrder := Format(1000000 + ParentGLAccountCategory."Sibling Sequence No.") + PresentationOrder;
+        end;
+        case GLAccountCategory."Account Category" of
+            GLAccountCategory."Account Category"::Assets:
+                PresentationOrder := '0' + PresentationOrder;
+            GLAccountCategory."Account Category"::Liabilities:
+                PresentationOrder := '1' + PresentationOrder;
+            else
+                PresentationOrder := '2' + PresentationOrder;
+        end;
+        GLAccountCategory."Presentation Order" := CopyStr(PresentationOrder, 1, MaxStrLen(GLAccountCategory."Presentation Order"));
+        GLAccountCategory.Modify();
+        IsHandled := true;
+    end;
 }

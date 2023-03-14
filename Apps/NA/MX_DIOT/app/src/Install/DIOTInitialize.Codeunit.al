@@ -19,7 +19,6 @@ codeunit 27020 "DIOT - Initialize"
         ApplyEvaluationClassificationsForPrivacy();
         DIOTDataManagement.InsertDefaultDIOTConcepts();
         InsertDefaultDIOTCountryData();
-        AddDIOTAssistedSetup();
     end;
 
     local procedure InitializeDone(): boolean
@@ -44,18 +43,6 @@ codeunit 27020 "DIOT - Initialize"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"DIOT Country/Region Data");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"DIOT Report Vendor Buffer");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"DIOT Report Buffer");
-    end;
-
-    local procedure AddDIOTAssistedSetup()
-    var
-        AssistedSetup: Codeunit "Assisted Setup";
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        Info: ModuleInfo;
-    begin
-        NavApp.GetCurrentModuleInfo(Info);
-        AssistedSetup.Add(
-            Info.Id(), PAGE::"DIOT Setup Wizard", DIOTDataManagement.GetDIOTSetupGuideTxt(),
-            AssistedSetupGroup::GettingStarted);
     end;
 
     local procedure InsertDefaultDIOTCountryData()

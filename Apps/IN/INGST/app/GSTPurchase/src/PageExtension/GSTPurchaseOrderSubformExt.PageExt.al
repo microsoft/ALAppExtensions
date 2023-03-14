@@ -10,15 +10,13 @@ pageextension 18085 "GST Purchase Order Subform Ext" extends "Purchase Order Sub
                 FormatLine();
             end;
         }
-#if not CLEAN17
-        modify("Cross-Reference No.")
+        modify("Item Reference No.")
         {
             trigger OnAfterValidate()
             begin
                 SaveRecords();
             end;
         }
-#endif
         modify(Quantity)
         {
             trigger OnAfterValidate()
@@ -57,6 +55,15 @@ pageextension 18085 "GST Purchase Order Subform Ext" extends "Purchase Order Sub
                 FormatLine();
             end;
         }
+        modify("Invoice Discount Amount")
+        {
+            trigger OnAfterValidate()
+            var
+                GSTPurchaseSubscribers: Codeunit "GST Purchase Subscribers";
+            begin
+                GSTPurchaseSubscribers.ReCalculateGST(Rec."Document Type", Rec."Document No.");
+            end;
+        }
         addafter("Qty. to Assign")
         {
             field("GST Group Code"; Rec."GST Group Code")
@@ -64,27 +71,12 @@ pageextension 18085 "GST Purchase Order Subform Ext" extends "Purchase Order Sub
                 ApplicationArea = Basic, Suite;
                 Editable = IsHSNSACEditable;
                 ToolTip = 'Specifies an identifier for the GST group used to calculate and post GST.';
-                trigger OnValidate()
-                var
-                    CalculateTax: Codeunit "Calculate Tax";
-                begin
-                    CurrPage.SaveRecord();
-                    CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
-                end;
             }
             field("HSN/SAC Code"; Rec."HSN/SAC Code")
             {
                 ApplicationArea = Basic, Suite;
                 Editable = IsHSNSACEditable;
                 ToolTip = 'Specifies the HSN/SAC code for the calculation of GST on Purchase line.';
-
-                trigger OnValidate()
-                var
-                    CalculateTax: Codeunit "Calculate Tax";
-                begin
-                    CurrPage.SaveRecord();
-                    CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
-                end;
             }
             field("GST Assessable Value"; Rec."GST Assessable Value")
             {
@@ -139,14 +131,6 @@ pageextension 18085 "GST Purchase Order Subform Ext" extends "Purchase Order Sub
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the GST Credit has to be availed or not.';
-
-                trigger OnValidate()
-                var
-                    CalculateTax: Codeunit "Calculate Tax";
-                begin
-                    CurrPage.SaveRecord();
-                    CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
-                end;
             }
         }
     }

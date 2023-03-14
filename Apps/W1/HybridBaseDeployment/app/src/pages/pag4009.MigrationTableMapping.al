@@ -13,6 +13,13 @@ page 4009 "Migration Table Mapping"
         {
             repeater(Map)
             {
+                field(TargetTableType; Rec."Target Table Type")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Target Table Type';
+                    Description = 'Specifies the type of the target table.';
+                    Visible = IsBCCloudMigration;
+                }
 
                 field("Extension Name"; ExtensionName)
                 {
@@ -23,37 +30,40 @@ page 4009 "Migration Table Mapping"
 
                     // The following properties are to disable user manipulation of locked mapping records.
                     Style = Subordinate;
-                    StyleExpr = Locked;
-                    Editable = not Locked;
-                    Enabled = not Locked;
+                    StyleExpr = Rec.Locked;
+                    Editable = not Rec.Locked;
+                    Enabled = not Rec.Locked;
 
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         PublishedApplication: Record "Published Application";
                     begin
-                        if not LookupApp(PublishedApplication) then
+                        if not Rec.LookupApp(PublishedApplication) then
                             exit(false);
 
                         ExtensionName := PublishedApplication.Name;
                         Text := PublishedApplication.Name;
-                        Validate("App ID", PublishedApplication.ID);
+                        Rec.Validate("App ID", PublishedApplication.ID);
                         exit(true);
                     end;
 
                     trigger OnValidate()
                     var
-                        PublishedApplication: Record "Published Application";
-                        ExtensionNameFilterTxt: Label '@%1*', Comment = '%1 - name of extension', Locked = true;
+                        ExtensionNameTemp: Text;
                     begin
-                        if ExtensionName <> '' then begin
-                            PublishedApplication.SetFilter(Name, StrSubstNo(ExtensionNameFilterTxt, ExtensionName));
-                            PublishedApplication.FindFirst();
-                            ExtensionName := PublishedApplication.Name;
-                            Validate("App ID", PublishedApplication.ID);
-                        end;
+                        ExtensionNameTemp := CopyStr(ExtensionName, 1, MaxStrLen(ExtensionName));
+                        Rec.UpdateExtensionName(ExtensionNameTemp);
+                        ExtensionName := CopyStr(ExtensionNameTemp, 1, MaxStrLen(ExtensionName));
                     end;
                 }
-                field("Table Name"; "Table Name")
+                field(TableID; Rec."Table ID")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Table ID';
+                    Visible = false;
+                    ToolTip = 'Specifies the ID of the target table.';
+                }
+                field("Table Name"; Rec."Table Name")
                 {
                     ApplicationArea = All;
                     Caption = 'Table Name';
@@ -62,17 +72,21 @@ page 4009 "Migration Table Mapping"
 
                     // The following properties are to disable user manipulation of locked mapping records.
                     Style = Subordinate;
-                    StyleExpr = Locked;
-                    Editable = not Locked;
-                    Enabled = not Locked;
+                    StyleExpr = Rec.Locked;
+                    Editable = not Rec.Locked;
+                    Enabled = not Rec.Locked;
 
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         AllObj: Record AllObj;
                         AllObjects: Page "All Objects";
                     begin
-                        AllObj.SetRange("App Package ID", "Extension Package ID");
-                        AllObj.SetRange("Object Type", AllObj."Object Type"::Table);
+                        AllObj.SetRange("App Package ID", Rec."Extension Package ID");
+                        if Rec."Target Table Type" = Rec."Target Table Type"::Table then
+                            AllObj.SetRange("Object Type", AllObj."Object Type"::Table)
+                        else
+                            AllObj.SetRange("Object Type", AllObj."Object Type"::"TableExtension");
+
                         AllObjects.SetTableView(AllObj);
                         AllObjects.LookupMode(true);
                         if not (AllObjects.RunModal() in [Action::OK, Action::LookupOK]) then
@@ -80,10 +94,16 @@ page 4009 "Migration Table Mapping"
 
                         AllObjects.GetRecord(AllObj);
                         Text := AllObj."Object Name";
+                        if (Rec."Table ID" <> AllObj."Object ID") and (Rec."Target Table Type" = Rec."Target Table Type"::"Table Extension") then
+                            // Partners often have the table and table extension that have same ID and they need to map both
+                            // Just the ID is the same, the table extended is different
+                            Rec."Table ID" := -AllObj."Object ID"
+                        else
+                            Rec."Table ID" := AllObj."Object ID";
                         exit(true);
                     end;
                 }
-                field("Source Table Name"; "Source Table Name")
+                field("Source Table Name"; Rec."Source Table Name")
                 {
                     ApplicationArea = All;
                     Caption = 'Source Table Name';
@@ -92,8 +112,42 @@ page 4009 "Migration Table Mapping"
                     // The following properties are to disable user manipulation of locked mapping records.
                     Style = Subordinate;
                     StyleExpr = Locked;
-                    Editable = not Locked;
-                    Enabled = not Locked;
+                    Editable = not Rec.Locked;
+                    Enabled = not Rec.Locked;
+
+                    trigger OnValidate()
+                    begin
+                        SourceTableAppID := Rec.GetSourceTableAppID(Rec);
+                        if Rec."Target Table Type" = Rec."Target Table Type"::"Table Extension" then
+                            Rec."Table Name" := CopyStr(Rec.GetSourceTableName(Rec), 1, MaxStrLen(Rec."Table Name"));
+                    end;
+                }
+
+                field(SourceTableAppID; SourceTableAppID)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Source Table App ID';
+                    Tooltip = 'Specifies the App ID of the source table. This value should be left blank if the source table is in C/AL, otherwise the Application ID should be provided.';
+                    Visible = IsBCCloudMigration;
+
+                    // The following properties are to disable user manipulation of locked mapping records.
+                    Style = Subordinate;
+                    StyleExpr = Rec.Locked;
+                    Editable = not Rec.Locked;
+                    Enabled = not Rec.Locked;
+
+                    trigger OnValidate()
+                    begin
+                        Rec.SetSourceTableName(SourceTableAppID);
+                    end;
+                }
+                field("Data Per Company"; Rec."Data Per Company")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Data Per Company';
+                    Tooltip = 'Specifies if the table data is per company';
+                    Visible = IsBCCloudMigration;
+                    Editable = Rec."Target Table Type" = Rec."Target Table Type"::"Table Extension";
                 }
             }
         }
@@ -103,6 +157,27 @@ page 4009 "Migration Table Mapping"
     {
         area(Processing)
         {
+            action(AddTableMappings)
+            {
+                ApplicationArea = All;
+                Caption = 'Add Table Mappings';
+                ToolTip = 'Adds table mappings for the extensions.';
+                Image = AddAction;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Visible = IsBCCloudMigration;
+
+                trigger OnAction()
+                var
+                    AddMigrationTableMappings: Page "Add Migration Table Mappings";
+                begin
+                    AddMigrationTableMappings.LookupMode(true);
+                    if AddMigrationTableMappings.RunModal() in [Action::OK, Action::LookupOK] then
+                        CurrPage.Update(false);
+                end;
+
+            }
             action(PopulateFromExtension)
             {
                 ApplicationArea = All;
@@ -118,20 +193,23 @@ page 4009 "Migration Table Mapping"
                     ExtensionTableMapping: Record "Migration Table Mapping";
                     PublishedApplication: Record "Published Application";
                     ApplicationObjectMetadata: Record "Application Object Metadata";
+                    TableMetadata: Record "Table Metadata";
                 begin
-                    if not LookupApp(PublishedApplication) then
+                    if not Rec.LookupApp(PublishedApplication) then
                         exit;
 
                     ApplicationObjectMetadata.SetRange("Package ID", PublishedApplication."Package ID");
                     ApplicationObjectMetadata.SetRange("Object Type", ApplicationObjectMetadata."Object Type"::Table);
                     if ApplicationObjectMetadata.FindSet() then
                         repeat
-                            if not ExtensionTableMapping.Get(PublishedApplication.ID, ApplicationObjectMetadata."Object ID") then begin
-                                ExtensionTableMapping.Init();
-                                ExtensionTableMapping.Validate("App ID", PublishedApplication.ID);
-                                ExtensionTableMapping.Validate("Table ID", ApplicationObjectMetadata."Object ID");
-                                ExtensionTableMapping.Insert(true);
-                            end;
+                            if not ExtensionTableMapping.Get(PublishedApplication.ID, ApplicationObjectMetadata."Object ID") then
+                                if TableMetadata.Get(ApplicationObjectMetadata."Object ID") then
+                                    if TableMetadata.ReplicateData then begin
+                                        ExtensionTableMapping.Init();
+                                        ExtensionTableMapping.Validate("App ID", PublishedApplication.ID);
+                                        ExtensionTableMapping.Validate("Table ID", ApplicationObjectMetadata."Object ID");
+                                        ExtensionTableMapping.Insert(true);
+                                    end;
                         until ApplicationObjectMetadata.Next() = 0
                     else
                         Message(NoTablesInExtensionMsg);
@@ -176,8 +254,42 @@ page 4009 "Migration Table Mapping"
                 var
                     ExtensionTableMapping: Record "Migration Table Mapping";
                 begin
-                    ExtensionTableMapping.SetRange("App ID", "App ID");
+                    ExtensionTableMapping.SetRange("App ID", Rec."App ID");
                     ExtensionTableMapping.DeleteAll();
+                end;
+            }
+
+            action(ImportTableMappings)
+            {
+                ApplicationArea = All;
+                Caption = 'Import';
+                Tooltip = 'Imports table mappings from a file.';
+                Image = Import;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Scope = Repeater;
+
+                trigger OnAction()
+                begin
+                    Rec.ImportMigrationTableMappings();
+                    CurrPage.Update();
+                end;
+            }
+            action(ExportTableMappings)
+            {
+                ApplicationArea = All;
+                Caption = 'Export';
+                Tooltip = 'Exports table mappings to a file.';
+                Image = Export;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Scope = Repeater;
+
+                trigger OnAction()
+                begin
+                    Rec.DownloadMigrationTableMappings();
                 end;
             }
         }
@@ -185,12 +297,16 @@ page 4009 "Migration Table Mapping"
 
     trigger OnInit()
     begin
-        SetCurrentKey("App ID", "Table Name");
+        Rec.SetCurrentKey("App ID", "Table Name");
     end;
 
     trigger OnOpenPage()
     begin
-        SetRange(Locked, false);
+        Rec.SetRange(Locked, false);
+        OnIsBCMigration(IsBCCloudMigration);
+
+        // TODO: REmove
+        IsBCCloudMigration := true;
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -200,36 +316,21 @@ page 4009 "Migration Table Mapping"
 
     trigger OnAfterGetRecord()
     begin
-        CalcFields("Extension Package ID");
-        CalcFields("Extension Name");
-        ExtensionName := "Extension Name";
+        Rec.CalcFields("Extension Package ID");
+        Rec.CalcFields("Extension Name");
+        ExtensionName := Rec."Extension Name";
+        SourceTableAppID := Rec.GetSourceTableAppID(Rec);
     end;
 
-    local procedure LookupApp(var PublishedApplication: Record "Published Application"): Boolean
-    var
-        ExtensionManagement: Page "Extension Management";
-        BlacklistExtensionFilter: Text;
-        BlacklistPublisher: Text;
-        BlacklistFilterTxt: Label '<>%1&', Comment = '%1 - extension publisher', Locked = true;
+    [IntegrationEvent(false, false)]
+    local procedure OnIsBCMigration(var SourceBC: Boolean)
     begin
-        foreach BlacklistPublisher in InvalidExtensionPublishers().Split(',') do
-            BlacklistExtensionFilter += StrSubstNo(BlacklistFilterTxt, BlacklistPublisher);
-
-        BlacklistExtensionFilter := BlacklistExtensionFilter.TrimEnd('&');
-        PublishedApplication.SetFilter(Publisher, BlacklistExtensionFilter);
-
-        ExtensionManagement.SetTableView(PublishedApplication);
-        ExtensionManagement.LookupMode(true);
-        if not (ExtensionManagement.RunModal() in [Action::LookupOK, Action::OK]) then
-            exit;
-
-        ExtensionManagement.GetRecord(PublishedApplication);
-        exit(true);
     end;
 
     var
+        IsBCCloudMigration: Boolean;
         ExtensionName: Text[250];
+        SourceTableAppID: Text;
         NoTablesInExtensionMsg: Label 'No tables exist in the specified extension.';
         ResetToDefaultsQst: Label 'All current table mappings for Cloud Migration will be deleted and replaced with the default values.\\Do you want to continue?';
-
 }

@@ -12,6 +12,10 @@ tableextension 11747 "Company Information CZL" extends "Company Information"
             var
                 BankAccount: Record "Bank Account";
             begin
+                if "Default Bank Account Code CZL" <> xRec."Default Bank Account Code CZL" then begin
+                    BankAccount.SetFilter("Currency Code", '%1', '');
+                    BankAccount.ModifyAll("Use as Default for Currency", false);
+                end;
                 if "Default Bank Account Code CZL" = '' then begin
                     UpdateBankInfoCZL('', '', '', '', '', '', '');
                     exit;
@@ -25,6 +29,8 @@ tableextension 11747 "Company Information CZL" extends "Company Information"
                   BankAccount."Transit No.",
                   BankAccount.IBAN,
                   BankAccount."SWIFT Code");
+                BankAccount.Validate("Use as Default for Currency", true);
+                BankAccount.Modify(false);
             end;
         }
         field(11771; "Bank Branch Name CZL"; Text[100])

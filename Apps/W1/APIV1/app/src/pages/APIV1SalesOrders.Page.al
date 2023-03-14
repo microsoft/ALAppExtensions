@@ -75,13 +75,9 @@ page 20028 "APIV1 - Sales Orders"
                     Caption = 'customerId', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF NOT SellToCustomer.GetBySystemId("Customer Id") THEN
                             ERROR(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Sell-to Customer No." := SellToCustomer."No.";
                         RegisterFieldSet(FIELDNO("Customer Id"));
@@ -91,39 +87,12 @@ page 20028 "APIV1 - Sales Orders"
                 field(contactId; "Contact Graph Id")
                 {
                     Caption = 'contactId', Locked = true;
-
-                    trigger OnValidate()
-                    var
-                        Contact: Record "Contact";
-                        Customer: Record "Customer";
-                        GraphIntContact: Codeunit "Graph Int. - Contact";
-                    begin
-                        RegisterFieldSet(FIELDNO("Contact Graph Id"));
-
-                        IF "Contact Graph Id" = '' THEN
-                            ERROR(SellToContactIdHasToHaveValueErr);
-
-                        IF NOT GraphIntContact.FindOrCreateCustomerFromGraphContactSafe("Contact Graph Id", Customer, Contact) THEN
-                            EXIT;
-
-                        UpdateSellToCustomerFromSellToGraphContactId(Customer);
-
-                        IF Contact."Company No." = Customer."No." THEN BEGIN
-                            VALIDATE("Sell-To Contact No.", Contact."No.");
-                            VALIDATE("Sell-to Contact", Contact.Name);
-
-                            RegisterFieldSet(FIELDNO("Sell-To Contact No."));
-                            RegisterFieldSet(FIELDNO("Sell-to Contact"));
-                        END;
-                    end;
                 }
                 field(customerNumber; "Sell-to Customer No.")
                 {
                     Caption = 'customerNumber', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF SellToCustomer."No." <> '' THEN BEGIN
                             IF SellToCustomer."No." <> "Sell-to Customer No." THEN
@@ -133,8 +102,6 @@ page 20028 "APIV1 - Sales Orders"
 
                         IF NOT SellToCustomer.GET("Sell-to Customer No.") THEN
                             ERROR(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Customer Id" := SellToCustomer.SystemId;
                         RegisterFieldSet(FIELDNO("Customer Id"));
@@ -156,13 +123,9 @@ page 20028 "APIV1 - Sales Orders"
                     Caption = 'billToCustomerId', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF NOT BillToCustomer.GetBySystemId("Bill-to Customer Id") THEN
                             ERROR(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer No." := BillToCustomer."No.";
                         RegisterFieldSet(FIELDNO("Bill-to Customer Id"));
@@ -174,8 +137,6 @@ page 20028 "APIV1 - Sales Orders"
                     Caption = 'billToCustomerNumber', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF BillToCustomer."No." <> '' THEN BEGIN
                             IF BillToCustomer."No." <> "Bill-to Customer No." THEN
@@ -185,8 +146,6 @@ page 20028 "APIV1 - Sales Orders"
 
                         IF NOT BillToCustomer.GET("Bill-to Customer No.") THEN
                             ERROR(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer Id" := BillToCustomer.SystemId;
                         RegisterFieldSet(FIELDNO("Bill-to Customer Id"));
@@ -222,7 +181,9 @@ page 20028 "APIV1 - Sales Orders"
                 field(sellingPostalAddress; SellingPostalAddressJSONText)
                 {
                     Caption = 'sellingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the selling address of the Sales Invoice.';
 
                     trigger OnValidate()
@@ -233,7 +194,9 @@ page 20028 "APIV1 - Sales Orders"
                 field(billingPostalAddress; BillingPostalAddressJSONText)
                 {
                     Caption = 'billingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the billing address of the Sales Invoice.';
                     Editable = false;
 
@@ -245,7 +208,9 @@ page 20028 "APIV1 - Sales Orders"
                 field(shippingPostalAddress; ShippingPostalAddressJSONText)
                 {
                     Caption = 'shippingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the shipping address of the Sales Invoice.';
 
                     trigger OnValidate()
@@ -536,6 +501,7 @@ page 20028 "APIV1 - Sales Orders"
         ShipmentMethod: Record "Shipment Method";
         GraphMgtSalesOrderBuffer: Codeunit "Graph Mgt - Sales Order Buffer";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
+        APIV1SendSalesDocument: Codeunit "APIV1 - Send Sales Document";
         LCYCurrencyCode: Code[10];
         CurrencyCodeTxt: Text;
         SellingPostalAddressJSONText: Text;
@@ -550,7 +516,6 @@ page 20028 "APIV1 - Sales Orders"
         CouldNotFindSellToCustomerErr: Label 'The sell-to customer cannot be found.', Locked = true;
         CouldNotFindBillToCustomerErr: Label 'The bill-to customer cannot be found.', Locked = true;
         PartialOrderShipping: Boolean;
-        SellToContactIdHasToHaveValueErr: Label 'Sell-to contact Id must have a value set.', Locked = true;
         SalesOrderPermissionsErr: Label 'You do not have permissions to read Sales Orders.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.', Locked = true;
         CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Locked = true;
@@ -734,29 +699,6 @@ page 20028 "APIV1 - Sales Orders"
         RegisterFieldSet(FIELDNO("Shipping Advice"));
     end;
 
-    local procedure UpdateSellToCustomerFromSellToGraphContactId(var Customer: Record Customer)
-    var
-        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
-        UpdateCustomer: Boolean;
-    begin
-        UpdateCustomer := "Sell-to Customer No." = '';
-        IF NOT UpdateCustomer THEN BEGIN
-            TempFieldBuffer.RESET();
-            TempFieldBuffer.SETRANGE("Field ID", FIELDNO("Customer Id"));
-            UpdateCustomer := NOT TempFieldBuffer.FINDFIRST();
-            TempFieldBuffer.RESET();
-        END;
-
-        IF UpdateCustomer THEN BEGIN
-            VALIDATE("Customer Id", Customer.SystemId);
-            VALIDATE("Sell-to Customer No.", Customer."No.");
-            RegisterFieldSet(FIELDNO("Customer Id"));
-            RegisterFieldSet(FIELDNO("Sell-to Customer No."));
-        END;
-
-        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(Customer);
-    end;
-
     local procedure CheckPermissions()
     var
         SalesHeader: Record "Sales Header";
@@ -812,13 +754,11 @@ page 20028 "APIV1 - Sales Orders"
 
     local procedure PostWithShipAndInvoice(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header")
     var
-        DummyO365SalesDocument: Record "O365 Sales Document";
         LinesInstructionMgt: Codeunit "Lines Instruction Mgt.";
-        O365SendResendInvoice: Codeunit "O365 Send + Resend Invoice";
         OrderNo: Code[20];
         OrderNoSeries: Code[20];
     begin
-        O365SendResendInvoice.CheckDocumentIfNoItemsExists(SalesHeader, FALSE, DummyO365SalesDocument);
+        APIV1SendSalesDocument.CheckDocumentIfNoItemsExists(SalesHeader);
         LinesInstructionMgt.SalesCheckAllLinesHaveQuantityAssigned(SalesHeader);
         OrderNo := SalesHeader."No.";
         OrderNoSeries := SalesHeader."No. Series";

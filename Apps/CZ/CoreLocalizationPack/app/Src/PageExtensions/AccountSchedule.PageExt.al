@@ -48,6 +48,7 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
             trigger OnLookup(var Text: Text): Boolean
             var
                 AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL";
+                AccSchedManagement: Codeunit "AccSchedManagement";
                 GLAccountList: Page "G/L Account List";
                 AccScheduleExtensionsCZL: Page "Acc. Schedule Extensions CZL";
             begin
@@ -76,7 +77,14 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
                     exit(true);
                 end;
 
-                exit(false);
+                Rec.LookupTotaling();
+                if Rec."Totaling Type" = Rec."Totaling Type"::"Account Category" then
+                    Text := AccSchedManagement.GLAccCategoryText(Rec)
+                else
+                    Text := Rec.Totaling;
+
+                exit(true);
+
             end;
         }
     }
@@ -95,31 +103,31 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
 #pragma warning restore AL0432
         {
 #endif
-                action("Set up Custom Functions CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Set up Custom Functions';
-                    Ellipsis = true;
-                    Image = NewSum;
-                    RunObject = Page "Acc. Schedule Extensions CZL";
-                    ToolTip = 'Specifies acc. schedule extensions page';
-                }
-                action("File Mapping CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'File Mapping';
-                    Image = ExportToExcel;
-                    ToolTip = 'File Mapping allows to set up export to Excel. You can see three dots next to the field with Amount.';
-
-                    trigger OnAction()
-                    var
-                        AccScheuledFileMappingCZL: Page "Acc. Schedule File Mapping CZL";
-                    begin
-                        AccScheuledFileMappingCZL.SetAccSchedName(Rec."Schedule Name");
-                        AccScheuledFileMappingCZL.RunModal();
-                    end;
-                }
+            action("Set up Custom Functions CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Set up Custom Functions';
+                Ellipsis = true;
+                Image = NewSum;
+                RunObject = Page "Acc. Schedule Extensions CZL";
+                ToolTip = 'Specifies acc. schedule extensions page';
             }
+            action("File Mapping CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'File Mapping';
+                Image = ExportToExcel;
+                ToolTip = 'File Mapping allows to set up export to Excel. You can see three dots next to the field with Amount.';
+
+                trigger OnAction()
+                var
+                    AccScheuledFileMappingCZL: Page "Acc. Schedule File Mapping CZL";
+                begin
+                    AccScheuledFileMappingCZL.SetAccSchedName(Rec."Schedule Name");
+                    AccScheuledFileMappingCZL.RunModal();
+                end;
+            }
+        }
 #if CLEAN19
         }
 #endif

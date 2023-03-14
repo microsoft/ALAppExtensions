@@ -17,20 +17,11 @@ pageextension 31062 "Sales Order List CZZ" extends "Sales Order List"
     {
         modify(PostedSalesPrepmtInvoices)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Prepayment Credi&t Memos")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

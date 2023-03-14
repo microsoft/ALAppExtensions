@@ -29,7 +29,10 @@ codeunit 13673 "FIK Install"
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
         PaymentMethod: Record "Payment Method";
+#if not CLEAN22
         PaymentBuffer: Record "Payment Buffer";
+#endif
+        VendorPaymentBuffer: Record "Vendor Payment Buffer";
         PaymentExportData: Record "Payment Export Data";
         BankStatementMatchingBuffer: Record "Bank Statement Matching Buffer";
         Company: Record Company;
@@ -56,8 +59,10 @@ codeunit 13673 "FIK Install"
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Acc. Reconciliation Line", BankAccReconciliationLine.FieldNo(PaymentReference));
 
         DataClassificationMgt.SetFieldToNormal(Database::"Payment Method", PaymentMethod.FieldNo(PaymentTypeValidation));
-
+#if not CLEAN22
         DataClassificationMgt.SetFieldToNormal(Database::"Payment Buffer", PaymentBuffer.FieldNo(GiroAccNo));
+#endif
+        DataClassificationMgt.SetFieldToNormal(Database::"Vendor Payment Buffer", VendorPaymentBuffer.FieldNo(GiroAccNo));
 
         DataClassificationMgt.SetFieldToNormal(Database::"Payment Export Data", PaymentExportData.FieldNo(RecipientGiroAccNo));
 

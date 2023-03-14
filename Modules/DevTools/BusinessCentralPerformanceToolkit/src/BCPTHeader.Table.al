@@ -122,8 +122,9 @@ table 149000 "BCPT Header"
                     Error(BaseVersionMustBeLessThanVersionErr)
             end;
         }
-
+#pragma warning disable AA0232
         field(17; "Total No. of Sessions"; Integer)
+#pragma warning restore AA0232
         {
             Caption = 'Total No. of Sessions';
             FieldClass = FlowField;
@@ -132,6 +133,17 @@ table 149000 "BCPT Header"
         field(15; CurrentRunType; Enum "BCPT Run Type")
         {
             Caption = 'Current Run Type';
+            Editable = false;
+            DataClassification = SystemMetadata;
+        }
+        field(18; "Test Company Name"; Text[30])
+        {
+            Caption = 'Test Company Name';
+            TableRelation = Company."Display Name";
+        }
+        field(19; RunID; Guid)
+        {
+            Caption = 'Unique RunID';
             Editable = false;
             DataClassification = SystemMetadata;
         }

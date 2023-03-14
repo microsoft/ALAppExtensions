@@ -1,11 +1,11 @@
-This module provides functionality for authenticating to the [Azure Storage Services REST API](https://docs.microsoft.com/en-us/rest/api/storageservices/).
+This module provides functionality for authenticating to the [Azure Storage Services REST API](https://go.microsoft.com/fwlink/?linkid=2211412).
 
 > This module does not store credentials for Azure Storage services.  
 > Use caution when you store and pass credentials.  
-> We recommend that you familiarize yourself with [Azure security baseline for Azure Storage](https://docs.microsoft.com/en-us/security/benchmark/azure/baselines/storage-security-baseline).
+> We recommend that you familiarize yourself with [Azure security baseline for Azure Storage](https://go.microsoft.com/fwlink/?linkid=2210395).
 
 ### Access Key / Shared Key
-An access key is one possible way to authenticate requests against the API. See [Authorize with Shared Key](https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key) for more information.
+An access key is one possible way to authenticate requests against the API. See [Authorize with Shared Key]() for more information.
 
 #### Examle
 
@@ -20,7 +20,7 @@ An access key is one possible way to authenticate requests against the API. See 
 ```
 
 ### SAS (Shared Access Signature)
-A SAS (Shared Access Signature) is one possible way to authenticate requests against the API. See [Grant limited access to Azure Storage resources using shared access signatures (SAS)](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview) for more information.
+A SAS (Shared Access Signature) is one possible way to authenticate requests against the API. See [Grant limited access to Azure Storage resources using shared access signatures (SAS)](https://go.microsoft.com/fwlink/?linkid=2210397) for more information.
 
 #### Examle
 ```
@@ -53,7 +53,7 @@ A SAS (Shared Access Signature) is one possible way to authenticate requests aga
 ## SAS Parameters (Table 9064)
 
  Optional parameters for Shared Access Signature authorization for Azure Storage Services.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
+ See: https://go.microsoft.com/fwlink/?linkid=2210398
  
 
 
@@ -76,7 +76,7 @@ procedure Authorize(var HttpRequest: HttpRequestMessage; StorageAccount: Text)
 
 The HTTP request to authorize.
 
-*StorageAccount ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*StorageAccount ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the storage account to authorize against.
 
@@ -89,7 +89,7 @@ The name of the storage account to authorize against.
 ### CreateAccountSAS (Method) <a name="CreateAccountSAS"></a> 
 
  Creates an account SAS (Shared Access Signature) for authorizing HTTP request to Azure Storage Services.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
+ See: https://go.microsoft.com/fwlink/?linkid=2210398
  
 
 #### Syntax
@@ -98,7 +98,7 @@ The name of the storage account to authorize against.
 procedure CreateAccountSAS(SigningKey: Text; SignedVersion: Enum "Storage Service API Version"; SignedServices: List of [Enum "SAS Service Type"]; SignedResources: List of [Enum "SAS Resource Type"]; SignedPermissions: List of [Enum "SAS Permission"]; SignedExpiry: DateTime): Interface "Storage Service Authorization"
 ```
 #### Parameters
-*SigningKey ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SigningKey ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The signing key to use.
 
@@ -118,7 +118,7 @@ Specifies the signed services accessible with the account SAS.
 
 Specifies the signed permissions for the account SAS. Permissions are only valid if they match the specified signed resource type; otherwise they are ignored.
 
-*SignedExpiry ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*SignedExpiry ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The time at which the shared access signature becomes invalid.
 
@@ -129,7 +129,7 @@ An account SAS authorization.
 ### CreateAccountSAS (Method) <a name="CreateAccountSAS"></a> 
 
  Creates an account SAS (Shared Access Signature) for authorizing HTTP request to Azure Storage Services.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
+ See: https://go.microsoft.com/fwlink/?linkid=2210398
  
 
 #### Syntax
@@ -142,7 +142,7 @@ procedure CreateAccountSAS(SigningKey: Text; SignedVersion: Enum "Storage Servic
                                                                     OptionalParams: Record "SAS Parameters"): Interface "Storage Service Authorization"
 ```
 #### Parameters
-*SigningKey ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SigningKey ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The signing key to use.
 
@@ -162,7 +162,7 @@ Specifies the signed services accessible with the account SAS.
 
 Specifies the signed permissions for the account SAS. Permissions are only valid if they match the specified signed resource type; otherwise they are ignored.
 
-*SignedExpiry ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*SignedExpiry ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The time at which the shared access signature becomes invalid.
 
@@ -177,7 +177,7 @@ An account SAS authorization.
 ### CreateSharedKey (Method) <a name="CreateSharedKey"></a> 
 
  Creates a Shared Key authorization mechanism for HTTP requests to Azure Storage Services.
- See: https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+ See: https://go.microsoft.com/fwlink/?linkid=2210396
  
 
 #### Syntax
@@ -186,7 +186,7 @@ An account SAS authorization.
 procedure CreateSharedKey(SharedKey: Text): Interface "Storage Service Authorization"
 ```
 #### Parameters
-*SharedKey ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SharedKey ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The shared key to use.
 
@@ -197,7 +197,7 @@ A Shared Key authorization.
 ### CreateSharedKey (Method) <a name="CreateSharedKey"></a> 
 
  Creates a Shared Key authorization mechanism for HTTP requests to Azure Storage Services.
- See: https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+ See: https://go.microsoft.com/fwlink/?linkid=2210396
  
 
 #### Syntax
@@ -206,7 +206,7 @@ A Shared Key authorization.
 procedure CreateSharedKey(SharedKey: Text; ApiVersion: Enum "Storage Service API Version"): Interface "Storage Service Authorization"
 ```
 #### Parameters
-*SharedKey ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SharedKey ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The shared key to use.
 
@@ -235,7 +235,7 @@ The default Storage Service API Version
 ## Storage Service API Version (Enum 9060)
 
  Defines the available API versions for Azure Storage Services.
- See: https://docs.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
+ See: https://go.microsoft.com/fwlink/?linkid=2210598
  
 
 ### 2020-10-02 (value: 0)
@@ -244,7 +244,7 @@ The default Storage Service API Version
 ## SAS Permission (Enum 9064)
 
  Defines the possible permissions for account SAS.
- See: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas#account-sas-permissions-by-operation
+ See: https://go.microsoft.com/fwlink/?linkid=2211413
  
 
 ### Read (value: 0)
@@ -269,7 +269,7 @@ The default Storage Service API Version
 ## SAS Resource Type (Enum 9063)
 
  Defines the possible resource types for account SAS.
- See: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas#specifying-account-sas-parameters
+ See: https://go.microsoft.com/fwlink/?linkid=2210398
  
 
 ### Service (value: 0)
@@ -282,7 +282,7 @@ The default Storage Service API Version
 ## SAS Service Type (Enum 9062)
 
  Defines the possible service types for account SAS
- More Information: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas#specifying-account-sas-parameters
+ More Information: https://go.microsoft.com/fwlink/?linkid=2210398
  
 
 ### Blob (value: 0)

@@ -29,7 +29,9 @@ table 9988 "Word Template"
         {
             DataClassification = CustomerContent;
         }
+#pragma warning disable AL0685
         field(5; "Table Caption"; Text[80])
+#pragma warning restore AL0685
         {
             FieldClass = FlowField;
             CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Table), "Object ID" = field("Table ID")));
@@ -55,6 +57,14 @@ table 9988 "Word Template"
 
         key(Language; "Language Code")
         {
+        }
+    }
+
+    fieldgroups
+    {
+        fieldgroup(Brick; Code, Name, "Table Caption", "Language Name")
+        {
+
         }
     }
 }

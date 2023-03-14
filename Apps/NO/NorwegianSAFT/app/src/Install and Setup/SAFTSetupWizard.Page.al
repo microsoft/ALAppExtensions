@@ -413,6 +413,8 @@ page 10674 "SAF-T Setup Wizard"
         MediaRepositoryStandard: Record "Media Repository";
         MediaResourcesFinished: Record "Media Resources";
         MediaResourcesStd: Record "Media Resources";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        NOValueAddedTaxTok: Label 'NO Set Up Value-added Tax', Locked = true;
         Step: Option Start,MappingType,MappingSourceLoaded,MappingAccount,MappingVAT,DimensionExport,Contact,Finish;
         BackActionEnabled: Boolean;
         FinishActionEnabled: Boolean;
@@ -438,7 +440,7 @@ page 10674 "SAF-T Setup Wizard"
         OpenMappingSetupLbl: Label 'Open the setup page to define G/L account mappings.';
         OpenVATMappingSetupLbl: Label 'Open the setup page to define a VAT Posting Setup mapping.';
         OpenDimensionExportSetupLbl: Label 'Open the setup page to define which dimensions to export to SAF-T.';
-        GLAccountMappingRemainderTxt: Label 'Mapping is not mandatory if no G/L entries are posted in the reported period.';
+        GLAccountMappingRemainderTxt: Label 'You must provide mapping for all G/L accounts in the company.';
         GLAccountMappingRemainder2Txt: Label 'For G/L account with no mapping code, enter NA.';
         VATMappingRemainderTxt: Label 'VAT posting setups without a mapping will be exported with the NA value to the XML file.';
 
@@ -470,6 +472,7 @@ page 10674 "SAF-T Setup Wizard"
     var
         AssistedSetup: Codeunit "Assisted Setup";
     begin
+        FeatureTelemetry.LogUptake('1000HT6', NOValueAddedTaxTok, Enum::"Feature Uptake Status"::"Set up");
         AssistedSetup.Complete(PAGE::"SAF-T Setup Wizard");
         CurrPage.Close();
     end;

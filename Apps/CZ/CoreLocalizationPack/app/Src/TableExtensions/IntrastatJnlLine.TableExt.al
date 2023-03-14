@@ -147,7 +147,7 @@ tableextension 31026 "Intrastat Jnl. Line CZL" extends "Intrastat Jnl. Line"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeExportIntrastatJournalCZL(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; IntrastatExportObjectType: Option ,,,Report,,Codeunit,XMLPort; var IntrastatExportObjectNo: Integer; var IsHandled: Boolean)
+    local procedure OnBeforeExportIntrastatJournalCZL(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; var IntrastatExportObjectType: Option ,,,Report,,Codeunit,XMLPort; var IntrastatExportObjectNo: Integer; var IsHandled: Boolean)
     begin
     end;
 }

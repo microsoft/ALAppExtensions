@@ -1,6 +1,41 @@
 codeunit 18792 "TDS On Purchase Order"
 {
     Subtype = Test;
+
+    [Test]
+    // [SCENARIO] Check if the program is copying purchase document with multiple TDS lines
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure CopyFromPurchOrdWithItemWithMultipleline()
+    var
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        ToPurchHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        Vendor: Record Vendor;
+        DocumentType: Enum "Purchase Document Type";
+    begin
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode with Threshold and Surcharge Overlook.
+        LibraryTDS.CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
+
+        // [WHEN] Created Purchase Order with Multple Line
+        CreatePurchaseDocument(PurchaseHeader,
+            PurchaseHeader."Document Type"::Order,
+            Vendor."No.",
+            WorkDate(),
+            PurchaseLine.Type::Item,
+            false);
+        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, false);
+
+        // [THEN] Create new Purchase Document using copy document
+        CreatePurchaseOrderFromCopyDocument(PurchaseHeader."No.", DocumentType::Order, Vendor."No.", ToPurchHeader);
+
+        // [THEN] Validate No. of Purchase Line Count in both documents
+        VerifyPurchaseLines(PurchaseHeader, ToPurchHeader);
+    end;
+
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
     // [SCENARIO] [353920] Check if the program is allowing the posting of Invoice with Item using the Purchase Order/Invoice with TDS information where T.A.N No. has not been defined.
@@ -1962,6 +1997,35 @@ codeunit 18792 "TDS On Purchase Order"
         Assert.AreNearlyEqual(
             ExpectedSHEcessAmount, TDSEntry."SHE Cess Amount", LibraryTDS.GetTDSRoundingPrecision(),
             StrSubstNo(AmountErr, TDSEntry.FieldName("SHE Cess Amount"), TDSEntry.TableCaption()));
+    end;
+
+    local procedure CreatePurchaseOrderFromCopyDocument(FromDocNo: Code[20]; DocumentType: Enum "Purchase Document Type"; VendorNo: Code[20]; var ToPurchHeader: Record "Purchase Header")
+    var
+        CopyDocumentMgt: Codeunit "Copy Document Mgt.";
+        FromDocType: Enum "Purchase Document Type From";
+    begin
+        LibraryPurchase.CreatePurchHeader(ToPurchHeader, DocumentType, VendorNo);
+        ToPurchHeader.Validate("Posting Date", WorkDate());
+        ToPurchHeader.Modify(true);
+
+        CopyDocumentMgt.SetProperties(true, false, false, false, true, false, false);
+        CopyDocumentMgt.CopyPurchDoc(FromDocType::Order, FromDocNo, ToPurchHeader);
+    end;
+
+    local procedure VerifyPurchaseLines(FromPurchaseHeader: Record "Purchase Header"; ToPurchaseHeader: Record "Purchase Header")
+    var
+        FromPurchaseLine: Record "Purchase Line";
+        ToPurchaseLine: Record "Purchase Line";
+        ExpectedCount: Integer;
+    begin
+        FromPurchaseLine.SetRange("Document Type", FromPurchaseHeader."Document Type");
+        FromPurchaseLine.SetRange("Document No.", FromPurchaseHeader."No.");
+        if FromPurchaseLine.FindSet() then
+            ExpectedCount := FromPurchaseLine.Count;
+
+        ToPurchaseLine.SetRange("Document Type", ToPurchaseHeader."Document Type");
+        ToPurchaseLine.SetRange("Document No.", ToPurchaseHeader."No.");
+        Assert.RecordCount(ToPurchaseLine, ExpectedCount);
     end;
 
     [ModalPageHandler]

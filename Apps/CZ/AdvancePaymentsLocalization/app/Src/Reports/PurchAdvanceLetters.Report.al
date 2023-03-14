@@ -3,6 +3,7 @@ report 31024 "Purch. Advance Letters CZZ"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
     Caption = 'Purchase Advance Letters';
+    DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/PurchAdvanceLetters.rdl';
 
     dataset

@@ -91,6 +91,15 @@ codeunit 148130 "Library - Elec. VAT Submission"
         VATCode.Modify(true);
     end;
 
+    procedure SetReportVATNoteInVATReportSetup(NewReportVATNote: Boolean)
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        VATReportSetup.Get();
+        VATReportSetup.Validate("Report VAT Note", NewReportVATNote);
+        VATReportSetup.Modify(true);
+    end;
+
     procedure FindSubmissionXmlRequestHeaderElement(var TempXMLBuffer: Record "XML Buffer" temporary)
     begin
         TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, 'mvaMeldingDto');
@@ -141,6 +150,13 @@ codeunit 148130 "Library - Elec. VAT Submission"
     begin
         Assert.AreEqual(ElementName, TempXMLBuffer.GetElementName(),
             StrSubstNo(UnexpectedElementNameErr, ElementName, TempXMLBuffer.GetElementName()));
+    end;
+
+    procedure GetOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup")
+    var
+        ElecVATOAuthMgt: Codeunit "Elec. VAT OAuth Mgt.";
+    begin
+        ElecVATOAuthMgt.GetOAuthSetup(OAuth20Setup);
     end;
 
     local procedure SetOAuthSetupTestTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")

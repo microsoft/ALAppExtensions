@@ -9,7 +9,8 @@ page 4022 "Migration User Mapping"
     UsageCategory = Tasks;
     Caption = 'Define User Mappings';
     Permissions = tabledata "My Notifications" = RIMD,
-                    tabledata "User" = RIMD;
+                    tabledata "User" = RIMD,
+                    tabledata "Hybrid Company Status" = RIM;
     layout
     {
         area(Content)
@@ -88,7 +89,12 @@ page 4022 "Migration User Mapping"
                 InFooterBar = true;
 
                 trigger OnAction()
+                var
+                    FeatureTelemetry: Codeunit "Feature Telemetry";
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                 begin
+                    FeatureTelemetry.LogUptake('0000JMG', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+                    FeatureTelemetry.LogUsage('0000JMH', HybridCloudManagement.GetFeatureTelemetryName(), 'Mapping OnPrem users');
                     ValidateAndProcess();
                 end;
             }
@@ -111,6 +117,7 @@ page 4022 "Migration User Mapping"
     }
     trigger OnOpenPage()
     begin
+        WarnUserMappingDoneBefore();
         GroupVisible := true;
         TempUser.SetFilter("Authentication Email", '<>%1', '');
         FillUserIDList();
@@ -121,6 +128,8 @@ page 4022 "Migration User Mapping"
         GroupVisible: Boolean;
         NotAllUsersMappedMsg: Label 'Not all users are mapped. Do you want to run the mapping process anyway?';
         CancelConfirmMsg: Label 'Exit without processing user mapping?';
+        UserMappingWasDoneContinueQst: Label 'You already mapped users in this migration on %1. If you map users again, you might run into unwanted results. Are you sure that you want to continue?', Comment = '%1 - Date and time when the last user mapping was done';
+
 
     local procedure ValidateAndProcess()
     begin
@@ -132,6 +141,7 @@ page 4022 "Migration User Mapping"
                 error('');
 
         ProcessUserMapping();
+        UpdateSetupRecord();
         Message('User mapping complete!');
         CurrPage.Close();
     end;
@@ -209,5 +219,32 @@ page 4022 "Migration User Mapping"
                 exit(false)
         end else
             exit(false);
+    end;
+
+    procedure WarnUserMappingDoneBefore()
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        if not HybridCompanyStatus.Get() then
+            exit;
+
+        if not HybridCompanyStatus."User Mapping Completed" then
+            exit;
+
+        if not Confirm(StrSubstNo(UserMappingWasDoneContinueQst, HybridCompanyStatus."Last User Mapping DateTime")) then
+            Error('');
+    end;
+
+
+    procedure UpdateSetupRecord()
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        if not HybridCompanyStatus.Get() then
+            HybridCompanyStatus.Insert();
+
+        HybridCompanyStatus."Last User Mapping DateTime" := CurrentDateTime;
+        HybridCompanyStatus."User Mapping Completed" := true;
+        HybridCompanyStatus.Modify();
     end;
 }

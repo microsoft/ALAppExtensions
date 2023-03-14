@@ -232,5 +232,296 @@ codeunit 133100 "Extension Management Test"
         Assert.IsTrue(PublishedApplication.FindFirst(), PackageIdExistsErr);
         Assert.AreEqual(PublishedApplication."Version Major", 1, PackageIdExtensionVersionErr);
     end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandler')]
+    procedure MessageShownOnInvokingSetupThisAppWhenNoSetupDefinedForExtension()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        MainAppPackageId: Guid;
+    begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] 2 extensions published but not installed
+        SetNavAppIds();
+        InitializeExtensions();
+
+        // [GIVEN] Install an extension
+        MainAppPackageId := ExtensionManagement.GetLatestVersionPackageIdByAppId(MainAppId);
+        ExtensionManagement.InstallExtension(MainAppPackageId, GlobalLanguage(), false);
+
+        // [WHEN] RunExtensionSetup is invoked
+        // [THEN] Message is shown
+        ExtensionInstallationImpl.RunExtensionSetup(MainAppId);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure ErrorThrownOnInvokingSetupThisAppWhenSelectedExtensionIsNotInstalled()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+    begin
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] 2 extensions published but not installed
+        SetNavAppIds();
+        InitializeExtensions();
+
+        // [WHEN] RunExtensionSetup is invoked
+        // [THEN] Error is thrown saying that the extension is not installed
+        asserterror ExtensionInstallationImpl.RunExtensionSetup(MainAppId);
+        Assert.ExpectedError('is not installed');
+    end;
+
+    [Test]
+    [HandlerFunctions('ExtensionSettingsModalHandler')]
+    [Scope('OnPrem')]
+    procedure SetupPageIsRunOnInvokingSetupThisAppWhenOnlyOneSetupExistsAndNoPrimarySetupDefinedForAnExtension()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        GuidedExperience: Codeunit "Guided Experience";
+        ModuleInformation: ModuleInfo;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        // Initialize
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] A Assisted Setup for the current extension
+        Title := CopyStr(MainAppId, 1, MaxStrLen(Title));
+        ShortTitle := CopyStr(MainAppId, 1, MaxStrLen(ShortTitle));
+        Description := CopyStr(DependingAppId, 1, MaxStrLen(Description));
+        NavApp.GetCurrentModuleInfo(ModuleInformation);
+
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '');
+
+        // [WHEN] RunExtensionSetup is invoked
+        ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
+
+        // [THEN] Modal handler handles the opened setup page
+    end;
+
+    [Test]
+    [HandlerFunctions('ExtensionSettingsModalHandler')]
+    [Scope('OnPrem')]
+    procedure SetupPageIsRunOnInvokingSetupThisAppWhenOnlyOneSetupExistsAndOnePrimarySetupDefinedForAnExtension()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        GuidedExperience: Codeunit "Guided Experience";
+        ModuleInformation: ModuleInfo;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        // Initialize
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] A Assisted Setup for the current extension
+        Title := CopyStr(MainAppId, 1, MaxStrLen(Title));
+        ShortTitle := CopyStr(MainAppId, 1, MaxStrLen(ShortTitle));
+        Description := CopyStr(DependingAppId, 1, MaxStrLen(Description));
+        NavApp.GetCurrentModuleInfo(ModuleInformation);
+
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '', true);
+
+        // [WHEN] RunExtensionSetup is invoked
+        ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
+
+        // [THEN] Modal handler handles the opened setup page
+    end;
+
+    [Test]
+    [HandlerFunctions('ExtensionSettingsModalHandler,ConfirmHandler')]
+    [Scope('OnPrem')]
+    procedure SetupPageIsRunOnInvokingSetupThisAppWhenOnlyTwoSetupExistsAndOnePrimarySetupDefinedForAnExtension()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        GuidedExperience: Codeunit "Guided Experience";
+        AppSetupList: TestPage "App Setup List";
+        ModuleInformation: ModuleInfo;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        // Initialize
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] A Assisted Setup for the current extension
+        Title := CopyStr(MainAppId, 1, MaxStrLen(Title));
+        ShortTitle := CopyStr(MainAppId, 1, MaxStrLen(ShortTitle));
+        Description := CopyStr(DependingAppId, 1, MaxStrLen(Description));
+        NavApp.GetCurrentModuleInfo(ModuleInformation);
+
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '', true);
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Details", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '');
+
+        // [WHEN] RunExtensionSetup is invoked
+        AppSetupList.Trap();
+        ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
+
+        // [THEN] Modal handler handles the opened setup page
+    end;
+
+    [Test]
+    //[HandlerFunctions('ExtensionSettingsModalHandler,ConfirmHandler')]
+    [Scope('OnPrem')]
+    procedure SetupListIsShownOnInvokingSetupThisAppWhenOnlyTwoSetupExistsAndNoPrimarySetupDefinedForAnExtension()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        GuidedExperience: Codeunit "Guided Experience";
+        AppSetupList: TestPage "App Setup List";
+        ModuleInformation: ModuleInfo;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        // Initialize
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] A Assisted Setup for the current extension
+        Title := CopyStr(MainAppId, 1, MaxStrLen(Title));
+        ShortTitle := CopyStr(MainAppId, 1, MaxStrLen(ShortTitle));
+        Description := CopyStr(DependingAppId, 1, MaxStrLen(Description));
+        NavApp.GetCurrentModuleInfo(ModuleInformation);
+
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '');
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Details", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '');
+
+        // [WHEN] RunExtensionSetup is invoked
+        AppSetupList.Trap();
+        ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
+
+        // [THEN] Modal handler handles the opened setup page and then AppSetupList handles the resulting setup list
+    end;
+
+    [Test]
+    [HandlerFunctions('ExtensionSettingsModalHandler,ConfirmHandler')]
+    [Scope('OnPrem')]
+    procedure WhenDefiningMoreThanOneAsPrimarySetupForAnExtensionTheLastOneWins()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        GuidedExperience: Codeunit "Guided Experience";
+        AppSetupList: TestPage "App Setup List";
+        ModuleInformation: ModuleInfo;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        // Initialize
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] A Assisted Setup for the current extension
+        Title := CopyStr(MainAppId, 1, MaxStrLen(Title));
+        ShortTitle := CopyStr(MainAppId, 1, MaxStrLen(ShortTitle));
+        Description := CopyStr(DependingAppId, 1, MaxStrLen(Description));
+        NavApp.GetCurrentModuleInfo(ModuleInformation);
+
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Details", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '', true);
+        // [WHEN] A second setup page is marked as primary
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '', true);
+
+        // [THEN] The last setup wins
+        AppSetupList.Trap();
+        ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure ExistingSetupCanBeMarkedAsPrimary()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        GuidedExperience: Codeunit "Guided Experience";
+        AppSetupList: TestPage "App Setup List";
+        ModuleInformation: ModuleInfo;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        // Initialize
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] A Assisted Setup for the current extension
+        Title := CopyStr(MainAppId, 1, MaxStrLen(Title));
+        ShortTitle := CopyStr(MainAppId, 1, MaxStrLen(ShortTitle));
+        Description := CopyStr(DependingAppId, 1, MaxStrLen(Description));
+        NavApp.GetCurrentModuleInfo(ModuleInformation);
+
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '');
+
+        // [WHEN] Call Insert again with IsPrimary = true
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '', true);
+
+        // [THEN] Setup is marked as Primary and runs
+        AppSetupList.Trap();
+        ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure SetupCanBeUnmarkedAsPrimary()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        GuidedExperience: Codeunit "Guided Experience";
+        AppSetupList: TestPage "App Setup List";
+        ModuleInformation: ModuleInfo;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        // Initialize
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] A Assisted Setup for the current extension
+        Title := CopyStr(MainAppId, 1, MaxStrLen(Title));
+        ShortTitle := CopyStr(MainAppId, 1, MaxStrLen(ShortTitle));
+        Description := CopyStr(DependingAppId, 1, MaxStrLen(Description));
+        NavApp.GetCurrentModuleInfo(ModuleInformation);
+
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '', true);
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Details", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '');
+
+        // [WHEN] Unmark the setup as primary
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '', false);
+
+        // [THEN] PrimaryGuidedExperienceItem has been deleted
+        AppSetupList.Trap();
+        ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
+    begin
+    end;
+
+    [ModalPageHandler]
+    procedure ExtensionSettingsModalHandler(var ExtensionSettings: TestPage "Extension Settings")
+    begin
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
 }
 

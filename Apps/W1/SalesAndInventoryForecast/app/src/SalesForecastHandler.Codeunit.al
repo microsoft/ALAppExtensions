@@ -17,7 +17,11 @@ codeunit 1850 "Sales Forecast Handler"
         SalesForecastNameTxt: Label 'Sales and Inventory Forecast';
         SalesForecastBusinessSetupDescriptionTxt: Label 'Set up and enable the Sales and Inventory Forecast service.';
         SalesForecastBusinessSetupKeywordsTxt: Label 'Sales,Inventory,Forecast';
-        UpdateDialogTxt: Label 'We''re updating the inventory forecast for item #1';
+        UpdateDialogTxt: Label 'We''re updating the inventory forecast for item #1', comment = '#1 = an Item No.';
+        SalesForecastSetupTitleTxt: Label 'Set up Sales & Inventory Forecast';
+        SalesForecastSetupShortTitleTxt: Label 'Sales & Inventory Forecast';
+        SalesForecastSetupDescriptionTxt: Label 'Let Business Central analyze historical data to predict future demand, so you can base procurement decisions on accurate and reliable forecasts, and help your company avoid lost revenue, optimize shipping costs, discover trends, and boost your brand reputation by always delivering on orders. Set it up now.';
+
 
     procedure CalculateForecast(var Item: Record Item; TimeSeriesManagement: Codeunit "Time Series Management"): Boolean
     var
@@ -107,8 +111,7 @@ codeunit 1850 "Sales Forecast Handler"
     end;
 
     [NonDebuggable]
-    [Scope('OnPrem')]
-    procedure InitializeTimeseries(var TimeSeriesManagement: Codeunit "Time Series Management"; MSSalesForecastSetup: Record "MS - Sales Forecast Setup"): Boolean
+    procedure InitializeTimeseries(var TimeSeriesManagement: Codeunit "Time Series Management"; MSSalesForecastSetupRec: Record "MS - Sales Forecast Setup"): Boolean
     var
         AzureAIUsage: Codeunit "Azure AI Usage";
         AzureAIService: Enum "Azure AI Service";
@@ -118,10 +121,10 @@ codeunit 1850 "Sales Forecast Handler"
         Limit: Decimal;
     begin
         // if null, then using standard credentials
-        if IsNullGuid(MSSalesForecastSetup."API Key ID") then begin
+        if IsNullGuid(MSSalesForecastSetupRec."API Key ID") then begin
             TimeSeriesManagement.GetMLForecastCredentials(APIURI, APIKey, LimitType, Limit);
 
-            if not TimeSeriesManagement.Initialize(APIURI, APIKey, MSSalesForecastSetup."Timeout (seconds)", true) then begin
+            if not TimeSeriesManagement.Initialize(APIURI, APIKey, MSSalesForecastSetupRec."Timeout (seconds)", true) then begin
                 Status := Status::"Failed Time Series initialization";
                 exit(false);
             end;
@@ -132,9 +135,9 @@ codeunit 1850 "Sales Forecast Handler"
             end;
         end else
             if not TimeSeriesManagement.Initialize(
-              MSSalesForecastSetup.GetAPIUri(),
-              MSSalesForecastSetup.GetAPIKey(),
-              MSSalesForecastSetup."Timeout (seconds)",
+              MSSalesForecastSetupRec.GetAPIUri(),
+              MSSalesForecastSetupRec.GetAPIKey(),
+              MSSalesForecastSetupRec."Timeout (seconds)",
               false) then begin
                 Status := Status::"Failed Time Series initialization";
                 exit(false);
@@ -235,6 +238,14 @@ codeunit 1850 "Sales Forecast Handler"
           MSSalesForecastSetup.GetAPIUri(), Page::"Sales Forecast Setup Card");
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', true, true)]
+    local procedure InsertIntoManualSetupOnRegisterManualSetup()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+    begin
+        GuidedExperience.InsertManualSetup(SalesForecastSetupTitleTxt, SalesForecastSetupShortTitleTxt, SalesForecastSetupDescriptionTxt, 3, ObjectType::Page, Page::"Sales Forecast Setup Card", "Manual Setup Category"::Finance, '', true);
+    end;
+
     local procedure InitializeSetup(): Boolean
     begin
         Clear(Status);
@@ -280,15 +291,14 @@ codeunit 1850 "Sales Forecast Handler"
         exit(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
-    local procedure HandleRegisterBusinessSetup(var Sender: Codeunit "Manual Setup")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', false, false)]
+    local procedure HandleRegisterBusinessSetup(var Sender: Codeunit "Guided Experience")
     var
         ManualSetupCategory: Enum "Manual Setup Category";
     begin
-        Sender.Insert(
-          SalesForecastNameTxt, SalesForecastBusinessSetupDescriptionTxt,
-          SalesForecastBusinessSetupKeywordsTxt,
-          Page::"Sales Forecast Setup Card", 'c526b3e9-b8ca-4683-81ba-fcd5f6b1472a', ManualSetupCategory::Service);
+        Sender.InsertManualSetup(
+          SalesForecastNameTxt, SalesForecastNameTxt, SalesForecastBusinessSetupDescriptionTxt, 5,
+          ObjectType::Page, Page::"Sales Forecast Setup Card", ManualSetupCategory::Service, SalesForecastBusinessSetupKeywordsTxt);
     end;
 
     [IntegrationEvent(false, false)]

@@ -210,17 +210,27 @@ page 30047 "APIV2 - Purchase Invoice Lines"
                     Caption = 'Tax Code';
 
                     trigger OnValidate()
+                    var
+                        GeneralLedgerSetup: Record "General Ledger Setup";
                     begin
-                        RegisterFieldSet(FieldNo("Tax Code"));
+                        if GeneralLedgerSetup.UseVat() then begin
+                            Validate("VAT Prod. Posting Group", CopyStr("Tax Code", 1, 20));
+                            RegisterFieldSet(FieldNo("VAT Prod. Posting Group"));
+                        end else begin
+                            Validate("Tax Group Code", CopyStr("Tax Code", 1, 20));
+                            RegisterFieldSet(FieldNo("Tax Group Code"));
+                        end;
                     end;
                 }
                 field(taxPercent; "VAT %")
                 {
                     Caption = 'Tax Percent';
+                    Editable = false;
                 }
                 field(totalTaxAmount; "Line Tax Amount")
                 {
                     Caption = 'Total Tax Amount';
+                    Editable = false;
                 }
                 field(amountIncludingTax; "Line Amount Including Tax")
                 {
@@ -279,7 +289,7 @@ page 30047 "APIV2 - Purchase Invoice Lines"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(11);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Purchase Invoice Line");
                 }
                 part(location; "APIV2 - Locations")
                 {
@@ -390,16 +400,5 @@ page 30047 "APIV2 - Purchase Invoice Lines"
         TempItemFieldSet.DeleteAll();
 
         Clear(Item);
-    end;
-
-    local procedure RegisterItemFieldSet(FieldNo: Integer)
-    begin
-        if TempItemFieldSet.Get(Database::Item, FieldNo) then
-            exit;
-
-        TempItemFieldSet.Init();
-        TempItemFieldSet.TableNo := Database::Item;
-        TempItemFieldSet.Validate("No.", FieldNo);
-        TempItemFieldSet.Insert(true);
     end;
 }

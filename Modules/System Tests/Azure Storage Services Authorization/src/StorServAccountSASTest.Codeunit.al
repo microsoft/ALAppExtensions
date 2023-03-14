@@ -7,11 +7,16 @@ codeunit 132918 "Stor. Serv. Account SAS Test"
 {
     Subtype = Test;
 
+    var
+        UriChangedLbl: Label 'HTTP Uri has changed. Original URI: %1, New URI: %2', Locked = true;
+        RandomUriLbl: Label 'https://%1.blob.windows.net/%2/?%3=%4&%5=%6', Locked = true;
+
     [Test]
     procedure SASNoParametersTest()
     var
         SASAuthorization: Interface "Storage Service Authorization";
         AccountKey, Uri, NewUri : Text;
+        StorageAccount: Text;
         Permissions: List of [Enum "SAS Permission"];
         Services: List of [Enum "SAS Service Type"];
         Resources: List of [Enum "SAS Resource Type"];
@@ -30,6 +35,7 @@ codeunit 132918 "Stor. Serv. Account SAS Test"
         Resources.Add(Enum::"SAS Resource Type"::Container);
         Permissions.Add(Enum::"SAS Permission"::Read);
         Permissions.Add(Enum::"SAS Permission"::Write);
+        Permissions.Add(Enum::"SAS Permission"::Tag);
 
         SASAuthorization := StorageServiceAuthorization.CreateAccountSAS(AccountKey, Enum::"Storage Service API Version"::"2020-10-02", Services, Resources, Permissions, ExpiryDate);
         SASAuthorization.Authorize(HttpRequest, StorageAccount);
@@ -39,17 +45,17 @@ codeunit 132918 "Stor. Serv. Account SAS Test"
         Assert.AreEqual('GET', HttpRequest.Method(), 'The HTTP request method should not have changed');
 
         NewUri := HttpRequest.GetRequestUri();
-        Assert.IsTrue(StrPos(NewUri, Uri) = 1, StrSubstNo('HTTP Uri has changed. Original URI: %1, New URI: %2', Uri, NewUri));
+        Assert.IsTrue(StrPos(NewUri, Uri) = 1, StrSubstNo(UriChangedLbl, Uri, NewUri));
 
         Assert.IsTrue(StrPos(NewUri, 'ss=b') > 0, 'SignedServices parameter is missing or is incorrect');
         Assert.IsTrue(StrPos(NewUri, 'srt=c') > 0, 'SignedResources parameter is missing or is incorrect');
-        Assert.IsTrue(StrPos(NewUri, 'sp=rw') > 0, 'SignedServices parameter is missing or is incorrect');
+        Assert.IsTrue(StrPos(NewUri, 'sp=rwt') > 0, 'SignedServices parameter is missing or is incorrect');
 
     end;
 
     local procedure GenerateRandomUri(StorageAccount: Text): Text
     begin
-        exit(StrSubstNo('https://%1.blob.windows.net/%2/?%3=%4&5=%6', StorageAccount, Any.AlphabeticText(5), Any.AlphanumericText(5), Any.AlphanumericText(5), Any.AlphanumericText(5), Any.AlphanumericText(5)));
+        exit(StrSubstNo(RandomUriLbl, StorageAccount, Any.AlphabeticText(5), Any.AlphanumericText(5), Any.AlphanumericText(5), Any.AlphanumericText(5), Any.AlphanumericText(5)));
     end;
 
     var
@@ -57,5 +63,4 @@ codeunit 132918 "Stor. Serv. Account SAS Test"
         Any: Codeunit Any;
         StorageServiceAuthorization: Codeunit "Storage Service Authorization";
         HttpRequest: HttpRequestMessage;
-        StorageAccount: Text;
 }

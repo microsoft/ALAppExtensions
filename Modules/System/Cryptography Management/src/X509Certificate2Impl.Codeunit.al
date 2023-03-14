@@ -83,6 +83,31 @@ codeunit 1285 "X509Certificate2 Impl."
         CreateCertificatePropertyJson(X509Certificate2, CertPropertyJson);
     end;
 
+    [NonDebuggable]
+    procedure GetCertificatePrivateKey(CertBase64Value: Text; Password: Text): Text
+    var
+        X509Certificate2: DotNet X509Certificate2;
+        AsymmetricAlgorithm: DotNet AsymmetricAlgorithm;
+    begin
+        InitializeX509Certificate(CertBase64Value, Password, X509Certificate2);
+        if not X509Certificate2.HasPrivateKey then
+            exit;
+
+        AsymmetricAlgorithm := X509Certificate2.PrivateKey;
+        exit(AsymmetricAlgorithm.ToXmlString(true));
+    end;
+
+    [NonDebuggable]
+    procedure GetCertificatePublicKey(CertBase64Value: Text; Password: Text): Text
+    var
+        X509Certificate2: DotNet X509Certificate2;
+        AsymmetricAlgorithm: DotNet AsymmetricAlgorithm;
+    begin
+        InitializeX509Certificate(CertBase64Value, Password, X509Certificate2);
+        AsymmetricAlgorithm := X509Certificate2.PublicKey."Key";
+        exit(AsymmetricAlgorithm.ToXmlString(false));
+    end;
+
     [TryFunction]
     local procedure TryInitializeCertificate(CertBase64Value: Text; Password: Text; var X509Certificate2: DotNet X509Certificate2)
     var
@@ -124,7 +149,7 @@ codeunit 1285 "X509Certificate2 Impl."
     begin
         foreach PropertyInfo in X509Certificate2.GetType().GetProperties() do
             if PropertyInfo.PropertyType().ToString() in ['System.Boolean', 'System.String', 'System.DateTime', 'System.Int32'] then
-                JObject.Add(PropertyInfo.Name(), Format(PropertyInfo.GetValue(X509Certificate2), 0, 9));
+                JObject.Add(PropertyInfo.Name(), Format(PropertyInfo.GetValue(X509Certificate2), 0, 0));
         JObject.WriteTo(CertPropertyJson);
     end;
 }

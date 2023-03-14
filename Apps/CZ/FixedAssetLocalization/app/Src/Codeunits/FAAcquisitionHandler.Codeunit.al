@@ -177,12 +177,16 @@ codeunit 31236 "FA Acquisition Handler CZF"
     begin
         if Rec.Type <> Rec.Type::"Fixed Asset" then
             exit;
-        if Rec."FA Posting Type" <> Rec."FA Posting Type"::"Acquisition Cost" then
-            exit;
 
-        FASetup.Get();
-        if FASetup."FA Acquisition As Custom 2 CZF" then
-            Rec."FA Posting Type" := Rec."FA Posting Type"::"Custom 2";
+#if not CLEAN21
+#pragma warning disable AL0432
+        if Rec."FA Posting Type" = Rec."FA Posting Type"::"Custom 2" then
+            Rec."FA Posting Type" := Rec."FA Posting Type"::"Custom 2 CZF";
+#pragma warning restore AL0432
+#endif
+        if Rec."FA Posting Type" = Rec."FA Posting Type"::"Acquisition Cost" then
+            if FASetup.IsFAAcquisitionAsCustom2CZL() then
+                Rec."FA Posting Type" := Rec."FA Posting Type"::"Custom 2 CZF";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeGetFAPostingGroup', '', false, false)]
@@ -190,7 +194,6 @@ codeunit 31236 "FA Acquisition Handler CZF"
     var
         FADepreciationBook: Record "FA Depreciation Book";
         FAPostingGroup: Record "FA Posting Group";
-        FAExtendedPostingGroupCZF: Record "FA Extended Posting Group CZF";
         GLAccount: Record "G/L Account";
         ApplicationAreaMgmt: Codeunit "Application Area Mgmt.";
     begin
@@ -215,23 +218,28 @@ codeunit 31236 "FA Acquisition Handler CZF"
 
         if PurchaseLine."FA Posting Type" = PurchaseLine."FA Posting Type"::"Acquisition Cost" then
             if FASetup."FA Acquisition As Custom 2 CZF" then
-                PurchaseLine."FA Posting Type" := PurchaseLine."FA Posting Type"::"Custom 2";
+                PurchaseLine."FA Posting Type" := PurchaseLine."FA Posting Type"::"Custom 2 CZF";
 
         FADepreciationBook.Get(PurchaseLine."No.", PurchaseLine."Depreciation Book Code");
         FADepreciationBook.TestField("FA Posting Group");
         FAPostingGroup.GetPostingGroup(FADepreciationBook."FA Posting Group", FADepreciationBook."Depreciation Book Code");
         case PurchaseLine."FA Posting Type" of
+            PurchaseLine."FA Posting Type"::Maintenance:
+                GLAccount.Get(FAPostingGroup.GetMaintenanceExpenseAccountCZF(PurchaseLine."Maintenance Code"));
+#if not CLEAN21
+#pragma warning disable AL0432
             PurchaseLine."FA Posting Type"::"Custom 2":
                 begin
                     FAPostingGroup.TestField("Custom 2 Account");
                     GLAccount.Get(FAPostingGroup."Custom 2 Account");
                 end;
-            PurchaseLine."FA Posting Type"::Maintenance:
-                if (not FAPostingGroup.UseStandardMaintenanceCZF()) and (PurchaseLine."Maintenance Code" <> '') then begin
-                    FAExtendedPostingGroupCZF.Get(FADepreciationBook."FA Posting Group", FAExtendedPostingGroupCZF."FA Posting Type"::Maintenance, PurchaseLine."Maintenance Code");
-                    GLAccount.Get(FAExtendedPostingGroupCZF.GetMaintenanceExpenseAccount());
-                end else
-                    GLAccount.Get(FAPostingGroup.GetMaintenanceExpenseAccount());
+#pragma warning restore AL0432
+#endif
+            PurchaseLine."FA Posting Type"::"Custom 2 CZF":
+                begin
+                    FAPostingGroup.TestField("Custom 2 Account");
+                    GLAccount.Get(FAPostingGroup."Custom 2 Account");
+                end;
             else
                 exit;
         end;
@@ -245,6 +253,36 @@ codeunit 31236 "FA Acquisition Handler CZF"
         IsHandled := true;
     end;
 
+#if not CLEAN20
+#pragma warning disable AL0432
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
+    local procedure FAPostingTypeCustom2OnAfterCopyToGenJnlLineFAObsolete(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer")
+    begin
+        case InvoicePostBuffer."FA Posting Type" of
+            InvoicePostBuffer."FA Posting Type"::"Custom 2":
+                GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
+            InvoicePostBuffer."FA Posting Type"::"Custom 2 CZF":
+                GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
+        end;
+    end;
+
+#pragma warning restore AL0432
+#endif
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
+    local procedure FAPostingTypeCustom2OnAfterCopyToGenJnlLineFA(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostingBuffer: Record "Invoice Posting Buffer")
+    begin
+        case InvoicePostingBuffer."FA Posting Type" of
+#if not CLEAN21
+#pragma warning disable AL0432
+            InvoicePostingBuffer."FA Posting Type"::"Custom 2":
+                GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
+#pragma warning restore AL0432
+#endif
+            InvoicePostingBuffer."FA Posting Type"::"Custom 2 CZF":
+                GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"FA Setup", 'OnIsFAAcquisitionAsCustom2CZL', '', false, false)]
     local procedure OnIsFAAcquisitionAsCustom2CZL(var FAAcquisitionAsCustom2: Boolean; var IsHandled: Boolean)
     begin
@@ -255,7 +293,6 @@ codeunit 31236 "FA Acquisition Handler CZF"
         FAAcquisitionAsCustom2 := FASetup."FA Acquisition As Custom 2 CZF";
         IsHandled := true;
     end;
-#if CLEAN18
 
     [EventSubscriber(ObjectType::Page, Page::"Fixed Asset Card", 'OnBeforeShowAcquisitionNotification', '', false, false)]
     local procedure BlockNotificationOnBeforeShowAcquisitionNotification(var Acquirable: Boolean; var IsHandled: Boolean)
@@ -265,5 +302,25 @@ codeunit 31236 "FA Acquisition Handler CZF"
         Acquirable := false;
         IsHandled := true;
     end;
-#endif
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterIsAcquisitionCost', '', false, false)]
+    local procedure OnAfterIsAcquisitionCostInGenJournalLine(var GenJournalLine: Record "Gen. Journal Line"; var AcquisitionCost: Boolean)
+    begin
+        AcquisitionCost := AcquisitionCost or
+            (FASetup.IsFAAcquisitionAsCustom2CZL() and (GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::"Custom 2"));
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"FA Journal Line", 'OnAfterIsAcquisitionCost', '', false, false)]
+    local procedure OnAfterIsAcquisitionCostInFAJournalLine(var FAJournalLine: Record "FA Journal Line"; var AcquisitionCost: Boolean)
+    begin
+        AcquisitionCost := AcquisitionCost or
+            (FASetup.IsFAAcquisitionAsCustom2CZL() and (FAJournalLine."FA Posting Type" = FAJournalLine."FA Posting Type"::"Custom 2"));
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"FA Ledger Entry", 'OnAfterIsAcquisitionCost', '', false, false)]
+    local procedure OnAfterIsAcquisitionCostInFALedgerEntry(var FALedgerEntry: Record "FA Ledger Entry"; var AcquisitionCost: Boolean)
+    begin
+        AcquisitionCost := AcquisitionCost or
+            (FASetup.IsFAAcquisitionAsCustom2CZL() and (FALedgerEntry."FA Posting Type" = FALedgerEntry."FA Posting Type"::"Custom 2"));
+    end;
 }

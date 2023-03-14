@@ -14,7 +14,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     end;
 
     var
-        SMTPMailSetup: Record "SMTP Mail Setup";
         LibraryERM: Codeunit "Library - ERM";
         LibraryInventory: Codeunit "Library - Inventory";
         LibrarySales: Codeunit "Library - Sales";
@@ -29,12 +28,11 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Assert: Codeunit Assert;
         IDCapTxt: Label 'cbc:ID';
         TaxAmountCapTxt: Label 'cbc:TaxExclusiveAmount';
-        DefaultProfileIDTxt: Label 'Procurement-BilSim-1.0';
         AccountingCostCodeCapTxt: Label 'cbc:AccountingCostCode';
         OIOUBLFormatNameTxt: Label 'OIOUBL';
         PEPPOLFormatNameTxt: Label 'PEPPOL';
         DefaultCodeTxt: Label 'DEFAULT';
-        NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.';
+        NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.', Comment = '%1 = Service Invoice Document Type';
         isInitialized: Boolean;
 
     [Test]
@@ -1122,22 +1120,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     end;
 
     [Test]
-    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure PostAndSendServiceInvoiceOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        PostAndSendServiceInvoiceOIOUBLWithPrintAndEmailInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceInvoiceOIOUBLWithPrintAndEmail();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         PostAndSendServiceInvoiceOIOUBLWithPrintAndEmailInternal();
     end;
 
@@ -1181,22 +1166,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     end;
 
     [Test]
-    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmail();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         PostAndSendServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     end;
 
@@ -1233,27 +1205,14 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Editor is opened.
         // [THEN] ZIP file is created, it contains OIOUBL Electronic Document and PDF with printed copy of Posted Service Invoice.
         LibraryService.FindServiceInvoiceHeader(ServiceInvoiceHeader, ServiceHeader."No.");
-        FileNameLst.AddRange(GetFileName(ServiceInvoiceHeader."No.", 'Invoice', 'XML'), GetFileName(ServiceInvoiceHeader."No.", 'SM.Invoice', 'PDF'));
+        FileNameLst.AddRange(GetFileName(ServiceInvoiceHeader."No.", 'Invoice', 'XML'), GetFileName(ServiceInvoiceHeader."No.", 'Service Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
-    end;
-
-    [Test]
-    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure SendPostedServiceInvoiceOIOUBLWithPrintAndEmailSMTPSetup() // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        SendPostedServiceInvoiceOIOUBLWithPrintAndEmailInteranl();
     end;
 
     [Test]
     [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedServiceInvoiceOIOUBLWithPrintAndEmail()
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         SendPostedServiceInvoiceOIOUBLWithPrintAndEmailInteranl();
     end;
 
@@ -1302,22 +1261,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     end;
 
     [Test]
-    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmailSMTPSetup() // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,ServiceInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmail()
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         SendPostedServiceInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     end;
 
@@ -1351,31 +1297,18 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
         // [THEN] Report "Service - Invoice" for printing Posted Service Invoice is invoked. Then Email Editor is opened.
         // [THEN] Two ZIP files are created, each of them contains OIOUBL Electronic Document and PDF with printed copy of Posted Service Invoice.
-        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(1), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(1), 'SM.Invoice', 'PDF'));
+        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(1), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(1), 'Service Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
 
         Clear(FileNameLst);
-        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(2), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(2), 'SM.Invoice', 'PDF'));
+        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(2), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(2), 'Service Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
-    end;
-
-    [Test]
-    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceCreditMemoRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure PostAndSendServiceCrMemoOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        PostAndSendServiceCrMemoOIOUBLWithPrintAndEmailInternal();
     end;
 
     [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,ServiceCreditMemoRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendServiceCrMemoOIOUBLWithPrintAndEmail();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         PostAndSendServiceCrMemoOIOUBLWithPrintAndEmailInternal();
     end;
 
@@ -1712,13 +1645,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine.MODIFY(true);
     end;
 
-    local procedure CreateServiceLineWithDiscount(var ServiceLine: Record "Service Line"; ServiceHeader: Record "Service Header"; LineDiscountPct: Integer)
-    begin
-        CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo(), ServiceHeader."OIOUBL-Account Code");
-        ServiceLine.Validate("Line Discount %", LineDiscountPct);
-        ServiceLine.Modify(true);
-    end;
-
     local procedure CreateServiceLineWithLineAndInvoiceDiscount(var ServiceLine: Record "Service Line"; ServiceHeader: Record "Service Header"; LineDiscountAmt: Decimal; InvDiscountAmt: Decimal)
     begin
         CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo(), ServiceHeader."OIOUBL-Account Code");
@@ -1775,20 +1701,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
             SetRange(Usage, DocFormatUsage);
             DeleteAll();
             InsertElectronicFormat(DocFormatCode, '', CodeunitID, 0, DocFormatUsage);
-        end;
-    end;
-
-    local procedure CreateOIOUBLProfile(): Code[10];
-    var
-        OIOUBLProfile: Record "OIOUBL-Profile";
-    // LibraryUtility: Codeunit "Library - Utility";
-    begin
-        with OIOUBLProfile do begin
-            VALIDATE("OIOUBL-Code", LibraryUtility.GenerateRandomCode(FIELDNO("OIOUBL-Code"), DATABASE::"OIOUBL-Profile"));
-            VALIDATE("OIOUBL-Profile ID", DefaultProfileIDTxt);
-
-            INSERT(true);
-            exit("OIOUBL-Code");
         end;
     end;
 
@@ -2065,36 +1977,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     local procedure MailSetupInitialize()
     var
-        EmailFeature: Codeunit "Email Feature";
         LibraryWorkflow: Codeunit "Library - Workflow";
     begin
-        if EmailFeature.IsEnabled() then begin
-            LibraryWorkflow.SetUpEmailAccount();
-            exit;
-        end;
-        SMTPMailSetupClear();
-
-        SMTPMailSetup.Init();
-        SMTPMailSetup."SMTP Server" := 'smtp.office365.com';
-        SMTPMailSetup."User ID" := 'testuser@domain.com';
-        SMTPMailSetup.Authentication := SMTPMailSetup.Authentication::Basic;
-        SMTPMailSetup.SetPassword('TestPasssword');
-        SMTPMailSetup.Insert();
-    end;
-
-    local procedure SMTPMailSetupClear() // To be removed together with deprecated SMTP objects
-    begin
-        SMTPMailSetup.DeleteAll();
-        Commit();
-    end;
-
-    local procedure UpdateServiceLineUnitOfMeasure(ServiceLine: Record "Service Line");
-    var
-        UnitOfMeasure: Record "Unit of Measure";
-    begin
-        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
-        ServiceLine.VALIDATE("Unit of Measure", UnitOfMeasure.Code);
-        ServiceLine.MODIFY(true);
+        LibraryWorkflow.SetUpEmailAccount();
     end;
 
     local procedure UpdateVATPostingSetupPct(var VATPostingSetup: Record "VAT Posting Setup"; NewVATPct: Decimal) OldVATPct: Decimal;
@@ -2327,12 +2212,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     procedure SelectSendingOptionsOKModalPageHandler(var SelectSendingOptions: TestPage "Select Sending Options")
     begin
         SelectSendingOptions.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure EmailDialogModalPageHandler(var EmailDialog: TestPage "Email Dialog")
-    begin
-        EmailDialog.Cancel().Invoke();
     end;
 
     [ModalPageHandler]

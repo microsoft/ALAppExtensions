@@ -46,11 +46,31 @@ codeunit 447 "Record Link Management"
     end;
 
     /// <summary>
+    /// Removes all record links from all records in the RecVariant within current filters
+    /// </summary>
+    /// <param name="RecVariant">A filtered record. All record links associated with records within the filtered recordset will be deleted.</param>
+    procedure RemoveLinks(RecVariant: Variant)
+    begin
+        RecordLinkImpl.RemoveLinks(RecVariant);
+    end;
+
+    /// <summary>
     /// Iterates over the record link table and removes those with obsolete record ids.
     /// </summary>
     procedure RemoveOrphanedLinks()
     begin
         RecordLinkImpl.RemoveOrphanedLinks();
+    end;
+
+    /// <summary>
+    /// Integration event for before copying links.
+    /// </summary>
+    /// <param name="FromRecord">The source record from which links are copied.</param>
+    /// <param name="ToRecord">The destination record to which links are copied.</param>
+    /// <param name="SkipReset">Out parameter to set if reset of Notify field should be skipped.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeCopyLinks(FromRecord: Variant; ToRecord: Variant; var SkipReset: Boolean)
+    begin
     end;
 
     /// <summary>

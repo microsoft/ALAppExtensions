@@ -1,4 +1,4 @@
-#pragma warning disable AL0204, AL0604
+#pragma warning disable AL0604
 page 31180 "Purch. Advance Letters CZZ"
 {
     ApplicationArea = Basic, Suite;
@@ -139,6 +139,37 @@ page 31180 "Purch. Advance Letters CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies amount on issued payment order.';
+                    Visible = false;
+                }
+                field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApply())
+                {
+                    Caption = 'Suggested Amount to Apply (LCY)';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the total Amount (LCY) suggested to apply.';
+                    Visible = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.DrillDownSuggestedAmountToApply();
+                    end;
+                }
+                field("Payment Method Code"; Rec."Payment Method Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies how to make payment, such as with bank transfer, cash, or check.';
+                    Visible = false;
+                }
+                field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the code for Shortcut Dimension 1, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
+                    Visible = false;
+                }
+                field("Shortcut Dimension 2 Code"; Rec."Shortcut Dimension 2 Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the code for Shortcut Dimension 2, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
                     Visible = false;
                 }
             }
@@ -311,8 +342,9 @@ page 31180 "Purch. Advance Letters CZZ"
                 var
                     PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                 begin
+                    PurchAdvLetterHeaderCZZ := Rec;
                     CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
-                    PurchAdvLetterHeaderCZZ.PrintRecord(true);
+                    PurchAdvLetterHeaderCZZ.PrintRecords(true);
                 end;
             }
             action(PrintToAttachment)
@@ -326,8 +358,12 @@ page 31180 "Purch. Advance Letters CZZ"
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
+                var
+                    PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                 begin
-                    Rec.PrintToDocumentAttachment();
+                    PurchAdvLetterHeaderCZZ := Rec;
+                    CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
+                    PurchAdvLetterHeaderCZZ.PrintToDocumentAttachment();
                 end;
             }
             action(AdvanceLetters)
@@ -359,11 +395,4 @@ page 31180 "Purch. Advance Letters CZZ"
             }
         }
     }
-
-    trigger OnOpenPage()
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-    begin
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-    end;
 }

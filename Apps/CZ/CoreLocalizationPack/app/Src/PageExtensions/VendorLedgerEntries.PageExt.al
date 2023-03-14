@@ -68,6 +68,21 @@ pageextension 31016 "Vendor Ledger Entries CZL" extends "Vendor Ledger Entries"
                 Visible = false;
             }
         }
+        addafter("Remaining Amt. (LCY)")
+        {
+            field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApplyCZL())
+            {
+                Caption = 'Suggested Amount to Apply (LCY)';
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+                ToolTip = 'Specifies the total Amount (LCY) suggested to apply.';
+                Visible = false;
+
+                trigger OnDrillDown()
+                begin
+                    Rec.DrillDownSuggestedAmountToApplyCZL();
+                end;
+            }
+        }
     }
 }
-

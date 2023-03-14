@@ -4,7 +4,8 @@ codeunit 18143 "GST Sales Validation"
         GSTBaseValidation: Codeunit "GST Base Validation";
         RefErr: Label 'Document is attached with Reference Invoice No. Please delete attached Reference Invoice No.';
         ReferenceNoErr: Label 'Selected Document No does not exit for Reference Invoice No.';
-        GSTPaymentDutyErr: Label 'You can only select GST without payment Of Duty in Export or Deemed Export Customer.';
+        GSTPaymentDutyErr: Label 'You can only select GST without payment Of Duty in Sez,Export or Deemed Export Customer.';
+        PostingErr: Label 'You must have to select GST without payment of duty - Yes for Ship to GST customer type - SEZ/Deemed';
         NonGSTInvTypeErr: Label 'You cannot enter Non-GST Invoice Type for any GST document.';
         POSGSTInvoiceErr: Label 'You can not select POS Out Of India field without GST Invoice.';
         AppliesToDocErr: Label 'You must remove Applies-to Doc No. before modifying Exempted value';
@@ -23,10 +24,11 @@ codeunit 18143 "GST Sales Validation"
         SellToBillToCustomerErr: Label 'Sell-to Customer No. and Bill-to Customer No. must be same for the Document Type %1 and Document No. %2.', Comment = '%1 = Document Type ; %2 = Document No.';
         ShipToCodeErr: Label 'GST Calculation on Ship-to Code/Address is allowed only if Sell-to and Bill-to Customer are same.';
         GSTPlaceOfSupplyErr: Label 'You must select Ship-to Code or Ship-to Customer in transaction header.';
-        PostGSTtoCustErr: Label 'Only allow for GST Customer type SEZ Development & SEZ Unit.';
+        PostGSTtoCustErr: Label 'Only allow for GST Customer type Deemed Export, SEZ Development & SEZ Unit.';
         ExemptedLinesErr: Label 'All lines in the document are GST Exempted, the preferred Invoice type should be Bill of Supply.';
         NonExemptedLinesErr: Label 'All lines in the document are not GST Exempted, the preferred Invoice type should be according to GST Customer Type.';
         GSTDependencyTypeErr: Label 'GST dependency type must be Bill to Address or Ship to Address';
+        GSTGroupCodeEqualErr: Label 'GST Group Code must be same in Sales Document Lines for the Document Type %1 and Document No. %2.', Comment = '%1 = Document Type ; %2 = Document No.';
 
     procedure GetPostInvoiceNoSeries(var SalesHeader: Record "Sales Header")
     var
@@ -38,7 +40,9 @@ codeunit 18143 "GST Sales Validation"
         SalesHeader := VariantRec;
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeUpdateLocationCode', '', false, false)]
+    [Obsolete('Not actual after Non Inventoriable Item refactoring', '20.0')]
     local procedure HandledOnBeforeUpdateLocationCode(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
     var
         Item: Record Item;
@@ -47,6 +51,7 @@ codeunit 18143 "GST Sales Validation"
             if (Item."HSN/SAC Code" <> '') and (Item."GST Group Code" <> '') then
                 IsHandled := true;
     end;
+#endif
 
     //CopyDocument 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopySalesLineFromSalesLineBuffer', '', false, false)]
@@ -54,8 +59,21 @@ codeunit 18143 "GST Sales Validation"
     var
         CalculateTax: Codeunit "Calculate Tax";
     begin
+        GSTPlaceOfSupply(ToSalesLine);
         if not RecalculateLines then
             CalculateTax.CallTaxEngineOnSalesLine(ToSalesLine, ToSalesLine);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnCopySalesDocOnAfterTransferPostedInvoiceFields', '', false, false)]
+    local procedure OnCopySalesDocOnAfterCopySalesDocUpdateHeader(var ToSalesHeader: Record "Sales Header")
+    var
+        ShiptoAddr: Record "Ship-to Address";
+    begin
+        if ToSalesHeader."Ship-to Code" <> '' then
+            if ShiptoAddr.Get(ToSalesHeader."Bill-to Customer No.", ToSalesHeader."Ship-to Code") then
+                ToSalesHeader."GST-Ship to Customer Type" := ShiptoAddr."Ship-to GST Customer Type";
+
+        AssignInvoiceType(ToSalesHeader);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Tax", 'OnAfterValidateSalesLineFields', '', false, false)]
@@ -224,9 +242,9 @@ codeunit 18143 "GST Sales Validation"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'POS Out Of India', false, false)]
-    local procedure ValidatePOSOutOfIndia(var Rec: Record "Sales Header")
+    local procedure ValidatePOSOutOfIndia(var Rec: Record "Sales Header"; var xRec: Record "Sales Header")
     begin
-        POSOutOfIndia(Rec);
+        POSOutOfIndia(Rec, xRec, Rec.FieldNo("POS Out Of India"));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeInitRecord', '', false, false)]
@@ -256,8 +274,18 @@ codeunit 18143 "GST Sales Validation"
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterCheckBillToCust', '', false, false)]
     local procedure UpdateBilltoCustinfo(var SalesHeader: Record "Sales Header"; Customer: Record Customer)
+    var
+        ShiptoAddress: Record "Ship-to Address";
     begin
         BilltoCustinfo(SalesHeader);
+
+        if (SalesHeader."Ship-to Code" <> '') and not (SalesHeader."GST Customer Type" = SalesHeader."GST Customer Type"::Unregistered) then begin
+            if ShiptoAddress.Get(SalesHeader."Bill-to Customer No.", SalesHeader."Ship-to Code") then
+                SalesHeader."GST-Ship to Customer Type" := ShiptoAddress."Ship-to GST Customer Type";
+        end
+        else
+            SalesHeader."GST-Ship to Customer Type" := SalesHeader."GST Customer Type";
+
         AssignInvoiceType(SalesHeader);
     end;
 
@@ -280,15 +308,15 @@ codeunit 18143 "GST Sales Validation"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Location Code', false, false)]
-    local procedure UpdateLocationinfo(var Rec: Record "Sales Header")
+    local procedure UpdateLocationinfo(var Rec: Record "Sales Header"; var xRec: Record "Sales Header")
     begin
-        Locationinfo(Rec);
+        Locationinfo(Rec, xRec, Rec.FieldNo("Location Code"));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Ship-to Customer', false, false)]
-    local procedure OnAfterValidateEventShipToCustomer(var Rec: Record "Sales Header")
+    local procedure OnAfterValidateEventShipToCustomer(var Rec: Record "Sales Header"; var xRec: Record "Sales Header")
     begin
-        ShiptoCustomer(Rec);
+        ShiptoCustomer(Rec, xRec, Rec.FieldNo("Ship-to Customer"));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnValidateShipToCodeOnBeforeCopyShipToAddress', '', false, false)]
@@ -299,12 +327,15 @@ codeunit 18143 "GST Sales Validation"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Post GST to Customer', false, false)]
-    local procedure OnValidatePostGSTtoCustomer(var Rec: Record "Sales Header")
+    local procedure OnValidatePostGSTtoCustomer(var Rec: Record "Sales Header"; var xRec: Record "Sales Header")
     begin
         Rec.TestField(Status, Rec.Status::Open);
-        ReferenceInvoiceNoValidation(Rec);
-        if not (Rec."GST Customer Type" IN [Rec."GST Customer Type"::"SEZ Development", Rec."GST Customer Type"::"SEZ Unit"]) then
-            Error(PostGSTtoCustErr)
+        ReferenceInvoiceNoValidation(Rec, xRec, Rec.FieldNo("Post GST to Customer"));
+        if not (Rec."GST Customer Type" IN [Rec."GST Customer Type"::"SEZ Development", Rec."GST Customer Type"::"SEZ Unit", Rec."GST Customer Type"::"Deemed Export"]) then
+            Error(PostGSTtoCustErr);
+
+        if Rec."Ship-to GST Customer Type" = Rec."Ship-to GST Customer Type"::Registered then
+            Error(PostGSTtoCustErr);
     end;
 
     //Sales Line Subscribers
@@ -436,6 +467,7 @@ codeunit 18143 "GST Sales Validation"
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterValidateEvent', 'Location Code', false, false)]
     local procedure OnAfterValidateEventLocationCode(var Rec: Record "Sales Line")
     begin
+        CheckHeaderLocation(Rec);
         UpdateGSTJurisdictionType(Rec);
     end;
 
@@ -510,6 +542,131 @@ codeunit 18143 "GST Sales Validation"
     begin
         if Rec."GST Dependency Type" = Rec."GST Dependency Type"::"Location Address" then
             Error(GSTDependencyTypeErr);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Ship-To Code', false, false)]
+    local procedure OnBeforeUpdateShipToAddress(var Rec: Record "Sales Header")
+    var
+        Customer: Record Customer;
+    begin
+        if Customer.Get(Rec."Sell-to Customer No.") then
+            Rec."GST Customer Type" := Customer."GST Customer Type";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Ship-To Code', false, false)]
+    local procedure OnAfterUpdateShipToAddress(var Rec: Record "Sales Header")
+    begin
+        if (Rec."Ship-to Code" = '') or (Rec."GST Customer Type" = Rec."GST Customer Type"::Unregistered) then
+            Rec."GST-Ship to Customer Type" := Rec."GST Customer Type";
+
+        AssignInvoiceType(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeUpdateLineDiscPct', '', false, false)]
+    local procedure OnBeforeUpdateLineDiscPct(var SalesLine: Record "Sales Line"; var IsHandled: Boolean; Currency: Record Currency)
+    var
+        LineDiscountPct: Decimal;
+        IsOutOfStandardDiscPctRange: Boolean;
+        LineDiscountPctErr: Label 'The value in the Line Discount % field must be between 0 and 100.';
+    begin
+        if not SalesLine."Price Inclusive of Tax" then
+            exit;
+
+        if Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") <> 0 then begin
+            LineDiscountPct :=
+                Round(
+                    SalesLine."Line Discount Amount" /
+                    Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") * 100,
+                    0.00001);
+
+            IsOutOfStandardDiscPctRange := not (LineDiscountPct in [0 .. 100]);
+
+            if IsOutOfStandardDiscPctRange then
+                Error(LineDiscountPctErr);
+
+            SalesLine."Line Discount %" := LineDiscountPct;
+        end else
+            SalesLine."Line Discount %" := 0;
+
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnUpdateAmountsOnAfterCalcLineAmount', '', false, false)]
+    local procedure OnUpdateAmountsOnAfterCalcLineAmount(var SalesLine: Record "Sales Line"; var LineAmount: Decimal)
+    var
+        Currency: Record Currency;
+    begin
+        if not SalesLine."Price Inclusive of Tax" then
+            exit;
+
+        GetCurrency(SalesLine, Currency);
+
+        SalesLine."Line Discount Amount" := Round(Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") *
+            SalesLine."Line Discount %" / 100, Currency."Amount Rounding Precision");
+
+        LineAmount := Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") - SalesLine."Line Discount Amount";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterAppliesToDocNoOnLookup', '', false, false)]
+    local procedure OnAfterAppliesToDocNoOnLookup(var SalesHeader: Record "Sales Header"; CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        ValidateGSTGroupCodeonSalesLines(SalesHeader, CustLedgerEntry);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales line", 'OnAfterValidateEvent', 'Quantity', false, false)]
+    local procedure OnAfterValidateQuantity(var Rec: Record "Sales Line")
+    begin
+        OnQuantityChangeValidation(Rec);
+    end;
+
+    local procedure OnQuantityChangeValidation(var SalesLine: Record "Sales Line")
+    var
+        SalesHeader: Record "Sales Header";
+        ShipToAddress: Record "Ship-to Address";
+    begin
+        if (SalesLine."GST Group Code" = '') or (SalesLine."HSN/SAC Code" = '') then
+            exit;
+
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        SalesHeader.TestField("POS Out Of India", false);
+
+        if SalesLine."GST Place Of Supply" = SalesLine."GST Place Of Supply"::"Ship-to Address" then begin
+            if (SalesHeader."Ship-to Code" = '') and (SalesHeader."Ship-to Customer" = '') then
+                error(GSTPlaceOfSupplyErr);
+
+            SalesHeader.TestField("POS Out Of India", false);
+            if SalesHeader."Ship-to GST Reg. No." = '' then
+                if ShipToAddress.Get(SalesLine."Sell-to Customer No.", SalesHeader."Ship-to Code") then
+                    if not (SalesHeader."GST Customer Type" in [SalesHeader."GST Customer Type"::Unregistered, SalesHeader."GST Customer Type"::Export]) then
+                        if ShipToAddress."ARN No." = '' then
+                            Error(ShipToGSTARNErr);
+        end;
+
+        if SalesLine."Document Type" In [SalesLine."Document Type"::Invoice,
+            SalesLine."Document Type"::"Credit Memo",
+            SalesLine."Document Type"::Order,
+            SalesLine."Document Type"::"Return Order"]
+        then
+            ReferenceInvoiceNoValidation(SalesLine, SalesLine, SalesLine.FieldNo(Quantity));
+
+        UpdateStateCode(SalesHeader, SalesLine);
+        UpdateGSTJurisdictionType(SalesLine);
+    end;
+
+    local procedure ValidateGSTGroupCodeonSalesLines(var SalesHeader: Record "Sales Header"; CustLedgerEntry: Record "Cust. Ledger Entry")
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        if not CustLedgerEntry."GST on Advance Payment" then
+            exit;
+
+        SalesLine.SetCurrentKey("Document Type", "Document No.", "No.", "GST Group Code");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetFilter("No.", '<>%1', '');
+        SalesLine.SetFilter("GST Group Code", '<>%1', CustLedgerEntry."GST Group Code");
+        if not SalesLine.IsEmpty() then
+            Error(GSTGroupCodeEqualErr, SalesHeader."Document Type", SalesHeader."No.");
     end;
 
     local procedure CalcTotalUPITAmount(var Rec: Record "Sales Line")
@@ -621,6 +778,9 @@ codeunit 18143 "GST Sales Validation"
             "GST Customer Type"::"SEZ Unit"])
         then
             Error(GSTPaymentDutyErr);
+
+        if SalesHeader."Ship-to GST Customer Type" = SalesHeader."Ship-to GST Customer Type"::Registered then
+            Error(GSTPaymentDutyErr);
     end;
 
     local procedure TradingInfo(var SalesHeader: Record "Sales Header")
@@ -669,7 +829,7 @@ codeunit 18143 "GST Sales Validation"
                 Error(ReferenceNoErr);
 
         if SalesHeader."Document Type" in ["Document Type Enum"::Order, "Document Type Enum"::Invoice] then
-            ReferenceInvoiceNoValidation(SalesHeader);
+            ReferenceInvoiceNoValidation(SalesHeader, SalesHeader, SalesHeader.FieldNo("Invoice Type"));
     end;
 
     local procedure CheckAllLinesExemptedSales(SalesHeader: Record "Sales Header"): Boolean
@@ -725,17 +885,17 @@ codeunit 18143 "GST Sales Validation"
         else
             SalesHeader."Location State Code" := '';
 
-        ReferenceInvoiceNoValidation(SalesHeader);
+        ReferenceInvoiceNoValidation(SalesHeader, SalesHeader, SalesHeader.FieldNo("Location GST Reg. No."));
         SalesHeader."POS Out Of India" := false;
     end;
 
-    local procedure POSOutOfIndia(var SalesHeader: Record "Sales Header")
+    local procedure POSOutOfIndia(var SalesHeader: Record "Sales Header"; var xSalesHeader: Record "Sales Header"; CurrFieldNo: Integer)
     var
         SalesLine: Record "Sales Line";
     begin
         SalesHeader.TestField(Status, SalesHeader.Status::Open);
         SalesHeader.TestField("Ship-to Customer", '');
-        ReferenceInvoiceNoValidation(SalesHeader);
+        ReferenceInvoiceNoValidation(SalesHeader, xSalesHeader, CurrFieldNo);
         if not SalesHeader."GST Invoice" then
             Error(POSGSTInvoiceErr);
 
@@ -867,10 +1027,24 @@ codeunit 18143 "GST Sales Validation"
             SalesLine."Document Type"::"Credit Memo",
             SalesLine."Document Type"::Order,
             SalesLine."Document Type"::"Return Order"] then
-            ReferenceInvoiceNoValidation(SalesHeader);
+            ReferenceInvoiceNoValidation(SalesLine, SalesLine, SalesLine.FieldNo("GST Place Of Supply"));
 
         UpdateStateCode(SalesHeader, SalesLine);
         UpdateGSTJurisdictionType(SalesLine);
+    end;
+
+    procedure UpdateGSTJurisdictionTypeFromPlaceOfSupply(SalesHeader: Record "Sales Header")
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.LoadFields("Document Type", "Document No.");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        if SalesLine.FindSet() then
+            repeat
+                GSTPlaceOfSupply(SalesLine);
+                SalesLine.Modify();
+            until SalesLine.Next() = 0;
     end;
 
     local procedure GSTGroupCode(var SalesLine: Record "Sales Line")
@@ -1039,9 +1213,12 @@ codeunit 18143 "GST Sales Validation"
                         Error(ShiptoGSTARNErr);
                 SalesHeader."GST Ship-to State Code" := ShipToAddress.State;
                 SalesHeader."Ship-to GST Reg. No." := ShipToAddress."GST Registration No.";
+                SalesHeader."GST-Ship to Customer Type" := ShipToAddress."Ship-to GST Customer Type";
+                SalesHeader."Ship-to GST Customer Type" := ShipToAddress."Ship-to GST Customer Type";
 
                 if CheckGSTPlaceOfSupply(SalesHeader) then
                     SalesHeader.State := ShipToAddress.State;
+                AssignInvoiceType(SalesHeader);
             end;
     end;
 
@@ -1067,7 +1244,7 @@ codeunit 18143 "GST Sales Validation"
             end;
     end;
 
-    local procedure Locationinfo(var SalesHeader: Record "Sales Header")
+    local procedure Locationinfo(var SalesHeader: Record "Sales Header"; var xSalesHeader: Record "Sales Header"; CurrFieldNo: Integer)
     var
         Location: Record Location;
     begin
@@ -1083,7 +1260,7 @@ codeunit 18143 "GST Sales Validation"
             GetPostInvoiceNoSeries(SalesHeader);
 
         SalesHeader."Location State Code" := Location."State Code";
-        ReferenceInvoiceNoValidation(SalesHeader);
+        ReferenceInvoiceNoValidation(SalesHeader, xSalesHeader, CurrFieldNo);
     end;
 
     local procedure GLAccValue(var SalesLine: Record "Sales Line"; GLAccount: Record "G/L Account")
@@ -1103,6 +1280,8 @@ codeunit 18143 "GST Sales Validation"
             exit;
 
         SalesLine."Invoice Type" := SalesHeader."Invoice Type";
+        if SalesLine."Location Code" = '' then
+            SalesLine."Location Code" := SalesHeader."Location Code";
         UpdateGSTPlaceOfSupply(Item."HSN/SAC Code", Item."GST Group Code", Item.Exempted, Item."GST Credit", SalesLine);
     end;
 
@@ -1233,8 +1412,14 @@ codeunit 18143 "GST Sales Validation"
         if not (Customer."GST Customer Type" in ["GST Customer Type"::Registered, "GST Customer Type"::" "]) and
             not (Customer."GST Registration Type" = "GST Registration Type"::GSTIN) then
             Error(GSTCustRegErr);
-        if (Customer."P.A.N. No." <> '') and (Customer."P.A.N. Status" = Customer."P.A.N. Status"::" ") then
-            GSTBaseValidation.CheckGSTRegistrationNo(Customer."State Code", Customer."GST Registration No.", Customer."P.A.N. No.")
+
+        if (Customer."P.A.N. No." <> '') and (Customer."P.A.N. Status" = Customer."P.A.N. Status"::" ") then begin
+            if (Customer."GST Registration Type" = "GST Registration Type"::GSTIN) then
+                GSTBaseValidation.CheckGSTRegistrationNo(Customer."State Code", Customer."GST Registration No.", Customer."P.A.N. No.")
+            else
+                if (Customer."GST Registration Type" in ["GST Registration Type"::GID, "GST Registration Type"::UID]) then
+                    GSTBaseValidation.CheckGSTRegistrationNoforGidandUid(Customer."State Code", Customer."GST Registration No.", Customer."P.A.N. No.")
+        end
         else
             if Customer."GST Registration No." <> '' then
                 Error(PANErr);
@@ -1289,14 +1474,15 @@ codeunit 18143 "GST Sales Validation"
 
         if Customer."GST Registration No." <> '' then begin
             Customer.TestField("State Code");
-            if (Customer."P.A.N. No." <> '') and (Customer."P.A.N. Status" = Customer."P.A.N. Status"::" ") then
-                GSTBaseValidation.CheckGSTRegistrationNo(
-                    Customer."State Code",
-                    Customer."GST Registration No.",
-                    Customer."P.A.N. No.")
-            else
-                if Customer."GST Registration No." <> '' then
-                    Error(PANErr);
+            if Customer."GST Registration Type" = Customer."GST Registration Type"::GSTIN then
+                if (Customer."P.A.N. No." <> '') and (Customer."P.A.N. Status" = Customer."P.A.N. Status"::" ") then
+                    GSTBaseValidation.CheckGSTRegistrationNo(
+                        Customer."State Code",
+                        Customer."GST Registration No.",
+                        Customer."P.A.N. No.")
+                else
+                    if Customer."GST Registration No." <> '' then
+                        Error(PANErr);
         end;
     end;
 
@@ -1369,6 +1555,15 @@ codeunit 18143 "GST Sales Validation"
             SalesHeader."GST Customer Type"::Exempted:
                 SalesHeader."Invoice Type" := SalesHeader."Invoice Type"::"Bill Of Supply";
         end;
+        case SalesHeader."GST-Ship to Customer Type" of
+            SalesHeader."GST-Ship to Customer Type"::" ", SalesHeader."GST-Ship to Customer Type"::Registered, SalesHeader."GST-Ship to Customer Type"::Unregistered:
+                SalesHeader."GST-Ship to Invoice Type" := SalesHeader."GST-Ship to Invoice Type"::Taxable;
+            SalesHeader."GST-Ship to Customer Type"::Export, SalesHeader."GST-Ship to Customer Type"::"Deemed Export",
+          SalesHeader."GST-Ship to Customer Type"::"SEZ Development", SalesHeader."GST-Ship to Customer Type"::"SEZ Unit":
+                SalesHeader.Validate("GST-Ship to Invoice Type", SalesHeader."GST-Ship to Invoice Type"::Export);
+            SalesHeader."GST-Ship to Customer Type"::Exempted:
+                SalesHeader."GST-Ship to Invoice Type" := SalesHeader."GST-Ship to Invoice Type"::"Bill Of Supply";
+        end;
     end;
 
     local procedure ExchangeAmtLCYToFCY(var SalesLine: Record "Sales Line")
@@ -1412,8 +1607,9 @@ codeunit 18143 "GST Sales Validation"
         SalesHeader: Record "Sales Header";
     begin
         if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then begin
-            if SalesHeader."Ship-to Code" <> '' then begin
-                UpdateGSTJurisdictionShiptoAdddress(SalesLine);
+            if SalesLine."GST Place Of Supply" = SalesLine."GST Place Of Supply"::"Ship-to Address" then begin
+                if SalesHeader."Ship-to Code" <> '' then
+                    UpdateGSTJurisdictionShiptoAdddress(SalesLine);
                 exit;
             end;
 
@@ -1466,14 +1662,24 @@ codeunit 18143 "GST Sales Validation"
     begin
         if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
             if ShiptoAddress.Get(SalesHeader."Bill-to Customer No.", SalesHeader."Ship-to Code") then
-                if SalesHeader."Location State Code" <> ShiptoAddress."State" then
-                    SalesLine."GST Jurisdiction Type" := SalesLine."GST Jurisdiction Type"::Interstate
-                else
-                    if SalesHeader."Location State Code" = ShiptoAddress."State" then
-                        SalesLine."GST Jurisdiction Type" := SalesLine."GST Jurisdiction Type"::Intrastate
+                case SalesHeader."GST-Ship to Invoice Type" of
+                    SalesHeader."GST-Ship to Invoice Type"::Taxable,
+                    SalesHeader."GST-Ship to Invoice Type"::"Bill of Supply",
+                    SalesHeader."GST-Ship to Invoice Type"::"Debit Note",
+                    SalesHeader."GST-Ship to Invoice Type"::"Non-GST",
+                    SalesHeader."GST-Ship to Invoice Type"::Supplementary:
+                        if SalesHeader."Location State Code" <> ShiptoAddress."State" then
+                            SalesLine."GST Jurisdiction Type" := SalesLine."GST Jurisdiction Type"::Interstate
+                        else
+                            if SalesHeader."Location State Code" = ShiptoAddress."State" then
+                                SalesLine."GST Jurisdiction Type" := SalesLine."GST Jurisdiction Type"::Intrastate;
+
+                    SalesHeader."GST-Ship to Invoice Type"::Export:
+                        SalesLine."GST Jurisdiction Type" := SalesLine."GST Jurisdiction Type"::Interstate;
+                end;
     end;
 
-    local procedure ShiptoCustomer(Var SalesHeader: Record "Sales Header")
+    local procedure ShiptoCustomer(Var SalesHeader: Record "Sales Header"; var xSalesHeader: Record "Sales Header"; CurrFieldNo: Integer)
     var
         Customer: Record Customer;
     begin
@@ -1490,7 +1696,7 @@ codeunit 18143 "GST Sales Validation"
         SalesHeader.TestField("POS Out Of India", FALSE);
         SalesHeader.TestField("Applies-to Doc. Type", SalesHeader."Applies-to Doc. Type"::" ");
         SalesHeader.TestField("Applies-to Doc. No.", '');
-        ReferenceInvoiceNoValidation(SalesHeader);
+        ReferenceInvoiceNoValidation(SalesHeader, xSalesHeader, CurrFieldNo);
 
         if SalesHeader."Ship-to Customer" <> '' then begin
             Customer.Get(SalesHeader."Ship-to Customer");
@@ -1647,7 +1853,10 @@ codeunit 18143 "GST Sales Validation"
                 if not (SalesHeader."GST Customer Type" In ["GST Customer Type"::Export]) then begin
                     ShipToAddr.TestField(State);
                     SalesHeader."Ship-to GST Reg. No." := ShipToAddr."GST Registration No.";
+                    SalesHeader."Ship-to GST Customer Type" := ShipToAddr."Ship-to GST Customer Type";
+                    SalesHeader."GST-Ship to Customer Type" := ShipToAddr."Ship-to GST Customer Type";
                 end;
+                AssignInvoiceType(SalesHeader);
             end;
     end;
 
@@ -1660,6 +1869,126 @@ codeunit 18143 "GST Sales Validation"
             Error(NonExemptedLinesErr);
     end;
 
+
+    local procedure FilterTaxTransactionValue(
+        TaxTypeSetupCode: Code[10];
+        RecordId: RecordId): Boolean
+    var
+        TaxTransactionValue: Record "Tax Transaction Value";
+    begin
+        TaxTransactionValue.SetRange("Tax Type", TaxTypeSetupCode);
+        TaxTransactionValue.SetRange("Tax Record ID", RecordId);
+        TaxTransactionValue.SetFilter(Percent, '<>%1', 0);
+        if not TaxTransactionValue.IsEmpty() then
+            exit(true);
+    end;
+
+    local procedure IsGSTApplicable(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
+    var
+        GSTSetup: Record "GST Setup";
+        SalesInvLine: Record "Sales Invoice Line";
+        TaxTransactionFound: Boolean;
+    begin
+        if not GSTSetup.Get() then
+            exit;
+
+        SalesInvLine.Reset();
+        SalesInvLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvLine.SetFilter(Type, '<>%1', SalesInvLine.Type::" ");
+        if SalesInvLine.FindSet() then
+            repeat
+                if SalesInvLine."System-Created Entry" = false then begin
+                    GSTSetup.TestField("GST Tax Type");
+                    TaxTransactionFound := FilterTaxTransactionValue(GSTSetup."GST Tax Type", SalesInvLine.RecordId);
+                end;
+            until SalesInvLine.Next() = 0
+        else
+            exit(false);
+
+        exit(TaxTransactionFound);
+    end;
+
+    procedure ValidateGSTWithoutPaymentOfDutyOnPost(var Rec: Record "Sales Header")
+    begin
+        if Rec."GST Customer Type" = Rec."GST Customer Type"::Registered then
+            if Rec."GST-Ship to Customer Type" In [Rec."GST-Ship to Customer Type"::"SEZ Unit",
+                                                     Rec."GST-Ship to Customer Type"::"SEZ Development",
+                                                     Rec."GST-Ship to Customer Type"::"Deemed Export"] then
+                if (Rec."GST Without Payment of Duty" <> true) and (Rec."Post GST to Customer" <> true) then
+                    Error(PostingErr);
+    end;
+
+    local procedure CreateReferenceInvoiceNo(SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header")
+    var
+        ReferenceInvoiceNo: Record "Reference Invoice No.";
+    begin
+        if not IsGSTApplicable(SalesInvoiceHeader) then
+            exit;
+
+        ReferenceInvoiceNo.Init();
+        ReferenceInvoiceNo."Document Type" := ReferenceInvoiceNo."Document Type"::"Credit Memo";
+        ReferenceInvoiceNo."Document No." := SalesHeader."No.";
+        ReferenceInvoiceNo."Source Type" := ReferenceInvoiceNo."Source Type"::Vendor;
+        ReferenceInvoiceNo."Source No." := SalesHeader."Bill-to Customer No.";
+        ReferenceInvoiceNo."Reference Invoice Nos." := SalesInvoiceHeader."No.";
+        ReferenceInvoiceNo.Verified := true;
+        ReferenceInvoiceNo.Insert();
+    end;
+
+    local procedure ReferenceInvoiceNoValidation(RecVar: Variant; xRecVar: Variant; FieldNo: Integer)
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        RecRef: RecordRef;
+        xRecRef: RecordRef;
+        IsHandled: Boolean;
+    begin
+        RecRef.GetTable(RecVar);
+        xRecRef.GetTable(xRecVar);
+
+        if (xRecRef.Field(FieldNo).Value <> RecRef.Field(FieldNo).Value) and (Format(xRecRef.Field(FieldNo).Value) <> '') then begin
+            case RecRef.Number of
+                Database::"Sales Line":
+                    begin
+                        RecRef.SetTable(SalesLine);
+                        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+                    end;
+                Database::"Sales Header":
+                    RecRef.SetTable(SalesHeader);
+                else begin
+                    OnBeforeValidateReferenceInvoiceNo(RecVar, xRecVar, FieldNo, IsHandled);
+                    if not IsHandled then
+                        Error('Record is not handled for Reference Invoice No.');
+                end;
+            end;
+            ReferenceInvoiceNoValidation(SalesHeader);
+        end
+    end;
+
+    local procedure CheckHeaderLocation(SalesLine: Record "Sales Line")
+    var
+        SalesHeader: Record "Sales Header";
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckHeaderLocation(SalesLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
+            exit;
+
+        if SalesHeader."GST Customer Type" = SalesHeader."GST Customer Type"::" " then
+            exit;
+
+        SalesLine.TestField("Location Code", SalesHeader."Location Code");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Correct Posted Sales Invoice", 'OnAfterCreateCorrectiveSalesCrMemo', '', false, false)]
+    local procedure UpdateReferenceInvoiceNo(SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header"; var CancellingOnly: Boolean)
+    begin
+        CreateReferenceInvoiceNo(SalesInvoiceHeader, SalesHeader);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Sales Validation", 'OnBeforeSalesLineHSNSACEditable', '', false, false)]
     local procedure SetGstHsnEditableforAllType(var IsEditable: Boolean; var IsHandled: Boolean)
     begin
@@ -1667,8 +1996,36 @@ codeunit 18143 "GST Sales Validation"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterGetLineAmountToHandle', '', false, false)]
+    local procedure OnAfterGetLineAmountToHandle(SalesLine: Record "Sales Line"; QtyToHandle: Decimal; var LineDiscAmount: Decimal)
+    var
+        Currency: Record Currency;
+    begin
+        if not (SalesLine."Price Inclusive of Tax") then
+            exit;
+
+        if (SalesLine."Line Discount %" = 0) then
+            exit;
+
+        if QtyToHandle = SalesLine.Quantity then
+            exit;
+
+        GetCurrency(SalesLine, Currency);
+        LineDiscAmount := Round(SalesLine."Line Discount Amount" * QtyToHandle / SalesLine.Quantity, Currency."Amount Rounding Precision");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSalesLineHSNSACEditable(SalesLine: Record "Sales Line"; var IsEditable: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateReferenceInvoiceNo(var RecVar: Variant; var xRecVar: Variant; var FieldNo: Integer; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckHeaderLocation(SalesLine: Record "Sales Line"; var IsHandled: Boolean)
     begin
     end;
 }

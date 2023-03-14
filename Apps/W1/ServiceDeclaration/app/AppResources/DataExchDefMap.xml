@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="SERVDECL-2022" Name="SERVICEDECLARATION" Type="5" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="1277" ColumnSeparator="5" CustomColumnSeparator=";" FileType="1" ReadingWritingCodeunit="1276">
+    <DataExchLineDef LineType="1" Code="DEFAULT" Name="DEFAULT" ColumnCount="5">
+      <DataExchColumnDef ColumnNo="1" Name="Service Transaction Type" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Country/Region Code" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Currency Code" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Sales Amount" Show="false" DataType="2" DataFormat="&lt;Sign&gt;&lt;Integer&gt;&lt;Decimals&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Purchase Amount" Show="false" DataType="2" DataFormat="&lt;Sign&gt;&lt;Integer&gt;&lt;Decimals&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="5024" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" FieldID="5" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="6" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="7" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="10" Optional="true" TransformationRule="ROUNDNEAR1">
+          <TransformationRules>
+            <Code>ROUNDNEAR1</Code>
+            <Description>Rounding decimal nearest to 1</Description>
+            <TransformationType>14</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>1.00</Precision>
+            <Direction>=</Direction>
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="5" FieldID="11" Optional="true" TransformationRule="ROUNDNEAR1">
+          <TransformationRules>
+            <Code>ROUNDNEAR1</Code>
+            <Description>Rounding decimal nearest to 1</Description>
+            <TransformationType>14</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>1.00</Precision>
+            <Direction>=</Direction>
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldGrouping FieldID="5" />
+        <DataExchFieldGrouping FieldID="6" />
+        <DataExchFieldGrouping FieldID="7" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

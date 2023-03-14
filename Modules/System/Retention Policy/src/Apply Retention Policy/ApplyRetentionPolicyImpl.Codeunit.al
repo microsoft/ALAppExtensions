@@ -7,11 +7,7 @@ codeunit 3904 "Apply Retention Policy Impl."
 {
     Access = Internal;
     TableNo = "Retention Policy Setup";
-    Permissions = tabledata Permission = r,
-                  tabledata "Tenant Permission" = r,
-                  tabledata User = r,
-                  tabledata AllObjWithCaption = r,
-                  tabledata "Access Control" = r;
+    Permissions = tabledata AllObjWithCaption = r;
 
     var
         TotalNumberOfRecordsDeleted: Integer;
@@ -46,6 +42,8 @@ codeunit 3904 "Apply Retention Policy Impl."
         WhereNewerFilterExclWithNullTxt: Label 'WHERE(Field%1=1(>=%2&%3..))', Locked = true;
         WhereOlderFilterExclTxt: Label 'WHERE(Field%1=1(>%2&..%3))', Locked = true;
         WhereOlderFilterExclWithNullTxt: Label 'WHERE(Field%1=1(>=%2&..%3))', Locked = true;
+        SingleDateFilterExclWithNullTxt: Label 'WHERE(Field%1=1(%2|%3))', Locked = true;
+        SingleDateFilterExclTxt: Label 'WHERE(Field%1=1(%2))', Locked = true;
         DateFieldNoMustHaveAValueErr: Label 'The field Date Field No. must have a value in the retention policy for table %1, %2', Comment = '%1 = table number, %2 = table caption';
 
     trigger OnRun()
@@ -106,8 +104,9 @@ codeunit 3904 "Apply Retention Policy Impl."
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetenPolicyTelemetryImpl: Codeunit "Reten. Policy Telemetry Impl.";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         Dialog: Dialog;
+        ExpiredRecordExpirationDate: Date;
     begin
         IsUserInvokedRun := UserInvokedRun;
 
@@ -123,8 +122,8 @@ codeunit 3904 "Apply Retention Policy Impl."
         RetentionPolicySetup.CalcFields("Table Name", "Table Caption");
         RetentionPolicyLog.LogInfo(LogCategory(), AppendStartedByUserMessage(StrSubstNo(StartApplyRetentionPolicyInfoLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"), UserInvokedRun));
 
-        if GetExpiredRecords(RetentionPolicySetup, RecRef) then
-            DeleteExpiredRecords(RecRef)
+        if GetExpiredRecords(RetentionPolicySetup, RecordRef, ExpiredRecordExpirationDate) then
+            DeleteExpiredRecords(RecordRef)
         else
             RetenPolicyTelemetryImpl.SendTelemetryOnRecordsDeleted(RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Name", 0, IsUserInvokedRun);
 
@@ -138,20 +137,20 @@ codeunit 3904 "Apply Retention Policy Impl."
         FeatureTelemetry.LogUsage('0000FVV', 'Retention policies', 'Retention policy applied');
     end;
 
-    procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"): Integer;
+    procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"; var ExpiredRecordExpirationDate: Date): Integer;
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         ExpiredRecordCount: Integer;
         TotalRecordCount: Integer;
     begin
         RetentionPolicySetup.CalcFields("Table Caption");
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(StartRetentionPolicyRecordCountLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
 
-        if GetExpiredRecords(RetentionPolicySetup, RecRef) then begin
-            ExpiredRecordCount := Count(RecRef);
-            RecRef.Reset();
-            TotalRecordCount := Count(RecRef);
+        if GetExpiredRecords(RetentionPolicySetup, RecordRef, ExpiredRecordExpirationDate) then begin
+            ExpiredRecordCount := Count(RecordRef);
+            RecordRef.Reset();
+            TotalRecordCount := Count(RecordRef);
         end;
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(EndRetentionPolicyRecordCountLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(NumberOfExpiredRecordsLbl, ExpiredRecordCount, TotalRecordCount, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
@@ -199,44 +198,44 @@ codeunit 3904 "Apply Retention Policy Impl."
         exit(true)
     end;
 
-    local procedure DeleteExpiredRecords(var RecRef: RecordRef)
+    local procedure DeleteExpiredRecords(var RecordRef: RecordRef)
     var
         TempRetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary;
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         RetenPolicyTelemetryImpl: Codeunit "Reten. Policy Telemetry Impl.";
         ApplyRetentionPolicyFacade: Codeunit "Apply Retention Policy";
-        RecRefDuplicate: RecordRef;
+        RecordRefDuplicate: RecordRef;
         RetenPolDeleting: Interface "Reten. Pol. Deleting";
         Handled: Boolean;
         NumberOfRecordsDeleted: Integer;
         RecordCountBefore: Integer;
         RecordCountAfter: Integer;
     begin
-        RecordCountBefore := Count(RecRef);
-        RecRefDuplicate := RecRef.Duplicate();
+        RecordCountBefore := Count(RecordRef);
+        RecordRefDuplicate := RecordRef.Duplicate();
 
-        FillTempRetenPolDeletingParamTable(TempRetenPolDeletingParam, RecRef);
+        FillTempRetenPolDeletingParamTable(TempRetenPolDeletingParam, RecordRef);
 
-        RetenPolDeleting := RetenPolAllowedTables.GetRetenPolDeleting(RecRef.Number);
-        RetenPolDeleting.DeleteRecords(RecRef, TempRetenPolDeletingParam);
+        RetenPolDeleting := RetenPolAllowedTables.GetRetenPolDeleting(RecordRef.Number);
+        RetenPolDeleting.DeleteRecords(RecordRef, TempRetenPolDeletingParam);
 
         if not TempRetenPolDeletingParam."Skip Event Indirect Perm. Req." then begin
-            ApplyRetentionPolicyFacade.OnApplyRetentionPolicyIndirectPermissionRequired(RecRefDuplicate, Handled);
+            ApplyRetentionPolicyFacade.OnApplyRetentionPolicyIndirectPermissionRequired(RecordRefDuplicate, Handled);
             if not Handled then
-                RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(IndirectPermissionsRequiredErr, RecRefDuplicate.Number, RecRefDuplicate.Caption));
+                RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(IndirectPermissionsRequiredErr, RecordRefDuplicate.Number, RecordRefDuplicate.Caption));
             Handled := false;
         end;
 
-        RecordCountAfter := Count(RecRefDuplicate);
+        RecordCountAfter := Count(RecordRefDuplicate);
         NumberOfRecordsDeleted := RecordCountBefore - RecordCountAfter;
         TotalNumberOfRecordsDeleted += NumberOfRecordsDeleted;
 
-        RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(DeletedRecordsFromTableLbl, NumberOfRecordsDeleted, RecordCountBefore, RecRefDuplicate.Number, RecRefDuplicate.Caption));
-        RetenPolicyTelemetryImpl.SendTelemetryOnRecordsDeleted(RecRefDuplicate.Number, RecRefDuplicate.Name, NumberOfRecordsDeleted, IsUserInvokedRun);
+        RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(DeletedRecordsFromTableLbl, NumberOfRecordsDeleted, RecordCountBefore, RecordRefDuplicate.Number, RecordRefDuplicate.Caption));
+        RetenPolicyTelemetryImpl.SendTelemetryOnRecordsDeleted(RecordRefDuplicate.Number, RecordRefDuplicate.Name, NumberOfRecordsDeleted, IsUserInvokedRun);
 
         if not TempRetenPolDeletingParam."Skip Event Rec. Limit Exceeded" then
-            RaiseRecordLimitExceededEvent(RecRefDuplicate);
+            RaiseRecordLimitExceededEvent(RecordRefDuplicate);
     end;
 
     local procedure CheckAndContinueWithRerun(var RetentionPolicySetup: Record "Retention Policy Setup")
@@ -250,24 +249,24 @@ codeunit 3904 "Apply Retention Policy Impl."
             end;
     end;
 
-    local procedure FillTempRetenPolDeletingParamTable(var TempRetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary; var RecRef: RecordRef)
+    local procedure FillTempRetenPolDeletingParamTable(var TempRetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary; var RecordRef: RecordRef)
     begin
-        TempRetenPolDeletingParam."Indirect Permission Required" := VerifyIndirectDeletePermission(RecRef.Number);
+        TempRetenPolDeletingParam."Indirect Permission Required" := VerifyIndirectDeletePermission(RecordRef.Number);
         TempRetenPolDeletingParam."Skip Event Indirect Perm. Req." := not TempRetenPolDeletingParam."Indirect Permission Required";
         TempRetenPolDeletingParam."Max. Number of Rec. to Delete" := MaxNumberOfRecordsToDelete() - TotalNumberOfRecordsDeleted;
-        TempRetenPolDeletingParam."Skip Event Rec. Limit Exceeded" := TempRetenPolDeletingParam."Max. Number of Rec. to Delete" > Count(RecRef);
+        TempRetenPolDeletingParam."Skip Event Rec. Limit Exceeded" := TempRetenPolDeletingParam."Max. Number of Rec. to Delete" > Count(RecordRef);
         TempRetenPolDeletingParam."Total Max. Nr. of Rec. to Del." := MaxNumberOfRecordsToDelete();
         TempRetenPolDeletingParam."User Invoked Run" := IsUserInvokedRun;
     end;
 
-    local procedure RaiseRecordLimitExceededEvent(var RecRefDuplicate: RecordRef)
+    local procedure RaiseRecordLimitExceededEvent(var RecordRefDuplicate: RecordRef)
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         ApplyRetentionPolicyFacade: Codeunit "Apply Retention Policy";
         Handled: Boolean;
     begin
         RetentionPolicyLog.LogWarning(LogCategory(), EndCurrentRunLbl);
-        ApplyRetentionPolicyFacade.OnApplyRetentionPolicyRecordLimitExceeded(RecRefDuplicate.Number, Count(RecRefDuplicate), ApplyAllRetentionPolicies, IsUserInvokedRun, Handled);
+        ApplyRetentionPolicyFacade.OnApplyRetentionPolicyRecordLimitExceeded(RecordRefDuplicate.Number, Count(RecordRefDuplicate), ApplyAllRetentionPolicies, IsUserInvokedRun, Handled);
         if IsUserInvokedRun and (not Handled) and GuiAllowed() then begin
             Commit();
             if Confirm(ConfirmRerunMsg, true, MaxNumberOfRecordsToDelete()) then
@@ -311,146 +310,98 @@ codeunit 3904 "Apply Retention Policy Impl."
         exit(true);
     end;
 
-    local procedure GetExpiredRecords(RetentionPolicySetup: Record "Retention Policy Setup"; var RecRef: RecordRef): Boolean
+    local procedure GetExpiredRecords(RetentionPolicySetup: Record "Retention Policy Setup"; var RecordRef: RecordRef; var ExpiredRecordExpirationDate: Date): Boolean
     var
         TempRetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary;
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
+        RecordReference: Codeunit "Record Reference";
+        RecordReferenceIndirectPermission: Interface "Record Reference";
         RecordsToDelete: Boolean;
     begin
         TempRetenPolFilteringParam."Null Date Replacement value" := DT2Date(RetentionPolicySetup.SystemCreatedAt);
         RetenPolFiltering := RetenPolAllowedTables.GetRetenPolFiltering(RetentionPolicySetup."Table Id");
         if RetentionPolicySetup."Apply to all records" then begin
-            RecordsToDelete := RetenPolFiltering.ApplyRetentionPolicyAllRecordFilters(RetentionPolicySetup, RecRef, TempRetenPolFilteringParam);
+            RecordsToDelete := RetenPolFiltering.ApplyRetentionPolicyAllRecordFilters(RetentionPolicySetup, RecordRef, TempRetenPolFilteringParam);
             if RecordsToDelete then
-                if RecRef.GetFilters() = '' then begin
-                    RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(NoFiltersReturnedErr, RecRef.Number, RecRef.Caption));
+                if RecordRef.GetFilters() = '' then begin
+                    RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(NoFiltersReturnedErr, RecordRef.Number, RecordRef.Caption));
                     exit(false);
                 end;
             exit(RecordsToDelete);
         end;
 
-        RecordsToDelete := RetenPolFiltering.ApplyRetentionPolicySubSetFilters(RetentionPolicySetup, RecRef, TempRetenPolFilteringParam);
-        RecRef.MarkedOnly(true);
-        if RecordsToDelete and RecRef.IsEmpty() then begin
-            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(NoFiltersReturnedErr, RecRef.Number, RecRef.Caption));
+        RecordsToDelete := RetenPolFiltering.ApplyRetentionPolicySubSetFilters(RetentionPolicySetup, RecordRef, TempRetenPolFilteringParam);
+        RecordRef.MarkedOnly(true);
+        RecordReference.Initialize(RecordRef, RecordReferenceIndirectPermission);
+        if RecordsToDelete and RecordReferenceIndirectPermission.IsEmpty(RecordRef) then begin
+            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(NoFiltersReturnedErr, RecordRef.Number, RecordRef.Caption));
             exit(false)
         end;
+        ExpiredRecordExpirationDate := TempRetenPolFilteringParam."Expired Record Expiration Date";
         exit(RecordsToDelete);
     end;
 
     local procedure VerifyIndirectDeletePermission(TableId: Integer): Boolean
     var
-        Permission: Record Permission;
-        TenantPermission: Record "Tenant Permission";
+        TempDummyExpandedPermission: Record "Expanded Permission" temporary;
+        UserPermissions: Codeunit "User Permissions";
     begin
-        case true of
-            VerifyIndirectDeleteEntitlement(TableId):
-                exit(true); // entitlement requires indirect permission
-            VerifyDeleteSystemPermission(TableId, Permission."Delete Permission"::Yes):
-                exit(false); // user has direct delete permission
-            VerifyDeleteTenantPermission(TableId, TenantPermission."Delete Permission"::"Yes"):
-                exit(false); // user has direct delete permission
-            VerifyDeleteSystemPermission(TableId, Permission."Delete Permission"::Indirect):
-                exit(true); // user has indirect delete permission
-            VerifyDeleteTenantPermission(TableId, TenantPermission."Delete Permission"::"Indirect"):
-                exit(true); // user has indirect delete permission
-            else
-                exit(false); // no indirect permission found
-        end;
+        TempDummyExpandedPermission := UserPermissions.GetEffectivePermission(TempDummyExpandedPermission."Object Type"::"Table Data", TableId);
+        exit(TempDummyExpandedPermission."Delete Permission" = TempDummyExpandedPermission."Delete Permission"::Indirect)
     end;
 
-    local procedure VerifyIndirectDeleteEntitlement(TableID: Integer): Boolean
-    var
-        TempDummyPermission: Record Permission temporary;
-        User: Record User;
-        NavUserAccountHelper: DotNet NavUserAccountHelper;
-        EntitlementString: Text;
-        DeleteEntitlement: Option;
-    begin
-        if not User.Get(UserSecurityId()) then
-            exit(false);
-        EntitlementString := NavUserAccountHelper.GetEntitlementPermissionForObject(UserSecurityId(), TempDummyPermission."Object Type"::"Table Data", TableId);
-        Evaluate(DeleteEntitlement, SelectStr(4, EntitlementString));
-        if DeleteEntitlement = TempDummyPermission."Delete Permission"::Indirect then
-            exit(true);
-    end;
-
-    local procedure VerifyDeleteSystemPermission(TableId: Integer; DeletePermission: Option): Boolean
-    var
-        Permission: Record Permission;
-        AccessControl: Record "Access Control";
-    begin
-        Permission.Setrange("Object Type", Permission."Object Type"::"Table Data");
-        Permission.SetFilter("Object ID", '%1|%2', 0, TableId);
-        Permission.SetRange("Delete Permission", DeletePermission);
-        if Permission.FindSet() then begin
-            AccessControl.SetRange("User Security ID", UserSecurityId());
-            AccessControl.SetFilter("Company Name", '%1|%2', '', CompanyName());
-            AccessControl.Setrange(Scope, AccessControl.Scope::System);
-            repeat
-                AccessControl.SetRange("Role ID", Permission."Role ID");
-                if not AccessControl.IsEmpty() then
-                    exit(true); // permission found in a system permission set assigned to the user.
-            until Permission.Next() = 0;
-        end;
-        exit(false);
-    end;
-
-    local procedure VerifyDeleteTenantPermission(TableId: Integer; DeletePermission: Option): Boolean
-    var
-        TenantPermission: Record "Tenant Permission";
-        AccessControl: Record "Access Control";
-    begin
-        TenantPermission.Setrange("Object Type", TenantPermission."Object Type"::"Table Data");
-        TenantPermission.SetFilter("Object ID", '%1|%2', 0, TableId);
-        TenantPermission.SetRange("Delete Permission", DeletePermission);
-        if TenantPermission.FindSet() then begin
-            AccessControl.SetRange("User Security ID", UserSecurityId());
-            AccessControl.SetFilter("Company Name", '%1|%2', '', CompanyName());
-            AccessControl.Setrange(Scope, AccessControl.Scope::Tenant);
-            repeat
-                AccessControl.SetRange("Role ID", TenantPermission."Role ID");
-                if not AccessControl.IsEmpty() then
-                    exit(true); // permission found in a tenant permission set assigned to the user.
-            until TenantPermission.Next() = 0;
-        end;
-        exit(false);
-    end;
-
-    procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+    procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         FilterView: Text;
     begin
         if DateFieldNo = 0 then
-            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(DateFieldNoMustHaveAValueErr, RecRef.Number, RecRef.Caption));
+            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
 
-        RecRef.FilterGroup := FilterGroup;
+        RecordRef.FilterGroup := FilterGroup;
 
-        if (ExpirationDate >= NullDateReplacementValue) and (DateFieldNo in [RecRef.SystemCreatedAtNo, RecRef.SystemModifiedAtNo]) then
+        if (ExpirationDate >= NullDateReplacementValue) and (DateFieldNo in [RecordRef.SystemCreatedAtNo, RecordRef.SystemModifiedAtNo]) then
             FilterView := STRSUBSTNO(WhereOlderFilterExclWithNullTxt, DateFieldNo, '''''', CalcDate('<-1D>', ExpirationDate))
         else
             FilterView := STRSUBSTNO(WhereOlderFilterExclTxt, DateFieldNo, '''''', CalcDate('<-1D>', ExpirationDate));
 
-        RecRef.SetView(FilterView);
+        RecordRef.SetView(FilterView);
     end;
 
-    procedure SetWhereNewerExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+    procedure SetWhereNewerExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         FilterView: Text;
     begin
         if DateFieldNo = 0 then
-            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(DateFieldNoMustHaveAValueErr, RecRef.Number, RecRef.Caption));
-        RecRef.FilterGroup := FilterGroup;
+            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
 
-        if (ExpirationDate <= NullDateReplacementValue) and (DateFieldNo in [RecRef.SystemCreatedAtNo, RecRef.SystemModifiedAtNo]) then
+        RecordRef.FilterGroup := FilterGroup;
+
+        if (ExpirationDate <= NullDateReplacementValue) and (DateFieldNo in [RecordRef.SystemCreatedAtNo, RecordRef.SystemModifiedAtNo]) then
             FilterView := STRSUBSTNO(WhereNewerFilterExclWithNullTxt, DateFieldNo, '''''', ExpirationDate)
         else
             FilterView := STRSUBSTNO(WhereNewerFilterExclTxt, DateFieldNo, '''''', ExpirationDate);
 
-        RecRef.SetView(FilterView);
+        RecordRef.SetView(FilterView);
+    end;
+
+    procedure SetSingleDateExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+    var
+        RetentionPolicyLog: Codeunit "Retention Policy Log";
+        FilterView: Text;
+    begin
+        if DateFieldNo = 0 then
+            RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
+        RecordRef.FilterGroup := FilterGroup;
+
+        if (ExpirationDate >= NullDateReplacementValue) and (DateFieldNo in [RecordRef.SystemCreatedAtNo, RecordRef.SystemModifiedAtNo]) then
+            FilterView := StrSubstNo(SingleDateFilterExclWithNullTxt, DateFieldNo, '''''', ExpirationDate - 1)
+        else
+            FilterView := StrSubstNo(SingleDateFilterExclTxt, DateFieldNo, ExpirationDate - 1);
+
+        RecordRef.SetView(FilterView);
     end;
 
     local procedure LogCategory(): Enum "Retention Policy Log Category"
@@ -460,17 +411,17 @@ codeunit 3904 "Apply Retention Policy Impl."
         exit(RetentionPolicyLogCategory::"Retention Policy - Apply");
     end;
 
-    local procedure MaxNumberOfRecordsToDelete(): Integer
+    internal procedure MaxNumberOfRecordsToDelete(): Integer
     begin
         exit(250000)
     end;
 
-    local procedure Count(RecRef: RecordRef): Integer;
+    local procedure Count(RecordRef: RecordRef): Integer;
     begin
-        if RecRef.ReadPermission() then
-            exit(RecRef.Count())
+        if RecordRef.ReadPermission() then
+            exit(RecordRef.Count())
         else
-            exit(RetenPolFiltering.Count(RecRef));
+            exit(RetenPolFiltering.Count(RecordRef));
     end;
 
     local procedure AppendStartedByUserMessage(Message: Text[2048]; UserInvokedRun: Boolean): Text[2048];

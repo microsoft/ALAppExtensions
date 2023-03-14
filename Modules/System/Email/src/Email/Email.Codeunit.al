@@ -31,6 +31,18 @@ codeunit 8901 "Email"
         EmailImpl.SaveAsDraft(EmailMessage, EmailOutbox);
     end;
 
+    /// <summary>
+    /// Saves a draft email in the Outbox.
+    /// </summary>
+    /// <param name="EmailMessage">The email message to save.</param>
+    /// <param name="EmailAccountId">The email account ID for sending.</param>
+    /// <param name="EmailConnector">The email connector for sending.</param>
+    /// <param name="EmailOutbox">The created outbox entry.</param>
+    procedure SaveAsDraft(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; var EmailOutbox: Record "Email Outbox")
+    begin
+        EmailImpl.SaveAsDraft(EmailMessage, EmailAccountId, EmailConnector, EmailOutbox);
+    end;
+
     #endregion
 
     #region Enqueue
@@ -42,7 +54,18 @@ codeunit 8901 "Email"
     /// <param name="EmailMessage">The email message to use as payload.</param>
     procedure Enqueue(EmailMessage: Codeunit "Email Message")
     begin
-        EmailImpl.Enqueue(EmailMessage, Enum::"Email Scenario"::Default);
+        EmailImpl.Enqueue(EmailMessage, Enum::"Email Scenario"::Default, CurrentDateTime());
+    end;
+
+    /// <summary>
+    /// Enqueues an email to be sent in the background.
+    /// </summary>
+    /// <remarks>The default account will be used for sending the email.</remarks>
+    /// <param name="EmailMessage">The email message to use as payload.</param>
+    /// <param name="NotBefore">The date and time for sending the email.</param>
+    procedure Enqueue(EmailMessage: Codeunit "Email Message"; NotBefore: DateTime)
+    begin
+        EmailImpl.Enqueue(EmailMessage, Enum::"Email Scenario"::Default, NotBefore);
     end;
 
     /// <summary>
@@ -52,7 +75,29 @@ codeunit 8901 "Email"
     /// <param name="EmailScenario">The scenario to use in order to determine the email account to use for sending the email.</param>
     procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailScenario: Enum "Email Scenario")
     begin
-        EmailImpl.Enqueue(EmailMessage, EmailScenario);
+        EmailImpl.Enqueue(EmailMessage, EmailScenario, CurrentDateTime());
+    end;
+
+    /// <summary>
+    /// Enqueues an email to be sent in the background.
+    /// </summary>
+    /// <param name="EmailMessage">The email message to use as payload.</param>
+    /// <param name="EmailScenario">The scenario to use in order to determine the email account to use for sending the email.</param>
+    /// <param name="NotBefore">The date and time for sending the email.</param>
+    procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailScenario: Enum "Email Scenario"; NotBefore: DateTime)
+    begin
+        EmailImpl.Enqueue(EmailMessage, EmailScenario, NotBefore);
+    end;
+
+    /// <summary>
+    /// Enqueues an email to be sent in the background.
+    /// </summary>
+    /// <remarks>Both "Account Id" and Connector fields need to be set on the <paramref name="EmailAccount"/> parameter.</remarks>
+    /// <param name="EmailMessage">The email message to use as payload.</param>
+    /// <param name="EmailAccount">The email account to use for sending the email.</param>
+    procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailAccount: Record "Email Account" temporary)
+    begin
+        EmailImpl.Enqueue(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector, CurrentDateTime());
     end;
 
     /// <summary>
@@ -60,10 +105,10 @@ codeunit 8901 "Email"
     /// </summary>
     /// <param name="EmailMessage">The email message to use as payload.</param>
     /// <param name="EmailAccount">The email account to use for sending the email.</param>
-    /// <remarks>Both "Account Id" and Connector fields need to be set on the <paramref name="EmailAccount"/> parameter.</remarks>
-    procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailAccount: Record "Email Account" temporary)
+    /// <param name="NotBefore">The earliest date and time for sending the email.</param>
+    procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailAccount: Record "Email Account" temporary; NotBefore: DateTime)
     begin
-        EmailImpl.Enqueue(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector);
+        EmailImpl.Enqueue(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector, NotBefore);
     end;
 
     /// <summary>
@@ -74,7 +119,19 @@ codeunit 8901 "Email"
     /// <param name="EmailConnector">The email connector to use for sending the email.</param>
     procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector")
     begin
-        EmailImpl.Enqueue(EmailMessage, EmailAccountId, EmailConnector);
+        EmailImpl.Enqueue(EmailMessage, EmailAccountId, EmailConnector, CurrentDateTime());
+    end;
+
+    /// <summary>
+    /// Enqueues an email to be sent in the background.
+    /// </summary>
+    /// <param name="EmailMessage">The email message to use as payload.</param>
+    /// <param name="EmailAccountId">The ID of the email account to use for sending the email.</param>
+    /// <param name="EmailConnector">The email connector to use for sending the email.</param>
+    /// <param name="NotBefore">The date and time for sending the email.</param>
+    procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; NotBefore: DateTime)
+    begin
+        EmailImpl.Enqueue(EmailMessage, EmailAccountId, EmailConnector, NotBefore);
     end;
 
     #endregion
@@ -93,7 +150,6 @@ codeunit 8901 "Email"
     begin
         exit(EmailImpl.Send(EmailMessage, Enum::"Email Scenario"::Default));
     end;
-
 
     /// <summary>
     /// Sends the email in the current session.
@@ -203,6 +259,19 @@ codeunit 8901 "Email"
     end;
 
     /// <summary>
+    /// Opens an email message in "Email Editor" page modally with scenario.
+    /// </summary>
+    /// <param name="EmailMessage">The email message to use as payload.</param>
+    /// <param name="EmailAccount">The email account to fill in.</param>
+    /// <param name="Scenario">The email scenario to fill in.</param>
+    /// <remarks>Both "Account Id" and Connector fields need to be set on the <paramref name="EmailAccount"/> parameter.</remarks>
+    /// <returns>The action that the user performed with the email message.</returns>
+    procedure OpenInEditorModallyWithScenario(EmailMessage: Codeunit "Email Message"; EmailAccount: Record "Email Account" temporary; Scenario: Enum "Email Scenario"): Enum "Email Action"
+    begin
+        exit(EmailImpl.OpenInEditorWithScenario(EmailMessage, EmailAccount."Account Id", EmailAccount.Connector, true, Scenario));
+    end;
+
+    /// <summary>
     /// Opens an email message in "Email Editor" page modally.
     /// </summary>
     /// <param name="EmailMessage">The email message to use as payload.</param>
@@ -266,7 +335,7 @@ codeunit 8901 "Email"
     ///<summary>
     /// Gets the outbox emails related to a record.
     ///</summary>
-    ///<param name="RecordVariant">Source Record.</param>
+    ///<param name="RecordVariant">Source record.</param>
     ///<param name="ResultEmailOutbox">The outbox emails related to a record.</param>
     procedure GetEmailOutboxForRecord(RecordVariant: Variant; var ResultEmailOutbox: Record "Email Outbox" temporary);
     begin
@@ -281,6 +350,15 @@ codeunit 8901 "Email"
     procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
     begin
         EmailImpl.OpenSentEmails(TableId, SystemId);
+    end;
+
+    /// <summary>
+    /// Open the sent emails page for a source record.
+    /// </summary>
+    /// <param name="RecordVariant">Source record. Can be either Record, RecordRef or RecordId.</param>
+    procedure OpenSentEmails(RecordVariant: Variant)
+    begin
+        EmailImpl.OpenSentEmails(RecordVariant);
     end;
 
     ///<summary>
@@ -403,15 +481,18 @@ codeunit 8901 "Email"
     begin
     end;
 
+#if not CLEAN20
     /// <summary>
     /// Integration event that notifies senders about whether their email was successfully sent in the background.
     /// </summary>
     /// <param name="MessageId">The ID of the email in the queue.</param>
     /// <param name="Status">True if the message was successfully sent.</param>
     [IntegrationEvent(false, false)]
+    [Obsolete('This event has been replaced with OnAfterEmailSend and OnAfterEmailSendFailed which are isolated.', '20.1')]
     internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
     begin
     end;
+#endif
 
     /// <summary>
     /// Integration event to get the names and IDs of attachments related to a source record. 
@@ -441,6 +522,43 @@ codeunit 8901 "Email"
     /// <param name="MessageId">The ID of the email that has been queued</param>
     [IntegrationEvent(false, false)]
     internal procedure OnEnqueuedInOutbox(MessageId: Guid)
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that notifies senders when the email has been sent successfully. This event is isolated.
+    /// </summary>
+    /// <param name="SentEmail">The record of the sent email.</param>
+    [IntegrationEvent(false, false, true)]
+    internal procedure OnAfterEmailSent(SentEmail: Record "Sent Email")
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that notifies senders when the email has been sent unsuccessfully. This event is isolated.
+    /// </summary>
+    /// <param name="EmailOutbox">The record of the email outbox that failed to send.</param>
+    [IntegrationEvent(false, false, true)]
+    internal procedure OnAfterEmailSendFailed(EmailOutbox: Record "Email Outbox")
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that allows updating of the email message before the email editor opens.
+    /// </summary>
+    /// <param name="EmailMessage">Email message codeunit which is linked to the current email.</param>
+    /// <param name="IsNewEmail">True if this is a newly created email.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeOpenEmailEditor(var EmailMessage: Codeunit "Email Message"; IsNewEmail: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that allows updating of the email message before the email is queued for sending.
+    /// </summary>
+    /// <param name="EmailMessage">Email message codeunit which is linked to the current email.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeSendEmail(var EmailMessage: Codeunit "Email Message")
     begin
     end;
 

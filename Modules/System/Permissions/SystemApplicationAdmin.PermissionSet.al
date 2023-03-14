@@ -15,12 +15,19 @@ permissionset 154 "System Application - Admin"
                              "Email - Admin",
                              "Exten. Mgt. - Admin",
 #if not CLEAN19
+#pragma warning disable AL0432
                              "EXCEL EXPORT ACTION",
+#pragma warning restore
+#endif
+#if not CLEAN20
+#pragma warning disable AL0432
+                             "SMARTLIST DESIGNER",
+#pragma warning restore
 #endif
                              "Edit in Excel-Admin",
                              "Feature Key - Admin",
                              "Permissions & Licenses - Edit",
+                             "Priv. Notice - Admin",
                              "Retention Policy - Admin",
-                             "SMARTLIST DESIGNER",
                              "TROUBLESHOOT TOOLS";
 }

@@ -1,4 +1,4 @@
-codeunit 31252 "Data Class. Eval. Handler CZA"
+codeunit 31252 "Data Class. Eval. Handler CZA"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]
     local procedure ApplyEvaluationClassificationsForPrivacyOnAfterClassifyCountrySpecificTables()
@@ -17,11 +17,13 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DefaultDimension: Record "Default Dimension";
         GLEntry: Record "G/L Entry";
         InventorySetup: Record "Inventory Setup";
+        ItemEntryRelation: Record "Item Entry Relation";
         ItemJournalLine: Record "Item Journal Line";
         ItemLedgerEntry: Record "Item Ledger Entry";
         ManufacturingSetup: Record "Manufacturing Setup";
         PostedAssemblyHeader: Record "Posted Assembly Header";
         PostedAssemblyLine: Record "Posted Assembly Line";
+        StandardItemJournalLine: Record "Standard Item Journal Line";
         ValueEntry: Record "Value Entry";
         TransferRoute: Record "Transfer Route";
         TransferHeader: Record "Transfer Header";
@@ -55,6 +57,7 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Use GPPG from SKU CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Skip Update SKU on Posting CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Exact Cost Revers. Mandat. CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Item Entry Relation", ItemEntryRelation.FieldNo("Undo CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Journal Line", ItemJournalLine.FieldNo("Delivery-to Source No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Journal Line", ItemJournalLine.FieldNo("Currency Code CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Journal Line", ItemJournalLine.FieldNo("Currency Factor CZA"));
@@ -68,6 +71,7 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DataClassificationMgt.SetFieldToNormal(Database::"Manufacturing Setup", ManufacturingSetup.FieldNo("Exact Cost Rev.Mand. Cons. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Posted Assembly Header", PostedAssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Posted Assembly Line", PostedAssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Standard Item Journal Line", StandardItemJournalLine.FieldNo("New Location Code CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Invoice-to Source No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Delivery-to Source No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Currency Code CZA"));
@@ -81,10 +85,12 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Header", TransferShipmentHeader.FieldNo("Gen.Bus.Post.Group Ship CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Header", TransferShipmentHeader.FieldNo("Gen.Bus.Post.Group Receive CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Line", TransferShipmentLine.FieldNo("Gen.Bus.Post.Group Ship CZA"));
-        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Line", TransferShipmentLine.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Line", TransferShipmentLine.FieldNo("Gen.Bus.Post.Group Receive CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Line", TransferShipmentLine.FieldNo("Correction CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Line", TransferShipmentLine.FieldNo("Transfer Order Line No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Receipt Header", TransferReceiptHeader.FieldNo("Gen.Bus.Post.Group Ship CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Receipt Header", TransferReceiptHeader.FieldNo("Gen.Bus.Post.Group Receive CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Receipt Line", TransferReceiptLine.FieldNo("Gen.Bus.Post.Group Ship CZA"));
-        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Receipt Line", TransferReceiptLine.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Receipt Line", TransferReceiptLine.FieldNo("Gen.Bus.Post.Group Receive CZA"));
     end;
 }

@@ -98,18 +98,31 @@ codeunit 20336 "Sales Posting Subscribers"
     begin
         TaxPostingHandler.GetCurrency(SalesHeader."Currency Code", Currency);
         Currency.TestField("Invoice Rounding Precision");
-        TotalAmount := TotalAmountIncludingVAT + TaxPostingBufferMgmt.GetTotalTaxAmount();
+        if SalesHeader."Document Type" in ["Sales Document Type"::"Credit Memo", "Sales Document Type"::"Return Order"] then
+            TotalAmount := TotalAmountIncludingVAT + TaxPostingBufferMgmt.GetTotalTaxAmount()
+        else
+            TotalAmount := TotalAmountIncludingVAT - TaxPostingBufferMgmt.GetTotalTaxAmount();
 
         InvoiceRoundingAmount :=
-          -Round(
-            TotalAmount -
-            Round(
-              TotalAmount, Currency."Invoice Rounding Precision", Currency.InvoiceRoundingDirection()),
-            Currency."Amount Rounding Precision");
+            -Round(
+                TotalAmount -
+                Round(
+                    TotalAmount, Currency."Invoice Rounding Precision", Currency.InvoiceRoundingDirection()),
+                    Currency."Amount Rounding Precision");
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
-    local procedure OnBeforePostVendorEntry(var GenJnlLine: Record "Gen. Journal Line"; var SalesHeader: Record "Sales Header")
+    local procedure OnBeforePostCustomerEntry(var GenJnlLine: Record "Gen. Journal Line"; var SalesHeader: Record "Sales Header")
+    var
+        TaxPostingBufferMgmt: Codeunit "Tax Posting Buffer Mgmt.";
+    begin
+        GenJnlLine."Tax ID" := TaxPostingBufferMgmt.GetTaxID();
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJnlLine: Record "Gen. Journal Line"; var SalesHeader: Record "Sales Header")
     var
         TaxPostingBufferMgmt: Codeunit "Tax Posting Buffer Mgmt.";
     begin

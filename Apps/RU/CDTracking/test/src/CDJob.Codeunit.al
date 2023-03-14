@@ -86,9 +86,7 @@ codeunit 147109 "CD Job"
     var
         Job: Record Job;
     begin
-        LibraryJob.CreateJob(Job);
-        Job.Validate("Bill-to Customer No.", LibrarySales.CreateCustomerNo());
-        Job.Modify(true);
+        LibraryJob.CreateJob(Job, LibrarySales.CreateCustomerNo());
         LibraryJob.CreateJobTask(Job, JobTask);
     end;
 

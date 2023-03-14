@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+#if not CLEAN19
 codeunit 10036 "Upgrade Mig. MX CFDI"
 {
     ObsoleteState = Pending;
@@ -35,3 +41,4 @@ codeunit 10036 "Upgrade Mig. MX CFDI"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetCFDIEnableOptionUpgradeTag());
     end;
 }
+#endif

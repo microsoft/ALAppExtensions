@@ -20,6 +20,7 @@ page 132610 "Assisted Setup Wizard"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Finish';
                 ToolTip = 'Finish';
+                Image = Close;
 
                 trigger OnAction()
                 var

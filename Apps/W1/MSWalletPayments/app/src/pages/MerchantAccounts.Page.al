@@ -1,5 +1,9 @@
+#if not CLEAN20
 page 1083 "MS - Wallet Merchant Accounts"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     Caption = 'Microsoft Pay Payments Accounts';
     CardPageID = "MS - Wallet Merchant Setup";
     Editable = false;
@@ -15,26 +19,31 @@ page 1083 "MS - Wallet Merchant Accounts"
         {
             repeater(Group)
             {
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     ApplicationArea = Basic, Suite;
+                    Tooltip = 'Specifies the Name of the merchant account.';
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
+                    Tooltip = 'Specifies the description.';
                 }
-                field(Enabled; Enabled)
+                field(Enabled; Rec.Enabled)
                 {
                     ApplicationArea = Basic, Suite;
+                    Tooltip = 'Specifies whether the merchant account is enabled.';
                 }
-                field("Always Include on Documents"; "Always Include on Documents")
+                field("Always Include on Documents"; Rec."Always Include on Documents")
                 {
                     ApplicationArea = Basic, Suite;
+                    Tooltip = 'Specifies whether the merchant should always be included on documents.';
                 }
-                field("Merchant ID"; "Merchant ID")
+                field("Merchant ID"; Rec."Merchant ID")
                 {
                     ApplicationArea = Basic, Suite;
                     Visible = false;
+                    Tooltip = 'Specifies the merchant id.';
                 }
             }
         }
@@ -51,6 +60,7 @@ page 1083 "MS - Wallet Merchant Accounts"
                 Image = NewDocument;
                 Promoted = true;
                 PromotedIsBig = true;
+                PromotedOnly = true;
                 ToolTip = 'Creates a new Microsoft Pay Payments merchant account.';
 
                 trigger OnAction();
@@ -65,4 +75,4 @@ page 1083 "MS - Wallet Merchant Accounts"
         }
     }
 }
-
+#endif

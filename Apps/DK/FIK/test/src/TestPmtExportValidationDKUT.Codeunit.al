@@ -26,15 +26,15 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         FieldMustBeEqualErr: Label '%1 must be equal to ''%2''', Comment = '%1=Field;%2=Value', Locked = true;
         FieldMustNotBeEqualErr: Label '%1 must not be %2', Comment = '%1=Field;%2=Value', Locked = true;
         FieldIsNotEmptyErr: Label '%1 cannot be used while %2 has a value.', Comment = '%1=Field;%2=Field', Locked = true;
-        FieldMustHaveValueErr: Label '%1 must have a value';
+        FieldMustHaveValueErr: Label '%1 must have a value', Comment = '%1 = Field', Locked = true;
         SimultaneousPaymentDetailsErr: Label '%1 and %2 cannot be used simultaneously for payments.', Comment = '%1=Field;%2=Field', Locked = true;
-        WrongBankInfoLengthErr: Label 'The value in the %1 field does not have the length that is required by the export format.';
+        WrongBankInfoLengthErr: Label 'The value in the %1 field does not have the length that is required by the export format.', Comment = '%1 = Field', Locked = true;
         WrongCreditorCurrencyErr: Label '%1 for one or more %2 is incorrect. You can only use %3.', Comment = '%1=Field;%2=Table;%3=Value', Locked = true;
         WrongTransferCurrencyErr: Label '%1 for one or more %2 is incorrect. You can only use %3 or %4.', Comment = '%1=Field;%2=Table;%3=Value;%4=Value', Locked = true;
         PmtTypeValidationErr: Label 'The %1 in %2, %3 must be %4 or %5.', Comment = 'The Payment Type Validation in Payment Method, Code must be Domestic or International.', Locked = true;
         FieldBlankErr: Label '%1 must have a value in %2.', Comment = '%1=table name, %2=field name. Example: Customer must have a value in Name.', Locked = true;
-        PaymentTypeShouldBeErr: Label '%1 should be %2 in %3.';
-        PaymentTypeShouldNotBeErr: Label '%1 should not be %2 in %3.';
+        PaymentTypeShouldBeErr: Label '%1 should be %2 in %3.', Comment = '%1 = Payment Type Validation Field Caption; %2 = Enum International Value; %3 = Payment Method Table Caption', Locked = true;
+        PaymentTypeShouldNotBeErr: Label '%1 should not be %2 in %3.', Comment = '%1 = Payment Type Validation Field Caption; %2 = Enum International Value; %3 = Payment Method Table Caption', Locked = true;
         VendorPmtErr: Label 'The selected export format only supports vendor payments.';
         GiroAccValueErr: Label 'Field GiroAccNo has wrong value.';
         WrongGiroAccLengthErr: Label 'Field GiroAccNo has wrong length in table %1.', Comment = '%1 stands for name of the table, where error occures.', Locked = true;
@@ -2176,7 +2176,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
     procedure GiroAccNoLength();
     var
         GenJournalLine: Record "Gen. Journal Line";
-        PaymentBuffer: Record "Payment Buffer";
+        VendorPaymentBuffer: Record "Vendor Payment Buffer";
         PaymentExportData: Record "Payment Export Data";
         PurchaseHeader: Record "Purchase Header";
         PurchInvHeader: Record "Purch. Inv. Header";
@@ -2216,8 +2216,8 @@ codeunit 148027 "TestPmtExport Validation DK UT"
 
         Assert.AreEqual(
           GiroAccNoLength,
-          LibraryUtility.GetFieldLength(DATABASE::"Payment Buffer", PaymentBuffer.FIELDNO(GiroAccNo)),
-          STRSUBSTNO(WrongGiroAccLengthErr, PaymentBuffer.TABLECAPTION()));
+          LibraryUtility.GetFieldLength(DATABASE::"Vendor Payment Buffer", VendorPaymentBuffer.FIELDNO(GiroAccNo)),
+          STRSUBSTNO(WrongGiroAccLengthErr, VendorPaymentBuffer.TABLECAPTION()));
 
         Assert.AreEqual(
           GiroAccNoLength,

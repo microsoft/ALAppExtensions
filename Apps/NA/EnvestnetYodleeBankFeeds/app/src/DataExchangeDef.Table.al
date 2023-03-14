@@ -32,6 +32,10 @@ table 1452 "MS - Yodlee Data Exchange Def"
     {
     }
 
+    var
+        YodleeTelemetryCategoryTok: Label 'AL Yodlee', Locked = true;
+        UnsuccessfulDataExchSetupErr: Label 'Unable to set up data exchange definition. Unable to insert %1 for data exchange definition %2.', Locked = true;
+
     procedure ResetDataExchToDefault();
     begin
         ResetDataExchDefinitionToDefault();
@@ -52,12 +56,18 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchDef.Name := 'Envestnet Yodlee - Bank Feeds Service';
         DataExchDef."Ext. Data Handling Codeunit" := 1413;
         DataExchDef."Reading/Writing Codeunit" := 1200;
-        DataExchDef.INSERT();
+        if not DataExchDef.INSERT() then begin
+            Session.LogMessage('0000HBA', StrSubstNo(UnsuccessfulDataExchSetupErr, DataExchDef.TableCaption(), DataExchDef.Code), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
         DataExchLineDef."Data Exch. Def Code" := DataExchDef.Code;
         DataExchLineDef.Code := 'TRANSACTIONFEED';
         DataExchLineDef.Name := 'Definition';
         DataExchLineDef."Data Line Tag" := '/root/root/transaction';
-        DataExchLineDef.INSERT();
+        if not DataExchLineDef.INSERT() then begin
+            Session.LogMessage('0000HBB', StrSubstNo(UnsuccessfulDataExchSetupErr, DataExchLineDef.TableCaption(), DataExchDef.Code), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
         InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 2, 'transactionId', '/root/root/transaction/id', '');
         InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 3, 'description', '/root/root/transaction/description/original', '');
         InsertDataExchColumnDef(DataExchDef, DataExchLineDef, 5, 'postDate', '/root/root/transaction/date', '');
@@ -74,7 +84,10 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchMapping."Mapping Codeunit" := 1451;
         DataExchMapping."Data Exch. No. Field ID" := 17;
         DataExchMapping."Data Exch. Line Field ID" := 18;
-        DataExchMapping.INSERT();
+        if not DataExchMapping.INSERT() then begin
+            Session.LogMessage('0000HBC', StrSubstNo(UnsuccessfulDataExchSetupErr, DataExchMapping.TableCaption(), DataExchDef.Code), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
         InsertDataExchFieldMapping(DataExchDef, DataExchLineDef, DataExchMapping, 2, 70, false);
         InsertDataExchFieldMapping(DataExchDef, DataExchLineDef, DataExchMapping, 3, 23, false);
         InsertDataExchFieldMapping(DataExchDef, DataExchLineDef, DataExchMapping, 5, 5, false);
@@ -99,14 +112,20 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchDef.Name := 'Envestnet Yodlee - Bank Feeds Service';
         DataExchDef."Ext. Data Handling Codeunit" := 1413;
         DataExchDef."Reading/Writing Codeunit" := 1200;
-        DataExchDef.INSERT();
+        if not DataExchDef.INSERT() then begin
+            Session.LogMessage('0000HBD', StrSubstNo(UnsuccessfulDataExchSetupErr, DataExchDef.TableCaption(), DataExchDef.Code), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
         if DataExchLineDef.Get(DataExchDef.Code, 'TRANSACTIONFEED') then
             DataExchLineDef.Delete(true);
         DataExchLineDef."Data Exch. Def Code" := DataExchDef.Code;
         DataExchLineDef.Code := 'TRANSACTIONFEED';
         DataExchLineDef.Name := 'Definition';
         DataExchLineDef."Data Line Tag" := '/root/root/transaction';
-        DataExchLineDef.INSERT();
+        if not DataExchLineDef.INSERT() then begin
+            Session.LogMessage('0000HBE', StrSubstNo(UnsuccessfulDataExchSetupErr, DataExchLineDef.TableCaption(), DataExchDef.Code), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
 
         DataExchColumnDef.SetRange("Data Exch. Def Code", DataExchDef.Code);
         if not DataExchColumnDef.IsEmpty() then
@@ -133,7 +152,10 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchMapping."Mapping Codeunit" := 1451;
         DataExchMapping."Data Exch. No. Field ID" := 17;
         DataExchMapping."Data Exch. Line Field ID" := 18;
-        DataExchMapping.INSERT();
+        if not DataExchMapping.INSERT() then begin
+            Session.LogMessage('0000HBF', StrSubstNo(UnsuccessfulDataExchSetupErr, DataExchMapping.TableCaption(), DataExchDef.Code), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
 
         DataExchFieldMapping.SetRange("Data Exch. Def Code", DataExchDef.Code);
         DataExchFieldMapping.SetRange("Table ID", DataExchMapping."Table ID");
@@ -158,7 +180,10 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchColumnDef.Name := Name;
         DataExchColumnDef.Path := Path;
         DataExchColumnDef."Negative-Sign Identifier" := NegativeSignIdentifier;
-        DataExchColumnDef.INSERT();
+        if not DataExchColumnDef.INSERT() then begin
+            Session.LogMessage('0000HBG', StrSubstNo(UnsuccessfulDataExchSetupErr, DataExchColumnDef.TableCaption(), DataExchColumnDef."Data Exch. Def Code"), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
     end;
 
     local procedure InsertDataExchFieldMapping(var DataExchDef: Record "Data Exch. Def"; var DataExchLineDef: Record "Data Exch. Line Def"; var DataExchMapping: Record "Data Exch. Mapping"; ColumnNo: Integer; FieldID: Integer; Optional: Boolean)
@@ -171,7 +196,10 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchFieldMapping."Column No." := ColumnNo;
         DataExchFieldMapping."Field ID" := FieldID;
         DataExchFieldMapping.Optional := Optional;
-        DataExchFieldMapping.INSERT();
+        if not DataExchFieldMapping.INSERT() then begin
+            Session.LogMessage('0000HBH', StrSubstNo(UnsuccessfulDataExchSetupErr, DataExchFieldMapping.TableCaption(), DataExchFieldMapping."Data Exch. Def Code"), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
     end;
 
     procedure ResetBankImportToDefault();
@@ -191,7 +219,10 @@ table 1452 "MS - Yodlee Data Exchange Def"
         BankExportImportSetup."Data Exch. Def. Code" := DataExchDef.Code;
         BankExportImportSetup.Direction := BankExportImportSetup.Direction::Import;
         BankExportImportSetup."Processing Codeunit ID" := 1270;
-        BankExportImportSetup.INSERT(TRUE);
+        if not BankExportImportSetup.INSERT() then begin
+            Session.LogMessage('0000HBI', StrSubstNo(UnsuccessfulDataExchSetupErr, BankExportImportSetup.TableCaption(), BankExportImportSetup.Code), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            exit;
+        end;
     end;
 
     procedure UpdateMSYodleeBankServiceSetupBankStmtImportFormat();

@@ -6,39 +6,37 @@ tableextension 31275 "Incoming Document CZC" extends "Incoming Document"
             exit;
         Get(CompensationHeaderCZC."Incoming Document Entry No.");
         TestReadyForProcessing();
-        TestIfAlreadyExistsCZC();
+        TestIfAlreadyExists();
         "Document Type" := "Document Type"::"Compensation CZC";
         Modify();
-        if not DocLinkExistsCZC(CompensationHeaderCZC) then
+        if not DocLinkExists(CompensationHeaderCZC) then
             CompensationHeaderCZC.AddLink(GetURL(), Description);
     end;
 
-    local procedure TestIfAlreadyExistsCZC()
+    procedure CreateCompensationCZC()
     var
         CompensationHeaderCZC: Record "Compensation Header CZC";
-        AlreadyUsedInDocHdrErr: Label 'The incoming document has already been assigned to %1 %2 (%3).', Comment = '%1 = Document Type, %2 = Document No., %3 = Table Name.';
     begin
-        case "Document Type" of
-            "Document Type"::"Compensation CZC":
-                begin
-                    CompensationHeaderCZC.SetRange("Incoming Document Entry No.", "Entry No.");
-                    if CompensationHeaderCZC.FindFirst() then
-                        Error(AlreadyUsedInDocHdrErr, '', CompensationHeaderCZC."No.", CompensationHeaderCZC.TableCaption);
-                end;
-        end;
-    end;
+        if "Document Type" <> "Document Type"::"Compensation CZC" then
+            TestIfAlreadyExists();
 
-    local procedure DocLinkExistsCZC(RecVariant: Variant): Boolean
-    var
-        RecordLink: Record "Record Link";
-        RecordRef: RecordRef;
-    begin
-        if GetURL() = '' then
-            exit(true);
-        RecordRef.GetTable(RecVariant);
-        RecordLink.SetRange("Record ID", RecordRef.RecordId);
-        RecordLink.SetRange(URL1, URL);
-        RecordLink.SetRange(Description, Description);
-        exit(not RecordLink.IsEmpty());
+        "Document Type" := "Document Type"::"Compensation CZC";
+        TestReadyForProcessing();
+        CompensationHeaderCZC.SetRange("Incoming Document Entry No.", "Entry No.");
+        if not CompensationHeaderCZC.IsEmpty() then begin
+            ShowRecord();
+            exit;
+        end;
+        CompensationHeaderCZC.Reset();
+        CompensationHeaderCZC.Init();
+        CompensationHeaderCZC.Insert(true);
+        if GetURL() <> '' then
+            CompensationHeaderCZC.AddLink(GetURL(), Description);
+        CompensationHeaderCZC."Incoming Document Entry No." := "Entry No.";
+        CompensationHeaderCZC.Modify();
+        "Document No." := CompensationHeaderCZC."No.";
+        Modify(true);
+        Commit();
+        ShowRecord();
     end;
 }

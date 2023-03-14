@@ -68,8 +68,10 @@ tableextension 13643 "OIOUBL-IssuedFinChrgMemoHeader" extends "Issued Fin. Charg
     end;
 
     procedure GetDescription(): Text[1024];
+    var
+        DescriptionTxt: Label '%1 %2 %3%4', Locked = true;
     begin
-        exit(CopyStr(STRSUBSTNO('%1 %2 %3%4', TABLECAPTION(), FIELDCAPTION("No."), "No.", CrLf()),1,1024));
+        exit(CopyStr(STRSUBSTNO(DescriptionTxt, TABLECAPTION(), FIELDCAPTION("No."), "No.", CrLf()), 1, 1024));
     end;
 
     local procedure CrLf() CrLf: Text[2];

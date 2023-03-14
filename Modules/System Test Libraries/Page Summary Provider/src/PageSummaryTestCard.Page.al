@@ -14,97 +14,99 @@ page 132548 "Page Summary Test Card"
     {
         area(content)
         {
-            field(TestBigInteger; TestBigInteger)
+            field(TestBigInteger; Rec.TestBigInteger)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestBlob; TestBlob)
+#pragma warning disable AW0004
+            field(TestBlob; Rec.TestBlob)
+#pragma warning restore AW0004
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestBoolean; TestBoolean)
+            field(TestBoolean; Rec.TestBoolean)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestCode; TestCode)
+            field(TestCode; Rec.TestCode)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestDate; TestDate)
+            field(TestDate; Rec.TestDate)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestDateFormula; TestDateFormula)
+            field(TestDateFormula; Rec.TestDateFormula)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestDateTime; TestDateTime)
+            field(TestDateTime; Rec.TestDateTime)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestDecimal; TestDecimal)
+            field(TestDecimal; Rec.TestDecimal)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestTime; TestTime)
+            field(TestTime; Rec.TestTime)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestText; TestText)
+            field(TestText; Rec.TestText)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestTableFilter; TestTableFilter)
+            field(TestTableFilter; Rec.TestTableFilter)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestRecordId; TestRecordId)
+            field(TestRecordId; Rec.TestRecordId)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestOption; TestOption)
+            field(TestOption; Rec.TestOption)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestMediaSet; TestMediaSet)
+            field(TestMediaSet; Rec.TestMediaSet)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestMedia; TestMedia)
+            field(TestMedia; Rec.TestMedia)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestInteger; TestInteger)
+            field(TestInteger; Rec.TestInteger)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestGuid; TestGuid)
+            field(TestGuid; Rec.TestGuid)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestEnum; TestEnum)
+            field(TestEnum; Rec.TestEnum)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
-            field(TestDuration; TestDuration)
+            field(TestDuration; Rec.TestDuration)
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';

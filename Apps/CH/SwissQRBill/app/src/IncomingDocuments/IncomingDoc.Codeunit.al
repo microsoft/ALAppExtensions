@@ -173,9 +173,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
             "Swiss QR-Bill IBAN" := IncomingDocument."Vendor IBAN";
             "Swiss QR-Bill Currency" := IncomingDocument."Currency Code";
             "Swiss QR-Bill Amount" := IncomingDocument."Amount Incl. VAT";
+            "Swiss QR-Bill Has Zero Amount" := ("Swiss QR-Bill Amount" = 0);
             "Swiss QR-Bill Unstr. Message" := IncomingDocument."Swiss QR-Bill Unstr. Message";
             "Swiss QR-Bill Bill Info" := IncomingDocument."Swiss QR-Bill Bill Info";
             "Swiss QR-Bill" := true;
+            OnUpdatePurchDocFromIncDocOnBeforeModify(PurchaseHeader, IncomingDocument);
             Modify(true);
         end;
     end;
@@ -218,7 +220,7 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
                     IncomingDocument."Vendor No.", IncomingDocument."Swiss QR-Bill Reference No.", true, true, true);
         end else
             if IncomingDocument.IsTemporary() then
-                Message(StrSubstNo('%1\\%2', ImportFailedTxt, DecodeFailedTxt));
+                Message(ImportFailedTxt + '\\' + DecodeFailedTxt);
     end;
 
     local procedure QRBillImport(var QRCodeText: Text; var FileName: Text; FromFile: Boolean) Result: Boolean
@@ -242,11 +244,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
     local procedure QRBillImportFromFile(var QRCodeText: Text; var FileName: Text): boolean
     var
         TempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         InStream: InStream;
     begin
-        FileName := FileMgt.BLOBImport(TempBlob, 'Import QR-Bill Text File');
-        FileName := FileMgt.GetFileNameWithoutExtension(FileName);
+        FileName := FileManagement.BLOBImport(TempBlob, 'Import QR-Bill Text File');
+        FileName := FileManagement.GetFileNameWithoutExtension(FileName);
         if TempBlob.HasValue() then begin
             TempBlob.CreateInStream(InStream);
             InStream.Read(QRCodeText);
@@ -284,7 +286,7 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
     local procedure UpdateIncomingDocumentMainAttachment(var IncomingDocument: Record "Incoming Document"; QRCodeText: Text; FileName: Text)
     var
         IncomingDocumentAttachment: Record "Incoming Document Attachment";
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         TempBlob: Codeunit "Temp Blob";
         InStream: InStream;
         OutStream: OutStream;
@@ -300,7 +302,7 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
         with IncomingDocumentAttachment do begin
             "Incoming Document Entry No." := IncomingDocument."Entry No.";
-            Name := CopyStr(FileMgt.GetFileNameWithoutExtension(FileName), 1, MaxStrLen(Name));
+            Name := CopyStr(FileManagement.GetFileNameWithoutExtension(FileName), 1, MaxStrLen(Name));
             Validate("File Extension", 'txt');
             SetContentFromBlob(TempBlob);
             Insert(true);
@@ -406,7 +408,7 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
     local procedure BusinessValidationDebitor(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer" temporary; var IncomingDocument: Record "Incoming Document")
     var
         TempCustomer: Record Customer temporary;
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
     begin
         if SwissQRBillBuffer.GetUltimateDebitorInfo(TempCustomer) then begin
             IncomingDocument."Swiss QR-Bill Debitor Name" := TempCustomer.Name;
@@ -416,24 +418,24 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
             IncomingDocument."Swiss QR-Bill Debitor City" := TempCustomer.City;
             IncomingDocument."Swiss QR-Bill Debitor Country" := TempCustomer."Country/Region Code";
 
-            CompanyInfo.Get();
-            if (CompanyInfo."Country/Region Code" <> '') and (TempCustomer."Country/Region Code" <> '') and
-                (CompanyInfo."Country/Region Code" <> TempCustomer."Country/Region Code")
+            CompanyInformation.Get();
+            if (CompanyInformation."Country/Region Code" <> '') and (TempCustomer."Country/Region Code" <> '') and
+                (CompanyInformation."Country/Region Code" <> TempCustomer."Country/Region Code")
             then
-                LogWarning(StrSubstNo(MatchWarningDebitorCountryTxt, TempCustomer."Country/Region Code", CompanyInfo."Country/Region Code"));
+                LogWarning(StrSubstNo(MatchWarningDebitorCountryTxt, TempCustomer."Country/Region Code", CompanyInformation."Country/Region Code"));
 
-            if (CompanyInfo."Post Code" <> '') and (TempCustomer."Post Code" <> '') and
-                (CompanyInfo."Post Code" <> TempCustomer."Post Code")
+            if (CompanyInformation."Post Code" <> '') and (TempCustomer."Post Code" <> '') and
+                (CompanyInformation."Post Code" <> TempCustomer."Post Code")
             then
-                LogWarning(StrSubstNo(MatchWarningDebitorPostCodeTxt, TempCustomer."Post Code", CompanyInfo."Post Code"));
+                LogWarning(StrSubstNo(MatchWarningDebitorPostCodeTxt, TempCustomer."Post Code", CompanyInformation."Post Code"));
 
-            if (CompanyInfo.City <> '') and (TempCustomer.City <> '') then
-                if NotSimilarStrings(TempCustomer.City, CompanyInfo.City) then
-                    LogWarning(StrSubstNo(MatchWarningDebitorCityTxt, TempCustomer.City, CompanyInfo.City));
+            if (CompanyInformation.City <> '') and (TempCustomer.City <> '') then
+                if NotSimilarStrings(TempCustomer.City, CompanyInformation.City) then
+                    LogWarning(StrSubstNo(MatchWarningDebitorCityTxt, TempCustomer.City, CompanyInformation.City));
 
-            if (CompanyInfo.Name <> '') and (TempCustomer.Name <> '') then
-                if NotSimilarStrings(TempCustomer.Name, CompanyInfo.Name) then
-                    LogWarning(StrSubstNo(MatchWarningDebitorNameTxt, TempCustomer.Name, CompanyInfo.Name));
+            if (CompanyInformation.Name <> '') and (TempCustomer.Name <> '') then
+                if NotSimilarStrings(TempCustomer.Name, CompanyInformation.Name) then
+                    LogWarning(StrSubstNo(MatchWarningDebitorNameTxt, TempCustomer.Name, CompanyInformation.Name));
         end else
             LogWarning(DebitorDetailsNotFoundTxt);
     end;
@@ -467,11 +469,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
     local procedure BusinessValidationCurrency(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer" temporary)
     var
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         Currency: Record Currency;
     begin
-        GLSetup.Get();
-        if GLSetup."LCY Code" <> SwissQRBillBuffer.Currency then
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."LCY Code" <> SwissQRBillBuffer.Currency then
             if not Currency.Get(SwissQRBillBuffer.Currency) then
                 LogWarning(StrSubstNo(MatchCurrencyTxt, SwissQRBillBuffer.Currency));
     end;
@@ -520,8 +522,15 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
         exit(FindVendorBankAccountWithGivenIBAN(VendorBankAccount, SwissQRBillMgt.FormatIBAN(IBAN)));
     end;
 
-    local procedure FindVendorBankAccountWithGivenIBAN(var VendorBankAccount: Record "Vendor Bank Account"; SearchIBAN: Code[50]): Boolean
+    local procedure FindVendorBankAccountWithGivenIBAN(var VendorBankAccount: Record "Vendor Bank Account"; SearchIBAN: Code[50]) Result: Boolean
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeFindVendorBankAccountWithGivenIBAN(VendorBankAccount, SearchIBAN, Result, IsHandled);
+        if IsHandled then
+            exit;
+
         with VendorBankAccount do begin
             Reset();
             SetRange(IBAN, SearchIBAN);
@@ -545,9 +554,9 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
     local procedure IncomingDocRelatedRecNotExists(IncomingDocument: Record "Incoming Document"; NavigateIfCreated: Boolean) Result: Boolean
     var
-        RelatedRecord: Variant;
+        RelatedRecordVariant: Variant;
     begin
-        Result := not IncomingDocument.GetRecord(RelatedRecord);
+        Result := not IncomingDocument.GetRecord(RelatedRecordVariant);
         if not Result then
             if NavigateIfCreated then begin
                 if Confirm(ConfirmNavigateDocAlreadyCreatedQst) then
@@ -558,11 +567,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
     internal procedure GetCurrency(CurrencyCode: Code[10]): Code[10]
     var
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         if CurrencyCode <> '' then
-            if GLSetup.Get() then
-                if GLSetup."LCY Code" = CurrencyCode then
+            if GeneralLedgerSetup.Get() then
+                if GeneralLedgerSetup."LCY Code" = CurrencyCode then
                     CurrencyCode := '';
         exit(CurrencyCode);
     end;
@@ -619,5 +628,15 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
         else
             sender.Status := sender.Status::Failed;
         sender.Modify();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFindVendorBankAccountWithGivenIBAN(var VendorBankAccount: Record "Vendor Bank Account"; SearchIBAN: Code[50]; var Result: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdatePurchDocFromIncDocOnBeforeModify(var PurchaseHeader: Record "Purchase Header"; var IncomingDocument: Record "Incoming Document")
+    begin
     end;
 }

@@ -43,10 +43,8 @@ page 8851 "Bank Statement Import Preview"
         TypeHelper: Codeunit "Type Helper";
         AmountVariant: Variant;
         DateVariant: Variant;
-        AmountVal: Decimal;
-        DateVal: Date;
     begin
-        AmountVariant := AmountVal;
+        AmountVariant := 0.00;
         if Rec.Amount.Contains('''') then   // remove thousands separator as it prevents decimal from being evaluated by default
             Rec.Amount := DelChr(Rec.Amount, '=', '''');
         if TypeHelper.Evaluate(AmountVariant, Rec.Amount, '', Rec."Amount Format") then begin
@@ -55,7 +53,7 @@ page 8851 "Bank Statement Import Preview"
         end else
             IsValidAmount := false;
 
-        DateVariant := DateVal;
+        DateVariant := 0D;
         if TypeHelper.Evaluate(DateVariant, Rec.Date, Rec."Date Format", Rec."Amount Format") then begin
             IsValidDate := true;
             Rec.Date := Format(DateVariant);

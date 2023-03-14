@@ -19,8 +19,8 @@ codeunit 148165 "Elster Tables UT"
         Assert: Codeunit "Assert";
         LibraryRandom: Codeunit "Library - Random";
         SameValueMsg: Label 'Value must be same.';
-        WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.';
-        CannotChangeXMLFileErr: Label 'You cannot change the value of this field anymore after the XML-File for the %1 has been created.';
+        WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.', Comment = '%1 = Registration No. Field Caption; %2 = Tax Office Area; %3 = Registration No. Length';
+        CannotChangeXMLFileErr: Label 'You cannot change the value of this field anymore after the XML-File for the %1 has been created.', Comment = '%1 = Sales VAT Advance Notif. Table Caption';
 
     [Test]
     procedure OnInsertVATStatNameError()
@@ -838,7 +838,7 @@ codeunit 148165 "Elster Tables UT"
     end;
 
     [ModalPageHandler]
-    procedure NoSeriesListModalPageHandler(var NoSeriesList: TestPage "No. Series List")
+    procedure NoSeriesListModalPageHandler(var NoSeriesList: TestPage "No. Series")
     begin
         NoSeriesList.OK().Invoke();
     end;

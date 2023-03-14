@@ -2796,7 +2796,11 @@ ObjectIDToRun2, ManualSetupCategory::Uncategorized, '');
 
         // [WHEN] Calling ShouldInitializeChecklist
         // [THEN] The result is false
+        Assert.IsFalse(Checklist.ShouldInitializeChecklist(true),
+            'The checklist should not be initialized for evaluation companies.');
+#if not CLEAN19
         Assert.IsFalse(Checklist.ShouldInitializeChecklist(), 'The checklist should not be initialized for evaluation companies.');
+#endif
     end;
 
     [Test]
@@ -2816,7 +2820,11 @@ ObjectIDToRun2, ManualSetupCategory::Uncategorized, '');
 
         // [WHEN] Calling ShouldInitializeChecklist
         // [THEN] The result is true
+        Assert.IsTrue(Checklist.ShouldInitializeChecklist(true),
+            'The checklist should be initialized when the Checklist Setup table is empty.');
+#if not CLEAN19
         Assert.IsTrue(Checklist.ShouldInitializeChecklist(), 'The checklist should be initialized when the Checklist Setup table is empty.');
+#endif
     end;
 
     [Test]
@@ -2838,7 +2846,11 @@ ObjectIDToRun2, ManualSetupCategory::Uncategorized, '');
 
         // [WHEN] Calling ShouldInitializeChecklist
         // [THEN] The result is true
+        Assert.IsTrue(Checklist.ShouldInitializeChecklist(true),
+            'The checklist should be initialized when the setup is not done.');
+#if not CLEAN19
         Assert.IsTrue(Checklist.ShouldInitializeChecklist(), 'The checklist should be initialized when the setup is not done.');
+#endif
     end;
 
     [Test]
@@ -2860,8 +2872,79 @@ ObjectIDToRun2, ManualSetupCategory::Uncategorized, '');
 
         // [WHEN] Calling ShouldInitializeChecklist
         // [THEN] The result is true
+        Assert.IsFalse(Checklist.ShouldInitializeChecklist(true),
+            'The checklist should not be initialized when the setup is done.');
+#if not CLEAN19
         Assert.IsFalse(Checklist.ShouldInitializeChecklist(), 'The checklist should not be initialized when the setup is done.');
+#endif
     end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestShouldInitializeChecklistWithChecklistSetupNotInProgress()
+    var
+        ChecklistSetup: Record "Checklist Setup";
+        Checklist: Codeunit Checklist;
+    begin
+        // [GIVEN] The Checklist Setup table has a record with the "Is Setup in Progress" flag set to true
+        ChecklistSetup.DeleteAll();
+        ChecklistSetup."Is Setup in Progress" := false;
+        ChecklistSetup."Is Setup Done" := false;
+        ChecklistSetup.Insert();
+
+        PermissionsMock.Set('Guided Exp Edit');
+
+        // [WHEN] Calling ShouldInitializeChecklist
+        // [THEN] The result is true
+        Assert.IsTrue(Checklist.ShouldInitializeChecklist(true),
+            'The checklist should be initialized when the setup is not in progress.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestShouldInitializeChecklistWithChecklistSetupInProgressForLessThanAnHour()
+    var
+        ChecklistSetup: Record "Checklist Setup";
+        Checklist: Codeunit Checklist;
+    begin
+        // [GIVEN] The Checklist Setup table has a record with the "Is Setup in Progress" flag set to true
+        ChecklistSetup.DeleteAll();
+        ChecklistSetup."Is Setup in Progress" := true;
+        ChecklistSetup."DateTime when Setup Started" := CurrentDateTime();
+        ChecklistSetup."Is Setup Done" := false;
+        ChecklistSetup.Insert();
+
+        PermissionsMock.Set('Guided Exp Edit');
+
+        // [WHEN] Calling ShouldInitializeChecklist
+        // [THEN] The result is false
+        Assert.IsFalse(Checklist.ShouldInitializeChecklist(true),
+            'The checklist should not be initialized when the setup has been in progress for less than an hour.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestShouldInitializeChecklistWithChecklistSetupInProgressForMoreThanAnHour()
+    var
+        ChecklistSetup: Record "Checklist Setup";
+        Checklist: Codeunit Checklist;
+        ChecklistImplementation: Codeunit "Checklist Implementation";
+    begin
+        // [GIVEN] The Checklist Setup table has a record with the "Is Setup in Progress" flag set to true
+        ChecklistSetup.DeleteAll();
+        ChecklistSetup."Is Setup in Progress" := true;
+        ChecklistSetup."DateTime when Setup Started" := ChecklistImplementation.GetCurrentDateTimeInUTC() - 3601000;
+        ChecklistSetup."Is Setup Done" := false;
+        ChecklistSetup.Insert();
+
+        PermissionsMock.Set('Guided Exp Edit');
+
+        // [WHEN] Calling ShouldInitializeChecklist
+        // [THEN] The result is true
+        Assert.IsTrue(Checklist.ShouldInitializeChecklist(false),
+            'The checklist should be initialized when the setup has been in progress for more than an hour.');
+    end;
+
 
     [Test]
     [Scope('OnPrem')]

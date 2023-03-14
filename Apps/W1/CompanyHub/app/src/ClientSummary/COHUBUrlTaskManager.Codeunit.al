@@ -22,6 +22,8 @@ codeunit 1154 "COHUB Url Task Manager"
     procedure FetchCompanies(var COHUBEnviroment: Record "COHUB Enviroment"): Boolean
     var
         COHUBAPIRequest: Codeunit "COHUB API Request";
+        COHUBCore: Codeunit "COHUB Core";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         CouldNotFetchCompaniesNotification: Notification;
         CompanyJsonObject: JsonObject;
         CompanyJsonArray: JsonArray;
@@ -38,6 +40,9 @@ codeunit 1154 "COHUB Url Task Manager"
         CompanyUrl: Text;
         EvaluationCompanyPropNameValue: Boolean;
     begin
+        FeatureTelemetry.LogUptake('0000IFJ', COHUBCore.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000IFK', COHUBCore.GetFeatureTelemetryName(), 'Fetching Companies');
+
         if COHUBEnviroment.Link = '' then
             exit(false);
 
@@ -93,14 +98,18 @@ codeunit 1154 "COHUB Url Task Manager"
     var
         COHUBCompanyEndpoint: Record "COHUB Company Endpoint";
         COHUBCompUrlTaskManager: Codeunit "COHUB Comp. Url Task Manager";
+        CompanyEndpointExist: Boolean;
     begin
+        CompanyEndpointExist := COHUBCompanyEndpoint.Get(COHUBEnviroment."No.", CompanyNameValue, UserSecurityId());
         COHUBCompanyEndpoint."Enviroment No." := COHUBEnviroment."No.";
         COHUBCompanyEndpoint."Company Name" := CompanyNameValue;
         COHUBCompanyEndpoint."Assigned To" := UserSecurityId();
         COHUBCompanyEndpoint."Company Display Name" := CompanyDisplayNameValue;
         COHUBCompanyEndpoint."ODATA Company URL" := COPYSTR(CompanyUrl, 1, MaxStrLen(COHUBCompanyEndpoint."ODATA Company URL"));
         COHUBCompanyEndpoint."Evaulation Company" := IsEvaulationCompany;
-        if not COHUBCompanyEndpoint.Modify(true) then
+        if CompanyEndpointExist then
+            COHUBCompanyEndpoint.Modify(true)
+        else
             COHUBCompanyEndpoint.Insert(true);
 
         COHUBCompUrlTaskManager.GatherKPIData(COHUBCompanyEndpoint);

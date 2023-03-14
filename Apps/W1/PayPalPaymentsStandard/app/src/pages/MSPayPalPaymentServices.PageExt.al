@@ -1,5 +1,9 @@
+#if not CLEAN21
 pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Services"
 {
+    ObsoleteReason = 'Microsoft Invoicing has been discontinued.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '21.0';
     layout
     {
         addfirst(Control75)
@@ -29,7 +33,7 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
 
                         trigger OnValidate();
                         begin
-                            MSPayPalStandardManagement.SetPaypalAccount(PaypalAccountId, false);
+                            MSPayPalStandardMgt.SetPaypalAccount(PaypalAccountId, false);
                             CurrPage.Update();
                         end;
                     }
@@ -53,7 +57,7 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
 
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
-        MSPayPalStandardManagement: Codeunit "MS - PayPal Standard Mgt.";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
         PaypalAccountId: Text[250];
         PaypalTermsOfServiceLink: Text[250];
         IsPaypalEnabledAndDefault: Boolean;
@@ -66,7 +70,6 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
     var
         TempPaymentServiceSetup: Record 1060 temporary;
         MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
-        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
         UserHasPermissions := CheckUserPermissions();
 
@@ -106,9 +109,9 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
     var
         DummyMSPayPalStandardAccount: Record "MS - PayPal Standard Account";
         AzureADUserManagement: Codeunit "Azure AD User Management";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if not EnvironmentInfo.IsSaaS() then
+        if not EnvironmentInformation.IsSaaS() then
             exit(DummyMSPayPalStandardAccount.WritePermission());
 
         if AzureADUserManagement.IsUserTenantAdmin() then
@@ -117,3 +120,4 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
         exit(false);
     end;
 }
+#endif

@@ -2,6 +2,14 @@ pageextension 31028 "Posted Sales Invoice CZZ" extends "Posted Sales Invoice"
 {
     actions
     {
+#if not CLEAN19
+#pragma warning disable AL0432
+        modify("Unpost Link Advance")
+        {
+            Visible = false;
+        }
+#pragma warning restore AL0432
+#endif
         addlast(processing)
         {
             group(AdvanceLetterCZZ)
@@ -15,7 +23,6 @@ pageextension 31028 "Posted Sales Invoice CZZ" extends "Posted Sales Invoice"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Unaply advance letters.';
                     Image = UnApply;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -30,7 +37,6 @@ pageextension 31028 "Posted Sales Invoice CZZ" extends "Posted Sales Invoice"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Apply advance letters.';
                     Image = Apply;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -54,7 +60,6 @@ pageextension 31028 "Posted Sales Invoice CZZ" extends "Posted Sales Invoice"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Show linked advance letters.';
                     Image = EntriesList;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -70,13 +75,4 @@ pageextension 31028 "Posted Sales Invoice CZZ" extends "Posted Sales Invoice"
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

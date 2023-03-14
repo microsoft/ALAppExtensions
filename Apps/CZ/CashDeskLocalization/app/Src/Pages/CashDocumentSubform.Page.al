@@ -112,6 +112,20 @@ page 31161 "Cash Document Subform CZP"
                     BlankZero = true;
                     ToolTip = 'Specifies whether the unit price on the line should be displayed including or excluding VAT.';
                 }
+                field(RelatedAmountToApplyField; RelatedAmountToApply)
+                {
+                    Caption = 'Related Amount to Apply (LCY)';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the total Amount (LCY) related suggestions to apply.';
+                    BlankZero = true;
+                    Visible = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.DrillDownRelatedAmountToApply();
+                    end;
+                }
                 field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
                 {
                     ApplicationArea = Dimensions;
@@ -395,6 +409,7 @@ page 31161 "Cash Document Subform CZP"
     trigger OnAfterGetRecord()
     begin
         Rec.ShowShortcutDimCode(ShortcutDimCode);
+        RelatedAmountToApply := Rec.CalcRelatedAmountToApply();
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -413,6 +428,7 @@ page 31161 "Cash Document Subform CZP"
         ShortcutDimCode: array[8] of Code[20];
         AccountTypeIsFilled: Boolean;
         VATAmount: Decimal;
+        RelatedAmountToApply: Decimal;
         DimVisible1: Boolean;
         DimVisible2: Boolean;
         DimVisible3: Boolean;
@@ -453,7 +469,7 @@ page 31161 "Cash Document Subform CZP"
         Clear(DimensionManagement);
     end;
 
-#if not CLEAN18
+#if not CLEAN19
     internal procedure LinkAdvLetters()
     begin
         Rec.LinkToAdvLetter();

@@ -411,8 +411,10 @@ table 18350 "Service Transfer Header"
     trigger OnDelete()
     begin
         TestStatusOpen();
+        ServiceTransferLine.Reset();
         ServiceTransferLine.SetRange("Document No.", "No.");
-        ServiceTransferLine.DeleteAll(true);
+        if ServiceTransferLine.FindSet() then
+            ServiceTransferLine.DeleteAll(true);
     end;
 
     trigger OnInsert()

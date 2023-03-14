@@ -50,8 +50,13 @@ pageextension 18441 "GST Service Lines" extends "Service Lines"
             field("GST Place Of Supply"; Rec."GST Place Of Supply")
             {
                 ApplicationArea = Basic, Suite;
-                Editable = false;
+                Editable = true;
                 ToolTip = 'Specifies on which location state code system should consider for GST calculation in case of sale of product or service.';
+
+                trigger OnValidate()
+                begin
+                    CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
+                end;
             }
             field("GST Group Code"; Rec."GST Group Code")
             {
@@ -59,6 +64,7 @@ pageextension 18441 "GST Service Lines" extends "Service Lines"
                 ToolTip = 'Specifies an identifier for the GST Group  used to calculate and post GST.';
                 trigger OnValidate()
                 begin
+                    Validate("GST Place Of Supply");
                     CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
                 end;
             }

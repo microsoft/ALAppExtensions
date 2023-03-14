@@ -56,7 +56,7 @@ page 20024 "APIV1 - Shipment Methods"
     var
         ShipmentMethod: Record "Shipment Method";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         ShipmentMethod.SETRANGE(Code, Code);
         IF NOT ShipmentMethod.ISEMPTY() THEN
@@ -64,9 +64,9 @@ page 20024 "APIV1 - Shipment Methods"
 
         INSERT(TRUE);
 
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         MODIFY(TRUE);
         EXIT(FALSE);

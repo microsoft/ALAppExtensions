@@ -11,11 +11,11 @@ codeunit 1809 "Assisted Setup Installation"
 
     trigger OnInstallAppPerCompany()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         AppInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(AppInfo);
-        if EnvironmentInfo.VersionInstalled(AppInfo.Id()) = 0 then
+        if EnvironmentInformation.VersionInstalled(AppInfo.Id()) = 0 then
             SetAllUpgradeTags();
     end;
 

@@ -21,8 +21,15 @@ codeunit 1867 "C5 Item Migrator"
         UnitOfMeasureNotSpecifiedErr: Label 'A unit of measure is not specified for item %1.', Comment = '%1 is the current item number';
         ServiceItemInBOMErr: Label 'BOMs cannot include service items in %1. You must remove %2 from the BOM for %3.', Comment = '%1=Product name %2=Component item %3 = main item';
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
     procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateItem(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
     begin
@@ -32,8 +39,15 @@ codeunit 1867 "C5 Item Migrator"
         CreateNavItem(C5InvenTable, Sender);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateCostingMethod', '', true, true)]
     procedure OnMigrateCostingMethod(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateCostingMethod(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateCostingMethod(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
     begin
@@ -83,13 +97,13 @@ codeunit 1867 "C5 Item Migrator"
             if C5InvenBom.FindSet() then
                 repeat
                     if not ItemDataMigrationFacade.DoesItemExist(C5InvenBom.ItemNumber) then
-                        Error(StrSubstNo(ReferencedItemDoesNotExistErr, C5InvenTable.ItemNumber, C5InvenBom.ItemNumber));
+                        Error(ReferencedItemDoesNotExistErr, C5InvenTable.ItemNumber, C5InvenBom.ItemNumber);
                     C5InvenTableComponent.SetRange(ItemNumber, C5InvenBom.ItemNumber);
                     if C5InvenTableComponent.FindFirst() then begin
                         if C5InvenTableComponent.ItemType = C5InvenTableComponent.ItemType::Service then
-                            Error(StrSubstNo(ServiceItemInBOMErr, ProductName.Short(), C5InvenBom.ItemNumber, C5InvenBom.BOMItemNumber));
+                            Error(ServiceItemInBOMErr, ProductName.Short(), C5InvenBom.ItemNumber, C5InvenBom.BOMItemNumber);
                         ItemDataMigrationFacade.CreateBOMComponent(
-                            C5InvenBom.ItemNumber, C5InvenBom.Qty, C5InvenBom.Position, BOMComponent.Type::Item);
+                            C5InvenBom.ItemNumber, C5InvenBom.Qty, C5InvenBom.Position, BOMComponent.Type::Item.AsInteger());
                     end;
                 until C5InvenBom.Next() = 0;
         end;
@@ -97,7 +111,7 @@ codeunit 1867 "C5 Item Migrator"
         // reference to another item
         // to make sure the alt item exists
         if (C5InvenTable.AltItemNumber <> '') and not ItemDataMigrationFacade.DoesItemExist(C5InvenTable.AltItemNumber) then
-            Error(StrSubstNo(ReferencedItemDoesNotExistErr, C5InvenTable.ItemNumber, C5InvenTable.AltItemNumber));
+            Error(ReferencedItemDoesNotExistErr, C5InvenTable.ItemNumber, C5InvenTable.AltItemNumber);
 
         ItemDataMigrationFacade.SetAlternativeItemNo(C5InvenTable.AltItemNumber);
 
@@ -107,8 +121,15 @@ codeunit 1867 "C5 Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemTrackingCode', '', true, true)]
     procedure OnMigrateItemTrackingCode(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateItemTrackingCode(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItemTrackingCode(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
     begin
@@ -122,8 +143,15 @@ codeunit 1867 "C5 Item Migrator"
         end;
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemUnitOfMeasure', '', true, true)]
     procedure OnMigrateItemUnitOfMeasure(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateItemUnitOfMeasure(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItemUnitOfMeasure(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
     begin
@@ -139,8 +167,15 @@ codeunit 1867 "C5 Item Migrator"
         Sender.ModifyItem(false);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemDiscountGroup', '', true, true)]
     procedure OnMigrateItemDiscountGroup(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateItemDiscountGroup(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItemDiscountGroup(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
     begin
@@ -156,8 +191,15 @@ codeunit 1867 "C5 Item Migrator"
         end;
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemSalesLineDiscount', '', true, true)]
     procedure OnMigrateItemSalesLineDiscount(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateItemSalesLineDiscount(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItemSalesLineDiscount(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
     begin
@@ -167,8 +209,15 @@ codeunit 1867 "C5 Item Migrator"
         ImportItemInventoryCustomerDiscountsFromStaging(C5InvenTable);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPrice', '', true, true)]
     procedure OnMigrateItemPrices(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateItemPrices(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItemPrices(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
     begin
@@ -178,9 +227,15 @@ codeunit 1867 "C5 Item Migrator"
         ImportItemPricesFromStaging(C5InvenTable);
     end;
 
-
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemTariffNo', '', true, true)]
     procedure OnMigrateItemTariffNo(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateItemTariffNo(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItemTariffNo(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
     begin
@@ -195,9 +250,15 @@ codeunit 1867 "C5 Item Migrator"
         end;
     end;
 
-
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemDimensions', '', true, true)]
     procedure OnMigrateItemDimensions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateItemDimensions(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItemDimensions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5InvenTable: Record "C5 InvenTable";
         C5HelperFunctions: Codeunit "C5 Helper Functions";
@@ -226,8 +287,15 @@ codeunit 1867 "C5 Item Migrator"
                 C5HelperFunctions.GetDimensionValueName(Database::"C5 Purpose", C5InvenTable.Purpose));
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
     procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    begin
+        MigrateItemPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5InvenTable: Record "C5 InvenTable";
         C5InvenItemGroup: Record "C5 InvenItemGroup";
@@ -273,8 +341,15 @@ codeunit 1867 "C5 Item Migrator"
         exit(FakeProductPostingGroupPrefixLbl + Group);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
     procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    begin
+        MigrateInventoryTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5InvenTable: Record "C5 InvenTable";
         C5InvenTrans: Record "C5 InvenTrans";
@@ -284,6 +359,7 @@ codeunit 1867 "C5 Item Migrator"
         C5HelperFunctions: Codeunit "C5 Helper Functions";
         SerialNumber: Code[20];
         LotNumber: Code[20];
+        DescriptionTxt: Label '%1 %2', locked = true;
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -327,7 +403,7 @@ codeunit 1867 "C5 Item Migrator"
 
                 Sender.CreateItemJournalLine(GetHardCodedBatchName(),
                     CopyStr(Format(C5InvenTrans.Voucher), 1, 20),
-                    CopyStr(StrSubstNo('%1 %2', C5InvenTrans.InvoiceNumber, C5InvenTrans.Txt), 1, 50),
+                    CopyStr(StrSubstNo(DescriptionTxt, C5InvenTrans.InvoiceNumber, C5InvenTrans.Txt), 1, 50),
                     C5InvenTrans.Date_,
                     C5InvenTrans.Qty - C5InvenTrans.SettledQty,
                     C5InvenTrans.CostAmount - C5InvenTrans.SettledAmount,

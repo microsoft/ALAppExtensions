@@ -12,19 +12,7 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
     end;
 
     trigger OnUpgradePerCompany();
-    var
-        MSYodleeBankSessionRecordRef: RecordRef;
-        AppInfo: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        IF AppInfo.DataVersion().Major() = 1 THEN BEGIN
-            NAVAPP.RESTOREARCHIVEDATA(DATABASE::"MS - Yodlee Bank Service Setup");
-            NAVAPP.RESTOREARCHIVEDATA(DATABASE::"MS - Yodlee Bank Acc. Link");
-            IF NAVAPP.GETARCHIVERECORDREF(DATABASE::"MS - Yodlee Bank Session", MSYodleeBankSessionRecordRef) THEN
-                NAVAPP.RESTOREARCHIVEDATA(DATABASE::"MS - Yodlee Bank Session")
-            ELSE
-                NAVAPP.LOADPACKAGEDATA(DATABASE::"MS - Yodlee Bank Session");
-        END;
         CleanupYodleeBankAccountLink();
         UpdateDataExchangeDefinition();
         UpdateYodleeBankSession();
@@ -97,7 +85,7 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
 
     local procedure UpgradeSecretsToIsolatedStorage()
     var
-        YodleeServiceSetup: Record "MS - Yodlee Bank Service Setup";
+        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISUpgradeTag(), '') then
@@ -106,10 +94,10 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         if UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISUpgradeTag()) then
             exit;
 
-        if YodleeServiceSetup.Get() then begin
-            MoveSPSecretToIsolatedStorage(YodleeServiceSetup."Consumer Password");
-            MoveSPSecretToIsolatedStorage(YodleeServiceSetup."Cobrand Name");
-            MoveSPSecretToIsolatedStorage(YodleeServiceSetup."Cobrand Password");
+        if MSYodleeBankServiceSetup.Get() then begin
+            MoveSPSecretToIsolatedStorage(MSYodleeBankServiceSetup."Consumer Password");
+            MoveSPSecretToIsolatedStorage(MSYodleeBankServiceSetup."Cobrand Name");
+            MoveSPSecretToIsolatedStorage(MSYodleeBankServiceSetup."Cobrand Password");
             MoveENKVSecretToIsolatedStorage('YODLEE_SERVICEURL');
             MoveENKVSecretToIsolatedStorage('YODLEE_FASTLINKURL');
             MoveENKVSecretToIsolatedStorage('YODLEE_USERNAME');
@@ -121,7 +109,7 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
 
     local procedure VerifySecretsUpgradeToIsolatedStorage()
     var
-        YodleeServiceSetup: Record "MS - Yodlee Bank Service Setup";
+        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISValidationTag(), '') then
@@ -130,10 +118,10 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         if UpgradeTag.HasUpgradeTag(GetYodleeSecretsToISValidationTag()) then
             exit;
 
-        if YodleeServiceSetup.Get() then begin
-            VerifySPSecret(YodleeServiceSetup."Consumer Password");
-            VerifySPSecret(YodleeServiceSetup."Cobrand Name");
-            VerifySPSecret(YodleeServiceSetup."Cobrand Password");
+        if MSYodleeBankServiceSetup.Get() then begin
+            VerifySPSecret(MSYodleeBankServiceSetup."Consumer Password");
+            VerifySPSecret(MSYodleeBankServiceSetup."Cobrand Name");
+            VerifySPSecret(MSYodleeBankServiceSetup."Cobrand Password");
             VerifyENKSecret('YODLEE_SERVICEURL');
             VerifyENKSecret('YODLEE_FASTLINKURL');
             VerifyENKSecret('YODLEE_USERNAME');

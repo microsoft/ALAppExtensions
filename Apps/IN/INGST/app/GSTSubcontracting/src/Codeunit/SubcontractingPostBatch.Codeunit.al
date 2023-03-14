@@ -134,7 +134,7 @@ codeunit 18467 "Subcontracting Post Batch"
         ItemJnlLine."Item Category Code" := Item."Item Category Code";
         ItemJnlLine."Inventory Posting Group" := Item."Inventory Posting Group";
         ItemJnlLine."Gen. Prod. Posting Group" := SubOrderCompList."Gen. Prod. Posting Group";
-        ItemJnlLine."Dimension Set ID" := SubOrderCompList."Dimension Set ID";
+        SubcontractingPost.GetDimensionsFromPurchaseLine(ItemJnlLine, SubOrderCompList);
 
         if Item."Item Tracking Code" <> '' then begin
             Inbound := false;
@@ -212,15 +212,15 @@ codeunit 18467 "Subcontracting Post Batch"
             repeat
                 PurchHeader.SetRange("Document Type", PurchLine."Document Type");
                 PurchHeader.SetRange("No.", PurchLine."Document No.");
-                PurchHeader.FindFirst();
-                PurchHeader."Vendor Shipment No." := MultiSubOrderDet."Vendor Shipment No.";
-                PurchHeader.Receive := true;
-                PurchHeader.Invoice := false;
-                PurchHeader.SubConPostLine := PurchLine."Line No.";
-                PurchPost.Run(PurchHeader);
-                PurchHeader.SubConPostLine := 0;
-                PurchHeader.Modify();
-
+                PurchHeader.SetRange("Subcon. Multiple Receipt", false);
+                if PurchHeader.FindFirst() then begin
+                    PurchHeader."Vendor Shipment No." := MultiSubOrderDet."Vendor Shipment No.";
+                    PurchHeader.Receive := true;
+                    PurchHeader.Invoice := false;
+                    PurchHeader.SubConPostLine := PurchLine."Line No.";
+                    PurchPost.Run(PurchHeader);
+                    PurchHeader.Modify();
+                end;
                 PurchLineToUpdate.Get(PurchLine."Document Type", PurchLine."Document No.", PurchLine."Line No.");
                 PurchLineToUpdate."Applies-to ID (Receipt)" := '';
                 PurchLineToUpdate.Modify();
@@ -256,6 +256,11 @@ codeunit 18467 "Subcontracting Post Batch"
         else
             NextlineNo := 10000;
         repeat
+            // Update missing dimension set id from purchase line
+            if (PurchLine."Dimension Set ID" <> 0) and (SubOrderComponentList."Dimension Set ID" = 0) then begin
+                SubOrderComponentList.Validate("Dimension Set ID", PurchLine."Dimension Set ID");
+                SubOrderComponentList.Modify(true);
+            end;
             DeliveryChallanLine.Reset();
             DeliveryChallanLine.SetRange("Delivery Challan No.", DeliveryChallanHeader."No.");
 
@@ -467,7 +472,7 @@ codeunit 18467 "Subcontracting Post Batch"
                     ItemJnlLine."Gen. Prod. Posting Group" := CompItem."Gen. Prod. Posting Group";
                     ItemJnlLine."Item Category Code" := CompItem."Item Category Code";
                     ItemJnlLine."Inventory Posting Group" := CompItem."Inventory Posting Group";
-                    ItemJnlLine."Dimension Set ID" := SubOrderComponentList."Dimension Set ID";
+                    SubcontractingPost.GetDimensionsFromPurchaseLine(ItemJnlLine, SubOrderComponentList);
 
                     ItemJnlPostLine.RunWithCheck(ItemJnlLine);
                 end;

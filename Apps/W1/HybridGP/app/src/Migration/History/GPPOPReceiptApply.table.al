@@ -1,6 +1,6 @@
 table 4060 "GPPOPReceiptApply"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields
@@ -266,6 +266,9 @@ table 4060 "GPPOPReceiptApply"
         key(PK; POPRCTNM, RCPTLNNM, PONUMBER, POLNENUM)
         {
             Clustered = false;
+        }
+        key(Key2; POPRCTNM, RCPTLNNM)
+        {
         }
     }
 

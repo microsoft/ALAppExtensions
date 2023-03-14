@@ -262,14 +262,14 @@ page 30010 "APIV2 - Vendors"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
-                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(3);
+                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(Vendor);
                 }
                 part(defaultDimensions; "APIV2 - Default Dimensions")
                 {
                     Caption = 'Default Dimensions';
                     EntityName = 'defaultDimension';
                     EntitySetName = 'defaultDimensions';
-                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(3);
+                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(Vendor);
                 }
                 part(agedAccountsPayable; "APIV2 - Aged AP")
                 {
@@ -284,7 +284,7 @@ page 30010 "APIV2 - Vendors"
                     Caption = 'Contacts Information';
                     EntityName = 'contactInformation';
                     EntitySetName = 'contactsInformation';
-                    SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(2);
+                    SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(Vendor);
                 }
             }
         }
@@ -302,7 +302,7 @@ page 30010 "APIV2 - Vendors"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         Vendor: Record Vendor;
-        RecRef: RecordRef;
+        VendorRecordRef: RecordRef;
     begin
         Vendor.SetRange("No.", "No.");
         if not Vendor.IsEmpty() then
@@ -310,9 +310,9 @@ page 30010 "APIV2 - Vendors"
 
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        VendorRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(VendorRecordRef, TempFieldSet, CurrentDateTime());
+        VendorRecordRef.SetTable(Rec);
 
         Modify(true);
         SetCalculatedFields();

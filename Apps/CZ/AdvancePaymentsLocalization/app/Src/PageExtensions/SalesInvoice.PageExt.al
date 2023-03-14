@@ -2,22 +2,26 @@ pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
 {
     layout
     {
-        modify("Prepayment %")
-        {
-            Visible = not AdvancePaymentsEnabledCZZ;
-        }
 #if not CLEAN19
 #pragma warning disable AL0432
         modify("Prepayment Type")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
+#if not CLEAN20
+#pragma warning disable AL0432
+        modify("Prepayment %")
+        {
+            Visible = false;
+        }
         modify("Compress Prepayment")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
+#pragma warning restore AL0432
+#endif
         addlast(factboxes)
         {
             part("Sales Adv. Usage FactBox CZZ"; "Sales Adv. Usage FactBox CZZ")
@@ -25,7 +29,6 @@ pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
                 ApplicationArea = Basic, Suite;
                 Provider = SalesLines;
                 SubPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Line No." = field("Line No.");
-                Visible = AdvancePaymentsEnabledCZZ;
             }
         }
     }
@@ -35,35 +38,35 @@ pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
 #pragma warning disable AL0432
         modify(Prepayment)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Assignment Ad&vance Letters")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Assigned Adv. Letters - detail")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify(Action1220032)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Create Ad&vance Letter")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Link Advance Letter")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Cancel All Adv. Payment Relations")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Adjust VAT by Adv. Payment Deduction")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -81,7 +84,6 @@ pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
                     ToolTip = 'The function allows to link advance letters.';
                     Image = LinkWithExisting;
                     Ellipsis = true;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -100,7 +102,6 @@ pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Shows summarized VAT Entries, include advance VAT Entries, based on posting preview.';
                 Image = VATEntries;
-                Visible = AdvancePaymentsEnabledCZZ;
 
                 trigger OnAction()
                 var
@@ -113,13 +114,4 @@ pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

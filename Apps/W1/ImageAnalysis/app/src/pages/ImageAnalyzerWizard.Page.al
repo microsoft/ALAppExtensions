@@ -143,6 +143,8 @@ page 2029 "Image Analyzer Wizard"
                         MultiLine = true;
                         Editable = true;
                         Caption = 'I understand and accept these terms';
+                        ToolTip = 'Specifies if the feature is enabled.';
+
                         trigger OnValidate()
                         begin
                             ShowSecondStep();
@@ -214,6 +216,7 @@ page 2029 "Image Analyzer Wizard"
                             ShowCaption = true;
                             Editable = true;
                             Caption = 'Analyze current picture';
+                            ToolTip = 'Start analysis of the current picture.';
                         }
                     }
                 }
@@ -301,8 +304,6 @@ page 2029 "Image Analyzer Wizard"
         [InDataSet]
         FinalStepVisible: Boolean;
         [InDataSet]
-        FinishActionEnabled: Boolean;
-        [InDataSet]
         BackActionEnabled: Boolean;
         [InDataSet]
         NextActionEnabled: Boolean;
@@ -361,23 +362,26 @@ page 2029 "Image Analyzer Wizard"
         ItemAttrPopManagement: Codeunit "Image Analyzer Ext. Mgt.";
     begin
         ItemAttrPopManagement.HandleSetupAndEnable();
-        CurrPage.Close();
 
-        if not AnalyzePictureOnFinishSwitch then
+        if not AnalyzePictureOnFinishSwitch then begin
+            CurrPage.Close();
             exit;
+        end;
 
         if IsSetItemToFill then
-            ItemAttrPopulate.OnAfterImportPictureAnalyzePicture(ItemToFill);
+            if ItemAttrPopulate.AnalyzePicture(ItemToFill) then
+                CurrPage.Close();
 
         if IsSetContactToFill then
-            ContactPictureAnalyze.OnAfterImportPictureAnalyzePicture(ContactToFill);
+            if ContactPictureAnalyze.AnalyzePicture(ContactToFill) then
+                CurrPage.Close();
+
     end;
 
     local procedure ShowStartStep()
     begin
         FirstStepVisible := true;
         SecondStepVisible := false;
-        FinishActionEnabled := false;
         BackActionEnabled := false;
     end;
 
@@ -385,7 +389,6 @@ page 2029 "Image Analyzer Wizard"
     begin
         FirstStepVisible := false;
         SecondStepVisible := true;
-        FinishActionEnabled := false;
         BackActionEnabled := true;
         NextActionEnabled := IsFeatureEnabled;
     end;
@@ -399,7 +402,6 @@ page 2029 "Image Analyzer Wizard"
 
     local procedure ResetControls()
     begin
-        FinishActionEnabled := true;
         BackActionEnabled := true;
         NextActionEnabled := true;
 

@@ -40,9 +40,9 @@ page 7568 Geolocation
         LocationProvider: DotNet LocationProvider;
         LocationAvailable: Boolean;
 
-    internal procedure SetGeolocationImpl(GeolocImpl: Codeunit "Geolocation Impl.")
+    internal procedure SetGeolocationImpl(NewGeolocationImpl: Codeunit "Geolocation Impl.")
     begin
-        GeolocationImpl := GeolocImpl;
+        GeolocationImpl := NewGeolocationImpl;
     end;
 
     /// <summary>
@@ -54,9 +54,9 @@ page 7568 Geolocation
         GeolocationImpl.LocationInteractionOnOpenPage(LocationProvider, LocationAvailable);
     end;
 
-    trigger LocationProvider::LocationChanged(Location: DotNet Location)
+    trigger LocationProvider::LocationChanged(NewLocation: DotNet Location)
     begin
-        GeolocationImpl.LocationInteractionOnLocationAvailable(Location);
+        GeolocationImpl.LocationInteractionOnLocationAvailable(NewLocation);
         CurrPage.Close();
     end;
 }

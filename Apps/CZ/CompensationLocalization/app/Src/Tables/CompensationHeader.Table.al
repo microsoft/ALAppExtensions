@@ -71,6 +71,7 @@ table 31272 "Compensation Header CZC"
                               Customer."Post Code",
                               Customer."Country/Region Code",
                               Customer.County);
+                            "Language Code" := Customer."Language Code";
                         end;
                     "Company Type"::Vendor:
                         begin
@@ -86,6 +87,7 @@ table 31272 "Compensation Header CZC"
                               Vendor."Post Code",
                               Vendor."Country/Region Code",
                               Vendor.County);
+                            "Language Code" := Vendor."Language Code";
                         end;
                     "Company Type"::Contact:
                         begin
@@ -101,6 +103,7 @@ table 31272 "Compensation Header CZC"
                               Contact."Post Code",
                               Contact."Country/Region Code",
                               Contact.County);
+                            "Language Code" := Contact."Language Code";
                         end;
                 end;
             end;
@@ -225,6 +228,12 @@ table 31272 "Compensation Header CZC"
         {
             Caption = 'No. Series';
             TableRelation = "No. Series";
+            DataClassification = CustomerContent;
+        }
+        field(85; "Language Code"; Code[10])
+        {
+            Caption = 'Language Code';
+            TableRelation = Language;
             DataClassification = CustomerContent;
         }
         field(90; "Balance (LCY)"; Decimal)

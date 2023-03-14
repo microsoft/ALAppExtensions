@@ -5,7 +5,6 @@
 
 permissionset 1994 "Guided Experience - Objects"
 {
-    Access = Internal;
     Assignable = false;
 
     IncludedPermissionSets = "Confirm Management - Objects",
@@ -32,20 +31,24 @@ permissionset 1994 "Guided Experience - Objects"
                   Page "Guided Experience Item List" = X,
                   Page "Manual Setup" = X,
                   Page Checklist = X,
+                  Page "App Setup List" = X,
                   Table "Checklist Item Buffer" = X,
                   Table "Checklist Item Role" = X,
                   Table "Checklist Item User" = X,
                   Table "Checklist Item" = X,
                   Table "Checklist Setup" = X,
                   Table "Guided Experience Item" = X,
+                  Table "Primary Guided Experience Item" = X,
                   Table "Spotlight Tour Text" = X,
 #if not CLEAN18
+#pragma warning disable AL0432
                   Codeunit "Assisted Setup" = X,
                   Codeunit "Manual Setup" = X,
                   Table "Assisted Setup Log" = X,
                   Table "Assisted Setup" = X,
                   Table "Business Setup Icon" = X,
                   Table "Manual Setup" = X,
+#pragma warning restore
 #endif
                   Table "User Checklist Status" = X;
 }

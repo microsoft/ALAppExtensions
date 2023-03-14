@@ -39,7 +39,7 @@ pageextension 2027 "Contact Pic Analyzer Ext" extends "Contact Card"
                     if Type <> Type::Person then
                         Message(ImageAnalysisForPersonsOnlyMsg);
 
-                    ContactPictureAnalyze.OnAfterImportPictureAnalyzePicture(rec);
+                    ContactPictureAnalyze.AnalyzePicture(rec);
                 end;
             }
         }

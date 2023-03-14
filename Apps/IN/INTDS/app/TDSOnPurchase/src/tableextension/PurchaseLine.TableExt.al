@@ -15,7 +15,9 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
                     if not TDSSection.Get("TDS Section Code") then
                         Error(SectionErr, TDSSection, TDSSection.TableCaption());
 
-                if ("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = '')) then
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("TDS Section Code")))
+                then
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
@@ -36,7 +38,9 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
             trigger OnAfterValidate()
             var
             begin
-                if ("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = '')) then
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("Direct Unit Cost")))
+                then
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
@@ -45,7 +49,9 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
             trigger OnAfterValidate()
             var
             begin
-                if ("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = '')) then
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("Line Discount %")))
+                then
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
@@ -54,11 +60,36 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
             trigger OnAfterValidate()
             var
             begin
-                if ("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = '')) then
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("Inv. Discount Amount")))
+                then
+                    UpdateTaxAmountOnCurrentDocument();
+            end;
+        }
+        modify(Quantity)
+        {
+            trigger OnAfterValidate()
+            var
+            begin
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("Quantity")))
+                then
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
     }
+
+    trigger OnAfterDelete()
+    begin
+        if Rec.IsTemporary then
+            exit;
+
+        if Rec."TDS Section Code" = '' then
+            exit;
+
+        UpdateTaxAmountOnCurrentDocument();
+    end;
+
     procedure OnAfterTDSSectionCodeLookupPurchLine(var PurchLine: Record "Purchase Line"; VendorNo: Code[20]; SetTDSSection: boolean)
     var
         Section: Record "TDS Section";
@@ -85,7 +116,7 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
         AllowedSections: Record "Allowed Sections";
     begin
         AllowedSections.Reset();
-        AllowedSections.SetRange("Vendor No", PurchLine."Pay-to Vendor No.");
+        AllowedSections.SetRange("Vendor No", PurchLine."Buy-from Vendor No.");
         AllowedSections.SetRange("TDS Section", TDSSection);
         if AllowedSections.findfirst() then
             if SetTDSSection then
@@ -101,10 +132,10 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
         AllowedSections: Record "Allowed Sections";
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-        if ConfirmManagement.GetResponseOrDefault(strSubstNo(ConfirmMessageMsg, TDSSection, PurchLine."Pay-to Vendor No."), true) then begin
+        if ConfirmManagement.GetResponseOrDefault(strSubstNo(ConfirmMessageMsg, TDSSection, PurchLine."Buy-from Vendor No."), true) then begin
             AllowedSections.init();
             AllowedSections."TDS Section" := TDSSection;
-            AllowedSections."Vendor No" := PurchLine."Pay-to Vendor No.";
+            AllowedSections."Vendor No" := PurchLine."Buy-from Vendor No.";
             AllowedSections.insert();
             if SetTDSSection then
                 PurchLine."TDS Section Code" := TDSSection
@@ -118,16 +149,19 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
         AllowedSections: Record "Allowed Sections";
     begin
         AllowedSections.Reset();
-        AllowedSections.SetRange("Vendor No", "Pay-to Vendor No.");
+        AllowedSections.SetRange("Vendor No", "Buy-from Vendor No.");
         AllowedSections.SetRange("TDS Section", "TDS Section Code");
         AllowedSections.SetRange("Non Resident Payments", true);
         if AllowedSections.IsEmpty then
-            Error(NonResidentPaymentsSelectionErr, Rec."Pay-to Vendor No.");
+            Error(NonResidentPaymentsSelectionErr, Rec."Buy-from Vendor No.");
     end;
 
     local procedure UpdateTaxAmountOnCurrentDocument()
     var
         PurchaseLine: Record "Purchase Line";
+        PrevPurchaseLine: Record "Purchase Line";
+        PreviousTransactionValue: Record "Tax Transaction Value";
+        CurrentTransactionValue: Record "Tax Transaction Value";
         CalculateTax: Codeunit "Calculate Tax";
     begin
         PurchaseLine.SetRange("Document Type", "Document Type");
@@ -136,13 +170,44 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
         if not PurchaseLine.IsEmpty() then
             Modify();
 
+        PrevPurchaseLine := Rec;
+        PreviousTransactionValue := GetComponentValue(PrevPurchaseLine);
+
+        PurchaseLine.LoadFields("Document Type", "Document No.", "Line No.");
         PurchaseLine.SetRange("Document Type", "Document Type");
         PurchaseLine.SetRange("Document No.", "Document No.");
         PurchaseLine.SetFilter("Line No.", '<>%1', "Line No.");
         if PurchaseLine.FindSet() then
             repeat
-                CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
+                CurrentTransactionValue := GetComponentValue(PurchaseLine);
+                if not ((((PreviousTransactionValue.Amount <> 0) and (CurrentTransactionValue.Amount <> 0))
+                and (PreviousTransactionValue.Percent = CurrentTransactionValue.Percent))) or
+                ((PreviousTransactionValue.Amount = 0) and (CurrentTransactionValue.Amount = 0))
+               then begin
+                    CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
+                    if PreviousTransactionValue.Amount = 0 then
+                        PreviousTransactionValue := GetComponentValue(PurchaseLine);
+                end;
             until PurchaseLine.Next() = 0;
+    end;
+
+    local procedure GetComponentValue(PurchaseLine: Record "Purchase Line"): Record "Tax Transaction Value"
+    var
+        TaxTransactionValue: Record "Tax Transaction Value";
+    begin
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
+        TaxTransactionValue.SetFilter("Tax Type", '%1', 'TDS');
+        TaxTransactionValue.SetRange("Tax Record ID", PurchaseLine.RecordId);
+        TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
+        TaxTransactionValue.SetRange("Value ID", 1);
+        if TaxTransactionValue.FindFirst() then;
+
+        exit(TaxTransactionValue);
+    end;
+
+    local procedure IsFieldValueModified(FieldNo: Integer): Boolean
+    begin
+        exit(CurrFieldNo = fieldNo);
     end;
 
     var

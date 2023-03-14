@@ -60,10 +60,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
                 SetBillToCustomerAddressFieldsFromCustomer(Customer);
 
-                CreateDim(
-                  Database::Customer, "Bill-to Customer No.",
-                  Database::"Salesperson/Purchaser", "Salesperson Code",
-                  Database::"Responsibility Center", "Responsibility Center");
+                CreateDimFromDefaultDim(Rec.FieldNo("Bill-to Customer No."));
 
                 Validate("Payment Terms Code");
                 Validate("Payment Method Code");
@@ -287,10 +284,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
             trigger OnValidate()
             begin
-                CreateDim(
-                  Database::"Salesperson/Purchaser", "Salesperson Code",
-                  Database::Customer, "Bill-to Customer No.",
-                  Database::"Responsibility Center", "Responsibility Center");
+                CreateDimFromDefaultDim(Rec.FieldNo("Salesperson Code"));
             end;
         }
         field(25; "Shortcut Dimension 1 Code"; Code[20])
@@ -605,10 +599,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
                       IdentSetUpErr,
                       ResponsibilityCenter.TableCaption, UserSetupManagement.GetSalesFilter());
 
-                CreateDim(
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::Customer, "Bill-to Customer No.",
-                  Database::"Salesperson/Purchaser", "Salesperson Code");
+                CreateDimFromDefaultDim(Rec.FieldNo("Responsibility Center"));
 
                 if xRec."Responsibility Center" <> "Responsibility Center" then
                     RecreateLines(FieldCaption("Responsibility Center"));
@@ -635,6 +626,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
                             if "Currency Factor" <> xRec."Currency Factor" then
                                 ConfirmCurrencyFactorUpdate();
                         end;
+                SetCompanyBankAccount();
             end;
         }
         field(71; "Currency Factor"; Decimal)
@@ -644,6 +636,12 @@ table 31004 "Sales Adv. Letter Header CZZ"
             DecimalPlaces = 0 : 15;
             Editable = false;
             MinValue = 0;
+
+            trigger OnValidate()
+            begin
+                if "Currency Factor" <> xRec."Currency Factor" then
+                    UpdateLinesByFieldNo(FieldNo("Currency Factor"));
+            end;
         }
         field(75; "VAT Country/Region Code"; Code[10])
         {
@@ -724,6 +722,24 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
+        field(500; "Incoming Document Entry No."; Integer)
+        {
+            Caption = 'Incoming Document Entry No.';
+            TableRelation = "Incoming Document";
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                IncomingDocument: Record "Incoming Document";
+            begin
+                if "Incoming Document Entry No." = xRec."Incoming Document Entry No." then
+                    exit;
+                if "Incoming Document Entry No." = 0 then
+                    IncomingDocument.RemoveReferenceToWorkingDocument(xRec."Incoming Document Entry No.")
+                else
+                    IncomingDocument.SetSalesAdvanceCZZ(Rec);
+            end;
+        }
     }
     keys
     {
@@ -772,6 +788,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         if not DocumentAttachment.IsEmpty() then
             DocumentAttachment.DeleteAll();
 
+        Validate("Incoming Document Entry No.", 0);
         DeleteRecordInApprovalRequest();
     end;
 
@@ -784,6 +801,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         DimensionManagement: Codeunit DimensionManagement;
+        UserSetupManagement: Codeunit "User Setup Management";
         HideValidationDialog: Boolean;
         SkipBillToContact: Boolean;
         HasSalesSetup: Boolean;
@@ -819,9 +837,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     local procedure InitRecord()
     var
-        ResponsibilityCenter: Record "Responsibility Center";
-        CompanyInformation: Record "Company Information";
-        UserSetupManagement: Codeunit "User Setup Management";
         AdvanceLbl: Label 'Advance Letter';
     begin
         GetSetup();
@@ -846,14 +861,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";
         "Responsibility Center" := UserSetupManagement.GetRespCenter(0, "Responsibility Center");
-
-        if "Responsibility Center" = '' then begin
-            CompanyInformation.Get();
-            Validate("Bank Account Code", CompanyInformation."Default Bank Account Code CZL");
-        end else begin
-            ResponsibilityCenter.Get("Responsibility Center");
-            Validate("Bank Account Code", ResponsibilityCenter."Default Bank Account Code CZL");
-        end;
 
         OnAfterInitRecord(Rec);
     end;
@@ -1035,6 +1042,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         SetSalespersonCode(BillToCustomer."Salesperson Code", "Salesperson Code");
         "Registration No." := BillToCustomer."Registration No. CZL";
         "Tax Registration No." := BillToCustomer."Tax Registration No. CZL";
+        "Responsibility Center" := UserSetupManagement.GetRespCenter(0, BillToCustomer."Responsibility Center");
 
         OnAfterSetFieldsBilltoCustomer(Rec, BillToCustomer);
     end;
@@ -1316,7 +1324,57 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Error(RecreateSalesLinesCancelErr, ChangedFieldName);
     end;
 
-    local procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
+    procedure UpdateLinesByFieldNo(ChangedFieldNo: Integer)
+    var
+        SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
+        "Field": Record "Field";
+        IsHandled: Boolean;
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        if IsNullGuid(Rec.SystemId) then
+            exit;
+
+        IsHandled := false;
+        OnBeforeUpdateLinesByFieldNo(Rec, ChangedFieldNo, xRec, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not LinesExist() then
+            exit;
+
+        if not Field.Get(Database::"Sales Adv. Letter Header CZZ", ChangedFieldNo) then
+            Field.Get(Database::"Sales Adv. Letter Line CZZ", ChangedFieldNo);
+
+        SalesAdvLetterLineCZZ.LockTable();
+        if not Rec.Modify() then
+            exit;
+
+        SalesAdvLetterLineCZZ.Reset();
+        SalesAdvLetterLineCZZ.SetRange("Document No.", "No.");
+        if SalesAdvLetterLineCZZ.FindSet() then
+            repeat
+                IsHandled := false;
+                OnBeforeLineByChangedFieldNo(Rec, SalesAdvLetterLineCZZ, ChangedFieldNo, xRec, IsHandled);
+                if not IsHandled then
+                    case ChangedFieldNo of
+                        FieldNo("Currency Factor"):
+                            SalesAdvLetterLineCZZ.Validate("Amount Including VAT");
+                        else
+                            OnUpdateLineByChangedFieldName(Rec, SalesAdvLetterLineCZZ, Field.FieldName, ChangedFieldNo);
+                    end;
+                OnUpdateLinesByFieldNoOnBeforeLineModify(SalesAdvLetterLineCZZ, ChangedFieldNo, CurrFieldNo);
+                SalesAdvLetterLineCZZ.Modify(true);
+            until SalesAdvLetterLineCZZ.Next() = 0;
+
+        OnAfterUpdateLinesByFieldNo(Rec, xRec, ChangedFieldNo);
+    end;
+
+#if not CLEAN21
+#pragma warning disable AL0432
+    [Obsolete('Replaced by CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])', '21.0')]
+    procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
         TableID: array[10] of Integer;
@@ -1349,6 +1407,47 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Modify();
     end;
 
+#pragma warning restore AL0432
+#endif
+    procedure CreateDimFromDefaultDim(FieldNo: Integer)
+    var
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
+    begin
+        InitDefaultDimensionSources(DefaultDimSource, FieldNo);
+        CreateDim(DefaultDimSource);
+    end;
+
+    local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
+    begin
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Customer, Rec."Bill-to Customer No.", FieldNo = Rec.FieldNo("Bill-to Customer No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Salesperson Code", FieldNo = Rec.FieldNo("Salesperson Code"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
+
+        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
+    end;
+
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        OldDimSetID: Integer;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCreateDim(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        SourceCodeSetup.Get();
+        OldDimSetID := "Dimension Set ID";
+        "Dimension Set ID" := DimensionManagement.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup.Purchases,
+                                "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        OnAfterCreateDim(Rec, xRec, CurrFieldNo, OldDimSetID);
+
+        if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
+            Modify();
+    end;
+
     procedure TestStatusOpen()
     begin
         OnBeforeTestStatusOpen(Rec);
@@ -1372,64 +1471,61 @@ table 31004 "Sales Adv. Letter Header CZZ"
         VATAmountLCY := SalesAdvLetterEntryCZZ."VAT Amount (LCY)";
     end;
 
-    procedure PrintRecord(ShowDialog: Boolean)
+    procedure PrintRecords(ShowRequestPage: Boolean)
     var
-        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        PrintReportID: Integer;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
-        SalesAdvLetterHeaderCZZ.Copy(Rec);
-        if not SalesAdvLetterHeaderCZZ.FindSet() then
-            exit;
-
-        AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Document Report ID");
-        if SalesAdvLetterHeaderCZZ.Count() > 1 then begin
-            PrintReportID := AdvanceLetterTemplateCZZ."Document Report ID";
-            SalesAdvLetterHeaderCZZ.Next();
-            repeat
-                AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-                AdvanceLetterTemplateCZZ.TestField("Document Report ID", PrintReportID);
-            until SalesAdvLetterHeaderCZZ.Next() = 0;
-        end;
-        Report.Run(AdvanceLetterTemplateCZZ."Document Report ID", ShowDialog, false, SalesAdvLetterHeaderCZZ);
+        IsHandled := false;
+        OnBeforePrintRecords(DummyReportSelections, Rec, ShowRequestPage, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToPrinter(
+              DummyReportSelections.Usage::"Sales Advance Letter CZZ".AsInteger(), Rec, FieldNo("Bill-to Customer No."), ShowRequestPage);
     end;
 
     procedure PrintToDocumentAttachment()
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        DocumentAttachment: Record "Document Attachment";
-        DocumentAttachmentMgmt: Codeunit "Document Attachment Mgmt";
-        TempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
-        DummyInStream: InStream;
-        ReportOutStream: OutStream;
-        DocumentInStream: InStream;
-        FileName: Text[250];
-        DocumentAttachmentFileNameTok: Label '%1', Comment = '%1 = Advance Letter No.', Locked = true;
     begin
-        SalesAdvLetterHeaderCZZ := Rec;
+        SalesAdvLetterHeaderCZZ.Copy(Rec);
+        if SalesAdvLetterHeaderCZZ.FindSet() then
+            repeat
+                DoPrintToDocumentAttachment(SalesAdvLetterHeaderCZZ);
+            until SalesAdvLetterHeaderCZZ.Next() = 0;
+    end;
+
+    local procedure DoPrintToDocumentAttachment(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    var
+        ReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeDoPrintToDocumentAttachment(SalesAdvLetterHeaderCZZ, IsHandled);
+        if IsHandled then
+            exit;
+
         SalesAdvLetterHeaderCZZ.SetRecFilter();
-        RecordRef.GetTable(SalesAdvLetterHeaderCZZ);
-        if not RecordRef.FindFirst() then
-            exit;
+        ReportSelections.SaveAsDocumentAttachment(
+            ReportSelections.Usage::"Sales Advance Letter CZZ".AsInteger(), SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ."No.", SalesAdvLetterHeaderCZZ."Bill-to Customer No.", true);
+    end;
 
-        AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Document Report ID");
-        if not Report.RdlcLayout(AdvanceLetterTemplateCZZ."Document Report ID", DummyInStream) then
-            exit;
+    procedure EmailRecords(ShowDialog: Boolean)
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        ReportDistributionManagement: Codeunit "Report Distribution Management";
+        DocumentTypeTxt: Text[50];
+        IsHandled: Boolean;
+    begin
+        DocumentTypeTxt := ReportDistributionManagement.GetFullDocumentTypeText(Rec);
 
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(ReportOutStream);
-        Report.SaveAs(AdvanceLetterTemplateCZZ."Document Report ID", '',
-                    ReportFormat::Pdf, ReportOutStream, RecordRef);
-
-        Clear(DocumentAttachment);
-        DocumentAttachment.InitFieldsFromRecRef(RecordRef);
-        FileName := DocumentAttachment.FindUniqueFileName(
-                    StrSubstNo(DocumentAttachmentFileNameTok, SalesAdvLetterHeaderCZZ."No."), 'pdf');
-        TempBlob.CreateInStream(DocumentInStream);
-        DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
-        DocumentAttachmentMgmt.ShowNotification(RecordRef, 1, true);
+        IsHandled := false;
+        OnBeforeEmailRecords(DummyReportSelections, Rec, DocumentTypeTxt, ShowDialog, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToEMail(
+              DummyReportSelections.Usage::"Sales Advance Letter CZZ".AsInteger(), Rec, FieldNo("No."), DocumentTypeTxt,
+              FieldNo("Bill-to Customer No."), ShowDialog);
     end;
 
     procedure CheckSalesAdvanceLetterReleaseRestrictions()
@@ -1453,6 +1549,13 @@ table 31004 "Sales Adv. Letter Header CZZ"
             exit;
 
         ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
+    end;
+
+    local procedure SetCompanyBankAccount()
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        Validate("Bank Account Code", BankAccount.GetDefaultBankAccountNoForCurrency("Currency Code"));
     end;
 
     [IntegrationEvent(false, false)]
@@ -1586,10 +1689,18 @@ table 31004 "Sales Adv. Letter Header CZZ"
     end;
 
     [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDim(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; xSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; CurrentFieldNo: Integer; OldDimSetID: Integer)
+    begin
+    end;
+
+#if not CLEAN21
+    [Obsolete('Replaced by CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])', '21.0')]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateDimTableIDs(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; CallingFieldNo: Integer; var TableID: array[10] of Integer; var No: array[10] of Code[20])
     begin
     end;
 
+#endif
     [IntegrationEvent(true, false)]
     local procedure OnBeforeTestStatusOpen(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
@@ -1627,6 +1738,51 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeDeleteRecordInApprovalRequest(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeEmailRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; DocTxt: Text; ShowDialog: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitDefaultDimensionSources(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateLinesByFieldNo(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; ChangedFieldNo: Integer; xSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeLineByChangedFieldNo(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; ChangedFieldNo: Integer; xSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateLineByChangedFieldName(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; ChangedFieldName: Text[100]; ChangedFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateLinesByFieldNoOnBeforeLineModify(var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; ChangedFieldNo: Integer; CurrentFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateLinesByFieldNo(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; xSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; ChangedFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeDoPrintToDocumentAttachment(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
     begin
     end;
 }

@@ -1,7 +1,7 @@
 codeunit 148041 "MX DIOT UT"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
 
     trigger OnRun()
     begin
@@ -642,8 +642,12 @@ codeunit 148041 "MX DIOT UT"
     end;
 
     local procedure RunDIOTReport()
+    var
+        AssistedSetupPage: TestPage "Assisted Setup";
     begin
+        AssistedSetupPage.OpenView();
         DIOTDataManagement.SetAssistedSetupComplete();
+        AssistedSetupPage.Close();
 
         Commit();
 

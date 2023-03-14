@@ -37,4 +37,11 @@ codeunit 31380 "Gen. Journal Line Handler CZA"
                 end;
         end;
     end;
+
+    [EventSubscriber(ObjectType::Page, Page::"General Journal", 'OnAfterEnableApplyEntriesAction', '', false, false)]
+    local procedure ApplyEntriesActionEnabledOnAfterEnableApplyEntriesAction(GenJournalLine: Record "Gen. Journal Line"; var ApplyEntriesActionEnabled: Boolean)
+    begin
+        ApplyEntriesActionEnabled := ApplyEntriesActionEnabled or
+          (GenJournalLine."Account Type" = GenJournalLine."Account Type"::"G/L Account") or (GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"G/L Account");
+    end;
 }

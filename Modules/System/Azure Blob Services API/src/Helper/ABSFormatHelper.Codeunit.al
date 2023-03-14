@@ -11,8 +11,8 @@ codeunit 9044 "ABS Format Helper"
     procedure AppendToUri(var Uri: Text; ParameterIdentifier: Text; ParameterValue: Text)
     var
         ConcatChar: Text;
-        AppendType1Lbl: Label '%1%2=%3', Comment = '%1 = Concatenation character, %2 = Parameter Identifer, %3 = Parameter Value';
-        AppendType2Lbl: Label '%1%2', Comment = '%1 = Concatenation character, %2 = Parameter Value';
+        AppendType1Lbl: Label '%1%2=%3', Comment = '%1 = Concatenation character, %2 = Parameter Identifer, %3 = Parameter Value', Locked = true;
+        AppendType2Lbl: Label '%1%2', Comment = '%1 = Concatenation character, %2 = Parameter Value', Locked = true;
     begin
         ConcatChar := '?';
         if Uri.Contains('?') then
@@ -112,9 +112,45 @@ codeunit 9044 "ABS Format Helper"
     end;
 
     [NonDebuggable]
+    procedure XmlDocumentToTagsDictionary(Document: XmlDocument): Dictionary of [Text, Text]
+    var
+        Tags: Dictionary of [Text, Text];
+        TagNodesList: XmlNodeList;
+        TagNode: XmlNode;
+        KeyValue: Text;
+        Value: Text;
+    begin
+        if not Document.SelectNodes('/Tags/TagSet/Tag', TagNodesList) then
+            exit;
+
+        foreach TagNode in TagNodesList do begin
+            KeyValue := GetSingleNodeInnerText(TagNode, 'Key');
+            Value := GetSingleNodeInnerText(TagNode, 'Value');
+            if KeyValue = '' then begin
+                Clear(Tags);
+                exit;
+            end;
+            Tags.Add(KeyValue, Value);
+        end;
+        exit(Tags);
+    end;
+
+    [NonDebuggable]
+    local procedure GetSingleNodeInnerText(Node: XmlNode; XPath: Text): Text
+    var
+        ChildNode: XmlNode;
+        XmlElement: XmlElement;
+    begin
+        if not Node.SelectSingleNode(XPath, ChildNode) then
+            exit;
+        XmlElement := ChildNode.AsXmlElement();
+        exit(XmlElement.InnerText());
+    end;
+
+    [NonDebuggable]
     procedure TagsDictionaryToSearchExpression(Tags: Dictionary of [Text, Text]): Text
     var
-        Helper: Codeunit "Uri";
+        UriHelper: Codeunit "Uri";
         Keys: List of [Text];
         "Key": Text;
         SingleQuoteChar: Char;
@@ -128,7 +164,7 @@ codeunit 9044 "ABS Format Helper"
                 Expression += ' AND ';
             Expression += StrSubstNo(ExpressionPartLbl, "Key".Trim(), GetOperatorFromValue(Tags.Get("Key")).Trim(), SingleQuoteChar, GetValueWithoutOperator(Tags.Get("Key")).Trim(), SingleQuoteChar);
         end;
-        Expression := Helper.EscapeDataString(Expression);
+        Expression := UriHelper.EscapeDataString(Expression);
         exit(Expression);
     end;
 
@@ -203,6 +239,17 @@ codeunit 9044 "ABS Format Helper"
             exit(NewBoolean);
     end;
 
+    procedure ConvertToEnum(FieldName: Text; PropertyValue: Text): Variant
+    begin
+        if FieldName = 'Resource Type' then
+            case PropertyValue of
+                Text.LowerCase(Format(Enum::"ABS Blob Resource Type"::File)):
+                    exit(Enum::"ABS Blob Resource Type"::File);
+                Text.LowerCase(Format(Enum::"ABS Blob Resource Type"::Directory)):
+                    exit(Enum::"ABS Blob Resource Type"::Directory);
+            end;
+    end;
+
     procedure GetNewLineCharacter(): Text
     var
         LF: Char;
@@ -213,12 +260,12 @@ codeunit 9044 "ABS Format Helper"
 
     procedure GetIso8601DateTime(MyDateTime: DateTime): Text
     begin
-        exit(FormatDateTime(MyDateTime, 's')); // https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
+        exit(FormatDateTime(MyDateTime, 's')); // https://go.microsoft.com/fwlink/?linkid=2210384
     end;
 
     procedure GetRfc1123DateTime(MyDateTime: DateTime): Text
     begin
-        exit(FormatDateTime(MyDateTime, 'R')); // https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
+        exit(FormatDateTime(MyDateTime, 'R')); // https://go.microsoft.com/fwlink/?linkid=2210384
     end;
 
     local procedure FormatDateTime(MyDateTime: DateTime; FormatSpecifier: Text): Text

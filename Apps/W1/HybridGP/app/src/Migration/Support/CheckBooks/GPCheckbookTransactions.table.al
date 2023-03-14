@@ -1,6 +1,6 @@
 table 40101 "GP Checkbook Transactions"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
     Permissions = tableData "Bank Account Ledger Entry" = rim;
 
@@ -26,6 +26,7 @@ table 40101 "GP Checkbook Transactions"
         {
             DataClassification = CustomerContent;
         }
+        //     1-Deposit, 2-Receipt, 3-APCheck, 4-"Withdrawl/Payroll Check", 5-IncreaseAdjustment, 6-DecreaseAdjustment, 7-BankTransfer;         
         field(6; CMTrxType; Integer)
         {
             DataClassification = CustomerContent;
@@ -216,8 +217,11 @@ table 40101 "GP Checkbook Transactions"
         }
     }
 
+#if not CLEAN21
+    [Obsolete('This method is obsolete. Code has been moved to GP Checkbook Migrator codeunit.', '21.0')]
     procedure MoveStagingData(CheckbookId: Code[15]; PostingGroup: Code[20])
     begin
 
     end;
+#endif
 }

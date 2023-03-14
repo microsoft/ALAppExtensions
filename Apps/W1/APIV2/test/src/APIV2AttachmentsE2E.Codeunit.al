@@ -787,7 +787,9 @@ codeunit 139833 "APIV2 - Attachments E2E"
 
         // [THEN] The Attachment exists and is correctly linked to the posted invoice.
         IncomingDocumentAttachment.GetBySystemId(AttachmentId);
+#pragma warning disable AA0210
         SalesInvoiceHeader.SetRange("Draft Invoice SystemId", DocumentId);
+#pragma warning restore
         SalesInvoiceHeader.FindFirst();
         DocumentRecordRef.GetTable(SalesInvoiceHeader);
         FindIncomingDocument(DocumentRecordRef, IncomingDocument);
@@ -825,7 +827,9 @@ codeunit 139833 "APIV2 - Attachments E2E"
 
         // [THEN] The Attachment exists and is correctly linked to the posted invoice.
         IncomingDocumentAttachment.GetBySystemId(AttachmentId);
+#pragma warning disable AA0210
         PurchInvHeader.SetRange("Draft Invoice SystemId", DocumentId);
+#pragma warning restore
         PurchInvHeader.FindFirst();
         DocumentRecordRef.GetTable(PurchInvHeader);
         FindIncomingDocument(DocumentRecordRef, IncomingDocument);
@@ -1175,6 +1179,7 @@ codeunit 139833 "APIV2 - Attachments E2E"
             IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Sales Invoice";
             IncomingDocument."Document No." := SalesInvoiceHeader."No.";
             IncomingDocument."Posting Date" := SalesInvoiceHeader."Posting Date";
+            IncomingDocument.Posted := true;
             IncomingDocument.Insert(true);
             IncomingDocument.Find();
             exit(true);
@@ -1232,10 +1237,7 @@ codeunit 139833 "APIV2 - Attachments E2E"
         if DocumentRecordRef.Number() = Database::"Purchase Header" then begin
             DocumentRecordRef.SetTable(PurchaseHeader);
             IncomingDocument.Description := CopyStr(PurchaseHeader."Buy-from Vendor Name", 1, MaxStrLen(IncomingDocument.Description));
-            if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
-                IncomingDocument."Document Type" := IncomingDocument."Document Type"::" ";
-            if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
-                IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Invoice";
+            IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Invoice";
             IncomingDocument."Document No." := PurchaseHeader."No.";
             IncomingDocument.Insert(true);
             PurchaseHeader.Find();
@@ -1356,33 +1358,33 @@ codeunit 139833 "APIV2 - Attachments E2E"
     local procedure BlobToBase64String(var TempBlob: Codeunit "Temp Blob"): Text
     var
         InStream: InStream;
-        Convert: DotNet Convert;
-        MemoryStream: DotNet MemoryStream;
+        "System.Convert": DotNet Convert;
+        "System.IO.MemoryStream": DotNet MemoryStream;
         Base64String: Text;
     begin
         if not TempBlob.HasValue() then
             exit('');
         TempBlob.CreateInStream(InStream);
-        MemoryStream := MemoryStream.MemoryStream();
-        COPYSTREAM(MemoryStream, InStream);
-        Base64String := Convert.ToBase64String(MemoryStream.ToArray());
-        MemoryStream.Close();
+        "System.IO.MemoryStream" := "System.IO.MemoryStream".MemoryStream();
+        COPYSTREAM("System.IO.MemoryStream", InStream);
+        Base64String := "System.Convert".ToBase64String("System.IO.MemoryStream".ToArray());
+        "System.IO.MemoryStream".Close();
         exit(Base64String);
     end;
 
     local procedure GetBlobLength(var TempBlob: Codeunit "Temp Blob"): Integer
     var
         InStream: InStream;
-        MemoryStream: DotNet MemoryStream;
+        "System.IO.MemoryStream": DotNet MemoryStream;
         ContentLength: Integer;
     begin
         if not TempBlob.HasValue() then
             exit(0);
         TempBlob.CreateInStream(InStream);
-        MemoryStream := MemoryStream.MemoryStream();
-        COPYSTREAM(MemoryStream, InStream);
-        ContentLength := MemoryStream.Length();
-        MemoryStream.Close();
+        "System.IO.MemoryStream" := "System.IO.MemoryStream".MemoryStream();
+        COPYSTREAM("System.IO.MemoryStream", InStream);
+        ContentLength := "System.IO.MemoryStream".Length();
+        "System.IO.MemoryStream".Close();
         exit(ContentLength);
     end;
 

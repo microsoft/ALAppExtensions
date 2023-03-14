@@ -7,12 +7,15 @@ codeunit 139762 "SMTP Account Auth Tests"
 {
     Subtype = Test;
     EventSubscriberInstance = Manual;
+    TestPermissions = Disabled;
 
     var
         Assert: Codeunit "Library Assert";
         TokenFromCacheTxt: Label 'aGVhZGVy.eyJ1bmlxdWVfbmFtZSI6InRlc3R1c2VyQGRvbWFpbi5jb20iLCJ1cG4iOiJ0ZXN0dXNlckBkb21haW4uY29tIn0=.c2lnbmF0dXJl', Comment = 'Access token example (with no secret data)', Locked = true;
+#pragma warning disable AA0240
         TokenFromCacheUserNameTxt: Label 'testuser@domain.com', Locked = true;
-        AuthenticationSuccessfulMsg: Label '%1 was authenticated.';
+#pragma warning restore AA0240
+        AuthenticationSuccessfulMsg: Label '%1 was authenticated.', Comment = '%1 = username';
         AuthenticationFailedMsg: Label 'Could not authenticate.';
         EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.';
         TokenFromCache: Text;
@@ -30,7 +33,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [GIVEN] SMTP account with basic authentication.
         SMTPAccount.DeleteAll();
         SMTPAccount.Id := CreateGuid();
-        SMTPAccount.Authentication := SMTPAccount.Authentication::Basic;
+        SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::Basic;
         SMTPAccount.Insert();
 
         // [GIVEN] OnPrem
@@ -45,7 +48,7 @@ codeunit 139762 "SMTP Account Auth Tests"
 
         // [WHEN] The authentication is changed to OAuth 2.0.
         // [THEN] A message is shown that all users need to authenticate (verified in the handler).
-        SMTPAccountPage.Authentication.Value := Format(SMTPAccount.Authentication::"OAuth 2.0");
+        SMTPAccountPage.Authentication.Value := Format(SMTPAccount."Authentication Type"::"OAuth 2.0");
 
         // [THEN] The actions related to OAuth 2.0 are still invisible (as server is not an O365 server).
         Assert.IsFalse(SMTPAccountPage."Authenticate with OAuth 2.0".Visible(), 'OAuth 2.0 actions should not be visible if the authentication is not OAuth 2.0 in SMTP setup');

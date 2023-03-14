@@ -16,7 +16,6 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
         SalesSetup: Record "Sales & Receivables Setup";
         OIOUBLDocumentEncode: Codeunit "OIOUBL-Document Encode";
         OIOUBLXMLGenerator: Codeunit "OIOUBL-Common Logic";
-        IssuedFinChargeMemoLineFound: Boolean;
         DocNameSpace: Text[250];
         DocNameSpace2: Text[250];
 
@@ -48,7 +47,8 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
                 repeat
                     UpdateTaxAmtAndTaxableAmt(IssuedFinChargeMemoLineLocal.Amount, IssuedFinChargeMemoLineLocal."VAT Amount", TaxableAmount, TaxAmount);
                 until IssuedFinChargeMemoLineLocal.NEXT() = 0;
-                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+                OIOUBLXMLGenerator.InsertTaxSubtotal(
+                    TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
             end;
         end;
 
@@ -62,7 +62,8 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
                 UpdateTaxAmtAndTaxableAmt(IssuedFinChargeMemoLineLocal.Amount, IssuedFinChargeMemoLineLocal."VAT Amount", TaxableAmount, TaxAmount);
             until IssuedFinChargeMemoLineLocal.NEXT() = 0;
             // Invoice->TaxTotal->TaxSubtotal
-            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+            OIOUBLXMLGenerator.InsertTaxSubtotal(
+                TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
         end;
 
         // Invoice->TaxTotal (for "Reverse Charge VAT")
@@ -75,7 +76,8 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
             repeat
                 UpdateTaxAmtAndTaxableAmt(IssuedFinChargeMemoLineLocal.Amount, IssuedFinChargeMemoLineLocal."VAT Amount", TaxableAmount, TaxAmount);
             until IssuedFinChargeMemoLineLocal.NEXT() = 0;
-            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+            OIOUBLXMLGenerator.InsertTaxSubtotal(
+                TaxTotalElement, IssuedFinChargeMemoLineLocal."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
         end;
 
         ReminderElement.Add(TaxTotalElement);
@@ -86,23 +88,15 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
         IssuedFinChargeMemoLine2: Record "Issued Fin. Charge Memo Line";
         PartyContact: Record Contact;
         PostalAddress: Record "Standard Address";
-        RBMgt: Codeunit "File Management";
+        TempBlob: Codeunit "Temp Blob";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
-#if not CLEAN17
-        EnvironmentInfo: Codeunit "Environment Information";
-#endif
         XMLdocOut: XmlDocument;
         XMLCurrNode: XmlElement;
         CurrencyCode: Code[10];
-        FromFile: Text[1024];
         TaxableAmount: Decimal;
         TaxAmount: Decimal;
         TotalTaxAmount: Decimal;
         TotalAmount: Decimal;
-#if not CLEAN17
-        DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
-#endif
-        OutputFile: File;
         FileOutstream: Outstream;
     begin
         CODEUNIT.RUN(CODEUNIT::"OIOUBL-Check Issued Fin. Chrg", Rec);
@@ -116,8 +110,6 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
 
         if NOT ContainsValidLine(IssuedFinChargeMemoLine, "No.") then
             EXIT;
-
-        FromFile := CopyStr(RBMgt.ServerTempFileName(''), 1, MaxStrLen(FromFile));
 
         // FinCharge
         XmlDocument.ReadFrom(OIOUBLXMLGenerator.GetReminderHeader(), XMLdocOut);
@@ -229,18 +221,11 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
 
         SalesSetup.GET();
 
-        OutputFile.create(FromFile);
-        OutputFile.CreateOutStream(FileOutstream);
+        TempBlob.CreateOutStream(FileOutstream);
         OnRunOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, Rec, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
-        OutputFile.Close();
 
-#if not CLEAN17
-        if RBMgt.IsLocalFileSystemAccessible() AND NOT EnvironmentInfo.IsSaaS() then
-            SalesSetup.VerifyAndSetOIOUBLSetupPath(DocumentType::"Finance Charge");
-#endif
-
-        OIOUBLManagement.ExportXMLFile("No.", FromFile, SalesSetup."OIOUBL-Fin. Chrg. Memo Path");
+        OIOUBLManagement.ExportXMLFile("No.", TempBlob, SalesSetup."OIOUBL-Fin. Chrg. Memo Path", '');
 
         IssuedFinChargeMemo.GET("No.");
         IssuedFinChargeMemo."OIOUBL-Elec. Fin. Charge Memo Created" := TRUE;
@@ -249,7 +234,6 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
 
     procedure UpdateTaxAmtAndTaxableAmt(Amount: Decimal; VATAmount: Decimal; var TaxableAmountParam: Decimal; var TaxAmountParam: Decimal);
     begin
-        IssuedFinChargeMemoLineFound := TRUE;
         TaxableAmountParam := TaxableAmountParam + Amount;
         TaxAmountParam := TaxAmountParam + VATAmount
     end;

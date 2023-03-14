@@ -2,7 +2,7 @@ pageextension 18151 "GST Sales Order Subform Ext" extends "Sales Order Subform"
 {
     layout
     {
-        Modify("No.")
+        modify("No.")
         {
             trigger OnAfterValidate()
             begin
@@ -10,7 +10,7 @@ pageextension 18151 "GST Sales Order Subform Ext" extends "Sales Order Subform"
                 FormatLine();
             end;
         }
-        Modify("Quantity")
+        modify("Quantity")
         {
             trigger OnAfterValidate()
             begin
@@ -67,6 +67,7 @@ pageextension 18151 "GST Sales Order Subform Ext" extends "Sales Order Subform"
                     CalculateTax: Codeunit "Calculate Tax";
                 begin
                     CurrPage.SaveRecord();
+                    Rec.Validate("GST Place Of Supply");
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
                 end;
             }
@@ -158,6 +159,7 @@ pageextension 18151 "GST Sales Order Subform Ext" extends "Sales Order Subform"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the GST group is assigned for goods or service.';
+
             }
             field(Exempted; Rec.Exempted)
             {

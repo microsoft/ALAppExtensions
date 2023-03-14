@@ -13,7 +13,7 @@ report 31280 "Suggest Payments CZB"
 
             dataitem("Cust. Ledger Entry"; "Cust. Ledger Entry")
             {
-                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''), "Amount on Credit (LCY)" = const(0));
+                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''));
 
                 trigger OnPreDataItem()
                 var
@@ -46,6 +46,8 @@ report 31280 "Suggest Payments CZB"
                         IsSkippedBlocked := true;
                         CurrReport.Skip();
                     end;
+                    if (CalcSuggestedAmountToApplyCZL() <> 0) and not BankAccount."Payment Partial Suggestion CZB" then
+                        CurrReport.Skip();
 
                     AddCustLedgEntry("Cust. Ledger Entry");
                     if StopPayments then
@@ -62,7 +64,7 @@ report 31280 "Suggest Payments CZB"
             }
             dataitem("Vendor Ledger Entry"; "Vendor Ledger Entry")
             {
-                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''), "Amount on Credit (LCY)" = const(0));
+                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''));
 
                 trigger OnPreDataItem()
                 var
@@ -97,6 +99,8 @@ report 31280 "Suggest Payments CZB"
                         IsSkippedBlocked := true;
                         CurrReport.Skip();
                     end;
+                    if (CalcSuggestedAmountToApplyCZL() <> 0) and not BankAccount."Payment Partial Suggestion CZB" then
+                        CurrReport.Skip();
 
                     AddVendLedgEntry("Vendor Ledger Entry");
                     if StopPayments then
@@ -113,7 +117,7 @@ report 31280 "Suggest Payments CZB"
             }
             dataitem("Vendor Ledger Entry Disc"; "Vendor Ledger Entry")
             {
-                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''), "Amount on Credit (LCY)" = const(0));
+                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''));
 
                 trigger OnPreDataItem()
                 var
@@ -152,6 +156,8 @@ report 31280 "Suggest Payments CZB"
                         IsSkippedBlocked := true;
                         CurrReport.Skip();
                     end;
+                    if (CalcSuggestedAmountToApplyCZL() <> 0) and not BankAccount."Payment Partial Suggestion CZB" then
+                        CurrReport.Skip();
 
                     AddVendLedgEntry("Vendor Ledger Entry Disc");
                     if StopPayments then
@@ -194,6 +200,8 @@ report 31280 "Suggest Payments CZB"
                         IsSkippedBlocked := true;
                         CurrReport.Skip();
                     end;
+                    if (CalcSuggestedAmountToApplyCZL() <> 0) and not BankAccount."Payment Partial Suggestion CZB" then
+                        CurrReport.Skip();
 
                     AddEmplLedgEntry("Employee Ledger Entry");
                     if StopPayments then
@@ -248,6 +256,8 @@ report 31280 "Suggest Payments CZB"
                         IsSkippedBlocked := true;
                         CurrReport.Skip();
                     end;
+                    if IsPurchaseLetterHeaderApplied("Purch. Advance Letter Header") then
+                        CurrReport.Skip();
 
                     RemAmount := "Purch. Advance Letter Header".GetRemAmount();
                     if RemAmount <> 0 then
@@ -281,6 +291,9 @@ report 31280 "Suggest Payments CZB"
 
                     trigger OnAfterGetRecord()
                     begin
+                        if IsPurchaseLetterLineApplied(PurchAdvLetterLinePerLine) then
+                            CurrReport.Skip();
+
                         if "Amount To Link" > 0 then
                             AddPurchaseLetterLine(PurchAdvLetterLinePerLine);
 
@@ -576,7 +589,9 @@ report 31280 "Suggest Payments CZB"
                     PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
         end;
         PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Applies-to C/V/E Entry No.", CustLedgerEntry."Entry No.");
-        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" then begin
+        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" and
+           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry."Pmt. Discount Date")
+        then begin
             PaymentOrderLineCZB."Pmt. Discount Possible" := false;
             PaymentOrderLineCZB."Pmt. Discount Date" := 0D;
             PaymentOrderLineCZB."Amount (Paym. Order Currency)" += PaymentOrderLineCZB."Remaining Pmt. Disc. Possible";
@@ -608,7 +623,9 @@ report 31280 "Suggest Payments CZB"
                     PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
         end;
         PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Applies-to C/V/E Entry No.", VendorLedgerEntry."Entry No.");
-        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" then begin
+        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" and
+           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry."Pmt. Discount Date")
+        then begin
             PaymentOrderLineCZB."Pmt. Discount Possible" := false;
             PaymentOrderLineCZB."Pmt. Discount Date" := 0D;
             PaymentOrderLineCZB."Amount (Paym. Order Currency)" -= PaymentOrderLineCZB."Remaining Pmt. Disc. Possible";
@@ -769,6 +786,27 @@ report 31280 "Suggest Payments CZB"
         PaymentOrderLineCZB."Letter No." := PurchAdvanceLetterLine."Letter No.";
         PaymentOrderLineCZB.Validate("Letter Line No.", PurchAdvanceLetterLine."Line No.");
         AddPaymentLine();
+    end;
+
+    local procedure IsPurchaseLetterHeaderApplied(PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header"): Boolean
+    var
+        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
+    begin
+        IssPaymentOrderLineCZB.SetRange("Letter Type", IssPaymentOrderLineCZB."Letter Type"::Purchase);
+        IssPaymentOrderLineCZB.SetRange("Letter No.", PurchAdvanceLetterHeader."No.");
+        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
+        exit(not IssPaymentOrderLineCZB.IsEmpty());
+    end;
+
+    local procedure IsPurchaseLetterLineApplied(PurchAdvanceLetterLine: Record "Purch. Advance Letter Line"): Boolean
+    var
+        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
+    begin
+        IssPaymentOrderLineCZB.SetRange("Letter Type", IssPaymentOrderLineCZB."Letter Type"::Purchase);
+        IssPaymentOrderLineCZB.SetRange("Letter No.", PurchAdvanceLetterLine."No.");
+        IssPaymentOrderLineCZB.SetRange("Letter Line No.", PurchAdvanceLetterLine."Line No.");
+        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
+        exit(not IssPaymentOrderLineCZB.IsEmpty());
     end;
 #endif
 }

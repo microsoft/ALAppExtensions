@@ -8,6 +8,7 @@ codeunit 13629 "OIOUBL-Check Sales Header"
     TableNo = "Sales Header";
     trigger OnRun();
     var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         IsHandled: Boolean;
     begin
@@ -26,8 +27,11 @@ codeunit 13629 "OIOUBL-Check Sales Header"
         if NOT OIOUBLDocumentEncode.IsValidGLN("OIOUBL-GLN") then
             FIELDERROR("OIOUBL-GLN", InvalidGLNErr);
 
-        if "External Document No." = '' then
-            ERROR(EmptyExtDocNoErr, "Document Type", "No.");
+        if "External Document No." = '' then begin
+            SalesReceivablesSetup.Get();
+            if not SalesReceivablesSetup."Document No. as Ext. Doc. No." then
+                ERROR(EmptyExtDocNoErr, "Document Type", "No.");
+        end;
 
         if "Document Type" in ["Document Type"::Invoice, "Document Type"::Order] then begin
             TESTFIELD("Payment Terms Code");

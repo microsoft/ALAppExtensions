@@ -128,7 +128,7 @@ page 31274 "Compensation List CZC"
                 var
                     ApprovalEntries: Page "Approval Entries";
                 begin
-                    ApprovalEntries.Setfilters(Database::"Compensation Header CZC", 0, Rec."No.");
+                    ApprovalEntries.SetRecordfilters(Database::"Compensation Header CZC", "Approval Document Type"::Quote, Rec."No.");
                     ApprovalEntries.Run();
                 end;
             }

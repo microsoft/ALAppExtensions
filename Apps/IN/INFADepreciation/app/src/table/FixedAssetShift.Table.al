@@ -178,6 +178,9 @@ table 18633 "Fixed Asset Shift"
         {
             Caption = 'FA Posting Group';
             DataClassification = CustomerContent;
+            ObsoleteState = Pending;
+            ObsoleteReason = 'New field introduced as Fixed Asset Posting Group';
+            ObsoleteTag = '23.0';
 
             trigger OnValidate()
             begin
@@ -666,6 +669,16 @@ table 18633 "Fixed Asset Shift"
         {
             Caption = 'Line No.';
             DataClassification = CustomerContent;
+        }
+        field(70; "Fixed Asset Posting Group"; Code[20])
+        {
+            Caption = 'Fixed Asset Posting Group';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                ModifyDeprFields();
+            end;
         }
         field(100; "Calculate FA Depreciation"; Boolean)
         {

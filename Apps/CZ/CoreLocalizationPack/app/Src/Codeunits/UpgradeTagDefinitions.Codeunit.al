@@ -7,6 +7,10 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerDatabaseUpgradeTags.Add(GetDataVersion180PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion183PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion189PerDatabaseUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetDataVersion200PerDatabaseUpgradeTag());
+#if CLEAN20
+        PerDatabaseUpgradeTags.Add(GetDataVersion230PerDatabaseUpgradeTag());
+#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
@@ -16,6 +20,7 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetDataVersion180PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion183PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion189PerCompanyUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetDataVersion200PerCompanyUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -38,6 +43,17 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         exit('CZL-UpgradeCoreLocalizationPackForCzech-PerDatabase-18.9');
     end;
 
+    procedure GetDataVersion200PerDatabaseUpgradeTag(): Code[250]
+    begin
+        exit('CZL-UpgradeCoreLocalizationPackForCzech-PerDatabase-20.0');
+    end;
+
+#if CLEAN20
+    procedure GetDataVersion230PerDatabaseUpgradeTag(): Code[250]
+    begin
+        exit('CZL-UpgradeCoreLocalizationPackForCzech-PerDatabase-23.0');
+    end;
+#endif
     procedure GetDataVersion174PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZL-UpgradeCoreLocalizationPackForCzech-PerCompany-17.4');
@@ -56,5 +72,10 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetDataVersion189PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZL-UpgradeCoreLocalizationPackForCzech-PerCompany-18.9');
+    end;
+
+    procedure GetDataVersion200PerCompanyUpgradeTag(): Code[250]
+    begin
+        exit('CZL-UpgradeCoreLocalizationPackForCzech-PerCompany-20.0');
     end;
 }

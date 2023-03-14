@@ -10,24 +10,34 @@ codeunit 20286 "Use Case Event Handling"
     procedure BusinessRuleOnAfterUpdateSalesLineAmountsDone(var SalesLine: Record "Sales Line"; var xSalesLine: Record "Sales Line")
     var
         SalesHeader: Record "Sales Header";
+        IsHandled: Boolean;
     begin
         if (SalesLine.Quantity = 0) and (xSalesLine.Quantity = 0) then
             exit;
+
         if not SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
             exit;
-        UseCaseExecution.HandleEvent('OnAfterUpdateSalesUnitPrice', SalesLine, SalesHeader."Currency Code", SalesHeader."Currency Factor");
+
+        OnBeforeSalesUseCaseHandleEvent(SalesLine, xSalesLine, IsHandled);
+        if not IsHandled then
+            UseCaseExecution.HandleEvent('OnAfterUpdateSalesUnitPrice', SalesLine, SalesHeader."Currency Code", SalesHeader."Currency Factor");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterUpdateAmountsDone', '', false, false)]
     procedure BusinessRuleOnAfterUpdatePurchUnitPrice(var PurchLine: Record "Purchase Line"; var xPurchLine: Record "Purchase Line");
     var
         PurchaseHeader: Record "Purchase Header";
+        IsHandled: Boolean;
     begin
         if (PurchLine.Quantity = 0) and (xPurchLine.Quantity = 0) then
             exit;
+
         if not PurchaseHeader.Get(PurchLine."Document Type", PurchLine."Document No.") then
             exit;
-        UseCaseExecution.HandleEvent('OnAfterUpdatePurchUnitPrice', PurchLine, PurchaseHeader."Currency Code", PurchaseHeader."Currency Factor");
+
+        OnBeforePurchaseUseCaseHandleEvent(PurchLine, xPurchLine, IsHandled);
+        if not IsHandled then
+            UseCaseExecution.HandleEvent('OnAfterUpdatePurchUnitPrice', PurchLine, PurchaseHeader."Currency Code", PurchaseHeader."Currency Factor");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::GlobalTriggerManagement, 'OnAfterOnDatabaseRename', '', false, false)]
@@ -53,14 +63,19 @@ codeunit 20286 "Use Case Event Handling"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'Amount', false, false)]
-    procedure OnAfterPostGenJnlLine(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line");
+    procedure OnAfterPostGenJnlLine(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line")
+    var
+        IsHandled: Boolean;
     begin
-        if rec."System-Created Entry" then
+        if Rec."System-Created Entry" then
             exit;
 
         if (Rec.Amount = 0) and (xRec.Amount = 0) then
             exit;
-        UseCaseExecution.HandleEvent('OnGenJnlPost', Rec, Rec."Currency Code", Rec."Currency Factor");
+
+        OnBeforeGenJnlLineUseCaseHandleEvent(Rec, xRec, IsHandled);
+        if not IsHandled then
+            UseCaseExecution.HandleEvent('OnGenJnlPost', Rec, Rec."Currency Code", Rec."Currency Factor");
     end;
 
     local procedure DeleteTaxTransactionValue(RecRef: RecordRef);
@@ -89,4 +104,19 @@ codeunit 20286 "Use Case Event Handling"
 
     var
         UseCaseExecution: Codeunit "Use Case Execution";
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGenJnlLineUseCaseHandleEvent(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeSalesUseCaseHandleEvent(var SalesLine: Record "Sales Line"; var xSalesLine: Record "Sales Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePurchaseUseCaseHandleEvent(var PurchLine: Record "Purchase Line"; var xPurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+    end;
 }

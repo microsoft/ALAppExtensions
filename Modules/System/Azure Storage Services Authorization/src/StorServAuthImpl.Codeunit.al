@@ -29,20 +29,20 @@ codeunit 9063 "Stor. Serv. Auth. Impl."
         StorServAuthSAS.SetSignedExpiry(SignedExpiry);
 
         // Set optional parameters
-        StorServAuthSAS.SetVersion(OptionalParams.ApiVersion);
         StorServAuthSAS.SetSignedStart(CurrentDateTime());
         StorServAuthSAS.SetIPrange(OptionalParams.SignedIp);
         StorServAuthSAS.SetProtocol(OptionalParams.SignedProtocol);
+        StorServAuthSAS.SetSignedEncryptionScope(OptionalParams.SignedEncryptionScope);
 
         exit(StorServAuthSAS);
     end;
 
     [NonDebuggable]
-    procedure SharedKey(SharedKey: Text; ApiVersion: Enum "Storage Service API Version"): Interface "Storage Service Authorization"
+    procedure SharedKey(SharedKeyToUse: Text; ApiVersion: Enum "Storage Service API Version"): Interface "Storage Service Authorization"
     var
         StorServAuthSharedKey: Codeunit "Stor. Serv. Auth. Shared Key";
     begin
-        StorServAuthSharedKey.SetSharedKey(SharedKey);
+        StorServAuthSharedKey.SetSharedKey(SharedKeyToUse);
         StorServAuthSharedKey.SetApiVersion(ApiVersion);
 
         exit(StorServAuthSharedKey);

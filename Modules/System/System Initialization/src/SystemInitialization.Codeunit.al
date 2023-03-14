@@ -9,7 +9,6 @@
 codeunit 150 "System Initialization"
 {
     Access = Public;
-    SingleInstance = true;
 
     /// <summary>
     /// Checks whether the system initialization is currently in progress.
@@ -23,11 +22,44 @@ codeunit 150 "System Initialization"
     end;
 
     /// <summary>
-    /// Integration event for after the system initialization.
-    /// Subscribe to this event in order to execute additional initialization steps.
+    /// Checks whether the signup context should be considered or whether it has expired.
     /// </summary>
+    /// <returns>Returns true if the signup context is still relevant for the tenant</returns>
+    procedure ShouldCheckSignupContext(): Boolean
+    var
+        SystemInitializationImpl: Codeunit "System Initialization Impl.";
+    begin
+        exit(SystemInitializationImpl.ShouldCheckSignupContext())
+    end;
+
+    /// <summary>
+    /// Integration event for after the system initialization.
+    /// Used only for login.
+    /// </summary>
+#if CLEAN20
+    [Scope('OnPrem')]
+#else
+    [Obsolete('Replaced by OnAfterLogin.', '20.0')]
+#endif
     [IntegrationEvent(false, false)]
     internal procedure OnAfterInitialization()
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event for after the login.
+    /// Subscribe to this event in order to execute additional initialization steps.
+    /// </summary>
+    [IntegrationEvent(false, false, true)]
+    internal procedure OnAfterLogin()
+    begin
+    end;
+
+    /// <summary>
+    /// Subscribe to this event to set the Signup Context and parse additional values.
+    /// </summary>
+    [IntegrationEvent(false, false)]
+    internal procedure OnSetSignupContext(SignupContext: Record "Signup Context"; var SignupContextValues: Record "Signup Context Values")
     begin
     end;
 }

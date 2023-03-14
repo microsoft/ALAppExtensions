@@ -7,7 +7,7 @@ pageextension 2026 "Item Picture Analyzer Ext" extends "Item Card"
 {
     actions
     {
-        addlast(ItemActionGroup)
+        addlast(Functions)
         {
             action(AnalyzePicture)
             {
@@ -33,7 +33,7 @@ pageextension 2026 "Item Picture Analyzer Ext" extends "Item Card"
                         exit;
                     end;
 
-                    ItemAttrPopulate.OnAfterImportPictureAnalyzePicture(rec);
+                    ItemAttrPopulate.AnalyzePicture(rec);
                 end;
             }
         }

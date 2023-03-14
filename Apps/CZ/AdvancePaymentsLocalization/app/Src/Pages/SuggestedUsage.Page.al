@@ -1,5 +1,6 @@
 page 31178 "Suggested Usage CZZ"
 {
+    Caption = 'Suggested Usage';
     PageType = List;
     ApplicationArea = Basic, Suite;
     UsageCategory = Lists;

@@ -20,15 +20,15 @@ FeatureTelemetry.LogUsage('0000XYZ', 'Emailing', 'Email sent');
 procedure LogUsage(EventId: Text; FeatureName: Text; EventName: Text)
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the event.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
-*EventName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the event.
 
@@ -52,15 +52,15 @@ Custom dimensions often contain infromation translated in different languages. I
 procedure LogUsage(EventId: Text; FeatureName: Text; EventName: Text; CustomDimensions: Dictionary of [Text, Text])
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the event.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
-*EventName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the event.
 
@@ -83,19 +83,19 @@ A dictionary containing additional information about the event.
 procedure LogError(EventId: Text; FeatureName: Text; EventName: Text; ErrorText: Text)
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the error.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
-*EventName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the event.
 
-*ErrorText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ErrorText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text of the error.
 
@@ -114,23 +114,23 @@ The text of the error.
 procedure LogError(EventId: Text; FeatureName: Text; EventName: Text; ErrorText: Text; ErrorCallStack: Text)
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the error.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
-*EventName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the event.
 
-*ErrorText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ErrorText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text of the error.
 
-*ErrorCallStack ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ErrorCallStack ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The error call stack.
 
@@ -155,23 +155,23 @@ Custom dimensions often contain infromation translated in different languages. I
 procedure LogError(EventId: Text; FeatureName: Text; EventName: Text; ErrorText: Text; ErrorCallStack: Text; CustomDimensions: Dictionary of [Text, Text])
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the error.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
-*EventName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the event.
 
-*ErrorText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ErrorText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text of the error.
 
-*ErrorCallStack ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ErrorCallStack ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The error call stack.
 
@@ -196,11 +196,11 @@ A dictionary containing additional information about the error.
 procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status")
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the event.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
@@ -225,11 +225,11 @@ The new status of the feature uptake.
 procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean)
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the event.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
@@ -237,7 +237,7 @@ The name of the feature.
 
 The new status of the feature uptake.
 
-*IsPerUser ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*IsPerUser ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies if the feature is targeted to be uptaken once for the tenant or uptaken individually by different users.
 
@@ -258,11 +258,11 @@ Specifies if the feature is targeted to be uptaken once for the tenant or uptake
 procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean; CustomDimensions: Dictionary of [Text, Text])
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the event.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
@@ -270,7 +270,7 @@ The name of the feature.
 
 The new status of the feature uptake.
 
-*IsPerUser ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*IsPerUser ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies if the feature is targeted to be uptaken once for the tenant or uptaken individually by different users.
 
@@ -295,11 +295,11 @@ A dictionary containing additional information about the event.
 procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean; PerformWriteTransactionsInASeparateSession: Boolean)
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the event.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
@@ -307,11 +307,11 @@ The name of the feature.
 
 The new status of the feature uptake.
 
-*IsPerUser ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*IsPerUser ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies if the feature is targeted to be uptaken once for the tenant or uptaken individually by different users.
 
-*PerformWriteTransactionsInASeparateSession ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*PerformWriteTransactionsInASeparateSession ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies if database write transactions should be performed in a separate background session.
 
@@ -332,11 +332,11 @@ Specifies if database write transactions should be performed in a separate backg
 procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean; PerformWriteTransactionsInASeparateSession: Boolean; CustomDimensions: Dictionary of [Text, Text])
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the event.
 
-*FeatureName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*FeatureName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the feature.
 
@@ -344,11 +344,11 @@ The name of the feature.
 
 The new status of the feature uptake.
 
-*IsPerUser ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*IsPerUser ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies if the feature is targeted to be uptaken once for the tenant or uptaken individually by different users.
 
-*PerformWriteTransactionsInASeparateSession ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*PerformWriteTransactionsInASeparateSession ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies if database write transactions should be performed in a separate background session.
 
@@ -367,11 +367,11 @@ A dictionary containing additional information about the event.
 internal procedure OnLogMessage(EventId: Text; Message: Text; Verbosity: Verbosity; CustomDimensions: Dictionary of [Text, Text])
 ```
 #### Parameters
-*EventId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EventId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A unique ID of the event.
 
-*Message ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Message ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Feature telemetry message.
 
@@ -400,11 +400,11 @@ This codeunit is only intended to be used from subscribers of [OnAddCommonCustom
 procedure AddCommonCustomDimension(CustomDimensionName: Text; CustomDimensionValue: Text)
 ```
 #### Parameters
-*CustomDimensionName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*CustomDimensionName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the custom dimension.
 
-*CustomDimensionValue ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*CustomDimensionValue ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The value of the custom dimension.
 

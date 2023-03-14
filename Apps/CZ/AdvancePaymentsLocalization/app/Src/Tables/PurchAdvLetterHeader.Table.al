@@ -79,11 +79,9 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 Validate("Bank Account Code", Vendor."Preferred Bank Account Code");
                 "Registration No." := Vendor."Registration No. CZL";
                 "Tax Registration No." := Vendor."Tax Registration No. CZL";
+                "Responsibility Center" := UserSetupManagement.GetRespCenter(1, Vendor."Responsibility Center");
 
-                CreateDim(
-                  Database::Vendor, "Pay-to Vendor No.",
-                  Database::"Salesperson/Purchaser", "Purchaser Code",
-                  Database::"Responsibility Center", "Responsibility Center");
+                CreateDimFromDefaultDim(Rec.FieldNo("Pay-to Vendor No."));
 
                 SetPurchaserCode(Vendor."Purchaser Code", "Purchaser Code");
 
@@ -301,10 +299,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
             trigger OnValidate()
             begin
-                CreateDim(
-                  Database::"Salesperson/Purchaser", "Purchaser Code",
-                  Database::Customer, "Pay-to Vendor No.",
-                  Database::"Responsibility Center", "Responsibility Center");
+                CreateDimFromDefaultDim(Rec.FieldNo("Purchaser Code"));
             end;
         }
         field(25; "Shortcut Dimension 1 Code"; Code[20])
@@ -358,6 +353,8 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 GetSetup();
                 if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date" then
                     Validate("VAT Date", "Posting Date");
+                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date" then
+                    Validate("Original Document VAT Date", "Posting Date");
 
                 if "Currency Code" <> '' then begin
                     UpdateCurrencyFactor();
@@ -383,6 +380,8 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 GetSetup();
                 if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date" then
                     Validate("VAT Date", "Document Date");
+                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date" then
+                    Validate("Original Document VAT Date", "Document Date");
             end;
         }
         field(36; "VAT Date"; Date)
@@ -396,6 +395,9 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 if not GeneralLedgerSetup."Use VAT Date CZL" then
                     TestField("VAT Date", "Posting Date");
                 CheckCurrencyExchangeRate("VAT Date");
+                GetSetup();
+                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date" then
+                    Validate("Original Document VAT Date", "VAT Date");
             end;
         }
         field(38; "Posting Description"; Text[100])
@@ -579,10 +581,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                       IdentSetUpErr,
                       ResponsibilityCenter.TableCaption, UserSetupManagement.GetSalesFilter());
 
-                CreateDim(
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::Vendor, "Pay-to Vendor No.",
-                  Database::"Salesperson/Purchaser", "Purchaser Code");
+                CreateDimFromDefaultDim(Rec.FieldNo("Responsibility Center"));
 
                 if xRec."Responsibility Center" <> "Responsibility Center" then
                     RecreateLines(FieldCaption("Responsibility Center"));
@@ -618,6 +617,12 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             DecimalPlaces = 0 : 15;
             Editable = false;
             MinValue = 0;
+
+            trigger OnValidate()
+            begin
+                if "Currency Factor" <> xRec."Currency Factor" then
+                    UpdateLinesByFieldNo(FieldNo("Currency Factor"));
+            end;
         }
         field(75; "VAT Country/Region Code"; Code[10])
         {
@@ -709,12 +714,35 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
+        field(500; "Incoming Document Entry No."; Integer)
+        {
+            Caption = 'Incoming Document Entry No.';
+            TableRelation = "Incoming Document";
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                IncomingDocument: Record "Incoming Document";
+            begin
+                if "Incoming Document Entry No." = xRec."Incoming Document Entry No." then
+                    exit;
+                if "Incoming Document Entry No." = 0 then
+                    IncomingDocument.RemoveReferenceToWorkingDocument(xRec."Incoming Document Entry No.")
+                else
+                    IncomingDocument.SetPurchaseAdvanceCZZ(Rec);
+            end;
+        }
         field(31040; "Amount on Iss. Payment Order"; Decimal)
         {
             Caption = 'Amount on Issued Payment Order';
             FieldClass = FlowField;
             CalcFormula = sum("Iss. Payment Order Line CZB".Amount where("Purch. Advance Letter No. CZZ" = field("No.")));
             Editable = false;
+        }
+        field(31112; "Original Document VAT Date"; Date)
+        {
+            Caption = 'Original Document VAT Date';
+            DataClassification = CustomerContent;
         }
     }
 
@@ -751,6 +779,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         DimensionManagement: Codeunit DimensionManagement;
+        UserSetupManagement: Codeunit "User Setup Management";
         HasPurchSetup: Boolean;
         HideValidationDialog: Boolean;
         SkipPayToContact: Boolean;
@@ -790,6 +819,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         if not DocumentAttachment.IsEmpty() then
             DocumentAttachment.DeleteAll();
 
+        Validate("Incoming Document Entry No.", 0);
         DeleteRecordInApprovalRequest();
     end;
 
@@ -822,7 +852,6 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
     local procedure InitRecord()
     var
-        UserSetupManagement: Codeunit "User Setup Management";
         AdvanceLbl: Label 'Advance Letter';
     begin
         GetSetup();
@@ -843,6 +872,16 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 "VAT Date" := "Document Date";
             PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
                 "VAT Date" := 0D;
+        end;
+        case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::Blank:
+                "Original Document VAT Date" := 0D;
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
+                "Original Document VAT Date" := "Posting Date";
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
+                "Original Document VAT Date" := "VAT Date";
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
+                "Original Document VAT Date" := "Document Date";
         end;
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";
@@ -920,7 +959,10 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         exit((not HasPayToAddress()) and PayToVendor.HasAddress());
     end;
 
-    local procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
+#if not CLEAN21
+#pragma warning disable AL0432
+    [Obsolete('Replaced by CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])', '21.0')]
+    procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
         TableID: array[10] of Integer;
@@ -948,6 +990,47 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         "Dimension Set ID" :=
           DimensionManagement.GetRecDefaultDimID(
             Rec, CurrFieldNo, TableID, No, SourceCodeSetup.Purchases, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
+            Modify();
+    end;
+
+#pragma warning restore AL0432
+#endif
+    procedure CreateDimFromDefaultDim(FieldNo: Integer)
+    var
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
+    begin
+        InitDefaultDimensionSources(DefaultDimSource, FieldNo);
+        CreateDim(DefaultDimSource);
+    end;
+
+    local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
+    begin
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Vendor, Rec."Pay-to Vendor No.", FieldNo = Rec.FieldNo("Pay-to Vendor No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Purchaser Code", FieldNo = Rec.FieldNo("Purchaser Code"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
+
+        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
+    end;
+
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        OldDimSetID: Integer;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCreateDim(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        SourceCodeSetup.Get();
+        OldDimSetID := "Dimension Set ID";
+        "Dimension Set ID" := DimensionManagement.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup.Purchases,
+                                "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        OnAfterCreateDim(Rec, xRec, CurrFieldNo, OldDimSetID);
 
         if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
             Modify();
@@ -1142,6 +1225,53 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             Error(RecreatePurchLinesCancelErr, ChangedFieldName);
     end;
 
+    procedure UpdateLinesByFieldNo(ChangedFieldNo: Integer)
+    var
+        PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
+        "Field": Record "Field";
+        IsHandled: Boolean;
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        if IsNullGuid(Rec.SystemId) then
+            exit;
+
+        IsHandled := false;
+        OnBeforeUpdateLinesByFieldNo(Rec, ChangedFieldNo, xRec, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not LinesExist() then
+            exit;
+
+        if not Field.Get(Database::"Sales Adv. Letter Header CZZ", ChangedFieldNo) then
+            Field.Get(Database::"Sales Adv. Letter Line CZZ", ChangedFieldNo);
+
+        PurchAdvLetterLineCZZ.LockTable();
+        if not Rec.Modify() then
+            exit;
+
+        PurchAdvLetterLineCZZ.Reset();
+        PurchAdvLetterLineCZZ.SetRange("Document No.", "No.");
+        if PurchAdvLetterLineCZZ.FindSet() then
+            repeat
+                IsHandled := false;
+                OnBeforeLineByChangedFieldNo(Rec, PurchAdvLetterLineCZZ, ChangedFieldNo, xRec, IsHandled);
+                if not IsHandled then
+                    case ChangedFieldNo of
+                        FieldNo("Currency Factor"):
+                            PurchAdvLetterLineCZZ.Validate("Amount Including VAT");
+                        else
+                            OnUpdateLineByChangedFieldName(Rec, PurchAdvLetterLineCZZ, Field.FieldName, ChangedFieldNo);
+                    end;
+                OnUpdateLinesByFieldNoOnBeforeLineModify(PurchAdvLetterLineCZZ, ChangedFieldNo, CurrFieldNo);
+                PurchAdvLetterLineCZZ.Modify(true);
+            until PurchAdvLetterLineCZZ.Next() = 0;
+
+        OnAfterUpdateLinesByFieldNo(Rec, xRec, ChangedFieldNo);
+    end;
+
     procedure LinesExist(): Boolean
     var
         PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
@@ -1300,64 +1430,43 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         exit(UserSetup."Salespers./Purch. Code");
     end;
 
-    procedure PrintRecord(ShowDialog: Boolean)
+    procedure PrintRecords(ShowRequestPage: Boolean)
     var
-        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        PrintReportID: Integer;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
-        PurchAdvLetterHeaderCZZ.Copy(Rec);
-        if not PurchAdvLetterHeaderCZZ.FindSet() then
-            exit;
-
-        AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Document Report ID");
-        if PurchAdvLetterHeaderCZZ.Count() > 1 then begin
-            PrintReportID := AdvanceLetterTemplateCZZ."Document Report ID";
-            PurchAdvLetterHeaderCZZ.Next();
-            repeat
-                AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-                AdvanceLetterTemplateCZZ.TestField("Document Report ID", PrintReportID);
-            until PurchAdvLetterHeaderCZZ.Next() = 0;
-        end;
-        Report.Run(AdvanceLetterTemplateCZZ."Document Report ID", ShowDialog, false, PurchAdvLetterHeaderCZZ);
+        IsHandled := false;
+        OnBeforePrintRecords(Rec, ShowRequestPage, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToPrinterVendor(
+              DummyReportSelections.Usage::"Purchase Advance Letter CZZ".AsInteger(), Rec, FieldNo("Pay-to Vendor No."), ShowRequestPage);
     end;
 
     procedure PrintToDocumentAttachment()
     var
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        DocumentAttachment: Record "Document Attachment";
-        DocumentAttachmentMgmt: Codeunit "Document Attachment Mgmt";
-        TempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
-        DummyInStream: InStream;
-        ReportOutStream: OutStream;
-        DocumentInStream: InStream;
-        FileName: Text[250];
-        DocumentAttachmentFileNameTok: Label '%1', Comment = '%1 = Advance Letter No.', Locked = true;
     begin
-        PurchAdvLetterHeaderCZZ := Rec;
+        PurchAdvLetterHeaderCZZ.Copy(Rec);
+        if PurchAdvLetterHeaderCZZ.FindSet() then
+            repeat
+                DoPrintToDocumentAttachment(PurchAdvLetterHeaderCZZ);
+            until PurchAdvLetterHeaderCZZ.Next() = 0;
+    end;
+
+    local procedure DoPrintToDocumentAttachment(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    var
+        ReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeDoPrintToDocumentAttachment(PurchAdvLetterHeaderCZZ, IsHandled);
+        if IsHandled then
+            exit;
+
         PurchAdvLetterHeaderCZZ.SetRecFilter();
-        RecordRef.GetTable(PurchAdvLetterHeaderCZZ);
-        if not RecordRef.FindFirst() then
-            exit;
-
-        AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Document Report ID");
-        if not Report.RdlcLayout(AdvanceLetterTemplateCZZ."Document Report ID", DummyInStream) then
-            exit;
-
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(ReportOutStream);
-        Report.SaveAs(AdvanceLetterTemplateCZZ."Document Report ID", '',
-                    ReportFormat::Pdf, ReportOutStream, RecordRef);
-
-        Clear(DocumentAttachment);
-        DocumentAttachment.InitFieldsFromRecRef(RecordRef);
-        FileName := DocumentAttachment.FindUniqueFileName(
-                    StrSubstNo(DocumentAttachmentFileNameTok, PurchAdvLetterHeaderCZZ."No."), 'pdf');
-        TempBlob.CreateInStream(DocumentInStream);
-        DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
-        DocumentAttachmentMgmt.ShowNotification(RecordRef, 1, true);
+        ReportSelections.SaveAsDocumentAttachment(
+            ReportSelections.Usage::"Purchase Advance Letter CZZ".AsInteger(), PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."No.", PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", true);
     end;
 
     procedure CheckPurchaseAdvanceLetterReleaseRestrictions()
@@ -1383,6 +1492,19 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
     end;
 
+    procedure CalcSuggestedAmountToApply(): Decimal
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CalcSuggestedAmountToApplyPurchAdvLetterHeader(Rec."No."));
+    end;
+
+    procedure DrillDownSuggestedAmountToApply()
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApplyPurchAdvLetterHeader(Rec."No.");
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnValidatePaymentTermsCodeOnBeforeCalcDueDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CalledByFieldNo: Integer; CallingFieldNo: Integer; var IsHandled: Boolean)
@@ -1430,10 +1552,17 @@ table 31008 "Purch. Adv. Letter Header CZZ"
     end;
 
     [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDim(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CurrentFieldNo: Integer; OldDimSetID: Integer)
+    begin
+    end;
+
+#if not CLEAN21
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateDimTableIDs(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CallingFieldNo: Integer; var TableID: array[10] of Integer; var No: array[10] of Code[20])
     begin
     end;
 
+#endif
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdatePayToCont(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; Vendor: Record Vendor; Contact: Record Contact)
     begin
@@ -1501,6 +1630,46 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeDeleteRecordInApprovalRequest(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePrintRecords(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitDefaultDimensionSources(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateLinesByFieldNo(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; ChangedFieldNo: Integer; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeLineByChangedFieldNo(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; ChangedFieldNo: Integer; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateLineByChangedFieldName(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; ChangedFieldName: Text[100]; ChangedFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateLinesByFieldNoOnBeforeLineModify(var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; ChangedFieldNo: Integer; CurrentFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateLinesByFieldNo(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; ChangedFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeDoPrintToDocumentAttachment(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
     begin
     end;
 }

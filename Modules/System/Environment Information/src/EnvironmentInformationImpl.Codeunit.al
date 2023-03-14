@@ -108,6 +108,22 @@ codeunit 3702 "Environment Information Impl."
         exit(AppInfo.DataVersion.Major());
     end;
 
+    procedure CanStartSession(): Boolean
+    var
+        NavTestExecution: DotNet NavTestExecution;
+    begin
+        if GetExecutionContext() in [ExecutionContext::Install, ExecutionContext::Upgrade] then
+            exit(false);
+
+        // Sessions cannot be started in tests if test isolation is enabled
+        // 1) check that a test is indeed being executed (so the current user is not delegated admin / device / GDAP guest user)
+        if NavTestExecution.IsInTestMode() then
+            // 2) check for test isolation
+            exit(TaskScheduler.CanCreateTask());
+
+        exit(true);
+    end;
+
     local procedure GetAppId() AppId: Text
     begin
         OnBeforeGetApplicationIdentifier(AppId);

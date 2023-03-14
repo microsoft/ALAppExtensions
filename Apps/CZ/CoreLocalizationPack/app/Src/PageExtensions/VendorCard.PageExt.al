@@ -25,6 +25,7 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
                 Importance = Additional;
             }
         }
+#if not CLEAN21
         addafter("Balance (LCY)")
         {
             field(BalanceOfCustomerCYL; BalanceAsCustomer)
@@ -34,6 +35,10 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
                 Editable = false;
                 Enabled = BalanceOfCustomerEnabled;
                 ToolTip = 'Specifies the customer''s balance which is connected with certain vendor';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Duplicated field.';
+                ObsoleteTag = '21.0';
 
                 trigger OnDrillDown()
                 var
@@ -48,6 +53,7 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
                 end;
             }
         }
+#endif
         addlast(Invoicing)
         {
             field("Transaction Type CZL"; Rec."Transaction Type CZL")
@@ -146,7 +152,7 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
             }
         }
     }
-
+#if not CLEAN21
     trigger OnAfterGetCurrRecord()
     begin
         if Customer.Get(Rec.GetLinkedCustomerCZL()) then begin
@@ -164,4 +170,5 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
         BalanceAsCustomer: Decimal;
         [InDataSet]
         BalanceOfCustomerEnabled: Boolean;
+#endif
 }

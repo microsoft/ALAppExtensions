@@ -5,7 +5,6 @@ page 31181 "Purch. Advance Letter CZZ"
     PageType = Document;
     SourceTable = "Purch. Adv. Letter Header CZZ";
     RefreshOnActivate = true;
-    PromotedActionCategories = 'New,Process,Report,Release,History,Print/Send,Navigate';
     UsageCategory = None;
 
     layout
@@ -147,6 +146,12 @@ page 31181 "Purch. Advance Letter CZZ"
                     ToolTip = 'Specifies the VAT date. This date must be shown on the VAT statement.';
                     Visible = false;
                 }
+                field("Original Document VAT Date"; Rec."Original Document VAT Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the VAT date of the original document.';
+                    Visible = false;
+                }
                 field("Advance Due Date"; Rec."Advance Due Date")
                 {
                     ApplicationArea = Basic, Suite;
@@ -224,8 +229,11 @@ page 31181 "Purch. Advance Letter CZZ"
                             ChangeExchangeRate.SetParameter(Rec."Currency Code", Rec."Currency Factor", Rec."Posting Date")
                         else
                             ChangeExchangeRate.SetParameter(Rec."Currency Code", Rec."Currency Factor", WorkDate());
-                        if ChangeExchangeRate.RunModal() = Action::OK then
+                        if ChangeExchangeRate.RunModal() = Action::OK then begin
                             Rec.Validate("Currency Factor", ChangeExchangeRate.GetParameter());
+                            CurrPage.SaveRecord();
+                            CurrPage.AdvLetterLines.Page.ClearAdvLetterDocTotals();
+                        end
                     end;
 
                     trigger OnValidate()
@@ -260,6 +268,22 @@ page 31181 "Purch. Advance Letter CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code for Shortcut Dimension 2, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
+                }
+                field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+                }
+                field("Registration No. CZL"; Rec."Registration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the registration number of vendor.';
+                }
+                field("Tax Registration No. CZL"; Rec."Tax Registration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the secondary VAT registration number for the vendor.';
+                    Importance = Additional;
                 }
             }
             group(Payments)
@@ -401,20 +425,6 @@ page 31181 "Purch. Advance Letter CZZ"
                     RunObject = Page "Suggested Usage CZZ";
                     RunPageLink = "Advance Letter Type" = const(Purchase), "Advance Letter No." = field("No.");
                 }
-                action("A&pprovals")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'A&pprovals';
-                    Image = Approvals;
-                    ToolTip = 'This function opens the approvals entries.';
-
-                    trigger OnAction()
-                    var
-                        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
-                    begin
-                        ApprovalsMgmt.OpenApprovalEntriesPage(Rec.RecordId);
-                    end;
-                }
                 action(DocAttach)
                 {
                     ApplicationArea = Basic, Suite;
@@ -444,10 +454,6 @@ page 31181 "Purch. Advance Letter CZZ"
                     Caption = 'Advance Letter Entries';
                     Image = Entries;
                     ShortCutKey = 'Ctrl+F7';
-                    Promoted = true;
-                    PromotedIsBig = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'View a list of entries related to this document.';
                     RunObject = Page "Purch. Adv. Letter Entries CZZ";
                     RunPageLink = "Purch. Adv. Letter No." = field("No.");
@@ -464,11 +470,7 @@ page 31181 "Purch. Advance Letter CZZ"
                     ApplicationArea = All;
                     Caption = 'Approve';
                     Image = Approve;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
-                    ToolTip = 'Relations to the workflow.';
+                    ToolTip = 'Approve the requested changes.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
                     trigger OnAction()
@@ -483,10 +485,7 @@ page 31181 "Purch. Advance Letter CZZ"
                     ApplicationArea = All;
                     Caption = 'Reject';
                     Image = Reject;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedIsBig = true;
-                    ToolTip = 'Rejects credit document';
+                    ToolTip = 'Reject the approval request.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
                     trigger OnAction()
@@ -501,9 +500,7 @@ page 31181 "Purch. Advance Letter CZZ"
                     ApplicationArea = All;
                     Caption = 'Delegate';
                     Image = Delegate;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    ToolTip = 'Specifies enu delegate of cash document.';
+                    ToolTip = 'Delegate the approval to a substitute approver.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
                     trigger OnAction()
@@ -518,9 +515,7 @@ page 31181 "Purch. Advance Letter CZZ"
                     ApplicationArea = All;
                     Caption = 'Comments';
                     Image = ViewComments;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    ToolTip = 'Specifies cash document comments.';
+                    ToolTip = 'View or add comments for the record.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
                     trigger OnAction()
@@ -538,13 +533,9 @@ page 31181 "Purch. Advance Letter CZZ"
                 action(Release)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Release';
+                    Caption = 'Re&lease';
                     Enabled = Status = Status::New;
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
-                    PromotedCategory = Category4;
                     ShortCutKey = 'Ctrl+F9';
                     ToolTip = 'Release the document.';
 
@@ -558,12 +549,9 @@ page 31181 "Purch. Advance Letter CZZ"
                 action(Reopen)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Reopen';
+                    Caption = 'Re&open';
                     Enabled = Status = Status::"To Pay";
                     Image = ReOpen;
-                    Promoted = true;
-                    PromotedOnly = true;
-                    PromotedCategory = Category4;
                     ToolTip = 'Reopen the document.';
 
                     trigger OnAction()
@@ -599,17 +587,28 @@ page 31181 "Purch. Advance Letter CZZ"
             group("Request Approval")
             {
                 Caption = 'Request Approval';
-                Image = SendApprovalRequest;
+                action(Approvals)
+                {
+                    AccessByPermission = TableData "Approval Entry" = R;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Approvals';
+                    Image = Approvals;
+                    ToolTip = 'View a list of the records that are waiting to be approved. For example, you can see who requested the record to be approved, when it was sent, and when it is due to be approved.';
+
+                    trigger OnAction()
+                    var
+                        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+                    begin
+                        ApprovalsMgmt.OpenApprovalEntriesPage(Rec.RecordId);
+                    end;
+                }
                 action(SendApprovalRequest)
                 {
                     ApplicationArea = Suite;
                     Caption = 'Send A&pproval Request';
                     Enabled = not OpenApprovalEntriesExist;
                     Image = SendApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
-                    ToolTip = 'Relations to the workflow.';
+                    ToolTip = 'Request approval of the document.';
 
                     trigger OnAction()
                     var
@@ -625,15 +624,78 @@ page 31181 "Purch. Advance Letter CZZ"
                     Caption = 'Cancel Approval Re&quest';
                     Enabled = OpenApprovalEntriesExist;
                     Image = CancelApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
-                    ToolTip = 'Relations to the workflow.';
+                    ToolTip = 'Cancel the approval request.';
 
                     trigger OnAction()
                     var
                         AdvPaymentsApprovMgtCZZ: Codeunit "Adv. Payments Approv. Mgt. CZZ";
                     begin
                         AdvPaymentsApprovMgtCZZ.OnCancelPurchaseAdvanceLetterApprovalRequest(Rec);
+                    end;
+                }
+            }
+            group(IncomingDocument)
+            {
+                Caption = 'Incoming Document';
+                Image = Documents;
+                action(IncomingDocCard)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'View Incoming Document';
+                    Enabled = HasIncomingDocument;
+                    Image = ViewOrder;
+                    ToolTip = 'View any incoming document records and file attachments that exist for the entry or document.';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocument: Record "Incoming Document";
+                    begin
+                        IncomingDocument.ShowCardFromEntryNo(Rec."Incoming Document Entry No.");
+                    end;
+                }
+                action(SelectIncomingDoc)
+                {
+                    AccessByPermission = tabledata "Incoming Document" = R;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Select Incoming Document';
+                    Image = SelectLineToApply;
+                    ToolTip = 'Select an incoming document record and file attachment that you want to link to the entry or document.';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocument: Record "Incoming Document";
+                    begin
+                        Rec.Validate("Incoming Document Entry No.", IncomingDocument.SelectIncomingDocument(Rec."Incoming Document Entry No.", Rec.RecordId));
+                    end;
+                }
+                action(IncomingDocAttachFile)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create Incoming Document from File';
+                    Ellipsis = true;
+                    Enabled = not HasIncomingDocument;
+                    Image = Attach;
+                    ToolTip = 'Create an incoming document record by selecting a file to attach, and then link the incoming document record to the entry or document.';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+                    begin
+                        IncomingDocumentAttachment.NewAttachmentFromDocument(Rec."Incoming Document Entry No.",
+                          Database::"Purch. Adv. Letter Header CZZ", 0, Rec."No.");
+                    end;
+                }
+                action(RemoveIncomingDoc)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Remove Incoming Document';
+                    Enabled = HasIncomingDocument;
+                    Image = RemoveLine;
+                    ToolTip = 'Remove an external document that has been recorded, manually or automatically, and attached as a file to a document or ledger entry.';
+
+                    trigger OnAction()
+                    begin
+                        Rec."Incoming Document Entry No." := 0;
                     end;
                 }
             }
@@ -645,9 +707,6 @@ page 31181 "Purch. Advance Letter CZZ"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Advance Letter';
                 Image = PrintReport;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Report;
                 Ellipsis = true;
                 ToolTip = 'Allows the print of advance letter.';
 
@@ -656,8 +715,8 @@ page 31181 "Purch. Advance Letter CZZ"
                     PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                 begin
                     PurchAdvLetterHeaderCZZ := Rec;
-                    PurchAdvLetterHeaderCZZ.SetRecFilter();
-                    PurchAdvLetterHeaderCZZ.PrintRecord(true);
+                    CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
+                    PurchAdvLetterHeaderCZZ.PrintRecords(true);
                 end;
             }
             action(PrintToAttachment)
@@ -665,15 +724,80 @@ page 31181 "Purch. Advance Letter CZZ"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
+                var
+                    PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                 begin
-                    Rec.PrintToDocumentAttachment();
+                    PurchAdvLetterHeaderCZZ := Rec;
+                    CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
+                    PurchAdvLetterHeaderCZZ.PrintToDocumentAttachment();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Report)
+            {
+                Caption = 'Report';
+
+                actionref(Print_Promoted; Print)
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Release)
+            {
+                Caption = 'Release';
+
+                actionref(Release_Promoted; Release)
+                {
+                }
+                actionref(Reopen_Promoted; Reopen)
+                {
+                }
+            }
+            group(Category_History)
+            {
+                Caption = 'History';
+
+                actionref(Entries_Promoted; Entries)
+                {
+                }
+            }
+            group(Category_Approve)
+            {
+                Caption = 'Approve';
+
+                actionref(Approve_Promoted; Approve)
+                {
+                }
+                actionref(Reject_Promoted; Reject)
+                {
+                }
+                actionref(Delegate_Promoted; Delegate)
+                {
+                }
+                actionref(Comment_Promoted; Comment)
+                {
+                }
+            }
+            group(Category_RequestApproval)
+            {
+                Caption = 'Request Approval';
+
+                actionref(Approvals_Promoted; Approvals)
+                {
+                }
+                actionref(SendApprovalRequest_Promoted; SendApprovalRequest)
+                {
+                }
+                actionref(CancelApprovalRequest_Promoted; CancelApprovalRequest)
+                {
+                }
             }
         }
     }
@@ -706,11 +830,7 @@ page 31181 "Purch. Advance Letter CZZ"
 
     var
         FormatAddress: Codeunit "Format Address";
-        DocNoVisible: Boolean;
-        IsBillToCountyVisible: Boolean;
-        DynamicEditable: Boolean;
-        OpenApprovalEntriesExistForCurrUser: Boolean;
-        OpenApprovalEntriesExist: Boolean;
+        DocNoVisible, IsBillToCountyVisible, DynamicEditable, OpenApprovalEntriesExistForCurrUser, OpenApprovalEntriesExist, HasIncomingDocument : Boolean;
 
     local procedure SetDocNoVisible()
     var
@@ -731,6 +851,7 @@ page 31181 "Purch. Advance Letter CZZ"
     var
         ApprovalsMgmt: Codeunit "Approvals Mgmt.";
     begin
+        HasIncomingDocument := Rec."Incoming Document Entry No." <> 0;
         OpenApprovalEntriesExistForCurrUser := ApprovalsMgmt.HasOpenApprovalEntriesForCurrentUser(Rec.RecordId);
         OpenApprovalEntriesExist := ApprovalsMgmt.HasOpenApprovalEntries(Rec.RecordId);
     end;

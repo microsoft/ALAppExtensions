@@ -109,13 +109,13 @@ codeunit 54 "Language Impl."
 
     procedure ValidateApplicationLanguageId(LanguageId: Integer)
     var
-        TempLanguage: Record "Windows Language" temporary;
+        TempWindowsLanguage: Record "Windows Language" temporary;
     begin
-        GetApplicationLanguages(TempLanguage);
+        GetApplicationLanguages(TempWindowsLanguage);
 
-        TempLanguage.SetRange("Language ID", LanguageId);
+        TempWindowsLanguage.SetRange("Language ID", LanguageId);
 
-        if TempLanguage.IsEmpty() then
+        if TempWindowsLanguage.IsEmpty() then
             Error(LanguageNotFoundErr, LanguageId);
     end;
 

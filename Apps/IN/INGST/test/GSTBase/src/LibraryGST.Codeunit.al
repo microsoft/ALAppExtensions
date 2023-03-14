@@ -1234,4 +1234,24 @@ codeunit 18077 "Library GST"
             CreateGSTPostingSetup(TaxComponent, LocationStateCode);
         end;
     end;
+
+    procedure CreateOrderAddress(var OrderAddress: Record "Order Address"; VendorNo: Code[20]): Code[10]
+    var
+        PostCode: Record "Post Code";
+    begin
+        LibraryERM.CreatePostCode(PostCode);
+        OrderAddress.Init();
+        OrderAddress.Validate("Vendor No.", VendorNo);
+        OrderAddress.Validate(
+          Code,
+          CopyStr(
+            LibraryUtility.GenerateRandomCode(OrderAddress.FieldNo(Code), DATABASE::"Order Address"),
+            1,
+            LibraryUtility.GetFieldLength(DATABASE::"Order Address", OrderAddress.FieldNo(Code))));
+        OrderAddress.Validate(Name, LibraryUtility.GenerateRandomText(MaxStrLen(OrderAddress.Name)));
+        OrderAddress.Validate(Address, LibraryUtility.GenerateRandomText(MaxStrLen(OrderAddress.Address)));
+        OrderAddress.Validate("Post Code", PostCode.Code);
+        OrderAddress.Insert(true);
+        exit(OrderAddress.Code);
+    end;
 }

@@ -175,12 +175,12 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
     }
     actions
     {
-        area(processing)
+        area(Processing)
         {
             group(AdvanceLetterVAT)
             {
-                Caption = 'VAT Document';
-                Image = Document;
+                Caption = 'Posting';
+                Image = PostingEntries;
 
                 action(PostPaymentVAT)
                 {
@@ -275,6 +275,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                     Caption = 'Find Entries';
                     Image = Navigate;
                     Ellipsis = true;
+                    ShortCutKey = 'Ctrl+Alt+Q';
                     ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
                     trigger OnAction()
@@ -313,7 +314,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                     PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
                 begin
                     CurrPage.SetSelectionFilter(PurchAdvLetterEntryCZZ);
-                    PurchAdvLetterEntryCZZ.PrintRecord(true);
+                    PurchAdvLetterEntryCZZ.PrintRecords(true);
                 end;
             }
         }
@@ -321,13 +322,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
 
     var
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
         IsClosed: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-    end;
 
     trigger OnAfterGetRecord()
     begin

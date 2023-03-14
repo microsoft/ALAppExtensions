@@ -13,6 +13,7 @@ page 1914 "MigrationQB VendorTable"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(GivenName; GivenName) { ApplicationArea = All; }
                 field(FamilyName; FamilyName) { ApplicationArea = All; }
                 field(CompanyName; CompanyName) { ApplicationArea = All; }
@@ -27,6 +28,7 @@ page 1914 "MigrationQB VendorTable"
                 field(PrimaryEmailAddr; PrimaryEmailAddr) { ApplicationArea = All; }
                 field(WebAddr; WebAddr) { ApplicationArea = All; }
                 field(Fax; Fax) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }
@@ -43,12 +45,13 @@ page 1914 "MigrationQB VendorTable"
                 {
                     ApplicationArea = All;
                     Caption = 'Vendor Transactions';
+                    ToolTip = 'View QuickBooks vendor transactions.';
                     Promoted = true;
                     PromotedIsBig = true;
                     PromotedOnly = true;
                     Image = EntriesList;
                     RunObject = Page "MigrationQB VendorTrans";
-                    RunPageLink = VendorRef = field (ListId);
+                    RunPageLink = VendorRef = field(ListId);
                     RunPageMode = Edit;
                 }
             }

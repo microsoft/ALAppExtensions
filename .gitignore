@@ -23,6 +23,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Oo]ut/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -287,10 +288,29 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
-# AL extension
-**/.vscode/*.json
+### AL ###
+#Template for AL projects for Dynamics 365 Business Central
+#launch.json folder
+.vscode/
+#Cache folder
+.alcache/
+#Symbols folder
+.alpackages/
+#Snapshots folder
+.snapshots/
+#Testing Output folder
+.output/
+#Extension App-file
 *.app
-AddOns/AMCBanking365Fundamentals/test/app.json
-AddOns/AMCBanking365Fundamentals/test/AppResources/Mock request  response/App.config
-AddOns/AMCBanking365Fundamentals/app/app.json
-AddOns/AMCBanking365Fundamentals/app/app.json
+#Rapid Application Development File
+rad.json
+#Translation Base-file
+*.g.xlf
+#License-files
+*.bclicense
+*.flf
+#Test results file
+TestResults.xml
+#Translation files
+*.xlf
+*.lcg

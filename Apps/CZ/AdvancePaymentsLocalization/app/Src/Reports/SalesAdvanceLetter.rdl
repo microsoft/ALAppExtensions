@@ -755,7 +755,6 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
-                                          <rd:Selected>true</rd:Selected>
                                         </CellContents>
                                       </TablixCell>
                                       <TablixCell>
@@ -2324,6 +2323,9 @@ Cstr(Fields!PageLbl.Value)</Value>
                                                 <Style />
                                               </Paragraph>
                                             </Paragraphs>
+                                            <Visibility>
+                                              <Hidden>=Fields!VAT_SalesAdvanceLetterLine.Value = 0</Hidden>
+                                            </Visibility>
                                             <Style>
                                               <Border>
                                                 <Color>LightGrey</Color>
@@ -2358,6 +2360,9 @@ Cstr(Fields!PageLbl.Value)</Value>
                                                 </Style>
                                               </Paragraph>
                                             </Paragraphs>
+                                            <Visibility>
+                                              <Hidden>=Fields!AmountIncludingVAT_SalesAdvanceLetterLine.Value = 0</Hidden>
+                                            </Visibility>
                                             <Style>
                                               <Border>
                                                 <Color>LightGrey</Color>
@@ -3105,6 +3110,18 @@ End Function</Code>
         <Field Name="CreatorLbl">
           <DataField>CreatorLbl</DataField>
         </Field>
+        <Field Name="GreetingLbl">
+          <DataField>GreetingLbl</DataField>
+        </Field>
+        <Field Name="BodyLbl">
+          <DataField>BodyLbl</DataField>
+        </Field>
+        <Field Name="ClosingLbl">
+          <DataField>ClosingLbl</DataField>
+        </Field>
+        <Field Name="DocumentNoLbl">
+          <DataField>DocumentNoLbl</DataField>
+        </Field>
         <Field Name="No_SalesAdvanceLetterHeader">
           <DataField>No_SalesAdvanceLetterHeader</DataField>
         </Field>
@@ -3191,6 +3208,15 @@ End Function</Code>
         </Field>
         <Field Name="AdvanceDueDate_SalesAdvancLetterHeader">
           <DataField>AdvanceDueDate_SalesAdvancLetterHeader</DataField>
+        </Field>
+        <Field Name="AmountIncludingVATLbl">
+          <DataField>AmountIncludingVATLbl</DataField>
+        </Field>
+        <Field Name="AmountIncludingVAT">
+          <DataField>AmountIncludingVAT</DataField>
+        </Field>
+        <Field Name="AmountIncludingVATFormat">
+          <DataField>AmountIncludingVATFormat</DataField>
         </Field>
         <Field Name="CopyNo">
           <DataField>CopyNo</DataField>

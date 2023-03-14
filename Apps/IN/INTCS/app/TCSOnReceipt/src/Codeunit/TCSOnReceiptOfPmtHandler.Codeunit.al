@@ -143,7 +143,7 @@ codeunit 18903 "TCS On Receipt Of Pmt. Handler"
         TCSEntry."Document No." := GenJnlLine."Document No."; // Payment Document No.
         TCSEntry."Posting Date" := GenJournalLine."Posting Date";
         TCSEntry."Account Type" := TCSEntry."Account Type"::"G/L Account";
-        TCSEntry.Description := Copystr(GenJournalLine.Description, 1, 50);
+        TCSEntry.Description := GenJournalLine.Description;
         TCSEntry."Account No." := GenJournalLine."Bal. Account No.";
         TCSEntry."Customer Account No." := CustomerPostingGroup."Receivables Account";
         TCSEntry."TCS Nature of Collection" := GenJournalLine."TCS Nature of Collection";
@@ -177,7 +177,7 @@ codeunit 18903 "TCS On Receipt Of Pmt. Handler"
         TCSEntry."T.C.A.N. No." := GenJournalLine."T.C.A.N. No.";
         TCSEntry."Concessional Code" := ConcessionalCode;
         TCSEntry."Concessional Form No." := ConcessionalFormNo;
-        TCSEntry."User ID" := UserId;
+        TCSEntry."User ID" := CopyStr(UserId(), 1, 50);
         TCSEntry."Source Code" := GenJnlLine."Source Code";
         TCSEntry.Applied := (GenJnlLine."Applies-to Doc. No." <> '') or (GenJnlLine."Applies-to ID" <> '');
         TCSEntry.Insert(true);

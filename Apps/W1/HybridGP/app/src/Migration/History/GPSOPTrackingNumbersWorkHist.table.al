@@ -1,6 +1,6 @@
 table 4076 "GPSOPTrackingNumbersWorkHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

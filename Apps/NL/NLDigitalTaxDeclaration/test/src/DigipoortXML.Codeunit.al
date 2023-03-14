@@ -20,6 +20,8 @@ codeunit 148000 "Digipoort XML"
         XbrliXbrlTok: Label 'xbrli:xbrl';
         AttrBdITok: Label 'xmlns:bd-i';
         AttrBdObTok: Label 'xmlns:bd-ob';
+        BDDataEndpointTxt: Label 'http://www.nltaxonomie.nl/nt17/bd/20221207/dictionary/bd-data', Locked = true;
+        VATDeclarationSchemaEndpointTxt: Label 'http://www.nltaxonomie.nl/nt17/bd/20221207/entrypoints/bd-rpt-ob-aangifte-2023.xsd', Locked = true;
 
     [Test]
     [HandlerFunctions('VATStatementRequestPageHandler,MessageHandler')]
@@ -88,10 +90,9 @@ codeunit 148000 "Digipoort XML"
         VATReportArchive: Record "VAT Report Archive";
         ElecTaxDeclarationSetup: Record "Elec. Tax Declaration Setup";
         CompanyInfo: Record "Company Information";
-        ElecTaxDeclarationMgt: Codeunit "Elec. Tax Declaration Mgt.";
         SubmissionMessageInStream: InStream;
-        Nodes: array[24] of Text;
-        Index: Integer;
+        NodeList: List of [Text];
+        Node: Text;
     begin
         VATReportArchive.Get(VATReportHeader."VAT Report Config. Code", VATReportHeader."No.");
         VATReportArchive.CalcFields("Submission Message BLOB");
@@ -103,9 +104,9 @@ codeunit 148000 "Digipoort XML"
         VATReportArchive."Submission Message BLOB".CreateInStream(SubmissionMessageInStream, TextEncoding::UTF8);
         LibraryXMLReadServer.LoadXMLDocFromInStream(SubmissionMessageInStream);
         LibraryXMLReadServer.VerifyAttributeAbsence(XbrliXbrlTok, AttrBdObTok);
-        LibraryXMLReadServer.VerifyAttributeValue(XbrliXbrlTok, AttrBdITok, ElecTaxDeclarationMgt.GetBDDataEndpoint());
+        LibraryXMLReadServer.VerifyAttributeValue(XbrliXbrlTok, AttrBdITok, BDDataEndpointTxt);
         LibraryXMLReadServer.VerifyAttributeValueInSubtree(
-          XbrliXbrlTok, 'link:schemaRef', 'xlink:href', ElecTaxDeclarationMgt.GetVATDeclarationSchemaEndpoint());
+          XbrliXbrlTok, 'link:schemaRef', 'xlink:href', VATDeclarationSchemaEndpointTxt);
         LibraryXMLReadServer.VerifyNodeValueInSubtree('xbrli:context', 'xbrli:identifier', DelStr(CompanyInfo."VAT Registration No.", 1, 2));
         LibraryXMLReadServer.VerifyNodeValueInSubtree(
           'xbrli:period', 'xbrli:startDate', Format(VATReportHeader."Start Date", 0, '<Year4>-<Month,2>-<Day,2>'));
@@ -132,34 +133,34 @@ codeunit 148000 "Digipoort XML"
                 end;
         end;
 
-        Nodes[1] := 'bd-i:InstallationDistanceSalesWithinTheEC';
-        Nodes[2] := 'bd-i:SmallEntrepreneurProvisionReduction';
-        Nodes[3] := 'bd-i:SuppliesServicesNotTaxed';
-        Nodes[4] := 'bd-i:SuppliesToCountriesOutsideTheEC';
-        Nodes[5] := 'bd-i:SuppliesToCountriesWithinTheEC';
-        Nodes[6] := 'bd-i:TaxedTurnoverPrivateUse';
-        Nodes[7] := 'bd-i:TaxedTurnoverSuppliesServicesGeneralTariff';
-        Nodes[8] := 'bd-i:TaxedTurnoverSuppliesServicesOtherRates';
-        Nodes[9] := 'bd-i:TaxedTurnoverSuppliesServicesReducedTariff';
-        Nodes[10] := 'bd-i:TurnoverFromTaxedSuppliesFromCountriesOutsideTheEC';
-        Nodes[11] := 'bd-i:TurnoverFromTaxedSuppliesFromCountriesWithinTheEC';
-        Nodes[12] := 'bd-i:TurnoverSuppliesServicesByWhichVATTaxationIsTransferred';
-        Nodes[13] := 'bd-i:ValueAddedTaxOnInput';
-        Nodes[14] := 'bd-i:ValueAddedTaxOnSuppliesFromCountriesOutsideTheEC';
-        Nodes[15] := 'bd-i:ValueAddedTaxOnSuppliesFromCountriesWithinTheEC';
-        Nodes[16] := 'bd-i:ValueAddedTaxOwed';
-        Nodes[17] := 'bd-i:ValueAddedTaxOwedToBePaidBack';
-        Nodes[18] := 'bd-i:ValueAddedTaxPrivateUse';
-        Nodes[19] := 'bd-i:ValueAddedTaxSuppliesServicesByWhichVATTaxationIsTransferred';
-        Nodes[20] := 'bd-i:ValueAddedTaxSuppliesServicesGeneralTariff';
-        Nodes[21] := 'bd-i:ValueAddedTaxSuppliesServicesOtherRates';
-        Nodes[22] := 'bd-i:ValueAddedTaxSuppliesServicesReducedTariff';
+        NodeList.AddRange(
+            'bd-i:InstallationDistanceSalesWithinTheEC',
+            'bd-i:SuppliesServicesNotTaxed',
+            'bd-i:SuppliesToCountriesOutsideTheEC',
+            'bd-i:SuppliesToCountriesWithinTheEC',
+            'bd-i:TaxedTurnoverPrivateUse',
+            'bd-i:TaxedTurnoverSuppliesServicesGeneralTariff',
+            'bd-i:TaxedTurnoverSuppliesServicesOtherRates',
+            'bd-i:TaxedTurnoverSuppliesServicesReducedTariff',
+            'bd-i:TurnoverFromTaxedSuppliesFromCountriesOutsideTheEC',
+            'bd-i:TurnoverFromTaxedSuppliesFromCountriesWithinTheEC',
+            'bd-i:TurnoverSuppliesServicesByWhichVATTaxationIsTransferred',
+            'bd-i:ValueAddedTaxOnInput',
+            'bd-i:ValueAddedTaxOnSuppliesFromCountriesOutsideTheEC',
+            'bd-i:ValueAddedTaxOnSuppliesFromCountriesWithinTheEC',
+            'bd-i:ValueAddedTaxOwed',
+            'bd-i:ValueAddedTaxOwedToBePaidBack',
+            'bd-i:ValueAddedTaxPrivateUse',
+            'bd-i:ValueAddedTaxSuppliesServicesByWhichVATTaxationIsTransferred',
+            'bd-i:ValueAddedTaxSuppliesServicesGeneralTariff',
+            'bd-i:ValueAddedTaxSuppliesServicesOtherRates',
+            'bd-i:ValueAddedTaxSuppliesServicesReducedTariff');
 
-        for Index := 1 to 22 do begin
-            LibraryXMLReadServer.GetNodeValueInSubtree(XbrliXbrlTok, Nodes[Index]); // Don't care about value, just verify existence
-            LibraryXMLReadServer.VerifyAttributeValueInSubtree(XbrliXbrlTok, Nodes[Index], 'decimals', 'INF');
-            LibraryXMLReadServer.VerifyAttributeValueInSubtree(XbrliXbrlTok, Nodes[Index], 'contextRef', 'Msg');
-            LibraryXMLReadServer.VerifyAttributeValueInSubtree(XbrliXbrlTok, Nodes[Index], 'unitRef', 'EUR');
+        foreach Node in NodeList do begin
+            LibraryXMLReadServer.GetNodeValueInSubtree(XbrliXbrlTok, Node); // Don't care about value, just verify existence
+            LibraryXMLReadServer.VerifyAttributeValueInSubtree(XbrliXbrlTok, Node, 'decimals', 'INF');
+            LibraryXMLReadServer.VerifyAttributeValueInSubtree(XbrliXbrlTok, Node, 'contextRef', 'Msg');
+            LibraryXMLReadServer.VerifyAttributeValueInSubtree(XbrliXbrlTok, Node, 'unitRef', 'EUR');
         end;
 
         LibraryXMLReadServer.VerifyXMLDeclaration('1.0', 'UTF-8', 'yes');

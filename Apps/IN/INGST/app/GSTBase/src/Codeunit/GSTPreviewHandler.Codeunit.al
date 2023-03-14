@@ -224,6 +224,37 @@ codeunit 18003 "GST Preview Handler"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post", 'OnBeforeCode', '', false, false)]
     local procedure OnBeforeCode()
     begin
+        ClearBuffers();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post (Yes/No)", 'OnBeforePost', '', false, false)]
+    local procedure OnBeforePostTransferDoc()
+    begin
+        ClearBuffers();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnAfterBindSubscription', '', false, false)]
+    local procedure OnAfterBindSubscription()
+    begin
+        FromDetailedGSTLedgerEntryNo := 0;
+        ToDetailedGSTLedgerEntryNo := 0;
+        PreviewPosting := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnAfterUnBindSubscription', '', false, false)]
+    local procedure OnAfterUnBindSubscription()
+    begin
+        PreviewPosting := false;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnBeforeCustPostApplyCustLedgEntry', '', false, false)]
+    local procedure OnBeforeCustPostApplyCustLedgEntry()
+    begin
+        ClearBuffers();
+    end;
+
+    procedure ClearBuffers()
+    begin
         TempGSTLedgerEntry.Reset();
         if not TempGSTLedgerEntry.IsEmpty() then
             TempGSTLedgerEntry.DeleteAll();
@@ -239,19 +270,5 @@ codeunit 18003 "GST Preview Handler"
         TempDetailedGSTLedgerEntryInfo.Reset();
         if not TempDetailedGSTLedgerEntryInfo.IsEmpty() then
             TempDetailedGSTLedgerEntryInfo.DeleteAll();
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnAfterBindSubscription', '', false, false)]
-    local procedure OnAfterBindSubscription()
-    begin
-        FromDetailedGSTLedgerEntryNo := 0;
-        ToDetailedGSTLedgerEntryNo := 0;
-        PreviewPosting := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnAfterUnBindSubscription', '', false, false)]
-    local procedure OnAfterUnBindSubscription()
-    begin
-        PreviewPosting := false;
     end;
 }

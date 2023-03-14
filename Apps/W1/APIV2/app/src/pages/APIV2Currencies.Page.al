@@ -83,13 +83,13 @@ page 30019 "APIV2 - Currencies"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        CurrencyRecordRef: RecordRef;
     begin
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        CurrencyRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(CurrencyRecordRef, TempFieldSet, CurrentDateTime());
+        CurrencyRecordRef.SetTable(Rec);
 
         Modify(true);
         exit(false);

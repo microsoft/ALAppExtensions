@@ -38,6 +38,11 @@ codeunit 1871 "C5 LedTrans Migrator"
         C5LedTrans.SetRange(BudgetCode, C5LedTrans.BudgetCode::Actual);
         C5LedTrans.SetFilter(Date_, '<%1&<>%2', C5SchemaParameters.CurrentPeriod, 0D);
         C5LedTrans.SetCurrentKey(Account, Date_, Transaction);
+
+        // Initialize the values, instead of using the default ones
+        CurrentAccount := '';
+        TotalAmount := 0;
+
         if C5LedTrans.FindSet() then begin
             CreateGeneralJournalBatchIfNeeded(GenJournalBatch);
             repeat

@@ -4,6 +4,7 @@ report 31186 "Sales Quote CZL"
     RDLCLayout = './Src/Reports/SalesQuote.rdl';
     Caption = 'Sales Quote';
     PreviewMode = PrintLayout;
+    WordMergeDataItem = "Sales Header";
 
     dataset
     {
@@ -110,6 +111,18 @@ report 31186 "Sales Quote CZL"
             column(VATLbl; VATLbl)
             {
             }
+            column(GreetingLbl; GreetingLbl)
+            {
+            }
+            column(BodyLbl; BodyLbl)
+            {
+            }
+            column(ClosingLbl; ClosingLbl)
+            {
+            }
+            column(DocumentNoLbl; DocumentNoLbl)
+            {
+            }
             column(No_SalesHeader; "No.")
             {
             }
@@ -189,6 +202,9 @@ report 31186 "Sales Quote CZL"
             {
             }
             column(QuoteValidUntilDate_SalesHeader; "Quote Valid Until Date")
+            {
+            }
+            column(QuoteValidUntilDateFormat_SalesHeader; FormatDate("Quote Valid Until Date"))
             {
             }
             column(DocFooterText; DocFooterText)
@@ -376,6 +392,9 @@ report 31186 "Sales Quote CZL"
                               "Salesperson Code", "Campaign No.", "Posting Description", "Opportunity No.");
                     end;
                 end;
+
+                if "Currency Code" = '' then
+                    "Currency Code" := "General Ledger Setup"."LCY Code";
             end;
         }
     }
@@ -491,6 +510,10 @@ report 31186 "Sales Quote CZL"
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
         QuoteValidUntilDateLbl: Label 'Valid to';
+        GreetingLbl: Label 'Hello';
+        ClosingLbl: Label 'Sincerely';
+        BodyLbl: Label 'Thank you for your business. Your quote is attached to this message.';
+        DocumentNoLbl: Label 'No.';
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; ArchiveDocumentFrom: Boolean; LogInteractionFrom: Boolean)
     begin
@@ -516,6 +539,11 @@ report 31186 "Sales Quote CZL"
     begin
         FormatAddress.SalesHeaderBillTo(CustAddr, SalesHeader);
         FormatAddress.SalesHeaderShipTo(ShipToAddr, CustAddr, SalesHeader);
+    end;
+
+    local procedure FormatDate(DateValue: Date): Text
+    begin
+        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

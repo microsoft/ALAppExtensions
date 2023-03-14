@@ -24,7 +24,7 @@ table 18013 "GST Setup"
         }
         field(4; "Generate E-Inv. on Ser. Post"; Boolean)
         {
-            Caption = 'Generate E-Inv. on Ser. Post';
+            Caption = 'Generate E-Inv. on Service Post';
             DataClassification = CustomerContent;
         }
     }

@@ -37,21 +37,25 @@ page 18493 "Subcontracting Order Subform"
                         FormatLine();
                     end;
                 }
-                field("Cross-Reference No."; Rec."Cross-Reference No.")
+                field("Item Reference No."; Rec."Item Reference No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the cross reference number is linked with this line.';
+                    ToolTip = 'Specifies the item reference number is linked with this line.';
                     Visible = false;
 
                     trigger OnLookup(var Text: Text): Boolean
+                    var
+                        PurchaseHeader: Record "Purchase Header";
+                        ItemReferenceMgt: Codeunit "Item Reference Management";
                     begin
-                        Rec.CrossReferenceNoLookUp();
+                        PurchaseHeader.Get("Document Type", "Document No.");
+                        ItemReferenceMgt.PurchaseReferenceNoLookUp(Rec, PurchaseHeader);
                         InsertExtendedText(false);
                     end;
 
                     trigger OnValidate()
                     begin
-                        CrossReferenceNoOnAfterValidat();
+                        ItemReferenceNoOnAfterValidate();
                     end;
                 }
                 field("IC Partner Code"; Rec."IC Partner Code")
@@ -808,6 +812,7 @@ page 18493 "Subcontracting Order Subform"
                         trigger OnAction()
                         begin
                             ShowSubOrderDetailsReceiptForm();
+                            LineAmount := Rec."Line Amount";
                         end;
                     }
                 }
@@ -817,12 +822,17 @@ page 18493 "Subcontracting Order Subform"
 
     trigger OnAfterGetRecord()
     begin
+        if LineAmount <> 0 then begin
+            Rec."Line Amount" := LineAmount;
+            LineAmount := 0;
+        end;
         Rec.ShowShortcutDimCode(ShortcutDimCode);
     end;
 
     trigger OnDeleteRecord(): Boolean
     var
         ReservePurchLine: Codeunit "Purch. Line-Reserve";
+        UpdateSubcontractDetails: Codeunit "Update Subcontract Details";
     begin
         if (Rec.Quantity <> 0) and Rec.ItemExists(Rec."No.") then begin
             Commit();
@@ -832,6 +842,8 @@ page 18493 "Subcontracting Order Subform"
 
             ReservePurchLine.DeleteLine(Rec);
         end;
+
+        UpdateSubcontractDetails.ValidateOrUpdateBeforeSubConOrderLineDelete(Rec);
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -848,6 +860,7 @@ page 18493 "Subcontracting Order Subform"
         TransferExtendedText: Codeunit "Transfer Extended Text";
         ShortcutDimCode: array[8] of Code[20];
         UpdateAllowedVar: Boolean;
+        LineAmount:Decimal;
         ViewModeMsg: Label 'Unable to run this function while in View mode.';
 
     procedure ApproveCalcInvDisc()
@@ -1006,7 +1019,7 @@ page 18493 "Subcontracting Order Subform"
             CurrPage.SaveRecord();
     end;
 
-    local procedure CrossReferenceNoOnAfterValidat()
+    local procedure ItemReferenceNoOnAfterValidate()
     begin
         InsertExtendedText(false);
     end;

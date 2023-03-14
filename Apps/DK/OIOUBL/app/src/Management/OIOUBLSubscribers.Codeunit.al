@@ -1,6 +1,11 @@
 codeunit 13622 "OIOUBL-Subscribers"
 {
-    [Obsolete('Replaced by subscriber ExportCustomerDocumentsOnBeforeSendToDisk.','15.4')]
+    var
+        OIOUBLSetupTitleTxt: Label 'Send electronic documents';
+        OIOUBLSetupShortTitleTxt: Label 'Electronic Invoicing';
+        OIOUBLSetupDescriptionTxt: Label 'Get ready for submitting invoices, credit memos, finance charge memos, and reminders for sales and services.';
+
+    [Obsolete('Replaced by subscriber ExportCustomerDocumentsOnBeforeSendToDisk.', '15.4')]
     [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
     procedure ExportCustomerDocumentOnBeforeSend(VAR Sender: Record "Document Sending Profile"; ReportUsage: Integer; RecordVariant: Variant; DocNo: Code[20]; ToCust: Code[20]; DocName: Text[150]; CustomerFieldNo: Integer; DocumentNoFieldNo: Integer; VAR IsHandled: Boolean)
     begin
@@ -19,10 +24,13 @@ codeunit 13622 "OIOUBL-Subscribers"
         OIOUBLExportServiceCrMemo: Codeunit "OIOUBL-Export Service Cr.Memo";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         DataTypeManagement: Codeunit "Data Type Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         RecRef: RecordRef;
+        OIOUBLTok: Label 'DK OIOUBL extension', Locked = true;
         ExportCodeunitID: Integer;
         IsStandardExportCodeunit: Boolean;
     begin
+        FeatureTelemetry.LogUptake('0000H8P', OIOUBLTok, Enum::"Feature Uptake Status"::"Used");
         if Sender.Disk <> Sender.Disk::"Electronic Document" then
             exit;
 
@@ -92,6 +100,7 @@ codeunit 13622 "OIOUBL-Subscribers"
 
         Commit();
         IsHandled := true;
+        FeatureTelemetry.LogUsage('0000H8Q', OIOUBLTok, 'OIOUBL subscriber sent');
     end;
 
     [EventSubscriber(ObjectType::Table, DATABASE::"Document Sending Profile", 'OnBeforeSendCustomerRecords', '', false, false)]
@@ -133,7 +142,6 @@ codeunit 13622 "OIOUBL-Subscribers"
         RecordExportBuffer.Reset();
         RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
         RecordExportBuffer.SetRange("Electronic Document Format", OIOUBLManagement.GetOIOUBLElectronicDocumentFormatCode());
-        RecordExportBuffer.SetFilter(ServerFilePath, '<>%1', '');
         RecordExportBuffer.SetFilter(ClientFileName, '<>%1', '');
         if RecordExportBuffer.IsEmpty() then begin
             OIOUBLManagement.ClearRecordExportBuffer();
@@ -151,6 +159,8 @@ codeunit 13622 "OIOUBL-Subscribers"
         OIOUBLManagement.DownloadZipFile(ServerZipFilePath, ClientZipFilePath, ClientZipFileName);
     end;
 
+#if not CLEAN20
+    [Obsolete('Replaced by CancelDownloadWhenZipOnExportXMLBlobOnBeforeDownload.', '20.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"OIOUBL-Management", 'OnExportXMLFileOnBeforeDownload', '', false, false)]
     procedure CancelDownloadWhenZipOnExportXMLFileOnBeforeDownload(var Sender: Codeunit "OIOUBL-Management"; DocNo: Code[20]; SourceFile: Text; FolderPath: Text; var IsHandled: Boolean)
     var
@@ -163,6 +173,28 @@ codeunit 13622 "OIOUBL-Subscribers"
         RecordExportBuffer.SetFilter(ServerFilePath, SourceFile);
         if not RecordExportBuffer.IsEmpty() then
             IsHandled := true;
+    end;
+#endif
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"OIOUBL-Management", 'OnExportXMLFileOnBeforeBLOBExport', '', false, false)]
+    local procedure CancelDownloadWhenZipOnExportXMLBlobOnBeforeDownload(var Sender: Codeunit "OIOUBL-Management"; DocNo: Code[20]; var TempBlob: Codeunit "Temp Blob"; FileName: Text; var IsHandled: Boolean)
+    var
+        RecordExportBuffer: Record "Record Export Buffer";
+    begin
+        if RecordExportBuffer.IsEmpty() then
+            exit;
+
+        RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
+        RecordExportBuffer.SetFilter(ClientFileName, FileName);
+        if not RecordExportBuffer.IsEmpty() then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', true, true)]
+    local procedure InsertIntoMAnualSetupOnRegisterManualSetup()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+    begin
+        GuidedExperience.InsertManualSetup(OIOUBLSetupTitleTxt, OIOUBLSetupShortTitleTxt, OIOUBLSetupDescriptionTxt, 5, ObjectType::Page, Page::"OIOUBL-setup", "Manual Setup Category"::Finance, '', true);
     end;
 
     [IntegrationEvent(false, false)]

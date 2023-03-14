@@ -31,6 +31,7 @@ codeunit 18433 "GST Application Library"
         DeleteInvoiceApplicationBufferOffline(TransactionType, AccountNo, GSTApplicationBuff."Original Document Type"::Invoice, InvoiceDocNo);
         DetailedGSTLedgerEntry.SetCurrentKey("Transaction Type", "Source No.", "Document Type", "Document No.", "GST Group Code");
         DetailedGSTLedgerEntry.SetRange("Transaction Type", TransactionType);
+        DetailedGSTLedgerEntry.SetRange("Entry Type", DetailedGSTLedgerEntry."Entry Type"::"Initial Entry");
 
         case TransactionType of
             TransactionType::Purchase:
@@ -67,6 +68,7 @@ codeunit 18433 "GST Application Library"
 
                 GSTApplicationBufferStage.Init();
                 GSTApplicationBufferStage."Transaction Type" := DetailedGSTLedgerEntry."Transaction Type";
+                GSTApplicationBufferStage."Transaction No." := DetailedGSTLedgerEntry."Transaction No.";
                 GSTApplicationBufferStage."Original Document Type" := GSTApplicationBufferStage."Original Document Type"::Invoice;
                 GSTApplicationBufferStage."Original Document No." := InvoiceDocNo;
                 GSTApplicationBufferStage."Account No." := AccountNo;
@@ -646,6 +648,7 @@ codeunit 18433 "GST Application Library"
         TransactionType: Enum "Detail Ledger Transaction Type";
         GSTCredit: Enum "GST Credit";
         OriginalDocumentType: Enum "Original Doc Type";
+        CalcAmount: Decimal;
     begin
         AppliedGSTAmount := 0;
         InvoiceGSTAmount := 0;
@@ -693,11 +696,19 @@ codeunit 18433 "GST Application Library"
                         GSTApplicationBuffer."Applied Base Amount" := GSTApplicationBuffer."GST Base Amount";
                         GSTApplicationBuffer."Applied Amount" := GSTApplicationBuffer."GST Amount";
                     end else begin
-                        GSTApplicationBuffer."Applied Base Amount" := Round(GSTApplicationBuffer."GST Base Amount" * AmountToApply / RemainingAmount, 0.01);
-                        GSTApplicationBuffer."Applied Amount" := GSTApplicationRound(
-                              GSTRoudingType,
-                              GSTRoundingPrecision,
-                              GSTApplicationBuffer."GST Amount" * AmountToApply / RemainingAmount);
+                        if GSTApplicationBuffer."GST %" <> 0 then
+                            if CustLedgEntry."GST Jurisdiction Type" = CustLedgEntry."GST Jurisdiction Type"::Intrastate then
+                                CalcAmount := AmountToApply * (100 / (100 + (GSTApplicationBuffer."GST %" * 2)))
+                            else
+                                CalcAmount := AmountToApply * (100 / (100 + (GSTApplicationBuffer."GST %")));
+
+                        GSTApplicationBuffer."Applied Base Amount" := CalcAmount;
+
+                        if GSTApplicationBuffer."GST %" <> 0 then
+                            GSTApplicationBuffer."Applied Amount" := GSTApplicationRound(
+                                  GSTRoudingType,
+                                  GSTRoundingPrecision,
+                                  (GSTApplicationBuffer."GST %" / 100) * CalcAmount);
                     end
                 else begin
                     if not GSTApplicationBuffer."GST Cess" then

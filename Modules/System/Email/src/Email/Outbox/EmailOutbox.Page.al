@@ -90,6 +90,12 @@ page 8882 "Email Outbox"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date when this email failed to send.';
                 }
+
+                field("Date Sending"; Rec."Date Sending")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date when this email is scheduled for sending.';
+                }
             }
         }
     }
@@ -173,7 +179,7 @@ page 8882 "Email Outbox"
 
                     repeat
                         EmailMessage.Get(SelectedEmailOutbox."Message Id");
-                        EmailImpl.Enqueue(EmailMessage, SelectedEmailOutbox."Account Id", SelectedEmailOutbox.Connector);
+                        EmailImpl.Enqueue(EmailMessage, SelectedEmailOutbox."Account Id", SelectedEmailOutbox.Connector, CurrentDateTime());
                     until SelectedEmailOutbox.Next() = 0;
 
                     LoadEmailOutboxForUser();
@@ -236,11 +242,50 @@ page 8882 "Email Outbox"
 
     local procedure LoadEmailOutboxForUser()
     begin
-        EmailImpl.RefreshEmailOutboxForUser(EmailAccountId, EmailStatus, Rec);
+        EmailImpl.GetOutboxEmails(EmailAccountId, EmailStatus, Rec);
 
         Rec.SetCurrentKey("Date Queued");
         NoEmailsInOutbox := Rec.IsEmpty();
         Rec.Ascending(false);
+        RecallThrottledEmailNotification();
+        if ExistThrottledEmail(Rec) then
+            ShowThrottledEmailInformation();
+    end;
+
+    local procedure ExistThrottledEmail(EmailOutbox: Record "Email Outbox"): Boolean
+    var
+        RateLimitDuration: Duration;
+        ActualDuration: Duration;
+    begin
+        RateLimitDuration := 1000 * 60; // one minute, rate limit is defined as emails per minute
+        EmailOutbox.SetRange(Status, Enum::"Email Status"::Queued);
+        if EmailOutbox.FindSet() then
+            repeat
+                if (EmailOutbox."Date Sending" <> 0DT) and (EmailOutbox."Date Queued" <> 0DT) then begin
+                    ActualDuration := EmailOutbox."Date Sending" - EmailOutbox."Date Queued";
+                    if ActualDuration >= RateLimitDuration then
+                        exit(true)
+                end;
+            until Emailoutbox.Next() = 0;
+        exit(false);
+    end;
+
+    local procedure RecallThrottledEmailNotification()
+    var
+        ThrottledEmailNotification: Notification;
+    begin
+        ThrottledEmailNotification.Id := EmailThrottledMsgIdTok;
+        ThrottledEmailNotification.Recall();
+    end;
+
+    local procedure ShowThrottledEmailInformation()
+    var
+        ThrottledEmailNotification: Notification;
+    begin
+        ThrottledEmailNotification.Id := EmailThrottledMsgIdTok;
+        ThrottledEmailNotification.Message(EmailThrottledMsg);
+        ThrottledEmailNotification.Scope := NotificationScope::LocalScope;
+        ThrottledEmailNotification.Send();
     end;
 
     local procedure ShowAccountInformation()
@@ -255,9 +300,9 @@ page 8882 "Email Outbox"
         EmailConnector.ShowAccountInformation(Rec."Account Id");
     end;
 
-    internal procedure SetEmailStatus(Status: Enum "Email Status")
+    internal procedure SetEmailStatus(NewEmailStatus: Enum "Email Status")
     begin
-        EmailStatus := Status;
+        EmailStatus := NewEmailStatus;
     end;
 
     internal procedure SetEmailAccountId(AccountId: Guid)
@@ -276,4 +321,6 @@ page 8882 "Email Outbox"
         [InDataSet]
         HasSourceRecord: Boolean;
         EmailConnectorHasBeenUninstalledMsg: Label 'The email extension that was used to send this email has been uninstalled. To view information about the email account, you must reinstall the extension.';
+        EmailThrottledMsg: Label 'Your emails are being throttled due to the rate limit set on an account.';
+        EmailThrottledMsgIdTok: Label '025cd7b4-9a12-44de-af35-d84f5e360438', Locked = true;
 }

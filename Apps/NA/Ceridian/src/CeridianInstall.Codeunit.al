@@ -37,13 +37,13 @@ codeunit 1667 "Ceridian Install"
     local procedure SetAllUpgradeTags()
     var
         UpgradeTag: Codeunit "Upgrade Tag";
-        MSCeridianUpgrade: Codeunit "MS Ceridian Payroll upgrade";
+        MSCeridianPayrollupgrade: Codeunit "MS Ceridian Payroll upgrade";
     begin
-        if not UpgradeTag.HasUpgradeTag(MSCeridianUpgrade.GetCeridianSecretsToISUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(MSCeridianUpgrade.GetCeridianSecretsToISUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(MSCeridianPayrollupgrade.GetCeridianSecretsToISUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(MSCeridianPayrollupgrade.GetCeridianSecretsToISUpgradeTag());
 
-        if not UpgradeTag.HasUpgradeTag(MSCeridianUpgrade.GetCeridianSecretsToISValidationTag()) then
-            UpgradeTag.SetUpgradeTag(MSCeridianUpgrade.GetCeridianSecretsToISValidationTag());
+        if not UpgradeTag.HasUpgradeTag(MSCeridianPayrollupgrade.GetCeridianSecretsToISValidationTag()) then
+            UpgradeTag.SetUpgradeTag(MSCeridianPayrollupgrade.GetCeridianSecretsToISValidationTag());
     end;
 }
 

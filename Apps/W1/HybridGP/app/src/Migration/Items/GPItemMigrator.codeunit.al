@@ -3,13 +3,17 @@ codeunit 4019 "GP Item Migrator"
     TableNo = "GP Item";
 
     var
-        PostingGroupCodeTxt: Label 'GP', Locked = true;
-        PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        DefaultPostingGroupCodeTxt: Label 'GP', Locked = true;
+        DefaultPostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
+        InventoryAccountTok: Label 'InventoryAccount', Locked = true;
+        DefaultAccountNumber: Text[20];
         ItemTypeOption: Option Inventory,Service;
         CostingMethodOption: Option FIFO,LIFO,Specific,Average,Standard;
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
         LastEntryNo: Integer;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
     procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -17,23 +21,57 @@ codeunit 4019 "GP Item Migrator"
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
-        GPItem.Get(RecordIdToMigrate);
+
+        if not GPItem.Get(RecordIdToMigrate) then
+            exit;
+
+        if not ShouldMigrateItem(GPItem) then begin
+            DecrementMigratedCount();
+            exit;
+        end;
+
         MigrateItemDetails(GPItem, Sender);
+    end;
+
+#pragma warning restore AA0207
+    local procedure ShouldMigrateItem(var GPItem: Record "GP Item"): Boolean
+    var
+        GPIV00101: Record "GP IV00101";
+    begin
+        if GPIV00101.Get(GPItem.No) then begin
+            if GPIV00101.INACTIVE then
+                if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
+                    exit(false);
+
+            if GPIV00101.IsDiscontinued() then
+                if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
+                    exit(false);
+        end;
+
+        exit(true);
+    end;
+
+    local procedure DecrementMigratedCount()
+    var
+        HelperFunctions: Codeunit "Helper Functions";
+        DataMigrationStatusFacade: Codeunit "Data Migration Status Facade";
+    begin
+        DataMigrationStatusFacade.IncrementMigratedRecordCount(HelperFunctions.GetMigrationTypeTxt(), Database::Item, -1);
     end;
 
     procedure MigrateItemDetails(GPItem: Record "GP Item"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     begin
         if not ItemDataMigrationFacade.CreateItemIfNeeded(CopyStr(GPItem.No, 1, 20), GPItem.Description, GPItem.ShortName, ConvertItemType(GPItem.ItemType)) then
             exit;
+
         ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(GPItem.BaseUnitOfMeasure, GPItem.BaseUnitOfMeasure);
         ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(GPItem.PurchUnitOfMeasure, GPItem.PurchUnitOfMeasure);
-
         ItemDataMigrationFacade.SetUnitListPrice(GPItem.UnitListPrice);
         ItemDataMigrationFacade.SetUnitCost(GPItem.CurrentCost);
         ItemDataMigrationFacade.SetStandardCost(GPItem.StandardCost);
         ItemDataMigrationFacade.SetCostingMethod(GetCostingMethod(GPItem));
         ItemDataMigrationFacade.SetBaseUnitOfMeasure(GPItem.BaseUnitOfMeasure);
-        ItemDataMigrationFacade.SetGeneralProductPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 20));
+        ItemDataMigrationFacade.SetGeneralProductPostingGroup(CopyStr(DefaultPostingGroupCodeTxt, 1, 20));
         ItemDataMigrationFacade.SetNetWeight(GPItem.ShipWeight);
         ItemDataMigrationFacade.SetSearchDescription(GPItem.SearchDescription);
         ItemDataMigrationFacade.SetPurchUnitOfMeasure(GPItem.PurchUnitOfMeasure);
@@ -41,12 +79,11 @@ codeunit 4019 "GP Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
     procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         GPItem: Record "GP Item";
-        GPItemLocation: Record "GP Item Location";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -54,19 +91,8 @@ codeunit 4019 "GP Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
 
-        Sender.CreateInventoryPostingSetupIfNeeded(CopyStr(PostingGroupCodeTxt, 1, 20), CopyStr(PostingGroupDescriptionTxt, 1, 50), '');
-        Sender.SetInventoryPostingSetupInventoryAccount(CopyStr(PostingGroupCodeTxt, 1, 20), '', HelperFunctions.GetPostingAccountNumber('InventoryAccount'));
-        if GPItemLocation.FindSet() then
-            repeat
-                Sender.CreateInventoryPostingSetupIfNeeded(CopyStr(PostingGroupCodeTxt, 1, 20), CopyStr(PostingGroupDescriptionTxt, 1, 50), CopyStr(GPItemLocation.LOCNCODE, 1, 10));
-                Sender.SetInventoryPostingSetupInventoryAccount(CopyStr(PostingGroupCodeTxt, 1, 20), CopyStr(GPItemLocation.LOCNCODE, 1, 10), HelperFunctions.GetPostingAccountNumber('InventoryAccount'));
-            until GPItemLocation.Next() = 0;
-
         if GPItem.Get(RecordIdToMigrate) then
-            if GPItem.ItemType = 0 then
-                Sender.SetInventoryPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 20));
-
-        Sender.ModifyItem(true);
+            MigrateItemInventoryPostingGroup(GPItem, Sender);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
@@ -88,7 +114,13 @@ codeunit 4019 "GP Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
 
+        if GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
+            exit;
+
         if GPItem.Get(RecordIdToMigrate) then begin
+            if not Sender.DoesItemExist(CopyStr(GPItem.No, 1, MaxStrLen(Item."No."))) then
+                exit;
+
             if GPItem.ItemType = 0 then
                 case GetCostingMethod(GPItem) of
                     CostingMethodOption::Average:
@@ -145,23 +177,23 @@ codeunit 4019 "GP Item Migrator"
                                         until GPItemTransaction.Next() = 0;
                                 end;
                             else begin
-                                    GPItemTransactionQuery.SetRange(No, GPItem.No);
-                                    GPItemTransactionQuery.Open();
-                                    while GPItemTransactionQuery.Read() do begin
-                                        // 1 transaction for each grouping using Unit Cost
-                                        GPItemTransaction.SetRange(No, GPItemTransactionQuery.No);
-                                        GPItemTransaction.SetRange(Location, GPItemTransactionQuery.Location);
-                                        GPItemTransaction.SetRange(ReceiptNumber, GPItemTransactionQuery.ReceiptNumber);
-                                        GPItemTransaction.SetRange(UnitCost, GPItemTransactionQuery.UnitCost);
-                                        if GPItemTransaction.FindSet() then begin
-                                            CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransactionQuery.Quantity, GPItemTransaction.DateReceived);
-                                            repeat
-                                                CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
-                                            until GPItemTransaction.Next() = 0;
-                                            AdjustItemInventory.PostItemJnlLines(ItemJnlLine);
-                                        end;
+                                GPItemTransactionQuery.SetRange(No, GPItem.No);
+                                GPItemTransactionQuery.Open();
+                                while GPItemTransactionQuery.Read() do begin
+                                    // 1 transaction for each grouping using Unit Cost
+                                    GPItemTransaction.SetRange(No, GPItemTransactionQuery.No);
+                                    GPItemTransaction.SetRange(Location, GPItemTransactionQuery.Location);
+                                    GPItemTransaction.SetRange(ReceiptNumber, GPItemTransactionQuery.ReceiptNumber);
+                                    GPItemTransaction.SetRange(UnitCost, GPItemTransactionQuery.UnitCost);
+                                    if GPItemTransaction.FindSet() then begin
+                                        CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransactionQuery.Quantity, GPItemTransaction.DateReceived);
+                                        repeat
+                                            CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
+                                        until GPItemTransaction.Next() = 0;
+                                        AdjustItemInventory.PostItemJnlLines(ItemJnlLine);
                                     end;
                                 end;
+                            end;
                         end;
                 end;
 
@@ -176,6 +208,34 @@ codeunit 4019 "GP Item Migrator"
 
         if ErrorText <> '' then
             Error(ErrorText);
+    end;
+#pragma warning restore AA0207
+
+    procedure MigrateItemInventoryPostingGroup(GPItem: Record "GP Item"; var Sender: Codeunit "Item Data Migration Facade")
+    var
+        Item: Record Item;
+        GPIV00101: Record "GP IV00101";
+        ItemClassId: Text[11];
+    begin
+        if not Sender.DoesItemExist(CopyStr(GPItem.No, 1, MaxStrLen(Item."No."))) then
+            exit;
+
+        MigrateItemClassesIfNeeded(GPItem, Sender);
+
+        if GPItem.ItemType = 0 then begin
+            if GPCompanyAdditionalSettings.GetMigrateItemClasses() then
+                if GPIV00101.Get(GPItem.No) then
+#pragma warning disable AA0139
+                    ItemClassId := GPIV00101.ITMCLSCD.Trim();
+#pragma warning restore AA0139
+
+            if (ItemClassId <> '') then
+                Sender.SetInventoryPostingGroup(ItemClassId)
+            else
+                Sender.SetInventoryPostingGroup(CopyStr(DefaultPostingGroupCodeTxt, 1, 20));
+
+            Sender.ModifyItem(true);
+        end;
     end;
 
     local procedure CreateItemBatch(TemplateName: Code[10]): Code[10]
@@ -289,71 +349,12 @@ codeunit 4019 "GP Item Migrator"
         exit(ItemTypeOption::Service);
     end;
 
+#if not CLEAN21
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetAll()
-    var
-        HelperFunctions: Codeunit "Helper Functions";
-        JArray: JsonArray;
     begin
-        HelperFunctions.GetEntities('Item', JArray);
-        GetItemsFromJson(JArray);
     end;
-
-    local procedure GetItemsFromJson(JArray: JsonArray)
-    var
-        GPItem: Record "GP Item";
-        HelperFunctions: Codeunit "Helper Functions";
-        RecordVariant: Variant;
-        ChildJToken: JsonToken;
-        EntityId: Text[75];
-        i: Integer;
-    begin
-        i := 0;
-        GPItem.Reset();
-        GPItem.DeleteAll();
-
-        while JArray.Get(i, ChildJToken) do begin
-            EntityId := CopyStr(HelperFunctions.GetTextFromJToken(ChildJToken, 'ITEMNMBR'), 1, MAXSTRLEN(GPItem.No));
-            EntityId := CopyStr(HelperFunctions.TrimBackslash(EntityId), 1, 75);
-            EntityId := CopyStr(HelperFunctions.TrimStringQuotes(EntityId), 1, 75);
-            if strlen(EntityId) > 20 then
-                EntityId := CopyStr(EntityId, 1, 20);
-
-            if not GPItem.Get(EntityId) then begin
-                GPItem.Init();
-                GPItem.Validate(GPItem.No, EntityId);
-                GPItem.Insert(true);
-            end;
-
-            RecordVariant := GPItem;
-            UpdateItemFromJson(RecordVariant, ChildJToken);
-            GPItem := RecordVariant;
-            GPItem.Modify(true);
-
-            i := i + 1;
-        end;
-    end;
-
-    local procedure UpdateItemFromJson(var RecordVariant: Variant; JToken: JsonToken)
-    var
-        GPItem: Record "GP Item";
-        HelperFunctions: Codeunit "Helper Functions";
-    begin
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(Description), JToken.AsObject(), 'SEARCHDESC');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(SearchDescription), JToken.AsObject(), 'SEARCHDESC');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(ShortName), JToken.AsObject(), 'ITMSHNAM');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(BaseUnitOfMeasure), JToken.AsObject(), 'BASEUOFM');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(ItemType), JToken.AsObject(), 'ITEMTYPE');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(CostingMethod), JToken.AsObject(), 'COSTINGMETHOD');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(CurrentCost), JToken.AsObject(), 'CURRCOST');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(StandardCost), JToken.AsObject(), 'STNDCOST');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(UnitListPrice), JToken.AsObject(), 'UNITLISTPRICE');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(ShipWeight), JToken.AsObject(), 'ITEMSHWT');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(InActive), JToken.AsObject(), 'INACTIVE');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(QuantityOnHand), JToken.AsObject(), 'QTYONHND');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(SalesUnitOfMeasure), JToken.AsObject(), 'SELNGUOM');
-        HelperFunctions.UpdateFieldValue(RecordVariant, GPItem.FieldNo(PurchUnitOfMeasure), JToken.AsObject(), 'PRCHSUOM');
-    end;
-
+#endif
     local procedure GetCostingMethod(var GPItem: Record "GP Item"): Option
     begin
         if ConvertItemType(GPItem.ItemType) = ItemTypeOption::Service then
@@ -371,5 +372,88 @@ codeunit 4019 "GP Item Migrator"
             '4':
                 exit(CostingMethodOption::Standard);
         end;
+    end;
+
+    procedure MigrateItemClassesIfNeeded(var GPItem: Record "GP Item"; var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
+    var
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        if DefaultAccountNumber = '' then
+            DefaultAccountNumber := HelperFunctions.GetPostingAccountNumber(InventoryAccountTok);
+
+        MigrateDefaultPostingGroupIfNeeded(ItemDataMigrationFacade);
+        MigrateGPPostingGroupIfNeeded(GPItem, ItemDataMigrationFacade);
+    end;
+
+    local procedure MigrateDefaultPostingGroupIfNeeded(var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
+    var
+        InventoryPostingGroup: Record "Inventory Posting Group";
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+        GPItemLocation: Record "GP Item Location";
+        PostingGroupCode: Code[20];
+    begin
+        PostingGroupCode := CopyStr(DefaultPostingGroupCodeTxt, 1, MaxStrLen(PostingGroupCode));
+        if not InventoryPostingGroup.Get(PostingGroupCode) then begin
+#pragma warning disable AA0139
+            ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, CopyStr(DefaultPostingGroupDescriptionTxt, 1, MaxStrLen(InventoryPostingGroup.Description)), '');
+#pragma warning restore AA0139                 
+            ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, '', DefaultAccountNumber);
+
+            if GPItemLocation.FindSet() then
+                repeat
+#pragma warning disable AA0139                
+                    ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, CopyStr(DefaultPostingGroupDescriptionTxt, 1, MaxStrLen(InventoryPostingGroup.Description)), CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")));
+#pragma warning restore AA0139                       
+                    ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")), DefaultAccountNumber);
+                until GPItemLocation.Next() = 0;
+        end;
+    end;
+
+    local procedure MigrateGPPostingGroupIfNeeded(var GPItem: Record "GP Item"; var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
+    var
+        InventoryPostingGroup: Record "Inventory Posting Group";
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+        GPIV00101: Record "GP IV00101";
+        GPIV40400: Record "GP IV40400";
+        GPItemLocation: Record "GP Item Location";
+        HelperFunctions: Codeunit "Helper Functions";
+        PostingGroupCode: Code[20];
+        AccountNumber: Code[20];
+    begin
+        if not GPCompanyAdditionalSettings.GetMigrateItemClasses() then
+            exit;
+
+        if GPIV40400.IsEmpty() then
+            exit;
+
+        if not GPIV00101.Get(GPItem.No) then
+            exit;
+
+#pragma warning disable AA0139
+        PostingGroupCode := GPIV00101.ITMCLSCD.Trim();
+#pragma warning restore AA0139
+
+        if PostingGroupCode = '' then
+            exit;
+
+        if InventoryPostingGroup.Get(PostingGroupCode) then
+            exit;
+
+        if not GPIV40400.Get(PostingGroupCode) then
+            exit;
+
+        AccountNumber := DefaultAccountNumber;
+
+        if GPIV40400.IVIVINDX > 0 then
+            AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPIV40400.IVIVINDX);
+
+        ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, GPIV40400.ITMCLSDC, '');
+        ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, '', AccountNumber);
+
+        if GPItemLocation.FindSet() then
+            repeat
+                ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, GPIV40400.ITMCLSDC, CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")));
+                ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")), AccountNumber);
+            until GPItemLocation.Next() = 0;
     end;
 }

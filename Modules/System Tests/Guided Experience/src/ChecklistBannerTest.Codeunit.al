@@ -10,6 +10,7 @@ codeunit 132605 "Checklist Banner Test"
     Permissions = tabledata "All Profile" = r,
                 tabledata "User Personalization" = rm;
 
+
     var
         Any: Codeunit Any;
         Assert: Codeunit "Library Assert";
@@ -27,7 +28,7 @@ codeunit 132605 "Checklist Banner Test"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('SessionSettingsHandler,ChecklistBannerHandler,AssistedSetupWizardHandler,HyperlinkHandler,RequestPageHandler')]
+    [HandlerFunctions('ChecklistBannerHandler,AssistedSetupWizardHandler,HyperlinkHandler,RequestPageHandler')]
     procedure TestChecklistBanner()
     var
         GuidedExperienceItem1: Record "Guided Experience Item";
@@ -47,6 +48,10 @@ codeunit 132605 "Checklist Banner Test"
         Link2: Text[250];
     begin
         BindSubscription(ChecklistBannerTest);
+
+        PermissionsMock.Start();
+        PermissionsMock.Set('SUPER');
+
         Initialize(true);
 
         // [GIVEN] Lists of profiles
@@ -59,7 +64,6 @@ codeunit 132605 "Checklist Banner Test"
         SetCompanyTypeToEvaluation(false);
 
         PermissionsMock.Set('Guided Exp Edit');
-
         // [GIVEN] 2 links
         GetLink(Link1);
         GetLink(Link2);
@@ -112,6 +116,68 @@ codeunit 132605 "Checklist Banner Test"
         // [THEN] The report corresponding to the fourth checklist item was run successfully
         Assert.IsTrue(ChecklistBannerTest.GetReportRunSuccessfully(),
             'The report corresponding to the fourth checklist item was not run successfully.');
+
+        UnbindSubscription(ChecklistBannerTest);
+    end;
+
+    [Test]
+    [HandlerFunctions('ChecklistBannerHandler,AssistedSetupWizardHandler,HyperlinkHandler,RequestPageHandler')]
+    procedure TestChecklistBannerVisibilityAfterDelete()
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        TempProfileAllProfile: Record "All Profile" temporary;
+        ChecklistBannerTest: Codeunit "Checklist Banner Test";
+        Checklist: Codeunit Checklist;
+        SystemActionTriggers: Codeunit "System Action Triggers";
+        GuidedExperienceType: Enum "Guided Experience Type";
+        ChecklistStatus: Enum "Checklist Status";
+        ObjectType: ObjectType;
+        Link: Text[250];
+        PartID: Integer;
+    begin
+        BindSubscription(ChecklistBannerTest);
+
+        PermissionsMock.Start();
+        PermissionsMock.Set('SUPER');
+
+        Initialize(true);
+
+        // [GIVEN] One profile
+        AddRoleToList(TempProfileAllProfile, ProfileID1);
+
+        // [GIVEN] The current company type is evaluation
+        SetCompanyTypeToEvaluation(true);
+
+        PermissionsMock.Set('Guided Exp Edit');
+
+        // [GIVEN] One link
+        GetLink(Link);
+
+        // [GIVEN] One guided experience item
+        InsertGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Assisted Setup Wizard", '');
+
+        // [GIVEN] The checklist item for the guided experience item
+        Checklist.Insert(GuidedExperienceItem."Guided Experience Type", GetObjectType(GuidedExperienceItem."Object Type to Run"),
+            GuidedExperienceItem."Object ID to Run", 100, TempProfileAllProfile, true);
+
+        // [GIVEN] The current profile is set to ProfileID1
+        SetCurrentProfile(ProfileID1);
+
+        // [WHEN] Calling GetRoleCenterBannerPartID (this will trigger the event subscriber 
+        // that switches the role for the user checklist status and returns the ID of the checklist banner)
+        SystemActionTriggers.GetRoleCenterBannerPartID(PartID);
+
+        // [THEN] The return value of the event is the ID of the checklist banner page
+        Assert.AreEqual(Page::"Checklist Banner", PartID, 'The return value of GetRoleCenterBannerPartID is wrong.');
+
+        // [THEN] A user checklist status record will be created for the first profile
+        VerifyUserChecklistStatus(ProfileID1, ChecklistStatus::"Not Started", true, true);
+
+        // [WHEN] Delete all checklist items for a user
+        Checklist.Delete(GuidedExperienceItem."Guided Experience Type", GetObjectType(GuidedExperienceItem."Object Type to Run"), GuidedExperienceItem."Object ID to Run");
+
+        // [THEN] A user checklist status should have "Is Visible" = false
+        VerifyUserChecklistStatus(ProfileID1, ChecklistStatus::"Not Started", false, true);
 
         UnbindSubscription(ChecklistBannerTest);
     end;
@@ -302,13 +368,6 @@ codeunit 132605 "Checklist Banner Test"
         exit(ReportRunSuccessfully);
     end;
 
-    [SessionSettingsHandler]
-    [Scope('OnPrem')]
-    procedure SessionSettingsHandler(var TestSessionSettings: SessionSettings): Boolean
-    begin
-        exit(true);
-    end;
-
     [PageHandler]
     [Scope('OnPrem')]
     procedure ChecklistBannerHandler(var ChecklistBannerContainer: TestPage "Checklist Banner Container")
@@ -372,7 +431,7 @@ codeunit 132605 "Checklist Banner Test"
         VerifyCompletionStatusForChecklistItem(ChecklistBannerContainer, 'first', true);
 
         // [THEN] The status of the first checklist item is completed
-        Assert.AreEqual('You completed this step', ChecklistBannerContainer.ChecklistBanner.TaskStatusText.Value(),
+        Assert.AreEqual('This step is completed', ChecklistBannerContainer.ChecklistBanner.TaskStatusText.Value(),
             'The status of the first checklist item is incorrect after completion.');
 
         // [THEN] The labels and the visibility of the banner buttons remain unchanged, as the completion percentage is 25%
@@ -567,15 +626,6 @@ codeunit 132605 "Checklist Banner Test"
         ChecklistBannerContainer.ChecklistBanner.BackToChecklist.Invoke();
     end;
 
-    local procedure SecondChecklistItemForTheSecondProfile(var ChecklistBannerContainer: TestPage "Checklist Banner Container")
-    begin
-        // [WHEN] Invoking Previous
-        ChecklistBannerContainer.ChecklistBanner.Previous();
-
-        // [THEN] The currently displayed checklist item is the second one and it is marked as completed
-        VerifyChecklistItemFields(ChecklistBannerContainer, 'second', true);
-    end;
-
     local procedure VerifyBannerTextsAndButtonsForWelcomeStep(ChecklistBannerContainer: TestPage "Checklist Banner Container")
     begin
         VerifyBannerTexts(ChecklistBannerContainer,
@@ -689,7 +739,7 @@ codeunit 132605 "Checklist Banner Test"
     [RequestPageHandler]
     procedure RequestPageHandler(var ChecklistTestReport: TestRequestPage "Checklist Test Report")
     begin
-        ChecklistTestReport.SaveAsPdf('report.pdf');
+        ChecklistTestReport.OK().Invoke();
     end;
 
     [HyperlinkHandler]

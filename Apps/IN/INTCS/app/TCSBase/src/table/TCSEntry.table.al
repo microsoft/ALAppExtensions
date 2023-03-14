@@ -36,10 +36,12 @@ table 18810 "TCS Entry"
         {
             DataClassification = EndUserIdentifiableInformation;
         }
-        field(7; Description; Text[50])
+#pragma warning disable AS0086        
+        field(7; Description; Text[100])
         {
             DataClassification = EndUserIdentifiableInformation;
         }
+#pragma warning restore        
         field(8; "TCS Amount Including Surcharge"; Decimal)
         {
             DataClassification = EndUserIdentifiableInformation;

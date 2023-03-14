@@ -1,5 +1,14 @@
 table 1085 "MS - Wallet Payment"
 {
+#if not CLEAN20
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '23.0';
+#endif
     ReplicateData = false;
 
     fields
@@ -30,9 +39,6 @@ table 1085 "MS - Wallet Payment"
     {
     }
 
-    var
-        InvalidPaymentURLErr: Label 'The payment URL is not valid.';
-
     procedure GetPaymentURL(): Text;
     var
         InStream: InStream;
@@ -49,16 +55,11 @@ table 1085 "MS - Wallet Payment"
 
     procedure SetPaymentURL(PaymentURL: Text);
     var
-        MSWalletMgt: Codeunit "MS - Wallet Mgt.";
         OutStream: OutStream;
     begin
-        if not MSWalletMgt.IsValidAndSecureURL(PaymentURL) then
-            Error(InvalidPaymentURLErr);
-
 
         "Payment URL".CREATEOUTSTREAM(OutStream);
         OutStream.WRITE(PaymentURL);
         MODIFY();
     end;
 }
-

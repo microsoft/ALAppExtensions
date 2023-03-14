@@ -21,6 +21,8 @@ table 11732 "Cash Document Header CZP"
                 TestField("No.", '');
                 GetCashDeskCZP("Cash Desk No.");
                 CashDeskCZP.TestField(Blocked, false);
+
+                CreateDimFromDefaultDim(Rec.FieldNo("Partner No."));
             end;
         }
         field(2; "No."; Code[20])
@@ -207,11 +209,7 @@ table 11732 "Cash Document Header CZP"
 
             trigger OnValidate()
             begin
-                CreateDim(
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                  Database::"Cash Desk CZP", "Cash Desk No.",
-                  GetPartnerTableNo(), "Partner No.");
+                CreateDimFromDefaultDim(Rec.FieldNo("Salespers./Purch. Code"));
             end;
         }
         field(45; "Amounts Including VAT"; Boolean)
@@ -289,11 +287,7 @@ table 11732 "Cash Document Header CZP"
                 if not UserSetupManagement.CheckRespCenter(3, "Responsibility Center") then
                     Error(RespCenterErr, FieldCaption("Responsibility Center"), CashDeskManagementCZP.GetUserCashResponsibilityFilter(CopyStr(UserId(), 1, 50)));
 
-                CreateDim(
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                  Database::"Cash Desk CZP", "Cash Desk No.",
-                  GetPartnerTableNo(), "Partner No.");
+                CreateDimFromDefaultDim(Rec.FieldNo("Responsibility Center"));
             end;
         }
         field(65; "Payment Purpose"; Text[100])
@@ -497,11 +491,7 @@ table 11732 "Cash Document Header CZP"
                             end;
                     end;
 
-                CreateDim(
-                  GetPartnerTableNo(), "Partner No.",
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                  Database::"Cash Desk CZP", "Cash Desk No.");
+                CreateDimFromDefaultDim(Rec.FieldNo("Partner No."));
             end;
         }
         field(98; "Canceled Document"; Boolean)
@@ -599,7 +589,6 @@ table 11732 "Cash Document Header CZP"
     trigger OnInsert()
     var
         CashDeskUserCZP: Record "Cash Desk User CZP";
-        CashDocumentActionCZP: Enum "Cash Document Action CZP";
     begin
         TestField("Cash Desk No.");
         TestField("Document Type");
@@ -610,7 +599,7 @@ table 11732 "Cash Document Header CZP"
             if CashDeskCZP."Responsibility ID (Release)" <> UserId then
                 Error(RespCreateErr, TableCaption, CashDeskCZP.TableCaption, "Cash Desk No.");
 
-        CashDeskManagementCZP.CheckUserRights("Cash Desk No.", CashDocumentActionCZP::Create);
+        CashDeskManagementCZP.CheckUserRights("Cash Desk No.", Enum::"Cash Document Action CZP"::Create);
 
         if CashDeskCZP."Confirm Inserting of Document" then
             if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(CreateQst, "Document Type", "Cash Desk No."), true) then
@@ -641,18 +630,13 @@ table 11732 "Cash Document Header CZP"
         "Reason Code" := CashDeskCZP."Reason Code";
         Validate("Currency Code", CashDeskCZP."Currency Code");
 
-        case "Document Type" of
-            "Document Type"::Receipt:
-                "Received By" := CashDeskUserCZP."User Full Name";
-            "Document Type"::Withdrawal:
-                "Paid By" := CashDeskUserCZP."User Full Name";
-        end;
-
-        CreateDim(
-          Database::"Responsibility Center", "Responsibility Center",
-          Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-          Database::"Cash Desk CZP", "Cash Desk No.",
-          GetPartnerTableNo(), "Partner No.");
+        if CashDeskUserCZP.Get("Cash Desk No.", UserId()) then
+            case "Document Type" of
+                "Document Type"::Receipt:
+                    "Received By" := CashDeskUserCZP."User Full Name";
+                "Document Type"::Withdrawal:
+                    "Paid By" := CashDeskUserCZP."User Full Name";
+            end;
     end;
 
     trigger OnModify()
@@ -748,6 +732,8 @@ table 11732 "Cash Document Header CZP"
             Validate("Currency Factor", xRec."Currency Factor")
     end;
 
+#if not CLEAN21
+#pragma warning disable AL0432
     procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20]; Type4: Integer; No4: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
@@ -771,6 +757,50 @@ table 11732 "Cash Document Header CZP"
           DimensionManagement.GetRecDefaultDimID(
             Rec, CurrFieldNo, TableID, No, SourceCodeSetup."Cash Desk CZP",
             "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        if (OldDimSetID <> "Dimension Set ID") and CashDocLinesExist() then begin
+            Modify();
+            UpdateAllLineDim("Dimension Set ID", OldDimSetID);
+        end;
+    end;
+#pragma warning disable AL0432
+#endif
+
+    procedure CreateDimFromDefaultDim(FieldNo: Integer)
+    var
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
+    begin
+        InitDefaultDimensionSources(DefaultDimSource, FieldNo);
+        CreateDim(DefaultDimSource);
+    end;
+
+    local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
+    begin
+        DimensionManagement.AddDimSource(DefaultDimSource, GetPartnerTableNo(), Rec."Partner No.", FieldNo = Rec.FieldNo("Partner No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Salespers./Purch. Code", FieldNo = Rec.FieldNo("Salespers./Purch. Code"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Cash Desk CZP", Rec."Cash Desk No.", FieldNo = Rec.FieldNo("Cash Desk No."));
+
+        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
+    end;
+
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        OldDimSetID: Integer;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCreateDim(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        SourceCodeSetup.Get();
+        OldDimSetID := "Dimension Set ID";
+        "Dimension Set ID" := DimensionManagement.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup."Cash Desk CZP",
+                                "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        OnAfterCreateDim(Rec, xRec, CurrFieldNo, OldDimSetID);
 
         if (OldDimSetID <> "Dimension Set ID") and CashDocLinesExist() then begin
             Modify();
@@ -935,6 +965,8 @@ table 11732 "Cash Document Header CZP"
             CashDocumentLineCZP."Cash Desk No." := "Cash Desk No.";
             CashDocumentLineCZP."Cash Document No." := "No.";
             CashDocumentLineCZP."Line No." := LineNo;
+            CashDocumentLineCZP.Insert(true);
+
             CashDocumentLineCZP.Validate("Account Type", CashDocumentLineCZP."Account Type"::"G/L Account");
             case "Document Type" of
                 "Document Type"::Receipt:
@@ -960,7 +992,7 @@ table 11732 "Cash Document Header CZP"
                       Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY("Posting Date", "Currency Code", CashDocumentLineCZP.Amount, "Currency Factor"));
             end;
             CashDocumentLineCZP."System-Created Entry" := true;
-            CashDocumentLineCZP.Insert(true);
+            CashDocumentLineCZP.Modify();
         end;
     end;
 
@@ -1029,6 +1061,7 @@ table 11732 "Cash Document Header CZP"
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
+        IsHandled: Boolean;
     begin
         TestField("Document Type");
         CashDocumentHeaderCZP.Copy(Rec);
@@ -1038,6 +1071,12 @@ table 11732 "Cash Document Header CZP"
             CashDocumentHeaderCZP."Document Type"::Withdrawal:
                 CashDeskRepSelectionsCZP.SetRange(Usage, CashDeskRepSelectionsCZP.Usage::"Cash Withdrawal");
         end;
+
+        IsHandled := false;
+        OnPrintRecordsOnBeforeFilterAndPrintReports(CashDeskRepSelectionsCZP, CashDocumentHeaderCZP, ShowRequestForm, IsHandled);
+        if IsHandled then
+            exit;
+
         CashDeskRepSelectionsCZP.SetFilter("Report ID", '<>0');
         CashDeskRepSelectionsCZP.FindSet();
         repeat
@@ -1281,6 +1320,30 @@ table 11732 "Cash Document Header CZP"
         ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
     end;
 
+    internal procedure PerformManualRelease(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        NoOfSelected: Integer;
+        NoOfSkipped: Integer;
+    begin
+        NoOfSelected := CashDocumentHeaderCZP.Count;
+        CashDocumentHeaderCZP.SetFilter(Status, '<>%1', CashDocumentHeaderCZP.Status::Released);
+        NoOfSkipped := NoOfSelected - CashDocumentHeaderCZP.Count;
+        BatchProcessingMgt.BatchProcess(CashDocumentHeaderCZP, Codeunit::"Cash Document Manual Release", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
+    end;
+
+    internal procedure PerformManualReopen(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        NoOfSelected: Integer;
+        NoOfSkipped: Integer;
+    begin
+        NoOfSelected := CashDocumentHeaderCZP.Count;
+        CashDocumentHeaderCZP.SetFilter(Status, '<>%1', CashDocumentHeaderCZP.Status::Open);
+        NoOfSkipped := NoOfSelected - CashDocumentHeaderCZP.Count;
+        BatchProcessingMgt.BatchProcess(CashDocumentHeaderCZP, Codeunit::"Cash Document Manual Reopen", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
+    end;
+
     [IntegrationEvent(true, false)]
 #if not CLEAN19
     [Obsolete('The event will be changed to local. Use the CheckCashDocReleaseRestrictions function instead.', '19.0')]
@@ -1363,6 +1426,26 @@ table 11732 "Cash Document Header CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateRoundingAmount(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; RoundingMethod: Record "Rounding Method"; var RoundingAmount: Decimal);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnPrintRecordsOnBeforeFilterAndPrintReports(var CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP"; CashDocumentHeaderCZP: Record "Cash Document Header CZP"; ShowRequestForm: Boolean; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateDim(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDim(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; xCashDocumentHeaderCZP: Record "Cash Document Header CZP"; CurrentFieldNo: Integer; OldDimSetID: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitDefaultDimensionSources(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
     begin
     end;
 }

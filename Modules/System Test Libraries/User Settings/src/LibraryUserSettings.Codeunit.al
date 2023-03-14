@@ -11,10 +11,10 @@ codeunit 132000 "Library - User Settings"
     procedure ClearAllSettings()
     var
         UserPersonalization: Record "User Personalization";
-        ExtraSettings: Record "Extra Settings";
+        ApplicationUserSettings: Record "Application User Settings";
     begin
         UserPersonalization.DeleteAll();
-        ExtraSettings.DeleteAll();
+        ApplicationUserSettings.DeleteAll();
     end;
 
     /// <summary>
@@ -24,12 +24,12 @@ codeunit 132000 "Library - User Settings"
     procedure ClearUserSettings(UserSID: Guid)
     var
         UserPersonalization: Record "User Personalization";
-        ExtraSettings: Record "Extra Settings";
+        ApplicationUserSettings: Record "Application User Settings";
     begin
         if UserPersonalization.Get(UserSID) then
             UserPersonalization.Delete();
-        if ExtraSettings.Get(UserSID) then
-            ExtraSettings.Delete();
+        if ApplicationUserSettings.Get(UserSID) then
+            ApplicationUserSettings.Delete();
     end;
 
     /// <summary>

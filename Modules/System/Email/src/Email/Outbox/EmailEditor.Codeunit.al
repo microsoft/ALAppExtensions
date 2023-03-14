@@ -8,7 +8,10 @@ codeunit 8906 "Email Editor"
     Access = Internal;
     Permissions = tabledata "Email Outbox" = rimd,
                   tabledata "Tenant Media" = r,
-                  tabledata "Email Related Record" = rd;
+                  tabledata "Email Related Record" = rd,
+                  tabledata "Email View Policy" = r,
+                  tabledata "Email Rate Limit" = r,
+                  tabledata "Sent Email" = r;
 
     procedure Open(EmailOutbox: Record "Email Outbox"; IsModal: Boolean): Enum "Email Action"
     var
@@ -21,7 +24,52 @@ codeunit 8906 "Email Editor"
         if IsNewOutbox then
             EmailEditor.SetAsNew();
 
+        BeforeOpenEmailEditor(EmailOutbox.GetMessageId());
+
         if IsModal then begin
+            Commit(); // Commit before opening modally
+            EmailEditor.RunModal();
+            exit(EmailEditor.GetAction());
+        end
+        else
+            EmailEditor.Run();
+    end;
+
+    local procedure BeforeOpenEmailEditor(MessageId: Guid)
+    var
+        Email: Codeunit Email;
+        EmailMessage: Codeunit "Email Message";
+        Telemetry: Codeunit Telemetry;
+        Dimensions: Dictionary of [Text, Text];
+        LastModifiedNo: Integer;
+    begin
+        EmailMessage.Get(MessageId);
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Email.OnBeforeOpenEmailEditor(EmailMessage, IsNewOutbox);
+
+        EmailMessage.Get(MessageId); // Get any latest changes
+        if LastModifiedNo < EmailMessage.GetNoOfModifies() then begin
+            Dimensions.Add('Category', EmailCategoryLbl);
+            Dimensions.Add('EmailMessageId', EmailMessage.GetId());
+            Telemetry.LogMessage('0000I2G', EmailModifiedByEventTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+        end;
+    end;
+
+    procedure OpenWithScenario(EmailOutbox: Record "Email Outbox"; IsModal: Boolean; Scenario: Enum "Email Scenario"): Enum "Email Action"
+    var
+        EmailEditor: Page "Email Editor";
+    begin
+        CheckPermissions(EmailOutbox);
+
+        EmailEditor.SetRecord(EmailOutbox);
+        EmailEditor.SetEmailScenario(Scenario);
+
+        if IsNewOutbox then
+            EmailEditor.SetAsNew();
+
+        if IsModal then begin
+            Commit(); // Commit before opening modally
             EmailEditor.RunModal();
             exit(EmailEditor.GetAction());
         end
@@ -30,11 +78,12 @@ codeunit 8906 "Email Editor"
     end;
 
     procedure CheckPermissions(EmailOutbox: Record "Email Outbox")
+    var
+        EmailImpl: Codeunit "Email Impl";
+        EmailViewPolicy: Interface "Email View Policy";
     begin
-        if IsNullGuid(EmailOutbox."User Security Id") then
-            exit;
-
-        if EmailOutbox."User Security Id" = UserSecurityId() then
+        EmailViewPolicy := EmailImpl.GetUserEmailViewPolicy();
+        if EmailViewPolicy.HasAccess(EmailOutbox) then
             exit;
 
         Error(EmailMessageOpenPermissionErr);
@@ -55,13 +104,13 @@ codeunit 8906 "Email Editor"
             Clear(EmailAccount);
     end;
 
-    procedure GetEmailMessage(var EmailOutbox: Record "Email Outbox"; var EmailMessage: Codeunit "Email Message Impl.");
+    procedure GetEmailMessage(var EmailOutbox: Record "Email Outbox"; var EmailMessageImpl: Codeunit "Email Message Impl.");
     begin
-        if EmailMessage.Get(EmailOutbox."Message Id") then
+        if EmailMessageImpl.Get(EmailOutbox."Message Id") then
             exit;
 
-        EmailMessage.Create('', '', '', true);
-        EmailOutbox."Message Id" := EmailMessage.GetId();
+        EmailMessageImpl.Create('', '', '', true);
+        EmailOutbox."Message Id" := EmailMessageImpl.GetId();
         EmailOutbox.Modify();
     end;
 
@@ -99,7 +148,7 @@ codeunit 8906 "Email Editor"
         end;
     end;
 
-    procedure UploadAttachment(EmailMessage: Codeunit "Email Message Impl.")
+    procedure UploadAttachment(EmailMessageImpl: Codeunit "Email Message Impl.")
     var
         FileName: Text;
         Instream: Instream;
@@ -107,11 +156,11 @@ codeunit 8906 "Email Editor"
         AttachamentSize: Integer;
     begin
         if not UploadIntoStream('', '', '', FileName, Instream) then
-            exit;
+            Error(GetLastErrorText());
 
         AttachmentName := CopyStr(FileName, 1, 250);
-        ContentType := EmailMessage.GetContentTypeFromFilename(Filename);
-        AttachamentSize := EmailMessage.AddAttachmentInternal(AttachmentName, ContentType, Instream);
+        ContentType := EmailMessageImpl.GetContentTypeFromFilename(Filename);
+        AttachamentSize := EmailMessageImpl.AddAttachmentInternal(AttachmentName, ContentType, Instream);
 
         Session.LogMessage('0000CTX', StrSubstNo(UploadingAttachmentMsg, AttachamentSize, ContentType), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
     end;
@@ -136,19 +185,19 @@ codeunit 8906 "Email Editor"
         DownloadFromStream(MediaInstream, '', '', '', Filename);
     end;
 
-    procedure ValidateEmailData(FromEmailAddress: Text; var EmailMessage: Codeunit "Email Message Impl."): Boolean
+    procedure ValidateEmailData(FromEmailAddress: Text; var EmailMessageImpl: Codeunit "Email Message Impl."): Boolean
     begin
         // Validate email account
         if FromEmailAddress = '' then
             Error(NoFromAccountErr);
 
         // Validate recipients
-        EmailMessage.ValidateRecipients();
+        EmailMessageImpl.ValidateRecipients();
 
         // Verify related records against current recipients
-        VerifyRelatedRecords(EmailMessage.GetId());
+        VerifyRelatedRecords(EmailMessageImpl.GetId());
 
-        if EmailMessage.GetSubject() = '' then
+        if EmailMessageImpl.GetSubject() = '' then
             exit(Dialog.Confirm(NoSubjectlineQst, false));
 
         exit(true);
@@ -156,12 +205,12 @@ codeunit 8906 "Email Editor"
 
     procedure SendOutbox(var EmailOutbox: Record "Email Outbox")
     var
-        Email: Codeunit "Email Impl";
+        EmailImpl: Codeunit "Email Impl";
         EmailMessage: Codeunit "Email Message";
     begin
         EmailMessage.Get(EmailOutbox."Message Id");
 
-        if not Email.Send(EmailMessage, EmailOutbox."Account Id", EmailOutbox.Connector, EmailOutbox) then
+        if not EmailImpl.Send(EmailMessage, EmailOutbox."Account Id", EmailOutbox.Connector, EmailOutbox) then
             Error(SendingFailedErr, GetLastErrorText());
     end;
 
@@ -171,7 +220,7 @@ codeunit 8906 "Email Editor"
             if not Confirm(ConfirmDiscardEmailQst, true) then
                 exit(false);
 
-        exit(EmailOutbox.Delete(true)); // This should detele the email message, recipients and attachments as well.
+        exit(EmailOutbox.Delete(true)); // This should delete the email message, recipients and attachments as well.
     end;
 
     procedure AttachFromRelatedRecords(EmailMessageID: Guid);
@@ -192,78 +241,84 @@ codeunit 8906 "Email Editor"
             until EmailRelatedAttachment.Next() = 0;
     end;
 
-    local procedure GetPrimarySourceEntity(var PrimarySource: Integer; EmailMessageID: Guid; Dict: Dictionary of [Integer, Guid]): Boolean
+    local procedure GetPrimarySourceEntity(var PrimarySource: Integer; EmailMessageID: Guid; RelatedIds: List of [Integer]): Boolean
     var
         EmailRelatedRecord: Record "Email Related Record";
-        Count: Integer;
+        RelatedId: Integer;
     begin
         // If there is only one key in the dict, then there is no need to use DB resources.
-        If Dict.Keys.Count = 1 then begin
-            PrimarySource := Dict.Keys.Get(1);
+        If RelatedIds.Count = 1 then begin
+            PrimarySource := RelatedIds.Get(1);
             exit(true);
         end;
 
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessageID);
-        for Count := 1 to Dict.Keys.Count() do begin
-            EmailRelatedRecord.SetFilter("Table Id", Format(Dict.Keys.Get(Count)));
-            EmailRelatedRecord.FindFirst();
+        foreach RelatedId in RelatedIds do begin
+            EmailRelatedRecord.SetFilter("Table Id", Format(RelatedId));
 
-            if EmailRelatedRecord."Relation Type" = EmailRelatedRecord."Relation Type"::"Primary Source" then begin
-                PrimarySource := Dict.Keys.Get(Count);
-                exit(true);
-            end;
+            if EmailRelatedRecord.FindSet() then
+                repeat
+                    if EmailRelatedRecord."Relation Type" = EmailRelatedRecord."Relation Type"::"Primary Source" then begin
+                        PrimarySource := RelatedId;
+                        exit(true);
+                    end;
+                until EmailRelatedRecord.Next() = 0;
         end;
 
         exit(false);
     end;
 
-    local procedure FindEmailSourceEntities(EmailMessageID: Guid; var Dict: Dictionary of [Integer, Guid]): Boolean
+    local procedure FindEmailSourceEntities(EmailMessageID: Guid; var Dict: Dictionary of [Integer, Text]): Boolean
     var
         EmailRelatedRecord: Record "Email Related Record";
+        SystemIdFilter: Text;
     begin
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessageID);
-        EmailRelatedRecord.FindSet();
-        repeat
-            Dict.Add(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id");
-        until EmailRelatedRecord.Next() <= 0;
+        if EmailRelatedRecord.FindSet() then
+            repeat
+                if Dict.Get(EmailRelatedRecord."Table Id", SystemIdFilter) then
+                    Dict.Set(EmailRelatedRecord."Table Id", SystemIdFilter + '|' + Format(EmailRelatedRecord."System Id"))
+                else
+                    Dict.Add(EmailRelatedRecord."Table Id", Format(EmailRelatedRecord."System Id"));
+            until EmailRelatedRecord.Next() <= 0;
 
         exit(EmailRelatedRecord.Count() > 0);
     end;
 
-    procedure LoadWordTemplate(EmailMessage: Codeunit "Email Message Impl."; EmailMessageID: Guid)
+    procedure LoadWordTemplate(EmailMessageImpl: Codeunit "Email Message Impl."; EmailMessageID: Guid)
     var
         WordTemplateRecord: Record "Word Template";
-        WordTemplateTextWizard: Page "Word Template To Text Wizard";
+        WordTemplateToTextWizard: Page "Word Template To Text Wizard";
         TemplateSize: Integer;
-        Dict: Dictionary of [Integer, Guid];
+        Dict: Dictionary of [Integer, Text];
         PrimarySource: Integer;
     begin
         if FindEmailSourceEntities(EmailMessageID, Dict) then begin
-            if not GetPrimarySourceEntity(PrimarySource, EmailMessageID, Dict) then
+            if not GetPrimarySourceEntity(PrimarySource, EmailMessageID, Dict.Keys) then
                 Error(NoPrimarySourceOnEmailErr);
 
-            WordTemplateTextWizard.SetData(Dict, PrimarySource);
-            WordTemplateTextWizard.RunModal();
+            WordTemplateToTextWizard.SetData(Dict, PrimarySource);
+            WordTemplateToTextWizard.RunModal();
 
-            if not WordTemplateTextWizard.WasDialogCompleted() then begin
+            if not WordTemplateToTextWizard.WasDialogCompleted() then begin
                 Session.LogMessage('0000FL1', LoadingTemplateExitedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
                 exit;
             end;
 
-            WordTemplateTextWizard.GetRecord(WordTemplateRecord);
-            if EmailMessage.GetSubject() = '' then
-                EmailMessage.SetSubject(WordTemplateRecord.Name);
+            WordTemplateToTextWizard.GetRecord(WordTemplateRecord);
+            if EmailMessageImpl.GetSubject() = '' then
+                EmailMessageImpl.SetSubject(WordTemplateRecord.Name);
 
-            EmailMessage.SetBody(WordTemplateTextWizard.GetDocumentAsText());
-            EmailMessage.Modify();
-            TemplateSize := WordTemplateTextWizard.GetDocumentSize();
+            EmailMessageImpl.SetBody(WordTemplateToTextWizard.GetDocumentAsText());
+            EmailMessageImpl.Modify();
+            TemplateSize := WordTemplateToTextWizard.GetDocumentSize();
 
             Session.LogMessage('0000FL2', StrSubstNo(LoadingTemplateMsg, TemplateSize), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
 
         end;
     end;
 
-    procedure AttachFromWordTemplate(EmailMessage: Codeunit "Email Message Impl."; EmailMessageID: Guid)
+    procedure AttachFromWordTemplate(EmailMessageImpl: Codeunit "Email Message Impl."; EmailMessageID: Guid)
     var
         WordTemplateRecord: Record "Word Template";
         WordTemplateSelectionWizard: Page "Word Template Selection Wizard";
@@ -271,7 +326,7 @@ codeunit 8906 "Email Editor"
         Filename: Text;
         FileSize: Integer;
         ContentType: Text[250];
-        Dict: Dictionary of [Integer, Guid];
+        Dict: Dictionary of [Integer, Text];
     begin
         if FindEmailSourceEntities(EmailMessageID, Dict) then begin
             WordTemplateSelectionWizard.SetData(Dict);
@@ -287,54 +342,24 @@ codeunit 8906 "Email Editor"
             WordTemplateSelectionWizard.GetDocumentStream(InStream);
 
             Filename := WordTemplateRecord.Name + '.' + WordTemplateSelectionWizard.GetDocumentFormat();
-            ContentType := EmailMessage.GetContentTypeFromFilename(Filename);
-            FileSize := EmailMessage.AddAttachmentInternal(CopyStr(Filename, 1, 250), ContentType, Instream);
+            ContentType := EmailMessageImpl.GetContentTypeFromFilename(Filename);
+            FileSize := EmailMessageImpl.AddAttachmentInternal(CopyStr(Filename, 1, 250), ContentType, Instream);
 
             Session.LogMessage('0000FL4', StrSubstNo(UploadingTemplateAttachmentMsg, FileSize, ContentType), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
         end;
     end;
 
-
-    local procedure InsertRelatedAttachments(TableID: Integer; SystemID: Guid; var RecordAttachments: Record "Email Related Attachment"; var EmailRelatedAttachment: Record "Email Related Attachment")
+    procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachmentOut: Record "Email Related Attachment")
     var
-        RecordRef: RecordRef;
+        EmailMessageImpl: Codeunit "Email Message Impl.";
     begin
-        RecordRef.Open(TableID);
-        if not RecordRef.GetBySystemId(SystemID) then begin
-            Session.LogMessage('0000CTZ', StrSubstNo(RecordNotFoundMsg, TableID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-            exit;
-        end;
-
-        repeat
-            EmailRelatedAttachment.Copy(RecordAttachments);
-            EmailRelatedAttachment."Attachment Source" := CopyStr(Format(RecordRef.RecordId(), 0, 1), 1, MaxStrLen(EmailRelatedAttachment."Attachment Source"));
-            EmailRelatedAttachment.Insert();
-        until RecordAttachments.Next() = 0;
-    end;
-
-    procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachment: Record "Email Related Attachment")
-    var
-        RecordAttachments: Record "Email Related Attachment";
-        EmailRelatedRecord: Record "Email Related Record";
-        Email: Codeunit "Email";
-        EmailImpl: Codeunit "Email Impl";
-    begin
-        EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
-        EmailImpl.FilterRemovedSourceRecords(EmailRelatedRecord);
-        if EmailRelatedRecord.FindSet() then
-            repeat
-                Email.OnFindRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", RecordAttachments);
-                if RecordAttachments.FindSet() then
-                    InsertRelatedAttachments(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", RecordAttachments, EmailRelatedAttachment);
-                RecordAttachments.DeleteAll();
-            until EmailRelatedRecord.Next() = 0
-        else
+        if not EmailMessageImpl.GetRelatedAttachments(EmailMessageId, EmailRelatedAttachmentOut) then
             Message(NoRelatedAttachmentsErr);
     end;
 
     procedure LookupRecipients(MessageID: Guid; var Text: Text): Boolean
     var
-        SuggestedRecords: Record "Email Address Lookup";
+        SuggestedEmailAddressLookup: Record "Email Address Lookup";
         EmailRelatedRecord: Record "Email Related Record";
         EmailAddressLookup: Codeunit "Email Address Lookup";
         EmailAddressLookupPage: Page "Email Address Lookup";
@@ -345,26 +370,26 @@ codeunit 8906 "Email Editor"
         EmailRelatedRecord.SetRange("Email Message Id", MessageID);
         if EmailRelatedRecord.FindSet() then
             repeat
-                EmailAddressLookup.OnGetSuggestedAddresses(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", SuggestedRecords);
+                EmailAddressLookup.OnGetSuggestedAddresses(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", SuggestedEmailAddressLookup);
             until EmailRelatedRecord.Next() = 0;
 
-        if SuggestedRecords.FindFirst() then
-            EntityType := SuggestedRecords."Entity type";
-        EmailAddressLookupPage.AddSuggestions(SuggestedRecords);
-        SuggestedRecords.DeleteAll();
+        if SuggestedEmailAddressLookup.FindFirst() then
+            EntityType := SuggestedEmailAddressLookup."Entity type";
+        EmailAddressLookupPage.AddSuggestions(SuggestedEmailAddressLookup);
+        SuggestedEmailAddressLookup.DeleteAll();
 
         EmailAddressLookupPage.LookupMode(true);
         EmailAddressLookupPage.SetEntityType(EntityType);
         if (EmailAddressLookupPage.RunModal() = Action::LookupOK) or (EmailAddressLookupPage.WasFullAddressLookup()) then begin
-            EmailAddressLookupPage.GetSelectedSuggestions(SuggestedRecords);
+            EmailAddressLookupPage.GetSelectedSuggestions(SuggestedEmailAddressLookup);
 
-            if SuggestedRecords.FindSet() then begin
+            if SuggestedEmailAddressLookup.FindSet() then begin
                 if (Text <> '') and (not Text.EndsWith(';')) then
                     Text += ';';
-                Text += EmailAddressLookup.GetSelectedSuggestionsAsText(SuggestedRecords);
+                Text += EmailAddressLookup.GetSelectedSuggestionsAsText(SuggestedEmailAddressLookup);
 
                 // Added recipients is added as related entities on the email
-                AddRelatedRecordsFromEmailAddress(MessageID, SuggestedRecords);
+                AddRelatedRecordsFromEmailAddress(MessageID, SuggestedEmailAddressLookup);
                 exit(true);
             end;
         end;
@@ -432,7 +457,7 @@ codeunit 8906 "Email Editor"
         until EmailRelatedRecord.Next() = 0;
     end;
 
-    internal procedure AddRelatedRecordsFromEmailAddress(MessageID: Guid; var Suggestion: Record "Email Address Lookup")
+    internal procedure AddRelatedRecordsFromEmailAddress(MessageID: Guid; var EmailAddressLookupSuggestion: Record "Email Address Lookup")
     var
         EmailRelatedRecord: Record "Email Related Record";
         EmailMessage: Codeunit "Email Message";
@@ -443,7 +468,7 @@ codeunit 8906 "Email Editor"
         EmailMessage.Get(MessageID);
         HasRelations := Email.HasRelations(EmailMessage);
 
-        if Suggestion.FindSet() then
+        if EmailAddressLookupSuggestion.FindSet() then
             repeat
                 if not HasRelations then begin
                     EmailRelationType := Enum::"Email Relation Type"::"Primary Source";
@@ -451,30 +476,30 @@ codeunit 8906 "Email Editor"
                 end else
                     EmailRelationType := Enum::"Email Relation Type"::"Related Entity";
 
-                Email.AddRelation(EmailMessage, Suggestion."Source Table Number", Suggestion."Source System Id", EmailRelationType, Enum::"Email Relation Origin"::"Email Address Lookup");
+                Email.AddRelation(EmailMessage, EmailAddressLookupSuggestion."Source Table Number", EmailAddressLookupSuggestion."Source System Id", EmailRelationType, Enum::"Email Relation Origin"::"Email Address Lookup");
 
                 // Add related record to cache
-                if EmailRelatedRecord.Get(Suggestion."Source Table Number", Suggestion."Source System Id", EmailMessage.GetId()) then
-                    if RelatedRecordsCache.Add(Suggestion."E-Mail Address", EmailRelatedRecord.SystemId) then;
+                if EmailRelatedRecord.Get(EmailAddressLookupSuggestion."Source Table Number", EmailAddressLookupSuggestion."Source System Id", EmailMessage.GetId()) then
+                    if RelatedRecordsCache.Add(EmailAddressLookupSuggestion."E-Mail Address", EmailRelatedRecord.SystemId) then;
 
-            until Suggestion.Next() = 0;
+            until EmailAddressLookupSuggestion.Next() = 0;
     end;
 
     var
         RelatedRecordsCache: Dictionary of [Text, Guid];
         IsNewOutbox: Boolean;
         ConfirmDiscardEmailQst: Label 'Go ahead and discard?';
-        EmailMessageOpenPermissionErr: Label 'You can only open your own email messages.';
+        EmailMessageOpenPermissionErr: Label 'You do not have permission to open the email message.';
         NoSubjectlineQst: Label 'Do you want to send this message without a subject?';
-        NoFromAccountErr: Label 'You must specify an email account from which to send the message.';
+        NoFromAccountErr: Label 'You must specify a valid email account to send the message to.';
         LoadingTemplateMsg: Label 'Applied word template to email body with size: %1.', Comment = '%1 - File size', Locked = true;
         UploadingAttachmentMsg: Label 'Attached file with size: %1, Content type: %2', Comment = '%1 - File size, %2 - Content type', Locked = true;
         UploadingTemplateAttachmentMsg: Label 'Attached word template with size: %1, Content type: %2', Comment = '%1 - File size, %2 - Content type', Locked = true;
-        RecordNotFoundMsg: Label 'Record not found in table: %1', Comment = '%1 - File size, %2 - Content type', Locked = true;
         EmailCategoryLbl: Label 'Email', Locked = true;
         SendingFailedErr: Label 'The email was not sent because of the following error: "%1" \\Depending on the error, you might need to contact your administrator.', Comment = '%1 - the error that occurred.';
         NoRelatedAttachmentsErr: Label 'Did not find any attachments related to this email.';
         LoadingTemplateExitedMsg: Label 'Did not apply word template to email as user exited dialog.';
         NoPrimarySourceOnEmailErr: Label 'Failed to find the primary source entity';
         NoAttachmentContentMsg: Label 'The attachment content is no longer available.';
+        EmailModifiedByEventTxt: Label 'Email has been modified by event', Locked = true;
 }

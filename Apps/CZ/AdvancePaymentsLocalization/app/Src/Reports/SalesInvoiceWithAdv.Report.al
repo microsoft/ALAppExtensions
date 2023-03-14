@@ -6,6 +6,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
     PreviewMode = PrintLayout;
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
+    WordMergeDataItem = "Sales Invoice Header";
 
     dataset
     {
@@ -136,6 +137,18 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             column(DisplayAdditionalFeeNote; DisplayAddFeeNote)
             {
             }
+            column(GreetingLbl; GreetingLbl)
+            {
+            }
+            column(BodyLbl; BodyLbl)
+            {
+            }
+            column(ClosingLbl; ClosingLbl)
+            {
+            }
+            column(DocumentNoLbl; DocumentNoLbl)
+            {
+            }
             column(No_SalesInvoiceHeader; "No.")
             {
             }
@@ -184,7 +197,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             column(DueDate_SalesInvoiceHeaderCaption; FieldCaption("Due Date"))
             {
             }
-            column(DueDate_SalesInvoiceHeader; "Due Date")
+            column(DueDate_SalesInvoiceHeader; FormatDate("Due Date"))
             {
             }
             column(DocumentDate_SalesInvoiceHeaderCaption; FieldCaption("Document Date"))
@@ -245,6 +258,9 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             {
             }
             column(PrepaymentAmt_SalesInvoiceHeader; PrepaymentAmt)
+            {
+            }
+            column(TotalAfterPrepayed_SalesInvoiceHeader; TotalAfterPrepayed)
             {
             }
             column(CalculatedExchRate; CalculatedExchRate)
@@ -464,10 +480,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                     column(VATClauseIdentifier; TempVATAmountLine."VAT Identifier")
                     {
                     }
-                    column(VATClauseDescription; VATClause.Description)
-                    {
-                    }
-                    column(VATClauseDescription2; VATClause."Description 2")
+                    column(VATClauseDescription; VATClauseText)
                     {
                     }
 
@@ -476,7 +489,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                         TempVATAmountLine.GetLine(Number);
                         if not VATClause.Get(TempVATAmountLine."VAT Clause Code") then
                             CurrReport.Skip();
-                        VATClause.GetDescription("Sales Invoice Header");
+                        VATClauseText := VATClause.GetDescriptionText("Sales Invoice Header");
                     end;
 
                     trigger OnPreDataItem()
@@ -588,6 +601,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                 SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Usage);
                 SalesAdvLetterEntryCZZ.CalcSums(Amount);
                 PrepaymentAmt := -SalesAdvLetterEntryCZZ.Amount;
+                TotalAfterPrepayed := "Amount Including VAT" + PrepaymentAmt;
 
                 GetLineFeeNoteOnReportHist("No.");
 
@@ -677,6 +691,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
+        VATClauseText: Text;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -685,6 +700,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         PaymentSymbolLabel: array[2] of Text;
         CalculatedExchRate: Decimal;
         PrepaymentAmt: Decimal;
+        TotalAfterPrepayed: Decimal;
         NoOfCop: Integer;
         NoOfLoops: Integer;
         LogInteract: Boolean;
@@ -712,6 +728,10 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         PrepayedLbl: Label 'Prepayed Advances';
         TotalAfterPrepayedLbl: Label 'Total after Prepayed Advances';
         PaymentsLbl: Label 'Payments List';
+        GreetingLbl: Label 'Hello';
+        ClosingLbl: Label 'Sincerely';
+        BodyLbl: Label 'Thank you for your business. Your invoice is attached to this message.';
+        DocumentNoLbl: Label 'No.';
         [InDataSet]
         LogInteractionEnable: Boolean;
         DisplayAddFeeNote: Boolean;
@@ -777,6 +797,11 @@ report 31018 "Sales - Invoice with Adv. CZZ"
     begin
         FormatAddress.SalesInvBillTo(CustAddr, SalesInvoiceHeader);
         FormatAddress.SalesInvShipTo(ShipToAddr, CustAddr, SalesInvoiceHeader);
+    end;
+
+    local procedure FormatDate(DateValue: Date): Text
+    begin
+        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

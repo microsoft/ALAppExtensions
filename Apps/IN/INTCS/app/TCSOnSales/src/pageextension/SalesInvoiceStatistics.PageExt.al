@@ -15,12 +15,26 @@ pageextension 18849 "Sales Invoice Statistics" extends "Sales Invoice Statistics
     }
 
     trigger OnAfterGetRecord()
-    var
-        TCSSalesManagement: Codeunit "TCS Sales Management";
     begin
-        TCSSalesManagement.GetStatisticsAmountPostedInvoice(Rec, TCSAmount);
+        FormatLine();
+    end;
+
+    local procedure GetTCSAmount()
+    var
+        TCSStatsManagement: Codeunit "TCS Stats Management";
+    begin
+        TCSAmount := TCSStatsManagement.GetTCSStatsAmount();
+        Calculated := true;
+        TCSStatsManagement.ClearSessionVariable();
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not Calculated then
+            GetTCSAmount();
     end;
 
     var
         TCSAmount: Decimal;
+        Calculated: Boolean;
 }

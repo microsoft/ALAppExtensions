@@ -4,71 +4,76 @@ codeunit 139650 "Hybrid Wizard Tests"
     Subtype = Test;
     TestPermissions = Disabled;
 
-    local procedure InitializePage(var wizard: TestPage "Hybrid Cloud Setup Wizard"; IsSaas: Boolean; AgreePrivacy: Boolean)
+    local procedure InitializePage(var HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard"; IsSaas: Boolean; AgreePrivacy: Boolean)
     var
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
     begin
-        Initialize();
-
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(IsSaas);
         AssistedSetupTestLibrary.CallOnRegister();
         AssistedSetupTestLibrary.SetStatusToNotCompleted(Page::"Hybrid Cloud Setup Wizard");
-        wizard.Trap();
+        HybridCloudSetupWizard.Trap();
 
         Page.Run(Page::"Hybrid Cloud Setup Wizard");
-        wizard.AgreePrivacy.SetValue(AgreePrivacy);
+        HybridCloudSetupWizard.AgreePrivacy.SetValue(AgreePrivacy);
     end;
 
     local procedure Initialize()
     var
         HybridDeploymentSetup: Record "Hybrid Deployment Setup";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
     begin
-        if not Initialized then begin
-            HybridDeploymentSetup.DeleteAll();
-            HybridDeploymentSetup."Handler Codeunit ID" := Codeunit::"Library - Hybrid Management";
-            HybridDeploymentSetup.Insert();
-            BindSubscription(LibraryHybridManagement);
-            HybridDeploymentSetup.Get();
-        end;
+        HybridReplicationSummary.DeleteAll();
+
+        if Initialized then
+            exit;
+
+        HybridDeploymentSetup.DeleteAll();
+        HybridDeploymentSetup."Handler Codeunit ID" := Codeunit::"Library - Hybrid Management";
+        HybridDeploymentSetup.Insert();
+        BindSubscription(LibraryHybridManagement);
+        HybridDeploymentSetup.Get();
 
         Initialized := true;
+        Commit();
     end;
 
     [Test]
     [HandlerFunctions('ConfirmYesHandler')]
     procedure TestWelcomePrivacyAgree()
     var
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
+        Initialize();
         // [SCENARIO] User starts wizard from Saas environment and doesn't accept privacy.
 
         // [GIVEN] User starts the wizard.
-        InitializePage(wizard, true, false);
+        InitializePage(HybridCloudSetupWizard, true, false);
 
         // [THEN] Next is disabled.
-        Assert.AreEqual(false, wizard.ActionNext.Enabled(), 'Next should be disabled when privacy is not accepted');
+        Assert.AreEqual(false, HybridCloudSetupWizard.ActionNext.Enabled(), 'Next should be disabled when privacy is not accepted');
 
         // [GIVEN] User accepts privacy statement.
-        wizard.AgreePrivacy.SetValue(true);
+        HybridCloudSetupWizard.AgreePrivacy.SetValue(true);
 
         // [THEN] Next is enabled.
-        Assert.AreEqual(true, wizard.ActionNext.Enabled(), 'Next should be enabled when privacy is accepted');
+        Assert.AreEqual(true, HybridCloudSetupWizard.ActionNext.Enabled(), 'Next should be enabled when privacy is accepted');
     end;
 
     [Test]
     [HandlerFunctions('ProductsPageHandler,ConfirmYesHandler')]
     procedure TestStatusNotCompletedWhenNotFinished()
     var
-        assistedSetup: Codeunit "Assisted Setup";
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        GuidedExperience: Codeunit "Guided Experience";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
+        Initialize();
         // [SCENARIO] User starts wizard from Saas environment and exits wizard before finishing.
 
         // [GIVEN] User starts the wizard.
-        InitializePage(wizard, true, true);
+        InitializePage(HybridCloudSetupWizard, true, true);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [GIVEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
@@ -81,95 +86,102 @@ codeunit 139650 "Hybrid Wizard Tests"
         end;
 
         // [THEN] Status of assisted setup remains not completed.
-        Assert.IsFalse(assistedSetup.IsComplete(Page::"Hybrid Cloud Setup Wizard"), 'Wizard status should not be completed.');
+        Assert.IsFalse(GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard"), 'Wizard status should not be completed.');
     end;
 
     [Test]
     procedure TestSaasWelcomeActions()
     var
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
+        Initialize();
         // [SCENARIO] User starts wizard from Saas environment.
 
         // [WHEN] User starts the wizard.
-        InitializePage(wizard, true, true);
+        InitializePage(HybridCloudSetupWizard, true, true);
 
         // [THEN] The welcome window should open in saas mode.
-        VerifySaasWelcomeWindow(wizard);
+        VerifySaasWelcomeWindow(HybridCloudSetupWizard);
     end;
 
     [Test]
     procedure TestEstimatedDatabaseSizeVisibilityFalse()
     var
-        hybridCompany: Record "Hybrid Company";
-        hybridCompanyList: TestPage "Hybrid Companies";
+        HybridCompany: Record "Hybrid Company";
+        HybridCompanies: TestPage "Hybrid Companies";
     begin
+        Initialize();
+
         // [SCENARIO] Hybrid Company records do not have the "Estimated Database Size" field populated.
         // This happens for source products that don't care about the DB size prior to migration.
-        hybridCompany.DeleteAll();
-        hybridCompany.Init();
-        hybridCompany."Display Name" := 'Company 1';
-        hybridCompany.Name := 'COMPANY1';
-        hybridCompany.Insert();
+        HybridCompany.DeleteAll();
+        HybridCompany.Init();
+        HybridCompany."Display Name" := 'Company 1';
+        HybridCompany.Name := 'COMPANY1';
+        HybridCompany.Insert();
 
         // [WHEN] User gets to the company selection page of the wizard.
-        hybridCompanyList.Trap();
+        HybridCompanies.Trap();
         Page.Run(Page::"Hybrid Companies");
 
         // [THEN] The "Estimated DB Size" field should not be visible
-        VerifyEstimatedSizeVisibility(hybridCompanyList, false);
+        VerifyEstimatedSizeVisibility(HybridCompanies, false);
     end;
 
     [Test]
     procedure TestEstimatedDatabaseSizeVisibilityTrue()
     var
-        hybridCompany: Record "Hybrid Company";
-        hybridCompanyList: TestPage "Hybrid Companies";
+        HybridCompany: Record "Hybrid Company";
+        HybridCompanies: TestPage "Hybrid Companies";
     begin
+        Initialize();
+
         // [SCENARIO] Hybrid Company records have the "Estimated Database Size" field populated.
         // This happens for source products that set a maximum DB size prior to migration.
-        hybridCompany.DeleteAll();
-        hybridCompany.Init();
-        hybridCompany."Display Name" := 'Company 1';
-        hybridCompany.Name := 'COMPANY1';
-        hybridCompany."Estimated Size" := 12.4;
-        hybridCompany.Insert();
+        HybridCompany.DeleteAll();
+        HybridCompany.Init();
+        HybridCompany."Display Name" := 'Company 1';
+        HybridCompany.Name := 'COMPANY1';
+        HybridCompany."Estimated Size" := 12.4;
+        HybridCompany.Insert();
 
         // [WHEN] User gets to the company selection page of the wizard.
-        hybridCompanyList.Trap();
+        HybridCompanies.Trap();
         Page.Run(Page::"Hybrid Companies");
 
         // [THEN] The "Estimated DB Size" field should not be visible
-        VerifyEstimatedSizeVisibility(hybridCompanyList, true);
+        VerifyEstimatedSizeVisibility(HybridCompanies, true);
     end;
 
     [Test]
     [HandlerFunctions('ProductsPageHandler,ConfirmDatabaseSizeLimitExceeded')]
     procedure TestEstimatedDatabaseSizeLimitExceeded()
     var
-        hybridCompany: Record "Hybrid Company";
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCompany: Record "Hybrid Company";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
-        // [SCENARIO] Customer has selected more than 30GB of company data to migrate.
-        hybridCompany.DeleteAll();
-        hybridCompany.Init();
-        hybridCompany."Display Name" := 'Company 1';
-        hybridCompany.Name := 'COMPANY1';
-        hybridCompany."Estimated Size" := 32.4;
-        hybridCompany.Replicate := true;
-        hybridCompany.Insert();
+        Initialize();
 
-        hybridCompany.Init();
-        hybridCompany."Display Name" := 'Company 2';
-        hybridCompany.Name := 'COMPANY2';
-        hybridCompany."Estimated Size" := 23.8;
-        hybridCompany.Replicate := true;
-        hybridCompany.Insert();
+        // [SCENARIO] Customer has selected more than 30GB of company data to migrate.
+        HybridCompany.DeleteAll();
+        HybridCompany.Init();
+        HybridCompany."Display Name" := 'Company 1';
+        HybridCompany.Name := 'COMPANY1';
+        HybridCompany."Estimated Size" := 32.4;
+        HybridCompany.Replicate := true;
+        HybridCompany.Insert();
+
+        HybridCompany.Init();
+        HybridCompany."Display Name" := 'Company 2';
+        HybridCompany.Name := 'COMPANY2';
+        HybridCompany."Estimated Size" := 23.8;
+        HybridCompany.Replicate := true;
+        HybridCompany.Insert();
 
         // [GIVEN] User starts the wizard.
-        InitializePage(wizard, true, true);
+        InitializePage(HybridCloudSetupWizard, true, true);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [WHEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
@@ -194,29 +206,31 @@ codeunit 139650 "Hybrid Wizard Tests"
     [HandlerFunctions('ProductsPageHandler')]
     procedure TestEstimatedDatabaseSizeLimitNotExceeded()
     var
-        hybridCompany: Record "Hybrid Company";
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCompany: Record "Hybrid Company";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
-        // [SCENARIO] Customer has selected more than 30GB of company data to migrate.
-        hybridCompany.DeleteAll();
-        hybridCompany.Init();
-        hybridCompany."Display Name" := 'Company 1';
-        hybridCompany.Name := 'COMPANY1';
-        hybridCompany."Estimated Size" := 12.4;
-        hybridCompany.Replicate := true;
-        hybridCompany.Insert();
+        Initialize();
 
-        hybridCompany.Init();
-        hybridCompany."Display Name" := 'Company 2';
-        hybridCompany.Name := 'COMPANY2';
-        hybridCompany."Estimated Size" := 23.8;
-        hybridCompany.Replicate := false;
-        hybridCompany.Insert();
+        // [SCENARIO] Customer has selected more than 30GB of company data to migrate.
+        HybridCompany.DeleteAll();
+        HybridCompany.Init();
+        HybridCompany."Display Name" := 'Company 1';
+        HybridCompany.Name := 'COMPANY1';
+        HybridCompany."Estimated Size" := 12.4;
+        HybridCompany.Replicate := true;
+        HybridCompany.Insert();
+
+        HybridCompany.Init();
+        HybridCompany."Display Name" := 'Company 2';
+        HybridCompany.Name := 'COMPANY2';
+        HybridCompany."Estimated Size" := 23.8;
+        HybridCompany.Replicate := false;
+        HybridCompany.Insert();
 
         // [GIVEN] User starts the wizard.
-        InitializePage(wizard, true, true);
+        InitializePage(HybridCloudSetupWizard, true, true);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [WHEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
@@ -241,19 +255,21 @@ codeunit 139650 "Hybrid Wizard Tests"
     [HandlerFunctions('ProductsPageHandler')]
     procedure TestDynamicsProductWindow()
     var
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
+        Initialize();
+
         // [SCENARIO] User starts wizard from saas environment and navigates to Dynamics Product window.
 
         // [GIVEN] User starts the wizard.
-        InitializePage(wizard, true, true);
+        InitializePage(HybridCloudSetupWizard, true, true);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [WHEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
             // [THEN] Dynamics Product window is displayed.
-            VerifySaasDynamicsProductWindow(wizard);
+            VerifySaasDynamicsProductWindow(HybridCloudSetupWizard);
 
             // [WHEN] User clicks 'Next' with out selecting a product.
             asserterror ActionNext.Invoke();
@@ -274,14 +290,16 @@ codeunit 139650 "Hybrid Wizard Tests"
     [HandlerFunctions('ProductsPageHandler')]
     procedure TestNoSqlConnectionStringError()
     var
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
+        Initialize();
+
         // [SCENARIO] User navigates wizard with out entering SQL connection string.
 
         // [GIVEN] User starts the wizard.
-        InitializePage(wizard, true, true);
+        InitializePage(HybridCloudSetupWizard, true, true);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [GIVEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
@@ -297,23 +315,23 @@ codeunit 139650 "Hybrid Wizard Tests"
         end;
     end;
 
-    local procedure VerifyEstimatedSizeVisibility(CompanyList: TestPage "Hybrid Companies"; Visibility: Boolean)
+    local procedure VerifyEstimatedSizeVisibility(HybridCompanies: TestPage "Hybrid Companies"; Visibility: Boolean)
     begin
-        Assert.AreEqual(Visibility, CompanyList."Estimated Size".Visible(), 'Estimated DB Size visibility should be ' + Format(Visibility));
+        Assert.AreEqual(Visibility, HybridCompanies."Estimated Size".Visible(), 'Estimated DB Size visibility should be ' + Format(Visibility));
     end;
 
-    local procedure VerifySaasWelcomeWindow(Wizard: TestPage "Hybrid Cloud Setup Wizard")
+    local procedure VerifySaasWelcomeWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with Wizard do begin
+        with HybridCloudSetupWizard do begin
             Assert.IsFalse(ActionBack.Enabled(), 'Welcome window ActionBack should be disabled.');
             Assert.IsTrue(ActionNext.Enabled(), 'Welcome window ActionNext should be enabled.');
             Assert.IsFalse(ActionFinish.Enabled(), 'Welcome window ActionFinish should be disabled.');
         end;
     end;
 
-    local procedure VerifySaasDynamicsProductWindow(Wizard: TestPage "Hybrid Cloud Setup Wizard")
+    local procedure VerifySaasDynamicsProductWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with Wizard do begin
+        with HybridCloudSetupWizard do begin
             Assert.IsTrue(ActionBack.Enabled(), 'Dynamics Product window ActionBack should be enabled.');
             Assert.IsTrue(ActionNext.Enabled(), 'Dynamics Product window ActionNext should be enabled.');
             Assert.IsFalse(ActionFinish.Enabled(), 'Dynamics Product window ActionFinish should be disabled.');
@@ -334,10 +352,10 @@ codeunit 139650 "Hybrid Wizard Tests"
     end;
 
     [ModalPageHandler]
-    procedure ProductsPageHandler(var productPage: TestPage "Hybrid Product Types")
+    procedure ProductsPageHandler(var HybridProductTypes: TestPage "Hybrid Product Types")
     begin
-        productPage.FindFirstField("Display Name", libraryHybridManagement.GetTestProductName());
-        productPage.OK().Invoke();
+        HybridProductTypes.FindFirstField("Display Name", libraryHybridManagement.GetTestProductName());
+        HybridProductTypes.OK().Invoke();
     end;
 
     var

@@ -125,12 +125,12 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
     /// <param name="DateFieldNo">The number of the date or datetime field used as to determine the age of records in the table.</param>
     /// <param name="Enabled">Indicates whether the retention policy line will be enabled.</param>
     /// <param name="Locked">Indicates whether the retention policy line will be locked. If this parameter is true, the line will also be enabled.</param>
-    /// <param name="RecRef">A record reference containing the filters to be added to the retention policy setup line.</param>
-    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetentionPeriodEnum: Enum "Retention Period Enum"; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecRef: RecordRef)
+    /// <param name="RecordRef">A record reference containing the filters to be added to the retention policy setup line.</param>
+    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetentionPeriodEnum: Enum "Retention Period Enum"; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecordRef: RecordRef)
     var
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
     begin
-        RetenPolAllowedTblImpl.AddTableFilterToJsonArray(TableFilters, RetentionPeriodEnum, DateFieldNo, Enabled, Locked, RecRef);
+        RetenPolAllowedTblImpl.AddTableFilterToJsonArray(TableFilters, RetentionPeriodEnum, DateFieldNo, Enabled, Locked, RecordRef);
     end;
 
     /// <summary>
@@ -142,12 +142,12 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
     /// <param name="DateFieldNo">The number of the date or datetime field used as to determine the age of records in the table.</param>
     /// <param name="Enabled">Indicates whether the retention policy line will be enabled.</param>
     /// <param name="Locked">Indicates whether the retention policy line will be locked. If this parameter is true, the line will also be enabled.</param>
-    /// <param name="RecRef">A record reference containing the filters to be added to the retention policy setup line.</param>
-    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetPeriodCalc: DateFormula; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecRef: RecordRef)
+    /// <param name="RecordRef">A record reference containing the filters to be added to the retention policy setup line.</param>
+    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetPeriodCalc: DateFormula; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecordRef: RecordRef)
     var
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
     begin
-        RetenPolAllowedTblImpl.AddTableFilterToJsonArray(TableFilters, RetPeriodCalc, DateFieldNo, Enabled, Locked, RecRef);
+        RetenPolAllowedTblImpl.AddTableFilterToJsonArray(TableFilters, RetPeriodCalc, DateFieldNo, Enabled, Locked, RecordRef);
     end;
 
     /// <summary>
@@ -167,7 +167,7 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
     /// </summary>
     /// <param name="TableId">The table ID to check.</param>
     /// <returns>True if the table is in the list of allowed tables. False if the table is not in the list of allowed tables.</returns>
-    procedure IsAllowedTable(TableId: Integer): boolean
+    procedure IsAllowedTable(TableId: Integer): Boolean
     var
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
     begin
@@ -254,6 +254,14 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
     begin
         exit(RetenPolAllowedTblImpl.CalcMinimumExpirationDate(TableId))
+    end;
+
+    /// <summary>
+    /// This event is called when the user chooses to refresh the allowed tables.
+    /// </summary>
+    [IntegrationEvent(false, false)]
+    internal procedure OnRefreshAllowedTables()
+    begin
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Retention Policy Allowed Table", 'OnBeforeInsertEvent', '', false, false)]

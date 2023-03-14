@@ -20,7 +20,8 @@ codeunit 1996 "Checklist Banner"
                   tabledata Company = r;
 
     var
-        CompletedStepLbl: Label 'You completed this step';
+        Telemetry: Codeunit Telemetry;
+        CompletedStepLbl: Label 'This step is completed';
         SkippedStepLbl: Label 'You skipped this step';
         BannerTitleLbl: Label 'Get started', MaxLength = 50, Comment = '*Onboarding Checklist*';
         CollapsedBannerTitleLbl: Label 'Get started:', MaxLength = 50, Comment = '*Onboarding Checklist*';
@@ -78,7 +79,6 @@ codeunit 1996 "Checklist Banner"
         UserChecklistStatus: Record "User Checklist Status";
         UserPersonalization: Record "User Personalization";
         ChecklistImplementation: Codeunit "Checklist Implementation";
-        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         Dimensions: Dictionary of [Text, Text];
         OldStatus: Enum "Checklist Status";
         UserNameCode: Code[50];
@@ -104,21 +104,14 @@ codeunit 1996 "Checklist Banner"
         end;
 
         GetUserChecklistStatusDimensionsInDefaultLanguage(OldStatus, NewStatus, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
-        GetCustomDimensionsForUserChecklistStatusUpdate(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
+        AddStatusUpdateDimensions(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
 
-        if UserPersonalization."Profile ID" = '' then
-            if UserPersonalization.Get(UserSecurityId()) then;
-
-        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-        GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
-
-        Session.LogMessage('0000EIQ', StrSubstNo(UserChecklistStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+        Telemetry.LogMessage('0000EIQ', StrSubstNo(UserChecklistStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
             Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
     end;
 
     procedure UpdateChecklistItemUserStatus(var ChecklistItemBuffer: Record "Checklist Item Buffer"; UserName: Text; NewStatus: Enum "Checklist Item Status")
     var
-        UserPersonalization: Record "User Personalization";
         GuidedExperienceItem: Record "Guided Experience Item";
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         OldStatus: Enum "Checklist Item Status";
@@ -135,20 +128,16 @@ codeunit 1996 "Checklist Banner"
         OldStatus := UpdateChecklistItemUserStatus(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version, CopyStr(UserName, 1, 50), NewStatus);
 
         GetChecklistItemStatusDimensionsInDefaultLanguage(OldStatus, NewStatus, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
-        GetCustomDimensionsForChecklistItemStatusUpdate(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
+        AddStatusUpdateDimensions(Dimensions, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage);
 
-        if UserPersonalization.Get(UserSecurityId()) then;
-        GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
-        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-
-        Session.LogMessage('0000EIT', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+        Telemetry.LogMessage('0000EIT', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
             Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
 
-        if GuidedExperienceItem.Get(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version) then;
-
-        GuidedExperienceImpl.AddGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem, 'Checklist');
-        Session.LogMessage('0000EIR', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
-            Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, Dimensions);
+        if GuidedExperienceItem.Get(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version) then begin
+            GuidedExperienceImpl.AddGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem, 'Checklist');
+            Telemetry.LogMessage('0000EIR', StrSubstNo(ChecklistItemStatusUpdateLbl, OldStatusInDefaultLanguage, NewStatusInDefaultLanguage),
+                Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, Dimensions);
+        end;
     end;
 
     procedure IsUserChecklistStatusComplete(UserName: Text): Boolean
@@ -160,10 +149,17 @@ codeunit 1996 "Checklist Banner"
             exit(UserChecklistStatus."Checklist Status" = UserChecklistStatus."Checklist Status"::Completed);
     end;
 
+#if not CLEAN22
+    [Obsolete('Replaced by ExecuteChecklistItem without IsEvaluationCompany as parameter.', '22.0')]
     procedure ExecuteChecklistItem(var ChecklistItemBuffer: Record "Checklist Item Buffer"; Tour: DotNet Tour; IsLastChecklistItem: Boolean; IsEvaluationCompany: Boolean): Boolean
+    begin
+        ExecuteChecklistItem(ChecklistItemBuffer, Tour, IsLastChecklistItem);
+    end;
+#endif
+
+    procedure ExecuteChecklistItem(var ChecklistItemBuffer: Record "Checklist Item Buffer"; Tour: DotNet Tour; IsLastChecklistItem: Boolean): Boolean
     var
         GuidedExperienceItem: Record "Guided Experience Item";
-        ChecklistItemStatus: Enum "Checklist Item Status";
         IsChecklistItemComplete: Boolean;
     begin
         if not GuidedExperienceItem.Get(ChecklistItemBuffer.Code, ChecklistItemBuffer.Version) then
@@ -185,14 +181,6 @@ codeunit 1996 "Checklist Banner"
             "Guided Experience Type"::Video:
                 RunVideo(GuidedExperienceItem."Video Url");
         end;
-
-        if IsEvaluationCompany then
-            if not (GuidedExperienceItem."Guided Experience Type"
-                in ["Guided Experience Type"::Tour, "Guided Experience Type"::"Spotlight Tour"])
-            then begin
-                UpdateChecklistItemUserStatus(ChecklistItemBuffer, UserId(), ChecklistItemStatus::Completed);
-                exit(true);
-            end;
 
         exit(IsChecklistItemComplete);
     end;
@@ -504,7 +492,7 @@ codeunit 1996 "Checklist Banner"
             and (NewStatus <> NewStatus::"Not Started")
             and (
                 (NewStatus = NewStatus::Started)
-                or ((OldStatus in [OldStatus::"Not Started", OldStatus::Started]) and (NewStatus in [NewStatus::Skipped, NewStatus::Completed]))
+                or ((OldStatus in [OldStatus::"Not Started", OldStatus::Started, OldStatus::Skipped]) and (NewStatus in [NewStatus::Skipped, NewStatus::Completed]))
                 )
             );
     end;
@@ -552,7 +540,7 @@ codeunit 1996 "Checklist Banner"
             [GuidedExperienceItem."Guided Experience Type"::"Manual Setup",
             GuidedExperienceItem."Guided Experience Type"::"Application Feature"]
         then begin
-            RunObject(GuidedExperienceItem."Object Type to Run", GuidedExperienceItem."Object ID to Run");
+            RunObject(GuidedExperienceItem);
             UpdateChecklistItemUserStatus(ChecklistItemBuffer, UserId(), ChecklistItemStatus::Started);
         end else
             if GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::"Assisted Setup" then begin
@@ -595,13 +583,20 @@ codeunit 1996 "Checklist Banner"
         Video.Play(VideoUrl);
     end;
 
-    local procedure RunObject(ObjectType: Enum "Guided Experience Object Type"; ObjectID: Integer)
+    local procedure RunObject(GuidedExperienceItem: Record "Guided Experience Item")
+    var
+        ObjectID: Integer;
+        ObjectType: Enum "Guided Experience Object Type";
     begin
         Commit(); //needed before the RunModal
-
+        ObjectType := GuidedExperienceItem."Object Type to Run";
+        ObjectID := GuidedExperienceItem."Object ID to Run";
         case ObjectType of
             ObjectType::Page:
-                Page.RunModal(ObjectID);
+                If GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::"Application Feature" then
+                    Page.Run(ObjectID)
+                else
+                    Page.RunModal(ObjectID);
             ObjectType::Codeunit:
                 Codeunit.Run(ObjectID);
             ObjectType::Report:
@@ -777,12 +772,6 @@ codeunit 1996 "Checklist Banner"
         GlobalLanguage(CurrentLanguageId);
     end;
 
-    local procedure GetCustomDimensionsForChecklistItemStatusUpdate(var Dimensions: Dictionary of [Text, Text]; OldStatus: Text; NewStatus: Text)
-    begin
-        Dimensions.Add('OldStatus', OldStatus);
-        Dimensions.Add('NewStatus', NewStatus);
-    end;
-
     local procedure GetUserChecklistStatusDimensionsInDefaultLanguage(OldStatus: Enum "Checklist Status"; NewStatus: Enum "Checklist Status"; var OldStatusInDefaultLanguage: Text; var NewStatusInDefaultLanguage: Text)
     var
         Language: Codeunit Language;
@@ -797,7 +786,7 @@ codeunit 1996 "Checklist Banner"
         GlobalLanguage(CurrentLanguageId);
     end;
 
-    local procedure GetCustomDimensionsForUserChecklistStatusUpdate(var Dimensions: Dictionary of [Text, Text]; OldStatus: Text; NewStatus: Text)
+    local procedure AddStatusUpdateDimensions(var Dimensions: Dictionary of [Text, Text]; OldStatus: Text; NewStatus: Text)
     begin
         Dimensions.Add('OldStatus', OldStatus);
         Dimensions.Add('NewStatus', NewStatus);

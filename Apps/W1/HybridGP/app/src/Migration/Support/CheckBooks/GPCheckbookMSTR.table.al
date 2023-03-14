@@ -1,6 +1,6 @@
 table 40099 "GP Checkbook MSTR"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields
@@ -179,86 +179,13 @@ table 40099 "GP Checkbook MSTR"
         }
     }
 
+#if not CLEAN21
+    [Obsolete('This method is obsolete. Code has been moved to GP Checkbook Migrator codeunit.', '21.0')]
     procedure MoveStagingData()
     var
-        BankAccount: Record "Bank Account";
+        GPCheckbookMigrator: codeunit "GP Checkbook Migrator";
     begin
-        if FindSet() then
-            repeat
-                if not BankAccount.Get(CHEKBKID) then begin
-                    BankAccount.Init();
-                    BankAccount."No." := DelChr(CHEKBKID, '>', ' ');
-                    BankAccount.Name := DelChr(DSCRIPTN, '>', ' ');
-                    BankAccount."Bank Account No." := DelChr(BNKACTNM, '>', ' ');
-                    BankAccount."Last Check No." := GetLastCheckNumber(NXTCHNUM);
-                    BankAccount."Balance Last Statement" := Last_Reconciled_Balance;
-                    BankAccount."Bank Acc. Posting Group" := GetBankAccPostingGroup(ACTINDX);
-                    UpdateBankInfo(DelChr(BANKID, '>', ' '), BankAccount);
-                    BankAccount.Insert(true);
-                end;
-            until Next() = 0;
+        GPCheckbookMigrator.MoveCheckbookStagingData();
     end;
-
-    local procedure UpdateBankInfo(BankId: Text[15]; var BankAccount: Record "Bank Account")
-    var
-        CMBankMSTR: Record "GP Bank MSTR";
-    begin
-        if CMBankMSTR.Get(BankId) then begin
-            BankAccount.Address := DelChr(CMBankMSTR.ADDRESS1, '>', ' ');
-            BankAccount."Address 2" := CopyStr(DelChr(CMBankMSTR.ADDRESS2, '>', ' '), 1, 50);
-            BankAccount.City := CopyStr(DelChr(CMBankMSTR.CITY, '>', ' '), 1, 30);
-            BankAccount."Phone No." := DelChr(CMBankMSTR.PHNUMBR1, '>', ' ');
-            BankAccount."Transit No." := DelChr(CMBankMSTR.TRNSTNBR, '>', ' ');
-            BankAccount."Fax No." := DelChr(CMBankMSTR.FAXNUMBR, '>', ' ');
-            BankAccount.County := DelChr(CMBankMSTR.STATE, '>', ' ');
-            BankAccount."Post Code" := DelChr(CMBankMSTR.ZIPCODE, '>', ' ');
-            BankAccount."Bank Branch No." := CopyStr(DelChr(CMBankMSTR.BNKBRNCH, '>', ' '), 1, 20);
-        end;
-    end;
-
-    local procedure GetBankAccPostingGroup(AcctIndex: Integer): Code[20]
-    var
-        BankAccountPostingGroup: Record "Bank Account Posting Group";
-        GPAccount: Record "GP Account";
-    begin
-        if GPAccount.Get(AcctIndex) then begin
-            // If a posting group already exists for this GL account use it.
-            BankAccountPostingGroup.SetRange("G/L Account No.", CopyStr(GPAccount.AcctNum, 1, 20));
-            if BankAccountPostingGroup.FindFirst() then
-                exit(BankAccountPostingGroup.Code);
-
-            BankAccountPostingGroup.Reset();
-            BankAccountPostingGroup.Init();
-            BankAccountPostingGroup.Code := 'GP' + Format(GetNextPostingGroupNumber());
-            BankAccountPostingGroup."G/L Account No." := CopyStr(GPAccount.AcctNum, 1, 20);
-            BankAccountPostingGroup.Insert(true);
-            exit(BankAccountPostingGroup.Code);
-        end;
-    end;
-
-    local procedure GetNextPostingGroupNumber(): Integer
-    var
-        BankAccountPostingGroup: Record "Bank Account Posting Group";
-    begin
-        BankAccountPostingGroup.SetFilter(Code, 'GP' + '*');
-        if BankAccountPostingGroup.IsEmpty then
-            exit(1);
-
-        exit(BankAccountPostingGroup.Count + 1);
-    end;
-
-    local procedure GetLastCheckNumber(NextCheckNumber: Text[21]): Code[20]
-    var
-        NextCheck: Integer;
-        LastCheckNumber: Integer;
-    begin
-        if not Evaluate(NextCheck, CopyStr(DelChr(NextCheckNumber, '>', ' '), 1, 20)) then
-            exit('');
-
-        if NextCheck <= 0 then
-            exit(Format(0));
-
-        LastCheckNumber := NextCheck - 1;
-        exit(Format(LastCheckNumber));
-    end;
+#endif
 }

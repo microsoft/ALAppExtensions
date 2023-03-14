@@ -82,6 +82,7 @@ page 1361 "MS - WorldPay Std. Template"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                PromotedOnly = true;
                 ToolTip = 'Resets values to default.';
 
                 trigger OnAction()

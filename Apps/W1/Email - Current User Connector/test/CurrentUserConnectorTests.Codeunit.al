@@ -6,6 +6,7 @@
 codeunit 139750 "Current User Connector Tests"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         LibraryOutlookRestAPI: Codeunit "Library - Outlook Rest API";

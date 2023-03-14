@@ -90,7 +90,7 @@ codeunit 149005 "BCPT Line"
 
     local procedure MaxNoOfSessions(): Integer
     begin
-        exit(125);
+        exit(500);
     end;
 
     procedure Indent(var BCPTLine: Record "BCPT Line")
@@ -155,7 +155,7 @@ codeunit 149005 "BCPT Line"
         AddLogEntry(BCPTLine, ScenarioOperation, ExecutionSuccess, ErrorMessage, NoOfSQL, StartTime, EndTime);
     end;
 
-    internal procedure AddLogEntry(var BCPTLine: Record "BCPT Line"; Operation: Text; ExecutionSuccess: Boolean; Message: Text; NoOfSQLStatements: Integer; StartTime: DateTime; EndTime: Datetime)
+    internal procedure AddLogEntry(var BCPTLine: Record "BCPT Line"; Operation: Text; ExecutionSuccess: Boolean; Message: Text; NumSQLStatements: Integer; StartTime: DateTime; EndTime: Datetime)
     var
         BCPTLogEntry: Record "BCPT Log Entry";
         BCPTRoleWrapperImpl: Codeunit "BCPT Role Wrapper"; // single instance
@@ -163,6 +163,7 @@ codeunit 149005 "BCPT Line"
         BCPTLine.Testfield("BCPT Code");
         BCPTRoleWrapperImpl.GetBCPTHeader(BCPTHeader);
         Clear(BCPTLogEntry);
+        BCPTLogEntry.RunID := BCPTHeader.RunID;
         BCPTLogEntry."BCPT Code" := BCPTLine."BCPT Code";
         BCPTLogEntry."BCPT Line No." := BCPTLine."Line No.";
         BCPTLogEntry.Version := BCPTHeader.Version;
@@ -170,11 +171,14 @@ codeunit 149005 "BCPT Line"
         BCPTLogEntry.Operation := copystr(Operation, 1, MaxStrLen(BCPTLogEntry.Operation));
         BCPTLogEntry.Tag := BCPTRoleWrapperImpl.GetBCPTHeaderTag();
         BCPTLogEntry."Entry No." := 0;
+        BCPTLogEntry."Test Company Name" := BCPTHeader."Test Company Name";
         if ExecutionSuccess then
             BCPTLogEntry.Status := BCPTLogEntry.Status::Success
-        else
+        else begin
             BCPTLogEntry.Status := BCPTLogEntry.Status::Error;
-        BCPTLogEntry."No. of SQL Statements" := NoOfSQLStatements;
+            BCPTLogEntry."Error Call Stack" := CopyStr(GetLastErrorCallStack, 1, MaxStrLen(BCPTLogEntry."Error Call Stack"));
+        end;
+        BCPTLogEntry."No. of SQL Statements" := NumSQLStatements;
         BCPTLogEntry.Message := copystr(Message, 1, MaxStrLen(BCPTLogEntry.Message));
         BCPTLogEntry."End Time" := EndTime;
         BCPTLogEntry."Start Time" := StartTime;
@@ -195,20 +199,21 @@ codeunit 149005 "BCPT Line"
         Dimensions: Dictionary of [Text, Text];
         TelemetryLogLbl: Label 'Performance Toolkit - %1 - %2 - %3', Locked = true;
     begin
-        Dimensions.Add('code', BCPTLogEntry."BCPT Code");
-        Dimensions.Add('lineNo', Format(BCPTLogEntry."BCPT Line No."));
-        Dimensions.Add('version', Format(BCPTLogEntry.Version));
-        Dimensions.Add('codeunitId', Format(BCPTLogEntry."Codeunit ID"));
+        Dimensions.Add('RunID', BCPTLogEntry.RunID);
+        Dimensions.Add('Code', BCPTLogEntry."BCPT Code");
+        Dimensions.Add('LineNo', Format(BCPTLogEntry."BCPT Line No."));
+        Dimensions.Add('Version', Format(BCPTLogEntry.Version));
+        Dimensions.Add('CodeunitId', Format(BCPTLogEntry."Codeunit ID"));
         BCPTLogEntry.CalcFields("Codeunit Name");
-        Dimensions.Add('codeunitName', BCPTLogEntry."Codeunit Name");
-        Dimensions.Add('operation', BCPTLogEntry.Operation);
-        Dimensions.Add('tag', BCPTLogEntry.Tag);
-        Dimensions.Add('status', Format(BCPTLogEntry.Status));
-        Dimensions.Add('noOfSqlStatements', Format(BCPTLogEntry."No. of SQL Statements"));
-        Dimensions.Add('startTime', Format(BCPTLogEntry."Start Time"));
-        Dimensions.Add('endTime', Format(BCPTLogEntry."End Time"));
-        Dimensions.Add('duration', Format(BCPTLogEntry."Duration (ms)"));
-        Dimensions.Add('sessionNo', Format(BCPTLogEntry."Session No."));
+        Dimensions.Add('CodeunitName', BCPTLogEntry."Codeunit Name");
+        Dimensions.Add('Operation', BCPTLogEntry.Operation);
+        Dimensions.Add('Tag', BCPTLogEntry.Tag);
+        Dimensions.Add('Status', Format(BCPTLogEntry.Status));
+        Dimensions.Add('NoOfSqlStatements', Format(BCPTLogEntry."No. of SQL Statements"));
+        Dimensions.Add('StartTime', Format(BCPTLogEntry."Start Time"));
+        Dimensions.Add('EndTime', Format(BCPTLogEntry."End Time"));
+        Dimensions.Add('DurationInMs', Format(BCPTLogEntry."Duration (ms)"));
+        Dimensions.Add('SessionNo', Format(BCPTLogEntry."Session No."));
         Session.LogMessage(
             '0000DGF',
             StrSubstNo(TelemetryLogLbl, BCPTLogEntry."BCPT Code", BCPTRoleWrapperImpl.GetScenarioLbl(), BCPTLogEntry.Status),
@@ -229,18 +234,18 @@ codeunit 149005 "BCPT Line"
         Sleep(NapTime);
     end;
 
-    procedure GetAvgDuration(Rec: Record "BCPT Line"): Integer
+    procedure GetAvgDuration(BCPTLine: Record "BCPT Line"): Integer
     begin
-        if Rec."No. of Iterations" = 0 then
+        if BCPTLine."No. of Iterations" = 0 then
             exit(0);
-        exit(Rec."Total Duration (ms)" div Rec."No. of Iterations");
+        exit(BCPTLine."Total Duration (ms)" div BCPTLine."No. of Iterations");
     end;
 
-    procedure GetAvgSQLStmts(Rec: Record "BCPT Line"): Integer
+    procedure GetAvgSQLStmts(BCPTLine: Record "BCPT Line"): Integer
     begin
-        if Rec."No. of Iterations" = 0 then
+        if BCPTLine."No. of Iterations" = 0 then
             exit(0);
-        exit(Rec."No. of SQL Statements" div Rec."No. of Iterations");
+        exit(BCPTLine."No. of SQL Statements" div BCPTLine."No. of Iterations");
     end;
 
     Procedure GetParam(var BCPTLine: Record "BCPT Line"; ParamName: Text): Text

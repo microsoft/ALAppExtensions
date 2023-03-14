@@ -72,6 +72,7 @@ report 31006 "Get Item Ledger Entries CZL"
                         "Item Ledger Entry Type"::Sale,
                         "Item Ledger Entry Type"::Purchase,
                         "Item Ledger Entry Type"::Transfer);
+                    OnAfterItemLedgerEntryOnPreDataItem("Item Ledger Entry");
                 end;
             }
             dataitem("Job Ledger Entry"; "Job Ledger Entry")
@@ -333,11 +334,12 @@ report 31006 "Get Item Ledger Entries CZL"
         IntrastatJnlLine."Source Entry No." := "Item Ledger Entry"."Entry No.";
         IntrastatJnlLine.Quantity := "Item Ledger Entry".Quantity;
         IntrastatJnlLine."Document No." := "Item Ledger Entry"."Document No.";
-        IntrastatJnlLine.Validate(IntrastatJnlLine."Item No.", "Item Ledger Entry"."Item No.");
+        IntrastatJnlLine.Validate("Item No.", "Item Ledger Entry"."Item No.");
         IntrastatJnlLine."Entry/Exit Point" := "Item Ledger Entry"."Entry/Exit Point";
         IntrastatJnlLine."Area" := "Item Ledger Entry".Area;
         IntrastatJnlLine."Transaction Specification" := "Item Ledger Entry"."Transaction Specification";
         IntrastatJnlLine."Shpt. Method Code" := "Item Ledger Entry"."Shpt. Method Code";
+        IntrastatJnlLine."Location Code" := "Item Ledger Entry"."Location Code";
         CalcDataForItemJnlLine();
         IntrastatJnlLine."Source Type" := IntrastatJnlLine."Source Type"::"Item Entry";
         case "Item Ledger Entry"."Entry Type" of
@@ -345,41 +347,41 @@ report 31006 "Get Item Ledger Entries CZL"
                 if "Item Ledger Entry"."Physical Transfer CZL" then begin
                     IntrastatJnlLine.Type := IntrastatJnlLine.Type::Shipment;
                     IntrastatJnlLine.Amount := Round(Abs(TotalCostAmt2 + TotalICCostAmt[1]), 1, Direction);
-                    IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                    IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                 end else
                     if "Item Ledger Entry".Quantity > 0 then begin
                         IntrastatJnlLine.Type := IntrastatJnlLine.Type::Receipt;
                         IntrastatJnlLine.Amount := Round(Abs(TotalCostAmt2 + TotalICCostAmt[1]), 1, Direction);
-                        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                        IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                     end else begin
                         IntrastatJnlLine.Type := IntrastatJnlLine.Type::Receipt;
                         IntrastatJnlLine.Amount := -Round(Abs(TotalCostAmt2 + TotalICCostAmt[1]), 1, Direction);
-                        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, -Abs(IntrastatJnlLine.Quantity));
+                        IntrastatJnlLine.Validate(Quantity, -Abs(IntrastatJnlLine.Quantity));
                     end;
             "Item Ledger Entry"."Entry Type"::Sale:
                 if "Item Ledger Entry"."Physical Transfer CZL" then begin
                     IntrastatJnlLine.Type := IntrastatJnlLine.Type::Receipt;
                     IntrastatJnlLine.Amount := Round(Abs(TotalAmt + TotalICAmt[1]), 1, Direction);
-                    IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, IntrastatJnlLine.RoundValueCZL(Abs(IntrastatJnlLine.Quantity)));
+                    IntrastatJnlLine.Validate(Quantity, IntrastatJnlLine.RoundValueCZL(Abs(IntrastatJnlLine.Quantity)));
                 end else
                     if "Item Ledger Entry".Quantity < 0 then begin
                         IntrastatJnlLine.Type := IntrastatJnlLine.Type::Shipment;
                         IntrastatJnlLine.Amount := Round(Abs(TotalAmt + TotalICAmt[1]), 1, Direction);
-                        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                        IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                     end else begin
                         IntrastatJnlLine.Type := IntrastatJnlLine.Type::Shipment;
                         IntrastatJnlLine.Amount := -Round(Abs(TotalAmt + TotalICAmt[1]), 1, Direction);
-                        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, -Abs(IntrastatJnlLine.Quantity));
+                        IntrastatJnlLine.Validate(Quantity, -Abs(IntrastatJnlLine.Quantity));
                     end;
             "Item Ledger Entry"."Entry Type"::Transfer:
                 if "Item Ledger Entry".Quantity < 0 then begin
                     IntrastatJnlLine.Type := IntrastatJnlLine.Type::Shipment;
                     IntrastatJnlLine.Amount := Round(Abs(TotalCostAmt2 + TotalICCostAmt[1]), 1, Direction);
-                    IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                    IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                 end else begin
                     IntrastatJnlLine.Type := IntrastatJnlLine.Type::Receipt;
                     IntrastatJnlLine.Amount := Round(Abs(TotalCostAmt2 + TotalICCostAmt[1]), 1, Direction);
-                    IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                    IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                 end;
         end;
         IntrastatJnlLine."Cost Regulation %" := IndirectCostPctReq;
@@ -429,16 +431,17 @@ report 31006 "Get Item Ledger Entries CZL"
         IntrastatJnlLine."Area" := "Job Ledger Entry".Area;
         IntrastatJnlLine."Transaction Specification" := "Job Ledger Entry"."Transaction Specification";
         IntrastatJnlLine."Shpt. Method Code" := "Job Ledger Entry"."Shpt. Method Code";
+        IntrastatJnlLine."Location Code" := "Job Ledger Entry"."Location Code";
 
         if IntrastatJnlBatch."Amounts in Add. Currency" then
             IntrastatJnlLine.Amount := Round(Abs(IntrastatJnlLine.Amount), Currency."Amount Rounding Precision", Direction)
         else
             IntrastatJnlLine.Amount := Round(Abs(IntrastatJnlLine.Amount), GeneralLedgerSetup."Amount Rounding Precision", Direction);
-        IntrastatJnlLine.Validate(IntrastatJnlLine."Item No.");
-        IntrastatJnlLine."Source Type" := IntrastatJnlLine."Source Type"::"Job Entry";
-        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Round(Abs(IntrastatJnlLine.Quantity), 0.00001));
+        IntrastatJnlLine.Validate("Item No.");
+        IntrastatJnlLine.Validate("Source Type", IntrastatJnlLine."Source Type"::"Job Entry");
+        IntrastatJnlLine.Validate(Quantity, Round(Abs(IntrastatJnlLine.Quantity), 0.00001));
 
-        IntrastatJnlLine.Validate(IntrastatJnlLine."Cost Regulation %", IndirectCostPctReq);
+        IntrastatJnlLine.Validate("Cost Regulation %", IndirectCostPctReq);
         if IsCorrection then begin
             IntrastatJnlLine.Quantity := -IntrastatJnlLine.Quantity;
             IntrastatJnlLine.Amount := -IntrastatJnlLine.Amount;
@@ -527,12 +530,18 @@ report 31006 "Get Item Ledger Entries CZL"
         exit(true);
     end;
 
-    local procedure HasCrossedBorder(ItemLedgerEntry: Record "Item Ledger Entry"): Boolean
+    local procedure HasCrossedBorder(ItemLedgerEntry: Record "Item Ledger Entry") Result: Boolean
     var
         ItemLedgerEntry2: Record "Item Ledger Entry";
         Location: Record Location;
         Include: Boolean;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeHasCrossedBorder(ItemLedgerEntry, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
         case true of
             ItemLedgerEntry."Drop Shipment":
                 begin
@@ -619,10 +628,11 @@ report 31006 "Get Item Ledger Entries CZL"
         IntrastatJnlLine."Source Entry No." := "Item Ledger Entry"."Entry No.";
         IntrastatJnlLine.Quantity := "Item Ledger Entry".Quantity;
         IntrastatJnlLine."Document No." := "Value Entry"."Document No.";
-        IntrastatJnlLine.Validate(IntrastatJnlLine."Item No.", "Item Ledger Entry"."Item No.");
+        IntrastatJnlLine.Validate("Item No.", "Item Ledger Entry"."Item No.");
         IntrastatJnlLine."Entry/Exit Point" := "Item Ledger Entry"."Entry/Exit Point";
         IntrastatJnlLine."Area" := "Item Ledger Entry".Area;
         IntrastatJnlLine."Transaction Specification" := "Item Ledger Entry"."Transaction Specification";
+        IntrastatJnlLine."Location Code" := "Item Ledger Entry"."Location Code";
         CalcDataForItemJnlLine();
         IntrastatJnlLine."Source Type" := IntrastatJnlLine."Source Type"::"Item Entry";
         case "Item Ledger Entry"."Entry Type" of
@@ -630,41 +640,41 @@ report 31006 "Get Item Ledger Entries CZL"
                 if "Item Ledger Entry"."Physical Transfer CZL" then begin
                     IntrastatJnlLine.Type := IntrastatJnlLine.Type::Shipment;
                     IntrastatJnlLine.Amount := Round(Abs(TotalICCostAmt[1]), 1, Direction);
-                    IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                    IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                 end else
                     if "Item Ledger Entry".Quantity > 0 then begin
                         IntrastatJnlLine.Type := IntrastatJnlLine.Type::Receipt;
                         IntrastatJnlLine.Amount := Round(Abs(TotalICCostAmt[1]), 1, Direction);
-                        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                        IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                     end else begin
                         IntrastatJnlLine.Type := IntrastatJnlLine.Type::Receipt;
                         IntrastatJnlLine.Amount := -Round(Abs(TotalICCostAmt[1]), 1, Direction);
-                        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, -Abs(IntrastatJnlLine.Quantity));
+                        IntrastatJnlLine.Validate(Quantity, -Abs(IntrastatJnlLine.Quantity));
                     end;
             "Item Ledger Entry"."Entry Type"::Sale:
                 if "Item Ledger Entry"."Physical Transfer CZL" then begin
                     IntrastatJnlLine.Type := IntrastatJnlLine.Type::Receipt;
                     IntrastatJnlLine.Amount := Round(Abs(TotalAmt + TotalICAmt[1]), 1, Direction);
-                    IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, IntrastatJnlLine.RoundValueCZL(Abs(IntrastatJnlLine.Quantity)));
+                    IntrastatJnlLine.Validate(Quantity, IntrastatJnlLine.RoundValueCZL(Abs(IntrastatJnlLine.Quantity)));
                 end else
                     if "Item Ledger Entry".Quantity < 0 then begin
                         IntrastatJnlLine.Type := IntrastatJnlLine.Type::Shipment;
                         IntrastatJnlLine.Amount := Round(Abs(TotalICAmt[1]), 1, Direction);
-                        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                        IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                     end else begin
                         IntrastatJnlLine.Type := IntrastatJnlLine.Type::Shipment;
                         IntrastatJnlLine.Amount := -Round(Abs(TotalICAmt[1]), 1, Direction);
-                        IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, -Abs(IntrastatJnlLine.Quantity));
+                        IntrastatJnlLine.Validate(Quantity, -Abs(IntrastatJnlLine.Quantity));
                     end;
             "Item Ledger Entry"."Entry Type"::Transfer:
                 if "Item Ledger Entry".Quantity < 0 then begin
                     IntrastatJnlLine.Type := IntrastatJnlLine.Type::Shipment;
                     IntrastatJnlLine.Amount := Round(Abs(TotalICCostAmt[1]), 1, Direction);
-                    IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                    IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                 end else begin
                     IntrastatJnlLine.Type := IntrastatJnlLine.Type::Receipt;
                     IntrastatJnlLine.Amount := Round(Abs(TotalICCostAmt[1]), 1, Direction);
-                    IntrastatJnlLine.Validate(IntrastatJnlLine.Quantity, Abs(IntrastatJnlLine.Quantity));
+                    IntrastatJnlLine.Validate(Quantity, Abs(IntrastatJnlLine.Quantity));
                 end;
         end;
         IntrastatJnlLine."Cost Regulation %" := IndirectCostPctReq;
@@ -930,9 +940,9 @@ report 31006 "Get Item Ledger Entries CZL"
         if (StatutoryReportingSetupCZL."Get Country/Region of Origin" = StatutoryReportingSetupCZL."Get Country/Region of Origin"::"Item Card") and
            (Item."Country/Region of Origin Code" <> '')
         then
-            IntrastatJnlLine.Validate(IntrastatJnlLine."Country/Region of Origin Code", Item."Country/Region of Origin Code")
+            IntrastatJnlLine.Validate("Country/Region of Origin Code", Item."Country/Region of Origin Code")
         else
-            IntrastatJnlLine.Validate(IntrastatJnlLine."Country/Region of Origin Code", "Item Ledger Entry"."Country/Reg. of Orig. Code CZL");
+            IntrastatJnlLine.Validate("Country/Region of Origin Code", "Item Ledger Entry"."Country/Reg. of Orig. Code CZL");
 
         IntrastatJnlLine."Base Unit of Measure CZL" := Item."Base Unit of Measure";
         if IntrastatJnlLine."Supplementary Units" then begin
@@ -1186,6 +1196,16 @@ report 31006 "Get Item Ledger Entries CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateTotals(var ItemLedgerEntry: Record "Item Ledger Entry"; IntrastatJnlBatch: Record "Intrastat Jnl. Batch"; var TotalAmt: Decimal; var TotalCostAmt: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterItemLedgerEntryOnPreDataItem(var ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeHasCrossedBorder(ItemLedgerEntry: Record "Item Ledger Entry"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
 

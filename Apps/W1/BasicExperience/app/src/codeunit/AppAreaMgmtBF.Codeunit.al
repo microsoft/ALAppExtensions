@@ -20,9 +20,12 @@ codeunit 20600 "App Area Mgmt BF"
     internal procedure GetEssentialExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
     var
         ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000H6X', 'Basic Experience', Enum::"Feature Uptake Status"::Used);
         Clear(TempEssentialApplicationAreaSetup);
         ApplicationAreaMgmtFacade.IsEssentialExperienceEnabled();
         TempApplicationAreaSetup := TempEssentialApplicationAreaSetup;
+        FeatureTelemetry.LogUsage('0000H6Y', 'Basic Experience', 'Got basic experience areas');
     end;
 }

@@ -91,6 +91,7 @@ table 18468 "Delivery Challan Header"
         field(17; "Quantity for rework"; Decimal)
         {
             Caption = 'Quantity for rework';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }

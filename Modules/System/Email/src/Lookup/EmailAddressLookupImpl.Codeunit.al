@@ -7,39 +7,39 @@ codeunit 8944 "Email Address Lookup Impl"
 {
     Access = Internal;
 
-    procedure GetSelectedSuggestionsAsText(var Address: Record "Email Address Lookup"): Text
+    procedure GetSelectedSuggestionsAsText(var EmailAddressLookup: Record "Email Address Lookup"): Text
     var
         Recipients: Text;
     begin
-        if Address.FindSet() then
+        if EmailAddressLookup.FindSet() then
             repeat
-                Recipients += Address."E-Mail Address" + ';';
-            until Address.Next() = 0;
+                Recipients += EmailAddressLookup."E-Mail Address" + ';';
+            until EmailAddressLookup.Next() = 0;
         exit(Recipients);
     end;
 
-    procedure LookupEmailAddress(Entity: Enum "Email Address Entity"; var Addresses: Record "Email Address Lookup"): Boolean
+    procedure LookupEmailAddress(Entity: Enum "Email Address Entity"; var EmailAddressLookupRec: Record "Email Address Lookup"): Boolean
     var
-        EmailAddressSuggestions: Record "Email Address Lookup";
+        EmailAddressLookupSuggestions: Record "Email Address Lookup";
         EmailAddressLookup: Codeunit "Email Address Lookup";
         IsHandled: Boolean;
     begin
-        EmailAddressLookup.OnLookupAddressFromEntity(Entity, EmailAddressSuggestions, IsHandled);
-        if not EmailAddressSuggestions.FindSet() then
+        EmailAddressLookup.OnLookupAddressFromEntity(Entity, EmailAddressLookupSuggestions, IsHandled);
+        if not EmailAddressLookupSuggestions.FindSet() then
             exit(false);
 
         if IsHandled then begin
             repeat
-                if StrLen(EmailAddressSuggestions."E-Mail Address") = 0 then
-                    Message(StrSubstNo(NoEmailAddressMsg, EmailAddressSuggestions.Name))
+                if StrLen(EmailAddressLookupSuggestions."E-Mail Address") = 0 then
+                    Message(StrSubstNo(NoEmailAddressMsg, EmailAddressLookupSuggestions.Name))
                 else
-                    if Addresses.Get(EmailAddressSuggestions."E-Mail Address", EmailAddressSuggestions."Entity type") then
-                        Message(StrSubstNo(EmailAddressDuplicateMsg, EmailAddressSuggestions."E-Mail Address"))
+                    if EmailAddressLookupRec.Get(EmailAddressLookupSuggestions."E-Mail Address", EmailAddressLookupSuggestions."Entity type") then
+                        Message(StrSubstNo(EmailAddressDuplicateMsg, EmailAddressLookupSuggestions."E-Mail Address"))
                     else begin
-                        Addresses.TransferFields(EmailAddressSuggestions);
-                        Addresses.Insert();
+                        EmailAddressLookupRec.TransferFields(EmailAddressLookupSuggestions);
+                        EmailAddressLookupRec.Insert();
                     end;
-            until EmailAddressSuggestions.Next() = 0;
+            until EmailAddressLookupSuggestions.Next() = 0;
             exit(IsHandled);
         end;
     end;

@@ -94,6 +94,7 @@ page 149001 "BCPT Setup Card"
                 ApplicationArea = All;
                 Enabled = Rec.Status <> Rec.Status::Running;
                 SubPageLink = "BCPT Code" = FIELD("Code"), "Version Filter" = field(Version), "Base Version Filter" = field("Base Version");
+                UpdatePropagation = Both;
             }
 
         }

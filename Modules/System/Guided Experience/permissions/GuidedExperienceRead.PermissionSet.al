@@ -10,7 +10,6 @@ PermissionSet 1991 "Guided Experience - Read"
 
     IncludedPermissionSets = "Guided Experience - Objects",
                              "Translation - Read",
-                             "Extension Management - Read",
                              "Upgrade Tags - Read",
                              "User Login Times - Read";
 
@@ -18,10 +17,12 @@ PermissionSet 1991 "Guided Experience - Read"
                   tabledata AllObj = r,
                   tabledata AllObjWithCaption = r,
 #if not CLEAN18
+#pragma warning disable AL0432
                   tabledata "Assisted Setup" = R, // needed for AccessByPermission
                   tabledata "Assisted Setup Log" = r,
                   tabledata "Manual Setup" = R, // big R needed for Manual Setup to be searchable
                   tabledata "Business Setup Icon" = r,
+#pragma warning restore
 #endif
                   tabledata "Checklist Item" = R,
                   tabledata "Checklist Item Buffer" = r, // needed for Checklist page to be searchable
@@ -30,8 +31,11 @@ PermissionSet 1991 "Guided Experience - Read"
                   tabledata "Checklist Setup" = R,
                   tabledata Company = r,
                   tabledata "Guided Experience Item" = R,
+                  tabledata "Primary Guided Experience Item" = r,
                   tabledata User = r,
                   tabledata "User Checklist Status" = R,
                   tabledata "User Personalization" = r,
+                  tabledata "Media" = R,
+                  tabledata "Published Application" = R,
                   tabledata "Spotlight Tour Text" = r;
 }

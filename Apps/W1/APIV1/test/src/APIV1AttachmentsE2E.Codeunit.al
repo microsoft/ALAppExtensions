@@ -711,7 +711,9 @@ codeunit 139733 "APIV1 - Attachments E2E"
 
         // [THEN] The Attachment exists and is correctly linked to the posted invoice.
         IncomingDocumentAttachment.GetBySystemId(AttachmentId);
+#pragma warning disable AA0210
         SalesInvoiceHeader.SETRANGE("Draft Invoice SystemId", DocumentId);
+#pragma warning restore
         SalesInvoiceHeader.FINDFIRST();
         DocumentRecordRef.GETTABLE(SalesInvoiceHeader);
         FindIncomingDocument(DocumentRecordRef, IncomingDocument);
@@ -749,7 +751,9 @@ codeunit 139733 "APIV1 - Attachments E2E"
 
         // [THEN] The Attachment exists and is correctly linked to the posted invoice.
         IncomingDocumentAttachment.GetBySystemId(AttachmentId);
+#pragma warning disable AA0210
         PurchInvHeader.SETRANGE("Draft Invoice SystemId", DocumentId);
+#pragma warning restore
         PurchInvHeader.FINDFIRST();
         DocumentRecordRef.GETTABLE(PurchInvHeader);
         FindIncomingDocument(DocumentRecordRef, IncomingDocument);
@@ -1090,6 +1094,7 @@ codeunit 139733 "APIV1 - Attachments E2E"
             IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Sales Invoice";
             IncomingDocument."Document No." := SalesInvoiceHeader."No.";
             IncomingDocument."Posting Date" := SalesInvoiceHeader."Posting Date";
+            IncomingDocument.Posted := true;
             IncomingDocument.INSERT(TRUE);
             IncomingDocument.FIND();
             EXIT(TRUE);
@@ -1281,33 +1286,33 @@ codeunit 139733 "APIV1 - Attachments E2E"
     local procedure BlobToBase64String(var TempBlob: Codeunit "Temp Blob"): Text
     var
         InStream: InStream;
-        Convert: DotNet Convert;
-        MemoryStream: DotNet MemoryStream;
+        "System.Convert": DotNet Convert;
+        "System.IO.MemoryStream": DotNet MemoryStream;
         Base64String: Text;
     begin
         IF NOT TempBlob.HasValue() THEN
             EXIT('');
         TempBlob.CreateInStream(InStream);
-        MemoryStream := MemoryStream.MemoryStream();
-        COPYSTREAM(MemoryStream, InStream);
-        Base64String := Convert.ToBase64String(MemoryStream.ToArray());
-        MemoryStream.Close();
+        "System.IO.MemoryStream" := "System.IO.MemoryStream".MemoryStream();
+        COPYSTREAM("System.IO.MemoryStream", InStream);
+        Base64String := "System.Convert".ToBase64String("System.IO.MemoryStream".ToArray());
+        "System.IO.MemoryStream".Close();
         EXIT(Base64String);
     end;
 
     local procedure GetBlobLength(var TempBlob: Codeunit "Temp Blob"): Integer
     var
         InStream: InStream;
-        MemoryStream: DotNet MemoryStream;
+        "System.IO.MemoryStream": DotNet MemoryStream;
         ContentLength: Integer;
     begin
         IF NOT TempBlob.HasValue() THEN
             EXIT(0);
         TempBlob.CreateInStream(InStream);
-        MemoryStream := MemoryStream.MemoryStream();
-        COPYSTREAM(MemoryStream, InStream);
-        ContentLength := MemoryStream.Length();
-        MemoryStream.Close();
+        "System.IO.MemoryStream" := "System.IO.MemoryStream".MemoryStream();
+        COPYSTREAM("System.IO.MemoryStream", InStream);
+        ContentLength := "System.IO.MemoryStream".Length();
+        "System.IO.MemoryStream".Close();
         EXIT(ContentLength);
     end;
 

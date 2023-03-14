@@ -115,9 +115,10 @@ page 20600 "Assisted Setup BF"
 
                 trigger OnAction();
                 var
-                    AssistedSetup: Codeunit "Assisted Setup";
+                    GuidedExperience: Codeunit "Guided Experience";
                 begin
-                    AssistedSetup.Complete(PAGE::"Assisted Setup BF");
+                    FeatureTelemetry.LogUptake('0000H6Z', 'Basic Experience', Enum::"Feature Uptake Status"::"Set up");
+                    GuidedExperience.CompleteAssistedSetup(ObjectType::Page, PAGE::"Assisted Setup BF");
                     CurrPage.Close();
                 end;
             }
@@ -131,12 +132,13 @@ page 20600 "Assisted Setup BF"
 
     trigger OnOpenPage()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
         BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
+        FeatureTelemetry.LogUptake('0000H70', 'Basic Experience', Enum::"Feature Uptake Status"::Discovered);
         HasBCBasicLicense := BasicMgmt.IsSupportedLicense();
-        AssistedSetup.Reset(PAGE::"Assisted Setup BF");
-        IsComplete := AssistedSetup.IsComplete(PAGE::"Assisted Setup BF");
+        GuidedExperience.ResetAssistedSetup(ObjectType::Page, PAGE::"Assisted Setup BF");
+        IsComplete := GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, PAGE::"Assisted Setup BF");
         ConsentAccepted := IsComplete;
 
         if not BasicMgmt.IsSupportedCompanies() then begin
@@ -154,16 +156,17 @@ page 20600 "Assisted Setup BF"
 
     local procedure LoadTopBanners();
     begin
-        if MediaRepository.GET('AssistedSetup-NoText-400px.png', FORMAT(CURRENTCLIENTTYPE))
+        if MediaRepository.GetForCurrentClientType('AssistedSetup-NoText-400px.png')
       then
-            if MediaResources.GET(MediaRepository."Media Resources Ref")
+            if MediaResources.Get(MediaRepository."Media Resources Ref")
         then
-                TopBannerVisible := MediaResources."Media Reference".HASVALUE;
+                TopBannerVisible := MediaResources."Media Reference".HasValue();
     end;
 
     var
         MediaRepository: Record "Media Repository";
         MediaResources: Record "Media Resources";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         Notification: Notification;
         TopBannerVisible: Boolean;
         IsComplete: Boolean;

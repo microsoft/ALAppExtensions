@@ -19,10 +19,11 @@ page 1903 "C5 LedTable List"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
-
+                    Caption = 'Error Message';
                     Enabled = false;
                 }
                 field(Account; Account) { ApplicationArea = All; }
@@ -52,6 +53,7 @@ page 1903 "C5 LedTable List"
                 field(VatBlocked; VatBlocked) { ApplicationArea = All; }
                 field(OpeningAccount; OpeningAccount) { ApplicationArea = All; }
                 field(DEL_UserLock; DEL_UserLock) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

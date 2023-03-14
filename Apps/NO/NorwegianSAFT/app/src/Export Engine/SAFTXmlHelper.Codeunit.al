@@ -36,6 +36,7 @@ codeunit 10674 "SAF-T XML Helper"
     var
         NewXMLElement: XmlElement;
     begin
+        PrepareNodeTextForXML(NodeText);
         InsertXMLNode(NewXMLElement, Name, NodeText);
         Depth += 1;
         CurrXMLElement[Depth] := NewXMLElement;
@@ -45,6 +46,7 @@ codeunit 10674 "SAF-T XML Helper"
     var
         NewXMLElement: XmlElement;
     begin
+        PrepareNodeTextForXML(NodeText);
         if NodeText = '' then
             exit;
         InsertXMLNode(NewXMLElement, Name, NodeText);
@@ -54,6 +56,7 @@ codeunit 10674 "SAF-T XML Helper"
     var
         NewXMLElement: XmlElement;
     begin
+        PrepareNodeTextForXML(NodeText);
         if NodeText = '' then
             exit;
         NewXMLElement := XmlElement.Create(Name, NamespaceFullName, NodeText);
@@ -75,6 +78,7 @@ codeunit 10674 "SAF-T XML Helper"
 
     local procedure InsertXMLNode(var NewXMLElement: XmlElement; Name: Text; NodeText: Text)
     begin
+        PrepareNodeTextForXML(NodeText);
         NewXMLElement := XmlElement.Create(Name, NamespaceFullName, NodeText);
         if (not CurrXMLElement[Depth].Add(NewXMLElement)) then
             error(StrSubstNo('Not possible to insert element %1', NodeText));
@@ -86,7 +90,7 @@ codeunit 10674 "SAF-T XML Helper"
         FileOutStream: OutStream;
     begin
         if not SAFTExportMgt.SaveXMLDocToFolder(SAFTExportHeader, XMLDoc, SAFTExportLine."Line No.") then begin
-            SAFTExportLine."SAF-T File".CreateOutStream(FileOutStream);
+            SAFTExportLine."SAF-T File".CreateOutStream(FileOutStream, TextEncoding::UTF8);
             XmlDoc.WriteTo(FileOutStream);
         end;
     end;
@@ -114,5 +118,13 @@ codeunit 10674 "SAF-T XML Helper"
     local procedure DateTimeOfFileCreation(CreatedDateTime: DateTime): Text
     begin
         exit(format(CreatedDateTime, 0, '<Year4><Month,2><Day,2><Hours24><Minutes,2><Seconds,2>'));
+    end;
+
+    local procedure PrepareNodeTextForXML(var RawXmlText: Text)
+    var
+        XMLDOMManagement: Codeunit "XML DOM Management";
+    begin
+        XMLDOMManagement.ClearUTF8BOMSymbols(RawXmlText);
+        RawXmlText := XMLDOMManagement.XMLEscape(RawXmlText);
     end;
 }

@@ -6,27 +6,27 @@ pageextension 31025 "VAT Posting Setup CZZ" extends "VAT POsting Setup"
 #pragma warning disable AL0432
         modify("Sales Advance VAT Account")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Sales Advance Offset VAT Acc.")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Sales Ded. VAT Base Adj. Acc.")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Purch. Advance VAT Account")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Purch. Advance Offset VAT Acc.")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Purch. Ded. VAT Base Adj. Acc.")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -36,13 +36,11 @@ pageextension 31025 "VAT Posting Setup CZZ" extends "VAT POsting Setup"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies sales advance letter account.';
-                Visible = AdvancePaymentsEnabledCZZ;
             }
             field("Sales Adv. Letter VAT Acc. CZZ"; Rec."Sales Adv. Letter VAT Acc. CZZ")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies sales advance letter VAT account.';
-                Visible = AdvancePaymentsEnabledCZZ;
             }
         }
         addafter("Purchase VAT Account")
@@ -51,23 +49,12 @@ pageextension 31025 "VAT Posting Setup CZZ" extends "VAT POsting Setup"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies purchase advance letter account.';
-                Visible = AdvancePaymentsEnabledCZZ;
             }
             field("Purch. Adv.Letter VAT Acc. CZZ"; Rec."Purch. Adv.Letter VAT Acc. CZZ")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies purchase advance letter VAT account.';
-                Visible = AdvancePaymentsEnabledCZZ;
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

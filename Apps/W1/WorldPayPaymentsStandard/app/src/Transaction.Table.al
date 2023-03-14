@@ -53,5 +53,13 @@ table 1367 "MS - WorldPay Transaction"
         InStream.READTEXT(DetailsText);
         EXIT(DetailsText);
     end;
+
+    trigger OnInsert()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000H7U', 'WorldPay Payments Standard', Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000H7V', 'WorldPay Payments Standard', 'Transaction details set');
+    end;
 }
 

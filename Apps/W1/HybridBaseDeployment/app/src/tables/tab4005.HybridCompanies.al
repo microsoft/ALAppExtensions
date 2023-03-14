@@ -86,6 +86,20 @@ table 4005 "Hybrid Company"
         exit(DataToMigrate);
     end;
 
+    procedure GetTotalOnPremSize(): Decimal
+    var
+        DataToMigrate: Decimal;
+    begin
+        Reset();
+
+        if FindSet() then
+            repeat
+                DataToMigrate += Rec."Estimated Size";
+            until Rec.Next() = 0;
+
+        exit(DataToMigrate);
+    end;
+
     procedure GetCompanyInitFailureMessage(): Text;
     var
         MessageInStream: InStream;
@@ -109,4 +123,10 @@ table 4005 "Hybrid Company"
         FailureMessageOutStream.Write(CompanyInitFailureMessage);
         Modify();
     end;
+
+    procedure GetRecommendedNumberOfCompaniesToReplicateInBatch(): Integer
+    begin
+        exit(10);
+    end;
+
 }

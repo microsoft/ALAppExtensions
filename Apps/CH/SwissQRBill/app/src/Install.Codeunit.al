@@ -97,16 +97,21 @@ codeunit 11517 "Swiss QR-Bill Install"
 
     local procedure AddAssistedSetup()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        VideoCategory: Enum "Video Category";
-        Info: ModuleInfo;
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        NavApp.GetCurrentModuleInfo(Info);
-        if not AssistedSetup.Exists(Page::"Swiss QR-Bill Setup Wizard") then
-            AssistedSetup.Add(
-                Info.Id(), Page::"Swiss QR-Bill Setup Wizard", CopyStr(AssistedSetupTxt, 1, 250),
-                AssistedSetupGroup::FirstInvoice, '', VideoCategory::Uncategorized, '', AssistedSetupDescriptionTxt);
+        if not GuidedExperience.Exists("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Swiss QR-Bill Setup Wizard") then
+            GuidedExperience.InsertAssistedSetup(
+                CopyStr(AssistedSetupTxt, 1, 2048),
+                CopyStr(AssistedSetupTxt, 1, 50),
+                AssistedSetupDescriptionTxt,
+                1,
+                ObjectType::Page,
+                PAGE::"Swiss QR-Bill Setup Wizard",
+                "Assisted Setup Group"::FirstInvoice,
+                '',
+                "Video Category"::Uncategorized,
+                ''
+            );
     end;
 
     local procedure ApplyEvaluationClassificationsForPrivacy()
@@ -156,6 +161,7 @@ codeunit 11517 "Swiss QR-Bill Install"
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Amount"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Bill Info"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Currency"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Has Zero Amount"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill IBAN"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Swiss QR-Bill Unstr. Message"));
 

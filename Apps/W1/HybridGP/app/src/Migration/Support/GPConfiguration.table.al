@@ -64,6 +64,31 @@ table 4024 "GP Configuration"
             DataClassification = SystemMetadata;
             InitValue = false;
         }
+        field(14; "Fiscal Periods Created"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
+        field(15; "Vendor EFT Bank Acc. Created"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
+        field(16; "Vendor Classes Created"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
+        field(17; "Customer Classes Created"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
+        field(18; "Historical Job Ran"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
     }
 
     keys
@@ -81,5 +106,40 @@ table 4024 "GP Configuration"
             Init();
             Insert();
         end;
+    end;
+
+    procedure IsAllPostMigrationDataCreated(): Boolean
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
+        if not "Fiscal Periods Created" then
+            exit(false);
+
+        if not "CheckBooks Created" then
+            if GPCompanyAdditionalSettings.GetBankModuleEnabled() then
+                exit(false);
+
+        if not "Open Purchase Orders Created" then
+            if GPCompanyAdditionalSettings.GetMigrateOpenPOs() then
+                exit(false);
+
+        if not "Vendor EFT Bank Acc. Created" then
+            if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+                exit(false);
+
+        if not "Vendor Classes Created" then
+            if GPCompanyAdditionalSettings.GetMigrateVendorClasses() then
+                exit(false);
+
+        if not "Customer Classes Created" then
+            if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+                exit(false);
+
+        exit(true);
+    end;
+
+    procedure HasHistoricalJobRan(): Boolean
+    begin
+        exit(Rec."Historical Job Ran");
     end;
 }

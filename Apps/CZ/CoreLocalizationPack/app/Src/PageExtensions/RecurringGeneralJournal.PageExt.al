@@ -2,6 +2,7 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
 {
     layout
     {
+        moveafter("Document No."; "External Document No.")
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
@@ -25,7 +26,25 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
                 Visible = false;
             }
         }
-        addafter(Correction)
+        addbefore(Amount)
+        {
+            field("Correction CZL"; Rec.Correction)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the entry as a corrective entry. You can use the field if you need to post a corrective entry to an account.';
+                Visible = false;
+            }
+        }
+        addafter("Payment Terms Code")
+        {
+            field("Due Date CZL"; Rec."Due Date")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the due date on the entry.';
+                Visible = false;
+            }
+        }
+        addafter("Ship-to/Order Address Code")
         {
             field("Original Doc. Partner Type CZL"; Rec."Original Doc. Partner Type CZL")
             {
@@ -36,6 +55,29 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the number of partner (customer or vendor). It''s possible for VAT Control Report.';
+            }
+        }
+    }
+
+    actions
+    {
+        addfirst("P&osting")
+        {
+            action("Reconcile CZL")
+            {
+                ApplicationArea = Suite;
+                Caption = 'Reconcile';
+                Image = Reconcile;
+                ShortCutKey = 'Ctrl+F11';
+                ToolTip = 'Opens reconciliation page.';
+
+                trigger OnAction()
+                var
+                    Reconciliation: Page Reconciliation;
+                begin
+                    Reconciliation.SetGenJnlLine(Rec);
+                    Reconciliation.Run();
+                end;
             }
         }
     }

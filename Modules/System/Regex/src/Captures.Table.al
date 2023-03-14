@@ -7,7 +7,7 @@
 /// Provides a representation of Regex Captures that models Capture objects in .Net
 /// </summary>
 /// <remark>
-/// For more information, visit https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.capture?view=netcore-3.1.
+/// For more information, visit https://go.microsoft.com/fwlink/?linkid=2210123.
 /// </remark>
 table 3963 Captures
 {

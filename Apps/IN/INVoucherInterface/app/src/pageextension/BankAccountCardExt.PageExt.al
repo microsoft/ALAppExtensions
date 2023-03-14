@@ -10,6 +10,12 @@ pageextension 18950 "Bank Account Card Ext" extends "Bank Account Card"
                 Caption = 'Stale Cheque Stipulated Period';
                 ToolTip = 'Specifies after how long the cheque can be marked stale for this bank account.';
             }
+            field("UPI ID"; Rec."UPI ID")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'UPI ID';
+                ToolTip = 'Specifies UPI ID for this bank account.';
+            }
         }
     }
 }

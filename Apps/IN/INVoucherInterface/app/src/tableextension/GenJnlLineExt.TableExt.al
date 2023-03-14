@@ -2,6 +2,13 @@ tableextension 18931 "Gen.Jnl Line Ext" extends "Gen. Journal Line"
 {
     fields
     {
+        modify("Document No.")
+        {
+            trigger OnAfterValidate()
+            begin
+                TestField("Check Printed", false);
+            end;
+        }
         field(18929; "Narration Document No."; Code[20])
         {
             DataClassification = EndUserIdentifiableInformation;

@@ -10,10 +10,12 @@ codeunit 1922 "Camera Impl."
     var
         Camera: Page Camera;
         PictureFileNameTok: Label 'Picture_%1.jpeg', Comment = '%1 = String generated from current datetime to make sure file names are unique ';
+#if not CLEAN20        
         OverrideImageQst: Label 'The existing picture will be replaced. Do you want to continue?';
         UnsupportedFieldTypeErr: Label 'The field type %1 is not supported.', Comment = '%1 - The type of the field', Locked = true;
+#endif        
 
-    procedure GetPicture(PictureStream: InStream; var PictureName: Text): Boolean
+    procedure GetPicture(Quality: Integer; PictureInStream: InStream; var PictureName: Text): Boolean
     var
         WasPictureTaken: Boolean;
     begin
@@ -22,10 +24,10 @@ codeunit 1922 "Camera Impl."
 
         Clear(Camera);
 
-        Camera.SetQuality(100); // 100%
+        Camera.SetQuality(Quality);
         Camera.RunModal();
         if Camera.HasPicture() then begin
-            Camera.GetPicture(PictureStream);
+            Camera.GetPicture(PictureInStream);
             PictureName := StrSubstNo(PictureFileNameTok, Format(CurrentDateTime(), 0, '<Day,2>_<Month,2>_<Year4>_<Hours24>_<Minutes,2>_<Seconds,2>'));
             WasPictureTaken := true;
         end;
@@ -53,7 +55,7 @@ codeunit 1922 "Camera Impl."
         if not (MediaFieldRef.Type in [FieldType::Media, FieldType::MediaSet]) then
             Error(UnsupportedFieldTypeErr, MediaFieldRef.Type);
 
-        if not GetPicture(PictureInStream, PictureName) then
+        if not GetPicture(100, PictureInStream, PictureName) then
             exit(false);
 
         if not IsNullGuid(MediaFieldRef.Value) then

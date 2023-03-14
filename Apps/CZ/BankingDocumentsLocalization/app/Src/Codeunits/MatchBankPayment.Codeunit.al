@@ -78,11 +78,12 @@ codeunit 31362 "Match Bank Payment CZB"
                     GenJournalLine.Validate("Account No.", SearchRuleLineCZB."Account No.");
                     GenJournalLine."Search Rule Line No. CZB" := SearchRuleLineCZB."Line No.";
                     GenJournalLine.Description := OriginalGenJournalLine.Description;
+                    GenJournalLine.Modify();
                 end;
-                SearchRuleLineCZB.SetRange("Description Filter");
-                SearchRuleLineCZB.SetRange("Variable Symbol Filter");
-                SearchRuleLineCZB.SetRange("Constant Symbol Filter");
-                SearchRuleLineCZB.SetRange("Specific Symbol Filter");
+                GenJournalLine.SetRange(Description);
+                GenJournalLine.SetRange("Variable Symbol CZL");
+                GenJournalLine.SetRange("Constant Symbol CZL");
+                GenJournalLine.SetRange("Specific Symbol CZL");
             end else begin
                 // search rule
                 TempMatchBankPaymentBufferCZB.Reset();
@@ -100,19 +101,23 @@ codeunit 31362 "Match Bank Payment CZB"
 #endif
                         end;
                     SearchRuleLineCZB."Search Scope"::Customer:
+#if not CLEAN19
                         begin
                             FillMatchBankPaymentBufferCustomer();
-#if not CLEAN19
                             FillMatchBankPaymentBufferSalesAdvance();
-#endif
                         end;
+#else
+                        FillMatchBankPaymentBufferCustomer();
+#endif
                     SearchRuleLineCZB."Search Scope"::Vendor:
+#if not CLEAN19
                         begin
                             FillMatchBankPaymentBufferVendor();
-#if not CLEAN19
                             FillMatchBankPaymentBufferPurchAdvance();
-#endif
                         end;
+#else
+                        FillMatchBankPaymentBufferVendor();
+#endif
                     SearchRuleLineCZB."Search Scope"::Employee:
                         FillMatchBankPaymentBufferEmployee();
                 end;
@@ -172,13 +177,16 @@ codeunit 31362 "Match Bank Payment CZB"
                         if TempMatchBankPaymentBufferCZB."Letter No." = '' then begin
 #pragma warning restore AL0432
 #endif
-                            GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
-                            GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
-                            if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
-                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
-                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
+                            if not SearchRuleLineCZB."Match Related Party Only" then begin
+                                GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
+                                if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
+                                    if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
+                                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
+                                    if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
+                                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
+                                end;
+                                GenJournalLine.SetSuppressCommit(true);
+                                GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
                             end;
                             if BankAccount."Dimension from Apply Entry CZB" then
                                 GenJournalLine.Validate("Dimension Set ID", TempMatchBankPaymentBufferCZB."Dimension Set ID");
@@ -197,8 +205,9 @@ codeunit 31362 "Match Bank Payment CZB"
                         if GenJournalLine.Description <> OriginalGenJournalLine.Description then
                             GenJournalLine.Description := OriginalGenJournalLine.Description;
 
-                        OnAfterValidateGenJournalLine(TempMatchBankPaymentBufferCZB, GenJournalLine);
+                        OnAfterValidateGenJournalLine(TempMatchBankPaymentBufferCZB, GenJournalLine, SearchRuleLineCZB);
                         GenJournalLine."Search Rule Line No. CZB" := SearchRuleLineCZB."Line No.";
+                        GenJournalLine.Modify();
                     end;
                 end;
             end;
@@ -243,9 +252,9 @@ codeunit 31362 "Match Bank Payment CZB"
             else
                 CustLedgerEntry.SetRange("Remaining Amount", MinAmount, MaxAmount);
         if SearchRuleLineCZB."Variable Symbol" then begin
-            if GenJournalLine."Variable Symbol CZL" = '' then
+            if GenJournalLine.GetVariableSymbolCZB() = '' then
                 exit;
-            CustLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine."Variable Symbol CZL");
+            CustLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine.GetVariableSymbolCZB());
         end;
         if SearchRuleLineCZB."Specific Symbol" then begin
             if GenJournalLine."Specific Symbol CZL" = '' then
@@ -307,9 +316,9 @@ codeunit 31362 "Match Bank Payment CZB"
             else
                 VendorLedgerEntry.SetRange("Remaining Amount", MinAmount, MaxAmount);
         if SearchRuleLineCZB."Variable Symbol" then begin
-            if GenJournalLine."Variable Symbol CZL" = '' then
+            if GenJournalLine.GetVariableSymbolCZB() = '' then
                 exit;
-            VendorLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine."Variable Symbol CZL");
+            VendorLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine.GetVariableSymbolCZB());
         end;
         if SearchRuleLineCZB."Specific Symbol" then begin
             if GenJournalLine."Specific Symbol CZL" = '' then
@@ -365,9 +374,9 @@ codeunit 31362 "Match Bank Payment CZB"
             else
                 EmployeeLedgerEntry.SetRange("Remaining Amount", MinAmount, MaxAmount);
         if SearchRuleLineCZB."Variable Symbol" then begin
-            if GenJournalLine."Variable Symbol CZL" = '' then
+            if GenJournalLine.GetVariableSymbolCZB() = '' then
                 exit;
-            EmployeeLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine."Variable Symbol CZL");
+            EmployeeLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine.GetVariableSymbolCZB());
         end;
         if SearchRuleLineCZB."Specific Symbol" then begin
             if GenJournalLine."Specific Symbol CZL" = '' then
@@ -542,6 +551,8 @@ codeunit 31362 "Match Bank Payment CZB"
         AppliedAmount: Decimal;
         PostingGroupCode: Code[20];
     begin
+        if SearchRuleLineCZB."Match Related Party Only" then
+            exit;
         LinkCode := GenJournalLine."Document No." + ' ' + Format(GenJournalLine."Line No.");
         if GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer then
             AppliedAmount := ApplySalesAdvanceLetter(LetterNo, LinkCode, GenJournalLine.Amount, PostingGroupCode)
@@ -659,9 +670,10 @@ codeunit 31362 "Match Bank Payment CZB"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterValidateGenJournalLine(var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var GenJournalLine: Record "Gen. Journal Line")
+    local procedure OnAfterValidateGenJournalLine(var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB")
     begin
     end;
+#if not CLEAN19
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeFillMatchBankPaymentBufferSalesAdvance(GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var IsHandled: Boolean);
@@ -672,4 +684,5 @@ codeunit 31362 "Match Bank Payment CZB"
     local procedure OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var IsHandled: Boolean);
     begin
     end;
+#endif
 }

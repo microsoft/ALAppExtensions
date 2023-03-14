@@ -108,6 +108,12 @@ page 31277 "Posted Compensation Card CZC"
                         UserMgt.DisplayUserInformation(Rec."User ID");
                     end;
                 }
+                field("Language Code"; Rec."Language Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the language to be used on printouts for this document.';
+                    Importance = Additional;
+                }
             }
             part(PostedCompensationLines; "Posted Compensation Subf. CZC")
             {
@@ -191,6 +197,7 @@ page 31277 "Posted Compensation Card CZC"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+                ShortcutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
                 trigger OnAction()

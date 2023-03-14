@@ -89,10 +89,10 @@ codeunit 1908 "Camera Page Impl."
         exit(FileHelper.FileExists());
     end;
 
-    procedure GetPicture(Stream: InStream)
+    procedure GetPicture(InStream: InStream)
     begin
         GetPicture(FileTempBlob);
-        FileTempBlob.CreateInStream(Stream);
+        FileTempBlob.CreateInStream(InStream);
     end;
 
     procedure CameraInteractionOnPictureAvailable(FilePath: Text)

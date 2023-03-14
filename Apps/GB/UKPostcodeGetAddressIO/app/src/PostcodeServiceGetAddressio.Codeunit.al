@@ -15,7 +15,9 @@ codeunit 9092 "Postcode Service GetAddress.io"
         WrongServiceErr: Label 'You must choose the getAddress.io service.';
         ServiceUnavailableErr: Label 'The getAddress.io service is not available right now. Try again later.';
         ExpiredTok: Label 'expired', Locked = true;
+        PaymentTok: Label 'Payment Required', Locked = true;
         ExpiredErr: Label 'Your account with getAddress.io has expired.';
+        PaymentErr: Label 'Requested postal code requires a paid plan by getAddress.io';
         NotFoundErr: Label 'No addresses could be found for this postcode.';
         BadRequestErr: Label 'The postcode is not valid.';
         InvalidAPIKeyErr: Label 'Your access to the getAddress.io service has expired. Please renew your API key.';
@@ -41,7 +43,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Postcode Service Manager", 'OnRetrieveAddressList', '', false, false)]
     procedure GetAddressListOnAddressListRetrieved(ServiceKey: Text; TempEnteredAutocompleteAddress: Record "Autocomplete Address" temporary; var TempAddressListNameValueBuffer: Record "Name/Value Buffer" temporary; var IsSuccessful: Boolean; var ErrorMsg: Text)
     var
-        TempAutocompleteAddress: Record "Autocomplete Address" temporary;
+        CountryRec: Record "Country/Region";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         HttpClientInstance: HttpClient;
         HttpResponse: HttpResponseMessage;
@@ -51,9 +53,10 @@ codeunit 9092 "Postcode Service GetAddress.io"
         AddressJsonToken: JsonToken;
         Url: Text;
         ResponseText: Text;
-        Address: Text[250];
+        TempJsonToken: JsonToken;
+        Line1: Text;
     begin
-        FeatureTelemetry.LogUptake('0000FW5', UKPostCodeFeatureNameTxt, Enum::"Feature Uptake Status"::Used, false, true);
+        FeatureTelemetry.LogUptake('0000FW5', UKPostCodeFeatureNameTxt, Enum::"Feature Uptake Status"::Used);
 
         // Check if we're the selected service
         if ServiceKey <> ServiceIdentifierMsg then begin
@@ -86,18 +89,41 @@ codeunit 9092 "Postcode Service GetAddress.io"
         HttpResponse.Content().ReadAs(ResponseText);
         JsonObjectInstance.ReadFrom(ResponseText);
 
-        if JsonObjectInstance.SelectToken('Addresses', JsonArrayToken) then begin
+        if JsonObjectInstance.SelectToken('addresses', JsonArrayToken) then begin
             AddressJsonArray := JsonArrayToken.AsArray();
 
-            foreach AddressJsonToken in AddressJsonArray do begin
-                Address := copyStr(AddressJsonToken.AsValue().AsText(), 1, MaxStrLen(Address));
-                ParseAddress(TempAutocompleteAddress, Address, TempEnteredAutocompleteAddress.Postcode);
+            foreach AddressJsonToken in AddressJsonArray do
+                if AddressJsonToken.SelectToken('line_1', TempJsonToken) then begin
+                    Line1 := TempJsonToken.AsValue().AsText();
 
-                if (StrPos(TempAutocompleteAddress.Address, TempEnteredAutocompleteAddress.Address) > 0) or
-                    (TempEnteredAutocompleteAddress.Address = '')
-                then
-                    PostcodeServiceManager.AddSelectionAddress(TempAddressListNameValueBuffer, Address, Address);
-            end;
+                    if AddressJsonToken.SelectToken('line_2', TempJsonToken) then
+                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+
+                    if AddressJsonToken.SelectToken('line_3', TempJsonToken) then
+                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+
+                    if AddressJsonToken.SelectToken('locality', TempJsonToken) then
+                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+
+                    if AddressJsonToken.SelectToken('town_or_city', TempJsonToken) then
+                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+
+                    if AddressJsonToken.SelectToken('county', TempJsonToken) then
+                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+
+                    if AddressJsonToken.SelectToken('country', TempJsonToken) then begin
+                        CountryRec.SetRange(Name, TempJsonToken.AsValue().AsText());
+                        if CountryRec.FindFirst() then
+                            Line1 := Line1 + ', ' + CountryRec.Code
+                        else
+                            Line1 := Line1 + ', ' + 'GB';
+                    end;
+
+                    // If Address was entered by user, then we only insert maching addresses
+                    if (StrPos(Line1, TempEnteredAutocompleteAddress.Address) > 0) or (TempEnteredAutocompleteAddress.Address = '') then
+                        PostcodeServiceManager.AddSelectionAddress(TempAddressListNameValueBuffer, Line1, Line1);
+
+                end;
 
             IsSuccessful := true;
             FeatureTelemetry.LogUsage('0000BU7', UKPostCodeFeatureNameTxt, 'List of addresses created');
@@ -159,6 +185,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
         Url := PostcodeGetAddressIoConfig.EndpointURL + Postcode;
 
         Url := Url + '?api-key=' + PostcodeGetAddressIoConfig.GetAPIKey(PostcodeGetAddressIoConfig.APIKey);
+        Url := Url + '&expand=true';
         exit(Url);
     end;
 
@@ -168,7 +195,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
             exit;
 
         PostcodeGetAddressIoConfig.Init();
-        PostcodeGetAddressIoConfig.EndpointURL := 'https://api.getaddress.io/v2/uk/';
+        PostcodeGetAddressIoConfig.EndpointURL := 'https://api.getAddress.io/find/';
         PostcodeGetAddressIoConfig.Insert();
         Commit();
     end;
@@ -179,6 +206,8 @@ codeunit 9092 "Postcode Service GetAddress.io"
     begin
         if (LowerCase(HTTPResponse.ReasonPhrase()).Contains(ExpiredTok)) then
             exit(ExpiredErr);
+        if HTTPResponse.ReasonPhrase().Contains(PaymentTok) then
+            exit(PaymentErr);
         ResponseStatus := HTTPResponse.HttpStatusCode();
         case ResponseStatus of
             200:
@@ -205,44 +234,35 @@ codeunit 9092 "Postcode Service GetAddress.io"
 
     local procedure ParseAddress(var TempAutocompleteAddress: Record "Autocomplete Address" temporary; AddressString: Text; EnteredPostcode: Text[20])
     var
-        pos: Integer;
-        addr2: Text;
+        Line1, Line2 : Text;
     begin
-        // Format: "line1","line2","line3","line4","locality","Town/City","County"
-        // "Address" = the last non-empty line in ["line1", "line2"...] + "locality"
-        // "Address 2" = the rest of the non-empty lines in ["line1"...]
-        pos := 4;
-        while pos > 0 do begin
-            if TrimStart(SELECTSTR(pos, AddressString)) <> '' then break;
-            pos := pos - 1;
+        // Input string is comma seperated following this 
+        // Line1, Line2, Line3, Locality, City, County, Country
+        Line1 := TrimStart(SELECTSTR(1, AddressString));
+        if Line1 <> '' then begin
+            if TrimStart(SELECTSTR(2, AddressString)) <> '' then
+                Line1 := Line1 + ', ' + TrimStart(SELECTSTR(2, AddressString));
+
+            if TrimStart(SELECTSTR(3, AddressString)) <> '' then
+                Line1 := Line1 + ', ' + TrimStart(SELECTSTR(3, AddressString));
+
+            Line2 := TrimStart(SELECTSTR(4, AddressString));
+
+        end else begin
+            // If there is no line_1, we default to locality
+            Line1 := TrimStart(SELECTSTR(4, AddressString));
+            if TrimStart(SELECTSTR(5, AddressString)) <> '' then
+                Line1 := Line1 + ', ' + TrimStart(SELECTSTR(5, AddressString));
+
+            Line2 := '';
         end;
 
-        TempAutocompleteAddress.Init();
-
-        if pos < 1 then
-            TempAutocompleteAddress.Address := COPYSTR(TrimStart(SELECTSTR(5, AddressString)), 1, 100)
-        else
-            TempAutocompleteAddress.Address := COPYSTR(TrimStart(SELECTSTR(pos, AddressString)) + GetLineByPosition(5, AddressString), 1, 100);
-
-        pos := pos - 1;
-        while pos > 0 do begin
-            if addr2 = '' then
-                addr2 := TrimStart(SELECTSTR(pos, AddressString))
-            else
-                addr2 := addr2 + GetLineByPosition(pos, AddressString);
-            pos := pos - 1;
-        end;
-
-        TempAutocompleteAddress."Address 2" := COPYSTR(addr2, 1, 50);
-        TempAutocompleteAddress.City := COPYSTR(TrimStart(SELECTSTR(6, AddressString)), 1, 30);
-        TempAutocompleteAddress.Postcode := EnteredPostcode;
-        TempAutocompleteAddress.County := COPYSTR(TrimStart(SELECTSTR(7, AddressString)), 1, 30);
-        TempAutocompleteAddress."Country / Region" := 'GB';
+        TempAutocompleteAddress.Address := COPYSTR(Line1, 1, MaxStrLen(TempAutocompleteAddress.Address));
+        TempAutocompleteAddress."Address 2" := COPYSTR(Line2, 1, MaxStrLen(TempAutocompleteAddress."Address 2"));
+        TempAutocompleteAddress.Postcode := COPYSTR(EnteredPostcode, 1, MaxStrLen(TempAutocompleteAddress.Postcode));
+        TempAutocompleteAddress.City := COPYSTR(TrimStart(SELECTSTR(5, AddressString)), 1, MaxStrLen(TempAutocompleteAddress.City));
+        TempAutocompleteAddress.County := COPYSTR(TrimStart(SELECTSTR(6, AddressString)), 1, MaxStrLen(TempAutocompleteAddress.County));
+        TempAutocompleteAddress."Country / Region" := COPYSTR(TrimStart(SELECTSTR(7, AddressString)), 1, MaxStrLen(TempAutocompleteAddress."Country / Region"));
     end;
 
-    local procedure GetLineByPosition(pos: Integer; AddressString: Text) Result: Text
-    begin
-        Result := TrimStart(SELECTSTR(pos, AddressString));
-        if Result <> '' then Result := ', ' + Result;
-    end;
 }

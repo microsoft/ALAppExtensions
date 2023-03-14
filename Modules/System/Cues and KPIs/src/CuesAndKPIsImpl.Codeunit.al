@@ -183,12 +183,12 @@ codeunit 9702 "Cues And KPIs Impl."
         end;
     end;
 
-    procedure ChangeUserForSetupEntry(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50])
+    procedure ChangeUserForSetupEntry(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50])
     var
         CueSetup: Record "Cue Setup";
     begin
         CueSetup.ChangeCompany(Company);
-        RecRef.SetTable(CueSetup);
+        RecordRef.SetTable(CueSetup);
         CueSetup.Rename(UserName, CueSetup."Table ID", CueSetup."Field No.");
     end;
 
@@ -232,6 +232,16 @@ codeunit 9702 "Cues And KPIs Impl."
             else
                 FinalStyle := MiddleRangeStyle;
         end;
+    end;
+
+    procedure PersonalizedCueSetupExistsForCurrentUser(TableID: Integer; FieldID: Integer): Boolean
+    var
+        CueSetup: Record "Cue Setup";
+    begin
+        CueSetup.SetRange("User Name", UserId);
+        CueSetup.SetRange("Table ID", TableID);
+        CueSetup.SetRange("Field No.", FieldID);
+        exit(not CueSetup.IsEmpty);
     end;
 
     procedure InsertData(TableID: Integer; FieldNo: Integer; LowRangeStyle: Enum "Cues And KPIs Style"; Threshold1: Decimal; MiddleRangeStyle: Enum "Cues And KPIs Style"; Threshold2: Decimal; HighRangeStyle: Enum "Cues And KPIs Style"): Boolean

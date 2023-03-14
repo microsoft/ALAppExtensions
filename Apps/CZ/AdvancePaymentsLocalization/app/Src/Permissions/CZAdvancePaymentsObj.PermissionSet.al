@@ -1,49 +1,64 @@
-// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-// ------------------------------------------------------------------------------------------------
-
 permissionset 11752 "CZ Advance Payments - Obj. CZZ"
 {
     Access = Public;
     Assignable = false;
     Caption = 'CZ Advance Payments - Objects';
 
-    Permissions = Codeunit "Advance Letter Doc. Totals CZZ" = X,
+    Permissions = Codeunit "Acc. Sched. Ext. Handler CZZ" = X,
+                  Codeunit "Advance Letter Doc. Totals CZZ" = X,
+#if not CLEAN21
+#pragma warning disable AL0432
+                  Codeunit "Adj. Exch. Rates Handler CZZ" = X,
                   Codeunit "Advance Payments Mgt. CZZ" = X,
+#pragma warning restore AL0432
+#endif            
                   Codeunit "Adv. Payments Approv. Mgt. CZZ" = X,
+                  Codeunit "Calculate Customer Stats. CZZ" = X,
+                  Codeunit "Calculate Vendor Stats. CZZ" = X,
                   Codeunit "Cash Document Line Handler CZZ" = X,
                   Codeunit "Cash Document-Post Handler CZZ" = X,
                   Codeunit "Cash Flow Handler CZZ" = X,
+                  Codeunit "Cross Application Handler CZZ" = X,
                   Codeunit "Cust. Entry-Edit Handler CZZ" = X,
                   Codeunit "Cust. Ledger Entry Handler CZZ" = X,
-                  Codeunit "Data Class. Eval. Handler CZZ" = X,
+                  Codeunit "Data Class. Eval. Handler CZZ" = X,
                   Codeunit "Doc. Attachment Handler CZZ" = X,
                   Codeunit "EET Management Handler CZZ" = X,
+#if not CLEAN21
+#pragma warning disable AL0432
                   Codeunit "Feature Advance Payments CZZ" = X,
+#pragma warning restore AL0432
+#endif
                   Codeunit "Gen.Jnl.-Check Ln. Handler CZZ" = X,
                   Codeunit "Gen.Jnl-Post Batch Handler CZZ" = X,
                   Codeunit "Gen.Jnl.-Post Line Handler CZZ" = X,
+                  Codeunit "Gen. Ledger Setup Handler CZZ" = X,
                   Codeunit "Guided Experience Handler CZZ" = X,
+                  Codeunit "Incoming Document Handler CZZ" = X,
                   Codeunit "Install Application CZZ" = X,
                   Codeunit "Match Bank Payment Handler CZZ" = X,
                   Codeunit "Navigate Handler CZZ" = X,
+                  Codeunit "Notification Handler CZZ" = X,
                   Codeunit "Payment Order Mgt. Handler CZZ" = X,
                   Codeunit "Post.Preview Event Handler CZZ" = X,
                   Codeunit "Post Preview Handler CZZ" = X,
+                  Codeunit "Prepayment Mgt. Handler CZZ" = X,
                   Codeunit "PurchAdvLetterManagement CZZ" = X,
                   Codeunit "Purch. Adv. Letter-Printed CZZ" = X,
                   Codeunit "Purchase Header Handler CZZ" = X,
                   Codeunit "Purch.-Post Handler CZZ" = X,
                   Codeunit "Rel. Purch.Adv.Letter Doc. CZZ" = X,
                   Codeunit "Rel. Sales Adv.Letter Doc. CZZ" = X,
+                  Codeunit "Report Selection Handler CZZ" = X,
                   Codeunit "SalesAdvLetterManagement CZZ" = X,
                   Codeunit "Sales Adv. Letter-Printed CZZ" = X,
                   Codeunit "Sales Header Handler CZZ" = X,
                   Codeunit "Sales-Post Handler CZZ" = X,
                   Codeunit "Show Preview Handler CZZ" = X,
                   Codeunit "Sugg. Wksh. Lines Handler CZZ" = X,
-                  Codeunit "Sync.Dep.Fld-IssPaymOrdLn CZZ" = X,
+#if not CLEAN19
+                  Codeunit "Sync.Dep.Fld-IssPaymOrdLn CZZ" = X,
+#endif
                   Codeunit "Upgrade Application CZZ" = X,
                   Codeunit "Upgrade Tag Definitions CZZ" = X,
                   Codeunit "VAT Entry Handler CZZ" = X,
@@ -92,6 +107,7 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Table "Advance Letter Application CZZ" = X,
                   Table "Advance Letter Link Buffer CZZ" = X,
                   Table "Advance Letter Template CZZ" = X,
+                  Table "Advance Posting Buffer CZZ" = X,
                   Table "Purch. Adv. Letter Entry CZZ" = X,
                   Table "Purch. Adv. Letter Header CZZ" = X,
                   Table "Purch. Adv. Letter Line CZZ" = X,

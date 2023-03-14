@@ -188,16 +188,9 @@ report 31183 "Finance Charge Memo CZL"
                 }
                 dataitem("Issued Fin. Charge Memo Line"; "Issued Fin. Charge Memo Line")
                 {
-                    CalcFields = "Interest Amount";
                     DataItemLink = "Finance Charge Memo No." = field("No.");
                     DataItemLinkReference = "Issued Fin. Charge Memo Header";
                     DataItemTableView = sorting("Finance Charge Memo No.", "Line No.");
-                    column(DocumentDate_IssuedFinChargeMemoLineCaption; FieldCaption("Document Date"))
-                    {
-                    }
-                    column(DocumentDate_IssuedFinChargeMemoLine; "Document Date")
-                    {
-                    }
                     column(DocumentType_IssuedFinChargeMemoLineCaption; FieldCaption("Document Type"))
                     {
                     }
@@ -208,6 +201,18 @@ report 31183 "Finance Charge Memo CZL"
                     {
                     }
                     column(DocumentNo_IssuedFinChargeMemoLine; "Document No.")
+                    {
+                    }
+                    column(PostingDate_IssuedFinChargeMemoLineCaption; FieldCaption("Posting Date"))
+                    {
+                    }
+                    column(PostingDate_IssuedFinChargeMemoLine; "Posting Date")
+                    {
+                    }
+                    column(DocumentDate_IssuedFinChargeMemoLineCaption; FieldCaption("Document Date"))
+                    {
+                    }
+                    column(DocumentDate_IssuedFinChargeMemoLine; "Document Date")
                     {
                     }
                     column(DueDate_IssuedFinChargeMemoLineCaption; FieldCaption("Due Date"))
@@ -234,16 +239,13 @@ report 31183 "Finance Charge Memo CZL"
                     column(RemainingAmount_IssuedFinChargeMemoLine; "Remaining Amount")
                     {
                     }
-                    column(InterestAmount_IssuedFinChargeMemoLineCaption; FieldCaption("Interest Amount"))
-                    {
-                    }
-                    column(InterestAmount_IssuedFinChargeMemoLine; "Interest Amount")
-                    {
-                    }
                     column(VATAmount_IssuedFinChargeMemoLineCaption; FieldCaption("VAT Amount"))
                     {
                     }
                     column(VATAmount_IssuedFinChargeMemoLine; "VAT Amount")
+                    {
+                    }
+                    column(Amount_IssuedFinChargeMemoLineCaption; FieldCaption(Amount))
                     {
                     }
                     column(Amount_IssuedFinChargeMemoLine; Amount)
@@ -255,64 +257,49 @@ report 31183 "Finance Charge Memo CZL"
                     column(Type_IssuedFinChargeMemoLine; Format(Type, 0, 2))
                     {
                     }
-                    dataitem("Detailed Iss.Fin.Ch. Memo Line"; "Detailed Iss.Fin.Ch. Memo Line")
+                    column(InterestRate_IssuedFinChargeMemoLineCaption; FieldCaption("Interest Rate"))
                     {
-                        DataItemLink = "Finance Charge Memo No." = field("Finance Charge Memo No."), "Fin. Charge. Memo Line No." = field("Line No.");
-                        DataItemTableView = sorting("Finance Charge Memo No.", "Fin. Charge. Memo Line No.", "Detailed Customer Entry No.", "Line No.");
-                        column(InterestRate_DetailedIssFinChMemoLineCaption; FieldCaption("Interest Rate"))
-                        {
-                        }
-                        column(InterestRate_DetailedIssFinChMemoLine; "Interest Rate")
-                        {
-                        }
-                        column(InterestAmount_DetailedIssFinChMemoLineCaption; FieldCaption("Interest Amount"))
-                        {
-                        }
-                        column(InterestAmount_DetailedIssFinChMemoLine; "Interest Amount")
-                        {
-                        }
-                        column(PostingDate_DetailedIssFinChMemoLineCaption; FieldCaption("Posting Date"))
-                        {
-                        }
-                        column(PostingDate_DetailedIssFinChMemoLine; "Posting Date")
-                        {
-                        }
-                        column(DocumentNo_DetailedIssFinChMemoLineCaption; FieldCaption("Document No."))
-                        {
-                        }
-                        column(DocumentNo_DetailedIssFinChMemoLine; "Document No.")
-                        {
-                        }
-                        column(BaseAmount_DetailedIssFinChMemoLineCaption; FieldCaption("Base Amount"))
-                        {
-                        }
-                        column(BaseAmount_DetailedIssFinChMemoLine; "Base Amount")
-                        {
-                        }
-                        trigger OnPreDataItem()
-                        begin
-                            if not PrintInterestDetail then
-                                CurrReport.Break();
-                        end;
+                    }
+                    column(InterestRate_IssuedFinChargeMemoLine; "Interest Rate")
+                    {
+                    }
+                    column(DetailedInterestRatesEntry_IssuedFinChargeMemoLine; "Detailed Interest Rates Entry")
+                    {
+                    }
+                    column(PrintInterestDetail; PrintInterestDetail)
+                    {
+                    }
+                    column(ShowCaptions; ShowCaptions)
+                    {
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        TempVATAmountLine.Init();
-                        TempVATAmountLine."VAT Identifier" := "VAT Identifier";
-                        TempVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
-                        TempVATAmountLine."Tax Group Code" := "Tax Group Code";
-                        TempVATAmountLine."VAT %" := "VAT %";
-                        TempVATAmountLine."VAT Base" := Amount;
-                        TempVATAmountLine."VAT Amount" := "VAT Amount";
-                        TempVATAmountLine."Amount Including VAT" := Amount + "VAT Amount";
-                        TempVATAmountLine."VAT Clause Code" := "VAT Clause Code";
-                        TempVATAmountLine.InsertLine();
+                        if not "Detailed Interest Rates Entry" then begin
+                            TempVATAmountLine.Init();
+                            TempVATAmountLine."VAT Identifier" := "VAT Identifier";
+                            TempVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
+                            TempVATAmountLine."Tax Group Code" := "Tax Group Code";
+                            TempVATAmountLine."VAT %" := "VAT %";
+                            TempVATAmountLine."VAT Base" := Amount;
+                            TempVATAmountLine."VAT Amount" := "VAT Amount";
+                            TempVATAmountLine."Amount Including VAT" := Amount + "VAT Amount";
+                            TempVATAmountLine."VAT Clause Code" := "VAT Clause Code";
+                            TempVATAmountLine.InsertLine();
+                        end;
+
+                        ShowCaptions := not PrevDetailedInterestRatesEntry and "Detailed Interest Rates Entry";
+                        PrevDetailedInterestRatesEntry := "Detailed Interest Rates Entry";
                     end;
 
                     trigger OnPreDataItem()
                     begin
                         TempVATAmountLine.Reset();
                         TempVATAmountLine.DeleteAll();
+
+                        if not PrintInterestDetail then
+                            SetRange("Detailed Interest Rates Entry", false);
+
+                        ShowCaptions := false;
                     end;
                 }
                 dataitem(VATCounter; "Integer")
@@ -471,6 +458,8 @@ report 31183 "Finance Charge Memo CZL"
         LogInteraction: Boolean;
         [InDataSet]
         LogInteractionEnable: Boolean;
+        ShowCaptions: Boolean;
+        PrevDetailedInterestRatesEntry: Boolean;
         DocumentLbl: Label 'Finance Charge Memo';
         PageLbl: Label 'Page';
         CopyLbl: Label 'Copy';

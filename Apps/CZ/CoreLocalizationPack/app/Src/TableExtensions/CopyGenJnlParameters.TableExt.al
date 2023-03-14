@@ -1,4 +1,4 @@
-tableextension 31009 "Copy Gen. Jnl. Parameters CZL" extends "Copy Gen. Journal Parameters"
+tableextension 31009 "Copy Gen. Jnl. Parameters CZL" extends "Copy Gen. Journal Parameters"
 {
     fields
     {

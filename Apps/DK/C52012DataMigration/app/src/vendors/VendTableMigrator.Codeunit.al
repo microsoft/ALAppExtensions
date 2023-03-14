@@ -16,9 +16,15 @@ codeunit 1864 "C5 VendTable Migrator"
         PaymentNotFoundErr: Label 'The Payment ''%1'' was not found.', Comment = '%1 = payment';
         GeneralJournalBatchNameTxt: Label 'VENDMIGR', Locked = true;
 
-
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     procedure OnMigrateVendor(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateVendor(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateVendor(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5VendTable: Record "C5 VendTable";
     begin
@@ -28,8 +34,67 @@ codeunit 1864 "C5 VendTable Migrator"
         MigrateVendorDetails(C5VendTable, Sender);
     end;
 
+    local procedure MigrateVendorDetails(C5VendTable: Record "C5 VendTable"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
+    var
+        C5VendContact: Record "C5 VendContact";
+        C5HelperFunctions: Codeunit "C5 Helper Functions";
+        PostCode: Code[20];
+        City: Text[30];
+        CountryRegionCode: Code[10];
+    begin
+        if not VendorDataMigrationFacade.CreateVendorIfNeeded(C5VendTable.Account, C5VendTable.Name) then
+            exit;
+
+        VendorDataMigrationFacade.SetSearchName(C5VendTable.SearchName);
+        C5HelperFunctions.ExtractPostCodeAndCity(C5VendTable.ZipCity, C5vENDTable.Country, PostCode, City, CountryRegionCode);
+        VendorDataMigrationFacade.SetAddress(C5VendTable.Address1, C5VendTable.Address2, CountryRegionCode, PostCode, City);
+        VendorDataMigrationFacade.SetPhoneNo(C5VendTable.Phone);
+        VendorDataMigrationFacade.SetTelexNo(C5VendTable.Telex);
+        VendorDataMigrationFacade.SetEmail(C5VendTable.Email);
+        VendorDataMigrationFacade.SetOurAccountNo(C5VendTable.OurAccount);
+        VendorDataMigrationFacade.SetCurrencyCode(C5HelperFunctions.FixLCYCode(C5VendTable.Currency)); // assume the currency is already present
+        VendorDataMigrationFacade.SetLanguageCode(C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_));
+        VendorDataMigrationFacade.SetPaymentTermsCode(CreatePaymentTermsIfNeeded(C5VendTable.Payment));
+        VendorDataMigrationFacade.SetPurchaserCode(CreateSalespersonPurchaserIfNeeded(C5VendTable.Purchaser));
+        VendorDataMigrationFacade.SetShipmentMethodCode(CreateShipmentMethodIfNeeded(C5VendTable.Delivery));
+        VendorDataMigrationFacade.SetInvoiceDiscCode(CreateVendorInvoiceDiscountIfNeeded(C5VendTable.DiscGroup));
+
+        VendorDataMigrationFacade.SetBlocked(ConvertBlocked(C5VendTable));
+        VendorDataMigrationFacade.SetFaxNo(C5VendTable.Fax);
+        VendorDataMigrationFacade.SetVATRegistrationNo(CopyStr(C5VendTable.VatNumber, 1, 20)); // VAT field length on the vendor table is 20
+        VendorDataMigrationFacade.SetHomePage(C5VendTable.URL);
+
+        // reference to another vendor
+        // to make sure the pay to vendor exists
+        if (C5VendTable.InvoiceAccount <> '') and not VendorDataMigrationFacade.DoesVendorExist(C5VendTable.InvoiceAccount) then
+            Error(ReferencedVendorDoesNotExistErr, C5VendTable.Account, C5VendTable.InvoiceAccount);
+
+        VendorDataMigrationFacade.SetPayToVendorNo(C5VendTable.InvoiceAccount); // foreign key
+
+        VendorDataMigrationFacade.SetContact(C5VendTable.Attention);
+
+        C5VendContact.SetRange(Account, C5VendTable.Account);
+        C5VendContact.SetRange(PrimaryContact, C5VendContact.PrimaryContact::No);
+        if C5VendContact.FindSet() then
+            repeat
+                C5HelperFunctions.ExtractPostCodeAndCity(C5VendContact.ZipCity, C5VendContact.Country, PostCode, City, CountryRegionCode);
+                VendorDataMigrationFacade.SetVendorAlternativeContact(
+                    C5VendContact.Name, C5VendContact.Address1, C5VendContact.Address2,
+                    PostCode, City, CountryRegionCode, C5VendContact.Email, C5VendContact.Phone,
+                    C5VendContact.Fax, C5VendContact.CellPhone);
+            until C5VendContact.Next() = 0;
+        VendorDataMigrationFacade.ModifyVendor(true);
+    end;
+
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorDimensions', '', true, true)]
     procedure OnMigrateVendorDimensions(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateVendorDimensions(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateVendorDimensions(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5VendTable: Record "C5 VendTable";
         C5HelperFunctions: Codeunit "C5 Helper Functions";
@@ -58,61 +123,15 @@ codeunit 1864 "C5 VendTable Migrator"
                 C5HelperFunctions.GetDimensionValueName(Database::"C5 Purpose", C5VendTable.Purpose));
     end;
 
-    local procedure MigrateVendorDetails(C5VendTable: Record "C5 VendTable"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
-    var
-        C5VendContact: Record "C5 VendContact";
-        C5HelperFunctions: Codeunit "C5 Helper Functions";
-        PostCode: Code[20];
-        City: Text[30];
-        CountryRegionCode: Code[10];
-    begin
-        if not VendorDataMigrationFacade.CreateVendorIfNeeded(C5VendTable.Account, C5VendTable.Name) then
-            exit;
-
-        VendorDataMigrationFacade.SetSearchName(C5VendTable.SearchName);
-        C5HelperFunctions.ExtractPostCodeAndCity(C5VendTable.ZipCity, C5vENDTable.Country, PostCode, City, CountryRegionCode);
-        VendorDataMigrationFacade.SetAddress(C5VendTable.Address1, C5VendTable.Address2, CountryRegionCode, PostCode, City);
-        VendorDataMigrationFacade.SetPhoneNo(C5VendTable.Phone);
-        VendorDataMigrationFacade.SetTelexNo(C5VendTable.Telex);
-        VendorDataMigrationFacade.SetEmail(C5VendTable.Email);
-        VendorDataMigrationFacade.SetOurAccountNo(C5VendTable.OurAccount);
-        VendorDataMigrationFacade.SetCurrencyCode(C5HelperFunctions.FixLCYCode(C5VendTable.Currency)); // assume the currency is already present
-        VendorDataMigrationFacade.SetLanguageCode(C5HelperFunctions.GetLanguageCodeForC5Language(C5VendTable.Language_));
-        VendorDataMigrationFacade.SetPaymentTermsCode(CreatePaymentTermsIfNeeded(C5VendTable.Payment));
-        VendorDataMigrationFacade.SetPurchaserCode(CreateSalespersonPurchaserIfNeeded(C5VendTable.Purchaser));
-        VendorDataMigrationFacade.SetShipmentMethodCode(CreateShipmentMethodIfNeeded(C5VendTable.Delivery));
-        VendorDataMigrationFacade.SetInvoiceDiscCode(CreateVendorInvoiceDiscountIfNeeded(C5VendTable.DiscGroup));
-
-        VendorDataMigrationFacade.SetBlockedType(ConvertBlocked(C5VendTable));
-        VendorDataMigrationFacade.SetFaxNo(C5VendTable.Fax);
-        VendorDataMigrationFacade.SetVATRegistrationNo(CopyStr(C5VendTable.VatNumber, 1, 20)); // VAT field length on the vendor table is 20
-        VendorDataMigrationFacade.SetHomePage(C5VendTable.URL);
-
-        // reference to another vendor
-        // to make sure the pay to vendor exists
-        if (C5VendTable.InvoiceAccount <> '') and not VendorDataMigrationFacade.DoesVendorExist(C5VendTable.InvoiceAccount) then
-            Error(StrSubstNo(ReferencedVendorDoesNotExistErr, C5VendTable.Account, C5VendTable.InvoiceAccount));
-
-        VendorDataMigrationFacade.SetPayToVendorNo(C5VendTable.InvoiceAccount); // foreign key
-
-        VendorDataMigrationFacade.SetContact(C5VendTable.Attention);
-
-        C5VendContact.SetRange(Account, C5VendTable.Account);
-        C5VendContact.SetRange(PrimaryContact, C5VendContact.PrimaryContact::No);
-        if C5VendContact.FindSet() then
-            repeat
-                C5HelperFunctions.ExtractPostCodeAndCity(C5VendContact.ZipCity, C5VendContact.Country, PostCode, City, CountryRegionCode);
-                VendorDataMigrationFacade.SetVendorAlternativeContact(
-                    C5VendContact.Name, C5VendContact.Address1, C5VendContact.Address2,
-                    PostCode, City, CountryRegionCode, C5VendContact.Email, C5VendContact.Phone,
-                    C5VendContact.Fax, C5VendContact.CellPhone);
-            until C5VendContact.Next() = 0;
-        VendorDataMigrationFacade.ModifyVendor(true);
-    end;
-
-
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    begin
+        MigrateVendorPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5VendTable: Record "C5 VendTable";
         C5VendGroup: Record "C5 VendGroup";
@@ -136,14 +155,22 @@ codeunit 1864 "C5 VendTable Migrator"
         Sender.ModifyVendor(true);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
     procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    begin
+        MigrateVendorTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5VendTable: Record "C5 VendTable";
         C5VendTrans: Record "C5 VendTrans";
         C5VendGroup: Record "C5 VendGroup";
         C5HelperFunctions: Codeunit "C5 Helper Functions";
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
+        DescriptionTxt: Label '%1 %2', Locked = true;
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -167,7 +194,7 @@ codeunit 1864 "C5 VendTable Migrator"
                 Sender.CreateGeneralJournalLine(
                     GetHardCodedBatchName(),
                     'C5MIGRATE',
-                    CopyStr(STRSUBSTNO('%1 %2', C5VendTrans.InvoiceNumber, C5VendTrans.Txt), 1, 50),
+                    CopyStr(STRSUBSTNO(DescriptionTxt, C5VendTrans.InvoiceNumber, C5VendTrans.Txt), 1, 50),
                     C5VendTrans.Date_,
                     C5VendTrans.DueDate,
                     C5VendTrans.AmountCur,
@@ -197,6 +224,10 @@ codeunit 1864 "C5 VendTable Migrator"
         C5Payment: Record "C5 Payment";
         DueDateAsDateFormula: DateFormula;
         DueDateCalculation: Text;
+        DueDayTxt: Label '+%1D', Locked = true;
+        DueWeekTxt: Label '+%1W', Locked = true;
+        DueMonthTxt: Label '+%1M', Locked = true;
+        DueDateTxt: Label '<%1>', Locked = true;
     begin
         if C5PaymentTxt = '' then
             exit(C5PaymentTxt);
@@ -220,13 +251,13 @@ codeunit 1864 "C5 VendTable Migrator"
 
         case C5Payment.UnitCode of
             C5Payment.UnitCode::Day:
-                DueDateCalculation += StrSubstNo('+%1D', C5Payment.Qty);
+                DueDateCalculation += StrSubstNo(DueDayTxt, C5Payment.Qty);
             C5Payment.UnitCode::Week:
-                DueDateCalculation += StrSubstNo('+%1W', C5Payment.Qty);
+                DueDateCalculation += StrSubstNo(DueWeekTxt, C5Payment.Qty);
             C5Payment.UnitCode::Month:
-                DueDateCalculation += StrSubstNo('+%1M', C5Payment.Qty);
+                DueDateCalculation += StrSubstNo(DueMonthTxt, C5Payment.Qty);
         end;
-        DueDateCalculation := StrSubstNo('<%1>', DueDateCalculation);
+        DueDateCalculation := StrSubstNo(DueDateTxt, DueDateCalculation);
         Evaluate(DueDateAsDateFormula, DueDateCalculation);
 
         exit(UninitializedVendorDataMigrationFacade.CreatePaymentTermsIfNeeded(C5Payment.Payment,

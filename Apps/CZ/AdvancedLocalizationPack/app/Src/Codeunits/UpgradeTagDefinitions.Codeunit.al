@@ -6,6 +6,8 @@ codeunit 31261 "Upgrade Tag Definitions CZA"
         PerDatabaseUpgradeTags.Add(GetDataVersion180PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion182PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion183PerDatabaseUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetDataVersion200PerDatabaseUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetDataVersion210PerDatabaseUpgradeTag());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
@@ -14,6 +16,8 @@ codeunit 31261 "Upgrade Tag Definitions CZA"
         PerCompanyUpgradeTags.Add(GetDataVersion180PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion182PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion183PerCompanyUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetDataVersion200PerCompanyUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetDataVersion210PerCompanyUpgradeTag());
     end;
 
     procedure GetDataVersion180PerDatabaseUpgradeTag(): Code[250]
@@ -31,6 +35,16 @@ codeunit 31261 "Upgrade Tag Definitions CZA"
         exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerDatabase-18.3');
     end;
 
+    procedure GetDataVersion200PerDatabaseUpgradeTag(): Code[250]
+    begin
+        exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerDatabase-20.0');
+    end;
+
+    procedure GetDataVersion210PerDatabaseUpgradeTag(): Code[250]
+    begin
+        exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerDatabase-21.0');
+    end;
+
     procedure GetDataVersion180PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerCompany-18.0');
@@ -44,5 +58,15 @@ codeunit 31261 "Upgrade Tag Definitions CZA"
     procedure GetDataVersion183PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerCompany-18.3');
+    end;
+
+    procedure GetDataVersion200PerCompanyUpgradeTag(): Code[250]
+    begin
+        exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerCompany-20.0');
+    end;
+
+    procedure GetDataVersion210PerCompanyUpgradeTag(): Code[250]
+    begin
+        exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerCompany-21.0');
     end;
 }

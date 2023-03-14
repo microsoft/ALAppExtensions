@@ -74,7 +74,7 @@ page 30065 "APIV2 - Purch Receipt Lines"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(17);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Purchase Receipt Line");
                 }
             }
         }

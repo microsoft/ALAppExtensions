@@ -317,7 +317,9 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiPurchaseHeader.FIELDNO("No."), DATABASE::"Purchase Header");
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiPurchaseHeader.FIELDNO("Posting Description"), DATABASE::"Purchase Header");
+#pragma warning disable AL0432
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiPurchaseHeader.FIELDNO(Id), DATABASE::"Purchase Header");
+#pragma warning restore AL0432
         // Special ignore case for ES
         RecordField.SETRANGE(TableNo, DATABASE::"Purchase Header");
         RecordField.SETRANGE(FieldName, 'Due Date Modified');
@@ -379,7 +381,7 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
         DocumentNo := PurchaseHeader."No.";
         Commit();
 
-        VerifyDraftPurchaseInvoice(DocumentId, TempPurchInvEntityAggregate.Status::Draft);
+        VerifyDraftPurchaseInvoice(DocumentId, TempPurchInvEntityAggregate.Status::Draft.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -391,7 +393,7 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
 
         // [THEN] Invoice is posted
         FindPostedPurchaseInvoiceByPreAssignedNo(DocumentNo, PurchInvHeader);
-        VerifyPostedPurchaseInvoice(PurchInvHeader."Draft Invoice SystemId", TempPurchInvEntityAggregate.Status::Open);
+        VerifyPostedPurchaseInvoice(PurchInvHeader."Draft Invoice SystemId", TempPurchInvEntityAggregate.Status::Open.AsInteger());
     end;
 
     local procedure CreatePurchaseInvoices(var InvoiceID1: Text; var InvoiceID2: Text)
@@ -450,12 +452,12 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
             EXIT(Currency.Code);
     end;
 
-    local procedure CreateInvoiceJSON(PropertyName1: Text; PropertyValue1: Variant; PropertyName2: Text; PropertyValue2: Variant): Text
+    local procedure CreateInvoiceJSON(PropertyName1: Text; PropertyValue1Variant: Variant; PropertyName2: Text; PropertyValue2Variant: Variant): Text
     var
         InvoiceJSON: Text;
     begin
-        InvoiceJSON := LibraryGraphMgt.AddPropertytoJSON('', PropertyName1, PropertyValue1);
-        InvoiceJSON := LibraryGraphMgt.AddPropertytoJSON(InvoiceJSON, PropertyName2, PropertyValue2);
+        InvoiceJSON := LibraryGraphMgt.AddPropertytoJSON('', PropertyName1, PropertyValue1Variant);
+        InvoiceJSON := LibraryGraphMgt.AddPropertytoJSON(InvoiceJSON, PropertyName2, PropertyValue2Variant);
         EXIT(InvoiceJSON);
     end;
 

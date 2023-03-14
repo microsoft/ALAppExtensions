@@ -10,21 +10,21 @@ codeunit 139910 "Test Upgrade AU"
     [Test]
     procedure UpgradeSetsCopyLineDescrToGLEntry()
     var
-        SalesSetup: Record "Sales & Receivables Setup";
-        PurchSetup: Record "Purchases & Payables Setup";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         ServiceMgtSetup: Record "Service Mgt. Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         W1CompanyHandler: Codeunit "W1 Company Handler";
     begin
         // [SCENARIO] Data migration for AU runs the correct upgrade code for the setup tables.
         // [GIVEN] The setup records exist and have an anticipated code upgrade
-        PurchSetup.Get();
-        PurchSetup."Copy Line Descr. to G/L Entry" := false;
-        PurchSetup.Modify();
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup."Copy Line Descr. to G/L Entry" := false;
+        PurchasesPayablesSetup.Modify();
 
-        SalesSetup.Get();
-        SalesSetup."Copy Line Descr. to G/L Entry" := false;
-        SalesSetup.Modify();
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup."Copy Line Descr. to G/L Entry" := false;
+        SalesReceivablesSetup.Modify();
 
         ServiceMgtSetup.Get();
         ServiceMgtSetup."Copy Line Descr. to G/L Entry" := false;
@@ -34,10 +34,10 @@ codeunit 139910 "Test Upgrade AU"
         W1CompanyHandler.OnUpgradePerCompanyDataForVersion(HybridReplicationSummary, CountryCodeTxt, 15.0);
 
         // [THEN] The tables are appropriately transformed
-        PurchSetup.Get();
-        Assert.IsTrue(PurchSetup."Copy Line Descr. to G/L Entry", PurchSetup.FieldName("Copy Line Descr. to G/L Entry"));
-        SalesSetup.Get();
-        Assert.IsTrue(SalesSetup."Copy Line Descr. to G/L Entry", SalesSetup.FieldName("Copy Line Descr. to G/L Entry"));
+        PurchasesPayablesSetup.Get();
+        Assert.IsTrue(PurchasesPayablesSetup."Copy Line Descr. to G/L Entry", PurchasesPayablesSetup.FieldName("Copy Line Descr. to G/L Entry"));
+        SalesReceivablesSetup.Get();
+        Assert.IsTrue(SalesReceivablesSetup."Copy Line Descr. to G/L Entry", SalesReceivablesSetup.FieldName("Copy Line Descr. to G/L Entry"));
         ServiceMgtSetup.Get();
         Assert.IsTrue(ServiceMgtSetup."Copy Line Descr. to G/L Entry", ServiceMgtSetup.FieldName("Copy Line Descr. to G/L Entry"));
     end;

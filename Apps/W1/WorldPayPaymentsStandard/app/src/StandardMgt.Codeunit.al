@@ -22,6 +22,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         WorldPayCaptionURLTxt: Label 'Pay with WorldPay';
         DemoLinkCaptionTxt: Label 'Note: You''re in an evaluation company, and this isn''t a real invoice. You can''t actually pay it.', Comment = 'Will be shown next to the Pay with WorldPay link.';
         WorldPayStandardNameTxt: Label 'WorldPay Payments Standard';
+        WorldPayStandardShortNameTxt: Label 'WorldPay Setup';
         WorldPayStandardDescriptionTxt: Label 'Use the WorldPay Payments Standard service';
         WorldPayStandardBusinessSetupDescriptionTxt: Label 'Set up and enable the WorldPay Payments Standard service.';
         YourReferenceTxt: Label 'Your Ref.', Comment = 'Ref. is short for reference from Your Reference field. After Ref there will be a number';
@@ -31,7 +32,6 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         WorldPayMandatoryParametersTok: Label 'instId=%1&cartId=%2&amount=%3&currency=%4&desc=%5', Locked = true;
         TargetURLCannotBeChangedInDemoCompanyErr: Label 'You cannot change the target URL in the demonstration company.';
         SandboxWorldPayBaseURLTok: Label 'https://secure-test.worldpay.com/wcc/purchase?testMode=100', Locked = true;
-        WorldPayMenuDescriptionTxt: Label 'Add WorldPay link to your invoices.';
         WorldPayHomepageLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=844661', Locked = true;
         WorldPayBusinessSetupKeywordsTxt: Label 'Finance,WorldPay,Payment';
         WorldPayPaymentMethodCodeTok: Label 'WorldPay', Locked = true;
@@ -44,6 +44,9 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         WorldPayNoLinkQst: Label 'An error occured while creating the WorldPay payment link.\\Do you want to continue to create the document without the link?';
         WorldPayTargetURLIsEmptyTxt: Label 'WorldPay target URL is empty.', Locked = true;
         WorldPayTargetURLIsInvalidTxt: Label 'WorldPay target URL is invalid.', Locked = true;
+        WorldPayInvoiceNoTok: Label '%1 (%2 %3)', Locked = true;
+        WorldPayTargetURLTok: Label '%1&%2', Locked = true;
+        WorldPayUrlTok: Label '%1 (%2)', Locked = true;
 
     local procedure GenerateHyperlink(var PaymentReportingArgument: Record 1062): Boolean;
     var
@@ -71,7 +74,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
 
                     InvoiceNo := SalesInvoiceHeader."No.";
                     IF SalesInvoiceHeader."Your Reference" <> '' THEN
-                        InvoiceNo := STRSUBSTNO('%1 (%2 %3)', InvoiceNo, YourReferenceTxt, SalesInvoiceHeader."Your Reference");
+                        InvoiceNo := STRSUBSTNO(WorldPayInvoiceNoTok, InvoiceNo, YourReferenceTxt, SalesInvoiceHeader."Your Reference");
 
                     QueryString := STRSUBSTNO(WorldPayMandatoryParametersTok,
                         UriEscapeDataString(MsWorldPayStandardAccount."Account ID"),
@@ -85,7 +88,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
                         exit(false);
                     end;
 
-                    TargetURL := STRSUBSTNO('%1&%2', BaseURL, QueryString);
+                    TargetURL := STRSUBSTNO(WorldPayTargetURLTok, BaseURL, QueryString);
                     if not PaymentReportingArgument.TrySetTargetURL(TargetURL) then begin
                         Session.LogMessage('0000804', WorldPayTargetURLIsInvalidTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WorldPayTelemetryCategoryTok);
                         exit(false);
@@ -112,7 +115,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
                     exit(true);
                 END;
             ELSE
-                ERROR(STRSUBSTNO(NotSupportedTypeErr, DocumentRecordRef.CAPTION()));
+                ERROR(NotSupportedTypeErr, DocumentRecordRef.CAPTION());
         END;
     end;
 
@@ -134,7 +137,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
 
         PaymentReportingArgument.VALIDATE("URL Caption", WorldPayCaptionURLTxt);
         IF STRPOS(PaymentReportingArgument.GetTargetURL(), GetSandboxURL()) > 0 THEN
-            PaymentReportingArgument.VALIDATE("URL Caption", STRSUBSTNO('%1 (%2)', WorldPayCaptionURLTxt, DemoLinkCaptionTxt));
+            PaymentReportingArgument.VALIDATE("URL Caption", STRSUBSTNO(WorldPayUrlTok, WorldPayCaptionURLTxt, DemoLinkCaptionTxt));
         PaymentReportingArgument.MODIFY(TRUE);
 
         IF GLOBALLANGUAGE() <> CurrentLanguage THEN
@@ -180,7 +183,6 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         PaymentMethod.Code := WorldPayPaymentMethodCodeTok;
         PaymentMethod.Description := WorldPayPaymentMethodDescTok;
         PaymentMethod."Bal. Account Type" := PaymentMethod."Bal. Account Type"::"G/L Account";
-        PaymentMethod."Use for Invoicing" := TRUE;
         IF PaymentMethod.INSERT() THEN;
     end;
 
@@ -214,6 +216,11 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
+    local procedure RegisterWorldPayStandardTemplateSubscriber(var PaymentServiceSetup: Record 1060)
+    begin
+        RegisterWorldPayStandardTemplate(PaymentServiceSetup);
+    end;
+
     procedure RegisterWorldPayStandardTemplate(var PaymentServiceSetup: Record 1060)
     var
         TempMSWorldPayStdTemplate: Record "MS - WorldPay Std. Template" temporary;
@@ -275,39 +282,29 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         UNTIL MSWorldPayStandardAccount.NEXT() = 0
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
-    local procedure RegisterBusinessSetup(var Sender: Codeunit 1875)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', false, false)]
+    local procedure RegisterBusinessSetup()
     var
         MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account";
         MSWorldPayStdTemplate: Record "MS - WorldPay Std. Template";
-        ManualSetupCategory: Enum "Manual Setup Category";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        IF NOT MSWorldPayStandardAccount.FINDFIRST() THEN BEGIN
+        if not MSWorldPayStandardAccount.FindFirst() then begin
             GetTemplate(MSWorldPayStdTemplate);
-            MSWorldPayStandardAccount.TRANSFERFIELDS(MSWorldPayStdTemplate, FALSE);
-            MSWorldPayStandardAccount.INSERT(TRUE);
-        END;
+            MSWorldPayStandardAccount.Transferfields(MSWorldPayStdTemplate, false);
+            MSWorldPayStandardAccount.Insert(true);
+        end;
 
-        Sender.Insert(
-          WorldPayStandardNameTxt, WorldPayStandardBusinessSetupDescriptionTxt, WorldPayBusinessSetupKeywordsTxt,
-          PAGE::"MS - WorldPay Standard Setup", 'bae453ed-0fd8-4416-afdc-4b09db6c12c3', ManualSetupCategory::Service);
+        GuidedExperience.InsertManualSetup(WorldPayStandardNameTxt, CopyStr(WorldPayStandardShortNameTxt, 1, 50), WorldPayStandardBusinessSetupDescriptionTxt, 3, ObjectType::Page, Page::"MS - WorldPay Standard Setup", "Manual Setup Category"::Service, WorldPayBusinessSetupKeywordsTxt, true);
     end;
 
     procedure ValidateChangeTargetURL()
     var
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInfo.IsSaaS() THEN
+        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInformation.IsSaaS() THEN
             ERROR(TargetURLCannotBeChangedInDemoCompanyErr);
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"O365 Tax Payments Settings", 'OnOpenPageEvent', '', false, false)]
-    local procedure AddWorldPayMenuItemOnOpenTaxPaymentsSettingsPageEvent(var Rec: Record 2132)
-    var
-        MSWorldPayStdSettings: Page "MS - WorldPay Std. Settings";
-    begin
-        Rec.InsertPageMenuItem(PAGE::"MS - WorldPay Std. Settings", CopyStr(MSWorldPayStdSettings.CAPTION(), 1, 30), WorldPayMenuDescriptionTxt);
     end;
 
     procedure GetTargetURL(): Text

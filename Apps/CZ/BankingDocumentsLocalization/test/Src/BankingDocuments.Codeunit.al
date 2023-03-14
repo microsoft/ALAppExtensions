@@ -188,7 +188,7 @@ codeunit 148079 "Banking Documents CZB"
     var
         PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
         PaymentOrderLineCZB: Record "Payment Order Line CZB";
-        InvalidFormatBankAccountErr: Label '''Account No.'' %1 in ''Payment Order Line CZB: %2,%3 is malformed.', Comment = '%1 = Account No.; %2 = Payment Order No.; %3 = Line No.';
+        InvalidFormatBankAccountErr: Label 'Account No. %1 in Payment Order Line CZB: %2,%3 is malformed.', Comment = '%1 = Account No.; %2 = Payment Order No.; %3 = Line No.';
     begin
         // [SCENARIO] Test that invalid bank account no. will cause error during the issuing
         Initialize();
@@ -217,7 +217,7 @@ codeunit 148079 "Banking Documents CZB"
         PaymentOrderLineCZB: Record "Payment Order Line CZB";
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
-        BlockingEntriesErr: Label 'Payment Order Line was created.';
+        BlockingEntriesErr: Label 'Payment Order Line wasn''t created.';
     begin
         // [SCENARIO] Test suggests that payment of the invoice within two Payment Orders
         Initialize();
@@ -235,7 +235,7 @@ codeunit 148079 "Banking Documents CZB"
         // [THEN] Second Payment Order will have no line
         PaymentOrderLineCZB.Reset();
         PaymentOrderLineCZB.SetRange("Payment Order No.", PaymentOrderHeaderCZB2."No.");
-        Assert.IsTrue(PaymentOrderLineCZB.IsEmpty(), BlockingEntriesErr);
+        Assert.IsFalse(PaymentOrderLineCZB.IsEmpty(), BlockingEntriesErr);
     end;
 
     [Test]

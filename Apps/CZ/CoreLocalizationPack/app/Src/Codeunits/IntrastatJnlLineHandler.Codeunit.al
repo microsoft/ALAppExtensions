@@ -4,6 +4,7 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
         Item: Record Item;
         TariffNumber: Record "Tariff Number";
         UnitOfMeasureManagement: Codeunit "Unit of Measure Management";
+        DefaultPartnerIdTok: Label 'QV123', Locked = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Intrastat Jnl. Line", 'OnAfterValidateEvent', 'Tariff No.', false, false)]
     local procedure ClearStatisticIndicationCZLOnAfterTariffNoValidate(var Rec: Record "Intrastat Jnl. Line")
@@ -58,9 +59,6 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
             exit;
         if Sender."Tariff No." <> '' then begin
             TariffNumber.Get(Sender."Tariff No.");
-#if not CLEAN18
-            TariffNumber.CalcFields("Supplementary Units");
-#endif
             if TariffNumber."Supplementary Units" then begin
                 TariffNumber.TestField("Suppl. Unit of Meas. Code CZL");
                 Sender."Supplem. UoM Code CZL" := TariffNumber."Suppl. Unit of Meas. Code CZL";
@@ -86,5 +84,52 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
         JournalTemplateName := IntrastatJnlLine.GetRangeMax("Journal Template Name");
         UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Intrastat Journal";
         UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Intrastat Jnl. Line", 'OnAfterGetCountryOfOriginCode', '', false, false)]
+    local procedure GetCountryOfOriginCode(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; var CountryOfOriginCode: Code[10])
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+    begin
+        StatutoryReportingSetupCZL.Get();
+        if StatutoryReportingSetupCZL."Get Country/Region of Origin" = StatutoryReportingSetupCZL."Get Country/Region of Origin"::"Item Card" then
+            exit;
+        if not ItemLedgerEntry.Get(IntrastatJnlLine."Source Entry No.") then
+            exit;
+        CountryOfOriginCode := ItemLedgerEntry."Country/Reg. of Orig. Code CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Intrastat Jnl. Line", 'OnBeforeGetPartnerIDForCountry', '', false, false)]
+    local procedure GetPartnerIDForCountry(CountryRegionCode: Code[10]; VATRegistrationNo: Text[50]; IsPrivatePerson: Boolean; IsThirdPartyTrade: Boolean; var PartnerID: Text[50]; var IsHandled: Boolean)
+    var
+        CountryRegion: Record "Country/Region";
+    begin
+        if IsHandled then
+            exit;
+
+        PartnerID := DefaultPartnerIdTok;
+        IsHandled := true;
+
+        if IsPrivatePerson then
+            exit;
+
+        if IsThirdPartyTrade then
+            exit;
+
+        if CountryRegionCode = '' then
+            exit;
+
+        if VATRegistrationNo = '' then
+            exit;
+
+        if not CountryRegion.Get(CountryRegionCode) then
+            exit;
+
+        if not CountryRegion.IsEUCountry(CountryRegionCode) then
+            exit;
+
+        PartnerID := '';
+        IsHandled := false;
     end;
 }

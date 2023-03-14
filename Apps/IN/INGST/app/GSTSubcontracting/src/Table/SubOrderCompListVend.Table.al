@@ -66,6 +66,7 @@ table 18478 "Sub Order Comp. List Vend"
         field(12; "Quantity (Base)"; Decimal)
         {
             Caption = 'Quantity (Base)';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(14; Description; Text[100])
@@ -149,12 +150,14 @@ table 18478 "Sub Order Comp. List Vend"
                 "Order Line No." = field("Production Order Line No."),
                 "Prod. Order Comp. Line No." = field("Line No.")));
             Caption = 'Quantity at Vendor Location';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             FieldClass = FlowField;
         }
         field(53; "Total Scrap Quantity"; Decimal)
         {
             Caption = 'Total Scrap Quantity';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
 
             trigger OnValidate()
@@ -169,16 +172,19 @@ table 18478 "Sub Order Comp. List Vend"
         field(54; "Qty. Received"; Decimal)
         {
             Caption = 'Qty. Received';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(55; "Qty. Received (Base)"; Decimal)
         {
             Caption = 'Qty. Received (Base)';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(56; "Qty. to Receive"; Decimal)
         {
             Caption = 'Qty. to Receive';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
 
             trigger OnValidate()
@@ -189,6 +195,7 @@ table 18478 "Sub Order Comp. List Vend"
         field(57; "Qty. to Consume"; Decimal)
         {
             Caption = 'Qty. to Consume';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
 
             trigger OnValidate()
@@ -202,6 +209,7 @@ table 18478 "Sub Order Comp. List Vend"
         field(59; "Qty. to Return (C.E.)"; Decimal)
         {
             Caption = 'Qty. to Return (C.E.)';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
 
@@ -214,6 +222,7 @@ table 18478 "Sub Order Comp. List Vend"
         field(60; "Qty. To Return (V.E.)"; Decimal)
         {
             Caption = 'Qty. To Return (V.E.)';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
 
@@ -232,6 +241,7 @@ table 18478 "Sub Order Comp. List Vend"
                 "Order Line No." = field("Production Order Line No."),
                 "Prod. Order Comp. Line No." = field("Line No.")));
             Caption = 'Qty. Consumed';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             FieldClass = FlowField;
         }
@@ -251,6 +261,7 @@ table 18478 "Sub Order Comp. List Vend"
                 "Order Line No." = field("Production Order Line No."),
                 "Prod. Order Comp. Line No." = field("Line No.")));
             Caption = 'Quantity Dispatched';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             FieldClass = FlowField;
         }

@@ -4,6 +4,7 @@ report 31182 "Reminder CZL"
     RDLCLayout = './Src/Reports/Reminder.rdl';
     Caption = 'Reminder';
     PreviewMode = PrintLayout;
+    WordMergeDataItem = "Issued Reminder Header";
 
     dataset
     {
@@ -96,22 +97,22 @@ report 31182 "Reminder CZL"
             column(RegistrationNo_IssuedReminderHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_IssuedReminderHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_IssuedReminderHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_IssuedReminderHeader; "Bank Account No.")
+            column(BankAccountNo_IssuedReminderHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_IssuedReminderHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_IssuedReminderHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_IssuedReminderHeader; IBAN)
+            column(IBAN_IssuedReminderHeader; "IBAN CZL")
             {
             }
-            column(SWIFTCode_IssuedReminderHeaderCaption; FieldCaption("SWIFT Code"))
+            column(SWIFTCode_IssuedReminderHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(SWIFTCode_IssuedReminderHeader; "SWIFT Code")
+            column(SWIFTCode_IssuedReminderHeader; "SWIFT Code CZL")
             {
             }
             column(CustomerNo_IssuedReminderHeaderCaption; FieldCaption("Customer No."))
@@ -133,6 +134,9 @@ report 31182 "Reminder CZL"
             {
             }
             column(CurrencyCode_IssuedReminderHeader; "Currency Code")
+            {
+            }
+            column(Contact_IssuedReminderHeader; Contact)
             {
             }
             column(DocFooterText; DocFooterText)
@@ -191,7 +195,7 @@ report 31182 "Reminder CZL"
                     column(DueDate_IssuedReminderLineCaption; FieldCaption("Due Date"))
                     {
                     }
-                    column(DueDate_IssuedReminderLine; "Due Date")
+                    column(DueDate_IssuedReminderLine; FormatDate("Due Date"))
                     {
                     }
                     column(OriginalAmount_IssuedReminderLineCaption; FieldCaption("Original Amount"))
@@ -206,10 +210,7 @@ report 31182 "Reminder CZL"
                     column(RemainingAmount_IssuedReminderLine; "Remaining Amount")
                     {
                     }
-                    column(InterestAmount_IssuedReminderLineCaption; FieldCaption("Interest Amount"))
-                    {
-                    }
-                    column(InterestAmount_IssuedReminderLine; "Interest Amount")
+                    column(Description_IssuedReminderLineCaption; FieldCaption(Description))
                     {
                     }
                     column(Description_IssuedReminderLine; Description)
@@ -224,27 +225,48 @@ report 31182 "Reminder CZL"
                     column(LineNo_IssuedReminderLine; "Line No.")
                     {
                     }
-                    column(InterestAmountInclVAT; InterestAmountInclVAT)
-                    {
-                    }
                     column(AmountInclVAT; AmountInclVAT)
                     {
                     }
+                    column(LineAmountText; LineAmountText)
+                    {
+                    }
+                    column(InterestAmountLbl; InterestAmountLbl)
+                    {
+                    }
+
                     trigger OnAfterGetRecord()
+                    var
+                        RemainingAmount: Decimal;
+                        ReminderInterestAmount: Decimal;
                     begin
-                        AmountInclVAT := 0;
-                        InterestAmountInclVAT := 0;
+                        LineAmountText := '';
+                        ReminderInterestAmount := 0;
+                        RemainingAmount := "Remaining Amount";
+                        AmountInclVAT := Amount + "VAT Amount";
 
-                        if "Interest Amount" <> 0 then
-                            InterestAmountInclVAT := "Interest Amount" + "VAT Amount";
+                        case Type of
+                            Type::"G/L Account":
+                                RemainingAmount := AmountInclVAT;
+                            Type::"Line Fee":
+                                RemainingAmount := AmountInclVAT;
+                            Type::"Customer Ledger Entry":
+                                ReminderInterestAmount := AmountInclVAT;
+                        end;
 
-                        if Amount <> 0 then
-                            AmountInclVAT := Amount + "VAT Amount"
+                        LineAmount := ReminderInterestAmount + RemainingAmount;
+                        TotalLineAmount += LineAmount;
+
+                        if LineAmount = 0 then
+                            LineAmountText := ''
+                        else
+                            LineAmountText := Format(LineAmount);
                     end;
 
                     trigger OnPreDataItem()
                     begin
-                        SetFilter("Line Type", '<>%1&<>%2', "Line Type"::"Not Due", "Line Type"::"On Hold");
+                        SetFilter("Line Type", '<>%1&<>%2&<>%3', "Line Type"::"Not Due", "Line Type"::"On Hold", "Line Type"::"Ending Text");
+                        SetRange("Detailed Interest Rates Entry", false);
                     end;
                 }
                 dataitem(NotDueLine; "Issued Reminder Line")
@@ -261,7 +283,7 @@ report 31182 "Reminder CZL"
                     column(DocumentNo_NotDueLine; "Document No.")
                     {
                     }
-                    column(DueDate_NotDueLine; "Due Date")
+                    column(DueDate_NotDueLine; FormatDate("Due Date"))
                     {
                     }
                     column(OriginalAmount_NotDueLine; "Original Amount")
@@ -282,13 +304,33 @@ report 31182 "Reminder CZL"
                     column(LineNo_NotDueLine; "Line No.")
                     {
                     }
+
                     trigger OnPreDataItem()
                     begin
                         if not ShowNotDueAmounts then
                             CurrReport.Break();
 
-                        SetFilter("Line Type", '%1|%2', "Line Type"::"Not Due", "Line Type"::"On Hold");
+                        SetFilter("Line Type", '%1|%2|%3', "Line Type"::"Not Due", "Line Type"::"On Hold", "Line Type"::"Ending Text");
                     end;
+                }
+                dataitem(LineSum; Integer)
+                {
+                    DataItemTableView = sorting(Number) where(Number = const(1));
+                    column(GreetingLbl; GreetingLbl)
+                    {
+                    }
+                    column(AmtDueLbl; AmtDueTxt)
+                    {
+                    }
+                    column(BodyLbl; BodyLbl)
+                    {
+                    }
+                    column(ClosingLbl; ClosingLbl)
+                    {
+                    }
+                    column(TotalLineAmount; TotalLineAmount)
+                    {
+                    }
                 }
                 dataitem("User Setup"; "User Setup")
                 {
@@ -324,7 +366,18 @@ report 31182 "Reminder CZL"
 
                     SetRange(Number, 1, NoOfLoops);
                 end;
+
+                trigger OnAfterGetRecord()
+                begin
+                    TotalLineAmount := 0;
+                end;
             }
+
+            trigger OnPreDataItem()
+            begin
+                AmtDueTxt := '';
+            end;
+
             trigger OnAfterGetRecord()
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
@@ -338,6 +391,9 @@ report 31182 "Reminder CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
+
+                if Format("Due Date") <> '' then
+                    AmtDueTxt := StrSubstNo(AmtDueLbl, "Due Date");
             end;
         }
     }
@@ -395,6 +451,8 @@ report 31182 "Reminder CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
+        AmtDueTxt: Text;
+        LineAmountText: Text;
         CompanyAddr: array[8] of Text[100];
         DocumentLbl: Label 'Reminder';
         PageLbl: Label 'Page';
@@ -410,9 +468,15 @@ report 31182 "Reminder CZL"
         LogInteractionEnable: Boolean;
         TotalLbl: Label 'Total';
         ShowNotDueAmounts: Boolean;
-        InterestAmountInclVAT: Decimal;
         AmountInclVAT: Decimal;
+        LineAmount: Decimal;
+        TotalLineAmount: Decimal;
         CreatorLbl: Label 'Created by';
+        InterestAmountLbl: Label 'Interest Amount';
+        GreetingLbl: Label 'Hello';
+        AmtDueLbl: Label 'You are receiving this email to formally notify you that payment owed by you is past due. The payment was due on %1. Enclosed is a copy of invoice with the details of remaining amount.', Comment = '%1 = A due date';
+        BodyLbl: Label 'If you have already made the payment, please disregard this email. Thank you for your business.';
+        ClosingLbl: Label 'Sincerely';
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean; ShowNotDueAmountsFrom: Boolean)
     begin
@@ -431,5 +495,10 @@ report 31182 "Reminder CZL"
         MailManagement: Codeunit "Mail Management";
     begin
         exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
+    end;
+
+    local procedure FormatDate(DateValue: Date): Text
+    begin
+        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 }

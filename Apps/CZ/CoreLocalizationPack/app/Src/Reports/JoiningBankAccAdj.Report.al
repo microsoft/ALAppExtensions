@@ -28,55 +28,55 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
                 WindowDialog.Update(1, Round((9999 / i) * j, 1));
 
                 DocumentNo := GetDocumentNoBySortingType(BankAccountLedgerEntryFilter);
-                if TempBankAccAdjustmentBuffer.Get(DocumentNo) then begin
-                    if TempBankAccAdjustmentBuffer.Valid and (TempBankAccAdjustmentBuffer."Currency Code" = BankAccountLedgerEntryFilter."Currency Code") then begin
-                        TempBankAccAdjustmentBuffer.Amount += BankAccountLedgerEntryFilter.Amount;
-                        TempBankAccAdjustmentBuffer."Debit Amount" += BankAccountLedgerEntryFilter."Debit Amount";
-                        TempBankAccAdjustmentBuffer."Credit Amount" += BankAccountLedgerEntryFilter."Credit Amount";
+                if TempBankAccAdjustBufferCZL.Get(DocumentNo) then begin
+                    if TempBankAccAdjustBufferCZL.Valid and (TempBankAccAdjustBufferCZL."Currency Code" = BankAccountLedgerEntryFilter."Currency Code") then begin
+                        TempBankAccAdjustBufferCZL.Amount += BankAccountLedgerEntryFilter.Amount;
+                        TempBankAccAdjustBufferCZL."Debit Amount" += BankAccountLedgerEntryFilter."Debit Amount";
+                        TempBankAccAdjustBufferCZL."Credit Amount" += BankAccountLedgerEntryFilter."Credit Amount";
                     end else begin
-                        TempBankAccAdjustmentBuffer.Amount := 0;
-                        TempBankAccAdjustmentBuffer."Debit Amount" := 0;
-                        TempBankAccAdjustmentBuffer."Credit Amount" := 0;
-                        TempBankAccAdjustmentBuffer.Valid := false;
+                        TempBankAccAdjustBufferCZL.Amount := 0;
+                        TempBankAccAdjustBufferCZL."Debit Amount" := 0;
+                        TempBankAccAdjustBufferCZL."Credit Amount" := 0;
+                        TempBankAccAdjustBufferCZL.Valid := false;
                     end;
-                    TempBankAccAdjustmentBuffer."Amount (LCY)" += BankAccountLedgerEntryFilter."Amount (LCY)";
-                    if ShowPostingDate and (TempBankAccAdjustmentBuffer."Posting Date" = 0D) and (BankAccountLedgerEntryFilter."Posting Date" <> 0D) then
-                        TempBankAccAdjustmentBuffer."Posting Date" := BankAccountLedgerEntryFilter."Posting Date";
-                    if ShowDescription and (TempBankAccAdjustmentBuffer.Description = '') and (BankAccountLedgerEntryFilter.Description <> '') then
-                        TempBankAccAdjustmentBuffer.Description := BankAccountLedgerEntryFilter.Description;
-                    TempBankAccAdjustmentBuffer.Modify();
+                    TempBankAccAdjustBufferCZL."Amount (LCY)" += BankAccountLedgerEntryFilter."Amount (LCY)";
+                    if ShowPostingDate and (TempBankAccAdjustBufferCZL."Posting Date" = 0D) and (BankAccountLedgerEntryFilter."Posting Date" <> 0D) then
+                        TempBankAccAdjustBufferCZL."Posting Date" := BankAccountLedgerEntryFilter."Posting Date";
+                    if ShowDescription and (TempBankAccAdjustBufferCZL.Description = '') and (BankAccountLedgerEntryFilter.Description <> '') then
+                        TempBankAccAdjustBufferCZL.Description := BankAccountLedgerEntryFilter.Description;
+                    TempBankAccAdjustBufferCZL.Modify();
                 end else begin
-                    TempBankAccAdjustmentBuffer.Init();
-                    TempBankAccAdjustmentBuffer."Document No." := DocumentNo;
-                    TempBankAccAdjustmentBuffer.Amount := BankAccountLedgerEntryFilter.Amount;
-                    TempBankAccAdjustmentBuffer."Debit Amount" := BankAccountLedgerEntryFilter."Debit Amount";
-                    TempBankAccAdjustmentBuffer."Credit Amount" := BankAccountLedgerEntryFilter."Credit Amount";
-                    TempBankAccAdjustmentBuffer."Amount (LCY)" := BankAccountLedgerEntryFilter."Amount (LCY)";
-                    TempBankAccAdjustmentBuffer."Currency Code" := BankAccountLedgerEntryFilter."Currency Code";
+                    TempBankAccAdjustBufferCZL.Init();
+                    TempBankAccAdjustBufferCZL."Document No." := DocumentNo;
+                    TempBankAccAdjustBufferCZL.Amount := BankAccountLedgerEntryFilter.Amount;
+                    TempBankAccAdjustBufferCZL."Debit Amount" := BankAccountLedgerEntryFilter."Debit Amount";
+                    TempBankAccAdjustBufferCZL."Credit Amount" := BankAccountLedgerEntryFilter."Credit Amount";
+                    TempBankAccAdjustBufferCZL."Amount (LCY)" := BankAccountLedgerEntryFilter."Amount (LCY)";
+                    TempBankAccAdjustBufferCZL."Currency Code" := BankAccountLedgerEntryFilter."Currency Code";
                     if ShowPostingDate then
-                        TempBankAccAdjustmentBuffer."Posting Date" := BankAccountLedgerEntryFilter."Posting Date";
+                        TempBankAccAdjustBufferCZL."Posting Date" := BankAccountLedgerEntryFilter."Posting Date";
                     if ShowDescription then
-                        TempBankAccAdjustmentBuffer.Description := BankAccountLedgerEntryFilter.Description;
-                    TempBankAccAdjustmentBuffer.Valid := true;
-                    TempBankAccAdjustmentBuffer.Insert();
+                        TempBankAccAdjustBufferCZL.Description := BankAccountLedgerEntryFilter.Description;
+                    TempBankAccAdjustBufferCZL.Valid := true;
+                    TempBankAccAdjustBufferCZL.Insert();
                 end;
 
-                if TempEnhancedCurrencyBuffer.Get(BankAccountLedgerEntryFilter."Currency Code") then begin
-                    TempEnhancedCurrencyBuffer."Total Amount" += BankAccountLedgerEntryFilter.Amount;
-                    TempEnhancedCurrencyBuffer."Total Amount (LCY)" += BankAccountLedgerEntryFilter."Amount (LCY)";
-                    TempEnhancedCurrencyBuffer."Total Credit Amount" += BankAccountLedgerEntryFilter."Credit Amount";
-                    TempEnhancedCurrencyBuffer."Total Debit Amount" += BankAccountLedgerEntryFilter."Debit Amount";
-                    TempEnhancedCurrencyBuffer.Counter += 1;
-                    TempEnhancedCurrencyBuffer.Modify();
+                if TempEnhancedCurrencyBufferCZL.Get(BankAccountLedgerEntryFilter."Currency Code") then begin
+                    TempEnhancedCurrencyBufferCZL."Total Amount" += BankAccountLedgerEntryFilter.Amount;
+                    TempEnhancedCurrencyBufferCZL."Total Amount (LCY)" += BankAccountLedgerEntryFilter."Amount (LCY)";
+                    TempEnhancedCurrencyBufferCZL."Total Credit Amount" += BankAccountLedgerEntryFilter."Credit Amount";
+                    TempEnhancedCurrencyBufferCZL."Total Debit Amount" += BankAccountLedgerEntryFilter."Debit Amount";
+                    TempEnhancedCurrencyBufferCZL.Counter += 1;
+                    TempEnhancedCurrencyBufferCZL.Modify();
                 end else begin
-                    TempEnhancedCurrencyBuffer.Init();
-                    TempEnhancedCurrencyBuffer."Currency Code" := BankAccountLedgerEntryFilter."Currency Code";
-                    TempEnhancedCurrencyBuffer."Total Amount" := BankAccountLedgerEntryFilter.Amount;
-                    TempEnhancedCurrencyBuffer."Total Amount (LCY)" := BankAccountLedgerEntryFilter."Amount (LCY)";
-                    TempEnhancedCurrencyBuffer."Total Credit Amount" := BankAccountLedgerEntryFilter."Credit Amount";
-                    TempEnhancedCurrencyBuffer."Total Debit Amount" := BankAccountLedgerEntryFilter."Debit Amount";
-                    TempEnhancedCurrencyBuffer.Counter := 1;
-                    TempEnhancedCurrencyBuffer.Insert();
+                    TempEnhancedCurrencyBufferCZL.Init();
+                    TempEnhancedCurrencyBufferCZL."Currency Code" := BankAccountLedgerEntryFilter."Currency Code";
+                    TempEnhancedCurrencyBufferCZL."Total Amount" := BankAccountLedgerEntryFilter.Amount;
+                    TempEnhancedCurrencyBufferCZL."Total Amount (LCY)" := BankAccountLedgerEntryFilter."Amount (LCY)";
+                    TempEnhancedCurrencyBufferCZL."Total Credit Amount" := BankAccountLedgerEntryFilter."Credit Amount";
+                    TempEnhancedCurrencyBufferCZL."Total Debit Amount" := BankAccountLedgerEntryFilter."Debit Amount";
+                    TempEnhancedCurrencyBufferCZL.Counter := 1;
+                    TempEnhancedCurrencyBufferCZL.Insert();
                 end;
             end;
 
@@ -90,28 +90,28 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
         dataitem(EntryBuffer; "Integer")
         {
             DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-            column(EntryBuffer_DocumentNo; TempBankAccAdjustmentBuffer."Document No.")
+            column(EntryBuffer_DocumentNo; TempBankAccAdjustBufferCZL."Document No.")
             {
             }
-            column(EntryBuffer_Amount; TempBankAccAdjustmentBuffer.Amount)
+            column(EntryBuffer_Amount; TempBankAccAdjustBufferCZL.Amount)
             {
             }
-            column(EntryBuffer_AmountLCY; TempBankAccAdjustmentBuffer."Amount (LCY)")
+            column(EntryBuffer_AmountLCY; TempBankAccAdjustBufferCZL."Amount (LCY)")
             {
             }
-            column(EntryBuffer_DebitAmount; TempBankAccAdjustmentBuffer."Debit Amount")
+            column(EntryBuffer_DebitAmount; TempBankAccAdjustBufferCZL."Debit Amount")
             {
             }
-            column(EntryBuffer_CreditAmount; TempBankAccAdjustmentBuffer."Credit Amount")
+            column(EntryBuffer_CreditAmount; TempBankAccAdjustBufferCZL."Credit Amount")
             {
             }
-            column(EntryBuffer_Description; TempBankAccAdjustmentBuffer.Description)
+            column(EntryBuffer_Description; TempBankAccAdjustBufferCZL.Description)
             {
             }
-            column(EntryBuffer_PostingDate; TempBankAccAdjustmentBuffer."Posting Date")
+            column(EntryBuffer_PostingDate; TempBankAccAdjustBufferCZL."Posting Date")
             {
             }
-            column(EntryBuffer_CurrencyCode; TempBankAccAdjustmentBuffer."Currency Code")
+            column(EntryBuffer_CurrencyCode; TempBankAccAdjustBufferCZL."Currency Code")
             {
             }
             column(EntryBuffer_Number; Number)
@@ -160,43 +160,43 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
                     BankAccountLedgerEntry.CopyFilters(BankAccountLedgerEntryFilter);
                     if SortingType = SortingType::"Document No." then begin
                         BankAccountLedgerEntry.SetCurrentKey("Document No.");
-                        BankAccountLedgerEntry.SetRange("Document No.", TempBankAccAdjustmentBuffer."Document No.");
+                        BankAccountLedgerEntry.SetRange("Document No.", TempBankAccAdjustBufferCZL."Document No.");
                     end else
-                        BankAccountLedgerEntry.SetRange("External Document No.", TempBankAccAdjustmentBuffer."Document No.");
+                        BankAccountLedgerEntry.SetRange("External Document No.", TempBankAccAdjustBufferCZL."Document No.");
                 end;
             }
             trigger OnAfterGetRecord()
             begin
                 if EntryBuffer.Number <> 1 then
-                    if TempBankAccAdjustmentBuffer.Next() = 0 then
+                    if TempBankAccAdjustBufferCZL.Next() = 0 then
                         CurrReport.Break();
 
-                if TempBankAccAdjustmentBuffer."Amount (LCY)" = 0 then
+                if TempBankAccAdjustBufferCZL."Amount (LCY)" = 0 then
                     CurrReport.Skip();
             end;
 
             trigger OnPreDataItem()
             begin
-                if not TempBankAccAdjustmentBuffer.FindSet() then
+                if not TempBankAccAdjustBufferCZL.FindSet() then
                     CurrReport.Quit();
             end;
         }
         dataitem(CurrencyBuffer; "Integer")
         {
             DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-            column(CurrencyBuffer_TotalAmount; TempEnhancedCurrencyBuffer."Total Amount")
+            column(CurrencyBuffer_TotalAmount; TempEnhancedCurrencyBufferCZL."Total Amount")
             {
             }
-            column(CurrencyBuffer_TotalAmountLCY; TempEnhancedCurrencyBuffer."Total Amount (LCY)")
+            column(CurrencyBuffer_TotalAmountLCY; TempEnhancedCurrencyBufferCZL."Total Amount (LCY)")
             {
             }
-            column(CurrencyBuffer_CurrencyCode; TempEnhancedCurrencyBuffer."Currency Code")
+            column(CurrencyBuffer_CurrencyCode; TempEnhancedCurrencyBufferCZL."Currency Code")
             {
             }
-            column(CurrencyBuffer_TotalCreditAmount; TempEnhancedCurrencyBuffer."Total Credit Amount")
+            column(CurrencyBuffer_TotalCreditAmount; TempEnhancedCurrencyBufferCZL."Total Credit Amount")
             {
             }
-            column(CurrencyBuffer_TotalDebitAmount; TempEnhancedCurrencyBuffer."Total Debit Amount")
+            column(CurrencyBuffer_TotalDebitAmount; TempEnhancedCurrencyBufferCZL."Total Debit Amount")
             {
             }
             column(CurrencyBuffer_Number; Number)
@@ -205,14 +205,14 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
             trigger OnAfterGetRecord()
             begin
                 if CurrencyBuffer.Number = 1 then
-                    TempEnhancedCurrencyBuffer.FindSet()
+                    TempEnhancedCurrencyBufferCZL.FindSet()
                 else
-                    TempEnhancedCurrencyBuffer.Next();
+                    TempEnhancedCurrencyBufferCZL.Next();
             end;
 
             trigger OnPreDataItem()
             begin
-                CurrencyBuffer.SetRange(Number, 1, TempEnhancedCurrencyBuffer.Count);
+                CurrencyBuffer.SetRange(Number, 1, TempEnhancedCurrencyBufferCZL.Count);
             end;
         }
     }
@@ -275,8 +275,8 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
     end;
 
     var
-        TempBankAccAdjustmentBuffer: Record "Bank Acc. Adjustment Buffer" temporary;
-        TempEnhancedCurrencyBuffer: Record "Enhanced Currency Buffer" temporary;
+        TempBankAccAdjustBufferCZL: Record "Bank Acc. Adjust. Buffer CZL" temporary;
+        TempEnhancedCurrencyBufferCZL: Record "Enhanced Currency Buffer CZL" temporary;
         BankAccountLedgerEntryFilters: Text;
         WindowDialog: Dialog;
         i: Integer;

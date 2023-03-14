@@ -45,20 +45,11 @@ codeunit 11743 "Sales Header Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterSetFieldsBilltoCustomer', '', false, false)]
-    local procedure UpdateBankInfoAndRegNosOnAfterSetFieldsBilltoCustomer(var SalesHeader: Record "Sales Header"; Customer: Record Customer)
-    var
-        CompanyInformation: Record "Company Information";
-        ResponsibilityCenter: Record "Responsibility Center";
+    local procedure UpdateBankInfoAndRegNosOnAfterSetFieldsBilltoCustomer(var SalesHeader: Record "Sales Header"; xSalesHeader: Record "Sales Header"; Customer: Record Customer)
     begin
-        if not SalesHeader.IsCreditDocType() then begin
-            if SalesHeader."Responsibility Center" = '' then begin
-                CompanyInformation.Get();
-                SalesHeader.Validate("Bank Account Code CZL", CompanyInformation."Default Bank Account Code CZL");
-            end else begin
-                ResponsibilityCenter.Get(SalesHeader."Responsibility Center");
-                SalesHeader.Validate("Bank Account Code CZL", ResponsibilityCenter."Default Bank Account Code CZL");
-            end;
-        end else
+        if not SalesHeader.IsCreditDocType() then
+            SalesHeader.Validate("Bank Account Code CZL", SalesHeader.GetDefaulBankAccountNoCZL())
+        else
             SalesHeader.Validate("Bank Account Code CZL", Customer."Preferred Bank Account Code");
         SalesHeader."Registration No. CZL" := Customer."Registration No. CZL";
         SalesHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
@@ -69,7 +60,8 @@ codeunit 11743 "Sales Header Handler CZL"
     begin
         SalesHeader."Registration No. CZL" := SellToCustomer."Registration No. CZL";
         SalesHeader."Tax Registration No. CZL" := SellToCustomer."Tax Registration No. CZL";
-        SalesHeader."Transaction Type" := SellToCustomer."Transaction Type CZL";
+        if SellToCustomer."Transaction Type CZL" <> '' then
+            SalesHeader."Transaction Type" := SellToCustomer."Transaction Type CZL";
         SalesHeader."Transaction Specification" := SellToCustomer."Transaction Specification CZL";
         SalesHeader."Transport Method" := SellToCustomer."Transport Method CZL";
         if SalesHeader.IsCreditDocType() then
@@ -80,13 +72,6 @@ codeunit 11743 "Sales Header Handler CZL"
     local procedure UpdateOnAfterCopyShipToCustomerAddressFieldsFromCustomer(var SalesHeader: Record "Sales Header"; SellToCustomer: Record Customer)
     begin
         SalesHeader."VAT Country/Region Code" := SellToCustomer."Country/Region Code";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterSetFieldsBilltoCustomer', '', false, false)]
-    local procedure UpdateRegNoOnAfterSetFieldsBilltoCustomer(var SalesHeader: Record "Sales Header"; Customer: Record Customer)
-    begin
-        SalesHeader."Registration No. CZL" := Customer."Registration No. CZL";
-        SalesHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'EU 3-Party Trade', false, false)]
@@ -102,22 +87,16 @@ codeunit 11743 "Sales Header Handler CZL"
         Rec.Validate("VAT Currency Code CZL", Rec."Currency Code");
     end;
 
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Currency Factor', false, false)]
-    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Sales Header"; var xRec: Record "Sales Header"; CurrFieldNo: Integer)
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Currency Factor', false, false)]
+    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Sales Header")
     begin
-        if (Rec."Currency Factor" <> xRec."Currency Factor") and (Rec.IsCurrentFieldNoDiffZero(CurrFieldNo) or (xRec."Currency Factor" = 0)) then begin
-            Rec.UpdateSalesLinesByFieldNo(Rec.FieldNo("Currency Factor"), false);
-            Rec.UpdateVATCurrencyFactorCZL();
-            Rec.CopyRecCurrencyFactortoxRecCurrencyFactor(Rec, xRec); // Elimination of double run function (synchro)
-        end;
+        Rec.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL();
     end;
-#pragma warning restore AL0432
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterUpdateCurrencyFactor', '', false, false)]
     local procedure OnAfterUpdateCurrencyFactor(var SalesHeader: Record "Sales Header")
     begin
-        SalesHeader.UpdateVATCurrencyFactorCZL()
+        SalesHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Customer Posting Group', false, false)]
@@ -149,5 +128,22 @@ codeunit 11743 "Sales Header Handler CZL"
                 if (SalesLine.Type = SalesLine.Type::Item) and (SalesLine."No." <> '') then
                     SalesLine."Physical Transfer CZL" := SalesHeader."Physical Transfer CZL";
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Ship-to Country/Region Code', false, false)]
+    local procedure UpdateVATCountryRegionCodeOnAfterShipToCountryRegionCodeValidate(var Rec: Record "Sales Header")
+    begin
+        if Rec."Ship-to Country/Region Code" <> '' then
+            Rec."VAT Country/Region Code" := Rec."Ship-to Country/Region Code"
+        else
+            Rec."VAT Country/Region Code" := Rec."Sell-to Country/Region Code";
+        Rec.Validate("VAT Country/Region Code");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterUpdateShipToAddress', '', false, false)]
+    local procedure UpdateVATCountryRegionCodeOnAfterUpdateShipToAddress(var SalesHeader: Record "Sales Header")
+    begin
+        if SalesHeader.IsCreditDocType() then
+            SalesHeader.Validate("VAT Country/Region Code", SalesHeader."Sell-to Country/Region Code");
     end;
 }

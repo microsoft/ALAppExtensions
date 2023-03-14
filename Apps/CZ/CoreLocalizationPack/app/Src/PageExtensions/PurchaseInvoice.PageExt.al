@@ -2,6 +2,22 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
 {
     layout
     {
+#if not CLEAN20
+        modify("Vendor Posting Group")
+        {
+            Editable = IsPostingGroupEditableCZL;
+        }
+#endif
+        movelast(General; "Posting Description")
+        addlast(General)
+        {
+            field("Your Reference CZL"; Rec."Your Reference")
+            {
+                ApplicationArea = Basic, Suite;
+                Importance = Additional;
+                ToolTip = 'Specifies the customer''s reference. The contents will be printed on sales documents.';
+            }
+        }
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
@@ -27,14 +43,11 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the vendor is unreliabe payer.';
             }
-            field("Vendor Posting Group CZL"; Rec."Vendor Posting Group")
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the vendor''s market type to link business transactions made for the vendor with the appropriate account in the general ledger.';
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
             }
-        }
-        addafter("VAT Registration No.")
-        {
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -54,11 +67,12 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                 ApplicationArea = Basic, Suite;
                 Caption = 'VAT Currency Code';
                 Editable = false;
-                ToolTip = 'Specifies vat currency code of purchase invoice';
+                ToolTip = 'Specifies VAT currency code of purchase invoice';
 
                 trigger OnAssistEdit()
+                var
+                    ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    Clear(ChangeExchangeRate);
                     if Rec."VAT Date CZL" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
                     else
@@ -68,23 +82,20 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
-                    Clear(ChangeExchangeRate);
-                end;
-
-                trigger OnValidate()
-                begin
-                    CurrencyCodeOnAfterValidate();
                 end;
             }
         }
-        addafter("Area")
+        addlast("Foreign Trade")
         {
-            field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
+            field("Language Code CZL"; Rec."Language Code")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Transaction';
-                Editable = false;
-                ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+                ToolTip = 'Specifies the language to be used on printouts for this document.';
+            }
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
             }
             field("EU 3-Party Trade CZL"; Rec."EU 3-Party Trade CZL")
             {
@@ -95,6 +106,13 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the purchase header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
+            }
+            field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Transaction';
+                Editable = false;
+                ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
@@ -179,12 +197,18 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
             }
         }
     }
+#if not CLEAN20
+
+    trigger OnOpenPage()
+    begin
+        PurchasesPayablesSetupCZL.GetRecordOnce();
+#pragma warning disable AL0432
+        IsPostingGroupEditableCZL := PurchasesPayablesSetupCZL."Allow Alter Posting Groups CZL";
+#pragma warning restore AL0432
+    end;
 
     var
-        ChangeExchangeRate: Page "Change Exchange Rate";
-
-    local procedure CurrencyCodeOnAfterValidate()
-    begin
-        CurrPage.PurchLines.Page.UpdateForm(true);
-    end;
+        PurchasesPayablesSetupCZL: Record "Purchases & Payables Setup";
+        IsPostingGroupEditableCZL: Boolean;
+#endif
 }

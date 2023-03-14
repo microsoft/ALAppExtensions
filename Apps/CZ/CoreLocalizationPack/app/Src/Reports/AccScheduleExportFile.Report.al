@@ -434,7 +434,7 @@ report 11776 "Acc. Schedule Export File CZL"
                         else begin
                             NonZero := NonZero or (ColumnValuesDisplayed[i] <> 0);
                             ColumnValuesAsText[i] :=
-                              AccSchedManagement.FormatCellAsText(TempColumnLayout, ColumnValuesDisplayed[i], false);
+                              FormatCellAsText(TempColumnLayout, ColumnValuesDisplayed[i], false);
                         end;
                 end;
 
@@ -520,5 +520,24 @@ report 11776 "Acc. Schedule Export File CZL"
     begin
         ExportAction := NewExportAction;
         TemplateIsVisible := ExportAction = ExportAction::FromTemplate;
+    end;
+
+    local procedure FormatCellAsText(var ColumnLayout2: Record "Column Layout"; Value: Decimal; CalcAddCurr: Boolean) ValueAsText: Text[30]
+    begin
+        ValueAsText := FormatAmount(Value, ColumnLayout2."Rounding Factor", CalcAddCurr);
+
+        if (ValueAsText <> '') and
+           (ColumnLayout2."Column Type" = ColumnLayout2."Column Type"::Formula) and
+           (StrPos(ColumnLayout2.Formula, '%') > 1)
+        then
+            ValueAsText := ValueAsText + '%';
+    end;
+
+    local procedure FormatAmount(Value: Decimal; RoundingFactor: Enum "Analysis Rounding Factor"; AddCurrency: Boolean): Text[30]
+    var
+        MatrixManagement: Codeunit "Matrix Management";
+    begin
+        Value := MatrixManagement.RoundAmount(Value, RoundingFactor);
+        exit(Format(Value, 0, MatrixManagement.FormatRoundingFactor(RoundingFactor, AddCurrency)));
     end;
 }

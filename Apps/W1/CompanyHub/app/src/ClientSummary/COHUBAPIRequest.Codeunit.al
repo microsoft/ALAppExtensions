@@ -21,7 +21,7 @@ codeunit 1164 "COHUB API Request"
     var
         COHUBEnviroment: Record "COHUB Enviroment";
         COHUBCore: Codeunit "COHUB Core";
-        RecRef: RecordRef;
+        CompanyEndpointRecordRef: RecordRef;
         EntityBaseUrl: Text;
         AccessToken: Text;
         EnvironmentName: Text;
@@ -29,16 +29,16 @@ codeunit 1164 "COHUB API Request"
         UserTaskUrl: Text;
     begin
         EntityBaseUrl := GetEntityBaseUrl(COHUBCompanyEndpoint);
-        RecRef.GetTable(COHUBCompanyEndpoint);
+        CompanyEndpointRecordRef.GetTable(COHUBCompanyEndpoint);
         UserTaskUrl := EntityBaseUrl + StrSubstNo(UserTaskCompleteLbl, TaskId);
 
         COHUBEnviroment.Get(COHUBCompanyEndpoint."Enviroment No.");
         COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnvironmentName, EnvironmentNameAndEnvironment);
 
-        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnvironmentName, AccessToken, RecRef) then
+        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnvironmentName, AccessToken, CompanyEndpointRecordRef) then
             exit(false);
 
-        exit(InvokeSecuredWebApiPostRequest(UserTaskUrl, AccessToken, APIResponse, RecRef))
+        exit(InvokeSecuredWebApiPostRequest(UserTaskUrl, AccessToken, APIResponse, CompanyEndpointRecordRef))
     end;
 
 
@@ -47,20 +47,20 @@ codeunit 1164 "COHUB API Request"
     procedure InvokeGetCompanies(var COHUBEnviroment: Record "COHUB Enviroment"; var APIResponse: Text; var CompanyAPIUrl: Text): Boolean
     var
         COHUBCore: Codeunit "COHUB Core";
-        RecRef: RecordRef;
+        COHUBEnvironmentRecordRef: RecordRef;
         AccessToken: Text;
         EnvironmentName: Text;
         EnvironmentNameAndEnvirnoment: Text;
         ResourceUrl: Text;
     begin
-        RecRef.GetTable(COHUBEnviroment);
+        COHUBEnvironmentRecordRef.GetTable(COHUBEnviroment);
         ResourceUrl := COHUBCore.GetResourceUrl();
         COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnvironmentName, EnvironmentNameAndEnvirnoment);
         CompanyAPIUrl := COHUBCore.GetFixedWebServicesUrl() + 'v2.0/' + EnvironmentNameAndEnvirnoment + '/ODataV4/Company';
-        if not GetGuestAccessToken(ResourceUrl, EnvironmentName, AccessToken, RecRef) then
+        if not GetGuestAccessToken(ResourceUrl, EnvironmentName, AccessToken, COHUBEnvironmentRecordRef) then
             exit(false);
 
-        exit(InvokeSecuredWebApiGetRequest(CompanyAPIUrl, AccessToken, APIResponse, RecRef));
+        exit(InvokeSecuredWebApiGetRequest(CompanyAPIUrl, AccessToken, APIResponse, COHUBEnvironmentRecordRef));
     end;
 
     [Scope('OnPrem')]
@@ -90,7 +90,7 @@ codeunit 1164 "COHUB API Request"
     var
         COHUBEnviroment: Record "COHUB Enviroment";
         COHUBCore: Codeunit "COHUB Core";
-        RecRef: RecordRef;
+        COHUBCompanyEndpointRecordRef: RecordRef;
         EntityBaseUrl: Text;
         CuesAPIUrl: Text;
         AccessToken: Text;
@@ -98,52 +98,52 @@ codeunit 1164 "COHUB API Request"
         EnvironmentNameAndEnvironment: Text;
     begin
         EntityBaseUrl := GetEntityBaseUrl(COHUBCompanyEndpoint);
-        RecRef.GetTable(COHUBCompanyEndpoint);
+        COHUBCompanyEndpointRecordRef.GetTable(COHUBCompanyEndpoint);
         CuesAPIUrl := EntityBaseUrl + CueAPISuffix;
 
         COHUBEnviroment.Get(COHUBCompanyEndpoint."Enviroment No.");
         COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnvironmentName, EnvironmentNameAndEnvironment);
 
-        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnvironmentName, AccessToken, RecRef) then
+        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnvironmentName, AccessToken, COHUBCompanyEndpointRecordRef) then
             exit(false);
 
-        exit(InvokeSecuredWebApiGetRequest(CuesAPIUrl, AccessToken, APIResponse, RecRef));
+        exit(InvokeSecuredWebApiGetRequest(CuesAPIUrl, AccessToken, APIResponse, COHUBCompanyEndpointRecordRef));
     end;
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure InvokeSecuredWebApiGetRequest(Url: Text; AccessToken: Text; var ResponseContent: Text; RecRef: RecordRef): Boolean;
+    local procedure InvokeSecuredWebApiGetRequest(Url: Text; AccessToken: Text; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
     var
-        Client: HttpClient;
+        RequestHttpClient: HttpClient;
     begin
-        GetHttpClient(Client);
-        Client.DefaultRequestHeaders().Add('Authorization', 'Bearer ' + AccessToken);
-        exit(InvokeWebApiGetRequestAndLogErrors(Client, Url, ResponseContent, RecRef));
+        GetHttpClient(RequestHttpClient);
+        RequestHttpClient.DefaultRequestHeaders().Add('Authorization', 'Bearer ' + AccessToken);
+        exit(InvokeWebApiGetRequestAndLogErrors(RequestHttpClient, Url, ResponseContent, SourceRecordRef));
     end;
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure InvokeSecuredWebApiPostRequest(Url: Text; AccessToken: Text; var ResponseContent: Text; RecRef: RecordRef): Boolean;
+    local procedure InvokeSecuredWebApiPostRequest(Url: Text; AccessToken: Text; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
     var
-        Client: HttpClient;
+        RequestHttpClient: HttpClient;
     begin
-        GetHttpClient(Client);
-        Client.DefaultRequestHeaders().Add('Authorization', 'Bearer ' + AccessToken);
-        exit(InvokeWebApiPostRequestAndLogErrors(Client, Url, ResponseContent, RecRef));
+        GetHttpClient(RequestHttpClient);
+        RequestHttpClient.DefaultRequestHeaders().Add('Authorization', 'Bearer ' + AccessToken);
+        exit(InvokeWebApiPostRequestAndLogErrors(RequestHttpClient, Url, ResponseContent, SourceRecordRef));
     end;
 
     [Scope('OnPrem')]
     [NonDebuggable]
 
-    local procedure TryInvokeWebApiGetRequest(Client: HttpClient; Url: Text; var ResponseContent: Text; var WasSuccessful: Boolean): Boolean;
+    local procedure TryInvokeWebApiGetRequest(WebRequestHttpClient: HttpClient; Url: Text; var ResponseContent: Text; var WasSuccessful: Boolean): Boolean;
     var
-        HttpResponse: HttpResponseMessage;
+        WebHttpResponseMessage: HttpResponseMessage;
         IsGetSuccess: Boolean;
     begin
-        IsGetSuccess := Client.Get(Url, HttpResponse);
+        IsGetSuccess := WebRequestHttpClient.Get(Url, WebHttpResponseMessage);
         if IsGetSuccess then begin
-            HttpResponse.Content().ReadAs(ResponseContent);
-            WasSuccessful := HttpResponse.IsSuccessStatusCode();
+            WebHttpResponseMessage.Content().ReadAs(ResponseContent);
+            WasSuccessful := WebHttpResponseMessage.IsSuccessStatusCode();
         end;
 
         exit(IsGetSuccess);
@@ -151,25 +151,25 @@ codeunit 1164 "COHUB API Request"
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure TryInvokeWebApiPostRequest(Client: HttpClient; Url: Text; var ResponseContent: Text; var WasSuccessful: Boolean): Boolean;
+    local procedure TryInvokeWebApiPostRequest(WebRequestHttpClient: HttpClient; Url: Text; var ResponseContent: Text; var WasSuccessful: Boolean): Boolean;
     var
-        Request: HttpRequestMessage;
-        Content: HttpContent;
+        WebHttpRequestMessage: HttpRequestMessage;
+        WebHttpContent: HttpContent;
         ContentHeaders: HttpHeaders;
-        HttpResponse: HttpResponseMessage;
+        WebRequestHttpResponseMessage: HttpResponseMessage;
         WasRequestSuccessful: Boolean;
     begin
-        Content.GetHeaders(ContentHeaders);
-        Content.Clear();
+        WebHttpContent.GetHeaders(ContentHeaders);
+        WebHttpContent.Clear();
         ContentHeaders.Clear();
         ContentHeaders.Add('Content-Type', 'application/json');
-        Request.Method('POST');
-        Request.SetRequestUri(Url);
-        WasRequestSuccessful := Client.Send(Request, HttpResponse);
+        WebHttpRequestMessage.Method('POST');
+        WebHttpRequestMessage.SetRequestUri(Url);
+        WasRequestSuccessful := WebRequestHttpClient.Send(WebHttpRequestMessage, WebRequestHttpResponseMessage);
 
         if WasRequestSuccessful then begin
-            HttpResponse.Content().ReadAs(ResponseContent);
-            WasSuccessful := HttpResponse.IsSuccessStatusCode();
+            WebRequestHttpResponseMessage.Content().ReadAs(ResponseContent);
+            WasSuccessful := WebRequestHttpResponseMessage.IsSuccessStatusCode();
         end;
 
         exit(WasRequestSuccessful);
@@ -177,18 +177,18 @@ codeunit 1164 "COHUB API Request"
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure InvokeWebApiGetRequestAndLogErrors(Client: HttpClient; Url: Text; var ResponseContent: Text; RecRef: RecordRef): Boolean;
+    local procedure InvokeWebApiGetRequestAndLogErrors(WebRequestHttpClient: HttpClient; Url: Text; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
     var
         COHUBCore: Codeunit "COHUB Core";
         WasSuccessful: Boolean;
     begin
-        if TryInvokeWebApiGetRequest(Client, Url, ResponseContent, WasSuccessful) then
+        if TryInvokeWebApiGetRequest(WebRequestHttpClient, Url, ResponseContent, WasSuccessful) then
             if WasSuccessful then
                 exit(true)
             else
-                COHUBCore.LogFailure(ResponseContent, RecRef)
+                COHUBCore.LogFailure(ResponseContent, SourceRecordRef)
         else begin
-            COHUBCore.LogFailure(GetLastErrorText(), RecRef);
+            COHUBCore.LogFailure(GetLastErrorText(), SourceRecordRef);
             ClearLastError();
         end;
 
@@ -197,18 +197,18 @@ codeunit 1164 "COHUB API Request"
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure InvokeWebApiPostRequestAndLogErrors(Client: HttpClient; Url: Text; var ResponseContent: Text; RecRef: RecordRef): Boolean;
+    local procedure InvokeWebApiPostRequestAndLogErrors(WebRequestHttpClient: HttpClient; Url: Text; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
     var
         COHUBCore: Codeunit "COHUB Core";
         WasSuccessful: Boolean;
     begin
-        if TryInvokeWebApiPostRequest(Client, Url, ResponseContent, WasSuccessful) then
+        if TryInvokeWebApiPostRequest(WebRequestHttpClient, Url, ResponseContent, WasSuccessful) then
             if WasSuccessful then
                 exit(true)
             else
-                COHUBCore.LogFailure(ResponseContent, RecRef)
+                COHUBCore.LogFailure(ResponseContent, SourceRecordRef)
         else begin
-            COHUBCore.LogFailure(GetLastErrorText(), RecRef);
+            COHUBCore.LogFailure(GetLastErrorText(), SourceRecordRef);
             ClearLastError();
         end;
 
@@ -217,35 +217,35 @@ codeunit 1164 "COHUB API Request"
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure GetHttpClient(var Client: HttpClient)
+    local procedure GetHttpClient(var WebRequestHttpClient: HttpClient)
     begin
-        Client.DefaultRequestHeaders().Clear();
+        WebRequestHttpClient.DefaultRequestHeaders().Clear();
     end;
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure GetEntityBaseUrl(var EnviromentCompanyEndpoint: Record "COHUB Company Endpoint"): Text;
+    local procedure GetEntityBaseUrl(var COHUBCompanyEndpoint: Record "COHUB Company Endpoint"): Text;
     var
         CompanyName: Text;
         EntityBaseUrl: Text;
     begin
-        CompanyName := EnviromentCompanyEndpoint."Company Name";
+        CompanyName := COHUBCompanyEndpoint."Company Name";
         CompanyName := CompanyName.Replace('''', '''''');
-        EntityBaseUrl := EnviromentCompanyEndpoint."ODATA Company URL" + '(''' + CompanyName + ''')';
+        EntityBaseUrl := COHUBCompanyEndpoint."ODATA Company URL" + '(''' + CompanyName + ''')';
 
         exit(EntityBaseUrl);
     end;
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure GetGuestAccessToken(ResourceUrl: Text; EnvironmentName: Text; var AccessToken: Text; RecRef: RecordRef): Boolean
+    local procedure GetGuestAccessToken(ResourceUrl: Text; EnvironmentName: Text; var AccessToken: Text; SourceRecordRef: RecordRef): Boolean
     var
         AzureADMgt: Codeunit "Azure AD Mgt.";
         COHUBCore: Codeunit "COHUB Core";
     begin
         AccessToken := AzureADMgt.GetGuestAccessToken(ResourceUrl, EnvironmentName);
         if AccessToken = '' then begin
-            COHUBCore.LogFailure(StrSubstNo(ErrorAcquiringTokenTxt, EnvironmentName), RecRef);
+            COHUBCore.LogFailure(StrSubstNo(ErrorAcquiringTokenTxt, EnvironmentName), SourceRecordRef);
             exit(false);
         end;
 

@@ -28,6 +28,29 @@ codeunit 135030 "Temp Blob Test"
     end;
 
     [Test]
+    procedure CreateStreamReturnTest()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        BlobInStream: InStream;
+        OutputText: Text;
+    begin
+        // [SCENARIO] Streams (InStream and OutStream) can be created and used.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
+        // [GIVEN] A BLOB with sample text
+        WriteSampleTextToBlob(TempBlob);
+
+        // [WHEN] The content of the BLOB is retrieved
+        BlobInStream := TempBlob.CreateInStream();
+        BlobInStream.ReadText(OutputText);
+
+        // [THEN] The content matches the sample text
+        Assert.AreEqual(SampleTxt, OutputText, 'Same text was expected.');
+    end;
+
+    [Test]
     procedure CreateStreamWithEncodingTest()
     var
         TempBlob: Codeunit "Temp Blob";
@@ -52,6 +75,36 @@ codeunit 135030 "Temp Blob Test"
 
         // [WHEN] The wrong encoding is used.
         TempBlob.CreateInStream(BlobInStream, TextEncoding::UTF16);
+        BlobInStream.ReadText(OutputText);
+        // [THEN] Incorrect result.
+        Assert.AreNotEqual(SampleTxt, OutputText, 'Different text was expected.');
+    end;
+
+    [Test]
+    procedure CreateStreamReturnWithEncodingTest()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        BlobOutStream: OutStream;
+        BlobInStream: InStream;
+        OutputText: Text;
+    begin
+        // [SCENARIO] Streams with encoding (InStream and OutStream) can be created and used.
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('Blob Storage Exec');
+
+        // [GIVEN] Some value in TempBlob.
+        BlobOutStream := TempBlob.CreateOutStream(TextEncoding::Windows);
+        BlobOutStream.WriteText(SampleTxt);
+
+        // [WHEN] The correct encoding is used.
+        BlobInStream := TempBlob.CreateInStream(TextEncoding::Windows);
+        BlobInStream.ReadText(OutputText);
+        // [THEN] Correct result.
+        Assert.AreEqual(SampleTxt, OutputText, 'Same text was expected.');
+
+        // [WHEN] The wrong encoding is used.
+        BlobInStream := TempBlob.CreateInStream(TextEncoding::UTF16);
         BlobInStream.ReadText(OutputText);
         // [THEN] Incorrect result.
         Assert.AreNotEqual(SampleTxt, OutputText, 'Different text was expected.');
@@ -102,7 +155,7 @@ codeunit 135030 "Temp Blob Test"
 
         // Verify the module highest permission level is sufficient ignore non Tables
         PermissionsMock.Set('Blob Storage Exec');
-        
+
         IntegerFieldNo := 5; // Height
         BlobFieldNo := 3; // Content
 
@@ -274,4 +327,3 @@ codeunit 135030 "Temp Blob Test"
         exit(SampleTxt = OutputText);
     end;
 }
-

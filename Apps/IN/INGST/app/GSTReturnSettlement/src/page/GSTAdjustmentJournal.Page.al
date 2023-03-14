@@ -484,7 +484,7 @@ page 18329 "GST Adjustment Journal"
                     Image = ItemTrackingLines;
                     Promoted = true;
                     PromotedCategory = Process;
-                    ShortCutKey = 'Shift+Ctrl+I';
+                    ShortCutKey = 'Ctrl+Alt+I';
 
                     trigger OnAction()
                     begin

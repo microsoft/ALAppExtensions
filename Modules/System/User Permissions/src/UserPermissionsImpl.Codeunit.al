@@ -30,16 +30,18 @@ codeunit 153 "User Permissions Impl."
         exit(not AccessControl.IsEmpty());
     end;
 
-    procedure RemoveSuperPermissions(UserSecurityId: Guid)
+    procedure RemoveSuperPermissions(UserSecurityId: Guid): Boolean
     var
         AccessControl: Record "Access Control";
     begin
         if not IsAnyoneElseSuper(UserSecurityId) then
-            exit;
+            exit(false);
 
         SetSuperFilters(AccessControl);
         AccessControl.SetRange("User Security ID", UserSecurityId);
         AccessControl.DeleteAll(true);
+
+        exit(true);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Access Control", 'OnBeforeRenameEvent', '', false, false)]
@@ -127,15 +129,15 @@ codeunit 153 "User Permissions Impl."
         Error(SUPERPermissionErr);
     end;
 
-    local procedure SetSuperFilters(var Rec: Record "Access Control")
+    local procedure SetSuperFilters(var AccessControlRec: Record "Access Control")
     begin
-        Rec.SetRange("Role ID", SUPERTok);
-        Rec.SetFilter("Company Name", '='''''); // Company Name value is an empty string
+        AccessControlRec.SetRange("Role ID", SUPERTok);
+        AccessControlRec.SetFilter("Company Name", '='''''); // Company Name value is an empty string
     end;
 
-    local procedure IsSuper(var Rec: Record "Access Control"): Boolean
+    local procedure IsSuper(var AccessControlRec: Record "Access Control"): Boolean
     begin
-        exit((Rec."Role ID" = SUPERTok) and (Rec."Company Name" = ''));
+        exit((AccessControlRec."Role ID" = SUPERTok) and (AccessControlRec."Company Name" = ''));
     end;
 
     local procedure IsAnyoneElseSuper(UserSecurityId: Guid): Boolean
@@ -204,6 +206,40 @@ codeunit 153 "User Permissions Impl."
         AccessControl.SetRange("App ID", BlankGuid);
         if not AccessControl.IsEmpty() then
             exit(true);
+    end;
+
+    procedure HasUserPermissionSetAssigned(UserSecurityId: Guid; Company: Text; RoleId: Code[20]; ItemScope: Option; AppId: Guid): Boolean
+    var
+        AccessControl: Record "Access Control";
+    begin
+        AccessControl.SetRange("User Security ID", UserSecurityId);
+        AccessControl.SetRange("Role ID", RoleID);
+        AccessControl.SetFilter("Company Name", '%1|%2', '', Company);
+        AccessControl.SetRange(Scope, ItemScope);
+        AccessControl.SetRange("App ID", AppId);
+
+        exit(not AccessControl.IsEmpty());
+    end;
+
+    internal procedure GetEffectivePermission(UserSecurityIdToCheck: Guid; CompanyNameToCheck: Text; PermissionObjectType: Option "Table Data","Table",,"Report",,"Codeunit","XMLport","MenuSuite","Page","Query","System",,,,,,,,,; ObjectId: Integer): Text
+    var
+        NavUserAccountHelper: DotNet NavUserAccountHelper;
+    begin
+        exit(NavUserAccountHelper.GetEffectivePermissionForObject(UserSecurityIdToCheck, CompanyNameToCheck, PermissionObjectType, ObjectId));
+    end;
+
+    procedure GetEffectivePermission(PermissionObjectType: Option "Table Data","Table",,"Report",,"Codeunit","XMLport","MenuSuite","Page","Query","System",,,,,,,,,; ObjectId: Integer) TempExpandedPermission: Record "Expanded Permission" temporary
+    var
+        PermissionMask: Text;
+    begin
+        TempExpandedPermission."Object Type" := PermissionObjectType;
+        TempExpandedPermission."Object ID" := ObjectId;
+        PermissionMask := GetEffectivePermission(UserSecurityId(), CompanyName(), PermissionObjectType, ObjectId);
+        Evaluate(TempExpandedPermission."Read Permission", SelectStr(1, PermissionMask));
+        Evaluate(TempExpandedPermission."Insert Permission", SelectStr(2, PermissionMask));
+        Evaluate(TempExpandedPermission."Modify Permission", SelectStr(3, PermissionMask));
+        Evaluate(TempExpandedPermission."Delete Permission", SelectStr(4, PermissionMask));
+        Evaluate(TempExpandedPermission."Execute Permission", SelectStr(5, PermissionMask));
     end;
 
     /// <summary>

@@ -16,10 +16,12 @@ codeunit 1993 "Checklist Implementation"
                     tabledata Company = r;
 
     var
+        Telemetry: Codeunit Telemetry;
         ChecklistItemInsertedLbl: Label 'Checklist item inserted.', Locked = true;
         ChecklistItemDeletedLbl: Label 'Checklist item deleted.', Locked = true;
         ChangeBannerVisibilityLbl: Label 'Looking for your checklist to set up Business Central?';
         UserResurfacedBannerLbl: Label 'Checklist banner resurfaced.', Locked = true;
+        UserResurfacedBannerNewSessionLbl: Label 'Checklist banner resurfaced, new session requested.', Locked = true;
         ChecklistInitializedLbl: Label 'Checklist banner initialized.', Locked = true;
         MicrosoftLearnLongTitleLbl: Label 'Find training on Microsoft Learn', MaxLength = 53, Comment = '*Onboarding Checklist*';
         MicrosoftLearnShortTitleLbl: Label 'Microsoft Learn', MaxLength = 34, Comment = '*Onboarding Checklist*';
@@ -131,6 +133,7 @@ codeunit 1993 "Checklist Implementation"
         ChecklistItem: Record "Checklist Item";
         ChecklistItemRole: Record "Checklist Item Role";
         ChecklistItemUser: Record "Checklist Item User";
+        UserChecklistStatus: Record "User Checklist Status";
     begin
         if ChecklistItem.Get(Code) then
             ChecklistItem.Delete();
@@ -142,12 +145,24 @@ codeunit 1993 "Checklist Implementation"
         ChecklistItemUser.SetRange(Code, Code);
         if not ChecklistItemUser.IsEmpty() then
             ChecklistItemUser.DeleteAll();
+
+        // Go through all the visible entries, because some checklist items could be assigned to multiple users/roles
+        // When all checklist items are deleted for a user/role, "Is Visible" should be set to false
+        UserChecklistStatus.SetRange("Is Visible", true);
+        if UserChecklistStatus.FindSet() then
+            repeat
+                if not DoesUserHaveChecklistItemsAssigned(UserChecklistStatus."User ID") then begin
+                    UserChecklistStatus."Is Visible" := false;
+                    UserChecklistStatus.Modify();
+                end;
+            until UserChecklistStatus.Next() = 0;
     end;
 
     procedure ShouldInitializeChecklist(ShouldSkipForEvaluationCompany: Boolean): Boolean
     var
         Company: Record Company;
         ChecklistSetup: Record "Checklist Setup";
+        CurrentDateTimeUTC: DateTime;
     begin
         if not (Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop]) then
             exit(false);
@@ -162,18 +177,49 @@ codeunit 1993 "Checklist Implementation"
         if ChecklistSetup.IsEmpty() then
             exit(true);
 
-        if ChecklistSetup.FindFirst() then
-            exit(not ChecklistSetup."Is Setup Done");
+        if ChecklistSetup.FindFirst() then begin
+            if ChecklistSetup."Is Setup Done" then
+                exit(false);
+
+            if ChecklistSetup."Is Setup in Progress" then begin
+                CurrentDateTimeUTC := GetCurrentDateTimeInUTC();
+
+                // if the setup started more than 1 hour ago, but was not finished, we should restart it
+                if CurrentDateTimeUTC - ChecklistSetup."DateTime when Setup Started" > 3600000 then
+                    exit(true)
+                else
+                    exit(false);
+            end;
+
+            exit(true);
+        end;
+    end;
+
+    procedure MarkChecklistSetupInProgress(CallerModuleInfo: ModuleInfo)
+    var
+        ChecklistSetup: Record "Checklist Setup";
+    begin
+        if ChecklistSetup.FindFirst() then begin
+            if ChecklistSetup."Is Setup Done" then
+                exit;
+
+            if ChecklistSetup."Is Setup in Progress" then
+                exit;
+
+            ChecklistSetup.Delete();
+        end;
+
+        ChecklistSetup."Is Setup in Progress" := true;
+        ChecklistSetup."DateTime when Setup Started" := GetCurrentDateTimeInUTC();
+        ChecklistSetup."Is Setup Done" := false;
+        ChecklistSetup.Insert();
     end;
 
     procedure MarkChecklistSetupAsDone(CallerModuleInfo: ModuleInfo)
     var
         ChecklistSetup: Record "Checklist Setup";
-        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
-        Dimensions: Dictionary of [Text, Text];
     begin
-        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-        Session.LogMessage('0000E9U', ChecklistInitializedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+        Telemetry.LogMessage('0000E9U', ChecklistInitializedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher);
 
         if ChecklistSetup.FindFirst() then begin
             if ChecklistSetup."Is Setup Done" then
@@ -221,26 +267,27 @@ codeunit 1993 "Checklist Implementation"
 
     procedure SetChecklistVisibility(UserName: Text; Visible: Boolean)
     var
-        UserPersonalization: Record "User Personalization";
-        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
-        Dimensions: Dictionary of [Text, Text];
-        SessionSettings: SessionSettings;
+        DummyDimensions: Dictionary of [Text, Text];
     begin
-        if SetChecklistVisibility(UserName, Visible, UserPersonalization) then begin
-            if UserPersonalization."Profile ID" = '' then
-                if UserPersonalization.Get(UserSecurityId()) then;
-
-            GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-            GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
-            Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
-
-            SessionSettings.RequestSessionUpdate(false);
-        end;
+        SetChecklistVisibility(UserName, Visible, false);
+        Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, DummyDimensions);
     end;
 
-    local procedure SetChecklistVisibility(UserName: Text; Visible: Boolean; var UserPersonalization: Record "User Personalization"): Boolean
+    procedure SetChecklistVisibility(UserName: Text; Visible: Boolean; SessionUpdateRequired: Boolean)
+    var
+        SessionSettings: SessionSettings;
+    begin
+        if SetChecklistVisibilityAndUpdateStatus(UserName, Visible) then
+            if SessionUpdateRequired then begin
+                SessionSettings.RequestSessionUpdate(false);
+                Telemetry.LogMessage('0000EIU', UserResurfacedBannerNewSessionLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher);
+            end;
+    end;
+
+    local procedure SetChecklistVisibilityAndUpdateStatus(UserName: Text; Visible: Boolean): Boolean
     var
         UserChecklistStatus: Record "User Checklist Status";
+        UserPersonalization: Record "User Personalization";
         UserNameCode: Code[50];
     begin
         UserNameCode := CopyStr(UserName, 1, 50);
@@ -268,13 +315,13 @@ codeunit 1993 "Checklist Implementation"
         exit(false);
     end;
 
-    procedure UpdateUserName(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50]; TableID: Integer)
+    procedure UpdateUserName(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50]; TableID: Integer)
     begin
         case TableID of
             Database::"Checklist Item User":
-                ChangeUserForChecklistItemUser(RecRef, Company, UserName);
+                ChangeUserForChecklistItemUser(RecordRef, Company, UserName);
             Database::"User Checklist Status":
-                ChangeUserForUserChecklistStatus(RecRef, Company, UserName);
+                ChangeUserForUserChecklistStatus(RecordRef, Company, UserName);
         end;
     end;
 
@@ -291,21 +338,21 @@ codeunit 1993 "Checklist Implementation"
             end;
     end;
 
-    local procedure ChangeUserForChecklistItemUser(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50])
+    local procedure ChangeUserForChecklistItemUser(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50])
     var
         ChecklistItemUser: Record "Checklist Item User";
     begin
         ChecklistItemUser.ChangeCompany(Company);
-        RecRef.SetTable(ChecklistItemUser);
+        RecordRef.SetTable(ChecklistItemUser);
         ChecklistItemUser.Rename(ChecklistItemUser.Code, UserName);
     end;
 
-    local procedure ChangeUserForUserChecklistStatus(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50])
+    local procedure ChangeUserForUserChecklistStatus(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50])
     var
         UserChecklistStatus: Record "User Checklist Status";
     begin
         UserChecklistStatus.ChangeCompany(Company);
-        RecRef.SetTable(UserChecklistStatus);
+        RecordRef.SetTable(UserChecklistStatus);
         UserChecklistStatus.Rename(UserName, UserChecklistStatus."Role ID");
     end;
 
@@ -621,18 +668,13 @@ codeunit 1993 "Checklist Implementation"
         OldChecklistItemUser.DeleteAll();
     end;
 
-    local procedure IsCallerModuleBaseApp(CallerModuleInfo: ModuleInfo): Boolean
-    begin
-        exit(CallerModuleInfo.Id = '437dbf0e-84ff-417a-965d-ed2bb9650972');
-    end;
-
-    local procedure IsCallerModuleSystemApp(CallerModuleInfo: ModuleInfo): Boolean
+    procedure GetCurrentDateTimeInUTC(): DateTime
     var
-        CurrentModuleInfo: ModuleInfo;
+        CurrentDateTimeUTC: DateTime;
     begin
-        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+        Evaluate(CurrentDateTimeUTC, Format(CurrentDateTime(), 0, 9));
 
-        exit(CallerModuleInfo.Id = CurrentModuleInfo.Id);
+        exit(CurrentDateTimeUTC);
     end;
 
     local procedure LogMessageOnDatabaseEvent(Code: Code[300]; Tag: Text; Message: Text)
@@ -646,8 +688,8 @@ codeunit 1993 "Checklist Implementation"
             exit;
 
         GuidedExperienceImpl.AddGuidedExperienceItemDimensions(Dimensions, GuidedExperienceItem, 'Checklist');
-        GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-        Session.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
+
+        Telemetry.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
             TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 

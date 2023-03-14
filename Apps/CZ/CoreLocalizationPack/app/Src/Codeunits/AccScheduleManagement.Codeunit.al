@@ -31,6 +31,10 @@ codeunit 11700 "Acc. Schedule Management CZL"
         BalanceSheetCZL: Report "Balance Sheet CZL";
         IncomeStatementCZL: Report "Income Statement CZL";
     begin
+        OnBeforeAccScheduleNameOnBeforePrint(AccScheduleName, IsHandled);
+        if IsHandled then
+            exit;
+
         case AccScheduleName."Acc. Schedule Type CZL" of
             AccScheduleName."Acc. Schedule Type CZL"::Standard:
                 begin
@@ -63,6 +67,10 @@ codeunit 11700 "Acc. Schedule Management CZL"
         IncomeStatementCZL: Report "Income Statement CZL";
         DateFilter2, GLBudgetFilter2, BusUnitFilter, CostBudgetFilter2, Dim1Filter, Dim2Filter, Dim3Filter, Dim4Filter : Text;
     begin
+        OnBeforeAccScheduleOverviewOnBeforePrint(AccScheduleLine, ColumnLayoutName, IsHandled);
+        if IsHandled then
+            exit;
+
         DateFilter2 := AccScheduleLine.GetFilter("Date Filter");
         GLBudgetFilter2 := AccScheduleLine.GetFilter("G/L Budget Filter");
         CostBudgetFilter2 := AccScheduleLine.GetFilter("Cost Budget Filter");
@@ -197,6 +205,15 @@ codeunit 11700 "Acc. Schedule Management CZL"
             AccSchedExtensionMgtCZL.ValidateFormula(Rec);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Categ. Generate Acc. Schedules", 'OnCreateIncomeStatementOnAfterCreateCOGSGroup', '', false, false)]
+    local procedure DeleteAccSchedLinesOnCreateIncomeStatementOnAfterCreateCOGSGroup(var AccScheduleLine: Record "Acc. Schedule Line"; var IsHandled: Boolean)
+    begin
+        AccScheduleLine.Reset();
+        AccScheduleLine.SetRange("Schedule Name", AccScheduleLine."Schedule Name");
+        AccScheduleLine.DeleteAll();
+        IsHandled := true;
+    end;
+
     procedure CalcCorrectionCell(var AccScheduleLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; CalcAddCurr: Boolean): Decimal
     var
         LocalAccScheduleLine: Record "Acc. Schedule Line";
@@ -223,5 +240,15 @@ codeunit 11700 "Acc. Schedule Management CZL"
                 NonZero := AccSchedManagement.CalcCell(AccScheduleLine, ColumnLayout, CalcAddCurr) <> 0;
             until (ColumnLayout.Next() = 0) or NonZero;
         exit(not NonZero);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAccScheduleNameOnBeforePrint(var AccScheduleName: Record "Acc. Schedule Name"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAccScheduleOverviewOnBeforePrint(var AccScheduleLine: Record "Acc. Schedule Line"; ColumnLayoutName: Code[10]; var IsHandled: Boolean)
+    begin
     end;
 }

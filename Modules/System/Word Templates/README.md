@@ -40,7 +40,7 @@ procedure DownloadDocument()
 procedure GetTemplate(var InStream: InStream)
 ```
 #### Parameters
-*InStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*InStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 Out parameter, the InStream to set.
 
@@ -54,7 +54,7 @@ Out parameter, the InStream to set.
 procedure GetDocument(var DocumentInStream: InStream)
 ```
 #### Parameters
-*DocumentInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*DocumentInStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 Out parameter, the InStream to set.
 
@@ -68,7 +68,7 @@ Out parameter, the InStream to set.
 procedure GetDocumentSize(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The size for the resulting document in bytes.
 ### Create (Method) <a name="Create"></a> 
@@ -90,7 +90,7 @@ procedure Create()
 procedure Create(TableId: Integer)
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Specifies the ID of the table whose fields will be used to populate the template.
 
@@ -104,7 +104,7 @@ Specifies the ID of the table whose fields will be used to populate the template
 procedure Create(TableId: Integer; RelatedTableIds: List of [Integer]; RelatedTableCodes: List of [Code[5]])
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Specifies the ID of the table from which fields will be used to insert data in the template.
 
@@ -142,7 +142,7 @@ The document format is not recognized or not supported.
 procedure Load(WordTemplateCode: Code[30])
 ```
 #### Parameters
-*WordTemplateCode ([Code[30]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*WordTemplateCode ([Code[30]](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 The code of the Word template to use.
 
@@ -158,7 +158,7 @@ The document format is not recognized or not supported.
 procedure Load(WordTemplateStream: InStream)
 ```
 #### Parameters
-*WordTemplateStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*WordTemplateStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 InStream of the Word template to use.
 
@@ -204,7 +204,7 @@ Format of the document to generate.
 procedure Merge(SplitDocument: Boolean)
 ```
 #### Parameters
-*SplitDocument ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*SplitDocument ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies whether a separate document per record should be created.
 
@@ -218,7 +218,7 @@ Specifies whether a separate document per record should be created.
 procedure Merge(SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
 ```
 #### Parameters
-*SplitDocument ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*SplitDocument ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies whether a separate document per record should be created.
 
@@ -236,11 +236,11 @@ Format of the document to generate.
 procedure Merge(RecordVariant: Variant; SplitDocument: Boolean)
 ```
 #### Parameters
-*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecordVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The Record to take data from, any filters on the Record will be respected.
 
-*SplitDocument ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*SplitDocument ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies whether a separate document per record should be created.
 
@@ -254,11 +254,11 @@ Specifies whether a separate document per record should be created.
 procedure Merge(RecordVariant: Variant; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
 ```
 #### Parameters
-*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecordVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The Record to take data from, any filters on the Record will be respected.
 
-*SplitDocument ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*SplitDocument ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Specifies whether a separate document per record should be created.
 
@@ -276,7 +276,7 @@ Format of the document to generate.
 procedure AddTable(TableID: Integer)
 ```
 #### Parameters
-*TableID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableID ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The ID of the table to add.
 
@@ -292,7 +292,7 @@ The function Load needs to be called before this function.
 procedure GetTableId(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 
 ### AddRelatedTable (Method) <a name="AddRelatedTable"></a> 
@@ -307,28 +307,28 @@ The function shows a message if the related code or table ID is already used for
 procedure AddRelatedTable(WordTemplateCode: Code[30]; RelatedCode: Code[5]; TableId: Integer; RelatedTableId: Integer; FieldNo: Integer): Boolean
 ```
 #### Parameters
-*WordTemplateCode ([Code[30]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*WordTemplateCode ([Code[30]](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 The code of an existing parent Word template.
 
-*RelatedCode ([Code[5]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*RelatedCode ([Code[5]](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 The code of the related table to add.
 
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
-*RelatedTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*RelatedTableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
-*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The field no. of the parent table that references the related table.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the related table was added, false otherwise.
 ### RemoveRelatedTable (Method) <a name="RemoveRelatedTable"></a> 
@@ -341,16 +341,16 @@ True if the related table was added, false otherwise.
 procedure RemoveRelatedTable(WordTemplateCode: Code[30]; RelatedTableId: Integer): Boolean
 ```
 #### Parameters
-*WordTemplateCode ([Code[30]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*WordTemplateCode ([Code[30]](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 The code of the parent Word template.
 
-*RelatedTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*RelatedTableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the related table was removed, false otherwise.
 
@@ -369,7 +369,7 @@ procedure SetMultipleTableNo(TableIds: List of [Integer]; SelectedTable: Integer
 
 
 
-*SelectedTable ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*SelectedTable ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
@@ -379,7 +379,7 @@ procedure SetMultipleTableNo(TableIds: List of [Integer]; SelectedTable: Integer
 procedure SetTableNo(Value: Integer)
 ```
 #### Parameters
-*Value ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Value ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
@@ -389,15 +389,15 @@ procedure SetTableNo(Value: Integer)
 procedure SetRelatedTable(RelatedTableId: Integer; FieldNo: Integer; RelatedCode: Code[5])
 ```
 #### Parameters
-*RelatedTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*RelatedTableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
-*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*FieldNo ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
-*RelatedCode ([Code[5]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*RelatedCode ([Code[5]](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 
 
@@ -408,7 +408,7 @@ procedure SetRelatedTable(RelatedTableId: Integer; FieldNo: Integer; RelatedCode
 local procedure OnSetTableNo(Value: Integer)
 ```
 #### Parameters
-*Value ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Value ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
@@ -448,7 +448,7 @@ The template to set.
 procedure SetData(RecordVariant: Variant)
 ```
 #### Parameters
-*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecordVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 The record to set.
 

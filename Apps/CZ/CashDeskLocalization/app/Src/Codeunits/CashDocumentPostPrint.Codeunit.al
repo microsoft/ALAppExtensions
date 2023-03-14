@@ -27,17 +27,27 @@ codeunit 11721 "Cash Document-Post + Print CZP"
             Codeunit.Run(Codeunit::"Cash Document-Post CZP", CashDocumentHeaderCZP)
         else
             Codeunit.Run(Codeunit::"Cash Document-Post(Yes/No) CZP", CashDocumentHeaderCZP);
-
-        GetReport(CashDocumentHeaderCZP);
         Commit();
+        GetReport(CashDocumentHeaderCZP);
     end;
 
     procedure GetReport(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     var
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeGetReport(CashDocumentHeaderCZP, IsHandled);
+        if IsHandled then
+            exit;
+
         PostedCashDocumentHdrCZP.Get(CashDocumentHeaderCZP."Cash Desk No.", CashDocumentHeaderCZP."No.");
         PostedCashDocumentHdrCZP.SetRecFilter();
-        PostedCashDocumentHdrCZP.PrintRecords(false);
+        PostedCashDocumentHdrCZP.PrintRecords(true);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetReport(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var IsHandled: Boolean)
+    begin
     end;
 }

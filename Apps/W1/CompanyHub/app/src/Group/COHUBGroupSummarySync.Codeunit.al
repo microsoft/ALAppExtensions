@@ -7,14 +7,19 @@ codeunit 1162 "COHUB Group Summary Sync"
         COHUBGroup: Record "COHUB Group";
         COHUBCompanyKPI: Record "COHUB Company KPI";
         COHUBGroupCompanySummary: Record "COHUB Group Company Summary";
+        COHUBCore: Codeunit "COHUB Core";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         SortOrder: Integer;
+        COHUBGroupSyncUsed: Boolean;
     begin
         // Groups should get inserted into temp table with indentation 0.
         // Group Line rows should get inserted into temp table with indentation 1.
         COHUBGroupCompanySummary.DeleteAll();
         COHUBGroup.Reset();
         COHUBGroup.SetFilter(Code, '<>%1', '');
-        if COHUBGroup.FindSet() then
+
+        if COHUBGroup.FindSet() then begin
+            COHUBGroupSyncUsed := true;
             repeat
                 // fill up group company summary with groups
                 Clear(COHUBGroupCompanySummary);
@@ -45,11 +50,13 @@ codeunit 1162 "COHUB Group Summary Sync"
                         COHUBGroupCompanySummary.Insert();
                     until COHUBCompanyKPI.Next() <= 0;
             until COHUBGroup.Next() = 0;
+        end;
 
         // Find all ungrouped tenants
         Clear(COHUBCompanyKPI);
         COHUBCompanyKPI.SetRange("Group Code", '');
-        if COHUBCompanyKPI.FindSet() then
+        if COHUBCompanyKPI.FindSet() then begin
+            COHUBGroupSyncUsed := true;
             repeat
                 Clear(COHUBGroupCompanySummary);
                 COHUBGroupCompanySummary."Group Code" := '';
@@ -65,5 +72,11 @@ codeunit 1162 "COHUB Group Summary Sync"
                 COHUBGroupCompanySummary."Assigned To" := COHUBCompanyKPI."Assigned To";
                 COHUBGroupCompanySummary.Insert();
             until COHUBCompanyKPI.Next() <= 0;
+        end;
+
+        if COHUBGroupSyncUsed then begin
+            FeatureTelemetry.LogUptake('0000IFE', COHUBCore.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+            FeatureTelemetry.LogUsage('0000IFF', COHUBCore.GetFeatureTelemetryName(), 'Group Sumary Sync');
+        end;
     end;
 }

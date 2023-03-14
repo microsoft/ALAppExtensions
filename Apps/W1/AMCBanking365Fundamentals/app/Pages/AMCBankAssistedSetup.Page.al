@@ -629,7 +629,10 @@ page 20105 "AMC Bank Assisted Setup"
     end;
 
     trigger OnOpenPage();
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000ZXC', 'AMC Banking 365 Fundamentals', Enum::"Feature Uptake Status"::Discovered);
         AMCBankAssistedMgt.OnOpenAssistedSetupPage(BankDataConvServPPVisible, BankDataConvServCREMVisible, UpdPayMethVisible, UpdBankClearStdVisible);
         ShowIntroStep();
     end;

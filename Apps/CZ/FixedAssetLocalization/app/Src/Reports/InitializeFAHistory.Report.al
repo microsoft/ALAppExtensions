@@ -48,13 +48,13 @@ report 31250 "Initialize FA History CZF"
                     field(InicializeDateCZF; InitializeDate)
                     {
                         Caption = 'Initialize Date';
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         ToolTip = 'Specifies the posting date to create fixed asset history entries.';
                     }
                     field(DocumentNoCZF; DocumentNo)
                     {
                         Caption = 'Document No.';
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         ToolTip = 'Specifies the document no. to create fixed asset history entries.';
                     }
                 }

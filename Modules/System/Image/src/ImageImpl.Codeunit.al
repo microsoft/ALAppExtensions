@@ -347,4 +347,44 @@ codeunit 3970 "Image Impl."
         TempBlob.CreateOutStream(OutStream);
         Bitmap.Save(OutStream, ImageCodec, EncoderParameters);
     end;
+
+    procedure GetRotateFlipType() RotateFlipType: Enum "Rotate Flip Type";
+    var
+        Image: DotNet Image;
+        PropertyItem: DotNet PropertyItem;
+        BitConverter: DotNet BitConverter;
+        PropertyList: DotNet IList;
+        OrientationPropertyId: Integer;
+        OrientationValue: Integer;
+    begin
+        OrientationPropertyId := 274; // exif property tag orientation, ID = 0x0112 which corresponds to integer value 274 (https://go.microsoft.com/fwlink/?linkid=2211500)
+
+        LoadImage(Image);
+        PropertyList := Image.PropertyIdList();
+        if not PropertyList.Contains(OrientationPropertyId) then
+            exit(Enum::"Rotate Flip Type"::RotateNoneFlipNone);
+
+        PropertyItem := Image.GetPropertyItem(OrientationPropertyId);
+        OrientationValue := BitConverter.ToUInt16(PropertyItem.Value, 0);
+        case OrientationValue of
+            1:
+                RotateFlipType := RotateFlipType::RotateNoneFlipNone;
+            2:
+                RotateFlipType := RotateFlipType::RotateNoneFlipX;
+            3:
+                RotateFlipType := RotateFlipType::Rotate180FlipNone;
+            4:
+                RotateFlipType := RotateFlipType::Rotate180FlipX;
+            5:
+                RotateFlipType := RotateFlipType::Rotate90FlipX;
+            6:
+                RotateFlipType := RotateFlipType::Rotate90FlipNone;
+            7:
+                RotateFlipType := RotateFlipType::Rotate270FlipX;
+            8:
+                RotateFlipType := RotateFlipType::Rotate270FlipNone;
+            else
+                RotateFlipType := RotateFlipType::RotateNoneFlipNone;
+        end;
+    end;
 }

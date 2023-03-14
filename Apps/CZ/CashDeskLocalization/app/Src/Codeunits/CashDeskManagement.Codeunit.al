@@ -53,7 +53,13 @@ codeunit 11724 "Cash Desk Management CZP"
     var
         CashDeskCZP: Record "Cash Desk CZP";
         CashDeskFilter: Text;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCashDocumentSelection(CashDocumentHeaderCZP, CashDeskSelected, IsHandled);
+        if IsHandled then
+            exit;
+
         CashDeskSelected := true;
 
         CheckCashDesks();
@@ -407,11 +413,16 @@ codeunit 11724 "Cash Desk Management CZP"
 
     [TryFunction]
     procedure CheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP")
+    begin
+        CheckUserRights(CashDeskNo, ActionType, true);
+    end;
+
+    [TryFunction]
+    procedure CheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; EETTransaction: Boolean)
     var
         CashDeskUserCZP: Record "Cash Desk User CZP";
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDeskCZP: Record "Cash Desk CZP";
-        EETManagementCZL: Codeunit "EET Management CZL";
         IsHandled: boolean;
     begin
         OnBeforeCheckUserRights(CashDeskNo, ActionType, IsHandled);
@@ -440,8 +451,8 @@ codeunit 11724 "Cash Desk Management CZP"
             ActionType::Post, ActionType::"Post and Print":
                 begin
                     CashDeskUserCZP.SetRange(Post, true);
-                    if EETManagementCZL.IsEETEnabled() then
-                        if CashDeskCZP.IsEETCashRegister() and CashDeskUserCZP.IsEmpty() then begin
+                    if EETTransaction then
+                        if CashDeskUserCZP.IsEmpty() then begin
                             CashDeskUserCZP.SetRange(Post);
                             CashDeskUserCZP.SetRange("Post EET Only", true);
                         end;
@@ -554,7 +565,13 @@ codeunit 11724 "Cash Desk Management CZP"
         CashDeskCZP: Record "Cash Desk CZP";
         CashDeskUserCZP: Record "Cash Desk User CZP";
         CashDeskAllowedToUser: Boolean;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeGetCashDesksForCashDeskUser(UserCode, TempCashDeskCZP, IsHandled);
+        if IsHandled then
+            exit;
+
         TempCashDeskCZP.Reset();
         TempCashDeskCZP.DeleteAll();
 
@@ -651,6 +668,16 @@ codeunit 11724 "Cash Desk Management CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterIsCheckUserRightsEnabled(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; var IsEnabled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCashDocumentSelection(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var CashDeskSelected: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetCashDesksForCashDeskUser(UserCode: Code[50]; var TempCashDeskCZP: Record "Cash Desk CZP" temporary; var IsHandled: Boolean)
     begin
     end;
 }

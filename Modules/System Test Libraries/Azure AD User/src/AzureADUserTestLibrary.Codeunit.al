@@ -10,20 +10,35 @@ codeunit 132915 "Azure AD User Test Library"
     /// <summary>
     /// Mocks the behavior of IsUserDelegatedAdmin.
     /// </summary>
-    /// <param name="Value">The value to set.</param>
-    procedure SetIsUserDelegatedtAdmin("Value": Boolean)
+    /// <param name="NewValue">The value to set.</param>
+    procedure SetIsUserDelegatedtAdmin(NewValue: Boolean)
     begin
-        IsUserAdmin := "Value";
+        IsUserDelegatedAdminValue := NewValue;
+    end;
+
+    /// <summary>
+    /// Mocks the behavior of IsUserDelegatedHelpdesk.
+    /// </summary>
+    /// <param name="NewValue">The value to set.</param>
+    procedure SetIsUserDelegatedtHelpdesk(NewValue: Boolean)
+    begin
+        IsUserDelegatedHelpdeskValue := NewValue;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph User Impl.", 'OnIsUserDelegatedAdmin', '', false, false)]
-    local procedure OverrideIsUserTenantAdmin(var IsUserDelegatedAdmin: Boolean; var Handled: Boolean)
+    local procedure OverrideIsUserDelegatedAdmin(var IsUserDelegatedAdmin: Boolean; var Handled: Boolean)
     begin
-        IsUserDelegatedAdmin := IsUserAdmin;
+        IsUserDelegatedAdmin := IsUserDelegatedAdminValue;
+        Handled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph User Impl.", 'OnIsUserDelegatedHelpdesk', '', false, false)]
+    local procedure OverrideIsUserDelegatedHelpdesk(var IsUserDelegatedHelpdesk: Boolean; var Handled: Boolean)
+    begin
+        IsUserDelegatedHelpdesk := IsUserDelegatedHelpdeskValue;
         Handled := true;
     end;
 
     var
-        IsUserAdmin: Boolean;
-
+        IsUserDelegatedAdminValue, IsUserDelegatedHelpdeskValue : Boolean;
 }

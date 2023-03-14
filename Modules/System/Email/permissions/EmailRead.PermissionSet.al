@@ -16,14 +16,19 @@ PermissionSet 8900 "Email - Read"
     Permissions = tabledata "Email Connector Logo" = r,
                   tabledata "Email Error" = r,
                   tabledata "Email Outbox" = r,
+                  tabledata "Email Rate Limit" = r,
                   tabledata "Sent Email" = r,
                   tabledata "Email Message" = r,
                   tabledata "Email Message Attachment" = r,
                   tabledata "Email Recipient" = r,
                   tabledata "Email Related Record" = r,
                   tabledata "Email Scenario" = r,
+                  tabledata "Email Attachments" = r,
+                  tabledata "Email Scenario Attachments" = r,
+                  tabledata "Email View Policy" = r,
                   tabledata Field = r,
                   tabledata Media = r, // Email Account Wizard requires this
                   tabledata "Media Resources" = r,
-                  tabledata "Tenant Media" = r;
+                  tabledata "Tenant Media" = r,
+                  tabledata User = R;
 }

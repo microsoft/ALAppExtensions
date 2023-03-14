@@ -13,7 +13,6 @@ codeunit 18632 "Depr Calculation Subscribers"
         FirstUserDefinedDeprDateLbl: Label 'FirstUserDefinedDeprDate', Locked = true;
         AcquisitionDateLbl: Label 'AcquisitionDate', Locked = true;
         DisposalDateLbl: Label 'DisposalDate', Locked = true;
-        DaysInPeriodLbl: Label 'DaysInPeriod', Locked = true;
         DaysInFiscalYearLbl: Label 'DaysInFiscalYear', Locked = true;
         BookValueLbl: Label 'BookValue', Locked = true;
         MinusBookValueLbl: Label 'MinusBookValue', Locked = true;
@@ -30,7 +29,7 @@ codeunit 18632 "Depr Calculation Subscribers"
         AmountBelowZeroLbl: Label 'AmountBelowZero', Locked = true;
 
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnBeforeCalculateTransferValue', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnCalculateOnBeforeTransferValue', '', false, false)]
     local procedure OnBeforeCalculateTransferValue(
         FANo: Code[20];
         var StorageDecimal: Dictionary of [Text, Decimal];
@@ -39,7 +38,7 @@ codeunit 18632 "Depr Calculation Subscribers"
         var StorageCode: Dictionary of [Text, Code[10]];
         var EntryAmounts2: array[4] of Decimal;
         var EntryAmounts: array[4] of Decimal;
-        var DeprMethod: Option StraightLine,DB1,DB2,DB1SL,DB2SL,"User-Defined",Manual,BelowZero;
+        var DeprMethod: Enum "FA Depr. Method Internal";
         var Year365Days: Boolean;
         var IsHandled: Boolean)
     begin
@@ -209,15 +208,15 @@ codeunit 18632 "Depr Calculation Subscribers"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterTransferValuesCalculation', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterTransferValues2', '', false, false)]
     local procedure OnAfterTransferValuesEvent(
         FADepreciationBook: Record "FA Depreciation Book";
         FixedAsset: Record "Fixed Asset";
-        var Year365Days: Boolean;
+        Year365Days: Boolean;
         var DeprYears: Decimal;
         var DeprBasis: Decimal;
         var BookValue: Decimal;
-        var DeprMethod: Option)
+        var DeprMethod: Enum "FA Depr. Method Internal")
     var
         FABlock: Record "Fixed Asset Block";
         DeprBook: Record "Depreciation Book";
@@ -384,6 +383,7 @@ codeunit 18632 "Depr Calculation Subscribers"
         FirstDeprDate: Date;
         SalvageValue: Decimal;
         MinusBookValue: Decimal;
+        UseDeprStartingDate: Boolean;
     begin
         DepreciationBook.Get(FADepreciationBook."Depreciation Book Code");
         if not DepreciationBook."Fiscal Year 365 Days" then
@@ -393,6 +393,12 @@ codeunit 18632 "Depr Calculation Subscribers"
         DeprStartingDate := FADepreciationBook."Depreciation Starting Date";
         DeprEndingDate := FADepreciationBook."Depreciation Ending Date";
         FirstDeprDate := DepreciationCalculation.GetFirstDeprDate(FixedAsset."No.", FADepreciationBook."Depreciation Book Code", DepreciationBook."Fiscal Year 365 Days");
+        UseDeprStartingDate := DepreciationCalculation.UseDeprStartingDate(FixedAsset."No.", FADepreciationBook."Depreciation Book Code");
+        IF UseDeprStartingDate THEN
+            FirstDeprDate := DeprStartingDate;
+        IF FirstDeprDate < DeprStartingDate THEN
+            FirstDeprDate := DeprStartingDate;
+
         SalvageValue := FADepreciationBook."Salvage Value";
         MinusBookValue := DepreciationCalculation.GetMinusBookValue(FixedAsset."No.", FADepreciationBook."Depreciation Book Code", 0D, 0D);
         RemainingLife := (DeprEndingDate - DeprStartingDate) - (FirstDeprDate - DeprStartingDate) + 1;
@@ -493,7 +499,7 @@ codeunit 18632 "Depr Calculation Subscribers"
         FixedAssetShiftLine.Reset();
         FixedAssetShiftLine.SetRange("FA No.", FixedAsset."No.");
         FixedAssetShiftLine.SetRange("Calculate FA Depreciation", true);
-        if (FixedAssetShiftLine.IsEmpty()) and (IntergerStore.Get(DaysInPeriodLbl) = 0) then
+        if (FixedAssetShiftLine.IsEmpty()) then
             exit;
 
         IsHandled := true;

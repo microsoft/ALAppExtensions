@@ -12,6 +12,7 @@ table 6712 "Tenant Web Service Filter"
     DataPerCompany = false;
     Extensible = false;
     Access = Public;
+    ReplicateData = false;
 
     fields
     {

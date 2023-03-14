@@ -87,13 +87,9 @@ page 20038 "APIV1 - Sales Credit Memos"
                     Caption = 'customerId', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF NOT SellToCustomer.GetBySystemId("Customer Id") THEN
                             ERROR(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Sell-to Customer No." := SellToCustomer."No.";
                         RegisterFieldSet(FIELDNO("Customer Id"));
@@ -103,39 +99,12 @@ page 20038 "APIV1 - Sales Credit Memos"
                 field(contactId; "Contact Graph Id")
                 {
                     Caption = 'contactId', Locked = true;
-
-                    trigger OnValidate()
-                    var
-                        Contact: Record "Contact";
-                        Customer: Record "Customer";
-                        GraphIntContact: Codeunit "Graph Int. - Contact";
-                    begin
-                        RegisterFieldSet(FIELDNO("Contact Graph Id"));
-
-                        IF "Contact Graph Id" = '' THEN
-                            ERROR(SellToContactIdHasToHaveValueErr);
-
-                        IF NOT GraphIntContact.FindOrCreateCustomerFromGraphContactSafe("Contact Graph Id", Customer, Contact) THEN
-                            EXIT;
-
-                        UpdateSellToCustomerFromSellToGraphContactId(Customer);
-
-                        IF Contact."Company No." = Customer."No." THEN BEGIN
-                            VALIDATE("Sell-to Contact No.", Contact."No.");
-                            VALIDATE("Sell-to Contact", Contact.Name);
-
-                            RegisterFieldSet(FIELDNO("Sell-to Contact No."));
-                            RegisterFieldSet(FIELDNO("Sell-to Contact"));
-                        END;
-                    end;
                 }
                 field(customerNumber; "Sell-to Customer No.")
                 {
                     Caption = 'customerNumber', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF SellToCustomer."No." <> '' THEN BEGIN
                             IF SellToCustomer."No." <> "Sell-to Customer No." THEN
@@ -145,8 +114,6 @@ page 20038 "APIV1 - Sales Credit Memos"
 
                         IF NOT SellToCustomer.GET("Sell-to Customer No.") THEN
                             ERROR(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Customer Id" := SellToCustomer.SystemId;
                         RegisterFieldSet(FIELDNO("Customer Id"));
@@ -168,13 +135,9 @@ page 20038 "APIV1 - Sales Credit Memos"
                     Caption = 'billToCustomerId', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF NOT BillToCustomer.GetBySystemId("Bill-to Customer Id") THEN
                             ERROR(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer No." := BillToCustomer."No.";
                         RegisterFieldSet(FIELDNO("Bill-to Customer Id"));
@@ -186,8 +149,6 @@ page 20038 "APIV1 - Sales Credit Memos"
                     Caption = 'billToCustomerNumber', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF BillToCustomer."No." <> '' THEN BEGIN
                             IF BillToCustomer."No." <> "Bill-to Customer No." THEN
@@ -198,8 +159,6 @@ page 20038 "APIV1 - Sales Credit Memos"
                         IF NOT BillToCustomer.GET("Bill-to Customer No.") THEN
                             ERROR(CouldNotFindBillToCustomerErr);
 
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
-
                         "Bill-to Customer Id" := BillToCustomer.SystemId;
                         RegisterFieldSet(FIELDNO("Bill-to Customer Id"));
                         RegisterFieldSet(FIELDNO("Bill-to Customer No."));
@@ -208,7 +167,9 @@ page 20038 "APIV1 - Sales Credit Memos"
                 field(sellingPostalAddress; SellingPostalAddressJSONText)
                 {
                     Caption = 'sellingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the selling address of the Sales Invoice.';
 
                     trigger OnValidate()
@@ -219,7 +180,9 @@ page 20038 "APIV1 - Sales Credit Memos"
                 field(billingPostalAddress; BillingPostalAddressJSONText)
                 {
                     Caption = 'billingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the billing address of the Sales Credit Memo.';
 
                     trigger OnValidate()
@@ -559,7 +522,6 @@ page 20038 "APIV1 - Sales Credit Memos"
         InvoiceNo: Code[20];
         InvoiceValuesDontMatchErr: Label 'The invoiceId and invoiceNumber do not match to a specific Invoice.', Locked = true;
         InvoiceIdDoesNotMatchAnInvoiceErr: Label 'The invoiceId does not match to an Invoice.', Locked = true;
-        SellToContactIdHasToHaveValueErr: Label 'Sell-to ontact Id must have a value set.', Locked = true;
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.', Locked = true;
         CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Locked = true;
         CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Locked = true;
@@ -696,29 +658,6 @@ page 20038 "APIV1 - Sales Credit Memos"
 
         IF xRec."Bill-to County" <> "Bill-to County" THEN
             RegisterFieldSet(FIELDNO("Bill-to County"));
-    end;
-
-    local procedure UpdateSellToCustomerFromSellToGraphContactId(var Customer: Record Customer)
-    var
-        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
-        UpdateCustomer: Boolean;
-    begin
-        UpdateCustomer := "Sell-to Customer No." = '';
-        IF NOT UpdateCustomer THEN BEGIN
-            TempFieldBuffer.RESET();
-            TempFieldBuffer.SETRANGE("Field ID", FIELDNO("Customer Id"));
-            UpdateCustomer := NOT TempFieldBuffer.FINDFIRST();
-            TempFieldBuffer.RESET();
-        END;
-
-        IF UpdateCustomer THEN BEGIN
-            VALIDATE("Customer Id", Customer.SystemId);
-            VALIDATE("Sell-to Customer No.", Customer."No.");
-            RegisterFieldSet(FIELDNO("Customer Id"));
-            RegisterFieldSet(FIELDNO("Sell-to Customer No."));
-        END;
-
-        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(Customer);
     end;
 
     local procedure CheckSellToCustomerSpecified()
@@ -878,11 +817,11 @@ page 20038 "APIV1 - Sales Credit Memos"
         end;
     end;
 
-    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceId: Guid)
+    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceIdentifier: Guid)
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV1 - Sales Credit Memos");
-        ActionContext.AddEntityKey(FieldNo(Id), InvoiceId);
+        ActionContext.AddEntityKey(FieldNo(Id), InvoiceIdentifier);
         ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
     end;
 

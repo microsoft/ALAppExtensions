@@ -179,7 +179,7 @@ page 31165 "Posted Cash Document CZP"
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
-                    ToolTip = 'Specifies the EET entry number.';
+                    ToolTip = 'Specifies the EET entry number.';
                 }
                 field("Created ID"; Rec."Created ID")
                 {
@@ -271,9 +271,6 @@ page 31165 "Posted Cash Document CZP"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
@@ -290,15 +287,43 @@ page 31165 "Posted Cash Document CZP"
                 Caption = 'Find Entries';
                 Ellipsis = true;
                 Image = Navigate;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
+                ShortCutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
                 trigger OnAction()
                 begin
                     Rec.Navigate();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(NavigatePromoted; "&Navigate")
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Cash Document';
+
+                actionref(DimensionsPromoted; Dimensions)
+                {
+                }
+                actionref(DocAttachPromoted; DocAttach)
+                {
+                }
+            }
+            group(Category_Report)
+            {
+                Caption = 'Report';
+
+                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
+                {
+                }
             }
         }
     }

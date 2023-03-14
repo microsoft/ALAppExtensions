@@ -42,22 +42,21 @@ page 2503 "Extension Installation"
 
         MarketplaceExtnDeployment.SetAppID(Rec.ID);
         MarketplaceExtnDeployment.RunModal();
-        if MarketplaceExtnDeployment.GetInstalledSelected() then begin
+        if MarketplaceExtnDeployment.GetInstalledSelected() then
             if NOT IsNullGuid(ID) then
                 ExtensionMarketplace.InstallMarketplaceExtension(ID, ResponseURL, MarketplaceExtnDeployment.GetLanguageId());
-            CurrPage.Close();
-        end;
+        CurrPage.Close();
     end;
 
     local procedure GetDetailsFromFilters()
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         i: Integer;
     begin
-        RecRef.GetTable(Rec);
-        for i := 1 to RecRef.FieldCount() do
-            ParseFilter(RecRef.FieldIndex(i));
-        RecRef.SetTable(Rec);
+        RecordRef.GetTable(Rec);
+        for i := 1 to RecordRef.FieldCount() do
+            ParseFilter(RecordRef.FieldIndex(i));
+        RecordRef.SetTable(Rec);
     end;
 
     local procedure ParseFilter(FieldRef: FieldRef)

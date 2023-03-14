@@ -94,12 +94,16 @@ page 1875 "Manual Setup"
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         GuidedExperience: Codeunit "Guided Experience";
 #if not CLEAN18
+#pragma warning disable AL0432
         ManualSetup: Codeunit "Manual Setup";
+#pragma warning restore
 #endif
     begin
         GuidedExperience.OnRegisterManualSetup();
 #if not CLEAN18
+#pragma warning disable AL0432
         ManualSetup.OnRegisterManualSetup();
+#pragma warning restore
 #endif
 
         GuidedExperienceImpl.GetContentForSetupPage(Rec, Rec."Guided Experience Type"::"Manual Setup");

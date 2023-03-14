@@ -35,8 +35,8 @@ interface "Data Archive Provider"
     /// <summary> 
     /// Saves the supplied record to the currently open archive entry.
     /// </summary>
-    /// <param name="RecRef">The record will be copied to the archive.</param>
-    procedure SaveRecord(var RecRef: RecordRef);
+    /// <param name="RecordRef">The record will be copied to the archive.</param>
+    procedure SaveRecord(var RecordRef: RecordRef);
 
     /// <summary> 
     /// Saves the supplied record to the currently open archive entry.
@@ -47,8 +47,8 @@ interface "Data Archive Provider"
     /// <summary> 
     /// Saves all records within the filters to the currently open archive entry.
     /// </summary>
-    /// <param name="RecRef">All records for the RecRef within the filters will be copied to the archive.</param>
-    procedure SaveRecords(var RecRef: RecordRef);
+    /// <param name="RecordRef">All records for the RecRef within the filters will be copied to the archive.</param>
+    procedure SaveRecords(var RecordRef: RecordRef);
 
     /// <summary> 
     /// Starts subscription to the OnDatabaseDelete trigger and calls SaveRecord with any deleted record.
@@ -71,7 +71,7 @@ interface "Data Archive Provider"
     /// </summary>
     /// <returns>Returns true if a provider for this interface is installed.</returns>
     procedure DataArchiveProviderExists(): Boolean;
-    
+
     /// <summary> 
     /// Sets the instance of the provider. Needed for self-reference.
     /// </summary>

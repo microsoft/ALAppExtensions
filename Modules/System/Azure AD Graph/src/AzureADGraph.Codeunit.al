@@ -6,6 +6,7 @@
 /// <summary>
 /// Exposes functionality to query Azure AD.
 /// </summary>
+#pragma warning disable AS0018
 codeunit 9012 "Azure AD Graph"
 {
     Access = Public;
@@ -134,6 +135,29 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
+    /// Gets the value of whether M365 collaboration is enabled.
+    /// </summary>
+    /// <returns>True, if M365 collaboration is enabled, false otherwise.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsM365CollaborationEnabled(): Boolean
+    begin
+        exit(AzureADGraphImpl.IsM365CollaborationEnabled());
+    end;
+
+    /// <summary>
+    /// Gets the name of the AAD security group defined in tenant admin center.
+    /// For more info, see https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-environments#manage-access-using-azure-active-directory-groups
+    /// </summary>
+    /// <returns>The name of the AAD security group defined in tenant admin center.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetEnvironmentDirectoryGroup(): Text
+    begin
+        exit(AzureADGraphImpl.GetEnvironmentDirectoryGroup());
+    end;
+
+    /// <summary>
     /// Gets a list of users.
     /// </summary>
     /// <param name="NumberOfUsers">The number of users to return.</param>
@@ -146,27 +170,78 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
-    /// Sets a flag that is used to determine whether a test is in progress or not.
+    /// Gets a list of licensed users.
     /// </summary>
-    /// <param name="TestInProgress">The value to be set to the flag.</param>
+    /// <param name="AssingedPlans">The assigned plans (licenses) to filter to.</param>
+    /// <param name="NumberOfUsers">The number of users to return.</param>
+    /// <param name="UserInfoPage">The list of users to return.</param>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure SetTestInProgress(TestInProgress: Boolean)
+    procedure GetLicensedUsersPage(AssingedPlans: DotNet StringArray; NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
     begin
-        AzureADGraphImpl.SetTestInProgress(TestInProgress);
+        AzureADGraphImpl.GetLicensedUsersPage(AssingedPlans, NumberOfUsers, UserInfoPage);
     end;
 
     /// <summary>
-    /// Publishes an event that is used to initialize the Azure AD Graph.
+    /// Gets a list of users who are members of the specified AAD group.
     /// </summary>
-    /// <param name="GraphQuery">The graph that the Azure AD Graph will be initialized with.</param>
-    [IntegrationEvent(false, false)]
+    /// <param name="GroupDisplayName">The name of the AAD group.</param>
+    /// <param name="GroupMembers">A list of UserInfo objects identifying users that are members of the specified group.</param>
     [Scope('OnPrem')]
     [NonDebuggable]
-    internal procedure OnInitialize(var GraphQuery: DotNet GraphQuery)
+    procedure GetGroupMembers(GroupDisplayName: Text; var GroupMembers: DotNet IEnumerable)
     begin
-
+        AzureADGraphImpl.GetGroupMembers(GroupDisplayName, GroupMembers);
     end;
 
-}
+    /// <summary>
+    /// Gets a list of users who are members of the specified AAD group.
+    /// </summary>
+    /// <param name="GroupId">The AAD object ID of the AAD security group.</param>
+    /// <param name="GroupMembers">A list of UserInfo objects identifying users that are members of the specified group.</param>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetMembersForGroupId(GroupId: Text; var GroupMembers: DotNet IEnumerable)
+    begin
+        AzureADGraphImpl.GetMembersForGroupId(GroupId, GroupMembers);
+    end;
 
+    /// <summary>
+    /// Checks if a given user is a member of an AAD security group.
+    /// </summary>
+    /// <param name="GroupDisplayName">The name of the AAD security group.</param>
+    /// <param name="GraphUserInfo">The user.</param>
+    /// <returns>True if the user is member of the AAD security group; otherwise - false.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsGroupMember(GroupDisplayName: Text; GraphUserInfo: DotNet UserInfo): Boolean
+    begin
+        exit(AzureADGraphImpl.IsGroupMember(GroupDisplayName, GraphUserInfo));
+    end;
+
+    /// <summary>
+    /// Checks if a given user is a member of an AAD security group.
+    /// </summary>
+    /// <param name="GroupId">The AAD object ID of the AAD security group.</param>
+    /// <param name="GraphUserInfo">The user.</param>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsMemberOfGroupWithId(GroupId: Text; GraphUserInfo: DotNet UserInfo): Boolean
+    begin
+        exit(AzureADGraphImpl.IsMemberOfGroupWithId(GroupId, GraphUserInfo));
+    end;
+
+    /// <summary>
+    /// Checks if the Microsoft 365 user account for the specified principal name is enabled.
+    /// Note: Even if the graph user is enabled, the account may be disabled in Business Central.
+    /// </summary>
+    /// <param name="UserPrincipalName">The user principal name.</param>
+    [Scope('OnPrem')]
+    [TryFunction]
+    [NonDebuggable]
+    procedure IsGraphUserAccountEnabled(UserPrincipalName: Text; var IsEnabled: Boolean)
+    begin
+        AzureADGraphImpl.IsGraphUserAccountEnabled(UserPrincipalName, IsEnabled);
+    end;
+}
+#pragma warning restore AS0018

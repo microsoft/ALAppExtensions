@@ -2,6 +2,20 @@ pageextension 11711 "Item Journal CZL" extends "Item Journal"
 {
     layout
     {
+        addafter("Transport Method")
+        {
+            field("Transaction Specification CZL"; Rec."Transaction Specification")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a code for the transaction specification, for the purpose of reporting to INTRASTAT.';
+            }
+            field("Shpt. Method Code CZL"; Rec."Shpt. Method Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the item''s shipment method.';
+                Visible = false;
+            }
+        }
         addafter("Document Date")
         {
             field("Invt. Movement Template CZL"; InvtMovementTemplateNameCZL)
@@ -45,7 +59,7 @@ pageextension 11711 "Item Journal CZL" extends "Item Journal"
                 Visible = false;
             }
         }
-        addafter("Transaction Specification")
+        addbefore("Shortcut Dimension 1 Code")
         {
             field("Tariff No. CZL"; Rec."Tariff No. CZL")
             {

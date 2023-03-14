@@ -2,7 +2,7 @@ report 31251 "Fixed Asset History CZF"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/FixedAssetHistory.rdl';
-    ApplicationArea = Basic, Suite;
+    ApplicationArea = FixedAssets;
     Caption = 'Fixed Asset History';
     UsageCategory = ReportsAndAnalysis;
 
@@ -144,8 +144,8 @@ report 31251 "Fixed Asset History CZF"
                                 SerialNo := FixedAsset3."Serial No.";
                             end;
 
-                            if FANo <> "FA No." then begin
-                                FANo := "FA No.";
+                            if FixedAssetNo <> "FA No." then begin
+                                FixedAssetNo := "FA No.";
                                 FAHistoryEntryCZF.Reset();
                                 FAHistoryEntryCZF.CopyFilters(FAHistory);
                                 if FAHistory.GetFilter("Posting Date") = '' then
@@ -187,7 +187,7 @@ report 31251 "Fixed Asset History CZF"
                             FAHistory.CopyFilter("FA No.", "No.");
 
                         CountPerGroup := 0;
-                        FANo := '';
+                        FixedAssetNo := '';
                     end;
                 }
 
@@ -296,8 +296,8 @@ report 31251 "Fixed Asset History CZF"
                                 SerialNo := FixedAsset3."Serial No.";
                             end;
 
-                            if FANo <> "FA No." then begin
-                                FANo := "FA No.";
+                            if FixedAssetNo <> "FA No." then begin
+                                FixedAssetNo := "FA No.";
                                 FAHistoryEntryCZF.Reset();
                                 FAHistoryEntryCZF.CopyFilters(FAHistory);
                                 if FAHistory.GetFilter("Posting Date") = '' then
@@ -346,7 +346,7 @@ report 31251 "Fixed Asset History CZF"
                             FAHistory.CopyFilter("FA No.", "No.");
 
                         CountPerGroup := 0;
-                        FANo := '';
+                        FixedAssetNo := '';
                     end;
                 }
 
@@ -392,7 +392,7 @@ report 31251 "Fixed Asset History CZF"
                     Caption = 'Options';
                     field(GroupByCZF; GroupBy)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Group By';
                         ToolTip = 'Specifies how fixed assets should be grouped.';
 
@@ -403,14 +403,14 @@ report 31251 "Fixed Asset History CZF"
                     }
                     field(NewPagePerGroupCZF; NewPagePerGroup)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'New Page Per Group';
                         Enabled = CheckMarkEnable;
                         ToolTip = 'Specifies if you want the report to print a new page for each group.';
                     }
                     field(EndDateCZF; EndDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'As of Date';
                         ToolTip = 'Specifies the date that the history will be based on in MMDDYY format.';
                     }
@@ -453,7 +453,7 @@ report 31251 "Fixed Asset History CZF"
         OldEmployee: Record Employee;
         GroupBy: Enum "FA History Type CZF";
         EndDate: Date;
-        FANo: Code[20];
+        FixedAssetNo: Code[20];
         Description, SerialNo : Text;
         NewPagePerGroup, FirstTime, ShowFirstHead, CheckCancel : Boolean;
         GroupCount, CountPerGroup : Integer;

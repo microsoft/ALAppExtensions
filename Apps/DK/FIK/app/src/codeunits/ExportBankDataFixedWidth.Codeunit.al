@@ -14,7 +14,7 @@ codeunit 13660 "Export BankData Fixed Width"
         DataExchDef: Record "Data Exch. Def";
         Delimiter: Text;
         Separator: Text;
-        NotSameDueDateForAllLinesErr: Label 'The Transfer Date value should be the same for all payment export data within the specified filters: %1.';
+        NotSameDueDateForAllLinesErr: Label 'The Transfer Date value should be the same for all payment export data within the specified filters: %1.', Comment = '%1 = Filters set for Payment Export Data';
 
     trigger OnRun();
     var

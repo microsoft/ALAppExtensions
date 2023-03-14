@@ -48,7 +48,8 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
                 BankAccount: Record "Bank Account";
                 CustomerBankAccount: Record "Customer Bank Account";
             begin
-                TestField(Status, Status::Pending);
+                if CurrFieldNo = Rec.FieldNo("Bank Account Code CZL") then
+                    TestField(Status, Status::Pending);
                 if "Bank Account Code CZL" = '' then begin
                     UpdateBankInfoCZL('', '', '', '', '', '', '');
                     exit;
@@ -286,8 +287,24 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
         exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
     end;
 
+    procedure GetDefaulBankAccountNoCZL() BankAccountNo: Code[20]
+    var
+        BankAccount: Record "Bank Account";
+        IsHandled: Boolean;
+    begin
+        OnBeforeGetDefaulBankAccountNoCZL(Rec, BankAccountNo, IsHandled);
+        if IsHandled then
+            exit(BankAccountNo);
+        exit(BankAccount.GetDefaultBankAccountNoCZL("Responsibility Center", "Currency Code"));
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var ServiceHeader: Record "Service Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetDefaulBankAccountNoCZL(var ServiceHeader: Record "Service Header"; var BankAccountNo: Code[20]; var IsHandled: Boolean);
     begin
     end;
 }

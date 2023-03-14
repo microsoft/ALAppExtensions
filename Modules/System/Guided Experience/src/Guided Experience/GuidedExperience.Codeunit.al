@@ -38,6 +38,32 @@ codeunit 1990 "Guided Experience"
             Keywords, SpotlighTourType::None, SpotlightTourTexts, true);
     end;
 
+    /// <summary>Inserts a manual setup page.</summary>
+    /// <param name="Title">The title of the manual setup.</param>
+    /// <param name="ShortTitle">A short title used for the checklist.</param>
+    /// <param name="Description">The description of the manual setup.</param>
+    /// <param name="ExpectedDuration">How many minutes the setup is expected to take.</param>
+    /// <param name="ObjectTypeToRun">The type of the object to be run as part of the setup.</param>
+    /// <param name="ObjectIDToRun">The ID of the object to be run as part of the setup.</param>
+    /// <param name="ManualSetupCategory">The category that this manual setup belongs to.</param>
+    /// <param name="Keywords">The keywords related to the manual setup.</param>
+    /// <param name="IsPrimarySetup">Is this a primary setup for this extenion.</param>
+    procedure InsertManualSetup(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; ManualSetupCategory: Enum "Manual Setup Category"; Keywords: Text[250]; IsPrimarySetup: Boolean)
+    var
+        CallerModuleInfo: ModuleInfo;
+        GuidedExperienceType: Enum "Guided Experience Type";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        VideoCategory: Enum "Video Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
+    begin
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+
+        GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::"Manual Setup",
+            ObjectTypeToRun, ObjectIDToRun, '', AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', ManualSetupCategory,
+            Keywords, SpotlighTourType::None, SpotlightTourTexts, true, IsPrimarySetup);
+    end;
+
     /// <summary>Inserts an assisted setup page.</summary>
     /// <param name="Title">The title of the assisted setup.</param>
     /// <param name="ShortTitle">A short title used for the checklist.</param>
@@ -61,7 +87,34 @@ codeunit 1990 "Guided Experience"
 
         GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::"Assisted Setup",
             ObjectTypeToRun, ObjectIDToRun, '', AssistedSetupGroup, VideoUrl, VideoCategory, HelpUrl, ManualSetupCategory::Uncategorized, '',
-            SpotlighTourType::None, SpotlightTourTexts, true);
+            SpotlighTourType::None, SpotlightTourTexts, true, false);
+    end;
+
+    /// <summary>Inserts an assisted setup page.</summary>
+    /// <param name="Title">The title of the assisted setup.</param>
+    /// <param name="ShortTitle">A short title used for the checklist.</param>
+    /// <param name="Description">The description of the assisted setup.</param>
+    /// <param name="ExpectedDuration">How many minutes the setup is expected to take.</param>
+    /// <param name="ObjectTypeToRun">The type of the object to be run as part of the setup.</param>
+    /// <param name="ObjectIDToRun">The ID of the object to be run as part of the setup.</param>
+    /// <param name="AssistedSetupGroup">The assisted setup group enum that this belongs to.</param>
+    /// <param name="VideoUrl">The URL of the video that explains the purpose and use of this setup.</param>
+    /// <param name="VideoCategory">The category of the video for this setup.</param>
+    /// <param name="HelpLink">The help url that explains the purpose and usage of this setup.</param>
+    /// <param name="IsPrimarySetup">Is this a primary setup for this extenion.</param>
+    procedure InsertAssistedSetup(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; AssistedSetupGroup: Enum "Assisted Setup Group"; VideoUrl: Text[250]; VideoCategory: Enum "Video Category"; HelpUrl: Text[250]; IsPrimarySetup: Boolean)
+    var
+        CallerModuleInfo: ModuleInfo;
+        GuidedExperienceType: Enum "Guided Experience Type";
+        ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
+    begin
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+
+        GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::"Assisted Setup",
+            ObjectTypeToRun, ObjectIDToRun, '', AssistedSetupGroup, VideoUrl, VideoCategory, HelpUrl, ManualSetupCategory::Uncategorized, '',
+            SpotlighTourType::None, SpotlightTourTexts, true, IsPrimarySetup);
     end;
 
 #if not CLEAN19
@@ -249,6 +302,19 @@ codeunit 1990 "Guided Experience"
         GuidedExperienceImpl.AddTranslationForSetupObject(GuidedExperienceType, ObjectType, ObjectID, LanguageID, Translation, GuidedExperienceItem.FieldNo(Description));
     end;
 
+    /// <summary>Adds the translation for the short title of the setup object.</summary>
+    /// <param name="GuidedExperienceType">The type of setup object.</param> 
+    /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
+    /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>
+    /// <param name="LanguageID">The language ID for which the translation is made.</param>
+    /// <param name="Translation">The translated text of the short title.</param>
+    procedure AddTranslationForSetupObjectShortTitle(GuidedExperienceType: Enum "Guided Experience Type"; ObjectType: ObjectType; ObjectID: Integer; LanguageID: Integer; Translation: Text)
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+    begin
+        GuidedExperienceImpl.AddTranslationForSetupObject(GuidedExperienceType, ObjectType, ObjectID, LanguageID, Translation, GuidedExperienceItem.FieldNo("Short Title"));
+    end;
+
     /// <summary>Checks whether a user has completed the setup corresponding to the object type and ID.</summary>
     /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
     /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>
@@ -354,6 +420,30 @@ codeunit 1990 "Guided Experience"
     procedure Remove(GuidedExperienceType: Enum "Guided Experience Type"; ObjectType: ObjectType; ObjectID: Integer; SpotlightTourType: Enum "Spotlight Tour Type")
     begin
         GuidedExperienceImpl.Remove(GuidedExperienceType, ObjectType, ObjectID, SpotlightTourType);
+    end;
+
+    /// <summary>Opens the primary setup for an app.</summary>
+    /// <raises>OnRegisterAssistedSetup</raises>
+    /// <raises>OnRegisterManualSetup</raises>
+    /// <param name="AppId">The app id of the app whose setup needs to be run.</param>
+    procedure RunExtensionSetup(AppId: Guid)
+    begin
+        GuidedExperienceImpl.RunExtensionSetup(AppId);
+    end;
+
+    /// <summary>checks if setup for an extension exist.</summary>
+    /// <raises>OnRegisterAssistedSetup</raises>
+    /// <raises>OnRegisterManualSetup</raises>
+    procedure SetupForExtensionExists(AppId: Guid): Boolean
+    begin
+        exit(GuidedExperienceImpl.SetupForExtensionExists(AppId));
+    end;
+
+    /// <summary>Opens a aggregated list of both manual setup and assisted setup pages for an extension.</summary>
+    /// <param name="AppId">The app id of the app whose setup pages will be shown.</param>
+    procedure OpenCombinedSetupList(AppId: Guid)
+    begin
+        GuidedExperienceImpl.OpenCombinedSetupList(AppId);
     end;
 
     /// <summary>Notifies that the list of assisted setups is being gathered, and that new items might be added.</summary>

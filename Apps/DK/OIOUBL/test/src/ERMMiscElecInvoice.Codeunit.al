@@ -37,7 +37,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         CustomerReferenceCapTxt: Label 'cbc:CustomerReference';
         DescriptionTxt: Label 'Test line with text value more than 50 characters.';
         GLNNoTok: Label 'GLN No.';
-        GLNNoErr: Label 'The GLN %1 is not valid.';
+        GLNNoErr: Label 'The GLN %1 is not valid.', Comment = '%1 = GLN No.';
         GLNNoTxt: Label '5790000510146';
         EndpointIDCapTxt: Label 'cbc:EndpointID';
         FinChrgMemoPathTxt: Label 'OIOUBL Fin. Chrg. Memo Path';
@@ -47,11 +47,11 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         LCYCodeLenghtErr: Label 'LCY Code should be 3 characters long in General Ledger Setup Primary Key=''''.';
         OIOUBLCodeTxt: Label 'OIOUBL Code';
         PaymentChannelCodeCapTxt: Label 'cbc:PaymentChannelCode';
-        PaymentChannelCodeTxt: Label '%1:BANK';
+        PaymentChannelCodeTxt: Label '%1:BANK', Comment = '%1 = Country or Region Code';
         PaymentMeansCodeCapTxt: Label 'cbc:PaymentMeansCode';
         ReminderPathTxt: Label 'OIOUBL Reminder Path';
         SalesOrderIDCapTxt: Label 'cbc:SalesOrderID';
-        ValidationErr: Label '%1 must be %2';
+        ValidationErr: Label '%1 must be %2', Comment = '%1 = Field Caption; %2 = Expected Value';
 
     [Test]
     procedure ContactDetailsForSalesQuote();
@@ -563,7 +563,9 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     var
         SalesHeader: Record "Sales Header";
         SalesInvLine: Record "Sales Invoice Line";
+        Currency: Record Currency;
         DocumentNo: Code[20];
+        UnitPrice: Decimal;
     begin
         // Verify XML data after Create Electronic Invoices for Item with more than two decimal digits in Unit Price.
 
@@ -580,8 +582,11 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 
         // Verify: Verify ID and Issue Date for Create Electronic Invoice Report.
         VerifyElectronicDocumentData(DocumentNo, SalesHeader."Document Date");
+
         // Verify: Verify Unit Price on document matches Unit Price on Electronic Document
-        VerifyNodeDecimalValue('cbc:PriceAmount', SalesInvLine."Unit Price");
+        Currency.InitRoundingPrecision();
+        UnitPrice := Round(SalesInvLine.Amount / SalesInvLine.Quantity, Currency."Unit-Amount Rounding Precision");
+        VerifyNodeDecimalValue('cbc:PriceAmount', UnitPrice);
     end;
 
     [Test]
@@ -1547,7 +1552,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         ContactCard.OPENEDIT();
         // TODO
         // ContactCard.FILTER.SETFILTER("No.",ContactNo);
-        ContactCard."Phone No.".SETVALUE(LibraryUtility.GenerateGUID());
+        ContactCard."Phone No.".SETVALUE(LibraryUtility.GenerateRandomPhoneNo());
         ContactCard."Fax No.".SETVALUE(LibraryUtility.GenerateGUID());
         ContactCard."E-Mail".SETVALUE(LibraryUtility.GenerateRandomEmail());
         ContactCard.OK().INVOKE();

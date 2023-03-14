@@ -23,7 +23,7 @@ codeunit 134687 "Test Email Connector" implements "Email Connector"
         Message('Showing information for account: %1', AccountId);
     end;
 
-    procedure RegisterAccount(var Account: Record "Email Account"): Boolean
+    procedure RegisterAccount(var EmailAccount: Record "Email Account"): Boolean
     var
     begin
         if ConnectorMock.FailOnRegisterAccount() then
@@ -32,9 +32,9 @@ codeunit 134687 "Test Email Connector" implements "Email Connector"
         if ConnectorMock.UnsuccessfulRegister() then
             exit(false);
 
-        Account."Account Id" := CreateGuid();
-        Account."Email Address" := 'Test email address';
-        Account.Name := 'Test account';
+        EmailAccount."Account Id" := CreateGuid();
+        EmailAccount."Email Address" := 'Test email address';
+        EmailAccount.Name := 'Test account';
 
         exit(true);
     end;

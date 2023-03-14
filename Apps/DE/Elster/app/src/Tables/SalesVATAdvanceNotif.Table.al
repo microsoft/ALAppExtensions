@@ -69,11 +69,30 @@ table 11021 "Sales VAT Advance Notif."
         field(9; "XSL-Filename"; Text[250])
         {
             DataClassification = CustomerContent;
+#if not CLEAN20
+            ObsoleteTag = '20.0';
+            ObsoleteState = Pending;
+            ObsoleteReason = 'This functionality is not in use and not supported';
+#else
+            ObsoleteTag = '20.0';
+            ObsoleteState = Removed;
+            ObsoleteReason = 'This functionality is not in use and not supported';
+#endif     
         }
         field(10; "XSD-Filename"; Text[250])
         {
             DataClassification = CustomerContent;
+#if not CLEAN20
+            ObsoleteTag = '20.0';
+            ObsoleteState = Pending;
+            ObsoleteReason = 'This functionality is not in use and not supported';
+#else
+            ObsoleteTag = '20.0';
+            ObsoleteState = Removed;
+            ObsoleteReason = 'This functionality is not in use and not supported';
+#endif
         }
+
         field(11; "Statement Template Name"; Code[10])
         {
             DataClassification = CustomerContent;
@@ -231,18 +250,24 @@ table 11021 "Sales VAT Advance Notif."
     }
 
     trigger OnInsert()
+    var
+        CompanyInformation: Record "Company Information";
     begin
+        FeatureTelemetry.LogUptake('0001Q0G', ElecVATAdvanceNotTok, Enum::"Feature Uptake Status"::"Used");
         if xRec.FindLast() then;
         Period := xRec.Period;
-        "XSL-Filename" := xRec."XSL-Filename";
-        "XSD-Filename" := xRec."XSD-Filename";
         "Contact for Tax Office" := xRec."Contact for Tax Office";
+        if "Contact for Tax Office" = '' then begin
+            CompanyInformation.Get();
+            "Contact for Tax Office" := CopyStr(CompanyInformation."VAT Representative", 1, MaxStrLen("Contact for Tax Office"));
+        end;
 
         if "No." = '' then begin
             ElecVATDeclSetup.Get();
             ElecVATDeclSetup.TestField("Sales VAT Adv. Notif. Nos.");
             NoSeriesMgt.InitSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", xRec."No. Series", WorkDate(), "No.", "No. Series");
         end;
+        FeatureTelemetry.LogUsage('0001Q0H', ElecVATAdvanceNotTok, 'Elec. VAT advance notif generated');
     end;
 
     trigger OnRename()
@@ -258,20 +283,19 @@ table 11021 "Sales VAT Advance Notif."
     var
         ElecVATDeclSetup: Record "Elec. VAT Decl. Setup";
         NoSeriesMgt: Codeunit NoSeriesManagement;
-        WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.';
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        ElecVATAdvanceNotTok: Label 'DE Elec. VAT Advance Notifications', Locked = true;
+        WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.', Comment = '%1 = Registration No. Field Caption; %2 = Tax Office Area; %3 = VAT No.';
         MustSpecStartingDateErr: Label 'You must specify a beginning of a month as starting date of the statement period.';
         StartingDateErr: Label 'The starting date is not the first date of a quarter.';
-        DeleteXMLFileQst: Label 'Do you want to delete the XML-File for the %1?';
-#if not CLEAN17
-        FilePathNotExistErr: Label 'The file or path %1 does not exist.';
-        FileExistsMsg: Label 'File already exists. Overwrite?';
-#endif
+        DeleteXMLFileQst: Label 'Do you want to delete the XML-File for the %1?', Comment = '%1 = Sales VAT Advance Notif. Table Caption';
         CreateXMLBeforeShowErr: Label 'You must create the XML-File before it can be shown.';
-        CannotChangeXMLFileErr: Label 'You cannot change the value of this field anymore after the XML-File for the %1 has been created.';
+        CannotChangeXMLFileErr: Label 'You cannot change the value of this field anymore after the XML-File for the %1 has been created.', Comment = '%1 = Sales VAT Advance Notif. Table Caption';
         XmlFilterTxt: Label 'XML File(*.xml)|*.xml', Locked = true;
         ElsterTok: Label 'ElsterTelemetryCategoryTok', Locked = true;
         DeleteXMLFileMsg: Label 'Deleting XML file', Locked = true;
         DeleteXMLFileSuccessMsg: Label 'XML file deleted successfully', Locked = true;
+        XMLFileNameTxt: Label '%1_%2.xml', Locked = true;
         TotalAmount: Decimal;
         TotalBase: Decimal;
         TotalUnrealizedAmount: Decimal;
@@ -315,7 +339,6 @@ table 11021 "Sales VAT Advance Notif."
     var
         SalesVATAdvNotif2: Record "Sales VAT Advance Notif.";
         FileManagement: Codeunit "File Management";
-        XmlProcessInst: XmlProcessingInstruction;
         XmlElem: XmlElement;
         XmlOutStream: OutStream;
         XmlInStream: InStream;
@@ -327,20 +350,6 @@ table 11021 "Sales VAT Advance Notif."
         FileName := FileManagement.ServerTempFileName('xml');
 
         XmlDoc.GetRoot(XmlElem);
-        if "XSL-Filename" <> '' then begin
-#if not CLEAN17
-            if FileManagement.IsLocalFileSystemAccessible() then
-                if not FileManagement.ClientFileExists("XSL-Filename") then
-                    Error(FilePathNotExistErr, "XSL-Filename");
-#endif
-            XmlProcessInst := XmlProcessingInstruction.Create(
-                'xml-stylesheet', 'type="text/xsl" href="' + "XSL-Filename" + '"');
-            XmlElem.AddBeforeSelf(XmlProcessInst);
-        end;
-
-        if EXISTS("XSD-Filename") then
-            XmlElem.SetAttribute('schemaLocation', "XSD-Filename");
-
         SalesVATAdvNotif2."XML Submission Document".CreateOutStream(XmlOutStream);
         XmlDoc.WriteTo(XmlOutStream);
         SalesVATAdvNotif2."XML Submission Document".CreateInStream(XmlInStream);
@@ -355,43 +364,16 @@ table 11021 "Sales VAT Advance Notif."
         ExportXMLFile(FileName);
     end;
 
-#if not CLEAN17
-    local procedure ExportXMLFile(SourceFile: Text)
-    var
-        FileManagement: Codeunit "File Management";
-        EnvironmentInfo: Codeunit "Environment Information";
-        FileName: Text;
-        FilePath: Text;
-        ResultXMLFullName: Text;
-    begin
-        ElecVATDeclSetup.Get();
-        if FileManagement.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
-            ElecVATDeclSetup.VerifyAndSetSalesVATAdvNotifPath();
-
-        FileName := StrSubstNo('%1_%2.xml', ElecVATDeclSetup."XML File Default Name", Description);
-
-        if FileManagement.IsLocalFileSystemAccessible() then begin
-            FilePath := FileManagement.DownloadTempFile(SourceFile);
-            ResultXMLFullName := StrSubstNo('%1\%2', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", FileName);
-            if FileManagement.ClientFileExists(ResultXMLFullName) then
-                if not Confirm(FileExistsMsg) then
-                    exit;
-            FileManagement.CopyClientFile(FilePath, ResultXMLFullName, true);
-        end else
-            Download(SourceFile, '', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", XmlFilterTxt, FileName);
-    end;
-#else
     local procedure ExportXMLFile(SourceFile: Text)
     var
         FileName: Text;
     begin
         ElecVATDeclSetup.Get();
 
-        FileName := StrSubstNo('%1_%2.xml', ElecVATDeclSetup."XML File Default Name", Description);
+        FileName := StrSubstNo(XMLFileNameTxt, ElecVATDeclSetup."XML File Default Name", Description);
 
         Download(SourceFile, '', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", XmlFilterTxt, FileName);
     end;
-#endif
 
     procedure CheckDate(StartDate2: Date)
     begin

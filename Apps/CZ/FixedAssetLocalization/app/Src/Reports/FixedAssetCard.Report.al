@@ -2,7 +2,7 @@ report 31246 "Fixed Asset Card CZF"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/FixedAssetCard.rdl';
-    ApplicationArea = Basic, Suite;
+    ApplicationArea = FixedAssets;
     Caption = 'Fixed Asset Card';
     UsageCategory = ReportsAndAnalysis;
 
@@ -287,7 +287,7 @@ report 31246 "Fixed Asset Card CZF"
                     Caption = 'Options';
                     field(ShowEntriesCZF; ShowEntries)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Show Entries';
                         ToolTip = 'Specifies when the entries is to be show';
                     }

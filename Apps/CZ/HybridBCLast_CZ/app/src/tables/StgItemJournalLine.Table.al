@@ -1,6 +1,15 @@
 table 11714 "Stg Item Journal Line"
 {
     Caption = 'Stg Item Journal Line';
+#if not CLEAN21
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '21.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '23.0';
+#endif
 
     fields
     {
@@ -269,17 +278,9 @@ table 11714 "Stg Item Journal Line"
         field(68; "Reserved Quantity"; Decimal)
         {
             AccessByPermission = tabledata "Purch. Rcpt. Header" = R;
-            CalcFormula = Sum("Reservation Entry".Quantity WHERE("Source ID" = FIELD("Journal Template Name"),
-                                                                  "Source Ref. No." = FIELD("Line No."),
-                                                                  "Source Type" = CONST(83),
-                                                                  "Source Subtype" = FIELD("Entry Type"),
-                                                                  "Source Batch Name" = FIELD("Journal Batch Name"),
-                                                                  "Source Prod. Order Line" = CONST(0),
-                                                                  "Reservation Status" = CONST(Reservation)));
             Caption = 'Reserved Quantity';
             DecimalPlaces = 0 : 5;
             Editable = false;
-            FieldClass = FlowField;
         }
         field(72; "Unit Cost (ACY)"; Decimal)
         {
@@ -418,17 +419,9 @@ table 11714 "Stg Item Journal Line"
         field(5468; "Reserved Qty. (Base)"; Decimal)
         {
             AccessByPermission = tabledata "Purch. Rcpt. Header" = R;
-            CalcFormula = Sum("Reservation Entry"."Quantity (Base)" WHERE("Source ID" = FIELD("Journal Template Name"),
-                                                                           "Source Ref. No." = FIELD("Line No."),
-                                                                           "Source Type" = CONST(83),
-                                                                           "Source Subtype" = FIELD("Entry Type"),
-                                                                           "Source Batch Name" = FIELD("Journal Batch Name"),
-                                                                           "Source Prod. Order Line" = CONST(0),
-                                                                           "Reservation Status" = CONST(Reservation)));
             Caption = 'Reserved Qty. (Base)';
             DecimalPlaces = 0 : 5;
             Editable = false;
-            FieldClass = FlowField;
         }
         field(5560; Level; Integer)
         {
@@ -929,7 +922,6 @@ table 11714 "Stg Item Journal Line"
         field(31072; "Statistic Indication"; Code[10])
         {
             Caption = 'Statistic Indication';
-            TableRelation = "Statistic Indication".Code WHERE("Tariff No." = FIELD("Tariff No."));
             ObsoleteState = Pending;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '18.0';
@@ -959,7 +951,6 @@ table 11714 "Stg Item Journal Line"
         field(31077; "Whse. Net Change Template"; Code[10])
         {
             Caption = 'Whse. Net Change Template';
-            TableRelation = "Whse. Net Change Template";
         }
         field(99000755; "Overhead Rate"; Decimal)
         {

@@ -84,6 +84,22 @@ table 9560 "Document Sharing"
         {
             DataClassification = CustomerContent;
         }
+
+        /// <summary>
+        /// Specifies the sharing intent of the document.
+        /// </summary>
+        field(9; "Document Sharing Intent"; Enum "Document Sharing Intent")
+        {
+            DataClassification = SystemMetadata;
+        }
+
+        /// <summary>
+        /// Specifies the sharing source of the document.
+        /// </summary>
+        field(10; "Source"; Enum "Document Sharing Source")
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

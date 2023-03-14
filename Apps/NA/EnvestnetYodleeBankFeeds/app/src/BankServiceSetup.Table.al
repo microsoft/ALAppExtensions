@@ -63,6 +63,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
             trigger OnValidate();
             var
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                FeatureTelemetry: Codeunit "Feature Telemetry";
             begin
                 if not xRec."Enabled" and Rec."Enabled" then
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
@@ -77,6 +78,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
                         TESTFIELD("Bank Acc. Linking URL");
                     END;
                     TESTFIELD("User Profile Email Address");
+                    FeatureTelemetry.LogUptake('0000GY2', 'Yodlee', Enum::"Feature Uptake Status"::"Set up");
                 end;
             end;
         }

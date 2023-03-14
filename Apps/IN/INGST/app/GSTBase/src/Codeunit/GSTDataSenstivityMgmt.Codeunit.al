@@ -34,6 +34,7 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"G/L Account");
         SetTableFieldsToNormal(Database::"Inventory Setup");
         SetTableFieldsToNormal(Database::"Item Charge");
+        SetTableFieldsToNormal(Database::"Item Templ.");
         SetTableFieldsToNormal(Database::Item);
         SetTableFieldsToNormal(Database::Location);
         SetTableFieldsToNormal(Database::"Sales & Receivables Setup");
@@ -146,7 +147,10 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"GST Journal Batch");
         SetTableFieldsToNormal(Database::"GST Journal Line");
         SetTableFieldsToNormal(Database::"GST Adjustment Buffer");
+#if not CLEAN20
         SetTableFieldsToNormal(Database::"Invoice Post. Buffer");
+#endif
+        SetTableFieldsToNormal(Database::"Invoice Posting Buffer");
     end;
 
     local procedure SetTableFieldsToNormal(TableNo: Integer)

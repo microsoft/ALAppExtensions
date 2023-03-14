@@ -20,7 +20,7 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
     begin
         Initialize();
         LibraryLowerPermissions.SetO365Basic();
-        GeneralTestGetAddressIO('CM129UR', '', 21);
+        GeneralTestGetAddressIO('CM129UR', '', 22);
     end;
 
     [Test]
@@ -88,7 +88,7 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
         SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 1);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Building 5', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
         Assert.AreEqual('', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
 
         // [WHEN]
@@ -96,7 +96,7 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
         SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 2);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Building 5, Microsoft Campus', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
         Assert.AreEqual('', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
 
         // [WHEN]
@@ -104,24 +104,24 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
         SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 3);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
-        Assert.AreEqual('Microsoft Ltd', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Ltd, Microsoft Campus, Microsoft Street', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
 
         // [WHEN]
         // - "line 4" is empty
         SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 4);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
-        Assert.AreEqual('Microsoft Campus, Microsoft Ltd', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Earley, Reading', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
 
         // [WHEN]
         // - "Locality" is empty
         SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 5);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Street', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
-        Assert.AreEqual('Microsoft Campus, Microsoft Ltd, Floor 3', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Ltd, Microsoft Campus, Microsoft Street', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Earley', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
     end;
 
     [Test]
@@ -290,17 +290,18 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
     begin
         TempAddressNameValueBuffer.ID := 1;
 
+        // Line1, Line2, Line3, Locality, City, County, Country
         case EmptyPosition of
             1:
-                TempAddressNameValueBuffer.Value := ', , , , Microsoft Area, Reading, Berkshire';
+                TempAddressNameValueBuffer.Value := 'Building 5, , , , Reading, Berkshire, GB';
             2:
-                TempAddressNameValueBuffer.Value := 'Microsoft Street, , , , Microsoft Area, Reading, Berkshire';
+                TempAddressNameValueBuffer.Value := 'Building 5, Microsoft Campus, , , Reading, Berkshire, GB';
             3:
-                TempAddressNameValueBuffer.Value := 'Microsoft Ltd, Microsoft Street, , , Microsoft Area, Reading, Berkshire';
+                TempAddressNameValueBuffer.Value := 'Microsoft Ltd, Microsoft Campus, Microsoft Street, , Reading, Berkshire, GB';
             4:
-                TempAddressNameValueBuffer.Value := 'Microsoft Ltd, Microsoft Campus, Microsoft Street, , Microsoft Area, Reading, Berkshire';
+                TempAddressNameValueBuffer.Value := ', , , Earley, Reading, Berkshire, GB';
             5:
-                TempAddressNameValueBuffer.Value := 'Floor 3, Microsoft Ltd, Microsoft Campus, Microsoft Street, , Reading, Berkshire';
+                TempAddressNameValueBuffer.Value := 'Microsoft Ltd, Microsoft Campus, Microsoft Street, Earley, , , GB';
         end;
 
         TempAddressNameValueBuffer.Name := TempAddressNameValueBuffer.Value;

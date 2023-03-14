@@ -6,13 +6,13 @@ codeunit 1451 "MS - Yodlee Import Bank Feed"
     var
         DataExch: Record "Data Exch.";
         ProcessDataExch: Codeunit "Process Data Exch.";
-        RecRef: RecordRef;
+        AuxRecordRef: RecordRef;
     begin
         DataExch.GET("Data Exch. Entry No.");
-        RecRef.GETTABLE(Rec);
+        AuxRecordRef.GETTABLE(Rec);
 
         PreProcess(Rec);
-        ProcessDataExch.ProcessAllLinesColumnMapping(DataExch, RecRef);
+        ProcessDataExch.ProcessAllLinesColumnMapping(DataExch, AuxRecordRef);
         PostProcess(Rec);
     end;
 
@@ -77,17 +77,17 @@ codeunit 1451 "MS - Yodlee Import Bank Feed"
     var
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
         ConfigValidateManagement: Codeunit "Config. Validate Management";
-        RecRef: RecordRef;
+        AuxRecordRef: RecordRef;
         FieldRef: FieldRef;
     begin
         BankAccReconciliation.GET(
           BankAccReconciliationLine."Statement Type",
           BankAccReconciliationLine."Bank Account No.",
           BankAccReconciliationLine."Statement No.");
-        RecRef.GETTABLE(BankAccReconciliation);
-        FieldRef := RecRef.FIELD(BankAccReconciliation.FIELDNO("Statement Ending Balance"));
+        AuxRecordRef.GETTABLE(BankAccReconciliation);
+        FieldRef := AuxRecordRef.FIELD(BankAccReconciliation.FIELDNO("Statement Ending Balance"));
         ConfigValidateManagement.EvaluateValueWithValidate(FieldRef, COPYSTR(Value, 1, 250), TRUE);
-        RecRef.MODIFY(TRUE);
+        AuxRecordRef.MODIFY(TRUE);
     end;
 }
 

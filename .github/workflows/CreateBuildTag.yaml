@@ -1,0 +1,54 @@
+name: 'Create Build Tag'
+
+on:
+  workflow_run:
+    workflows: [' CI/CD']
+    types: ['completed']
+    branches: ['main', 'release/*']
+
+run-name: Create build tag on branch ${{ github.ref_name }}.
+
+jobs:
+  TagSuccessfulBuild:
+    if: github.event.workflow_run.conclusion == 'success' && github.repository_owner == 'microsoft'
+    runs-on: windows-latest
+    steps:
+      - name: Create version tag
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Query all artifacts from the build workflow
+            const allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+
+            if(!allArtifacts) {
+              console.log(`Could not fetch artifacts from run ID ${context.payload.workflow_run.id}`)
+              return;
+            }
+
+            // Determine the build number, based on the apps artifact name
+            const appsArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name.match(/.*-Apps-.*/)
+            })[0];
+
+            if(!appsArtifact) {
+              console.log(`Could not find apps artifact from run ID ${context.payload.workflow_run.id}`)
+              return;
+            }
+
+            // The build number is after -Apps-
+            const buildNumber = appsArtifact.name.replace(/.*-Apps-/, "")
+            const tag = `refs/tags/builds/${buildNumber}`
+
+            console.log(`Creating tag: ${tag}`)
+
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: tag,
+              sha: context.sha
+            });

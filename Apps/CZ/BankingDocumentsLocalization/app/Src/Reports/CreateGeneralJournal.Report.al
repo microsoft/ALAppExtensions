@@ -24,6 +24,14 @@ report 31287 "Create General Journal CZB"
 
                 trigger OnPostDataItem()
                 begin
+                    if not HideMessages then begin
+                        WindowDialog.Close();
+                        WindowDialog.Open(ApplyingLinesMsg);
+                    end;
+
+                    if not ApplyGeneralJournalLine("Iss. Bank Statement Header CZB") then
+                        ApplyingFailed := true;
+
                     if not HideMessages then
                         WindowDialog.Close();
                 end;
@@ -46,7 +54,10 @@ report 31287 "Create General Journal CZB"
             trigger OnPostDataItem()
             begin
                 if not HideMessages then
-                    Message(SuccessCreatedMsg);
+                    if ApplyingFailed then
+                        Message(ApplyingFailedMsg)
+                    else
+                        Message(SuccessCreatedMsg);
             end;
         }
     }
@@ -98,7 +109,10 @@ report 31287 "Create General Journal CZB"
         WindowDialog: Dialog;
         VariableSymbolToDescription, VariableSymbolToVariableSymbol, VariableSymbolToExtDocNo : Boolean;
         CreatingLinesMsg: Label 'Creating payment journal lines...\\Line No. #1##########', Comment = '%1 = Progress bar';
+        ApplyingLinesMsg: Label 'Applying payment journal lines...\\Line No. #1##########', Comment = '%1 = Progress bar';
         SuccessCreatedMsg: Label 'Payment journal lines were successfully created.';
+        ApplyingFailedMsg: Label 'One or more errors were found when matching the statement lines in the payment journal. For more information, open the payment journal and run the Match by Search Rule function for the unapplied lines.';
+        ApplyingFailed: Boolean;
         HideMessages: Boolean;
         LastLineNo: Integer;
 
@@ -201,31 +215,40 @@ report 31287 "Create General Journal CZB"
         GenJournalLine.Validate(Amount, -IssBankStatementLineCZB."Amount (Bank Stat. Currency)");
         GenJournalLine.Validate("Currency Code", IssBankStatementLineCZB."Bank Statement Currency Code");
         GenJournalLine.Validate("Currency Factor", IssBankStatementLineCZB."Bank Statement Currency Factor");
-        GenJournalLine."Bank Account No. CZL" := "Iss. Bank Statement Line CZB"."Account No.";
-        GenJournalLine."Bank Account Code CZL" := "Iss. Bank Statement Line CZB"."Cust./Vendor Bank Account Code";
-        GenJournalLine."IBAN CZL" := "Iss. Bank Statement Line CZB".IBAN;
-        GenJournalLine."Variable Symbol CZL" := IssBankStatementLineCZB."Variable Symbol";
+        GenJournalLine."Bank Account No. CZL" := IssBankStatementLineCZB."Account No.";
+        GenJournalLine."Bank Account Code CZL" := IssBankStatementLineCZB."Cust./Vendor Bank Account Code";
+        GenJournalLine."IBAN CZL" := IssBankStatementLineCZB.IBAN;
+        GenJournalLine.Description := IssBankStatementLineCZB.Description;
+        GenJournalLine.SetVariableSymbolCZB(
+            IssBankStatementLineCZB."Variable Symbol", VariableSymbolToDescription, VariableSymbolToVariableSymbol, VariableSymbolToExtDocNo);
         GenJournalLine."Specific Symbol CZL" := IssBankStatementLineCZB."Specific Symbol";
         GenJournalLine."Constant Symbol CZL" := IssBankStatementLineCZB."Constant Symbol";
         GenJournalLine.Validate("Bal. Account Type", GenJournalLine."Bal. Account Type"::"Bank Account");
         GenJournalLine.Validate("Bal. Account No.", BankAccount."No.");
-        GenJournalLine.Description := IssBankStatementLineCZB.Description;
-
+        GenJournalLine.Validate("Search Rule Code CZB", IssBankStatementHeaderCZB."Search Rule Code");
         OnAfterAssignGenJournalLine(IssBankStatementHeaderCZB, IssBankStatementLineCZB, BankAccount, GenJournalLine);
         GenJournalLine.Insert();
+    end;
 
-        GenJournalLine.Validate("Search Rule Code CZB", IssBankStatementHeaderCZB."Search Rule Code");
-        Codeunit.Run(Codeunit::"Match Bank Payment CZB", GenJournalLine);
-        OnAfterApplyGenJournalLine(IssBankStatementHeaderCZB, IssBankStatementLineCZB, GenJournalLine);
-
-        if VariableSymbolToDescription and (IssBankStatementLineCZB."Variable Symbol" <> '') then
-            GenJournalLine.Description := IssBankStatementLineCZB."Variable Symbol";
-        if VariableSymbolToVariableSymbol then
-            GenJournalLine."Variable Symbol CZL" := IssBankStatementLineCZB."Variable Symbol";
-        if VariableSymbolToExtDocNo then
-            GenJournalLine."External Document No." := IssBankStatementLineCZB."Variable Symbol";
-
-        GenJournalLine.Modify(true);
+    local procedure ApplyGeneralJournalLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB") Result: Boolean
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        Result := true;
+        GetBankAccount(IssBankStatementHeaderCZB);
+        GenJournalLine.SetRange("Journal Template Name", BankAccount."Payment Jnl. Template Name CZB");
+        GenJournalLine.SetRange("Journal Batch Name", BankAccount."Payment Jnl. Batch Name CZB");
+        GenJournalLine.SetRange("Document No.", IssBankStatementHeaderCZB."No.");
+        if GenJournalLine.FindSet() then begin
+            Commit(); // the matching bank payment should not rollback already created general journal lines in case of error
+            repeat
+                if not HideMessages then
+                    WindowDialog.Update(1, GenJournalLine."Line No.");
+                if not Codeunit.Run(Codeunit::"Match Bank Payment CZB", GenJournalLine) then
+                    Result := false;
+                OnAfterMatchingBankPayment(IssBankStatementHeaderCZB, GenJournalLine);
+            until GenJournalLine.Next() = 0;
+        end;
     end;
 
     [IntegrationEvent(false, false)]
@@ -237,9 +260,16 @@ report 31287 "Create General Journal CZB"
     local procedure OnAfterAssignGenJournalLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB"; BankAccount: Record "Bank Account"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
-
+#if not CLEAN22
+    [Obsolete('The event is replaced by the OnAfterMatchingBankPayment event.', '22.0')]
     [IntegrationEvent(false, false)]
     local procedure OnAfterApplyGenJournalLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+#endif
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterMatchingBankPayment(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 }

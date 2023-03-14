@@ -23,7 +23,7 @@ page 31137 "EET Simple Registration CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     ShowMandatory = true;
-                    ToolTip = 'Specifies the code of the business premises.';
+                    ToolTip = 'Specifies the code of the business premises.';
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
@@ -39,7 +39,7 @@ page 31137 "EET Simple Registration CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     ShowMandatory = true;
-                    ToolTip = 'Specifies the code of the EET cash register.';
+                    ToolTip = 'Specifies the code of the EET cash register.';
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
@@ -65,7 +65,7 @@ page 31137 "EET Simple Registration CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Total Sales Amount';
-                    ToolTip = 'Specifies the total amount of cash document.';
+                    ToolTip = 'Specifies the total amount of cash document.';
 
                     trigger OnValidate()
                     begin
@@ -76,7 +76,7 @@ page 31137 "EET Simple Registration CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
-                    ToolTip = 'Specifies the type of the applied document.';
+                    ToolTip = 'Specifies the type of the applied document.';
 
                     trigger OnValidate()
                     begin
@@ -87,7 +87,7 @@ page 31137 "EET Simple Registration CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
-                    ToolTip = 'Specifies the number of the applied document.';
+                    ToolTip = 'Specifies the number of the applied document.';
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
@@ -162,7 +162,7 @@ page 31137 "EET Simple Registration CZL"
                         AutoFormatType = 1;
                         Caption = 'Amount - Art.90';
                         Importance = Additional;
-                        ToolTip = 'Specifies the base amount under paragraph 90th.';
+                        ToolTip = 'Specifies the base amount under paragraph 90th.';
 
                         trigger OnValidate()
                         begin
@@ -202,7 +202,7 @@ page 31137 "EET Simple Registration CZL"
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
                         Caption = 'VAT Amount';
-                        ToolTip = 'Specifies the reduced VAT amount.';
+                        ToolTip = 'Specifies the reduced VAT amount.';
 
                         trigger OnValidate()
                         begin
@@ -229,7 +229,7 @@ page 31137 "EET Simple Registration CZL"
                         AutoFormatType = 1;
                         Caption = 'Amount - Art.90';
                         Importance = Additional;
-                        ToolTip = 'Specifies the reduced amount under paragraph 90th.';
+                        ToolTip = 'Specifies the reduced amount under paragraph 90th.';
 
                         trigger OnValidate()
                         begin
@@ -269,7 +269,7 @@ page 31137 "EET Simple Registration CZL"
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
                         Caption = 'VAT Amount';
-                        ToolTip = 'Specifies the reduced VAT amount 2.';
+                        ToolTip = 'Specifies the reduced VAT amount 2.';
 
                         trigger OnValidate()
                         begin
@@ -313,7 +313,7 @@ page 31137 "EET Simple Registration CZL"
                         AutoFormatType = 1;
                         Caption = 'Amount - Art.89';
                         Importance = Additional;
-                        ToolTip = 'Specifies the amount under paragraph 89th.';
+                        ToolTip = 'Specifies the amount under paragraph 89th.';
 
                         trigger OnValidate()
                         begin
@@ -326,7 +326,7 @@ page 31137 "EET Simple Registration CZL"
                         AutoFormatType = 1;
                         Caption = 'Amount Exempted From VAT';
                         Importance = Additional;
-                        ToolTip = 'Specifies the amount of cash document VAT-exempt.';
+                        ToolTip = 'Specifies the amount of cash document VAT-exempt.';
 
                         trigger OnValidate()
                         begin
@@ -339,7 +339,7 @@ page 31137 "EET Simple Registration CZL"
                         AutoFormatType = 1;
                         Caption = 'Amt. For Subseq. Draw/Settle';
                         Importance = Additional;
-                        ToolTip = 'Specifies the amount of the payments for subsequent drawdown or settlement.';
+                        ToolTip = 'Specifies the amount of the payments for subsequent drawdown or settlement.';
 
                         trigger OnValidate()
                         begin
@@ -352,7 +352,7 @@ page 31137 "EET Simple Registration CZL"
                         AutoFormatType = 1;
                         Caption = 'Amt. Subseq. Drawn/Settled';
                         Importance = Additional;
-                        ToolTip = 'Specifies the amount of the subsequent drawing or settlement.';
+                        ToolTip = 'Specifies the amount of the subsequent drawing or settlement.';
 
                         trigger OnValidate()
                         begin

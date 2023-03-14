@@ -17,6 +17,7 @@ page 31185 "VAT Document CZZ"
                     Caption = 'Document No.';
                     ToolTip = 'Specifies document no.';
                     Editable = DocumentNoEditable;
+                    ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
@@ -41,6 +42,7 @@ page 31185 "VAT Document CZZ"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Posting Date';
                     ToolTip = 'Specifies posting date.';
+                    ShowMandatory = true;
 
                     trigger OnValidate()
                     var
@@ -70,12 +72,14 @@ page 31185 "VAT Document CZZ"
                     ApplicationArea = Basic, Suite;
                     Caption = 'VAT Date';
                     ToolTip = 'Specifies VAT date.';
+                    ShowMandatory = true;
                 }
                 field(OriginalDocumentVATDate; OriginalDocumentVATDate)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Original Document VAT Date';
                     ToolTip = 'Specifies original document VAT date.';
+                    ShowMandatory = true;
                 }
                 field(ExternalDocumentNo; ExternalDocumentNo)
                 {
@@ -127,25 +131,29 @@ page 31185 "VAT Document CZZ"
         DocumentNoEditable: Boolean;
 
 #if not CLEAN20
-#pragma warning disable AL0432
     [Obsolete('Replaced by InitDocument function with NewOriginalDocumentVATDate parameter.', '20.0')]
-    procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewPostingDate: Date; NewVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-#pragma warning restore AL0432
+    procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewPostingDate: Date; NewVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     begin
-        InitDocument(NewNoSeriesCode, NewDocumentNo, NewPostingDate, NewVATDate, NewVATDate, NewCurrencyCode, NewCurrencyFactor, NewExternalDocumentNo, InvoicePostBuffer);
+        InitDocument(NewNoSeriesCode, NewDocumentNo, NewPostingDate, NewPostingDate, NewVATDate, NewVATDate, NewCurrencyCode, NewCurrencyFactor, NewExternalDocumentNo, AdvancePostingBufferCZZ);
     end;
-#endif
 
-#pragma warning disable AL0432
-    procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewPostingDate: Date; NewVATDate: Date; NewOriginalDocumentVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-#pragma warning restore AL0432
+#endif
+#if not CLEAN21
+    [Obsolete('Replaced by InitDocument function with NewDocumentDate parameter.', '21.0')]
+    procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewPostingDate: Date; NewVATDate: Date; NewOriginalDocumentVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
+    begin
+        InitDocument(NewNoSeriesCode, NewDocumentNo, NewPostingDate, NewPostingDate, NewVATDate, NewOriginalDocumentVATDate, NewCurrencyCode, NewCurrencyFactor, NewExternalDocumentNo, AdvancePostingBufferCZZ);
+    end;
+
+#endif
+    procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewDocumentDate: Date; NewPostingDate: Date; NewVATDate: Date; NewOriginalDocumentVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
         NoSeriesCode := NewNoSeriesCode;
         InitNoSeriesCode := NewNoSeriesCode;
         PostingDate := NewPostingDate;
-        DocumentDate := NewPostingDate;
+        DocumentDate := NewDocumentDate;
         ExternalDocumentNo := NewExternalDocumentNo;
         CurrencyCode := NewCurrencyCode;
         CurrencyFactor := NewCurrencyFactor;
@@ -161,8 +169,15 @@ page 31185 "VAT Document CZZ"
             end;
         OriginalDocumentVATDate := NewOriginalDocumentVATDate;
         if OriginalDocumentVATDate = 0D then
-            OriginalDocumentVATDate := VATDate;
-        CurrPage.Lines.Page.InitDocumentLines(NewCurrencyCode, NewCurrencyFactor, InvoicePostBuffer);
+            case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
+                PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
+                    OriginalDocumentVATDate := PostingDate;
+                PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
+                    OriginalDocumentVATDate := VATDate;
+                PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
+                    OriginalDocumentVATDate := DocumentDate;
+            end;
+        CurrPage.Lines.Page.InitDocumentLines(NewCurrencyCode, NewCurrencyFactor, AdvancePostingBufferCZZ);
 
         if NewDocumentNo <> '' then begin
             DocumentNo := NewDocumentNo;
@@ -175,23 +190,19 @@ page 31185 "VAT Document CZZ"
     end;
 
 #if not CLEAN20
-#pragma warning disable AL0432
     [Obsolete('Replaced by GetDocument function with NewOriginalDocumentVATDate parameter.', '20.0')]
-    procedure GetDocument(var NewDocumentNo: Code[20]; var NewPostingDate: Date; var NewDocumentDate: Date; var NewVATDate: Date; var NewExternalDocumentNo: Code[35]; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-#pragma warning restore AL0432
+    procedure GetDocument(var NewDocumentNo: Code[20]; var NewPostingDate: Date; var NewDocumentDate: Date; var NewVATDate: Date; var NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     begin
         NewDocumentNo := DocumentNo;
         NewPostingDate := PostingDate;
         NewDocumentDate := DocumentDate;
         NewVATDate := VATDate;
         NewExternalDocumentNo := ExternalDocumentNo;
-        CurrPage.Lines.Page.GetDocumentLines(InvoicePostBuffer);
+        CurrPage.Lines.Page.GetDocumentLines(AdvancePostingBufferCZZ);
     end;
 #endif
 
-#pragma warning disable AL0432
-    procedure GetDocument(var NewDocumentNo: Code[20]; var NewPostingDate: Date; var NewDocumentDate: Date; var NewVATDate: Date; var NewOriginalDocumentVATDate: Date; var NewExternalDocumentNo: Code[35]; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-#pragma warning restore AL0432
+    procedure GetDocument(var NewDocumentNo: Code[20]; var NewPostingDate: Date; var NewDocumentDate: Date; var NewVATDate: Date; var NewOriginalDocumentVATDate: Date; var NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     begin
         NewDocumentNo := DocumentNo;
         NewPostingDate := PostingDate;
@@ -199,7 +210,7 @@ page 31185 "VAT Document CZZ"
         NewVATDate := VATDate;
         NewOriginalDocumentVATDate := OriginalDocumentVATDate;
         NewExternalDocumentNo := ExternalDocumentNo;
-        CurrPage.Lines.Page.GetDocumentLines(InvoicePostBuffer);
+        CurrPage.Lines.Page.GetDocumentLines(AdvancePostingBufferCZZ);
     end;
 
     procedure SaveNoSeries()

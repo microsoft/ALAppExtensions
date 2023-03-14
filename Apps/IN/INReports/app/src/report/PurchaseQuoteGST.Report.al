@@ -515,7 +515,7 @@ report 18012 "Purchase - Quote GST"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageId("Language Code");
+                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
                 CompanyInfo.Get();
                 IsGSTApplicable := CheckGSTDoc("Purchase Line");
 

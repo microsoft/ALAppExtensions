@@ -3,6 +3,7 @@ report 31026 "Sales Adv. Letters Recap. CZZ"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
     Caption = 'Sales Advance Letters Recapitulation';
+    DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/SalesAdvLettersRecap.rdl';
 
     dataset

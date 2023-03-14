@@ -14,6 +14,7 @@ page 132577 "Caption Class Test Page"
             {
                 ApplicationArea = All;
                 CaptionClass = CaptionClassTest.GetCaptionClass();
+                ToolTip = 'Test field';
             }
         }
     }

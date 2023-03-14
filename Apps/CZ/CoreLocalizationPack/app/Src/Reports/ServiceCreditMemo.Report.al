@@ -398,7 +398,7 @@ report 31198 "Service Credit Memo CZL"
                     column(VATClauseIdentifier; TempVATAmountLine."VAT Identifier")
                     {
                     }
-                    column(VATClauseDescription; VATClause.Description)
+                    column(VATClauseDescription; VATClauseText)
                     {
                     }
                     column(VATClauseDescription2; VATClause."Description 2")
@@ -409,7 +409,7 @@ report 31198 "Service Credit Memo CZL"
                         TempVATAmountLine.GetLine(Number);
                         if not VATClause.Get(TempVATAmountLine."VAT Clause Code") then
                             CurrReport.Skip();
-                        VATClause.GetDescription("Service Cr.Memo Header");
+                        VATClauseText := VATClause.GetDescriptionText("Service Cr.Memo Header");
                     end;
 
                     trigger OnPreDataItem()
@@ -529,6 +529,7 @@ report 31198 "Service Credit Memo CZL"
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         ExchRateText: Text[50];
+        VATClauseText: Text;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];

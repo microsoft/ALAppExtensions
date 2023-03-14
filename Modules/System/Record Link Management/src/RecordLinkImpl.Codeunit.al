@@ -16,49 +16,69 @@ codeunit 4470 "Record Link Impl."
         RemovingStatusMsg: Label '@1@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@';
         ResultMsg: Label '%1 orphaned links were removed.', Comment = '%1 = number of orphaned record links found.';
 
-    local procedure ResetNotifyOnLinks(RecVar: Variant)
+    local procedure ResetNotifyOnLinks(RecVariant: Variant)
     var
         RecordLink: Record "Record Link";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.GetTable(RecVar);
-        RecordLink.SetRange("Record ID", RecRef.RecordId());
+        RecordRef.GetTable(RecVariant);
+        RecordLink.SetRange("Record ID", RecordRef.RecordId());
         RecordLink.SetRange(Notify, true);
         if not RecordLink.IsEmpty() then
             RecordLink.ModifyAll(Notify, false);
     end;
 
-    procedure CopyLinks(FromRecord: Variant; ToRecord: Variant)
+    procedure CopyLinks(FromRecordVariant: Variant; ToRecordVariant: Variant)
     var
-        RecRefTo: RecordRef;
+        RecordRefTo: RecordRef;
+        SkipReset: Boolean;
     begin
-        RecRefTo.GetTable(ToRecord);
-        RecRefTo.CopyLinks(FromRecord);
-        ResetNotifyOnLinks(RecRefTo);
-        RecordLinkManagement.OnAfterCopyLinks(FromRecord, ToRecord);
+        SkipReset := false;
+        RecordLinkManagement.OnBeforeCopyLinks(FromRecordVariant, ToRecordVariant, SkipReset);
+        RecordRefTo.GetTable(ToRecordVariant);
+        RecordRefTo.CopyLinks(FromRecordVariant);
+        if not SkipReset then
+            ResetNotifyOnLinks(RecordRefTo);
+        RecordLinkManagement.OnAfterCopyLinks(FromRecordVariant, ToRecordVariant);
     end;
 
     procedure WriteNote(var RecordLink: Record "Record Link"; Note: Text)
     var
         BinWriter: DotNet BinaryWriter;
-        OStr: OutStream;
+        Output: OutStream;
     begin
-        RecordLink.Note.CreateOutStream(OStr, TEXTENCODING::UTF8);
-        BinWriter := BinWriter.BinaryWriter(OStr);
+        RecordLink.Note.CreateOutStream(Output, TEXTENCODING::UTF8);
+        BinWriter := BinWriter.BinaryWriter(Output);
         BinWriter.Write(Note);
     end;
 
     procedure ReadNote(RecordLink: Record "Record Link") Note: Text
     var
         BinReader: DotNet BinaryReader;
-        IStr: InStream;
+        Data: InStream;
     begin
-        RecordLink.Note.CreateInStream(IStr, TEXTENCODING::UTF8);
-        BinReader := BinReader.BinaryReader(IStr);
+        RecordLink.Note.CreateInStream(Data, TEXTENCODING::UTF8);
+        BinReader := BinReader.BinaryReader(Data);
         // Peek if stream is empty
         if BinReader.BaseStream().Position() = BinReader.BaseStream().Length() then
             exit;
         Note := BinReader.ReadString();
+    end;
+
+    procedure RemoveLinks(RecVariant: Variant)
+    var
+        RecRef: RecordRef;
+        NotARecordErr: Label 'Internal server error. Please contact your system administrator.';
+    begin
+        if not RecVariant.IsRecord() then
+            Error(NotARecordErr);
+
+        RecRef.GetTable(RecVariant);
+        if RecRef.FindSet() then
+            repeat
+                if RecRef.HasLinks() then
+                    RecRef.DeleteLinks();
+            until RecRef.Next() = 0;
     end;
 
     procedure RemoveOrphanedLinks()
@@ -78,7 +98,7 @@ codeunit 4470 "Record Link Impl."
         RecordLink: Record "Record Link";
         RecordRef: RecordRef;
         PrevRecID: RecordID;
-        Window: Dialog;
+        WindowDialog: Dialog;
         i: Integer;
         Total: Integer;
         TimeLocked: Time;
@@ -86,7 +106,7 @@ codeunit 4470 "Record Link Impl."
         RecordExists: Boolean;
     begin
         if GuiAllowed() then
-            Window.Open(RemovingMsg + RemovingStatusMsg);
+            WindowDialog.Open(RemovingMsg + RemovingStatusMsg);
         TimeLocked := Time();
         RecordLink.SetFilter(Company, '%1|%2', '', CompanyName());
         RecordLink.SetCurrentKey("Record ID");
@@ -98,7 +118,7 @@ codeunit 4470 "Record Link Impl."
             repeat
                 i := i + 1;
                 if GuiAllowed() and ((i mod 1000) = 0) then
-                    Window.Update(1, Round(i / Total * 10000, 1));
+                    WindowDialog.Update(1, Round(i / Total * 10000, 1));
                 if Format(RecordLink."Record ID") <> Format(PrevRecID) then begin  // Direct comparison doesn't work.
                     PrevRecID := RecordLink."Record ID";
                     RecordExists := RecordRef.Get(RecordLink."Record ID");
@@ -117,7 +137,7 @@ codeunit 4470 "Record Link Impl."
                 end;
             until RecordLink.Next() = 0;
         if GuiAllowed() then
-            Window.Close();
+            WindowDialog.Close();
     end;
 }
 

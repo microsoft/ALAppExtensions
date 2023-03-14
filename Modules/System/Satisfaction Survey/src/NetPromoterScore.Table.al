@@ -7,6 +7,7 @@ table 1433 "Net Promoter Score"
 {
     Access = Internal;
     DataPerCompany = false;
+    ReplicateData = false;
 
     fields
     {

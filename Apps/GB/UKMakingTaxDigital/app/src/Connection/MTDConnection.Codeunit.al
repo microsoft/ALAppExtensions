@@ -11,6 +11,8 @@ codeunit 10537 "MTD Connection"
     end;
 
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        UKMakingTaxTok: Label 'UK Making Tax Digital', Locked = true;
         OAuthNotConfiguredErr: Label 'OAuth setup is not enabled for HMRC Making Tax Digital.';
         OpenSetupMsg: Label 'Open service connections to setup.';
         OpenSetupQst: Label 'Do you want to open the setup?';
@@ -48,6 +50,13 @@ codeunit 10537 "MTD Connection"
         EmptyStatusCodeErr: Label 'Empty status code in json response', Locked = true;
         CannotParseResponseErr: Label 'Cannot parse the http error response', Locked = true;
         FeatureConsentErr: Label 'The Making Tax Digital feature is not enabled. To enable it, on the VAT Report Setup page, on the Making Tax Digital FastTab, turn on the Enabled toggle.';
+        ErrPathTxt: Label ' (path %1)', Locked = true;
+        HttpErrTxt: Label 'HTTP error %1 (%2). %3', Locked = true;
+        SubmitVATReturnUrlPathTxt: Label '/organisations/vat/%1/returns', Locked = true;
+        RetrieveVATReturnUrlPathTxt: Label '/organisations/vat/%1/returns/%2', Locked = true;
+        RetrieveObligationsUrlPathTxt: Label '/organisations/vat/%1/obligations?from=%2&to=%3', Locked = true;
+        RetrieveLiabilitiesUrlPathTxt: Label '/organisations/vat/%1/liabilities?from=%2&to=%3', Locked = true;
+        RetrievePaymentsUrlPathTxt: Label '/organisations/vat/%1/payments?from=%2&to=%3', Locked = true;
 
     internal procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text; ResetFraudPreventionSessionHeaders: Boolean): Boolean
     begin
@@ -114,6 +123,7 @@ codeunit 10537 "MTD Connection"
         VATReportSetup: Record "VAT Report Setup";
         MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
         OAuth20SetupCode: code[20];
+        ErrText: Text;
     begin
         VATReportSetup.Get();
         if not VATReportSetup."MTD Enabled" then
@@ -122,10 +132,12 @@ codeunit 10537 "MTD Connection"
         if IsOAuthConfigured() then
             exit;
 
-        if not OpenSetup then
-            Error(StrSubstNo('%1\%2', OAuthNotConfiguredErr, OpenSetupMsg));
+        if not OpenSetup then begin
+            ErrText := OAuthNotConfiguredErr + '\' + OpenSetupMsg;
+            Error(ErrText);
+        end;
 
-        if Confirm(StrSubstNo('%1\%2', OAuthNotConfiguredErr, OpenSetupQst)) then begin
+        if Confirm(OAuthNotConfiguredErr + '\' + OpenSetupQst) then begin
             OAuth20SetupCode := GetOAuthSetupCode();
             if not OAuth20Setup.GET(OAuth20SetupCode) then begin
                 MTDOAuth20Mgt.InitOAuthSetup(OAuth20Setup, OAuth20SetupCode);
@@ -166,6 +178,7 @@ codeunit 10537 "MTD Connection"
         JObject2: JsonObject;
         HttpLogError: Text;
     begin
+        FeatureTelemetry.LogUptake('0000HFW', UKMakingTaxTok, Enum::"Feature Uptake Status"::"Used");
         OAuth20Setup.GET(GetOAuthSetupCode());
         VATReportSetup.Get();
 
@@ -308,9 +321,9 @@ codeunit 10537 "MTD Connection"
                                     HttpError += '\' + JToken2.AsValue().AsText();
                             if JToken.SelectToken('path', JToken2) then
                                 if JToken2.AsValue().AsText() <> '' then
-                                    HttpError += StrSubstNo(' (path %1)', JToken2.AsValue().AsText());
+                                    HttpError += StrSubstNo(ErrPathTxt, JToken2.AsValue().AsText());
                         end;
-                HttpLogError := StrSubstNo('HTTP error %1 (%2). %3', StatusCode, StatusReason, HttpError);
+                HttpLogError := StrSubstNo(HttpErrTxt, StatusCode, StatusReason, HttpError);
                 if (StatusCode = 429) then
                     HttpError := Error_TOO_MANY_REQ_Txt;
 
@@ -371,7 +384,7 @@ codeunit 10537 "MTD Connection"
 
         if HMRCErrorMessage <> '' then begin
             HttpError := HMRCErrorMessage;
-            HttpLogError := StrSubstNo('HTTP error %1 (%2). %3', StatusCode, StatusReason, HttpError);
+            HttpLogError := StrSubstNo(HttpErrTxt, StatusCode, StatusReason, HttpError);
             Session.LogMessage('0000CCD', HttpLogError, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
             exit(true);
         end;
@@ -382,34 +395,34 @@ codeunit 10537 "MTD Connection"
 
     local procedure SubmitVATReturnPath(): Text
     begin
-        exit(StrSubstNo('/organisations/vat/%1/returns', GetVATRegNo()));
+        exit(StrSubstNo(SubmitVATReturnUrlPathTxt, GetVATRegNo()));
     end;
 
     local procedure RetrieveVATReturnPath(PeriodNo: Text): Text
     var
         TypeHelper: Codeunit "Type Helper";
     begin
-        exit(StrSubstNo('/organisations/vat/%1/returns/%2', GetVATRegNo(), TypeHelper.UrlEncode(PeriodNo)));
+        exit(StrSubstNo(RetrieveVATReturnUrlPathTxt, GetVATRegNo(), TypeHelper.UrlEncode(PeriodNo)));
     end;
 
     local procedure RetrieveObligationsPath(FromDate: Date; ToDate: Date): Text
     begin
-        exit(StrSubstNo('/organisations/vat/%1/obligations?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(StrSubstNo(RetrieveObligationsUrlPathTxt, GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
     local procedure RetrieveLiabilitiesPath(FromDate: Date; ToDate: Date): Text
     begin
-        exit(StrSubstNo('/organisations/vat/%1/liabilities?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(StrSubstNo(RetrieveLiabilitiesUrlPathTxt, GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
     local procedure RetrievePaymentsPath(FromDate: Date; ToDate: Date): Text
     begin
-        exit(StrSubstNo('/organisations/vat/%1/payments?from=%2&to=%3', GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
+        exit(StrSubstNo(RetrievePaymentsUrlPathTxt, GetVATRegNo(), FormatValue(FromDate), FormatValue(ToDate)));
     end;
 
-    local procedure FormatValue(Value: Variant): Text
+    local procedure FormatValue(VariantValue: Variant): Text
     begin
-        exit(Format(Value, 0, 9));
+        exit(Format(VariantValue, 0, 9));
     end;
 
     local procedure GetVATRegNo(): Text[20]

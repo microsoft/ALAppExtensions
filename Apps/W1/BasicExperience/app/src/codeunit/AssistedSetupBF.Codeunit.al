@@ -8,15 +8,23 @@ codeunit 20605 "Assisted Setup BF"
         AssistedSetupDescriptionTxt: Label 'Start using the Basic Experience to manage your business.';
         AlreadySetUpQst: Label 'This assisted setup guide has already been completed. Do you want to run it again?';
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]
     local procedure SetupInitialize()
     var
-        BaseAppID: Codeunit "BaseApp ID";
-        AssistedSetup: Codeunit "Assisted Setup";
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        VideoCategory: Enum "Video Category";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        AssistedSetup.Add(BaseAppID.Get(), PAGE::"Assisted Setup BF", AssistedSetupTxt, AssistedSetupGroup::ReadyForBusiness, '', VideoCategory::ReadyForBusiness, AssistedSetupHelpTxt, AssistedSetupDescriptionTxt);
+        GuidedExperience.InsertAssistedSetup(
+            CopyStr(AssistedSetupTxt, 1, 2048),
+            CopyStr(AssistedSetupTxt, 1, 50),
+            AssistedSetupDescriptionTxt,
+            1,
+            ObjectType::Page,
+            PAGE::"Assisted Setup BF",
+            "Assisted Setup Group"::ReadyForBusiness,
+            '',
+            "Video Category"::ReadyForBusiness,
+            AssistedSetupHelpTxt
+        );
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnReRunOfCompletedSetup', '', false, false)]

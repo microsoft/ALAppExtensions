@@ -6,6 +6,7 @@
 table 135039 "Cues And KPIs Test 1 Cue"
 {
     DataClassification = ToBeClassified;
+    ReplicateData = false;
 
     fields
     {
@@ -18,15 +19,17 @@ table 135039 "Cues And KPIs Test 1 Cue"
         field(15; NormalDecimal; Decimal)
         {
         }
+#pragma warning disable AA0232
         field(20; FlowfieldInteger; Integer)
+#pragma warning restore AA0232
         {
             FieldClass = FlowField;
-            CalcFormula = sum ("Cues And KPIs Test 1 Cue".NormalInteger);
+            CalcFormula = sum("Cues And KPIs Test 1 Cue".NormalInteger);
         }
         field(25; FlowfieldDecimal; Decimal)
         {
             FieldClass = FlowField;
-            CalcFormula = sum ("Cues And KPIs Test 1 Cue".NormalDecimal);
+            CalcFormula = sum("Cues And KPIs Test 1 Cue".NormalDecimal);
         }
     }
 
@@ -35,6 +38,11 @@ table 135039 "Cues And KPIs Test 1 Cue"
         key(PK; "Primary Key")
         {
             Clustered = true;
+        }
+
+        key(Key1; NormalInteger)
+        {
+            SumIndexFields = NormalInteger;
         }
     }
 }

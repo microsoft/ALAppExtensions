@@ -1021,7 +1021,7 @@ page 18550 "Bank Payment Voucher"
                             if IsSimplePage then
                                 // If this page is opend in simple mode then use the current doc no. for every G/L lines that are created
                                 // from standard journal.
-                                StdGenJnl.CreateGenJnlFromStdJnlWithDocNo(StdGenJnl, CurrentJnlBatchName, CurrentDocNo)
+                                StdGenJnl.CreateGenJnlFromStdJnlWithDocNo(StdGenJnl, CurrentJnlBatchName, CurrentDocNo, 0D)
                             else
                                 StdGenJnl.CreateGenJnlFromStdJnl(StdGenJnl, CurrentJnlBatchName);
                             Message(BankPaymentInsertedMsg, StdGenJnl.Code);
@@ -1631,7 +1631,7 @@ page 18550 "Bank Payment Voucher"
                     var
                         ODataUtility: Codeunit ODataUtility;
                     begin
-                        ODataUtility.EditJournalWorksheetInExcel(CurrPage.Caption() [240], CurrPage.ObjectId(false), "Journal Batch Name", "Journal Template Name");
+                        ODataUtility.EditJournalWorksheetInExcel(CurrPage.Caption(), CurrPage.ObjectId(false), "Journal Batch Name", "Journal Template Name");
                     end;
                 }
                 action(PreviousDocNumberTrx)

@@ -6,7 +6,8 @@
 codeunit 8907 "Email Viewer"
 {
     Access = Internal;
-    Permissions = tabledata "Sent Email" = ri;
+    Permissions = tabledata "Sent Email" = ri,
+                  tabledata "Email View Policy" = r;
 
     procedure Open(SentEmail: Record "Sent Email")
     var
@@ -37,11 +38,12 @@ codeunit 8907 "Email Viewer"
     end;
 
     procedure CheckPermissions(SentEmail: Record "Sent Email")
+    var
+        EmailImpl: Codeunit "Email Impl";
+        EmailViewPolicy: Interface "Email View Policy";
     begin
-        if IsNullGuid(SentEmail."User Security Id") then
-            exit;
-
-        if SentEmail."User Security Id" = UserSecurityId() then
+        EmailViewPolicy := EmailImpl.GetUserEmailViewPolicy();
+        if EmailViewPolicy.HasAccess(SentEmail) then
             exit;
 
         Error(EmailMessageOpenPermissionErr);
@@ -74,44 +76,21 @@ codeunit 8907 "Email Viewer"
             Clear(EmailAccount);
     end;
 
-    procedure GetEmailMessage(var SentEmail: Record "Sent Email"; var EmailMessage: Codeunit "Email Message Impl.");
+    procedure GetEmailMessage(var SentEmail: Record "Sent Email"; var EmailMessageImpl: Codeunit "Email Message Impl.");
     begin
-        if not EmailMessage.Get(SentEmail."Message Id") then
+        if not EmailMessageImpl.Get(SentEmail."Message Id") then
             Error(EmailMessageDoesNotExistMsg);
     end;
 
     procedure RefreshSentMailForUser(AccountId: Guid; NewerThan: DateTime; SourceTableID: Integer; SourceSystemID: Guid; var SentEmailForUser: Record "Sent Email" temporary)
     var
-        SentEmail: Record "Sent Email";
-        EmailAccountImpl: Codeunit "Email Account Impl.";
         EmailImpl: Codeunit "Email Impl";
     begin
-        if not SentEmailForUser.IsEmpty() then
-            SentEmailForUser.DeleteAll();
-
-        if SourceTableID <> 0 then begin
-            EmailImpl.GetSentEmailsForRecord(SourceTableID, SourceSystemID, SentEmailForUser);
-            exit;
-        end;
-
-        if not EmailAccountImpl.IsUserEmailAdmin() then
-            SentEmail.SetRange("User Security Id", UserSecurityId());
-
-        if not IsNullGuid(AccountId) then
-            SentEmail.SetRange("Account Id", AccountId);
-
-        if NewerThan <> 0DT then
-            SentEmailForUser.SetRange("Date Time Sent", NewerThan, System.CurrentDateTime());
-
-        if SentEmail.FindSet() then
-            repeat
-                SentEmailForUser.TransferFields(SentEmail);
-                SentEmailForUser.Insert();
-            until SentEmail.Next() = 0;
+        EmailImpl.GetSentEmails(AccountId, NewerThan, SourceTableID, SourceSystemID, SentEmailForUser);
     end;
 
     var
-        EmailMessageOpenPermissionErr: Label 'You can only open your own email messages.';
+        EmailMessageOpenPermissionErr: Label 'You do not have permission to open the email message.';
         EmailMessageDoesNotExistMsg: Label 'The email message has been deleted by another user.';
         EmailWasQueuedForSendingMsg: Label 'The message was queued for sending.';
 }

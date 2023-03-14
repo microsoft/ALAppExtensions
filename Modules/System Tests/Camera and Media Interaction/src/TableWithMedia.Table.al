@@ -7,6 +7,7 @@
 table 135011 "Table With Media"
 {
     Access = Internal;
+	ReplicateData = false;
 
     fields
     {

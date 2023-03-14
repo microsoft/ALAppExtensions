@@ -1,9 +1,14 @@
 codeunit 12106 "Upg Mig BaseApp Local IT"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '21.0';
+
     trigger OnRun()
     begin
     end;
 
+#if not CLEAN18
     var
         ITCountryCodeTxt: Label 'IT', Locked = true;
 
@@ -30,11 +35,14 @@ codeunit 12106 "Upg Mig BaseApp Local IT"
 
         if IntrastatJnlLine.FindSet() then
             repeat
+#pragma warning disable AL0432
                 IntrastatJnlLine."Partner VAT ID" := IntrastatJnlLine."VAT Registration No.";
+#pragma warning restore AL0432
                 IntrastatJnlLine.Modify();
             until IntrastatJnlLine.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetIntrastatJnlLinePartnerIDUpgradeTag());
     end;
+#endif
 }
 

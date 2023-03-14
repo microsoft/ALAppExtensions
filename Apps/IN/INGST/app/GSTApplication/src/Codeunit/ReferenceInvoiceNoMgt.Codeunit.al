@@ -56,7 +56,7 @@ codeunit 18435 "Reference Invoice No. Mgt."
                     Error(SameDocErr);
 
                 if RefInvNo."Source Type" = RefInvNo."Source Type"::Vendor then begin
-                    VendorLedgerEntry.SetCurrentKey("Document No.", "Document Type", "Vendor No.");
+                    VendorLedgerEntry.SetCurrentKey("Document No.", "Vendor No.", "Entry No.");
                     VendorLedgerEntry.SetRange("Vendor No.", RefInvNo."Source No.");
                     VendorLedgerEntry.SetRange("Document No.", ReferenceInvoiceNo."Reference Invoice Nos.");
                     if VendorLedgerEntry.FindFirst() then begin
@@ -83,7 +83,7 @@ codeunit 18435 "Reference Invoice No. Mgt."
                 end;
 
                 if RefInvNo."Source Type" = RefInvNo."Source Type"::Customer then begin
-                    CustLedgerEntry.SetCurrentKey("Document No.", "Document Type", "Customer No.");
+                    CustLedgerEntry.SetCurrentKey("Document No.", "Customer No.", "Entry No.");
                     CustLedgerEntry.SetRange("Customer No.", RefInvNo."Source No.");
                     CustLedgerEntry.SetRange("Document No.", ReferenceInvoiceNo."Reference Invoice Nos.");
                     if CustLedgerEntry.FindFirst() then begin
@@ -1046,7 +1046,16 @@ codeunit 18435 "Reference Invoice No. Mgt."
         UpdateReferenceInvoiceNo: Page "Update Reference Invoice No";
         SalesDocType: Enum "Sales Document Type";
         GSTDocumentType: Enum "Document Type Enum";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+#if not CLEAN22
+        OnBeforeUpdateReferenceInvoiceNoPurchHeader(PurchaseHeader, IsHandled);
+#endif
+        OnBeforeUpdateReferenceInvoiceNoPurchaseHeader(PurchaseHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         if not IsGSTApplicable("Transaction Type Enum"::Purchase, PurchaseHeader."Document Type", SalesDocType, PurchaseHeader."No.") then
             Error(ReferenceInvoiceNoErr);
 
@@ -1074,7 +1083,16 @@ codeunit 18435 "Reference Invoice No. Mgt."
         UpdateReferenceInvoiceNo: Page "Update Reference Invoice No";
         PurchDocType: Enum "Purchase Document Type";
         GSTDocumentType: Enum "Document Type Enum";
+        ISHandled: Boolean;
     begin
+        IsHandled := false;
+#if not CLEAN22
+        OnBeforeUpdateReferenceInvoiceNoSalesHeader(SalesHeader, IsHandled);
+#endif
+        OnBeforeUpdateRefInvoiceNoSalesHeader(SalesHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         if not IsGSTApplicable("Transaction Type Enum"::Sales, PurchDocType, SalesHeader."Document Type", SalesHeader."No.") then
             Error(ReferenceInvoiceNoErr);
 
@@ -3235,7 +3253,16 @@ codeunit 18435 "Reference Invoice No. Mgt."
         ReferenceInvoiceNo: Record "Reference Invoice No.";
         SalesDocType: Enum "Sales Document Type";
         GSTDocumentType: Enum "Document Type Enum";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+#if not CLEAN22
+        OnBeforeCheckRefInvNoPurchHeader(PurchaseHeader, IsHandled);
+#endif
+        OnBeforeCheckRefInvNoPurchaseHeader(PurchaseHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         if not IsGSTApplicable("Transaction Type Enum"::Purchase, PurchaseHeader."Document Type", SalesDocType, PurchaseHeader."No.") then
             exit;
 
@@ -3265,7 +3292,16 @@ codeunit 18435 "Reference Invoice No. Mgt."
         CustLedgerEntry: Record "Cust. Ledger Entry";
         ReferenceInvoiceNo: Record "Reference Invoice No.";
         GSTDocumentType: Enum "Document Type Enum";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+#if not CLEAN22
+        OnBeforeCheckRefInvNoSalesHeader(SalesHeader, IsHandled);
+#endif
+        OnBeforeCheckRefInvoiceNoSalesHeader(SalesHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         if not IsGSTApplicable("Transaction Type Enum"::Sales, SalesHeader."Document Type", SalesHeader."Document Type", SalesHeader."No.") then
             exit;
 
@@ -4469,6 +4505,7 @@ codeunit 18435 "Reference Invoice No. Mgt."
         var Rec: Record "Reference Invoice No.";
         var xRec: Record "Reference Invoice No.")
     var
+        SalesHeader: Record "Sales Header";
         PurchaseHeader: Record "Purchase Header";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         VendorLedgerEntryToCheck: Record "Vendor Ledger Entry";
@@ -4484,15 +4521,18 @@ codeunit 18435 "Reference Invoice No. Mgt."
             Error(ReferenceVerifyErr);
 
         if Rec."Reference Invoice Nos." <> '' then
-            if Rec."Source Type" = Rec."Source Type"::Vendor then begin
+            if Purchaseheader.Get(Rec."Document Type", Rec."Document No.") then begin
+                VendorLedgerEntryToCheck.LoadFields("Document No.");
                 VendorLedgerEntryToCheck.SetRange("Document No.", Rec."Reference Invoice Nos.");
                 if VendorLedgerEntryToCheck.IsEmpty() then
                     Error(VendInvNoErr, Rec."Reference Invoice Nos.");
-            end else begin
-                CustLedgerEntry.SetRange("Document No.", Rec."Reference Invoice Nos.");
-                if CustLedgerEntry.IsEmpty() then
-                    Error(CustInvNoErr, Rec."Reference Invoice Nos.");
-            end;
+            end else
+                if SalesHeader.Get(Rec."Document Type", Rec."Document No.") then begin
+                    CustLedgerEntry.LoadFields("Document No.");
+                    CustLedgerEntry.SetRange("Document No.", Rec."Reference Invoice Nos.");
+                    if CustLedgerEntry.IsEmpty() then
+                        Error(CustInvNoErr, Rec."Reference Invoice Nos.");
+                end;
 
         if Rec."Source Type" <> "Source Type"::Customer then begin
             if PurchaseHeader.Get(Rec."Document Type", Rec."Document No.") then begin
@@ -4625,14 +4665,10 @@ codeunit 18435 "Reference Invoice No. Mgt."
                 exit;
 
             GSTSetup.TestField("GST Tax Type");
-            if not (GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo"]) then begin
-                GenJnlLine."GST in Journal" := false;
-                GenJnlLine.Modify();
-                exit;
-            end;
-
-            GenJnlLine."GST in Journal" := FilterTaxTransactionValue(GSTSetup."GST Tax Type", GenJnlLine.RecordId);
-            GenJnlLine.Modify();
+            if not (GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo"]) then
+                GenJnlLine."GST in Journal" := false
+            else
+                GenJnlLine."GST in Journal" := FilterTaxTransactionValue(GSTSetup."GST Tax Type", GenJnlLine.RecordId);
         end;
     end;
 
@@ -4668,4 +4704,54 @@ codeunit 18435 "Reference Invoice No. Mgt."
     begin
         CreatePostedReferenceInvoiceNoService(ServiceHeader, ServInvoiceNo, ServCrMemoNo);
     end;
+
+#if not CLEAN22
+    [Obsolete('Replaced by new integration event OnBeforeCheckRefInvNoPurchaseHeader', '22.0')]
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckRefInvNoPurchHeader(var PurchaseHeader: Record "Purchase Header"; IsHandled: Boolean)
+    begin
+    end;
+#endif
+#if not CLEAN22
+    [Obsolete('Replaced by new integration event OnBeforeUpdateReferenceInvoiceNoPurchaseHeader', '22.0')]
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateReferenceInvoiceNoPurchHeader(var PurchaseHeader: Record "Purchase Header"; IsHandled: Boolean)
+    begin
+    end;
+#endif
+#if not CLEAN22
+    [Obsolete('Replaced by new integration event OnBeforeCheckRefInvoiceNoSalesHeader', '22.0')]
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckRefInvNoSalesHeader(var SalesHeader: Record "Sales Header"; IsHandled: Boolean)
+    begin
+    end;
+#endif
+#if not CLEAN22
+    [Obsolete('Replaced by new integration event OnBeforeUpdateRefInvoiceNoSalesHeader', '22.0')]
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateReferenceInvoiceNoSalesHeader(var SalesHeader: Record "Sales Header"; IsHandled: Boolean)
+    begin
+    end;
+#endif
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckRefInvNoPurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateReferenceInvoiceNoPurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckRefInvoiceNoSalesHeader(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateRefInvoiceNoSalesHeader(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    begin
+    end;
+
 }

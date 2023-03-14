@@ -18,6 +18,7 @@ codeunit 4751 "Recommended Apps Impl."
     procedure InsertApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; ShortDescription: Text[250]; LongDescription: Text[2048];
     RecommendedBy: Enum "App Recommended By"; AppSourceURL: Text): Boolean
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         MemoryStream: DotNet MemoryStream;
         LanguageCode: Text[5];
         PubId: Text[100];
@@ -42,6 +43,8 @@ codeunit 4751 "Recommended Apps Impl."
         RecommendedApps.PubId := PubId;
         RecommendedApps.AId := AId;
         RecommendedApps.PAppId := PAppId;
+
+        FeatureTelemetry.LogUsage('0000H7R', 'Recommended Apps', 'Recommended apps inserted');
 
         exit(RecommendedApps.Insert());
     end;
@@ -168,16 +171,16 @@ codeunit 4751 "Recommended Apps Impl."
         ErrMsg: Text;
     begin
         Regex.Match(AppSourceURL, '(?i)(?<=appsource.microsoft.com\/)(.+)(?=\/product)', 1, Matches);
-        LanguageCode := Matches.ReadValue();
+        LanguageCode := CopyStr(Matches.ReadValue(), 1, 5);
 
         Regex.Match(AppSourceURL, '(?i)(?<=PUBID.)(.+)(?=(%7CAID|\|AID))', 1, Matches);
-        PubId := Matches.ReadValue();
+        PubId := CopyStr(Matches.ReadValue(), 1, 100);
 
         Regex.Match(AppSourceURL, '(?i)(?<=AID.)(.+)(?=(%7CPAPPID|\|PAPPID))', 1, Matches);
-        AId := Matches.ReadValue();
+        AId := CopyStr(Matches.ReadValue(), 1, 100);
 
         Regex.Match(AppSourceURL, '(?i)(?<=PAPPID.)(.+)(?=(\?tab=Overview))|(?<=PAPPID.)(.+)(?=($))', 1, Matches);
-        PAppId := Matches.ReadValue();
+        PAppId := CopyStr(Matches.ReadValue(), 1, 100);
 
         if (LanguageCode = '') or (PubId = '') or (AId = '') or (PAppId = '') then begin
             ErrMsg := StrSubstNo(URLNotWellFormattedErrLbl, Id, AppSourceURL);

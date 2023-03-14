@@ -134,6 +134,13 @@ codeunit 18637 "Fixed Asset Subscribers"
         Rec.UpdateDeprPercent();
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"FA Depreciation Book", 'OnBeforeInsertFADeprBook', '', false, false)]
+    local procedure OnBeforeInsertFADeprBook(FADepreciationBook: Record "FA Depreciation Book"; var IsHandled: Boolean)
+    begin
+        if (FADepreciationBook."No. of Depreciation Years" <> 0) or (FADepreciationBook."No. of Depreciation Months" <> 0) then
+            IsHandled := true;
+    end;
+
     local procedure CalcDepreciationPeriod(var FixedAssetDeprBook: Record "FA Depreciation Book")
     var
         DepreciationBook: Record "Depreciation Book";

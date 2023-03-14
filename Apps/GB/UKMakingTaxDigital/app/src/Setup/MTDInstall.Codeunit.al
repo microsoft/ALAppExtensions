@@ -82,7 +82,6 @@ codeunit 10539 "MTD Install"
                 "Auto Receive Period CU ID" := Codeunit::"MTD Auto Receive Period";
                 "Receive Submitted Return CU ID" := Codeunit::"MTD Receive Submitted";
                 InitProductionMode(VATReportSetup);
-                InitPeriodReminderCalculation(VATReportSetup);
 #if not CLEAN19
                 "MTD Disable FraudPrev. Headers" := false;
 #endif
@@ -131,6 +130,7 @@ codeunit 10539 "MTD Install"
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD OAuth Setup Option"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Gov Test Scenario"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Enabled"));
+        DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP Public IP Service URL"));
 #if not CLEAN19
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Disable FraudPrev. Headers"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP WinClient Due DateTime"));
@@ -245,21 +245,6 @@ codeunit 10539 "MTD Install"
 
             "MTD OAuth Setup Option" := "MTD OAuth Setup Option"::Production;
             "MTD Gov Test Scenario" := '';
-            exit(true);
-        end;
-    end;
-
-    internal procedure InitPeriodReminderCalculation(var VATReportSetup: Record "VAT Report Setup"): Boolean
-    var
-        DateFormulaText: Text;
-    begin
-        with VATReportSetup do begin
-            if IsPeriodReminderCalculation() or ("Period Reminder Time" = 0) then
-                exit(false);
-
-            DateFormulaText := StrSubstNo('<%1D>', "Period Reminder Time");
-            Evaluate("Period Reminder Calculation", DateFormulaText);
-            "Period Reminder Time" := 0;
             exit(true);
         end;
     end;

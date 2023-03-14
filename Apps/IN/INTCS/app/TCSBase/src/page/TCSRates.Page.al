@@ -402,6 +402,7 @@ page 18816 "TCS Rates"
 
     trigger OnOpenPage()
     begin
+        ColumnCount := 0;
         GlobalTaxType := '';
         TCSSetup.Get();
         TCSSetup.TestField(TCSSetup."Tax Type");
@@ -450,7 +451,7 @@ page 18816 "TCS Rates"
         UpdateRecord := true;
 
         if IsLookup then
-            UpdateRecord := AttributeManagement.GetTaxRateAttributeLookupValue(AttributeCaption[ColumnIndex], AttributeValue[ColumnIndex]);
+            UpdateRecord := AttributeManagement.GetTaxRateAttributeLookupValue(GlobalTaxType, AttributeCaption[ColumnIndex], AttributeValue[ColumnIndex]);
 
         if UpdateRecord then
             TaxSetupMatrixMgmt.UpdateTaxConfigurationValue(ID, GlobalTaxType, AttributeID, ColumnIndex, AttributeValue, RangeAttribute);

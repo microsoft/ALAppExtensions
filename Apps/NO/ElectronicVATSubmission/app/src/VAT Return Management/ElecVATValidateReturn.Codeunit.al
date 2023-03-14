@@ -3,9 +3,6 @@ codeunit 10686 "Elec. VAT Validate Return"
     TableNo = "VAT Report Header";
 
     var
-        IncorrectSignErr: Label 'The amount on the row %1 has an incorrect sign. It must be %2.', Comment = '%1 = number, %2 = either positive or negative';
-        PositiveLbl: Label 'positive';
-        NegativeLbl: Label 'negative';
         VATAmountCalcErr: Label 'The VAT amount in the box %1 is not equal to the base VAT * VAT Rate.', Comment = '%1 - number';
 
     trigger OnRun()
@@ -36,12 +33,6 @@ codeunit 10686 "Elec. VAT Validate Return"
         VATStatementReportLine.SetRange("VAT Report No.", VATReportHeader."No.");
         VATStatementReportLine.FindSet();
         repeat
-            If VATStatementReportLine."Box No." in ['1', '11', '12', '13', '14', '15'] then begin
-                if VATStatementReportLine.Amount > 0 then
-                    Error(IncorrectSignErr, VATStatementReportLine."Row No.", NegativeLbl);
-            end else
-                if VATStatementReportLine.Amount < 0 then
-                    Error(IncorrectSignErr, VATStatementReportLine."Row No.", PositiveLbl);
             VATCodeValue := CopyStr(VATStatementReportLine."Box No.", 1, MaxStrLen(VATCodeValue));
             VATCode.Get(VATCodeValue);
             if VATCode."Report VAT Rate" and (VATStatementReportLine.Base <> 0) then begin
@@ -49,7 +40,6 @@ codeunit 10686 "Elec. VAT Validate Return"
                 if abs(ExpectedVATAmount - VATStatementReportLine.Amount) > 1 then
                     error(VATAmountCalcErr, VATStatementReportLine."Box No.");
             end;
-
         until VATStatementReportLine.Next() = 0;
     end;
 }
