@@ -21,7 +21,7 @@ env:
   workflowDepth: 2
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  CICDBuild: true
+  OfficialBuild: true
 
 jobs:
   Initialization:
