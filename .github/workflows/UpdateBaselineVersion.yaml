@@ -9,9 +9,6 @@ defaults:
   run:
     shell: powershell
 
-env:
-  repoName: ${{ github.event.repository.name }}
-
 jobs:
   UpdateBaseline:
     if: github.repository_owner == 'microsoft'
