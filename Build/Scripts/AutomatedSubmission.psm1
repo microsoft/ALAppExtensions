@@ -3,15 +3,11 @@
     Set the git config for the current actor
 .Parameter Actor
     The actor to set the git config for
-.Parameter Token
-    The token to use for the git config
 #>
 function Set-GitConfig
 (
     [Parameter(Mandatory=$true)]
-    [string] $Actor,
-    [Parameter(Mandatory=$true)]
-    [string] $Token
+    [string] $Actor
 )
 {
     git config --global user.name $Actor
@@ -65,7 +61,7 @@ function New-AutoSubmissionTopicBranch
 
     if($PsCmdlet.ParameterSetName -eq "SubFolder") {
         $currentDate = (Get-Date).ToUniversalTime().ToString("yyMMddHHmm")
-        $BranchName = "private/$SubFolder/$latestBaseline-$currentDate"
+        $BranchName = "private/$SubFolder/$currentDate"
     }
     
     git checkout -b $BranchName | Out-Null

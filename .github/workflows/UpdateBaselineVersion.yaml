@@ -3,7 +3,7 @@ name: Update Baseline Version
 on:
   workflow_dispatch:
   schedule:
-    - cron: "55 03 * * 2" # Run at 03:55 UTC on Tuesday
+    - cron: "55 03 * * *" # Run at 03:55 UTC on Tuesday
 
 defaults:
   run:
@@ -14,6 +14,7 @@ env:
 
 jobs:
   UpdateBaseline:
+    if: github.repository_owner == 'microsoft'
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -21,4 +22,6 @@ jobs:
       
       - name: Update Baseline Version
         run: | 
-          Build/Scripts/UpdateBaselineVersion.ps1 -Owner $env:GITHUB_REPOSITORY_OWNER -Repo $env:repoName -TargetBranch $env:GITHUB_REF_NAME -Token ${{ secrets.GHTOKENWORKFLOW }} -Actor $env:GITHUB_ACTOR
+          Build/Scripts/UpdateBaselineVersion.ps1 -TargetBranch $env:GITHUB_REF_NAME -Actor $env:GITHUB_ACTOR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
