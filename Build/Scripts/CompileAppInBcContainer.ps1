@@ -32,6 +32,8 @@ if($app)
 $appFile = Compile-AppInBcContainer @parameters
 
 # Determine whether the current build is a CICD build
+
+Write-Host "GITHUB_WORKFLOW: $($env:GITHUB_WORKFLOW)"
 $CICDBuild = $($env:GITHUB_WORKFLOW).Trim() -eq 'CICD'
 
 if($CICDBuild) {
