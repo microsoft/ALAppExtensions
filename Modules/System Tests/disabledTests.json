@@ -30,7 +30,7 @@
     },
     {
       "codeunitName": "Checklist Banner Test",
-      "method": "TestChecklistBannerVisibilityAfterDelete"
+      "method": "*"
     },
     {
       "codeunitName": "Checklist Facade Test",
