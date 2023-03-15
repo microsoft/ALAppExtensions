@@ -14,12 +14,7 @@ Param(
 Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
 Import-Module $PSScriptRoot\AutomatedSubmission.psm1
-
-Import-Module (Get-GithubHelper)
-. (Get-ALGOHelper) -local
-
-$baseFolder = GetBaseFolder -folder $PSScriptRoot
-DownloadAndImportBcContainerHelper -baseFolder $baseFolder
+Install-Module -Name BcContainerHelper
 
 $latestBaseline = Get-LatestBaselineVersionFromArtifacts
 $currentBaseline = Get-ConfigValueFromKey -Key "baselineVersion" -ConfigType "BuildConfig" 
@@ -35,7 +30,8 @@ if ([System.Version] $latestBaseline -gt [System.Version] $currentBaseline) {
     Push-AutoSubmissionChange -BranchName $BranchName -Files @("Build/BuildConfig.json") -CommitMessage $title
 
     # Create PR
-    New-GitHubPullRequest -Title $title -Owner $Owner -Repo $Repo -Head $BranchName -Base $TargetBranch -Token $Token
+    $Token | invoke-gh auth login --with-token
+    gh pr create --fill --head $Head --base $Base --repo $Repo --label "infrastructure"
 } else {
     Write-Host "Current baseline version is already up to date"
 }

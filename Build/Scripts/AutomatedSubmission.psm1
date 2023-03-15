@@ -14,10 +14,10 @@ function Set-GitConfig
     [string] $Token
 )
 {
-    invoke-git config --global user.name $Actor
-    invoke-git config --global user.email "$($Actor)@users.noreply.github.com"
-    invoke-git config --global hub.protocol https
-    invoke-git config --global core.autocrlf false
+    git config --global user.name $Actor
+    git config --global user.email "$($Actor)@users.noreply.github.com"
+    git config --global hub.protocol https
+    git config --global core.autocrlf false
 }
 
 <#
@@ -38,9 +38,9 @@ function Push-AutoSubmissionChange
     [string] $CommitMessage
 ) 
 {
-    invoke-git add $Files
-    invoke-git commit -m $commitMessage
-    invoke-git push -u origin $BranchName
+    git add $Files
+    git commit -m $commitMessage
+    git push -u origin $BranchName
 }
 
 <#
@@ -68,57 +68,9 @@ function New-AutoSubmissionTopicBranch
         $BranchName = "private/$SubFolder/$latestBaseline-$currentDate"
     }
     
-    invoke-git checkout -b $BranchName | Out-Null
+    git checkout -b $BranchName | Out-Null
 
     return $BranchName
-}
-
-<#
-.Synopsis 
-    Creates a new GitHub pull request
-.Parameter Owner
-    The owner of the repository
-.Parameter Repo
-    The name of the repository
-.Parameter Title
-    The title of the pull request
-.Parameter Body
-    The body of the pull request
-.Parameter Head
-    The branch to merge into the base branch
-.Parameter Base
-    The branch to merge into
-.Parameter Token
-    The token to use for the pull request
-#>
-function New-GitHubPullRequest {
-    param(
-        [string]$Owner,
-        [string]$Repo,
-        [string]$Title,
-        [string]$Body,
-        [string]$Head,
-        [string]$Base,
-        [string]$Token
-    )
-
-    $uri = "https://api.github.com/repos/$Owner/$Repo/pulls"
-    $headers = @{
-        "Authorization" = "token $Token"
-        "Content-Type"  = "application/json"
-    }
-
-    $body = @{
-        "title" = $Title
-        "body"  = $Body
-        "head"  = $Head
-        "base"  = $Base
-    } | ConvertTo-Json
-
-    Write-Host "Uri: $uri"
-    Write-Host "Body $body"
-
-    Invoke-RestMethod -Uri $uri -Headers $headers -Method Post -Body $body
 }
 
 Export-ModuleMember -Function *-*
