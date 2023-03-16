@@ -188,13 +188,13 @@ function Update-AppSourceCopVersion
     Write-Host "Setting 'publisher:$Publisher' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["publisher"] = $Publisher
 
-    $buildVersion = Get-ConfigValueFromKey -Key "repoVersion"
+    $buildVersion = Get-ConfigValue -Key "repoVersion"
     Write-Host "Setting 'obsoleteTagVersion:$buildVersion' value in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["obsoleteTagVersion"] = $buildVersion
 
     # All major versions greater than current but less or equal to main should be allowed
     $currentBuildVersion = [int] $buildVersion.Split('.')[0]
-    $maxAllowedObsoleteVersion = [int] (Get-ConfigValueFromKey -ConfigType "BuildConfig" -Key "MaxAllowedObsoleteVersion")
+    $maxAllowedObsoleteVersion = [int] (Get-ConfigValue -ConfigType "BuildConfig" -Key "MaxAllowedObsoleteVersion")
     $obsoleteTagAllowedVersions = @()
 
     for ($i = $currentBuildVersion + 1; $i -le $maxAllowedObsoleteVersion; $i++) {
@@ -232,7 +232,7 @@ function Get-BaselineVersion {
         # Use latest available version from nuget if build mode is clean
         return (Find-Package -Name "microsoft-ALAppExtensions-Modules-preview" -Source "https://nuget.org/api/v2/").Version
     } else {
-        return Get-ConfigValueFromKey -Key "BaselineVersion" -ConfigType "BuildConfig"
+        return Get-ConfigValue -Key "BaselineVersion" -ConfigType "BuildConfig"
     }
 }
 
@@ -244,12 +244,12 @@ function Get-LatestBaselineVersionFromArtifacts {
 
     Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 
-    [System.Version] $repoVersion = Get-ConfigValueFromKey -Key "RepoVersion"
+    [System.Version] $repoVersion = Get-ConfigValue -Key "RepoVersion"
 
     if ($repoVersion.Minor -gt 0) {
         $baselineMajorMinor = "$($repoVersion.Major).$($repoVersion.Minor - 1)"
     } else {
-        $baselineMajorMinor = "$($repoVersion.Major - 1).5"
+        $baselineMajorMinor = "$($repoVersion.Major - 1)"
     }
     $artifactUrl = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $baselineMajorMinor -select 'Latest'
 

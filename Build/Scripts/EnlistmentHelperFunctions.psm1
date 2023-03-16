@@ -27,7 +27,7 @@ function Get-BuildMode() {
 .Parameter Key
     The key to read the value from
 #>
-function Get-ConfigValueFromKey() {
+function Get-ConfigValue() {
     param(
         [Parameter(Mandatory=$false)]
         [ValidateSet("BuildConfig","AL-GO")]
@@ -55,7 +55,7 @@ function Get-ConfigValueFromKey() {
 .Parameter Value
     The value to set the key to
 #>
-function Set-ConfigValueFromKey() {
+function Set-ConfigValue() {
     param(
         [Parameter(Mandatory=$false)]
         [ValidateSet("BuildConfig","AL-GO")]

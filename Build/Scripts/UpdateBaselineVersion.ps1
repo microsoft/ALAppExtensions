@@ -17,18 +17,18 @@ $currentBaseline = Get-ConfigValueFromKey -Key "baselineVersion" -ConfigType "Bu
 
 if ([System.Version] $latestBaseline -gt [System.Version] $currentBaseline) {
     Write-Host "Updating baseline version from $currentBaseline to $latestBaseline"
-    Set-ConfigValueFromKey -Key "baselineVersion" -Value $latestBaseline -ConfigType "BuildConfig"
+    Set-ConfigValue -Key "baselineVersion" -Value $latestBaseline -ConfigType "BuildConfig"
 
     # Create branch and push changes
     Set-GitConfig -Actor $Actor
-    $BranchName = New-AutoSubmissionTopicBranch -SubFolder "UpdateBaselineVersion"
+    $BranchName = New-TopicBranch -Category "UpdateBaselineVersion/$latestBaseline"
     $title = "Update baseline version to $latestBaseline"
-    Push-AutoSubmissionChange -BranchName $BranchName -Files @("Build/BuildConfig.json") -CommitMessage $title
+    Push-GitBranch -BranchName $BranchName -Files @("Build/BuildConfig.json") -CommitMessage $title
 
     # Create PR
     $availableLabels = gh label list --json name | ConvertFrom-Json
-    if ("infrastructure" -in $availableLabels.name) {
-        gh pr create --fill --head $BranchName --base $TargetBranch --label "infrastructure"
+    if ("automation" -in $availableLabels.name) {
+        gh pr create --fill --head $BranchName --base $TargetBranch --label "automation"
     } else {
         gh pr create --fill --head $BranchName --base $TargetBranch
     }

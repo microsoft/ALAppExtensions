@@ -26,7 +26,7 @@ function Set-GitConfig
 .Parameter CommitMessage
     The commit message to use
 #>
-function Push-AutoSubmissionChange
+function Push-GitBranch
 (
     [Parameter(Mandatory=$true)]
     [string] $BranchName,
@@ -42,26 +42,26 @@ function Push-AutoSubmissionChange
 <#
 .Synopsis
     Creates a new branch for an automated submission
-    If a subfolder is specified, the branch name will be in the format private/<subfolder>/<baselineVersion>-<currentDate>
+    If a subfolder is specified, the branch name will be in the format automation/<subfolder>/<baselineVersion>-<currentDate>
     If a branch name is specified, the branch name will be used as is
 .Parameter BranchName
     The name of the branch to create
-.Parameter SubFolder
-    The subfolder to use in the branch name
+.Parameter Category
+    The category to use in the branch name
 #>
-function New-AutoSubmissionTopicBranch
+function New-TopicBranch
 {
     param
     (
         [Parameter(Mandatory=$true, ParameterSetName = 'BranchName')]
         [string] $BranchName,
-        [Parameter(Mandatory=$true, ParameterSetName = 'SubFolder')]
-        [string] $SubFolder
+        [Parameter(Mandatory=$true, ParameterSetName = 'Category')]
+        [string] $Category
     )
 
-    if($PsCmdlet.ParameterSetName -eq "SubFolder") {
+    if($PsCmdlet.ParameterSetName -eq "Category") {
         $currentDate = (Get-Date).ToUniversalTime().ToString("yyMMddHHmm")
-        $BranchName = "private/$SubFolder/$currentDate"
+        $BranchName = "automation/$Category/$currentDate"
     }
     
     git checkout -b $BranchName | Out-Null
