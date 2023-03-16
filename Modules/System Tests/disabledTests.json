@@ -18,7 +18,10 @@
     },
     {
       "codeunitName": "Azure AD User Management Test",
-      "method": "TestOfficeSyncWizard"
+      "method": [
+        "TestOfficeSyncWizard", 
+        "TestCodeunitRunPlansAreRefreshed"
+      ]
     },
     {
       "codeunitName": "Azure AD User Sync Test",
