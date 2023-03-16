@@ -26,12 +26,7 @@ if ([System.Version] $latestBaseline -gt [System.Version] $currentBaseline) {
     Push-GitBranch -BranchName $BranchName -Files @("Build/BuildConfig.json") -CommitMessage $title
 
     # Create PR
-    $availableLabels = gh label list --json name | ConvertFrom-Json
-    if ("automation" -in $availableLabels.name) {
-        gh pr create --fill --head $BranchName --base $TargetBranch --label "automation"
-    } else {
-        gh pr create --fill --head $BranchName --base $TargetBranch
-    }
+    New-PullRequest -Branch $BranchName -TargetBranch $TargetBranch -Label "automation" -AutoFill
 } else {
     Write-Host "Current baseline version is already up to date"
 }

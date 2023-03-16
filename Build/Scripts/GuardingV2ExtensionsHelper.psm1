@@ -262,4 +262,34 @@ function Get-LatestBaselineVersionFromArtifacts {
     return $updatedBaseline
 }
 
+function New-PullRequest {
+    Param(
+        [Parameter(Mandatory = $true)] 
+        [string] $Branch,
+        [Parameter(Mandatory = $true)] 
+        [string] $TargetBranch,
+        [Parameter(Mandatory = $false)] 
+        [string] $Label,
+        [Parameter(Mandatory = $false)] 
+        [switch] $AutoFill
+    )
+
+    $ghCmd = "gh pr create --head $Branch --base $TargetBranch"
+
+    if ($Label) {
+        $availableLabels = gh label list --json name | ConvertFrom-Json
+        if ($Label -in $availableLabels.name) {
+            $ghCmd += " --label $Label"
+        } else {
+            Write-Host "Label $Label does not exist in the repo. Skipping adding label to the PR"
+        }
+    }
+
+    if ($AutoFill) {
+        $ghCmd += " --fill"
+    }
+
+    Invoke-Expression $ghCmd
+}
+
 Export-ModuleMember -Function *-*
