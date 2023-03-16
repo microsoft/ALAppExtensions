@@ -395,7 +395,7 @@ jobs:
       - name: Calculate Artifact names
         id: calculateArtifactsNames
         uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
-        if: success() || failure()
+        if: success() || failure() || cancelled()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           settingsJson: ${{ env.Settings }}
@@ -447,7 +447,7 @@ jobs:
 
       - name: Publish artifacts - build output
         uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
+        if: (success() || failure() || cancelled()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
         with:
           name: ${{ env.BuildOutputArtifactsName }}
           path: '${{ matrix.project }}/BuildOutput.txt'
@@ -455,7 +455,7 @@ jobs:
 
       - name: Publish artifacts - container event log
         uses: actions/upload-artifact@v3
-        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
+        if: (failure() || cancelled()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
         with:
           name: ${{ env.ContainerEventLogArtifactsName }}
           path: '${{ matrix.project }}/ContainerEventLog.evtx'
@@ -463,7 +463,7 @@ jobs:
 
       - name: Publish artifacts - test results
         uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
+        if: (success() || failure() || cancelled()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
         with:
           name: ${{ env.TestResultsArtifactsName }}
           path: '${{ matrix.project }}/TestResults.xml'
