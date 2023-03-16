@@ -32,7 +32,7 @@ if($app)
 $appFile = Compile-AppInBcContainer @parameters
 
 # Determine whether the current build is a CICD build
-$CICDBuild = $($env:GITHUB_WORKFLOW).Trim() -eq 'CI/CD'
+$CICDBuild = $env:GITHUB_WORKFLOW -and ($($env:GITHUB_WORKFLOW).Trim() -eq 'CI/CD')
 
 if($CICDBuild) {
     # Create the artifacts folder for the app to place in the package
