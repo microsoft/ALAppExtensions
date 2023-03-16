@@ -13,7 +13,7 @@ Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
 Import-Module $PSScriptRoot\AutomatedSubmission.psm1
 
 $latestBaseline = Get-LatestBaselineVersionFromArtifacts
-$currentBaseline = Get-ConfigValueFromKey -Key "baselineVersion" -ConfigType "BuildConfig" 
+$currentBaseline = Get-ConfigValue -Key "baselineVersion" -ConfigType "BuildConfig" 
 
 if ([System.Version] $latestBaseline -gt [System.Version] $currentBaseline) {
     Write-Host "Updating baseline version from $currentBaseline to $latestBaseline"
