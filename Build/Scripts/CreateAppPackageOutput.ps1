@@ -30,11 +30,22 @@ if(-not (Test-Path $packageArtifactsFolder)) {
 
 Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
-if (($BuildMode -eq 'Default') -or $app) {
-    # Add the source code to the artifacts folder
-    $sourceCodeFolder = Join-Path "$packageArtifactsFolder" "SourceCode"
-    Write-Host "Copying source code for app '$appName' from '$AppProjectFolder' to source code folder: $sourceCodeFolder"
-    Copy-Item -Path "$AppProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+$sourceCodeFolder = Join-Path "$packageArtifactsFolder" "SourceCode"
+
+switch ( $BuildMode )
+{
+    'Default' {
+        # Add the source code to the artifacts folder
+        Write-Host "Copying source code for app '$appName' from '$AppProjectFolder' to source code folder: $sourceCodeFolder"
+        Copy-Item -Path "$AppProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+    }
+    'Translated' { 
+        # Add the source code for non-test apps to the artifacts folder as it contains the translations
+        if($app) {
+            Write-Host "Copying source code for app '$appName' from '$AppProjectFolder' to source code folder: $sourceCodeFolder"
+            Copy-Item -Path "$AppProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
+        }
+    }
 }
 
 # Add the app file for every built app to a folder for all built modes
