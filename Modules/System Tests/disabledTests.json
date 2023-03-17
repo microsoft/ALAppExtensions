@@ -102,6 +102,10 @@
       "method": "*"
     },
     {
+      "codeunitName": "User Settings Tests",
+      "method": "*"
+    },
+    {
       "codeunitName": "X509Certificate2 Test",
       "method": "VerifyCertificateExpirationFromBase64Cert"
     },
