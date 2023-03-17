@@ -1,8 +1,8 @@
 {
     "appFolders":  [
-        "..\\Modules\\DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
     ],
     "testFolders":  [
+        "..\\Modules\\DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
     ],
     "doNotPublishApps": true,
     "enableAppSourceCop": true,
