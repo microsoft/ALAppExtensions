@@ -1,10 +1,3 @@
-function Get-GitBranchName() {
-    if ($ENV:GITHUB_REF_NAME) {
-        return $ENV:GITHUB_REF_NAME
-    }
-    return git rev-parse --abbrev-ref HEAD
-}
-
 function Get-BaseFolder() {
     if ($ENV:GITHUB_WORKSPACE) {
         return $ENV:GITHUB_WORKSPACE
@@ -27,7 +20,7 @@ function Get-BuildMode() {
 .Parameter Key
     The key to read the value from
 #>
-function Get-ConfigValueFromKey() {
+function Get-ConfigValue() {
     param(
         [Parameter(Mandatory=$false)]
         [ValidateSet("BuildConfig","AL-GO")]
@@ -47,6 +40,38 @@ function Get-ConfigValueFromKey() {
 
 <#
 .Synopsis
+    Get the value of a key from the BuildConfig.json or AL-GO-Settings file
+.Parameter ConfigType
+    The type of config file to read from. Can be either "BuildConfig" or "AL-GO"
+.Parameter Key
+    The key to write to
+.Parameter Value
+    The value to set the key to
+#>
+function Set-ConfigValue() {
+    param(
+        [Parameter(Mandatory=$false)]
+        [ValidateSet("BuildConfig","AL-GO")]
+        [string]$ConfigType = "AL-GO",
+        [Parameter(Mandatory=$true)]
+        [string]$Key,
+        [Parameter(Mandatory=$true)]
+        [string]$Value
+    )
+
+    if ($ConfigType -eq "BuildConfig") {
+        $ConfigPath = Join-Path (Get-BaseFolder) "Build/BuildConfig.json" -Resolve
+    } else {
+        $ConfigPath = Join-Path (Get-BaseFolder) ".github/AL-Go-Settings.json" -Resolve
+    }
+    $BuildConfig = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
+    $BuildConfig.$Key = $Value
+    $BuildConfig | ConvertTo-Json -Depth 100 | Set-Content -Path $ConfigPath
+}
+
+<#
+.Synopsis
+    Get the nuget.exe if it doesn't exist
     Downloads the nuget.exe if it doesn't exist
 .Parameter OutputPath
     The path where the nuget.exe will be downloaded to

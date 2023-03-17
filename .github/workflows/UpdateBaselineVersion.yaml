@@ -1,0 +1,29 @@
+name: Update Baseline Version
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "55 03 * * 2" # Run at 03:55 UTC on Tuesday
+
+defaults:
+  run:
+    shell: powershell
+
+jobs:
+  UpdateBaseline:
+    if: github.repository_owner == 'microsoft'
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        branch: ['main']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ matrix.branch }}
+      
+      - name: Update Baseline Version
+        run: | 
+          Build/Scripts/UpdateBaselineVersion.ps1 -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
