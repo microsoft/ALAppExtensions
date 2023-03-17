@@ -8,6 +8,10 @@
       "method": "*"
     },
     {
+      "codeunitName": "Azure AD Graph Test",
+      "method": "*"
+    },
+    {
       "codeunitName": "Azure AD Graph User Test",
       "method": [
         "TestUpdateUserFromAzureGraphForAValidUserWithUpdatedFullName",
