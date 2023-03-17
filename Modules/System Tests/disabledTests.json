@@ -111,10 +111,9 @@
     },
     {
       "codeunitName": "X509Certificate2 Test",
-      "method": "VerifyCertificateExpirationFromBase64Cert"
-    },
-    {
-      "codeunitName": "X509Certificate2 Test",
-      "method": "VerifyCertificateNotBeforeFromBase64Cert"
+      "method": [
+        "VerifyCertificateExpirationFromBase64Cert",
+        "VerifyCertificateNotBeforeFromBase64Cert"
+      ]
     }
 ]
