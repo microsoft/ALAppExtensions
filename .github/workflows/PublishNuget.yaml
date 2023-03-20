@@ -1,6 +1,7 @@
 name: 'Publish Nuget'
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: [' CI/CD']
     types: [completed]
