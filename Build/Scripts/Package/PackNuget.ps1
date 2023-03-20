@@ -1,0 +1,45 @@
+Param(
+    [Parameter(Mandatory=$true)]
+    [string] $BuildArtifactsPath,
+    [Parameter(Mandatory=$true)]
+    [string] $OutputPackageFolder,
+    [Parameter(Mandatory=$true)]
+    [string] $RepoName,
+    [Parameter(Mandatory=$true)]
+    [string] $RepoOwner,
+    [Parameter(Mandatory=$true)]
+    [string] $NuspecPath,
+    [Parameter(Mandatory=$true)]
+    [string] $LicensePath
+)
+
+Import-Module $PSScriptRoot\PackNuget.psm1
+
+New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
+
+$appsFolders = Get-ChildItem $BuildArtifactsPath -Directory 
+$packageVersion = ($appsFolders -replace ".*-Apps-","" | Select-Object -First 1).ToString() 
+$packageId = "$RepoOwner-$RepoName-Modules-preview"
+
+Write-Host "App folder(s): $($appsFolders -join ', ')" -ForegroundColor Magenta
+Write-Host "Package folder: $OutputPackageFolder" -ForegroundColor Magenta
+Write-Host "Package ID: $packageId" -ForegroundColor Magenta
+Write-Host "Package version: $packageVersion" -ForegroundColor Magenta
+
+# Generate Nuspec file
+$manifestOutputPath = (Join-Path $OutputPackageFolder 'manifest.nuspec')
+New-Manifest `
+    -PackageId $packageId `
+    -Version $packageVersion `
+    -Authors "$RepoOwner" `
+    -Owners "$RepoOwner" `
+    -NuspecPath $NuspecPath `
+    -OutputPath $manifestOutputPath
+
+# Copy files to package folder
+Initialize-PackageFolder -OutputPackageFolder $OutputPackageFolder -AppFolders $appsFolders -LicensePath $LicensePath
+
+Test-PackageFolder -OutputPackageFolder $OutputPackageFolder
+
+# Pack Nuget package
+nuget pack $manifestOutputPath -OutputDirectory $OutputPackageFolder

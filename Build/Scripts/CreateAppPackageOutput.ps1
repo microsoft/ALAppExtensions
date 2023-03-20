@@ -30,15 +30,25 @@ if(-not (Test-Path $packageArtifactsFolder)) {
 
 Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
+$buildArtifactsFolder = Join-Path "$packageArtifactsFolder" "BuildArtifacts"
 $sourceCodeFolder = Join-Path "$packageArtifactsFolder" "SourceCode"
 
 switch ( $BuildMode )
 {
-    'Default' {
+    'Default' { 
+        # Add the generated Translations folder to the artifacts folder
+        $TranslationsFolder = Join-Path "$AppProjectFolder" "Translations"
+        if (Test-Path $TranslationsFolder) {
+            Write-Host "Copying translation for app $appName from $TranslationsFolder to $buildArtifactsFolder"
+            Copy-Item -Path $TranslationsFolder -Destination "$buildArtifactsFolder" -Recurse -Force | Out-Null
+        } else {
+            Write-Host "Translations were not generated for app $appName"
+        }
+
         # Add the source code to the artifacts folder
         Write-Host "Copying source code for app '$appName' from '$AppProjectFolder' to source code folder: $sourceCodeFolder"
         Copy-Item -Path "$AppProjectFolder" -Destination "$sourceCodeFolder" -Recurse -Force | Out-Null
-    }
+        }
     'Translated' { 
         # Add the source code for non-test apps to the artifacts folder as it contains the translations
         if($app) {
