@@ -76,9 +76,17 @@ codeunit 30190 "Shpfy Export Shipments"
         if SalesShipmentLine.FindSet() then begin
             repeat
                 if FindFulfillmentOrderLine(SalesShipmentHeader, SalesShipmentLine, FulfillmentOrderLine) then begin
-                    TempFulfillmentOrderLine := FulfillmentOrderLine;
-                    TempFulfillmentOrderLine."Quantity to Fulfill" := Round(SalesShipmentLine.Quantity, 1, '=');
-                    TempFulfillmentOrderLine.Insert();
+                    FulfillmentOrderLine."Quantity to Fulfill" += Round(SalesShipmentLine.Quantity, 1, '=');
+                    FulfillmentOrderLine."Remaining Quantity" := FulfillmentOrderLine."Remaining Quantity" - Round(SalesShipmentLine.Quantity, 1, '=');
+                    FulfillmentOrderLine.Modify();
+                    if TempFulfillmentOrderLine.Get(FulfillmentOrderLine."Shopify Fulfillment Order Id", FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id") then begin
+                        TempFulfillmentOrderLine."Quantity to Fulfill" += FulfillmentOrderLine."Quantity to Fulfill";
+                        TempFulfillmentOrderLine.Modify();
+                    end else begin
+                        TempFulfillmentOrderLine := FulfillmentOrderLine;
+                        TempFulfillmentOrderLine."Quantity to Fulfill" := Round(SalesShipmentLine.Quantity, 1, '=');
+                        TempFulfillmentOrderLine.Insert();
+                    end;
                 end;
             until SalesShipmentLine.Next() = 0;
 
@@ -95,7 +103,7 @@ codeunit 30190 "Shpfy Export Shipments"
                                 if ShippingAgent.Name = '' then
                                     GraphQuery.Append(ShippingAgent.Code)
                                 else
-                                    GraphQuery.Append(ShippingAgent.Code)
+                                    GraphQuery.Append(ShippingAgent.Name)
                             end else
                                 GraphQuery.Append(TrackingCompany.Names.Get(TrackingCompany.Ordinals.IndexOf(ShippingAgent."Shpfy Tracking Company".AsInteger())));
                         end else
@@ -106,13 +114,18 @@ codeunit 30190 "Shpfy Export Shipments"
                     GraphQuery.Append('number: \"');
                     GraphQuery.Append(SalesShipmentHeader."Package Tracking No.");
                     GraphQuery.Append('\",');
-                    GraphQuery.Append('url: \"');
+
                     ShippingEvents.BeforeRetrieveTrackingUrl(SalesShipmentHeader, TrackingUrl, IsHandled);
                     if not IsHandled then
                         if ShippingAgent."Internet Address" <> '' then
                             TrackingUrl := ShippingAgent.GetTrackingInternetAddr(SalesShipmentHeader."Package Tracking No.");
-                    GraphQuery.Append(TrackingUrl);
-                    GraphQuery.Append('\"');
+
+                    if TrackingUrl <> '' then begin
+                        GraphQuery.Append('url: \"');
+                        GraphQuery.Append(TrackingUrl);
+                        GraphQuery.Append('\"');
+                    end;
+
                     GraphQuery.Append('}');
                 end;
                 GraphQuery.Append('lineItemsByFulfillmentOrder: [');
@@ -151,8 +164,8 @@ codeunit 30190 "Shpfy Export Shipments"
         if OrderLine.Get(SalesShipmentHeader."Shpfy Order Id", SalesShipmentLine."Shpfy Order Line Id") then begin
             FulfillmentOrderLine.Reset();
             FulfillmentOrderLine.SetRange("Shopify Order Id", OrderLine."Shopify Order Id");
-            FulfillmentOrderLine.SetRange("Shopify Product Id", OrderLine."Shopify Product Id");
             FulfillmentOrderLine.SetRange("Shopify Variant Id", OrderLine."Shopify Variant Id");
+            FulfillmentOrderLine.SetFilter("Remaining Quantity", '>=%1', Round(SalesShipmentLine.Quantity, 1, '='));
             if FulfillmentOrderLine.FindFirst() then
                 exit(true);
         end;

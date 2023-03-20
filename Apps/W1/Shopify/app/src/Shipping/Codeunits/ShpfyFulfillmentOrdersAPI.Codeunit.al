@@ -30,6 +30,7 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
                     RegisterFulfillmentService(Shop);
 
                 GetShopifyFulFillmentOrders(Shop);
+
             until Shop.Next() = 0;
     end;
 
@@ -174,6 +175,9 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
         Parameters: Dictionary of [Text, Text];
         JResponse: JsonToken;
     begin
+        if CommunicationMgt.GetTestInProgress() then
+            exit;
+
         CommunicationMgt.SetShop(Shop);
 
         if not Shop."Fulfillmentservice Activated" then
@@ -195,6 +199,7 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
                     GraphQLType := "Shpfy GraphQL Type"::GetNextFulfillmentOrdersFromOrder;
                 end else
                     break;
+
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.order.fulfillmentOrders.pageInfo.hasNextPage');
         Commit();
     end;
