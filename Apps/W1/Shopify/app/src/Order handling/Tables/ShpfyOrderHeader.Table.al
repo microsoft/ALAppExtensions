@@ -658,6 +658,7 @@ table 30118 "Shpfy Order Header"
     trigger OnDelete()
     var
         DataCapture: Record "Shpfy Data Capture";
+        FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
     begin
         ShopifyOrderLine.SetRange("Shopify Order Id", "Shopify Order Id");
         ShopifyOrderLine.DeleteAll(true);
@@ -666,6 +667,10 @@ table 30118 "Shpfy Order Header"
         DataCapture.SetRange("Linked To Id", Rec.SystemId);
         if not DataCapture.IsEmpty then
             DataCapture.DeleteAll(false);
+
+        FulfillmentOrderHeader.SetRange("Shopify Order Id", Rec."Shopify Order Id");
+        if not FulfillmentOrderHeader.IsEmpty then
+            FulfillmentOrderHeader.DeleteAll(true);
     end;
 
     /// <summary> 

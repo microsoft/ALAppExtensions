@@ -53,6 +53,7 @@ codeunit 30161 "Shpfy Import Order"
                         end;
                     GraphQLType := "Shpfy GraphQL Type"::GetNextOrderLines;
                 until not JsonHelper.GetValueAsBoolean(JPageInfo, 'hasNextPage');
+                OrderFulfillments.GetFulfillments(Shop, OrderHeader."Shopify Order Id");
                 if CheckToCloseOrder(OrderHeader) then
                     CloseOrder(OrderHeader);
             end;
@@ -555,13 +556,14 @@ codeunit 30161 "Shpfy Import Order"
         CommunicationMgt.SetShop(Shop);
     end;
 
-    local procedure UpdateLocationIdOnOrderLine(OrderLine: Record "Shpfy Order Line")
+    local procedure UpdateLocationIdOnOrderLine(var OrderLine: Record "Shpfy Order Line")
     var
         FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
     begin
         FulfillmentOrderLine.Reset();
         FulfillmentOrderLine.SetRange("Shopify Order Id", OrderLine."Shopify Order Id");
         FulfillmentOrderLine.SetRange("Shopify Variant Id", OrderLine."Shopify Variant Id");
+        FulfillmentOrderLine.SetRange("Total Quantity", OrderLine.Quantity);
         if FulfillmentOrderLine.FindFirst() then
             OrderLine."Location Id" := FulfillmentOrderLine."Shopify Location Id";
     end;

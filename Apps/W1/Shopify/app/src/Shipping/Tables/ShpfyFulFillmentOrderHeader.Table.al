@@ -43,4 +43,13 @@ table 30143 "Shpfy FulFillment Order Header"
             Clustered = true;
         }
     }
+
+    trigger OnDelete()
+    var
+        FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
+    begin
+        FulfillmentOrderLine.Reset();
+        FulfillmentOrderLine.SetRange("Shopify Fulfillment Order Id", Rec."Shopify Fulfillment Order Id");
+        FulfillmentOrderLine.DeleteAll(true);
+    end;
 }
