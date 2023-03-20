@@ -93,7 +93,6 @@ jobs:
         include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[0].buildDimensions }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
-    timeout-minutes: 40
     outputs:
       AppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.AppsArtifactsName }}
       TestAppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestAppsArtifactsName }}
@@ -234,7 +233,6 @@ jobs:
         include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[1].buildDimensions }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
-    timeout-minutes: 40
     outputs:
       AppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.AppsArtifactsName }}
       TestAppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestAppsArtifactsName }}
