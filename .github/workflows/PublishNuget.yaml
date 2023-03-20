@@ -49,7 +49,7 @@ jobs:
             const artifactsDirectory = `${process.env.buildArtifactsPath}`;
             fs.mkdirSync(artifactsDirectory);
 
-            const runId = Number('${{ github.event.workflow_run.id }}');
+            const runId = Number('4469256032');
             const artifactFilter = 'Apps-'
             var allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
@@ -83,7 +83,7 @@ jobs:
         run: |
           $NuspecPath = Join-Path $env:GITHUB_WORKSPACE "Build\ALAppExtensions.template.nuspec"
           $LicenseFilePath = Join-Path $env:GITHUB_WORKSPACE "LICENSE"
-          Build\Scripts\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -NuspecPath $NuspecPath -LicensePath $LicenseFilePath
+          Build\Scripts\Package\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -NuspecPath $NuspecPath -LicensePath $LicenseFilePath
 
       - name: Push Package
         run: |
