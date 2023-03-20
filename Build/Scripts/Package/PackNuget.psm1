@@ -72,9 +72,9 @@ function Initialize-PackageFolder
                 $ApplicationName = $_.ApplicationName
                 $Include = $_.IncludeInPackage
                 Write-Host "Copying $ApplicationName to package: $Include" -ForegroundColor Magenta
-                $folders = Get-ChildItem -Path $appsToPackage
-                Write-Host $folders
-                if ($Include) {
+                #$folders = Get-ChildItem -Path $appsToPackage
+                #Write-Host $folders
+                if ($Include -and (Test-Path "$appsToPackage/$ApplicationName")) {
                     Copy-Item -Path "$appsToPackage/$ApplicationName" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
                 } else {
                     Write-Host "Skipping $ApplicationName"
