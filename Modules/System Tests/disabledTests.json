@@ -61,9 +61,14 @@
       ]
     },
     {
+      "codeunitName":  "Cryptography Management Test",
+      "method":  "TestEncryptInputLengthOk"
+    },
+    {
       "codeunitName": "Cues And KPIs Test",
       "method": [ 
         "CueUserPageShowsRecordsInsertedForCurrentUser",
+        "CueSetupAdminPageCanInsertAndEdit",
         "CueSetupAdminPageCanInsertForDifferentUsers",
         "ChangeUsersForSetupEntries",
         "TestPersonalizedCueSetupExistsForCurrentUser"
@@ -74,12 +79,21 @@
       "method": "TestLastModifiedBy"
     },
     {
+      "codeunitName":  "Data Out Of Geo. App Test",
+      "method":  "*"
+    },
+    {
+      "codeunitName":  "Email Test",
+      "method":  "OpenMessageInEditorTest"
+    },
+    {
       "codeunitName": "Extension Management Test",
       "method": "*"
     },
     {
       "codeunitName":  "Feature Key Test",
       "method":  [
+        "T003_CannotDisableOneWayFeatureOnPage",
         "T004_CannotEnableOneWayFeatureAsNotImplemented",
         "T005_EnableOneWayFeatureReviewData",
         "T006_EnableOneWayFeatureRunUpdateData"
@@ -96,6 +110,10 @@
     {
       "codeunitName": "Retention Policy Test",
       "method": "*"
+    },
+    {
+      "codeunitName":  "Time Zone Selection Tests",
+      "method":  "TimeZoneGetDisplayName"
     },
     {
       "codeunitName": "User Permissions Test",
