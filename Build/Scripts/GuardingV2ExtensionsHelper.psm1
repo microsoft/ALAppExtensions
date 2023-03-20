@@ -88,6 +88,8 @@ function Restore-BaselinesFromArtifacts {
         }
 
         Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+    } catch {
+        Write-Host "Unable to find baseline app for $ExtensionName in nuget"
     } finally {
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
@@ -129,6 +131,8 @@ function Restore-BaselinesFromNuget {
         Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
     
         Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+    } catch {
+        Write-Host "Unable to find baseline app for $ExtensionName in nuget"
     } finally {
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
