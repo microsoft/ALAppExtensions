@@ -13,11 +13,21 @@ codeunit 139701 "Migration Vendor 1099 Tests"
     [Test]
     procedure TestMappingsCreated()
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         SupportedTaxYear: Record "Supported Tax Year";
         GP1099BoxMapping: Record "GP 1099 Box Mapping";
+        GPCloudMigrationUS: Codeunit "GP Cloud Migration US";
     begin
-        // [GIVEN] Vendor 1099 Migration extension is installed
-        // [WHEN] The 2022 1099 mapping is created when installed
+        Initialize();
+
+        // Enable Migrate Vendor 1099 setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor 1099", true);
+        GPCompanyAdditionalSettings.Validate("1099 Tax Year", 2022);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] GP migration has completed and the Vendor 1099 migration has started
+        GPCloudMigrationUS.RunPostMigration();
 
         // [THEN] The supported tax year of 2022 will be present
         SupportedTaxYear.SetRange("Tax Year", 2022);
@@ -52,11 +62,22 @@ codeunit 139701 "Migration Vendor 1099 Tests"
     [Test]
     procedure TestGetSupportedYear()
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPVendor1099MappingHelpers: Codeunit "GP Vendor 1099 Mapping Helpers";
+        GPCloudMigrationUS: Codeunit "GP Cloud Migration US";
     begin
-        // [GIVEN] Vendor 1099 Migration extension is installed
-        // [WHEN] The 2022 1099 mapping is created when installed
+        Initialize();
 
+        // Enable Migrate Vendor 1099 setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor 1099", true);
+        GPCompanyAdditionalSettings.Validate("1099 Tax Year", 2022);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] GP migration has completed and the Vendor 1099 migration has started
+        GPCloudMigrationUS.RunPostMigration();
+
+        // [WHEN] The 2022 1099 mapping is created when installed
         // [THEN] The GetSupportedTaxYear procedure will return correct results
         Assert.AreEqual(2022, GPVendor1099MappingHelpers.GetSupportedTaxYear(2022), 'Supported tax year is incorrect.');
         Assert.AreEqual(2022, GPVendor1099MappingHelpers.GetSupportedTaxYear(2023), 'Supported tax year is incorrect.');
@@ -73,13 +94,22 @@ codeunit 139701 "Migration Vendor 1099 Tests"
     [Test]
     procedure TestGetIRS1099BoxCode()
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPVendor1099MappingHelpers: Codeunit "GP Vendor 1099 Mapping Helpers";
+        GPCloudMigrationUS: Codeunit "GP Cloud Migration US";
     begin
-        // [GIVEN] Vendor 1099 Migration extension is installed
-        // [WHEN] The 2022 1099 mapping is created when installed
+        Initialize();
+
+        // Enable Migrate Vendor 1099 setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor 1099", true);
+        GPCompanyAdditionalSettings.Validate("1099 Tax Year", 2022);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] GP migration has completed and the Vendor 1099 migration has started
+        GPCloudMigrationUS.RunPostMigration();
 
         // [THEN] The GetIRS1099BoxCode procedure will return correct results
-
         // Unsupported tax year
         Assert.AreEqual('', GPVendor1099MappingHelpers.GetIRS1099BoxCode(1997, 2, 1), 'Incorrect 1099 Box Code returned.');
 
@@ -155,7 +185,7 @@ codeunit 139701 "Migration Vendor 1099 Tests"
         // [GIVEN] The Intelligent Cloud migration is completed
         CreateVendorData();
 
-        // Enable Migrate Open POs setting
+        // Enable Migrate Vendor 1099 setting
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Vendor 1099", true);
         GPCompanyAdditionalSettings.Validate("1099 Tax Year", 2022);

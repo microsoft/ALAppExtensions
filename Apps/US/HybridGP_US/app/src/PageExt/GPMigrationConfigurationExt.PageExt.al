@@ -49,4 +49,12 @@ pageextension 41103 "GP Migration Configuration Ext" extends "GP Migration Confi
             }
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        if Rec."1099 Tax Year" = 0 then begin
+            Rec.Validate("1099 Tax Year", Date2DMY(Today(), 3));
+            Rec.Modify();
+        end;
+    end;
 }
