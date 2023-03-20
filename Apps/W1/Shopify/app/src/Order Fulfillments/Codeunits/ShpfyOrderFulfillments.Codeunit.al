@@ -148,8 +148,7 @@ codeunit 30160 "Shpfy Order Fulfillments"
 
         OrderFulfillment.CalcFields("Contains Gift Cards");
         if OrderFulfillment."Contains Gift Cards" then
-            if JsonHelper.GetJsonArray(JFulfillment, JArray, 'receipt.gift_cards') then
-                GiftCards.GetGiftCardsFromFulfillment(OrderFulfillment."Shopify Order Id", OrderFulfillment."Shopify Fulfillment Id");
+            GiftCards.GetGiftCardsFromFulfillment(OrderFulfillment."Shopify Order Id", OrderFulfillment."Shopify Fulfillment Id");
 
         DataCapture.Add(Database::"Shpfy Order Fulfillment", OrderFulfillment.SystemId, JFulfillment);
         exit(id);
