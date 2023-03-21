@@ -72,12 +72,8 @@ function Initialize-PackageFolder
                 $ApplicationName = $_.ApplicationName
                 $Include = $_.IncludeInPackage
                 Write-Host "Copying $ApplicationName to package: $Include" -ForegroundColor Magenta
-                #$folders = Get-ChildItem -Path $appsToPackage
-                #Write-Host $folders
                 if ($Include -and (Test-Path "$appsToPackage/$ApplicationName")) {
                     Copy-Item -Path "$appsToPackage/$ApplicationName" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
-                } else {
-                    Write-Host "Skipping $ApplicationName"
                 }
             }
         } else {
@@ -95,7 +91,7 @@ function Test-PackageFolder
     $OutputPackageFolder
 ) {
     $apps = Get-ChildItem -Path "$OutputPackageFolder/Apps"
-    $expectedApplications = Get-ApplicationsForPackage
+    $expectedApplications = Get-ApplicationsForPackage | Where-Object IncludeInPackage
 
     if($apps.Count -eq 0) {
         throw "No apps found in $OutputPackageFolder"
@@ -104,11 +100,6 @@ function Test-PackageFolder
     if ($apps.Count -ne $expectedApplications.Count) {
         Write-Host "Expected $($expectedApplications.Count) apps, found $($apps.Count)"
     }
-
-    Write-Host $apps
-    Write-Host "-----------------"
-    Write-Host $expectedApplications
-
 
     $expectedApplications | ForEach-Object {
         $ApplicationName = $_.ApplicationName
