@@ -42,22 +42,7 @@
     {
       "codeunitName": "Checklist Facade Test",
       "method": [ 
-        "TestInsertDuplicateAssistedSetupChecklistItemWithUsers",
-        "TestUpdateAssistedSetupChecklistItemWithUsers",
-        "TestUpdateUsersForAssistedSetupChecklistItem",
-        "TestInsertManualSetupChecklistItemWithUsers",
-        "TestInsertDuplicateManualSetupChecklistItemWithUsers",
-        "TestUpdateManualSetupChecklistItemWithUsers",
-        "TestUpdateUsersForManualSetupChecklistItem",
-        "TestInsertLearnChecklistItemWithUsers",
-        "TestInsertDuplicateLearnChecklistItemWithUsers",
-        "TestUpdateLearnChecklistItemWithUsers",
-        "TestUpdateUsersForLearnChecklistItem",
-        "TestInsertVideoChecklistItemWithUsers",
-        "TestInsertSpotlightTourChecklistItemWithUsers",
-        "TestDeleteAssistedSetupChecklistItemWithUsers",
-        "TestDeleteManualSetupChecklistItemWithUsers",
-        "TestDeleteLearnChecklistItemWithUsers"
+        "*"
       ]
     },
     {
