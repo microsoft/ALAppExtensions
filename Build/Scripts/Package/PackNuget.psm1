@@ -94,7 +94,7 @@ function Test-PackageFolder
     [Parameter(Mandatory=$true)]
     $OutputPackageFolder
 ) {
-    $apps = Get-ChildItem -Path "$OutputPackageFolder/Apps" -Recurse
+    $apps = Get-ChildItem -Path "$OutputPackageFolder/Apps"
     $expectedApplications = Get-ApplicationsForPackage
 
     if($apps.Count -eq 0) {
