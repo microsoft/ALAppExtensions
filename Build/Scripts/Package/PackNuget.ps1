@@ -39,6 +39,7 @@ New-Manifest `
 # Copy files to package folder
 Initialize-PackageFolder -OutputPackageFolder $OutputPackageFolder -AppFolders $appsFolders -LicensePath $LicensePath
 
+# Verify that all expected packages are in the package folder
 Test-PackageFolder -OutputPackageFolder $OutputPackageFolder
 
 # Pack Nuget package

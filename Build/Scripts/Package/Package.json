@@ -1,26 +1,24 @@
 {
-  "projects": {
-        "Any": {
-            "includeInNuget": true
-        },
-        "Library Assert": {
-            "includeInNuget": true
-        },
-        "Library Variable Storage": {
-            "includeInNuget": true
-        },
-        "Performance Toolkit": {
-            "includeInNuget": false,
-            "_comment": "Not enabled yet"
-        },
-        "Permissions Mock": {
-            "includeInNuget": true
-        },
-        "System Application": {
-            "includeInNuget": true
-        },
-        "Test Runner": {
-            "includeInNuget": true
-        }
-}
+    "Any": {
+        "includeInNuget": true
+    },
+    "Library Assert": {
+        "includeInNuget": true
+    },
+    "Library Variable Storage": {
+        "includeInNuget": true
+    },
+    "Performance Toolkit": {
+        "includeInNuget": false,
+        "_comment": "Not enabled yet"
+    },
+    "Permissions Mock": {
+        "includeInNuget": true
+    },
+    "System Application": {
+        "includeInNuget": true
+    },
+    "Test Runner": {
+        "includeInNuget": true
+    }
 }
