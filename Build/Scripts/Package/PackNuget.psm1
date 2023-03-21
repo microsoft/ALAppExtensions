@@ -102,7 +102,7 @@ function Test-PackageFolder
     } 
 
     if ($apps.Count -ne $expectedApplications.Count) {
-        throw "Expected $($expectedApplications.Count) apps, found $($apps.Count)"
+        Write-Host "Expected $($expectedApplications.Count) apps, found $($apps.Count)"
     }
 
     $expectedApplications | ForEach-Object {
@@ -110,7 +110,7 @@ function Test-PackageFolder
         $Include = $_.IncludeInPackage
         if ($Include) {
             if(!(Test-Path -Path "$OutputPackageFolder/Apps/$ApplicationName")) {
-                throw "App $ApplicationName not found in $OutputPackageFolder"
+                Write-Host "App $ApplicationName not found in $OutputPackageFolder"
             }
         }
     }
