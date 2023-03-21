@@ -1,7 +1,6 @@
 name: 'Publish Nuget'
 
 on:
-  workflow_dispatch:
   workflow_run:
     workflows: [' CI/CD']
     types: [completed]
@@ -22,7 +21,7 @@ env:
 
 jobs:
   Publish:
-    #if: github.event.workflow_run.conclusion == 'success' && github.repository_owner == 'microsoft'
+    if: github.event.workflow_run.conclusion == 'success' && github.repository_owner == 'microsoft'
     runs-on: [ windows-latest ]
     name: Publish Nuget
     steps:
@@ -50,7 +49,7 @@ jobs:
             const artifactsDirectory = `${process.env.buildArtifactsPath}`;
             fs.mkdirSync(artifactsDirectory);
 
-            const runId = Number('4469256032');
+            const runId = Number('${{ github.event.workflow_run.id }}');
             const artifactFilter = 'Apps-'
             var allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner,
@@ -80,23 +79,11 @@ jobs:
       - name: Setup NuGet.exe
         uses: nuget/setup-nuget@v1
 
-      - name: Publish artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          path: '${{ github.workspace }}/.artifacts'
-          name: 'Artifacts'
-
       - name: Prepare Package
         run: |
           $NuspecPath = Join-Path $env:GITHUB_WORKSPACE "Build\ALAppExtensions.template.nuspec"
           $LicenseFilePath = Join-Path $env:GITHUB_WORKSPACE "LICENSE"
-          Build\Scripts\Package\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -NuspecPath $NuspecPath -LicensePath $LicenseFilePath
-      
-      - name: Publish out
-        uses: actions/upload-artifact@v3
-        with:
-          path: '${{ github.workspace }}/out'
-          name: 'Out'
+          Build\Scripts\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -NuspecPath $NuspecPath -LicensePath $LicenseFilePath
 
       - name: Push Package
         run: |

@@ -77,17 +77,17 @@ function Restore-BaselinesFromArtifacts {
         $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app"
 
         if (-not $baselineApp) {
-            Write-Host "Unable to find baseline app for $ExtensionName in $baselineURL"
-        } else {
-            Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
-
-            if (-not (Test-Path $AppSymbolsFolder)) {
-                Write-Host "Creating folder $AppSymbolsFolder"
-                New-Item -ItemType Directory -Path $AppSymbolsFolder
-            }
-
-            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+            throw "Unable to find baseline app for $ExtensionName in $baselineURL"
         }
+
+        Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+
+        if (-not (Test-Path $AppSymbolsFolder)) {
+            Write-Host "Creating folder $AppSymbolsFolder"
+            New-Item -ItemType Directory -Path $AppSymbolsFolder
+        }
+
+        Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
     } finally {
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
@@ -120,19 +120,15 @@ function Restore-BaselinesFromNuget {
     
         $packagePath = Get-PackageFromNuget -PackageId "microsoft-ALAppExtensions-Modules-preview" -Version $BaselineVersion -OutputPath $baselineFolder
         $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app"
-
-        if (-not $baselineApp) {
-            Write-Host "Unable to find baseline app for $ExtensionName in version $BaselineVersion"
-        } else {
-            Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
     
-            if (-not (Test-Path $AppSymbolsFolder)) {
-                Write-Host "Creating folder $AppSymbolsFolder"
-                New-Item -ItemType Directory -Path $AppSymbolsFolder
-            }
-    
-            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+        if (-not (Test-Path $AppSymbolsFolder)) {
+            Write-Host "Creating folder $AppSymbolsFolder"
+            New-Item -ItemType Directory -Path $AppSymbolsFolder
         }
+    
+        Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+    
+        Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
     } finally {
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
