@@ -85,6 +85,11 @@ jobs:
           $NuspecPath = Join-Path $env:GITHUB_WORKSPACE "Build\ALAppExtensions.template.nuspec"
           $LicenseFilePath = Join-Path $env:GITHUB_WORKSPACE "LICENSE"
           Build\Scripts\Package\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -NuspecPath $NuspecPath -LicensePath $LicenseFilePath
+      
+      - name: Publish artifacts - apps
+        uses: actions/upload-artifact@v3
+        with:
+          path: '${{ github.workspace }}/out'
 
       - name: Push Package
         run: |
