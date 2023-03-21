@@ -77,7 +77,7 @@ page 30145 "Shpfy Refund"
             }
             group(NoteGroup)
             {
-                Caption = 'Note;';
+                Caption = 'Note';
                 Visible = HasNote;
 
                 field(Note; Rec.GetNote())
