@@ -64,15 +64,12 @@ function Initialize-PackageFolder
     $AppFolders | ForEach-Object { 
         $appsToPackage = Join-Path $_.FullName 'Package'
         Write-Host "Copying apps from $appsToPackage" -ForegroundColor Magenta
-        
         if(Test-Path -Path $appsToPackage) 
         {
-            $Applications = Get-ApplicationsForPackage
-            $Applications | ForEach-Object {
+            (Get-ApplicationsForPackage) | ForEach-Object {
                 $ApplicationName = $_.ApplicationName
-                $Include = $_.IncludeInPackage
-                Write-Host "Copying $ApplicationName to package: $Include" -ForegroundColor Magenta
-                if ($Include -and (Test-Path "$appsToPackage/$ApplicationName")) {
+                if ($_.IncludeInPackage -and (Test-Path "$appsToPackage/$ApplicationName")) {
+                    Write-Host "Copying $ApplicationName to package" -ForegroundColor Magenta
                     Copy-Item -Path "$appsToPackage/$ApplicationName" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
                 }
             }
@@ -106,7 +103,7 @@ function Test-PackageFolder
         $Include = $_.IncludeInPackage
         if ($Include) {
             if(!(Test-Path -Path "$OutputPackageFolder/Apps/$ApplicationName")) {
-                Write-Host "App $ApplicationName not found in $OutputPackageFolder"
+                throw "App $ApplicationName not found in $OutputPackageFolder"
             }
         }
     }
