@@ -81,9 +81,14 @@ codeunit 30190 "Shpfy Export Shipments"
                     FulfillmentOrderLine."Remaining Quantity" := FulfillmentOrderLine."Remaining Quantity" - Round(SalesShipmentLine.Quantity, 1, '=');
                     FulfillmentOrderLine.Modify();
 
-                    TempFulfillmentOrderLine := FulfillmentOrderLine;
-                    if not TempFulfillmentOrderLine.Insert() then
+                    if TempFulfillmentOrderLine.Get(FulfillmentOrderLine."Shopify Fulfillment Order Id", FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id") then begin
+                        TempFulfillmentOrderLine."Quantity to Fulfill" += Round(SalesShipmentLine.Quantity, 1, '=');
                         TempFulfillmentOrderLine.Modify();
+                    end else begin
+                        TempFulfillmentOrderLine := FulfillmentOrderLine;
+                        TempFulfillmentOrderLine."Quantity to Fulfill" := Round(SalesShipmentLine.Quantity, 1, '=');
+                        TempFulfillmentOrderLine.Insert();
+                    end;
                 end;
             until SalesShipmentLine.Next() = 0;
 
