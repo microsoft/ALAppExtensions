@@ -144,5 +144,4 @@ function New-Manifest
     $template.Save($OutputPath)
 }
 
-
 Export-ModuleMember *-*
