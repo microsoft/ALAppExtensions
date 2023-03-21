@@ -105,6 +105,11 @@ function Test-PackageFolder
         Write-Host "Expected $($expectedApplications.Count) apps, found $($apps.Count)"
     }
 
+    Write-Host $apps
+    Write-Host "-----------------"
+    Write-Host $expectedApplications
+
+
     $expectedApplications | ForEach-Object {
         $ApplicationName = $_.ApplicationName
         $Include = $_.IncludeInPackage
