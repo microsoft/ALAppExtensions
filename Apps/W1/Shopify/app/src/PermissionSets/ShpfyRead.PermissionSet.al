@@ -37,7 +37,11 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Payment Transaction" = R,
         tabledata "Shpfy Payout" = R,
         tabledata "Shpfy Product" = R,
+#if not CLEAN22
+#pragma warning disable AL0601
         tabledata "Shpfy Province" = R,
+#pragma warning restore AL0601
+#endif
 #if not CLEAN21
 #pragma warning disable AL0432
         tabledata "Shpfy Registered Store" = R,
@@ -56,6 +60,11 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Variant" = R,
         tabledata "Shpfy Fulfillment Line" = R,
         tabledata "Shpfy FulFillment Order Header" = R,
-        tabledata "Shpfy FulFillment Order Line" = R;
+        tabledata "Shpfy FulFillment Order Line" = R,
+        tabledata "Shpfy Doc. Link To BC Doc." = R,
+        tabledata "Shpfy Refund Header" = R,
+        tabledata "Shpfy Refund Line" = R,
+        tabledata "Shpfy Return Header" = R,
+        tabledata "Shpfy Return Line" = R;
 }
 #pragma warning restore AS0090, AS0049

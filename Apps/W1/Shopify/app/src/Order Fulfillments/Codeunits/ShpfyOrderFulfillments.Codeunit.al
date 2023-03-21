@@ -90,9 +90,9 @@ codeunit 30160 "Shpfy Order Fulfillments"
             Clear(OrderFulfillment);
             OrderFulfillment."Shopify Fulfillment Id" := Id;
             OrderFulfillment."Shopify Order Id" := OrderId;
-        end else
-            if OrderFulfillment."Updated At" = JsonHelper.GetValueAsDateTime(JFulfillment, 'updatedAt') then
-                exit;
+        end; // else
+             // if OrderFulfillment."Updated At" = JsonHelper.GetValueAsDateTime(JFulfillment, 'updatedAt') then
+             //     exit;
         OrderFulfillment.Status := ConvertToFulFillmentStatus(JsonHelper.GetValueAsText(JFulfillment, 'status'));
         OrderFulfillmentRecordRef.GetTable(OrderFulfillment);
         JsonHelper.GetValueIntoField(JFulfillment, 'createdAt', OrderFulfillmentRecordRef, OrderFulfillment.FieldNo("Created At"));
@@ -144,7 +144,6 @@ codeunit 30160 "Shpfy Order Fulfillments"
                 JFulfillment := JsonHelper.GetJsonToken(JResponse, 'data.fulfillment');
             end;
         until not HasNextPage;
-
 
         OrderFulfillment.CalcFields("Contains Gift Cards");
         if OrderFulfillment."Contains Gift Cards" then

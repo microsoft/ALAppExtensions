@@ -405,6 +405,12 @@ page 30113 "Shpfy Order"
         }
         area(factboxes)
         {
+            part(LinkedBCDocuments; "Shpfy Linked BC Documents")
+            {
+                ApplicationArea = All;
+                Caption = 'Linked BC Documents';
+                SubPageLink = "Shopify Document Type" = const("Shpfy Document Type"::"Shopify Order"), "Shopify Document Id" = field("Shopify Order Id");
+            }
             part(SalesHistory; "Sales Hist. Sell-to FactBox")
             {
                 ApplicationArea = All;
@@ -614,7 +620,48 @@ page 30113 "Shpfy Order"
                     SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Sales Order No.");
                     SalesOrder.SetRecord(SalesHeader);
                     SalesOrder.Run();
-                    ;
+                end;
+            }
+            action(Refunds)
+            {
+                ApplicationArea = All;
+                Caption = 'Refunds';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify refunds.';
+
+                trigger OnAction()
+                var
+                    RefundHeader: Record "Shpfy Refund Header";
+                    RefundHeaders: Page "Shpfy Refunds";
+                begin
+                    RefundHeader.SetRange("Order Id", Rec."Shopify Order Id");
+                    RefundHeaders.SetTableView(RefundHeader);
+                    RefundHeaders.Run();
+                end;
+            }
+            action(Returns)
+            {
+                ApplicationArea = All;
+                Caption = 'Returns';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify returns.';
+
+                trigger OnAction()
+                var
+                    ReturnHeader: Record "Shpfy Return Header";
+                    ReturnHeaders: Page "Shpfy Returns";
+                begin
+                    ReturnHeader.SetRange("Order Id", Rec."Shopify Order Id");
+                    ReturnHeaders.SetTableView(ReturnHeader);
+                    ReturnHeaders.Run();
                 end;
             }
             action(SalesInvoice)

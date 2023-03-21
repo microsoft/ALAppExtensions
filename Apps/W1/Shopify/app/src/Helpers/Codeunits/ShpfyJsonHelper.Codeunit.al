@@ -567,6 +567,7 @@ codeunit 30157 "Shpfy Json Helper"
     /// <param name="JObject">Parameter of type JsonObject.</param>
     /// <param name="TokenPath">Parameter of type Text contains the path members combined with the .-char.</param>
     /// <returns>Return value of type Date.</returns>
+    [NonDebuggable]
     internal procedure GetValueAsDate(JObject: JsonObject; TokenPath: Text): Date
     var
         JValue: JsonValue;
@@ -579,6 +580,7 @@ codeunit 30157 "Shpfy Json Helper"
                 exit(DT2Date(JValue.AsDateTime()));
     end;
 
+    [NonDebuggable]
     [TryFunction]
     local procedure TryAsDate(JValue: JsonValue; var ResultDate: Date)
     begin

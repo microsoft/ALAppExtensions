@@ -37,7 +37,11 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Payment Transaction" = IMD,
         tabledata "Shpfy Payout" = IMD,
         tabledata "Shpfy Product" = IMD,
+#if not CLEAN222
+#pragma warning disable AL0601
         tabledata "Shpfy Province" = IMD,
+#pragma warning restore AL0601
+#endif
 #if not CLEAN21
 #pragma warning disable AL0432
         tabledata "Shpfy Registered Store" = imd,
@@ -56,5 +60,10 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Variant" = IMD,
         tabledata "Shpfy Fulfillment Line" = IMD,
         tabledata "Shpfy FulFillment Order Header" = IMD,
-        tabledata "Shpfy FulFillment Order Line" = IMD;
+        tabledata "Shpfy FulFillment Order Line" = IMD,
+        tabledata "Shpfy Doc. Link To BC Doc." = IMD,
+        tabledata "Shpfy Refund Header" = IMD,
+        tabledata "Shpfy Refund Line" = IMD,
+        tabledata "Shpfy Return Header" = IMD,
+        tabledata "Shpfy Return Line" = IMD;
 }

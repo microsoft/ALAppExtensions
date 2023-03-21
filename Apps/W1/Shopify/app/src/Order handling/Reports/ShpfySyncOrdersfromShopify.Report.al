@@ -29,6 +29,7 @@ report 30104 "Shpfy Sync Orders from Shopify"
                     OrdersToImport.SetRange("Shop Id", Shop."Shop Id");
                     OrdersToImport.SetRange("Shop Code", '');
                     OrdersToImport.ModifyAll("Shop Code", Shop.Code);
+                    OrdersToImport.SetRange("Shop Code", Shop.Code);
                     Commit();
                     OrdersToImport.SetRange("Shop Code", Shop.Code);
 

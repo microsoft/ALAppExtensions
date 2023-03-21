@@ -45,7 +45,10 @@ codeunit 30161 "Shpfy Import Order"
                 repeat
                     JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Paramters);
                     if JsonHelper.GetJsonObject(JResponse, JPageInfo, 'data.order.lineItems.pageInfo') then
-                        Paramters.Add('After', JsonHelper.GetValueAsText(JPageInfo, 'endCursor'));
+                        if Paramters.ContainsKey('After') then
+                            Paramters.Set('After', JsonHelper.GetValueAsText(JPageInfo, 'endCursor'))
+                        else
+                            Paramters.Add('After', JsonHelper.GetValueAsText(JPageInfo, 'endCursor'));
                     if JsonHelper.GetJsonArray(JResponse, JOrderLines, 'data.order.lineItems.nodes') then
                         foreach JOrderLine in JOrderLines do begin
                             ImportOrderLine(OrderHeader, OrderLine, JOrderLine);
@@ -60,15 +63,18 @@ codeunit 30161 "Shpfy Import Order"
         end;
     end;
 
-    [NonDebuggable]
+    //[NonDebuggable]
     internal procedure ImportOrderHeader(OrdersToImport: Record "Shpfy Orders to Import"; var OrderHeader: Record "Shpfy Order Header"; JOrder: JsonObject)
     var
         OrderTransaction: Record "Shpfy Order Transaction";
         ShippingCharges: Codeunit "Shpfy Shipping Charges";
         Transactions: Codeunit "Shpfy Transactions";
+        ReturnsAPI: Codeunit "Shpfy Returns API";
+        RefundsAPI: Codeunit "Shpfy Refunds API";
         FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
         ICountyFromJson: Interface "Shpfy ICounty From Json";
         OrderHeaderRecordRef: RecordRef;
+        IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
         OrderId: BigInteger;
         IsNew: Boolean;
         CompanyName: Text;
@@ -244,6 +250,12 @@ codeunit 30161 "Shpfy Import Order"
             if OrderTransaction.FindFirst() then
                 OrderHeader.Gateway := OrderTransaction.Gateway;
         end;
+
+        IReturnRefundProcess := Shop."Return and Refund Process";
+        if IReturnRefundProcess.IsImportNeededFor("Shpfy Source Document Type"::Return) then
+            ReturnsAPI.GetReturns(OrderId, JsonHelper.GetJsonObject(JOrder, 'returns'));
+        if IReturnRefundProcess.IsImportNeededFor("Shpfy Source Document Type"::Refund) then
+            RefundsAPI.GetRefunds(JsonHelper.GetJsonArray(JOrder, 'refunds'));
     end;
 
     [NonDebuggable]
@@ -293,7 +305,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderRisks.UpdateOrderRisks(OrderHeader, JRisks);
     end;
 
-    [NonDebuggable]
+    //[NonDebuggable]
     internal procedure ImportOrderLine(OrderHeader: Record "Shpfy Order Header"; var OrderLine: Record "Shpfy Order Line"; JOrderLine: JsonToken)
     var
         OrderLineRecordRef: RecordRef;
@@ -323,16 +335,24 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrderLine, 'fulfillmentService.serviceName', OrderLineRecordRef, OrderLine.FieldNo("Fulfillment Service"));
             JsonHelper.GetValueIntoField(JOrderLine, 'product.isGiftCard', OrderLineRecordRef, OrderLine.FieldNo("Gift Card"));
             JsonHelper.GetValueIntoField(JOrderLine, 'taxable', OrderLineRecordRef, OrderLine.FieldNo(Taxable));
-            JsonHelper.GetValueIntoField(JOrderLine, 'originalUnitPriceSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Unit Price"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'originalUnitPriceSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Unit Price"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Discount Amount"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Discount Amount"));
+            JsonHelper.GetValueIntoField(JOrderLine, 'discountedUnitPriceSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Unit Price"));
+            JsonHelper.GetValueIntoField(JOrderLine, 'discountedUnitPriceSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Unit Price"));
             OrderLineRecordRef.SetTable(OrderLine);
+            OrderLine."Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'shopMoney');
+            OrderLine."Presentment Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'presentmentMoney');
             UpdateLocationIdOnOrderLine(OrderLine);
             OrderLine.Modify();
             OrderLineRecordRef.Close();
             AddTaxLines(OrderLine."Line Id", JsonHelper.GetJsonArray(JOrderLine, 'taxLines'));
         end;
+    end;
+
+    local procedure GetTotalLineDiscountAmount(JDiscountSets: JsonArray; MoneyType: Text) Result: Decimal
+    var
+        JDiscountSet: JsonToken;
+    begin
+        foreach JDiscountSet in JDiscountSets do
+            Result += JsonHelper.GetValueAsDecimal(JDiscountSet, 'allocatedAmountSet.' + MoneyType + '.amount');
     end;
 
     /// <summary>

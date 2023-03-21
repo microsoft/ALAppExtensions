@@ -32,6 +32,7 @@ codeunit 30166 "Shpfy Process Order"
         ShopifyShop.Get(OrderHeader."Shop Code");
         CreateHeaderFromShopifyOrder(SalesHeader, OrderHeader);
         CreateLinesFromShopifyOrder(SalesHeader, OrderHeader);
+        ApplyGlobalDiscounts(OrderHeader, SalesHeader);
 
         IsHandled := false;
         OrderHeader.Get(OrderHeader."Shopify Order Id");
@@ -42,7 +43,6 @@ codeunit 30166 "Shpfy Process Order"
         OrderEvents.OnAfterReleaseSalesHeader(SalesHeader, OrderHeader);
 
         Rec.Get(OrderHeader."Shopify Order Id");
-
     end;
 
     /// <summary> 
@@ -54,8 +54,10 @@ codeunit 30166 "Shpfy Process Order"
     var
         ShopLocation: Record "Shpfy Shop Location";
         ShopifyTaxArea: Record "Shpfy Tax Area";
+        DocLinkToBCDoc: Record "Shpfy Doc. Link To BC Doc.";
         OrdersAPI: Codeunit "Shpfy Orders API";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
+        BCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";
         IsHandled: Boolean;
     begin
         OrderEvents.OnBeforeCreateSalesHeader(ShopifyOrderHeader, SalesHeader, IsHandled);
@@ -128,7 +130,46 @@ codeunit 30166 "Shpfy Process Order"
                 SalesHeader.SetWorkDescription(ShopifyOrderHeader.GetWorkDescription());
         end;
         OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.");
+        DocLinkToBCDoc.Init();
+        DocLinkToBCDoc."Shopify Document Type" := "Shpfy Document Type"::"Shopify Order";
+        DocLinkToBCDoc."Shopify Document Id" := ShopifyOrderHeader."Shopify Order Id";
+        DocLinkToBCDoc."BC Document Type" := BCDocumentTypeConvert.Convert(SalesHeader);
+        DocLinkToBCDoc."BC Document No." := SalesHeader."No.";
+        DocLinkToBCDoc.Insert();
         OrderEvents.OnAfterCreateSalesHeader(ShopifyOrderHeader, SalesHeader);
+    end;
+
+    local procedure ApplyGlobalDiscounts(OrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
+    var
+        OrderLine: Record "Shpfy Order Line";
+        SalesLine: REcord "Sales Line";
+        SalesCalcDiscountByType: Codeunit "Sales - Calc Discount By Type";
+        Discount: Decimal;
+    begin
+        OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        OrderLine.CalcSums("Discount Amount");
+        SalesHeader.Get(SalesHeader."Document Type", SalesHeader."No.");
+        Discount := OrderHeader."Discount Amount" - OrderLine."Discount Amount";
+        if Discount > 0 then begin
+            SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+            SalesLine.SetRange("Document No.", SalesHeader."No.");
+            SalesLine.SetRange(Type, SalesLine.Type::"G/L Account");
+            SalesLine.SetRange("No.", ShopifyShop."Shipping Charges Account");
+            if SalesLine.FindFirst then begin
+                if Discount >= SalesLine."Line Amount" then begin
+                    Discount -= SalesLine."Line Amount";
+                    SalesLine.Validate("Line Discount %", 100);
+                    SalesLine.Modify();
+                end else begin
+                    SalesLine.Validate("Line Discount Amount", Discount);
+                    SalesLine.Modify;
+                    Clear(Discount);
+                end;
+            end;
+            if Discount > 0 then begin
+                SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(Discount, SalesHeader);
+            end;
+        end;
     end;
 
     /// <summary> 

@@ -209,7 +209,6 @@ codeunit 30176 "Shpfy Product API"
         Client: HttpClient;
         Content: HttpContent;
         Headers: HttpHeaders;
-        Request: HttpRequestMessage;
         Response: HttpResponseMessage;
         InStream: InStream;
     begin

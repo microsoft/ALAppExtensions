@@ -9,17 +9,21 @@ codeunit 30167 "Shpfy Process Orders"
 
     var
         ShopifyOrderFilter: Text;
+        Shop: Record "Shpfy Shop";
 
     trigger OnRun()
     var
         ShopifyOrderHeader: Record "Shpfy Order Header";
     begin
+        Shop := Rec;
         ShopifyOrderHeader.Reset();
         if ShopifyOrderFilter <> '' then
             ShopifyOrderHeader.SetView(ShopifyOrderFilter);
         ShopifyOrderHeader.SetRange(Processed, false);
         ShopifyOrderHeader.SetRange("Shop Code", Rec.Code);
+        ShopifyOrderHeader.SetCurrentKey("Shop Code", Processed);
         ProcessShopifyOrders(ShopifyOrderHeader);
+        ProcessShopifyRefunds();
     end;
 
     /// <summary>
@@ -69,6 +73,23 @@ codeunit 30167 "Shpfy Process Orders"
             repeat
                 ProcessShopifyOrder(ShopifyOrderHeader);
             until ShopifyOrderHeader.Next() = 0;
+    end;
+
+    local procedure ProcessShopifyRefunds()
+    var
+        RefundHeader: Record "Shpfy Refund Header";
+        IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
+    begin
+        if Shop."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then begin
+            IReturnRefundProcess := Shop."Return and Refund Process";
+            RefundHeader.SetRange("Is Processed", false);
+            RefundHeader.SetLoadFields("Refund Id");
+            if RefundHeader.FindSet(false, false) then
+                repeat
+                    IReturnRefundProcess.CreateSalesDocument("Shpfy Source Document Type"::Refund, RefundHeader."Refund Id");
+                    Commit();
+                until RefundHeader.Next() = 0;
+        end;
     end;
 }
 

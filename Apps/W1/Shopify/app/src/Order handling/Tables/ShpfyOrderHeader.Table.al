@@ -651,17 +651,23 @@ table 30118 "Shpfy Order Header"
         {
             Clustered = true;
         }
+        key(Idx01; "Shop Code", Processed) { }
     }
     var
         ShopifyOrderLine: Record "Shpfy Order Line";
 
     trigger OnDelete()
     var
+        ShopifyReturnHeader: Record "Shpfy Return Header";
         DataCapture: Record "Shpfy Data Capture";
         FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
     begin
         ShopifyOrderLine.SetRange("Shopify Order Id", "Shopify Order Id");
-        ShopifyOrderLine.DeleteAll(true);
+        if not ShopifyOrderLine.IsEmpty then
+            ShopifyOrderLine.DeleteAll(true);
+        ShopifyReturnHeader.SetRange("Order Id", "Shopify Order Id");
+        if not ShopifyReturnHeader.IsEmpty then
+            ShopifyReturnHeader.DeleteAll(true);
         DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
         DataCapture.SetRange("Linked To Table", Database::"Shpfy Order Header");
         DataCapture.SetRange("Linked To Id", Rec.SystemId);
@@ -712,5 +718,14 @@ table 30118 "Shpfy Order Header"
         ShopifyTag.UpdateTags(Database::"Shpfy Order Header", "Shopify Order Id", CommaSeperatedTags);
     end;
 
+    internal procedure IsProcessed(): Boolean
+    var
+        DocLinkToBCDoc: Record "Shpfy Doc. Link To BC Doc.";
+    begin
+        DocLinkToBCDoc.SetRange("Shopify Document Type", "Shpfy Document Type"::"Shopify Order");
+        DocLinkToBCDoc.SetRange("Shopify Document Id", Rec."Shopify Order Id");
+        DocLinkToBCDoc.SetCurrentKey("Shopify Document Type", "Shopify Document Id");
+        exit(Rec.Processed or not DocLinkToBCDoc.IsEmpty);
+    end;
 }
 
