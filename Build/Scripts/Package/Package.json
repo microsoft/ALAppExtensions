@@ -3,19 +3,19 @@
     "Any": {
         "includeInNuget": true
     },
-    "Assert": {
+    "Library Assert": {
         "includeInNuget": true
+    },
+    "Library Variable Storage": {
+        "includeInNuget": true
+    },
+    "Performance Toolkit": {
+        "includeInNuget": false
     },
     "Permissions Mock": {
         "includeInNuget": true
     },
-    "Variable Storage": {
-        "includeInNuget": true
-    },
     "Test Runner": {
-        "includeInNuget": true
-    },
-    "Performance Toolkit": {
         "includeInNuget": true
     },
     "System Application": {
