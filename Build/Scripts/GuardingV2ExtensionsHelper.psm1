@@ -78,7 +78,7 @@ function Restore-BaselinesFromArtifacts {
         Write-Host "Downloading from $baselineURL to $baselineFolder"
 
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app"
+        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app" -ErrorAction SilentlyContinue
 
         if (-not $baselineApp) {
             Write-Host "Unable to find baseline app for $ExtensionName in $baselineFolder"
@@ -127,7 +127,7 @@ function Restore-BaselinesFromNuget {
         Write-Host "Downloading from nuget to $baselineFolder"
     
         $packagePath = Get-PackageFromNuget -PackageId "microsoft-ALAppExtensions-Modules-preview" -Version $BaselineVersion -OutputPath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app"
+        $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app" -ErrorAction SilentlyContinue
 
         if (-not $baselineApp) {
             Write-Host "Unable to find baseline app for $ExtensionName in $packagePath"
