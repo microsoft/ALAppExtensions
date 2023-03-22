@@ -12,10 +12,20 @@
         "includeInPackage": false,
         "_comment": "Not enabled yet"
     },
+    "Performance Toolkit Tests": {
+        "includeInPackage": false,
+        "_comment": "Not enabled yet"
+    },
     "Permissions Mock": {
         "includeInPackage": true
     },
     "System Application": {
+        "includeInPackage": true
+    },
+    "System Application Tests": {
+        "includeInPackage": true
+    },
+    "System Application Test Libraries": {
         "includeInPackage": true
     },
     "Test Runner": {

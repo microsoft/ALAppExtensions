@@ -90,7 +90,7 @@ function Test-PackageFolder
     } 
 
     if ($appsInPackageFolder.Count -ne $expectedApplications.Count) {
-        Write-Host "Expected $($expectedApplications.Count) apps, found $($appsInPackageFolder.Count)"
+        throw "Expected $($expectedApplications.Count) apps, found $($appsInPackageFolder.Count)"
     }
 
     $expectedApplications | ForEach-Object {
