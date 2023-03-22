@@ -1,24 +1,24 @@
 {
     "Any": {
-        "includeInNuget": true
+        "includeInPackage": true
     },
     "Library Assert": {
-        "includeInNuget": true
+        "includeInPackage": true
     },
     "Library Variable Storage": {
-        "includeInNuget": true
+        "includeInPackage": true
     },
     "Performance Toolkit": {
-        "includeInNuget": false,
+        "includeInPackage": false,
         "_comment": "Not enabled yet"
     },
     "Permissions Mock": {
-        "includeInNuget": true
+        "includeInPackage": true
     },
     "System Application": {
-        "includeInNuget": true
+        "includeInPackage": true
     },
     "Test Runner": {
-        "includeInNuget": true
+        "includeInPackage": true
     }
 }

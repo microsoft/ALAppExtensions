@@ -21,7 +21,7 @@ function Get-ApplicationsForPackage() {
     
         $applicationPackageMetadata = [ApplicationPackageMetadata]::new()
         $applicationPackageMetadata.ApplicationName = $applicationName
-        $applicationPackageMetadata.IncludeInPackage = $packages.$applicationName.includeInNuget
+        $applicationPackageMetadata.IncludeInPackage = $packages.$applicationName.includeInPackage
         $applications += $applicationPackageMetadata
     }
 
@@ -95,7 +95,7 @@ function Test-PackageFolder
 
     $expectedApplications | ForEach-Object {
         $applicationName = $_.ApplicationName
-        if ($_.IncludeInPackage -and -not (Test-Path -Path "$OutputPackageFolder/Apps/$applicationName")) {
+        if (Test-Path -Path "$OutputPackageFolder/Apps/$applicationName") {
             throw "App $applicationName not found in $OutputPackageFolder"
         }
     }
