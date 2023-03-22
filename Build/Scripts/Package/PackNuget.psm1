@@ -28,20 +28,6 @@ function Get-ApplicationsForPackage() {
     return $applications
 }
 
-function Add-AppToPackage
-(
-    [Parameter(Mandatory=$true)]
-    $ApplicationName
-) 
-{
-    $application = (Get-ApplicationsForPackage) | Where-Object ApplicationName -eq $ApplicationName
-    if($application) {
-        return $application.IncludeInPackage
-    } 
-
-    return $false
-}
-
 <#
 .Synopsis
     Copies the apps from the build artifacts folder to the package folder
