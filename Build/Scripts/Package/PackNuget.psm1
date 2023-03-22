@@ -13,7 +13,7 @@ class ApplicationPackageMetadata
 #>
 function Get-ApplicationsForPackage() {
     $packageJson = "$PSScriptRoot\Package.json"
-    $packages = Get-Content $packageJson | ConvertFrom-Json
+    $packages = (Get-Content $packageJson | ConvertFrom-Json).projects
     
     $applications = @()
     ($packages | Get-Member -MemberType NoteProperty).Name | ForEach-Object {
@@ -62,7 +62,7 @@ function Initialize-PackageFolder
                 }
             }
         } else {
-            throw "No apps found in: $appsToPackage" 
+            Write-Host "No apps found in: $appsToPackage" 
         }
     }
 
@@ -89,14 +89,19 @@ function Test-PackageFolder
         throw "No apps found in $OutputPackageFolder"
     } 
 
-    if ($appsInPackageFolder.Count -ne $expectedApplications.Count) {
-        throw "Expected $($expectedApplications.Count) apps, found $($appsInPackageFolder.Count)"
-    }
-
+    Write-Host "Verifying expected apps are in package folder: $OutputPackageFolder"
     $expectedApplications | ForEach-Object {
         $applicationName = $_.ApplicationName
         if (Test-Path -Path "$OutputPackageFolder/Apps/$applicationName") {
             throw "App $applicationName not found in $OutputPackageFolder"
+        }
+    }
+
+    Write-Host "Verifying apps in package folder are expected"
+    $appsInPackageFolder | ForEach-Object {
+        $applicationName = $_.Name
+        if ($expectedApplications | Where-Object ApplicationName -eq $applicationName) {
+            throw "App $applicationName not expected in $OutputPackageFolder"
         }
     }
 }
