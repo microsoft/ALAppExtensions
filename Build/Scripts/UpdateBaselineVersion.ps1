@@ -32,6 +32,7 @@ if ([System.Version] $latestBaseline -gt [System.Version] $currentBaseline) {
     } else {
         gh pr create --fill --head $BranchName --base $TargetBranch
     }
+    gh pr merge --auto --squash --delete-branch
 } else {
     Write-Host "Current baseline version is already up to date"
 }
