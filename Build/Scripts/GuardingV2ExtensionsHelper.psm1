@@ -34,14 +34,16 @@ function Enable-BreakingChangesCheck {
     # Restore the baseline package and place it in the app symbols folder
     if ($BuildMode -eq 'Clean') {
         Write-Host "Enabling breaking changes check in Clean mode. Setting up $baselineVersion as a baseline as this is the latest version of AlAppExtensions"
-        Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
+        $baselinePackageRestored = Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     } else {
         Write-Host "Enabling breaking changes check in Default mode. Setting up $baselineVersion version as a baseline"
-        Restore-BaselinesFromArtifacts -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
+        $baselinePackageRestored = Restore-BaselinesFromArtifacts -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     }
 
-    # Generate the app source cop json file
-    Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
+    if ($baselinePackageRestored) {
+        # Generate the app source cop json file
+        Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
+    }
 }
 
 <#
@@ -70,27 +72,32 @@ function Restore-BaselinesFromArtifacts {
         throw "Unable to find URL for baseline version $BaselineVersion"
     }
 
+    $baselineRestored = $false
+
     try {
         Write-Host "Downloading from $baselineURL to $baselineFolder"
 
         Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app"
+        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app" -ErrorAction SilentlyContinue
 
         if (-not $baselineApp) {
-            throw "Unable to find baseline app for $ExtensionName in $baselineURL"
+            Write-Host "Unable to find baseline app for $ExtensionName in $baselineFolder"
+        } else {
+            Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+
+            if (-not (Test-Path $AppSymbolsFolder)) {
+                Write-Host "Creating folder $AppSymbolsFolder"
+                New-Item -ItemType Directory -Path $AppSymbolsFolder
+            }
+    
+            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+            $baselineRestored = $true
         }
-
-        Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
-
-        if (-not (Test-Path $AppSymbolsFolder)) {
-            Write-Host "Creating folder $AppSymbolsFolder"
-            New-Item -ItemType Directory -Path $AppSymbolsFolder
-        }
-
-        Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
     } finally {
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
+
+    return $baselineRestored
 }
 
 <#
@@ -114,24 +121,31 @@ function Restore-BaselinesFromNuget {
     )
 
     $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+    $baselineRestored = $false
 
     try {
         Write-Host "Downloading from nuget to $baselineFolder"
     
         $packagePath = Get-PackageFromNuget -PackageId "microsoft-ALAppExtensions-Modules-preview" -Version $BaselineVersion -OutputPath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app"
-    
-        if (-not (Test-Path $AppSymbolsFolder)) {
-            Write-Host "Creating folder $AppSymbolsFolder"
-            New-Item -ItemType Directory -Path $AppSymbolsFolder
+        $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app" -ErrorAction SilentlyContinue
+
+        if (-not $baselineApp) {
+            Write-Host "Unable to find baseline app for $ExtensionName in $packagePath"
+        } else {
+            if (-not (Test-Path $AppSymbolsFolder)) {
+                Write-Host "Creating folder $AppSymbolsFolder"
+                New-Item -ItemType Directory -Path $AppSymbolsFolder
+            }
+
+            Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+            $baselineRestored = $true
         }
-    
-        Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
-    
-        Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
     } finally {
         Remove-Item -Path $baselineFolder -Recurse -Force
     }
+
+    return $baselineRestored
 }
 
 <#
