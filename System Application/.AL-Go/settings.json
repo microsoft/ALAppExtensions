@@ -9,7 +9,6 @@
     "buildModes": [
         "Translated"
     ],
-    "doNotRunTests": false,
     "enableAppSourceCop": true,
     "enablePerTenantExtensionCop":  true
 }
