@@ -504,12 +504,12 @@ codeunit 9101 "SharePoint Client Impl."
     procedure DownloadFileContent(OdataId: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
     var
         FileInStream: InStream;
-        OS: OutStream;
+        FileOutStream: OutStream;
     begin
         if not DownloadFileContent(OdataId, FileInStream) then
             exit(false);
-        TempBlob.CreateOutStream(OS);
-        CopyStream(OS, FileInStream);
+        TempBlob.CreateOutStream(FileOutStream);
+        CopyStream(FileOutStream, FileInStream);
         exit(true);
     end;
 
