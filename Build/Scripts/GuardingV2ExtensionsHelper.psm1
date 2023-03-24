@@ -25,24 +25,27 @@ function Enable-BreakingChangesCheck {
     # Get name of the app from app.json
     $appJson = Join-Path $AppProjectFolder "app.json"
     $applicationName = (Get-Content -Path $appJson | ConvertFrom-Json).Name
-    
+
     # Get the baseline version
     $baselineVersion = Get-BaselineVersion -BuildMode $BuildMode
+    
+    Write-Host "Enabling breaking changes check for app: $applicationName, build mode: $BuildMode, baseline version: $baselineVersion"
 
-    Write-Host "Restoring baselines for $applicationName from $baselineVersion"
+    $baselinePackageRestored = $false
 
     # Restore the baseline package and place it in the app symbols folder
     if ($BuildMode -eq 'Clean') {
-        Write-Host "Enabling breaking changes check in Clean mode. Setting up $baselineVersion as a baseline as this is the latest version of AlAppExtensions"
         $baselinePackageRestored = Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     } else {
-        Write-Host "Enabling breaking changes check in Default mode. Setting up $baselineVersion version as a baseline"
         $baselinePackageRestored = Restore-BaselinesFromArtifacts -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     }
 
     if ($baselinePackageRestored) {
         # Generate the app source cop json file
         Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
+    }
+    else {
+        Write-Host "Breaking changes check will not be performed for $applicationName as no baseline was restored"
     }
 }
 
@@ -77,7 +80,7 @@ function Restore-BaselinesFromArtifacts {
     try {
         Write-Host "Downloading from $baselineURL to $baselineFolder"
 
-        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
+        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder | Out-Null
         $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app" -ErrorAction SilentlyContinue
 
         if (-not $baselineApp) {
@@ -87,10 +90,10 @@ function Restore-BaselinesFromArtifacts {
 
             if (-not (Test-Path $AppSymbolsFolder)) {
                 Write-Host "Creating folder $AppSymbolsFolder"
-                New-Item -ItemType Directory -Path $AppSymbolsFolder
+                New-Item -ItemType Directory -Path $AppSymbolsFolder | Out-Null
             }
     
-            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder | Out-Null
             $baselineRestored = $true
         }
     } finally {
@@ -134,11 +137,11 @@ function Restore-BaselinesFromNuget {
         } else {
             if (-not (Test-Path $AppSymbolsFolder)) {
                 Write-Host "Creating folder $AppSymbolsFolder"
-                New-Item -ItemType Directory -Path $AppSymbolsFolder
+                New-Item -ItemType Directory -Path $AppSymbolsFolder | Out-Null
             }
 
             Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
-            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder | Out-Null
             $baselineRestored = $true
         }
     } finally {
