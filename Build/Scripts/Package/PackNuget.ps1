@@ -6,14 +6,10 @@ Param(
     [Parameter(Mandatory=$true)]
     [string] $RepoName,
     [Parameter(Mandatory=$true)]
-    [string] $RepoOwner,
-    [Parameter(Mandatory=$true)]
-    [string] $NuspecPath,
-    [Parameter(Mandatory=$true)]
-    [string] $LicensePath
+    [string] $RepoOwner
 )
 
-Import-Module $PSScriptRoot\PackNuget.psm1
+Import-Module "$PSScriptRoot\PackNuget.psm1"
 
 New-Item -Path $OutputPackageFolder -ItemType Directory | Out-Null
 
@@ -28,19 +24,23 @@ Write-Host "Package version: $packageVersion" -ForegroundColor Magenta
 
 # Generate Nuspec file
 $manifestOutputPath = (Join-Path $OutputPackageFolder 'manifest.nuspec')
+$packageMetadata = Get-PackageMetadata
+
 New-Manifest `
     -PackageId $packageId `
     -Version $packageVersion `
     -Authors "$RepoOwner" `
     -Owners "$RepoOwner" `
-    -NuspecPath $NuspecPath `
+    -NuspecPath $packageMetadata.NuspecPath `
     -OutputPath $manifestOutputPath
 
+$applicationsToPackage = $packageMetadata.Applications | Where-Object IncludeInPackage
+
 # Copy files to package folder
-Initialize-PackageFolder -OutputPackageFolder $OutputPackageFolder -AppFolders $appsFolders -LicensePath $LicensePath
+Initialize-PackageFolder -OutputPackageFolder $OutputPackageFolder -AppFolders $appsFolders -ApplicationsToPackage $applicationsToPackage -LicensePath $packageMetadata.LicensePath
 
 # Verify that all expected packages are in the package folder
-Test-PackageFolder -OutputPackageFolder $OutputPackageFolder
+Test-PackageFolder -OutputPackageFolder $OutputPackageFolder -ExpectedApplications $applicationsToPackage
 
 # Pack Nuget package
 nuget pack $manifestOutputPath -OutputDirectory $OutputPackageFolder

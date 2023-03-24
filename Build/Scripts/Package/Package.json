@@ -1,4 +1,6 @@
 {
+    "LicensePath": "LICENSE",
+    "NuspecPath": "Build\\ALAppExtensions.template.nuspec",
     "Projects": {
         "Any": {
             "includeInPackage": true
@@ -23,10 +25,10 @@
         "System Application": {
             "includeInPackage": true
         },
-        "System Application Tests": {
+        "System Application Test": {
             "includeInPackage": true
         },
-        "System Application Test Libraries": {
+        "System Application Test Library": {
             "includeInPackage": true
         },
         "Test Runner": {

@@ -29,61 +29,17 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download Build Output
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const downloadArtifact = async (artifact, downloadDirectory) => {
-                const archivePath = `${downloadDirectory}/${artifact.name}.zip`;
-                console.log(`Download artifact to path: ${archivePath}`);
-                let download = await github.rest.actions.downloadArtifact({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    artifact_id: artifact.id,
-                    archive_format: 'zip'
-                });
-                
-                fs.writeFileSync(archivePath, Buffer.from(download.data));
-            };
-
-            let fs = require('fs');
-            const artifactsDirectory = `${process.env.buildArtifactsPath}`;
-            fs.mkdirSync(artifactsDirectory);
-
-            const runId = Number('${{ github.event.workflow_run.id }}');
-            const artifactFilter = 'Apps-'
-            var allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                run_id: runId,
-            });
-
-            allArtifacts = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name.includes(artifactFilter);
-            });
-
-            console.log(`Found ${allArtifacts.length} artifacts matching filter: ${artifactFilter}`);
-
-            for (const artifact of allArtifacts) {
-                await downloadArtifact(artifact, artifactsDirectory);
-            }
-            
-      - name: Unzip Build Output
-        run: | 
-          Get-ChildItem -Path "$($env:buildArtifactsPath)/*zip" | ForEach-Object {
-            $downloadIntoPath = "$($env:buildArtifactsPath)/$($_.BaseName)"
-            Write-Host "Expand archive: $($_.FullName) into path $downloadIntoPath"
-            Expand-Archive -DestinationPath $downloadIntoPath -Path $_.FullName
-            Remove-Item -Path $_.FullName -Force
-          }
-
+        env:
+            GH_TOKEN: ${{ github.token }}
+        run: |
+            gh run download ${{ github.event.workflow_run.id }} --pattern '*Apps-*' --dir $env:buildArtifactsPath
+        
       - name: Setup NuGet.exe
         uses: nuget/setup-nuget@v1
 
       - name: Prepare Package
         run: |
-          $NuspecPath = Join-Path $env:GITHUB_WORKSPACE "Build\ALAppExtensions.template.nuspec"
-          $LicenseFilePath = Join-Path $env:GITHUB_WORKSPACE "LICENSE"
-          Build\Scripts\PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER -NuspecPath $NuspecPath -LicensePath $LicenseFilePath
+          Build/Scripts/Package/PackNuget.ps1 -BuildArtifactsPath $env:buildArtifactsPath -OutputPackageFolder $env:packageOutputPath -RepoName $env:repoName -RepoOwner $env:GITHUB_REPOSITORY_OWNER
 
       - name: Push Package
         run: |

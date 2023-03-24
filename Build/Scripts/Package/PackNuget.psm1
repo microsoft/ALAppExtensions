@@ -1,31 +1,41 @@
 class ApplicationPackageMetadata
 {
-    # The name of the application
     [string] $ApplicationName
-    # Whether or not to include the application in the package
     [bool] $IncludeInPackage
 }
 
+class PackageMetadata 
+{
+    [string] $LicensePath
+    [string] $NuspecPath
+    [ApplicationPackageMetadata[]] $Applications
+}
 
 <#
-.Synopsis 
-    Gets the list of applications to include in the package from the Package.json file
+.Synopsis
+    Get package metadata from the Package.json file
 #>
-function Get-ApplicationsForPackage() {
-    $packageJson = "$PSScriptRoot\Package.json"
-    $packages = (Get-Content $packageJson | ConvertFrom-Json).projects
-    
-    $applications = @()
-    ($packages | Get-Member -MemberType NoteProperty).Name | ForEach-Object {
+function Get-PackageMetadata() {
+    Import-Module "$PSScriptRoot\..\EnlistmentHelperFunctions.psm1"
+
+    $baseFolder = Get-BaseFolder
+    $packageMetadataJson = (Get-Content "$PSScriptRoot\Package.json" | ConvertFrom-Json)
+   
+    [PackageMetadata] $packageMetadata = [PackageMetadata]::new()
+    $packageMetadata.LicensePath = (Join-Path $baseFolder $packageMetadataJson.LicensePath -Resolve)
+    $packageMetadata.NuspecPath = (Join-Path $baseFolder $packageMetadataJson.NuspecPath -Resolve)
+
+    $packageMetadata.Applications = @()
+    ($packageMetadataJson.Projects | Get-Member -MemberType NoteProperty).Name | ForEach-Object {
         $applicationName = $_
-    
+
         $applicationPackageMetadata = [ApplicationPackageMetadata]::new()
         $applicationPackageMetadata.ApplicationName = $applicationName
-        $applicationPackageMetadata.IncludeInPackage = $packages.$applicationName.includeInPackage
-        $applications += $applicationPackageMetadata
+        $applicationPackageMetadata.IncludeInPackage = $packageMetadataJson.Projects.$applicationName.includeInPackage
+        $packageMetadata.Applications += $applicationPackageMetadata
     }
 
-    return $applications
+    return $packageMetadata
 }
 
 <#
@@ -45,6 +55,8 @@ function Initialize-PackageFolder
     [Parameter(Mandatory=$true)]
     $AppFolders,
     [Parameter(Mandatory=$true)]
+    $ApplicationsToPackage,
+    [Parameter(Mandatory=$true)]
     $LicensePath
 )
 {
@@ -54,10 +66,9 @@ function Initialize-PackageFolder
         Write-Host "Copying apps from $appsToPackage" -ForegroundColor Magenta
         if(Test-Path -Path $appsToPackage) 
         {
-            (Get-ApplicationsForPackage) | ForEach-Object {
+            $ApplicationsToPackage | ForEach-Object {
                 $applicationName = $_.ApplicationName
-                if ($_.IncludeInPackage -and (Test-Path "$appsToPackage/$applicationName")) {
-                    Write-Host "Copying $applicationName to package" -ForegroundColor Magenta
+                if (Test-Path "$appsToPackage/$applicationName") {
                     Copy-Item -Path "$appsToPackage/$applicationName" -Destination "$OutputPackageFolder/Apps" -Recurse -Force
                 }
             }
@@ -79,29 +90,31 @@ function Initialize-PackageFolder
 function Test-PackageFolder
 (
     [Parameter(Mandatory=$true)]
-    $OutputPackageFolder
+    $OutputPackageFolder,
+    [Parameter(Mandatory=$true)]
+    $ExpectedApplications
 ) 
 {
-    $appsInPackageFolder = Get-ChildItem -Path "$OutputPackageFolder/Apps"
-    $expectedApplications = Get-ApplicationsForPackage | Where-Object IncludeInPackage
+    $appsFolder = Join-Path $OutputPackageFolder "Apps" -Resolve
+    $appsInPackageFolder = Get-ChildItem -Path $appsFolder
 
     if($appsInPackageFolder.Count -eq 0) {
-        throw "No apps found in $OutputPackageFolder"
+        throw "No apps found in $appsInPackageFolder"
     } 
 
-    Write-Host "Verifying expected apps are in package folder: $OutputPackageFolder"
-    $expectedApplications | ForEach-Object {
+    Write-Host "Verifying expected apps are in package folder"
+    $ExpectedApplications | ForEach-Object {
         $applicationName = $_.ApplicationName
-        if (Test-Path -Path "$OutputPackageFolder/Apps/$applicationName") {
-            throw "App $applicationName not found in $OutputPackageFolder"
+        if (-not (Test-Path -Path "$appsFolder/$applicationName")) {
+            throw "App $applicationName not found in $appsFolder"
         }
     }
 
     Write-Host "Verifying apps in package folder are expected"
     $appsInPackageFolder | ForEach-Object {
         $applicationName = $_.Name
-        if ($expectedApplications | Where-Object ApplicationName -eq $applicationName) {
-            throw "App $applicationName not expected in $OutputPackageFolder"
+        if (-not ($ExpectedApplications | Where-Object ApplicationName -eq $applicationName)) {
+            throw "App $applicationName not expected in $appsFolder"
         }
     }
 }
