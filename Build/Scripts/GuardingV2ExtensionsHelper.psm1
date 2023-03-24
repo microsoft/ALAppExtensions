@@ -40,7 +40,7 @@ function Enable-BreakingChangesCheck {
         $baselinePackageRestored = Restore-BaselinesFromArtifacts -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     }
 
-    if ($baselinePackageRestored -eq $true) {
+    if ($baselinePackageRestored) {
         # Generate the app source cop json file
         Update-AppSourceCopVersion -ExtensionFolder $AppProjectFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     }
