@@ -260,7 +260,7 @@ jobs:
 
       - name: Publish artifacts - apps
         uses: actions/upload-artifact@v3
-        if: needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.AppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
@@ -268,7 +268,7 @@ jobs:
 
       - name: Publish artifacts - dependencies
         uses: actions/upload-artifact@v3
-        if: needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.DependenciesArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Dependencies/'
@@ -276,7 +276,7 @@ jobs:
 
       - name: Publish artifacts - test apps
         uses: actions/upload-artifact@v3
-        if: needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.TestAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
@@ -423,7 +423,7 @@ jobs:
 
       - name: Publish artifacts - apps
         uses: actions/upload-artifact@v3
-        if: needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.AppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
@@ -431,7 +431,7 @@ jobs:
 
       - name: Publish artifacts - dependencies
         uses: actions/upload-artifact@v3
-        if: needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.DependenciesArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/Dependencies/'
@@ -439,7 +439,7 @@ jobs:
 
       - name: Publish artifacts - test apps
         uses: actions/upload-artifact@v3
-        if: needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
+        if: github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0
         with:
           name: ${{ env.TestAppsArtifactsName }}
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
