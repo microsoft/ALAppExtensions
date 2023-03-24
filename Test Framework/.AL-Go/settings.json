@@ -4,7 +4,6 @@
         "..\\Modules\\DevTools\\TestFramework\\TestRunner"
     ],
     "testFolders":  [
-        "..\\Modules\\DevTools\\TestFramework\\TestStabilityTools\\PreventMetadataUpdates"
     ],
     "doNotRunTests": true,
     "enableAppSourceCop": true,
