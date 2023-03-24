@@ -9,32 +9,34 @@ class PackageMetadata
     [string] $LicensePath
     [string] $NuspecPath
     [ApplicationPackageMetadata[]] $Applications
+
+    LoadFromJson() {
+        Import-Module "$PSScriptRoot\..\EnlistmentHelperFunctions.psm1"
+        $baseFolder = Get-BaseFolder
+        $packageMetadataJson = (Get-Content "$PSScriptRoot\PackageMetadata.json" | ConvertFrom-Json)
+    
+        $this.LicensePath = (Join-Path $baseFolder $packageMetadataJson.LicensePath -Resolve)
+        $this.NuspecPath = (Join-Path $baseFolder $packageMetadataJson.NuspecPath -Resolve)
+
+        $this.Applications = @()
+        ($packageMetadataJson.Projects | Get-Member -MemberType NoteProperty).Name | ForEach-Object {
+            $applicationName = $_
+
+            $applicationPackageMetadata = [ApplicationPackageMetadata]::new()
+            $applicationPackageMetadata.ApplicationName = $applicationName
+            $applicationPackageMetadata.IncludeInPackage = $packageMetadataJson.Projects.$applicationName.includeInPackage
+            $this.Applications += $applicationPackageMetadata
+        }
+    }
 }
 
 <#
 .Synopsis
-    Get package metadata from the Package.json file
+    Get package metadata from the PackageMetadata.json file
 #>
 function Get-PackageMetadata() {
-    Import-Module "$PSScriptRoot\..\EnlistmentHelperFunctions.psm1"
-
-    $baseFolder = Get-BaseFolder
-    $packageMetadataJson = (Get-Content "$PSScriptRoot\Package.json" | ConvertFrom-Json)
-   
     [PackageMetadata] $packageMetadata = [PackageMetadata]::new()
-    $packageMetadata.LicensePath = (Join-Path $baseFolder $packageMetadataJson.LicensePath -Resolve)
-    $packageMetadata.NuspecPath = (Join-Path $baseFolder $packageMetadataJson.NuspecPath -Resolve)
-
-    $packageMetadata.Applications = @()
-    ($packageMetadataJson.Projects | Get-Member -MemberType NoteProperty).Name | ForEach-Object {
-        $applicationName = $_
-
-        $applicationPackageMetadata = [ApplicationPackageMetadata]::new()
-        $applicationPackageMetadata.ApplicationName = $applicationName
-        $applicationPackageMetadata.IncludeInPackage = $packageMetadataJson.Projects.$applicationName.includeInPackage
-        $packageMetadata.Applications += $applicationPackageMetadata
-    }
-
+    $packageMetadata.LoadFromJson()
     return $packageMetadata
 }
 
