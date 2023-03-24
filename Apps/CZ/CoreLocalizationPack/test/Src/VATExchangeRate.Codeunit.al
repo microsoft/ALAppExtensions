@@ -275,7 +275,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
         GeneralPostingType: Enum "General Posting Type";
-        WrongVATCalculationTypeTxt: Label 'VAT Calculation Type must be equal to ''Reverse Charge VAT''';
+        WrongVATCalculationTypeTxt: Label 'Relation Exch. Rate Amount for the Currency Code and for the VAT Currency Code must be the same if Normal VAT is used.';
     begin
         // [SCENARIO] If Currency Factor and VAT Currency factor are different, VAT calculation must be Reverse Charge
         Initialize();

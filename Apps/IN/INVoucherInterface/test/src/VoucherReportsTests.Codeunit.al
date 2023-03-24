@@ -60,6 +60,39 @@ codeunit 18998 "Voucher Reports Tests"
         VerifyAmountFieldsOnVoucherRegisterReport(GenJournalBatch.Name);
     end;
 
+    [Test]
+    [HandlerFunctions('ReverseTransactionConfirmHandler,PostedReversalEntryMessageHandler')]
+    procedure VerifyFieldValuesOnBankBookReport()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        Location: Record Location;
+        BankAccount: Record "Bank Account";
+        Vendor: Record Vendor;
+        VoucherType: Enum "Gen. Journal Template Type";
+        TransactionNo: Integer;
+    begin
+        // [SCENARIO] [Verify Fields on Bank Book Report]
+        // [GIVEN] Create Vendor,Location,Bank Account with Voucher Setup
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryWarehouse.CreateLocationWMS(Location, false, false, false, false, false);
+        CreateBankAccountWithVoucherAcc(BankAccount, VoucherType::"Bank Payment Voucher",
+            GenJournalLine."Account Type"::"Bank Account",
+            Location.Code);
+        CreatePaymentVoucherTemplate(GenJournalBatch, VoucherType::"Bank Payment Voucher", Location.Code);
+
+        // [WHEN] Craet and Post Bank Payment voucher
+        CreateandPostGenJnlLine(GenJournalLine, GenJournalBatch, GenJournalLine."Document Type"::Payment, GenJournalLine."Account Type"::Vendor, Vendor."No.", GenJournalLine."Bal. Account Type"::"Bank Account", BankAccount."No.", LibraryRandom.RandDecInDecimalRange(10000, 6000, 2));
+        CreateandPostGenJnlLine(GenJournalLine, GenJournalBatch, GenJournalLine."Document Type"::Payment, GenJournalLine."Account Type"::Vendor, Vendor."No.", GenJournalLine."Bal. Account Type"::"Bank Account", BankAccount."No.", LibraryRandom.RandDecInDecimalRange(10000, 6000, 2));
+
+        TransactionNo := GetTransactionNo(GenJournalBatch.Name);
+        // [WHEN] Reverse Transaction
+        LibraryERM.ReverseTransaction(TransactionNo);
+
+        // [THEN] Amount Fields Verified on Voucher Register Report
+        VerifyAmountFieldsOnBankBookReport(BankAccount."No.");
+    end;
+
     local procedure VerifyAmountFieldsOnDayBookReport(JnlBatchName: Code[10])
     var
         GLEntry: Record "G/L Entry";
@@ -173,13 +206,13 @@ codeunit 18998 "Voucher Reports Tests"
                     VoucherPostingDebitAccount.Insert();
                 end;
             else begin
-                    VoucherPostingDebitAccount.Init();
-                    VoucherPostingDebitAccount.Validate("Location code", LocationCode);
-                    VoucherPostingDebitAccount.Validate(Type, SubType);
-                    VoucherPostingDebitAccount.Validate("Account Type", AccType);
-                    VoucherPostingDebitAccount.Validate("Account No.", AccountNo);
-                    VoucherPostingDebitAccount.Insert();
-                end;
+                VoucherPostingDebitAccount.Init();
+                VoucherPostingDebitAccount.Validate("Location code", LocationCode);
+                VoucherPostingDebitAccount.Validate(Type, SubType);
+                VoucherPostingDebitAccount.Validate("Account Type", AccType);
+                VoucherPostingDebitAccount.Validate("Account No.", AccountNo);
+                VoucherPostingDebitAccount.Insert();
+            end;
         end;
         CreateNoSeries();
         if StorageBoolean.ContainsKey(LocationSetupLbl) then begin
@@ -252,6 +285,60 @@ codeunit 18998 "Voucher Reports Tests"
         exit(GenJournalLine."Document No.");
     end;
 
+    local procedure CreateandPostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; GenJournalBatch: Record "Gen. Journal Batch"; DocType: Enum "Gen. Journal Document Type"; AccType: Enum "Gen. Journal Account Type"; AccNo: Code[20]; BalAccType: Enum "Gen. Journal Account Type"; BalAccNo: Code[20]; Amount: Decimal): Code[20]
+    var
+        DocNo: Code[20];
+    begin
+        LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, DocType, AccType,
+        AccNo, BalAccType, BalAccNo, Amount);
+        DocNo := GenJournalLine."Document No.";
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        exit(DocNo);
+    end;
+
+    local procedure GetTransactionNo(JnlBatchName: Code[10]): Integer
+    var
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+    begin
+        BankAccountLedgerEntry.SetRange("Journal Batch Name", JnlBatchName);
+        if BankAccountLedgerEntry.FindFirst() then
+            exit(BankAccountLedgerEntry."Transaction No.");
+    end;
+
+    local procedure VerifyAmountFieldsOnBankBookReport(BankAccountNo: Code[20])
+    var
+        BankAccount: Record "Bank Account";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+        TransDebitAmount: Decimal;
+        TransCreditAmount: Decimal;
+    begin
+        BankAccount.SetRange("No.", BankAccountNo);
+        BankAccount.SetFilter("Date Filter", '%1', WorkDate());
+        BankAccount.FindFirst();
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", BankAccount."No.");
+        BankAccountLedgerEntry.SetRange("Posting Date", WorkDate());
+        BankAccountLedgerEntry.CalcSums("Debit Amount", "Credit Amount");
+        TransDebitAmount := BankAccountLedgerEntry."Debit Amount";
+        TransCreditAmount := BankAccountLedgerEntry."Credit Amount";
+
+        LibraryReportDataSet.RunReportAndLoad(Report::"Bank Book", BankAccount, '');
+        LibraryReportDataset.AssertElementWithValueExists('TransDebits', TransDebitAmount);
+        LibraryReportDataset.AssertElementWithValueExists('TransCredits', TransCreditAmount);
+    end;
+
+    [ConfirmHandler]
+    procedure ReverseTransactionConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := Question = ReverseTransactionQst;
+    end;
+
+    [MessageHandler]
+    procedure PostedReversalEntryMessageHandler(Message: Text)
+    begin
+    end;
+
     var
         LibraryERM: Codeunit "Library - ERM";
         LibraryWarehouse: Codeunit "Library - Warehouse";
@@ -270,4 +357,5 @@ codeunit 18998 "Voucher Reports Tests"
         GLEntryCreditAmountLbl: Label 'CreditAmount_GLEntry';
         VoucherRegGLEntryDebitAmtLbl: Label 'DebitAmount_GLEntry';
         VoucherRegGLEntryCreditAmtLbl: Label 'CreditAmount_GLEntry';
+        ReverseTransactionQst: Label 'To reverse these entries, correcting entries will be posted.\Do you want to reverse the entries?';
 }

@@ -11,14 +11,18 @@ codeunit 18390 "GST Transfer Order Receipt"
         TempItemJnlLine: Record "Item Journal Line" temporary;
         GSTTransferOrderShipment: Codeunit "GST Transfer order Shipment";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
+#if not CLEAN22      
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         ReserveTransLine: Codeunit "Transfer Line-Reserve";
+#endif
         GSTBaseValidation: Codeunit "GST Base Validation";
         CustomDutyAmount: Decimal;
         ItemJournalCustom: Decimal;
         RoundDiffAmt: Decimal;
         TransReceiptHeaderNo: Code[20];
         ItemLedgerEntryNo: Integer;
+        LineNo: Integer;
+        TotalQuantity: Decimal;
         FirstExecution: Boolean;
         GSTAmountLoaded: Decimal;
         TransferCost: Decimal;
@@ -68,6 +72,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         TempTransferBufferFinal.DeleteAll();
         TempGSTPostingBufferStage.DeleteAll();
         TempGSTPostingBufferFinal.DeleteAll();
+        TempItemJnlLine.DeleteAll();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterItemValuePosting', '', false, false)]
@@ -100,14 +105,10 @@ codeunit 18390 "GST Transfer Order Receipt"
             DocTransferType::"Transfer Receipt");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnAfterTransRcptLineModify', '', false, false)]
-    local procedure InsertTransferBuffer(TransferLine: Record "Transfer Line"; var TransferReceiptLine: Record "Transfer Receipt Line")
-    var
-        TransferReceiptHeader: Record "Transfer Receipt Header";
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnAfterPostItemJnlLine', '', false, false)]
+    local procedure InsertTransferBuffer(var TransLine3: Record "Transfer Line"; var TransRcptHeader2: Record "Transfer Receipt Header"; var TransRcptLine2: Record "Transfer Receipt Line"; var ItemJnlPostLine: Codeunit "Item Jnl.-Post Line")
     begin
-        TransferReceiptHeader.Get(TransferReceiptLine."Document No.");
-        PostRevaluationEntryunrealizedProfit(TransferLine, TransferReceiptHeader, TransferReceiptLine);
-        FillTransferBuffer(TransferLine);
+        FillTransferBuffer(TransLine3);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnBeforeInsertTransRcptLine', '', false, false)]
@@ -345,7 +346,7 @@ codeunit 18390 "GST Transfer Order Receipt"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInsertValueEntry', '', false, false)]
     local procedure PostRevaulaedEntry(var ValueEntry: Record "Value Entry")
     begin
-        if (ItemJournalCustom <> 0) and (ValueEntry."Item Ledger Entry Quantity" > 0) then
+        if (ValueEntry."Item Ledger Entry Quantity" > 0) and (ValueEntry."Document Type" = ValueEntry."Document Type"::"Transfer Receipt") then
             ItemLedgerEntryNo := ValueEntry."Item Ledger Entry No.";
     end;
 
@@ -356,68 +357,10 @@ codeunit 18390 "GST Transfer Order Receipt"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterItemValuePosting', '', false, false)]
-    local procedure PostRevaluationEntryGST(sender: Codeunit "Item Jnl.-Post Line"; var ItemJournalLine: Record "Item Journal Line")
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-        RevaluedItemJnlLine: Record "Item Journal Line";
+    local procedure InitRevaluationEntryForGSTAndUnrealizedProfit(var ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry")
     begin
-        if ItemJournalCustom = 0 then
-            exit;
-
-        SourceCodeSetup.Get();
-        if (ItemJournalLine."Source Code" <> SourceCodeSetup.Transfer) then
-            exit; //To enusre run only for Transfer 
-
-        RevaluedItemJnlLine.Init();
-        RevaluedItemJnlLine.Validate("Posting Date", ItemJournalLine."Posting Date");
-        RevaluedItemJnlLine."Document Date" := ItemJournalLine."Posting Date";
-        RevaluedItemJnlLine.Validate("Document No.", ItemJournalLine."Document No.");
-        RevaluedItemJnlLine."External Document No." := ItemJournalLine."External Document No.";
-        RevaluedItemJnlLine.Validate("Entry Type", RevaluedItemJnlLine."Entry Type"::Transfer);
-        RevaluedItemJnlLine."Value Entry Type" := RevaluedItemJnlLine."Value Entry Type"::Revaluation;
-        RevaluedItemJnlLine.Validate("Item No.", ItemJournalLine."Item No.");
-        RevaluedItemJnlLine.Description := ItemJournalLine.Description;
-        RevaluedItemJnlLine."Inventory Posting Group" := ItemJournalLine."Inventory Posting Group";
-        RevaluedItemJnlLine."Gen. Prod. Posting Group" := ItemJournalLine."Gen. Prod. Posting Group";
-        RevaluedItemJnlLine."Source Code" := SourceCodeSetup."Revaluation Journal";
-        RevaluedItemJnlLine.Validate("Applies-to Entry", ItemLedgerEntryNo);
-        RevaluedItemJnlLine.Validate("Unit Cost (Revalued)", (RevaluedItemJnlLine."Unit Cost (Revalued)" + (ItemJournalCustom / ItemJournalLine."Quantity")));
-        RevaluedItemJnlLine.Description := StrSubstNo(TransferReceiptNoLbl, ItemJournalLine."No.");
-        RevaluedItemJnlLine."New Location Code" := ItemJournalLine."New Location Code";
-        ItemJournalCustom := 0;
-        Sender.RunWithCheck(RevaluedItemJnlLine);
-    end;
-
-    local procedure CreateReservationEntryRevaluation(
-        TransferReceiptHeader: Record "Transfer Receipt Header";
-        ItemLedgerEntry: Record "Item Ledger Entry";
-        TransferLine: Record "Transfer Line")
-    var
-        ReservationEntry: Record "Reservation Entry";
-        EntryNo: Integer;
-    begin
-        if ReservationEntry.FindLast() then
-            EntryNo := ReservationEntry."Entry No." + 1
-        else
-            EntryNo := 1;
-
-        ReservationEntry.Init();
-        ReservationEntry."Entry No." := EntryNo;
-        ReservationEntry."Item No." := ItemLedgerEntry."Item No.";
-        ReservationEntry."Location Code" := TransferReceiptHeader."Transfer-to Code";
-        ReservationEntry.Quantity := ItemLedgerEntry.Quantity;
-        ReservationEntry.Validate("Quantity (Base)", ItemLedgerEntry.Quantity);
-        ReservationEntry."Reservation Status" := "Reservation Status"::Surplus;
-        ReservationEntry."Source Type" := Database::"Transfer Line";
-        ReservationEntry."Source Subtype" := 1;
-        ReservationEntry."Source ID" := TransferLine."Document No.";
-        ReservationEntry."Source Ref. No." := TransferLine."Line No.";
-        ReservationEntry.Positive := true;
-        ReservationEntry."Qty. per Unit of Measure" := ItemLedgerEntry."Qty. per Unit of Measure";
-        ReservationEntry."Lot No." := ItemLedgerEntry."Lot No.";
-        ReservationEntry."Item Tracking" := ReservationEntry."Item Tracking"::"Lot No.";
-        ReservationEntry."Appl.-to Item Entry" := ItemLedgerEntry."Entry No.";
-        ReservationEntry.Insert();
+        InitRevaluationEntryGST(ItemJournalLine);
+        InitRevaluationEntryUnrealizedProfit(ItemJournalLine, ValueEntry);
     end;
 
     local procedure FillDetailLedgBufferTransfer(DocNo: Code[20])
@@ -977,7 +920,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         SourceCodeSetup.Get();
         GenJnlLine."Source Code" := SourceCodeSetup.Transfer;
         GenJnlLine."Account Type" := GenJnlLine."Account Type"::"G/L Account";
-        if TempGSTPostingBufferStage."Account No." <> '' then
+        if TempGSTPostingBufferFinal."Account No." <> '' then
             RunGenJnlPostLine(GenJnlLine);
 
         GSTTransferOrderShipment.InsertGSTLedgerEntryTransfer(
@@ -1045,6 +988,8 @@ codeunit 18390 "GST Transfer Order Receipt"
             RunGenJnlPostLine(GenJournalLine);
     end;
 
+#if not CLEAN22
+    [Obsolete('Replaced by InitRevaluationEntryUnrealizedProfit', '22.0')]
     local procedure PostRevaluationEntryunrealizedProfit(
         var TransferLine3: Record "Transfer Line";
         TransferReceiptHeader2: Record "Transfer Receipt Header";
@@ -1136,15 +1081,14 @@ codeunit 18390 "GST Transfer Order Receipt"
                     TempItemJnlLine.Init();
                     TempItemJnlLine.TransferFields(ItemJournalLine);
                     TempItemJnlLine."Line No." := Ctr;
-                    if ItemLedgerEntry."Lot No." <> '' then begin
-                        CreateReservationEntryRevaluation(TransferReceiptHeader2, ItemLedgerEntry, TransferLine3);
+                    if ItemLedgerEntry."Lot No." <> '' then
                         ReserveTransLine.TransferTransferToItemJnlLine(TransferLine3, TempItemJnlLine, TransferLine3."Qty. to Receive (Base)", "Transfer Direction"::Inbound);
-                    end;
 
                     ItemJnlPostLine.Run(TempItemJnlLine);
                 end;
             until ItemLedgerEntry.Next() = 0;
     end;
+#endif
 
     local procedure GetTransferReceiptPostingNoSeries(var TransferHeader: Record "Transfer Header"): Code[20]
     var
@@ -1157,5 +1101,128 @@ codeunit 18390 "GST Transfer Order Receipt"
             TransferHeader,
             PostingNoSeries."Document Type"::"Transfer Receipt Header");
         exit(NoSeriesCode);
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnRunWithCheckOnAfterRetrieveItemTracking', '', false, false)]
+    local procedure OnRunWithCheckOnAfterRetrieveItemTracking(var ItemJournalLine: Record "Item Journal Line"; var TempTrackingSpecification: Record "Tracking Specification"; var TrackingSpecExists: Boolean)
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+    begin
+        SourceCodeSetup.Get();
+        if (ItemJournalLine."Source Code" = SourceCodeSetup."Revaluation Journal") and (ItemJournalLine."Applies-to Entry" <> 0) then
+            TrackingSpecExists := false;
+    end;
+
+    local procedure InitRevaluationEntryGST(var ItemJournalLine: Record "Item Journal Line")
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        TransferReceiptLine: Record "Transfer Receipt Line";
+    begin
+        SourceCodeSetup.Get();
+
+        if ItemJournalCustom = 0 then
+            exit;
+
+        if (ItemJournalLine."Source Code" <> SourceCodeSetup.Transfer) then
+            exit;
+
+        if not TransferReceiptLine.Get(ItemJournalLine."Document No.", ItemJournalLine."Document Line No.") then
+            exit;
+
+        InitRevaluationEntry(ItemJournalLine, (ItemJournalCustom / TransferReceiptLine."Quantity"));
+    end;
+
+    local procedure InitRevaluationEntryUnrealizedProfit(var ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry")
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        TransferReceiptLine: Record "Transfer Receipt Line";
+        Location: Record Location;
+        TransferPriceDiff: Decimal;
+        TotalTransferPriceDiff: Decimal;
+        AmntUnitCost: Decimal;
+    begin
+        if not TransferReceiptLine.Get(ItemJournalLine."Document No.", ItemJournalLine."Document Line No.") then
+            exit;
+
+        SourceCodeSetup.Get();
+        if (ItemJournalLine."Source Code" <> SourceCodeSetup.Transfer) then
+            exit;
+
+        TransferHeader.Get(ItemJournalLine."Order No.");
+        if not TransferHeader."Load Unreal Prof Amt on Invt." then
+            exit;
+
+        Location.Get(TransferHeader."Transfer-from Code");
+        if Location."Bonded warehouse" then
+            exit;
+
+        TransferLine.Get(ItemJournalLine."Order No.", ItemJournalLine."Order Line No.");
+
+        RoundDiffAmt := TransferLine.Amount - (-TransferCost);
+        TotalTransferPriceDiff := 0;
+
+        AmntUnitCost := ValueEntry."Cost Amount (Actual)" / ValueEntry."Item Ledger Entry Quantity";
+        TransferPriceDiff := Round((TransferLine."Transfer Price" / ItemJournalLine."Qty. per Unit of Measure") - AmntUnitCost);
+        if TransferPriceDiff <> 0 then begin
+            TotalTransferPriceDiff += TransferPriceDiff * ItemJournalLine.Quantity;
+            if (TotalTransferPriceDiff <> RoundDiffAmt) and (ItemJournalLine."Lot No." = '') then
+                TransferPriceDiff := TransferPriceDiff - (TotalTransferPriceDiff - RoundDiffAmt);
+
+            InitRevaluationEntry(ItemJournalLine, TransferPriceDiff);
+        end;
+    end;
+
+    local procedure InitRevaluationEntry(var ItemJournalLine: Record "Item Journal Line"; UnitCostRevalued: Decimal)
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+    begin
+        SourceCodeSetup.Get();
+
+        LineNo := LineNo + 1;
+
+        TempItemJnlLine.Init();
+        TempItemJnlLine.Validate("Posting Date", ItemJournalLine."Posting Date");
+        TempItemJnlLine.Validate("Document No.", ItemJournalLine."Document No.");
+        TempItemJnlLine."External Document No." := ItemJournalLine."External Document No.";
+        TempItemJnlLine.Validate("Entry Type", TempItemJnlLine."Entry Type"::Transfer);
+        TempItemJnlLine."Value Entry Type" := TempItemJnlLine."Value Entry Type"::Revaluation;
+        TempItemJnlLine.Validate("Item No.", ItemJournalLine."Item No.");
+        TempItemJnlLine."Source Code" := SourceCodeSetup."Revaluation Journal";
+        TempItemJnlLine.Validate("Applies-to Entry", ItemLedgerEntryNo);
+        TempItemJnlLine.Validate("Unit Cost (Revalued)", (TempItemJnlLine."Unit Cost (Revalued)" + UnitCostRevalued));
+        TempItemJnlLine.Description := StrSubstNo(TransferReceiptNoLbl, ItemJournalLine."Document No.");
+        TempItemJnlLine."Line No." := LineNo;
+        TempItemJnlLine.Insert();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterPostItemJnlLine', '', false, false)]
+    local procedure OnAfterPostItemJnlLine(sender: Codeunit "Item Jnl.-Post Line"; var ItemJournalLine: Record "Item Journal Line")
+    var
+        TransferReceiptLine: Record "Transfer Receipt Line";
+    begin
+        if ItemJournalLine."Entry Type" <> ItemJournalLine."Entry Type"::Transfer then
+            exit;
+
+        if not TransferReceiptLine.Get(ItemJournalLine."Document No.", ItemJournalLine."Document Line No.") then
+            exit;
+
+        if TempItemJnlLine.IsEmpty then
+            exit;
+
+        TotalQuantity := TotalQuantity + ItemJournalLine.Quantity;
+
+        if TotalQuantity <> TransferReceiptLine.Quantity then
+            exit;
+
+        if TempItemJnlLine.FindSet() then
+            repeat
+                sender.RunWithCheck(TempItemJnlLine);
+            until TempItemJnlLine.Next() = 0;
+
+        TotalQuantity := 0;
+        TempItemJnlLine.DeleteAll();
     end;
 }

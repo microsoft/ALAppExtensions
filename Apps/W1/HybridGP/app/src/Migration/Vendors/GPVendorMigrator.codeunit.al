@@ -147,54 +147,74 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure MigrateVendorDetails(GPVendor: Record "GP Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
+        Vendor: Record Vendor;
+        GenBusinessPostingGroup: Record "Gen. Business Posting Group";
+        VendorPostingGroup: Record "Vendor Posting Group";
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
-        VendorName: Text[50];
-        ContactName: Text[50];
+        VendorNo: Code[20];
         Country: Code[10];
+        ZipCode: Code[20];
+        ShipMethod: Code[10];
+        PaymentTerms: Code[10];
+        VendorName: Text[50];
+        VendorName2: Text[50];
+        ContactName: Text[50];
+        Address1: Text[50];
+        Address2: Text[50];
+        City: Text[30];
+        State: Text[30];
     begin
-        VendorName := CopyStr(GPVendor.VENDNAME, 1, 50);
-        ContactName := CopyStr(GPVendor.VNDCNTCT, 1, 50);
-        if not VendorDataMigrationFacade.CreateVendorIfNeeded(CopyStr(GPVendor.VENDORID, 1, 20), VendorName) then
+        VendorNo := CopyStr(GPVendor.VENDORID, 1, MaxStrLen(Vendor."No."));
+        VendorName := CopyStr(GPVendor.VENDNAME.TrimEnd(), 1, MaxStrLen(VendorName));
+
+        if not VendorDataMigrationFacade.CreateVendorIfNeeded(VendorNo, VendorName) then
             exit;
 
-        if (CopyStr(GPVendor.COUNTRY, 1, 10) <> '') then begin
-            HelperFunctions.CreateCountryIfNeeded(CopyStr(GPVendor.COUNTRY, 1, 10), CopyStr(GPVendor.COUNTRY, 1, 10));
-            Country := CopyStr(GPVendor.COUNTRY, 1, 10);
-        end else begin
+        VendorName2 := CopyStr(GPVendor.VNDCHKNM.TrimEnd(), 1, MaxStrLen(VendorName2));
+        ContactName := CopyStr(GPVendor.VNDCNTCT, 1, MaxStrLen(ContactName));
+        Address1 := CopyStr(GPVendor.ADDRESS1, 1, MaxStrLen(Address1));
+        Address2 := CopyStr(GPVendor.ADDRESS2, 1, MaxStrLen(Address2));
+        City := CopyStr(GPVendor.CITY, 1, MaxStrLen(City));
+        State := CopyStr(GPVendor.STATE, 1, MaxStrLen(State));
+        ZipCode := CopyStr(GPVendor.ZIPCODE, 1, MaxStrLen(ZipCode));
+        Country := CopyStr(GPVendor.COUNTRY, 1, MaxStrLen(Country));
+        ShipMethod := CopyStr(GPVendor.SHIPMTHD, 1, MaxStrLen(ShipMethod));
+        PaymentTerms := CopyStr(GPVendor.PYMTRMID, 1, MaxStrLen(PaymentTerms));
+
+        if VendorName2 <> '' then
+            if not HelperFunctions.StringEqualsCaseInsensitive(VendorName2, VendorName) then
+                VendorDataMigrationFacade.SetName2(VendorName2);
+
+        if (Country <> '') then
+            HelperFunctions.CreateCountryIfNeeded(Country, Country)
+        else begin
             CompanyInformation.Get();
             Country := CompanyInformation."Country/Region Code";
         end;
 
-        if (CopyStr(GPVendor.ZIPCODE, 1, 20) <> '') and (CopyStr(GPVendor.CITY, 1, 30) <> '') then
-            VendorDataMigrationFacade.CreatePostCodeIfNeeded(CopyStr(GPVendor.ZIPCODE, 1, 20),
-                CopyStr(GPVendor.CITY, 1, 30), CopyStr(GPVendor.STATE, 1, 20), Country);
+        if (ZipCode <> '') and (City <> '') then
+            VendorDataMigrationFacade.CreatePostCodeIfNeeded(ZipCode, City, State, Country);
 
-        VendorDataMigrationFacade.SetAddress(CopyStr(GPVendor.ADDRESS1, 1, 50),
-            CopyStr(GPVendor.ADDRESS2, 1, 50), Country,
-            CopyStr(GPVendor.ZIPCODE, 1, 20), CopyStr(GPVendor.CITY, 1, 30));
-
+        VendorDataMigrationFacade.SetAddress(Address1, Address2, Country, ZipCode, City);
         VendorDataMigrationFacade.SetPhoneNo(HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.PHNUMBR1));
         VendorDataMigrationFacade.SetFaxNo(HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.FAXNUMBR));
         VendorDataMigrationFacade.SetContact(ContactName);
-        VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        VendorDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        VendorDataMigrationFacade.SetEmail(COPYSTR(GPVendor.INET1, 1, 80));
-        VendorDataMigrationFacade.SetHomePage(COPYSTR(GPVendor.INET2, 1, 80));
-        VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
+        VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, MaxStrLen(VendorPostingGroup."Code")));
+        VendorDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, MaxStrLen(GenBusinessPostingGroup."Code")));
+        VendorDataMigrationFacade.SetEmail(COPYSTR(GPVendor.INET1, 1, MaxStrLen(Vendor."E-Mail")));
+        VendorDataMigrationFacade.SetHomePage(COPYSTR(GPVendor.INET2, 1, MaxStrLen(Vendor."Home Page")));
 
-        if (CopyStr(GPVendor.SHIPMTHD, 1, 10) <> '') then begin
-            VendorDataMigrationFacade.CreateShipmentMethodIfNeeded(CopyStr(GPVendor.SHIPMTHD, 1, 10), '');
-            VendorDataMigrationFacade.SetShipmentMethodCode(CopyStr(GPVendor.SHIPMTHD, 1, 10));
+        if (ShipMethod <> '') then begin
+            VendorDataMigrationFacade.CreateShipmentMethodIfNeeded(ShipMethod, '');
+            VendorDataMigrationFacade.SetShipmentMethodCode(ShipMethod);
         end;
 
-        if (CopyStr(GPVendor.PYMTRMID, 1, 10) <> '') then begin
+        if (PaymentTerms <> '') then begin
             EVALUATE(PaymentTermsFormula, '');
-            VendorDataMigrationFacade.CreatePaymentTermsIfNeeded(CopyStr(GPVendor.PYMTRMID, 1, 10), GPVendor.PYMTRMID, PaymentTermsFormula);
-            VendorDataMigrationFacade.SetPaymentTermsCode(CopyStr(GPVendor.PYMTRMID, 1, 10));
+            VendorDataMigrationFacade.CreatePaymentTermsIfNeeded(PaymentTerms, PaymentTerms, PaymentTermsFormula);
+            VendorDataMigrationFacade.SetPaymentTermsCode(PaymentTerms);
         end;
-
-        VendorDataMigrationFacade.SetName2(CopyStr(GPVendor.VNDCHKNM, 1, 50));
 
         if (GPVendor.TAXSCHID <> '') then begin
             VendorDataMigrationFacade.CreateTaxAreaIfNeeded(GPVendor.TAXSCHID, '');

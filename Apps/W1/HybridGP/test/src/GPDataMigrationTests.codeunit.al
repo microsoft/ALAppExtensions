@@ -365,10 +365,10 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.Reset();
         MigrateVendors(GPVendor);
 
-        // [then] Then the correct number of Vendors are applied
+        // [THEN] The correct number of Vendors are applied
         Assert.AreEqual(VendorCount, Vendor.Count(), 'Wrong number of Migrated Vendors read');
 
-        // [then] Then fields for Vendors 1 are correctly applied
+        // [THEN] The fields for Vendors 1 are correctly applied
         Vendor.SetRange("No.", '1160');
         Vendor.FindFirst();
 
@@ -376,7 +376,9 @@ codeunit 139664 "GP Data Migration Tests"
         Country := CompanyInformation."Country/Region Code";
 
         Assert.AreEqual('Risco, Inc.', Vendor.Name, 'Name of Migrated Vendor is wrong');
-        Assert.AreEqual('Risco, Inc.', Vendor."Name 2", 'Name 2 of Migrated Vendor is wrong');
+
+        // [THEN] The Vendor Name 2 will be blank because it is the same as the Vendor name
+        Assert.AreEqual('', Vendor."Name 2", 'Name 2 of Migrated Vendor is wrong');
         Assert.AreEqual('Roger', Vendor.Contact, 'Contact Name of Migrated Vendor is wrong');
         Assert.AreEqual('RISCO, INC.', Vendor."Search Name", 'Search Name of Migrated Vendor is wrong');
         Assert.AreEqual('2344 Brookings St', Vendor.Address, 'Address of Migrated Vendor is wrong');
@@ -485,6 +487,82 @@ codeunit 139664 "GP Data Migration Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGPVendorImportWithName2()
+    var
+        Vendor: Record Vendor;
+        CompanyInformation: Record "Company Information";
+        Country: Code[10];
+    begin
+        // [SCENARIO] All Vendor are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
+        // Enable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [WHEN] Data is imported
+        CreateVendorData();
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [Then] The fields for the Vendor are correctly imported to temporary table
+        GPVendor.SetRange(VENDORID, '3070');
+        GPVendor.FindFirst();
+        Assert.AreEqual('L.M. Berry & co. -NYPS', GPVendor.VENDNAME, 'VENDNAME of Vendor is wrong');
+        Assert.AreEqual('L.M. Berry & co. -NYPS', GPVendor.SEARCHNAME, 'SEARCHNAME of Vendor is wrong');
+        Assert.AreEqual('L.M. Berry & co.', GPVendor.VNDCHKNM, 'VNDCHKNM of Vendor is wrong');
+        Assert.AreEqual('Box 90255', GPVendor.ADDRESS1, 'ADDRESS2 of Vendor is wrong');
+        Assert.AreEqual('', GPVendor.ADDRESS2, 'ADDRESS2 of Vendor is wrong');
+        Assert.AreEqual('Chicago', GPVendor.CITY, 'CITY of Vendor is wrong');
+        Assert.AreEqual('', GPVendor.VNDCNTCT, 'VNDCNTCT Phone of Vendor is wrong');
+        Assert.AreEqual('70143651130000', GPVendor.PHNUMBR1, 'PHNUMBR1 of Vendor is wrong');
+        Assert.AreEqual('2% EOM/Net 15th', GPVendor.PYMTRMID, 'PYMTRMID of Vendor is wrong');
+        Assert.AreEqual('MAIL', GPVendor.SHIPMTHD, 'SHIPMTHD of Vendor is wrong');
+        Assert.AreEqual('', GPVendor.COUNTRY, 'SLPRSNID of Vendor is wrong');
+        Assert.AreEqual('', GPVendor.PYMNTPRI, 'PYMNTPRI of Vendor is wrong');
+        Assert.AreEqual(-34.70, GPVendor.AMOUNT, 'AMOUNT of Vendor is wrong');
+        Assert.AreEqual('00000000000000', GPVendor.FAXNUMBR, 'FAXNUMBR of Vendor is wrong');
+        Assert.AreEqual('IL', GPVendor.STATE, 'STATE of Vendor is wrong');
+        Assert.AreEqual('505930011', GPVendor.ZIPCODE, 'ZIPCODE of Vendor is wrong');
+        Assert.AreEqual('', GPVendor.INET1, 'INET1 of Vendor is wrong');
+        Assert.AreEqual(' ', GPVendor.INET2, 'INET2 of Vendor is wrong');
+        Assert.AreEqual('P-N-TXB-%PTIP', GPVendor.TAXSCHID, 'TAXSCHID of Vendor is wrong');
+        Assert.AreEqual('J6', GPVendor.UPSZONE, 'UPSZONE of Vendor is wrong');
+        Assert.AreEqual('45-0029728', GPVendor.TXIDNMBR, 'TXIDNMBR of Vendor is wrong');
+
+        // [WHEN] data is migrated
+        Vendor.DeleteAll();
+        GPVendor.Reset();
+        MigrateVendors(GPVendor);
+
+        // [THEN] The fields for Vendors are correctly applied
+        Vendor.SetRange("No.", '3070');
+        Vendor.FindFirst();
+
+        CompanyInformation.Get();
+        Country := CompanyInformation."Country/Region Code";
+
+        Assert.AreEqual('L.M. Berry & co. -NYPS', Vendor.Name, 'Name of Migrated Vendor is wrong');
+
+        // [THEN] The Vendor Name 2 will be set because it is not the same as the Vendor name
+        Assert.AreEqual('L.M. Berry & co.', Vendor."Name 2", 'Name 2 of Migrated Vendor is wrong');
+        Assert.AreEqual('', Vendor.Contact, 'Contact Name of Migrated Vendor is wrong');
+        Assert.AreEqual('L.M. BERRY & CO. -NYPS', Vendor."Search Name", 'Search Name of Migrated Vendor is wrong');
+        Assert.AreEqual('Box 90255', Vendor.Address, 'Address of Migrated Vendor is wrong');
+        Assert.AreEqual('', Vendor."Address 2", 'Address2 of Migrated Vendor is wrong');
+        Assert.AreEqual('Chicago', Vendor.City, 'City of Migrated Vendor is wrong');
+        Assert.AreEqual('505930011', Vendor."Post Code", 'Post Code of Migrated Vendor is wrong');
+        Assert.AreEqual('70143651130000', Vendor."Phone No.", 'Phone No. of Migrated Vendor is wrong');
+        Assert.AreEqual('', Vendor."Fax No.", 'Fax No. of Migrated Vendor is wrong');
+        Assert.AreEqual(Country, Vendor."Country/Region Code", 'Country/Region of Migrated Vendor is wrong');
+        Assert.AreEqual('MAIL', Vendor."Shipment Method Code", 'Shipment Method Code of Migrated Vendor is wrong');
+        Assert.AreEqual(true, Vendor."Tax Liable", 'Tax Liable of Migrated Vendor is wrong');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestPayablesMasterDataOnly()
     var
         Vendor: Record Vendor;
@@ -514,12 +592,14 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] adding Vendors, update the expected count here
         VendorCount := 54;
 
+        Clear(GPVendor);
+        Clear(Vendor);
+
         // [THEN] Then the correct number of Vendors are imported
         Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
 
         // [WHEN] data is migrated
         Vendor.DeleteAll();
-        GPVendor.Reset();
         MigrateVendors(GPVendor);
 
         // [THEN] Then the correct number of Vendors are applied
@@ -555,13 +635,15 @@ codeunit 139664 "GP Data Migration Tests"
         // When adding Vendors, update the expected count here
         VendorCount := 54;
 
+        Clear(GPVendor);
+        Clear(Vendor);
+
         // [then] Then the correct number of GPVendors are imported
         Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of GPVendors found.');
         Assert.AreEqual(0, HelperFunctions.GetNumberOfVendors(), 'Wrong number of Vendors calculated.');
 
         // [WHEN] data is migrated
         Vendor.DeleteAll();
-        GPVendor.Reset();
         MigrateVendors(GPVendor);
 
         Assert.RecordCount(Vendor, 0);
@@ -1856,7 +1938,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.VENDORID := '3070';
         GPVendor.VENDNAME := 'L.M. Berry & co. -NYPS';
         GPVendor.SEARCHNAME := 'L.M. Berry & co. -NYPS';
-        GPVendor.VNDCHKNM := 'L.M. Berry & co. -NYPS';
+        GPVendor.VNDCHKNM := 'L.M. Berry & co.';
         GPVendor.ADDRESS1 := 'Box 90255';
         GPVendor.ADDRESS2 := '';
         GPVendor.CITY := 'Chicago';

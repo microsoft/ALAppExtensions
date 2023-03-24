@@ -235,6 +235,8 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         IntelligentCloud: Record "Intelligent Cloud";
         HybridDeployment: Codeunit "Hybrid Deployment";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         RestoreDataPerDatabaseTables(HybridReplicationSummary."Run ID", SourceProduct);
 
@@ -261,6 +263,8 @@ codeunit 4001 "Hybrid Cloud Management"
         Commit(); // Manual commit in case subscriber to the call below crashes
 
         OnAfterDisableMigration(SourceProduct);
+        FeatureTelemetry.LogUptake('0000JMT', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000JMX', HybridCloudManagement.GetFeatureTelemetryName(), 'Disabling cloud migration');
     end;
 
     local procedure DisableMigrationOnly(Reason: Text)
@@ -503,22 +507,25 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         HybridCompany: Record "Hybrid Company";
         GuidedExperience: Codeunit "Guided Experience";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
+        TelemetryDimensions.Add('TotalNumberOfOnPremCompanies', Format(HybridCompany.Count(), 0, 9));
         HybridCompany.SetRange(Replicate, true);
-
-        TelemetryDimensions.Add('Category', CloudMigrationTok);
-        TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
-        TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
-
-        Session.LogMessage('0000EUR', CompletedCloudMigrationSetupMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
-
         GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard");
         IntelligentCloudSetup.Validate("Replication User", UserId());
         IntelligentCloudSetup.Modify();
         RestoreDefaultMigrationTableMappings(false);
         RefreshIntelligentCloudStatusTable();
         CreateCompanies();
+
+        FeatureTelemetry.LogUptake('0000JMU', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
+        TelemetryDimensions.Add('Category', CloudMigrationTok);
+        TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
+        TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
+        TelemetryDimensions.Add('TotalOnPremSize', Format(HybridCompany.GetTotalOnPremSize(), 0, 9));
+        TelemetryDimensions.Add('Product', IntelligentCloudSetup."Product ID");
+        FeatureTelemetry.LogUsage('0000EUR', GetFeatureTelemetryName(), CompletedCloudMigrationSetupMsg, TelemetryDimensions);
     end;
 
     procedure HandleShowIRInstructionsStep(var HybridProductType: Record "Hybrid Product Type"; var IRName: Text; var PrimaryKey: Text)
@@ -633,6 +640,7 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         HybridDeployment: Codeunit "Hybrid Deployment";
         Handled: Boolean;
     begin
@@ -646,6 +654,13 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridDeployment.RunReplication(RunId, ReplicationType);
 
         HybridReplicationSummary.CreateInProgressRecord(RunId, ReplicationType);
+        FeatureTelemetry.LogUptake('0000JMV', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000JMY', GetFeatureTelemetryName(), 'Running data replication');
+    end;
+
+    internal procedure GetFeatureTelemetryName(): Text
+    begin
+        exit('Cloud Migration');
     end;
 
     procedure CheckFixDataOnReplicationCompleted(NotificationText: Text): Boolean
@@ -1210,6 +1225,7 @@ codeunit 4001 "Hybrid Cloud Management"
     procedure RunDataUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary")
     var
         ExistingHybridReplicationSummary: Record "Hybrid Replication Summary";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         Handled: Boolean;
         ErrorMessage: Text;
     begin
@@ -1221,8 +1237,12 @@ codeunit 4001 "Hybrid Cloud Management"
             Error(CannotStartUpgradeFromOldRunErr);
 
         OnInvokeDataUpgrade(HybridReplicationSummary, Handled);
+
         if not Handled then
             Error(UpgradeNotExecutedErr);
+
+        FeatureTelemetry.LogUptake('0000JMW', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000JMZ', GetFeatureTelemetryName(), 'Running data replication');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]

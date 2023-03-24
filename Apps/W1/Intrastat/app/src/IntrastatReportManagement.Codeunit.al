@@ -32,6 +32,7 @@ codeunit 4810 IntrastatReportManagement
         IntrastatCoreAppIdTok: Label '70912191-3c4c-49fc-a1de-bc6ea1ac9da6', Locked = true;
         IntrastatTelemetryCategoryTok: Label 'AL Intrastat', Locked = true;
         LearnMoreLinkTok: Label 'https://go.microsoft.com/fwlink/?linkid=2204541', Locked = true;
+        RangeCrossingErr: Label 'There is a conflict in checklist rules for ''%1'' in ''%2'' (field must be both blank and not blank). Please review filters in %3.', Comment = '%1=caption of a field, %2=key of record, %3=caption of report checklist page';
 
     procedure GetIntrastatBaseCountryCode(ItemLedgEntry: Record "Item Ledger Entry") CountryCode: Code[10]
     var
@@ -47,8 +48,7 @@ codeunit 4810 IntrastatReportManagement
 
         case ItemLedgEntry."Document Type" of
             ItemLedgEntry."Document Type"::"Sales Shipment":
-                begin
-                    SalesShptHeader.Get(ItemLedgEntry."Document No.");
+                if SalesShptHeader.Get(ItemLedgEntry."Document No.") then
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                             CountryCode := SalesShptHeader."Ship-to Country/Region Code";
@@ -57,10 +57,8 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := SalesShptHeader."Bill-to Country/Region Code";
                     end;
-                end;
             ItemLedgEntry."Document Type"::"Sales Return Receipt":
-                begin
-                    ReturnRcptHeader.Get(ItemLedgEntry."Document No.");
+                if ReturnRcptHeader.Get(ItemLedgEntry."Document No.") then
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                             CountryCode := ReturnRcptHeader."Sell-to Country/Region Code";
@@ -69,10 +67,8 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := ReturnRcptHeader."Bill-to Country/Region Code";
                     end;
-                end;
             ItemLedgEntry."Document Type"::"Purchase Receipt":
-                begin
-                    PurchRcptHeader.Get(ItemLedgEntry."Document No.");
+                if PurchRcptHeader.Get(ItemLedgEntry."Document No.") then
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                             CountryCode := PurchRcptHeader."Buy-from Country/Region Code";
@@ -81,10 +77,8 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := PurchRcptHeader."Pay-to Country/Region Code";
                     end;
-                end;
             ItemLedgEntry."Document Type"::"Purchase Return Shipment":
-                begin
-                    ReturnShptHeader.Get(ItemLedgEntry."Document No.");
+                if ReturnShptHeader.Get(ItemLedgEntry."Document No.") then
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                             CountryCode := ReturnShptHeader."Ship-to Country/Region Code";
@@ -93,7 +87,6 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := ReturnShptHeader."Pay-to Country/Region Code";
                     end;
-                end;
         end;
     end;
 
@@ -310,16 +303,34 @@ codeunit 4810 IntrastatReportManagement
     var
         ErrorMessage: Record "Error Message";
         IntrastatReportChecklist: Record "Intrastat Report Checklist";
-        AnyError: Boolean;
+        IntrastatReportChecklistPage: Page "Intrastat Report Checklist";
+        AnyError, LinePassesNonBlank, LinePassesBlank : Boolean;
     begin
         ChecklistSetBatchContext(ErrorMessage, IntrastatReportLine);
         if IntrastatReportChecklist.FindSet() then
             repeat
-                if IntrastatReportChecklist.LinePassesFilterExpression(IntrastatReportLine) then
+                LinePassesNonBlank := IntrastatReportChecklist.LinePassesFilterExpression(IntrastatReportLine);
+                LinePassesBlank := IntrastatReportChecklist.LinePassesFilterExpressionForMustBeBlank(IntrastatReportLine);
+
+                if LinePassesBlank and LinePassesNonBlank then begin
+                    IntrastatReportChecklist.CalcFields("Field Name");
                     AnyError :=
                       AnyError or
-                      (ErrorMessage.LogIfEmpty(
-                         IntrastatReportLine, IntrastatReportChecklist."Field No.", ErrorMessage."Message Type"::Error) <> 0);
+                      (ErrorMessage.LogMessage(
+                         IntrastatReportLine, IntrastatReportChecklist."Field No.", ErrorMessage."Message Type"::Error, StrSubstNo(RangeCrossingErr, IntrastatReportChecklist."Field Name", Format(IntrastatReportLine.RecordId), IntrastatReportChecklistPage.Caption)) <> 0)
+                end else begin
+                    if LinePassesNonBlank then
+                        AnyError :=
+                          AnyError or
+                          (ErrorMessage.LogIfEmpty(
+                             IntrastatReportLine, IntrastatReportChecklist."Field No.", ErrorMessage."Message Type"::Error) <> 0);
+
+                    if LinePassesBlank then
+                        AnyError :=
+                          AnyError or
+                          (ErrorMessage.LogIfNotEmpty(
+                             IntrastatReportLine, IntrastatReportChecklist."Field No.", ErrorMessage."Message Type"::Error) <> 0);
+                end;
             until IntrastatReportChecklist.Next() = 0;
 
         if AnyError and ThrowError then

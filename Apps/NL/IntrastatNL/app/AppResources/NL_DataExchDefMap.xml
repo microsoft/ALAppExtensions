@@ -78,7 +78,7 @@
             <Code>REPLACERECEIPT</Code>
             <Description>Replace Receipt with 6</Description>
             <TransformationType>6</TransformationType>
-            <FindValue>(Receipt|Invoer)</FindValue>
+            <FindValue>(Receipt|Ontvangstdocument)</FindValue>
             <ReplaceValue>6</ReplaceValue>
             <StartPosition>0</StartPosition>
             <Length>0</Length>
@@ -97,7 +97,7 @@
             <Code>REPLACESHIPMENT</Code>
             <Description>Replace Shipment with 7</Description>
             <TransformationType>6</TransformationType>
-            <FindValue>(Shipment|Uitvoer)</FindValue>
+            <FindValue>(Shipment|Verzenddocument)</FindValue>
             <ReplaceValue>7</ReplaceValue>
             <StartPosition>0</StartPosition>
             <Length>0</Length>

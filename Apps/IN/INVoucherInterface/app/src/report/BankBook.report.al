@@ -364,10 +364,8 @@ report 18930 "Bank Book"
                         if GLEntry.Count > 1 then
                             OneEntryRecord := false;
 
-                        if Amount > 0 then
-                            TransDebits := TransDebits + Amount
-                        else
-                            TransCredits := TransCredits - Amount;
+                        TransDebits := TransDebits + "Debit Amount";
+                        TransCredits := TransCredits + "Credit Amount";
 
                         SourceDesc := '';
                         if "Source Code" <> '' then begin

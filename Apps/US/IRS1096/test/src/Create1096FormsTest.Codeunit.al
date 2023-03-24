@@ -442,6 +442,61 @@ codeunit 144041 "Create 1096 Forms Test"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    [Test]
+    procedure CompanyInformationIRSFields()
+    var
+        CompanyInformation: Record "Company Information";
+        Employee: Record Employee;
+        CompanyInformationPage: TestPage "Company Information";
+        EINNumber: Code[10];
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 453564] "EIN Number" and "IRS Contact No." are editable on Company Information page
+        EINNumber := LibraryUtility.GenerateRandomNumericText(10);
+        Employee.Init();
+        Employee."No." := LibraryUtility.GenerateGUID();
+        Employee.Insert();
+        CompanyInformationPage.OpenEdit();
+        CompanyInformationPage."EIN Number".SetValue(EINNumber);
+        CompanyInformationPage."IRS Contact No.".SetValue(Employee."No.");
+        CompanyInformationPage.Close();
+        CompanyInformation.Get();
+        CompanyInformation.TestField("EIN Number", EINNumber);
+        CompanyInformation.TestField("IRS Contact No.", Employee."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('IRS1096RequestPageHandler')]
+    procedure ReportIRS1096RequestPageInitialization()
+    var
+        CompanyInformation: Record "Company Information";
+        Employee: Record Employee;
+        EINNumber: Code[10];
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 453564] 'IRS 1096 Form' report opens request page initialized with "EIN Number" and "IRS Contact No." from Company Information
+        Initialize();
+
+        // [GIVEN] "EIN Number" and "IRS Contact No."
+        EINNumber := LibraryUtility.GenerateRandomNumericText(10);
+        Employee.Init();
+        Employee."No." := LibraryUtility.GenerateGUID();
+        Employee."First Name" := LibraryUtility.GenerateGUID();
+        Employee."Last Name" := LibraryUtility.GenerateGUID();
+        Employee.Insert();
+        CompanyInformation."EIN Number" := EINNumber;
+        CompanyInformation."IRS Contact No." := Employee."No.";
+
+        // [WHEN] Run 'IRS 1096 Form' report
+        Report.Run(Report::"IRS 1096 Form");
+
+        // [THEN] The report's request page is initialized with values from "EIN Number" and "IRS Contact No."
+        Assert.AreEqual(EINNumber, LibraryVariableStorage.DequeueText(), '');
+        Assert.AreEqual(Employee.FullName(), LibraryVariableStorage.DequeueText(), '');
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"Create 1096 Forms Test");
@@ -550,5 +605,13 @@ codeunit 144041 "Create 1096 Forms Test"
     procedure MessageHandler(Message: Text)
     begin
         Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Message);
+    end;
+
+    [RequestPageHandler]
+    procedure IRS1096RequestPageHandler(var IRS1096Form: TestRequestPage "IRS 1096 Form")
+    begin
+        LibraryVariableStorage.Enqueue(IRS1096Form.IdentificationNumber);
+        LibraryVariableStorage.Enqueue(IRS1096Form.ContactName);
+        IRS1096Form.Cancel().Invoke();
     end;
 }

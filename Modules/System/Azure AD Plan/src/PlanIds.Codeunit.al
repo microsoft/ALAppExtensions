@@ -56,7 +56,6 @@ codeunit 9027 "Plan Ids"
         exit(TeamMemberPlanGUIDTxt);
     end;
 
-#if not CLEAN21
     /// <summary>
     /// Returns the ID for the Microsoft 365 Collaboration plan.
     /// </summary>
@@ -65,7 +64,6 @@ codeunit 9027 "Plan Ids"
     begin
         exit(Microsoft365PlanGUIDTxt);
     end;
-#endif
 
     /// <summary>
     /// Returns the ID for the Microsoft 365 plan.

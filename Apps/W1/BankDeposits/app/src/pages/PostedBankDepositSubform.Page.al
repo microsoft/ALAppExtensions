@@ -8,7 +8,8 @@ page 1697 "Posted Bank Deposit Subform"
     PromotedActionCategories = 'New,Process,Report,Line,Functions';
 #pragma warning restore
     SourceTable = "Posted Bank Deposit Line";
-    Permissions = tabledata "Posted Bank Deposit Line" = r;
+    Permissions = tabledata "Posted Bank Deposit Header" = r,
+                  tabledata "Posted Bank Deposit Line" = r;
 
     layout
     {

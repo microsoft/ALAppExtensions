@@ -118,6 +118,10 @@ codeunit 139661 "GP Account Tests"
         // [THEN] Accounts are created, but with no transactions
         Assert.RecordCount(GLAccount, 7);
         Assert.RecordCount(GenJournalLine, 0);
+
+        // [THEN] accounts are created Direct Posting option set
+        GLAccount.SetFilter("Direct Posting", '1');
+        Assert.RecordCount(GLAccount, 7);
     end;
 
     [Test]
@@ -306,7 +310,7 @@ codeunit 139661 "GP Account Tests"
         GPAccount.IncomeBalance := false;
         GPAccount.DebitCredit := 0;
         GPAccount.Active := false;
-        GPAccount.DirectPosting := true;
+        GPAccount.DirectPosting := false;
         GPAccount.AccountSubcategoryEntryNo := 9;
         GPAccount.Insert(true);
 
@@ -333,7 +337,7 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountCategory := 3;
         GPAccount.DebitCredit := 0;
         GPAccount.Active := false;
-        GPAccount.DirectPosting := true;
+        GPAccount.DirectPosting := false;
         GPAccount.AccountSubcategoryEntryNo := 3;
         GPAccount.Insert(true);
 
@@ -388,7 +392,7 @@ codeunit 139661 "GP Account Tests"
         GPAccount.IncomeBalance := true;
         GPAccount.DebitCredit := 1;
         GPAccount.Active := true;
-        GPAccount.DirectPosting := true;
+        GPAccount.DirectPosting := false;
         GPAccount.AccountSubcategoryEntryNo := 5;
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);

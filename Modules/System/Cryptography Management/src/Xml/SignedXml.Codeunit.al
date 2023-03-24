@@ -183,7 +183,13 @@ codeunit 1460 SignedXml
     begin
         SignedXmlImpl.AddXmlDsigEnvelopedSignatureTransform();
     end;
-
+    /// <summary>
+    /// Adds a Reference object to the Signed XML and clears Reference object
+    /// </summary>
+    procedure AddReferenceToSignedXML()
+    begin
+        SignedXmlImpl.AddReferenceToSignedXML();
+    end;
     /// <summary>
     /// Computes an Xml digital signature from Xml document.
     /// </summary>
