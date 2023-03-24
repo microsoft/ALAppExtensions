@@ -81,7 +81,7 @@ function Restore-BaselinesFromArtifacts {
     try {
         Write-Host "Downloading from $baselineURL to $baselineFolder"
 
-        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder
+        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder | Out-Null
         $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app" -ErrorAction SilentlyContinue
 
         if (-not $baselineApp) {
@@ -91,10 +91,10 @@ function Restore-BaselinesFromArtifacts {
 
             if (-not (Test-Path $AppSymbolsFolder)) {
                 Write-Host "Creating folder $AppSymbolsFolder"
-                New-Item -ItemType Directory -Path $AppSymbolsFolder
+                New-Item -ItemType Directory -Path $AppSymbolsFolder | Out-Null
             }
     
-            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder | Out-Null
             $baselineRestored = $true
         }
     } finally {
@@ -138,11 +138,11 @@ function Restore-BaselinesFromNuget {
         } else {
             if (-not (Test-Path $AppSymbolsFolder)) {
                 Write-Host "Creating folder $AppSymbolsFolder"
-                New-Item -ItemType Directory -Path $AppSymbolsFolder
+                New-Item -ItemType Directory -Path $AppSymbolsFolder | Out-Null
             }
 
             Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
-            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder
+            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder | Out-Null
             $baselineRestored = $true
         }
     } finally {
