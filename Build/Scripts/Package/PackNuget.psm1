@@ -45,6 +45,8 @@ function Get-PackageMetadata() {
     The path to the package folder
 .Parameter AppFolders
     The list of app folders to copy from
+.Parameter ApplicationsToPackage
+    The list of applications to package
 .Parameter LicensePath
     The path to the license file
 #>
@@ -86,6 +88,8 @@ function Initialize-PackageFolder
     Verifies that all expected apps are in the package folder
 .Parameter OutputPackageFolder
     The path to the package folder
+.Parameter ExpectedApplications
+    The list of expected applications
 #>
 function Test-PackageFolder
 (
