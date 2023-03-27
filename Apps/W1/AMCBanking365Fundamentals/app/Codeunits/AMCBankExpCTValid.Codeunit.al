@@ -5,12 +5,16 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
     trigger OnRun()
     var
         GenJournalLine: Record "Gen. Journal Line";
+        GenJournalLineCopy: Record "Gen. Journal Line";
         PaymentMethod: record "Payment Method";
         PaymentExportGenJnlCheck: Codeunit "Payment Export Gen. Jnl Check";
         TestedBankAccount: Boolean;
     begin
-        DeletePaymentFileBatchErrors();
-        DeletePaymentFileErrors();
+        GenJournalLineCopy."Journal Template Name" := Rec."Journal Template Name";
+        GenJournalLineCopy."Journal Batch Name" := Rec."Journal Batch Name";
+
+        GenJournalLineCopy.DeletePaymentFileBatchErrors();
+        GenJournalLineCopy.DeletePaymentFileErrors();
 
         GenJournalLine.CopyFilters(Rec);
         if GenJournalLine.FindSet() then
@@ -25,7 +29,7 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
 
             until GenJournalLine.Next() = 0;
 
-        if GenJournalLine.HasPaymentFileErrorsInBatch() then begin
+        if GenJournalLineCopy.HasPaymentFileErrorsInBatch() then begin
             Commit();
             Error(HasErrorsErr);
         end;
