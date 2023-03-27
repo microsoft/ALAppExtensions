@@ -5,6 +5,9 @@
     ],
     "testFolders":  [
     ],
+    "buildModes": [
+        "Translated"
+    ],
     "doNotRunTests": true,
     "enableAppSourceCop": true,
     "enablePerTenantExtensionCop":  true
