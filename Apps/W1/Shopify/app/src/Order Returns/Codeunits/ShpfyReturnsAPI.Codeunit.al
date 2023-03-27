@@ -52,6 +52,7 @@ codeunit 30222 "Shpfy Returns API"
 
     local procedure GetReturnHeader(ReturnId: BigInteger)
     var
+        DataCapture: Record "Shpfy Data Capture";
         ReturnHeader: Record "Shpfy Return Header";
         ReturnHeaderRecordRef: RecordRef;
         HeaderParameters: Dictionary of [Text, Text];
@@ -75,10 +76,12 @@ codeunit 30222 "Shpfy Returns API"
         JsonHelper.GetValueIntoField(JReturn, 'totalQuantity', ReturnHeaderRecordRef, ReturnHeader.FieldNo("Total Quantity"));
         ReturnHeaderRecordRef.Modify();
         ReturnHeaderRecordRef.Close();
+        DataCapture.Add(Database::"Shpfy Return Header", ReturnHeader.SystemId, JResponse);
     end;
 
     local procedure FillInReturnLine(ReturnId: BigInteger; JLine: JsonObject)
     var
+        DataCapture: Record "Shpfy Data Capture";
         ReturnLine: Record "Shpfy Return Line";
         ReturnLineRecordRef: RecordRef;
         Id: BigInteger;
@@ -104,5 +107,6 @@ codeunit 30222 "Shpfy Returns API"
         JsonHelper.GetValueIntoField(JLine, 'withCodeDiscountedTotalPriceSet.presentmentMoney.amount', ReturnLineRecordRef, ReturnLine.FieldNo("Presentment Disc. Total Amt."));
         ReturnLineRecordRef.Modify();
         ReturnLineRecordRef.Close();
+        DataCapture.Add(Database::"Shpfy Return Line", ReturnLine.SystemId, JLine);
     end;
 }

@@ -51,7 +51,7 @@ codeunit 30262 "Shpfy Document Link Mgt."
                 CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy BC Document Type"::"Posted Sales Shipment", SalesShptHdrNo);
                 CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy BC Document Type"::"Posted Sales Invoice", SalesInvHdrNo);
                 CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy BC Document Type"::"Posted Return Receipt", RetRcpHdrNo);
-                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy BC Document Type"::"Posted Sales Credit Note", SalesCrMemoHdrNo);
+                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy BC Document Type"::"Posted Sales Credit Memo", SalesCrMemoHdrNo);
             end;
 
         end;

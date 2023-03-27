@@ -142,34 +142,19 @@ codeunit 30166 "Shpfy Process Order"
     local procedure ApplyGlobalDiscounts(OrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
     var
         OrderLine: Record "Shpfy Order Line";
+        OrderShippingCharges: Record "Shpfy Order Shipping Charges";
         SalesLine: REcord "Sales Line";
         SalesCalcDiscountByType: Codeunit "Sales - Calc Discount By Type";
         Discount: Decimal;
     begin
         OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
         OrderLine.CalcSums("Discount Amount");
+        OrderShippingCharges.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        OrderShippingCharges.CalcSums("Discount Amount");
         SalesHeader.Get(SalesHeader."Document Type", SalesHeader."No.");
-        Discount := OrderHeader."Discount Amount" - OrderLine."Discount Amount";
-        if Discount > 0 then begin
-            SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-            SalesLine.SetRange("Document No.", SalesHeader."No.");
-            SalesLine.SetRange(Type, SalesLine.Type::"G/L Account");
-            SalesLine.SetRange("No.", ShopifyShop."Shipping Charges Account");
-            if SalesLine.FindFirst then begin
-                if Discount >= SalesLine."Line Amount" then begin
-                    Discount -= SalesLine."Line Amount";
-                    SalesLine.Validate("Line Discount %", 100);
-                    SalesLine.Modify();
-                end else begin
-                    SalesLine.Validate("Line Discount Amount", Discount);
-                    SalesLine.Modify;
-                    Clear(Discount);
-                end;
-            end;
-            if Discount > 0 then begin
-                SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(Discount, SalesHeader);
-            end;
-        end;
+        Discount := OrderHeader."Discount Amount" - OrderLine."Discount Amount" - OrderShippingCharges."Discount Amount";
+        if Discount > 0 then
+            SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(Discount, SalesHeader);
     end;
 
     /// <summary> 
@@ -265,6 +250,7 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine.Validate(Description, OrderShippingCharges.Title);
                     SalesLine.Validate("Unit Price", OrderShippingCharges.Amount);
                     SalesLine.Validate("Line Discount Amount", OrderShippingCharges."Discount Amount");
+                    SalesLine."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
                     SalesLine.Modify(true);
                 end;
                 OrderEvents.OnAfterCreateShippingCostSalesLine(ShopifyOrderHeader, OrderShippingCharges, SalesHeader, SalesLine);

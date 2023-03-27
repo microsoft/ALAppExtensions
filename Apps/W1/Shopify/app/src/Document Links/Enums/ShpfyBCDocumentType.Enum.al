@@ -42,9 +42,9 @@ enum 30143 "Shpfy BC Document Type" implements "Shpfy IOpenBCDocument"
         Caption = 'Posted Sales Invoice';
         Implementation = "Shpfy IOpenBCDocument" = "Shpfy Open PostedSalesInvoice";
     }
-    value(8; "Posted Sales Credit Note")
+    value(8; "Posted Sales Credit Memo")
     {
-        Caption = 'Posted Sales Credit Note';
+        Caption = 'Posted Sales Credit Memo';
         Implementation = "Shpfy IOpenBCDocument" = "Shpfy Open PostedSalesCrMemo";
     }
 }

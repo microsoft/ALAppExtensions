@@ -6,6 +6,7 @@ page 30141 "Shpfy Returns"
     SourceTable = "Shpfy Return Header";
     UsageCategory = Documents;
     CardPageId = "Shpfy Return";
+    SourceTableView = sorting("Return Id") order(descending);
 
     layout
     {

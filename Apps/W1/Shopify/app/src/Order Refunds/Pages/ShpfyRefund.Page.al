@@ -98,6 +98,7 @@ page 30145 "Shpfy Refund"
                     ShowCaption = false;
                     ToolTip = 'Last error information with the last process of this document.';
                     MultiLine = true;
+                    Style = Attention;
                 }
             }
         }
@@ -114,11 +115,11 @@ page 30145 "Shpfy Refund"
     {
         area(Processing)
         {
-            action(CreateCreditNote)
+            action(CreateCreditMemo)
             {
-                Caption = 'Create Credit Note';
+                Caption = 'Create Credit Memo';
                 Image = CreateCreditMemo;
-                ToolTip = 'Create a credit note for this refund.';
+                ToolTip = 'Create a credit memo for this refund.';
                 Enabled = CanCreateDocument;
 
                 trigger OnAction()
@@ -133,10 +134,28 @@ page 30145 "Shpfy Refund"
                         Error(ErrorInfo);
                 end;
             }
+            action(RetrievedShopifyData)
+            {
+                ApplicationArea = All;
+                Caption = 'Retrieved Shopify Data';
+                Image = Entry;
+                ToolTip = 'View the data retrieved from Shopify.';
+
+                trigger OnAction();
+                var
+                    DataCapture: Record "Shpfy Data Capture";
+                begin
+                    DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
+                    DataCapture.SetRange("Linked To Table", Database::"Shpfy Refund Header");
+                    DataCapture.SetRange("Linked To Id", Rec.SystemId);
+                    Page.Run(Page::"Shpfy Data Capture List", DataCapture);
+                end;
+            }
         }
         area(Promoted)
         {
-            actionref(PromotedCreateCreditNoted; CreateCreditNote) { }
+            actionref(PromotedCreateCreditMemo; CreateCreditMemo) { }
+            actionref(PromotedRetrievedShopifyData; RetrievedShopifyData) { }
         }
     }
 

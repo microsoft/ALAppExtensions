@@ -31,11 +31,19 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
     local procedure CreateSalesDocument()
     var
         RefundHeader: Record "Shpfy Refund Header";
+        ReleaseSalesDocument: Codeunit "Release Sales Document";
+        IsHandled: Boolean;
     begin
         if RefundHeader.Get(RefundId) then begin
             Shop.Get(RefundHeader."Shop Code");
-            if DoCreateSalesHeader(RefundHeader, SalesDocumentType, SalesHeader) then
+            if DoCreateSalesHeader(RefundHeader, SalesDocumentType, SalesHeader) then begin
                 CreateSalesLines(RefundHeader, SalesHeader);
+                RefundProcessEvents.OnBeforeReleaseSalesHeader(SalesHeader, RefundHeader, IsHandled);
+                RefundHeader.Get(RefundHeader."Refund Id");
+                if not IsHandled then
+                    ReleaseSalesDocument.Run(SalesHeader);
+                RefundProcessEvents.OnAfterReleaseSalesHeader(SalesHeader, RefundHeader);
+            end;
         end;
     end;
 
@@ -50,8 +58,6 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
         IsHandled: Boolean;
     begin
         Clear(SalesHeader);
-        if RefundHeader."Total Refunded Amount" = 0 then
-            exit;
 
         DocLinkToBCDoc.SetRange("Shopify Document Type", "Shpfy Document Type"::"Shopify Refund");
         DocLinkToBCDoc.SetRange("Shopify Document Id", RefundHeader."Refund Id");
@@ -134,7 +140,9 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
         SalesLine: Record "Sales Line";
         RefundLine: Record "Shpfy Refund Line";
         ReturnLine: Record "Shpfy Return Line";
+        GiftCard: Record "Shpfy Gift Card";
         LineNo: Integer;
+        OpenAmount: Decimal;
         IsHandled: Boolean;
     begin
         RefundLine.SetRange("Refund Id", RefundHeader."Refund Id");
@@ -180,6 +188,23 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
                             SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
                             SalesLine."Shpfy Refund Line Id" := RefundLine."Refund Line Id";
                             SalesLine.Modify();
+                            if RefundLine."Gift Card" then begin
+                                GiftCard.SetRange("Order Line Id", RefundLine."Order Line Id");
+                                GiftCard.SetAutoCalcFields("Known Used Amount");
+                                OpenAmount := SalesLine.GetLineAmountInclVAT();
+                                if GiftCard.FindSet(true, false) then
+                                    repeat
+                                        if GiftCard.Amount - GiftCard."Known Used Amount" > 0 then
+                                            if OpenAmount <= GiftCard.Amount - GiftCard."Known Used Amount" then begin
+                                                GiftCard.Amount -= OpenAmount;
+                                                OpenAmount := 0;
+                                            end else begin
+                                                OpenAmount := GiftCard.Amount - GiftCard."Known Used Amount";
+                                                GiftCard.Amount := GiftCard."Known Used Amount";
+                                            end;
+                                        GiftCard.Modify();
+                                    until (OpenAmount = 0) or (GiftCard.Next() = 0);
+                            end;
                             RefundProcessEvents.OnAfterCreateItemSalesLine(RefundHeader, RefundLine, SalesHeader, SalesLine);
                         end;
                 end;

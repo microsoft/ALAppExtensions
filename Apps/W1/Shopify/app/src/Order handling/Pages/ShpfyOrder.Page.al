@@ -702,7 +702,6 @@ page 30113 "Shpfy Order"
                     Hyperlink(Rec."Order Status URL");
                 end;
             }
-
             action(RetrievedShopifyData)
             {
                 ApplicationArea = All;

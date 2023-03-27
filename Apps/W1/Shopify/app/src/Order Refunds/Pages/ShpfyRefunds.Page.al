@@ -7,6 +7,7 @@ page 30144 "Shpfy Refunds"
     UsageCategory = Documents;
     Editable = false;
     CardPageId = "Shpfy Refund";
+    SourceTableView = sorting("Refund Id") order(descending);
 
     layout
     {

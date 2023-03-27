@@ -39,12 +39,13 @@ codeunit 30228 "Shpfy Refunds API"
 
     local procedure GetRefundHeader(RefundId: BigInteger; UpdatedAt: DateTime)
     var
+        DataCapture: Record "Shpfy Data Capture";
         RefundHeader: Record "Shpfy Refund Header";
         RefundHeaderRecordRef: RecordRef;
         IsNew: Boolean;
         Parameters: Dictionary of [Text, Text];
-        JResponse: JsonToken;
         JRefund: JsonObject;
+        JResponse: JsonToken;
     begin
         if not RefundHeader.Get(RefundId) then
             IsNew := true
@@ -70,10 +71,12 @@ codeunit 30228 "Shpfy Refunds API"
         JsonHelper.GetValueIntoField(JRefund, 'totalRefundedSet.presentmentMoney.amount', RefundHeaderRecordRef, RefundHeader.FieldNo("Pres. Tot. Refunded Amount"));
         RefundHeaderRecordRef.Modify();
         RefundHeaderRecordRef.Close();
+        DataCapture.Add(Database::"Shpfy Refund Header", RefundHeader.SystemId, JResponse);
     end;
 
     local procedure FillInRefundLine(RefundId: BigInteger; JLine: JsonObject)
     var
+        DataCapture: Record "Shpfy Data Capture";
         RefundLine: Record "Shpfy Refund Line";
         RefundLineRecordRef: RecordRef;
         Id: BigInteger;
@@ -97,5 +100,6 @@ codeunit 30228 "Shpfy Refunds API"
         JsonHelper.GetValueIntoField(JLine, 'totalTaxSet.presentmentMoney.amount', RefundLineRecordRef, RefundLine.FieldNo("Presentment Total Tax Amount"));
         RefundLineRecordRef.Modify();
         RefundLineRecordRef.Close();
+        DataCapture.Add(Database::"Shpfy Refund Line", RefundLine.SystemId, JLine);
     end;
 }

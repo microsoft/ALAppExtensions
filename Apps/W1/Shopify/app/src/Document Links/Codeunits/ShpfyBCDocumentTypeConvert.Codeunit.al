@@ -55,7 +55,7 @@ codeunit 30259 "Shpfy BC Document Type Convert"
                 Database::"Return Receipt Header":
                     exit("Shpfy BC Document Type"::"Posted Return Receipt");
                 Database::"Sales Cr.Memo Header":
-                    exit("Shpfy BC Document Type"::"Posted Sales Credit Note");
+                    exit("Shpfy BC Document Type"::"Posted Sales Credit Memo");
             end;
         end;
         Error(NotSupportedErr);
