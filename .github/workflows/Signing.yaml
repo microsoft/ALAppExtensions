@@ -12,7 +12,7 @@ env:
   buildScripts: ${{ github.workspace }}/Build/Scripts
 
 jobs:
-  UpdateBaseline:
+  Sign:
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -20,25 +20,18 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      
-      - name: Initialize the workflow
-        id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
-        with:
-          shell: powershell
-          eventId: "DO0091"
 
-      - name: Download Build Output
-        env:
-            GH_TOKEN: ${{ github.token }}
-        run: |
-            gh run download 4530221544 --pattern 'System Application-main-Apps-*' --dir $env:buildArtifactsPath
+      #- name: Download Build Output
+      #  env:
+      #      GH_TOKEN: ${{ github.token }}
+      #  run: |
+      #      gh run download 4530221544 --pattern 'System Application-main-Apps-*' --dir $env:buildArtifactsPath
       
       - name: Install Azure SignTool
         run: |
           dotnet tool install --global AzureSignTool
       
-      - name: Update Baseline Version
+      - name: Sign
         run: | 
           $Files = Get-ChildItem -Path $env:buildScripts -Filter *.ps1 -Recurse | Select-Object -ExpandProperty FullName
           Build/Scripts/CodeSign.ps1 $Files `

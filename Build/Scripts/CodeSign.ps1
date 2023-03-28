@@ -24,9 +24,9 @@ Write-Host "AzureKeyVaultTenantID: $AzureKeyVaultTenantID"
 
 AzureSignTool.exe sign $Files `
                         --azure-key-vault-url "$AzureKeyVaultURI" `
+                        --azure-key-vault-tenant-id "$AzureKeyVaultTenantID" `
                         --azure-key-vault-client-id "$AzureKeyVaultClientID" `
                         --azure-key-vault-client-secret "$ClientSecret" `
-                        --azure-key-vault-tenant-id "$AzureKeyVaultTenantID" `
                         --azure-key-vault-certificate "$AzureKeyVaultCertificateName" `
                         --description "$Description" `
                         --description-url "$DescriptionUrl" `
