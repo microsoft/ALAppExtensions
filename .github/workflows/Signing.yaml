@@ -1,0 +1,56 @@
+name: Sign Binaries
+
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: powershell
+
+env:
+  buildArtifactsPath: ${{ github.workspace }}/.artifacts
+
+jobs:
+  UpdateBaseline:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+      
+      - name: Initialize the workflow
+        id: init
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        with:
+          shell: powershell
+          eventId: "DO0091"
+
+      - name: Download Build Output
+        env:
+            GH_TOKEN: ${{ github.token }}
+        run: |
+            gh run download 4530221544 --pattern 'System Application-main-Apps-*' --dir $env:buildArtifactsPath
+      
+      - name: Install Azure SignTool
+        shell: ${{ inputs.shell }}
+        run: |
+          dotnet tool install --global AzureSignTool
+      
+      - name: Update Baseline Version
+        run: | 
+          $Files = Get-ChildItem -Path $env:buildArtifactsPath -Filter *.app -Recurse | Select-Object -ExpandProperty FullName
+          Build/Scripts/CodeSign.ps1 $Files
+                                      -AzureKeyVaultURI "${{ secrets.KEY_VAULT_URL }}" `
+                                      -AzureKeyVaultClientID "${{ secrets.KEY_VAULT_CLIENT_ID }}" `
+                                      -AzureKeyVaultClientSecret "${{ secrets.KEY_VAULT_CLIENT_SECRET }}" `
+                                      -AzureKeyVaultTenantID "${{ secrets.KEY_VAULT_TENANT_ID }}" `
+                                      -AzureKeyVaultCertificateName "${{ secrets.KEY_VAULT_CERTIFICATE_NAME }}" `
+
+      - name: Upload Build Output
+        uses: actions/upload-artifact@v2
+        with:
+          name: System Application (Signed)
+          path: ${{ env.buildArtifactsPath }}
+
