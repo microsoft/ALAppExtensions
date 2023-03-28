@@ -33,7 +33,8 @@ jobs:
       
       - name: Sign
         run: | 
-          $Files = Get-ChildItem -Path $env:buildScripts -Filter CompileAppInBcContainer.ps1 -Recurse | Select-Object -ExpandProperty FullName
+          # $Files = Get-ChildItem -Path $env:buildScripts -Filter CompileAppInBcContainer.ps1 -Recurse | Select-Object -ExpandProperty FullName
+          $Files = "Build\Scripts\CompileAppInBcContainer.ps1"
           Build/Scripts/CodeSign.ps1 $Files `
                                       -AzureKeyVaultURI "${{ secrets.KEY_VAULT_URL }}" `
                                       -AzureKeyVaultClientID "${{ secrets.KEY_VAULT_CLIENT_ID }}" `
