@@ -18,6 +18,8 @@ param(
 
 Write-Host "Signing files: $Files"
 Write-Host "AzureKeyVaultCertificateName: $AzureKeyVaultCertificateName"
+Write-Host "AzureKeyVaultTenantID: $AzureKeyVaultTenantID"
+
 
 
 AzureSignTool.exe sign $Files `
