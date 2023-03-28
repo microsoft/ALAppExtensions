@@ -12,7 +12,7 @@ param(
     [string]$FileDigest = "sha256"
 )
 
-Install-NAVSipCryptoProviderFromNavContainer 
+#Install-NAVSipCryptoProviderFromNavContainer 
 
 #$ClientSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AzureKeyVaultClientSecret))
 
