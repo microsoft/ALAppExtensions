@@ -31,7 +31,7 @@ pageextension 20111 "AMC Bank Bank Account Page Ext" extends "Bank Account List"
 
     trigger OnOpenPage()
     begin
-        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled(); //Hotfix AMC-JN
+        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
 
     end;
 

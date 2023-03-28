@@ -28,7 +28,7 @@ pageextension 20110 "AMC Bank Stmt Line Det. Ext" extends "Bank Statement Line D
 
     trigger OnOpenPage()
     begin
-        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled(); //Hotfix AMC-JN
+        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
         SetCurrentKey("Data Exch. No.", "Line No.", "Column No.", "Node ID");
     end;
 

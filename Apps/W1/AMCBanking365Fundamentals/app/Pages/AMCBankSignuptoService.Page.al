@@ -199,7 +199,7 @@ page 20109 "AMC Bank Signup to Service"
         restcall := AMCBankRESTRequestMgt.GetEasyRegistartionURLRestCall();
         AMCBankingSetup.Get();
 
-        RestUrl := AMCBankingMgt.GetCleanLicenseServerName(AMCBankingSetup) + AMCBankingMgt.GetLicenseRegisterTag(); //Hotfix AMC-JN
+        RestUrl := AMCBankingMgt.GetCleanLicenseServerName(AMCBankingSetup) + AMCBankingMgt.GetLicenseRegisterTag();
         AMCBankRESTRequestMgt.InitializeHttp(HttpRequestMessage, RestUrl, 'POST');
 
         if (CountryRegion.Get(rec."Country/Region Code")) then;
