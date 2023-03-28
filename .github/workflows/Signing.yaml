@@ -35,7 +35,6 @@ jobs:
             gh run download 4530221544 --pattern 'System Application-main-Apps-*' --dir $env:buildArtifactsPath
       
       - name: Install Azure SignTool
-        shell: ${{ inputs.shell }}
         run: |
           dotnet tool install --global AzureSignTool
       
