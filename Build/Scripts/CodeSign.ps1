@@ -20,7 +20,7 @@ Write-Host "Signing files: $Files"
 Write-Host "AzureKeyVaultCertificateName: $AzureKeyVaultCertificateName"
 Write-Host "AzureKeyVaultTenantID: $AzureKeyVaultTenantID"
 
-$PathExists = Test-Path $Files[0]
+$PathExists = Test-Path $Files
 Write-Host "PathExists: $PathExists"
 
 AzureSignTool.exe sign --azure-key-vault-url "$AzureKeyVaultURI" `
@@ -33,4 +33,5 @@ AzureSignTool.exe sign --azure-key-vault-url "$AzureKeyVaultURI" `
                         --timestamp-rfc3161 "$TimestampService" `
                         --timestamp-digest "$TimestampDigest" `
                         --file-digest "$FileDigest" `
+                        --verbose `
                         $Files 

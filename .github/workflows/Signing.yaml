@@ -34,6 +34,9 @@ jobs:
       - name: Sign
         run: | 
           $Files = Get-ChildItem -Path $env:buildScripts -Filter CompileAppInBcContainer.ps1 -Recurse | Select-Object -ExpandProperty FullName | Select -First 1
+          Write-Host "Signing files (1): $Files"
+          $PathExists = Test-Path $Files
+          Write-Host "PathExists (1): $PathExists"
           Build/Scripts/CodeSign.ps1 -Files $Files `
                                       -AzureKeyVaultURI "${{ secrets.KEY_VAULT_URL }}" `
                                       -AzureKeyVaultClientID "${{ secrets.KEY_VAULT_CLIENT_ID }}" `
