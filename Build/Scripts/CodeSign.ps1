@@ -31,8 +31,11 @@ function Get-NavSipFromArtifacts() {
 
     try {
         Download-Artifacts -artifactUrl (Get-BCArtifactUrl -type Sandbox) -includePlatform -basePath $artifactTempFolder | Out-Null
+        Write-Host "Downloaded artifacts to $artifactTempFolder"
         $navsip = Get-ChildItem -Path $artifactTempFolder -Filter "navsip.dll" -Recurse
-        Copy-Item -Path $navsip.FullName -Destination $navSipTempFolder -Force
+        Write-Host "Found navsip at $($navsip.FullName)"
+        Copy-Item -Path $navsip.FullName -Destination "$navSipTempFolder/navsip.dll" -Force -Verbose
+        Write-Host "Copied navsip to $navSipTempFolder"
     } finally {
         Remove-Item -Path $artifactTempFolder -Recurse -Force
     }
