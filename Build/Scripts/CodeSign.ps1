@@ -31,6 +31,7 @@ $ContainerName = GetContainerName -project $Project
 Write-Host "Container name: $ContainerName - Project: $Project"
 Write-Host "env:containerName $env:containerName"
 
+Write-Host "TimestampService: $TimestampService"
 Install-NAVSipCryptoProviderFromNavContainer -containerName $env:containerName
 
 Write-Host "Signing files: $Files"
@@ -41,8 +42,6 @@ AzureSignTool sign --file-digest $FileDigest `
     --azure-key-vault-tenant-id $AzureKeyVaultTenantID `
     --azure-key-vault-client-secret $AzureKeyVaultClientSecret `
     --azure-key-vault-certificate $AzureKeyVaultCertificateName `
-    --timestamp-rfc3161 $TimestampService `
-    --timestamp-digest $TimestampDigest `
     --verbose `
     $Files
 
