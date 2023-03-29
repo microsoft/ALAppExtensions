@@ -34,6 +34,7 @@ function Get-NavSipFromArtifacts() {
         Write-Host "Downloaded artifacts to $artifactTempFolder"
         $navsip = Get-ChildItem -Path $artifactTempFolder -Filter "navsip.dll" -Recurse
         Write-Host "Found navsip at $($navsip.FullName)"
+        New-Item -Path $navSipTempFolder -ItemType Directory -Force -Verbose
         Copy-Item -Path $navsip.FullName -Destination "$navSipTempFolder/navsip.dll" -Force -Verbose
         Write-Host "Copied navsip to $navSipTempFolder"
     } finally {
