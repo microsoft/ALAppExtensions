@@ -50,23 +50,23 @@ function Register-NavSip() {
     $navSip32Path = "C:\Windows\SysWow64\NavSip.dll"
 
     try {
-        Write-Host "Copy $navsip to $navSip64Path"
+        Write-Host "Copy $navsipPath to $navSip64Path"
         Copy-Item -Path $navsipPath -Destination $navSip64Path -Force
         Write-Host "Registering $navSip64Path"
         RegSvr32 /s $navSip64Path
     }
     catch {
-        Write-Host "Failed to copy $navsip to $navSip64Path"
+        Write-Host "Failed to copy $navsipPath to $navSip64Path"
     }
     
     try {
-        Write-Host "Copy $navsip to $navSip32Path"
+        Write-Host "Copy $navsipPath to $navSip32Path"
         Copy-Item -Path $navsipPath -Destination $navSip32Path -Force
         Write-Host "Registering $navSip32Path"
         RegSvr32 /s $navSip32Path
     }
     catch {
-        Write-Host "Failed to copy $navsip to $navSip32Path"
+        Write-Host "Failed to copy $navsipPath to $navSip32Path"
     }
 
 }
