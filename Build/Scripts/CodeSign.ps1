@@ -28,8 +28,8 @@ Import-Module $GitHubHelperPath
 $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE 
 
 $ContainerName = GetContainerName -project $Project
-Write-Hot "Container name: $ContainerName - Project: $Project"
-Write-Hot "env:containerName $env:containerName"
+Write-Host "Container name: $ContainerName - Project: $Project"
+Write-Host "env:containerName $env:containerName"
 
 Install-NAVSipCryptoProviderFromNavContainer -containerName $env:containerName
 
