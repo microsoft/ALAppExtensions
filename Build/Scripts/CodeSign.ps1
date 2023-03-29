@@ -46,8 +46,8 @@ function Get-NavSipFromArtifacts() {
 
 function Register-NavSip() {
     $navsipPath = Get-NavSipFromArtifacts
-    $navSip64Path = "C:\Windows\System32\NavSip.dll"
-    $navSip32Path = "C:\Windows\SysWow64\NavSip.dll"
+    $navSip32Path = "C:\Windows\System32"
+    $navSip64Path = "C:\Windows\SysWow64"
 
     try {
         Write-Host "Copy $navsipPath to $navSip64Path"
@@ -68,6 +68,13 @@ function Register-NavSip() {
     catch {
         Write-Host "Failed to copy $navsipPath to $navSip32Path"
     }
+
+    $pathexists = Test-Path "$navSip32Path/navsip.dll"
+    Write-Host "navsip.dll exists in $navSip32Path : $pathexists"
+
+    
+    $pathexists = Test-Path "$navSip64Path/navsip.dll"
+    Write-Host "navsip.dll exists in $navSip64Path : $pathexists"
 
 }
 
