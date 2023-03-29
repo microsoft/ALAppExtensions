@@ -7,8 +7,7 @@ param(
     [string]$AzureKeyVaultCertificateName,
     [string]$TimestampService = "http://timestamp.digicert.com",
     [string]$TimestampDigest = "sha256",
-    [string]$FileDigest = "sha256",
-    [string]$Project
+    [string]$FileDigest = "sha256"
 )
 
 # TODO: Remove when moving to AL-GO
@@ -24,41 +23,57 @@ $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actio
 
 Import-Module $GitHubHelperPath
 . $ALGoHelperPath -local
+# TODO: END
+
+function Get-NavSipFromArtifacts() {
+    $artifactTempFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+    $navSipTempFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+
+    try {
+        Download-Artifacts -artifactUrl (Get-BCArtifactUrl -type Sandbox) -includePlatform -basePath $artifactTempFolder | Out-Null
+        $navsip = Get-ChildItem -Path $artifactTempFolder -Filter "navsip.dll" -Recurse
+        Copy-Item -Path $navsip.FullName -Destination $navSipTempFolder -Force
+    } finally {
+        Remove-Item -Path $artifactTempFolder -Recurse -Force
+    }
+    
+    return Join-Path $navSipTempFolder "navsip.dll" -Resolve
+}
+
+function Register-NavSip() {
+    $navsipPath = Get-NavSipFromArtifacts
+    $navSip64Path = "C:\Windows\System32\NavSip.dll"
+    $navSip32Path = "C:\Windows\SysWow64\NavSip.dll"
+
+    try {
+        Write-Host "Copy $navsip to $navSip64Path"
+        Copy-Item -Path $navsipPath -Destination $navSip64Path -Force
+        Write-Host "Registering $navSip64Path"
+        RegSvr32 /s $navSip64Path
+    }
+    catch {
+        Write-Host "Failed to copy $navsip to $navSip64Path"
+    }
+    
+    try {
+        Write-Host "Copy $navsip to $navSip32Path"
+        Copy-Item -Path $navsipPath -Destination $navSip32Path -Force
+        Write-Host "Registering $navSip32Path"
+        RegSvr32 /s $navSip32Path
+    }
+    catch {
+        Write-Host "Failed to copy $navsip to $navSip32Path"
+    }
+
+}
 
 $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE 
+Register-NavSip
 
-#$ContainerName = GetContainerName -project $Project
-#Install-NAVSipCryptoProviderFromNavContainer -containerName $env:containerName
-
-$baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
-Download-Artifacts -artifactUrl (Get-BCArtifactUrl -type Sandbox) -includePlatform -basePath $baselineFolder | Out-Null
-$navsip = Get-ChildItem -Path $baselineFolder -Filter "navsip.dll" -Recurse
-
-$navSip64Path = "C:\Windows\System32\NavSip.dll"
-$navSip32Path = "C:\Windows\SysWow64\NavSip.dll"
-
-try {
-    Write-Host "Copy $navsip to $navSip64Path"
-    Copy-Item -Path $navsip.FullName -Destination $navSip64Path -Force
-    Write-Host "Registering $navSip64Path"
-    RegSvr32 /s $navSip64Path
+Write-Host "Signing files:"
+$Files | ForEach-Object { 
+    Write-Host "- $($_.Name)" 
 }
-catch {
-    Write-Host "Failed to copy $navsip to $navSip64Path"
-}
-
-try {
-    Write-Host "Copy $navsip to $navSip32Path"
-    Copy-Item -Path $navsip.FullName -Destination $navSip32Path -Force
-    Write-Host "Registering $navSip32Path"
-    RegSvr32 /s $navSip32Path
-}
-catch {
-    Write-Host "Failed to copy $navsip to $navSip32Path"
-}
-
-
-Write-Host "Signing files: $Files"
 
 AzureSignTool sign --file-digest $FileDigest `
     --azure-key-vault-url $AzureKeyVaultURI `

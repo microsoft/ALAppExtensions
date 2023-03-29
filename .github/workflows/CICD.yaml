@@ -235,8 +235,7 @@ jobs:
       
       - name: Sign
         run: | 
-          $Files = Get-ChildItem -Path '${{ matrix.project }}/.buildartifacts/Apps/' -Filter *.app -Recurse | Select-Object -ExpandProperty FullName | Select -First 1
-          Write-Host "Signing files: $Files"
+          $Files = Get-ChildItem -Path '${{ matrix.project }}/.buildartifacts/Apps/' -Filter *.app -Recurse | Select-Object -ExpandProperty FullName
           Build/Scripts/CodeSign.ps1 -AzureKeyVaultURI "${{ secrets.KEY_VAULT_URL }}" `
                                       -AzureKeyVaultClientID "${{ secrets.KEY_VAULT_CLIENT_ID }}" `
                                       -AzureKeyVaultClientSecret "${{ secrets.KEY_VAULT_CLIENT_SECRET }}" `
