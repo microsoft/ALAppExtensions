@@ -35,12 +35,12 @@ jobs:
         run: | 
           # $Files = Get-ChildItem -Path $env:buildScripts -Filter CompileAppInBcContainer.ps1 -Recurse | Select-Object -ExpandProperty FullName
           $Files = "Build\Scripts\CompileAppInBcContainer.ps1"
-          Build/Scripts/CodeSign.ps1 $Files `
+          Build/Scripts/CodeSign.ps1 -Files $Files `
                                       -AzureKeyVaultURI "${{ secrets.KEY_VAULT_URL }}" `
                                       -AzureKeyVaultClientID "${{ secrets.KEY_VAULT_CLIENT_ID }}" `
                                       -AzureKeyVaultClientSecret "${{ secrets.KEY_VAULT_CLIENT_SECRET }}" `
                                       -AzureKeyVaultTenantID "${{ secrets.KEY_VAULT_TENANT_ID }}" `
-                                      -AzureKeyVaultCertificateName "${{ secrets.KEY_VAULT_CERTIFICATE_NAME }}" `
+                                      -AzureKeyVaultCertificateName "${{ secrets.KEY_VAULT_CERTIFICATE_NAME }}"
 
       - name: Upload Build Output
         uses: actions/upload-artifact@v2
