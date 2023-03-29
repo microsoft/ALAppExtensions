@@ -47,13 +47,15 @@ function Get-NavSipFromArtifacts() {
 function Register-NavSip() {
     $navsipPath = Get-NavSipFromArtifacts
     $navSip32Path = "C:\Windows\System32"
+    $navSip32DllPath = "C:\Windows\System32\navsip.dll"
     $navSip64Path = "C:\Windows\SysWow64"
+    $navSip64DllPath = "C:\Windows\SysWow64\navsip.dll"
 
     try {
         Write-Host "Copy $navsipPath to $navSip64Path"
         Copy-Item -Path $navsipPath -Destination $navSip64Path -Force
         Write-Host "Registering $navSip64Path"
-        RegSvr32 /s $navSip64Path
+        RegSvr32 /s $navSip64DllPath
     }
     catch {
         Write-Host "Failed to copy $navsipPath to $navSip64Path"
@@ -63,17 +65,17 @@ function Register-NavSip() {
         Write-Host "Copy $navsipPath to $navSip32Path"
         Copy-Item -Path $navsipPath -Destination $navSip32Path -Force
         Write-Host "Registering $navSip32Path"
-        RegSvr32 /s $navSip32Path
+        RegSvr32 /s $navSip32DllPath
     }
     catch {
         Write-Host "Failed to copy $navsipPath to $navSip32Path"
     }
 
-    $pathexists = Test-Path "$navSip32Path/navsip.dll"
+    $pathexists = Test-Path $navSip32DllPath
     Write-Host "navsip.dll exists in $navSip32Path : $pathexists"
 
     
-    $pathexists = Test-Path "$navSip64Path/navsip.dll"
+    $pathexists = Test-Path $navSip64DllPath
     Write-Host "navsip.dll exists in $navSip64Path : $pathexists"
 
 }
