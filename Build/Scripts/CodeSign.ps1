@@ -10,6 +10,8 @@ param(
     [string]$FileDigest = "sha256"
 )
 
+$BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE 
+
 Install-NAVSipCryptoProviderFromNavContainer 
 
 Write-Host "Signing files: $Files"
@@ -24,3 +26,5 @@ AzureSignTool sign --file-digest $FileDigest `
     --timestamp-digest $TimestampDigest `
     --verbose `
     $Files
+
+CleanupAfterBcContainerHelper -bcContainerHelperPath $bcContainerHelperPath
