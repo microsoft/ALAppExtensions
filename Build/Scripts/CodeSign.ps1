@@ -23,7 +23,7 @@ Write-Host "AzureKeyVaultTenantID: $AzureKeyVaultTenantID"
 $PathExists = Test-Path $Files
 Write-Host "PathExists: $PathExists"
 
-AzureSignTool.exe sign --azure-key-vault-url "$AzureKeyVaultURI" `
+AzureSignTool sign --azure-key-vault-url "$AzureKeyVaultURI" `
                         --azure-key-vault-tenant-id "$AzureKeyVaultTenantID" `
                         --azure-key-vault-client-id "$AzureKeyVaultClientID" `
                         --azure-key-vault-client-secret "$ClientSecret" `
