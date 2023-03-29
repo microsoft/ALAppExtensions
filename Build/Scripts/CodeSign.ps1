@@ -1,5 +1,5 @@
 param(
-    [String]$Files,
+    [String[]]$Files,
     [string]$AzureKeyVaultURI,
     [string]$AzureKeyVaultClientID,
     [string]$AzureKeyVaultClientSecret,
