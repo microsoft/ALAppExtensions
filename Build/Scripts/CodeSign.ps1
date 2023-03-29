@@ -76,7 +76,7 @@ Register-NavSip
 
 Write-Host "Signing files:"
 $Files | ForEach-Object { 
-    Write-Host "- $($_.Name)" 
+    Write-Host "- $_" 
 }
 
 AzureSignTool sign --file-digest $FileDigest `
