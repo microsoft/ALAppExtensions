@@ -7,7 +7,8 @@ param(
     [string]$AzureKeyVaultCertificateName,
     [string]$TimestampService = "http://timestamp.digicert.com",
     [string]$TimestampDigest = "sha256",
-    [string]$FileDigest = "sha256"
+    [string]$FileDigest = "sha256",
+    [string]$Project
 )
 
 # TODO: Remove when moving to AL-GO
@@ -26,7 +27,8 @@ Import-Module $GitHubHelperPath
 
 $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE 
 
-Install-NAVSipCryptoProviderFromNavContainer 
+$ContainerName = GetContainerName -project $Project
+Install-NAVSipCryptoProviderFromNavContainer -containerName $ContainerName 
 
 Write-Host "Signing files: $Files"
 

@@ -242,6 +242,7 @@ jobs:
                                       -AzureKeyVaultClientSecret "${{ secrets.KEY_VAULT_CLIENT_SECRET }}" `
                                       -AzureKeyVaultTenantID "${{ secrets.KEY_VAULT_TENANT_ID }}" `
                                       -AzureKeyVaultCertificateName "${{ secrets.KEY_VAULT_CERTIFICATE_NAME }}" `
+                                      -Project ${{ matrix.project }} `
                                       -Files $Files 
 
       - name: Calculate Artifact names
