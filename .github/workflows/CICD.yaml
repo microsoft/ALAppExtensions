@@ -229,20 +229,17 @@ jobs:
           secretsJson: ${{ env.RepoSecrets }}
           buildMode: ${{ matrix.buildMode }}
       
-      - name: Install Azure SignTool
-        run: |
-          dotnet tool install --global AzureSignTool
-      
       - name: Sign
-        run: | 
-          $Files = Get-ChildItem -Path '${{ matrix.project }}/.buildartifacts/Apps/' -Filter *.app -Recurse | Select-Object -ExpandProperty FullName
-          Build/Scripts/CodeSign.ps1 -AzureKeyVaultURI "${{ secrets.KEY_VAULT_URL }}" `
-                                      -AzureKeyVaultClientID "${{ secrets.KEY_VAULT_CLIENT_ID }}" `
-                                      -AzureKeyVaultClientSecret "${{ secrets.KEY_VAULT_CLIENT_SECRET }}" `
-                                      -AzureKeyVaultTenantID "${{ secrets.KEY_VAULT_TENANT_ID }}" `
-                                      -AzureKeyVaultCertificateName "${{ secrets.KEY_VAULT_CERTIFICATE_NAME }}" `
-                                      -Project "${{ matrix.project }}" `
-                                      -Files $Files 
+        id: signApps
+        uses: aholstrup1/AL-Go-Actions/SignApp@main
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          azureKeyVaultURI: ${{ secrets.KEY_VAULT_URL }}
+          azureKeyVaultClientID: ${{ secrets.KEY_VAULT_CLIENT_ID }}
+          azureKeyVaultClientSecret: ${{ secrets.KEY_VAULT_CLIENT_SECRET }}
+          azureKeyVaultTenantID: ${{ secrets.KEY_VAULT_TENANT_ID }}
+          azureKeyVaultCertificateName: ${{ secrets.KEY_VAULT_CERTIFICATE_NAME }}
+          pathToFiles: ${{ matrix.project }}/.buildartifacts/Apps/
 
       - name: Calculate Artifact names
         id: calculateArtifactsNames
