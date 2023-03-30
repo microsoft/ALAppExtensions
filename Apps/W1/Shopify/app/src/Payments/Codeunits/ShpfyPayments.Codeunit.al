@@ -189,6 +189,15 @@ codeunit 30169 "Shpfy Payments"
             else
                 if Transaction."Payout Id" > 0 then
                     SinceId := Math.Min(SinceId, Transaction."Payout Id");
+        end else begin
+            Transaction.Get(Id);
+            if Transaction."Payout Id" = 0 then begin
+                PayoutId := JHelper.GetValueAsBigInteger(JTransaction, 'payout_id');
+                if PayoutId <> 0 then begin
+                    Transaction."Payout Id" := PayoutId;
+                    Transaction.Modify();
+                end;
+            end;
         end;
     end;
 }
