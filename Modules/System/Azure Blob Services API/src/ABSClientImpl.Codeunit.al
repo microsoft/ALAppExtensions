@@ -132,7 +132,7 @@ codeunit 9051 "ABS Client Impl."
         ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
         NextMarker, ResponseText : Text;
-        NextMarkerNodeList, NodeList : XmlNodeList;
+        NodeList: XmlNodeList;
     begin
         Clear(BlobList);
         ABSOperationPayload.SetOperation(Operation::ListBlobs);
