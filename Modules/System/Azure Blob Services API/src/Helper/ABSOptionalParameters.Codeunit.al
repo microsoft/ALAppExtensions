@@ -334,12 +334,22 @@ codeunit 9047 "ABS Optional Parameters"
     end;
 
     /// <summary>
-    /// Specifies the maximum number of blobs to return
+    /// Specifies the maximum number of blobs to be fetch, from 1 to 5000 if not defined it will fetch 5000
+    /// If more than 5000 blobs then use NextMarker to fetch the next set of blobs
     /// </summary>
-    /// <param name="Value">Max. number of results to return. Must be positive, must not be greater than 5000</param>
+    /// <param name="Value">Max. number of results to fetch. Must be positive</param>
     procedure MaxResults("Value": Integer)
     begin
         SetParameter('maxresults', Format("Value"));
+    end;
+
+    /// <summary>
+    /// Specifies the NextMarker of blobs to fetch
+    /// </summary>
+    /// <param name="Value">NextMarker From previous response to fetch the next 5000 or what you have defined in MaxResults</param>
+    procedure NextMarker("Value": Text)
+    begin
+        SetParameter('marker', "Value");
     end;
 
     /// <summary>
