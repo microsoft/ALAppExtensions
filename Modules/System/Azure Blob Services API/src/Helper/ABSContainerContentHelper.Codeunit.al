@@ -50,6 +50,7 @@ codeunit 9054 "ABS Container Content Helper"
     [NonDebuggable]
     local procedure AddParentEntries(NameFromXml: Text; var ABSContainerContent: Record "ABS Container Content"; var EntryNo: Integer)
     var
+        DirectoryContentTypeTxt: Label 'Directory', Locked = true;
         ParentEntries: List of [Text];
         CurrentParent, ParentEntryFullName, ParentEntryName : Text[2048];
         Level: Integer;
@@ -79,13 +80,14 @@ codeunit 9054 "ABS Container Content Helper"
                 ABSContainerContent.Name := ParentEntryName;
                 ABSContainerContent."Full Name" := ParentEntryFullName;
                 ABSContainerContent."Parent Directory" := CurrentParent;
+                ABSContainerContent."Content Type" := DirectoryContentTypeTxt;
 
                 ABSContainerContent."Entry No." := EntryNo;
                 ABSContainerContent.Insert(true);
                 EntryNo += 1;
             end;
 
-            CurrentParent := CopyStr(ABSContainerContent."Full Name" + '/', 1, MaxStrLen(ABSContainerContent.Name));
+            CurrentParent := CopyStr(ParentEntryFullName + '/', 1, MaxStrLen(CurrentParent));
         end;
     end;
 

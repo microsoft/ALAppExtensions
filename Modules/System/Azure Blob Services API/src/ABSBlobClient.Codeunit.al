@@ -77,7 +77,8 @@ codeunit 9053 "ABS Blob Client"
     /// Lists the blobs in a specific container.
     /// see: https://go.microsoft.com/fwlink/?linkid=2210588
     /// </summary>    
-    /// <param name="BlobList">Collection of the result (BlobList of [Text, XmlNode]).</param>
+    /// <param name="BlobList">Collection of the result (BlobList of [Text, XmlNode]).
+    /// The key in the dictionary is the full blob path and the value is the complete blob xmlnode from the response</param>
     /// <returns>An operation reponse object</returns>
     procedure ListBlobs(var BlobList: Dictionary of [Text, XmlNode]): Codeunit "ABS Operation Response"
     var
@@ -90,7 +91,8 @@ codeunit 9053 "ABS Blob Client"
     /// Lists the blobs in a specific container.
     /// see: https://go.microsoft.com/fwlink/?linkid=2210588
     /// </summary>    
-    /// <param name="BlobList">Collection of the result (BlobList of [Text, XmlNode]).</param>
+    /// <param name="BlobList">Collection of the result (BlobList of [Text, XmlNode]).
+    /// The key in the dictionary is the full blob path and the value is the complete blob xmlnode from the response</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
     procedure ListBlobs(var BlobList: Dictionary of [Text, XmlNode]; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
