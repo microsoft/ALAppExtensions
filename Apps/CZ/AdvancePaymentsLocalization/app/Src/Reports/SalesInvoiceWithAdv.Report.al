@@ -188,10 +188,10 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             column(PostingDate_SalesInvoiceHeader; "Posting Date")
             {
             }
-            column(VATDate_SalesInvoiceHeaderCaption; FieldCaption("VAT Date CZL"))
+            column(VATDate_SalesInvoiceHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_SalesInvoiceHeader; "VAT Date CZL")
+            column(VATDate_SalesInvoiceHeader; "VAT Reporting Date")
             {
             }
             column(DueDate_SalesInvoiceHeaderCaption; FieldCaption("Due Date"))
@@ -587,11 +587,6 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                     CalculatedExchRate := 1;
 
                 SalesInvLine.SetRange("Document No.", "No.");
-#if not CLEAN19
-#pragma warning disable AL0432
-                SalesInvLine.SetFilter("Letter No.", '%1', '');
-#pragma warning restore AL0432
-#endif
                 SalesInvLine.CalcSums(Amount, "Amount Including VAT");
                 Amount := SalesInvLine.Amount;
                 "Amount Including VAT" := SalesInvLine."Amount Including VAT";
@@ -614,6 +609,13 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                         SegManagement.LogDocument(
                           4, "No.", 0, 0, DATABASE::Customer, "Bill-to Customer No.", "Salesperson Code",
                           "Campaign No.", "Posting Description", '');
+
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
         }
     }
@@ -690,6 +692,11 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
+#if not CLEAN22
+#pragma warning disable AL0432
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
+#endif
         ExchRateText: Text[50];
         VATClauseText: Text;
         CompanyAddr: array[8] of Text[100];
@@ -738,7 +745,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
 
     procedure InitLogInteraction()
     begin
-        LogInteract := SegManagement.FindInteractTmplCode(4) <> '';
+        LogInteract := SegManagement.FindInteractionTemplateCode(4) <> '';
     end;
 
     local procedure GetLineFeeNoteOnReportHist(SalesInvoiceHeaderNo: Code[20])

@@ -1059,7 +1059,6 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     end;
 
     [StrMenuHandler]
-    [Scope('OnPrem')]
     procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
     begin
         Choice := 1;

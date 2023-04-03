@@ -6,6 +6,8 @@
 codeunit 4109 "Temp Blob List Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
 #pragma warning disable AA0073

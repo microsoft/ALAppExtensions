@@ -7,7 +7,6 @@ page 31180 "Purch. Advance Letters CZZ"
     SourceTable = "Purch. Adv. Letter Header CZZ";
     UsageCategory = Lists;
     CardPageId = "Purch. Advance Letter CZZ";
-    PromotedActionCategories = 'New,Process,Report,Release,History,Print/Send,Navigate';
     Editable = false;
 
     layout
@@ -91,6 +90,12 @@ page 31180 "Purch. Advance Letters CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies to pay amount.';
+                    Visible = false;
+                }
+                field("To Pay (LCY)"; Rec."To Pay (LCY)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies to pay (LCY) amount.';
                     Visible = false;
                 }
                 field("To Use"; Rec."To Use")
@@ -192,6 +197,11 @@ page 31180 "Purch. Advance Letters CZZ"
                 Caption = 'Attachments';
                 SubPageLink = "Table ID" = const(31008), "No." = field("No.");
             }
+            part(IncomingDocAttachFactBox; "Incoming Doc. Attach. FactBox")
+            {
+                ApplicationArea = Basic, Suite;
+                ShowFilter = false;
+            }
             systempart(Links; Links)
             {
                 ApplicationArea = RecordLinks;
@@ -239,6 +249,20 @@ page 31180 "Purch. Advance Letters CZZ"
                     RunObject = Page "Suggested Usage CZZ";
                     RunPageLink = "Advance Letter Type" = const(Purchase), "Advance Letter No." = field("No.");
                 }
+                action(Approvals)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Approvals';
+                    Image = Approvals;
+                    ToolTip = 'This function opens the approvals entries.';
+
+                    trigger OnAction()
+                    var
+                        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+                    begin
+                        ApprovalsMgmt.OpenApprovalEntriesPage(Rec.RecordId);
+                    end;
+                }
                 action(DocAttach)
                 {
                     ApplicationArea = Basic, Suite;
@@ -268,10 +292,6 @@ page 31180 "Purch. Advance Letters CZZ"
                     Caption = 'Advance Letter Entries';
                     Image = Entries;
                     ShortCutKey = 'Ctrl+F7';
-                    Promoted = true;
-                    PromotedIsBig = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'View a list of entries related to this document.';
                     RunObject = Page "Purch. Adv. Letter Entries CZZ";
                     RunPageLink = "Purch. Adv. Letter No." = field("No.");
@@ -289,38 +309,31 @@ page 31180 "Purch. Advance Letters CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Release';
-                    Enabled = Status = Status::New;
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
-                    PromotedCategory = Category4;
                     ShortCutKey = 'Ctrl+F9';
-                    ToolTip = 'Release the document.';
+                    ToolTip = 'Release the advance letter document to indicate that it has been account. The status then changes to To Pay.';
 
                     trigger OnAction()
                     var
-                        RelPurchAdvLetterDoc: Codeunit "Rel. Purch.Adv.Letter Doc. CZZ";
+                        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                     begin
-                        RelPurchAdvLetterDoc.Run(Rec);
+                        CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
+                        Rec.PerformManualRelease(PurchAdvLetterHeaderCZZ);
                     end;
                 }
                 action(Reopen)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Reopen';
-                    Enabled = Status = Status::"To Pay";
                     Image = ReOpen;
-                    Promoted = true;
-                    PromotedOnly = true;
-                    PromotedCategory = Category4;
-                    ToolTip = 'Reopen the document.';
+                    ToolTip = 'Reopen the document to change it after it has been approved. Approved documents have the To Pay status and must be opened before they can be changed.';
 
                     trigger OnAction()
                     var
-                        RelPurchAdvLetterDoc: Codeunit "Rel. Purch.Adv.Letter Doc. CZZ";
+                        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                     begin
-                        RelPurchAdvLetterDoc.Reopen(Rec);
+                        CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
+                        Rec.PerformManualReopen(PurchAdvLetterHeaderCZZ);
                     end;
                 }
             }
@@ -332,9 +345,6 @@ page 31180 "Purch. Advance Letters CZZ"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Advance Letter';
                 Image = PrintReport;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Report;
                 Ellipsis = true;
                 ToolTip = 'Allows the print of advance letter.';
 
@@ -352,9 +362,6 @@ page 31180 "Purch. Advance Letters CZZ"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
@@ -394,5 +401,56 @@ page 31180 "Purch. Advance Letters CZZ"
                 RunObject = Report "Purch. Adv. Letters Recap. CZZ";
             }
         }
+        area(Promoted)
+        {
+            group(Category_Category4)
+            {
+                Caption = 'Release';
+                ShowAs = SplitButton;
+
+                actionref(Release_Promoted; Release)
+                {
+                }
+                actionref(Reopen_Promoted; Reopen)
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Print';
+
+                actionref(Print_Promoted; Print)
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Purchase Advance Letter';
+
+                actionref(Dimensions_Promoted; Dimensions)
+                {
+                }
+                actionref(SuggestedUsage_Promoted; SuggestedUsage)
+                {
+                }
+                actionref(Approvals_Promoted; Approvals)
+                {
+                }
+                actionref(DocAttach_Promoted; DocAttach)
+                {
+                }
+                actionref(Entries_Promoted; Entries)
+                {
+                }
+            }
+        }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        CurrPage.IncomingDocAttachFactBox.Page.LoadDataFromRecord(Rec);
+    end;
 }

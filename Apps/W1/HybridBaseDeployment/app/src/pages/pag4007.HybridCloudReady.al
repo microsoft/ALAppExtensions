@@ -15,7 +15,7 @@ page 4007 "Intelligent Cloud Ready"
                 group(Checklist)
                 {
                     ShowCaption = false;
-                    InstructionalText = 'This process will disable your Cloud Migration environment and data migration from your on-premises solution. It is highly recommended that you work with your partner to complete this process if you intend to make your Business Central tenant your primary solution.';
+                    InstructionalText = 'This process will complete the cloud migration for your environment and data migration from your on-premises solution. It is highly recommended that you work with your partner to complete this process if you intend to make your Business Central tenant your primary solution.';
 
                     field(Spacer1; '')
                     {
@@ -120,16 +120,12 @@ page 4007 "Intelligent Cloud Ready"
 
                 trigger OnAction()
                 var
-                    IntelligentCloudSetup: Record "Intelligent Cloud Setup";
                     HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                     PermissionManager: Codeunit "Permission Manager";
                     UserPermissions: Codeunit "User Permissions";
                 begin
                     if Dialog.Confirm(DisableReplicationConfirmQst, false) then begin
-                        IntelligentCloudSetup.Get();
-                        HybridCloudManagement.DisableMigration(IntelligentCloudSetup."Product ID", DisablereplicationTxt, true);
-                        Message(DisablereplicationTxt);
-
+                        HybridCloudManagement.CompleteCloudMigration();
                         IsSuperAndSetupComplete := PermissionManager.IsIntelligentCloud() and UserPermissions.IsSuper(UserSecurityId());
                         InAgreement := false;
                     end;
@@ -179,7 +175,6 @@ page 4007 "Intelligent Cloud Ready"
 
     var
         DisableReplicationConfirmQst: Label 'You will no longer have the Cloud Migration setup. Are you sure you want to disable?';
-        DisablereplicationTxt: Label 'Cloud Migration has been disabled.';
         RunReplicationTxt: Label 'Cloud migration has been started. You can track the status on the management page.';
         ReadMigrationWhitePaperTxt: Label '1. Read the Business Central Cloud Migration help.';
         ReadWhitePaperURLTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2009758', Locked = true;
@@ -188,7 +183,7 @@ page 4007 "Intelligent Cloud Ready"
         FixErrorsTxt: Label '4. Correct any necessary errors.';
         RunMigrationAgainTxt: Label '5. Run the migration again if you had to make any corrections in step #4.', Comment = '#4 - reference to step 4';
         DisableMigrationTxt: Label '6. Disable Cloud Migration in the Actions menu above.';
-        ReviewPermissionsTxt: Label '7. Review and make necessary updates to users, user groups and permission sets.';
+        ReviewPermissionsTxt: Label '7. Review and make necessary updates to users and permission sets.';
         MustFinishMigrationsErr: Label 'In order to disable the cloud migration, you must first wait for any in progress migrations to finish.';
         InAgreement: Boolean;
         IsSuperAndSetupComplete: Boolean;

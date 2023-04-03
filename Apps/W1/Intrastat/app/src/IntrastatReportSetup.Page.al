@@ -184,6 +184,7 @@ page 4810 "Intrastat Report Setup"
         }
     }
 
+#if not CLEAN22
     trigger OnOpenPage()
     var
         IntrastatReportMgt: Codeunit IntrastatReportManagement;
@@ -201,4 +202,5 @@ page 4810 "Intrastat Report Setup"
         if not Rec.Get() then
             Rec.Insert();
     end;
+#endif
 }

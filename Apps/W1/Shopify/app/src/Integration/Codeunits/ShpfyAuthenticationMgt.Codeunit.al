@@ -7,7 +7,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
     var
         // https://shopify.dev/api/usage/access-scopes
-        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping,read_shopify_payments_payouts', Locked = true;
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping,read_shopify_payments_payouts', Locked = true;
         ShopifyAPIKeyAKVSecretNameLbl: Label 'ShopifyApiKey', Locked = true;
         ShopifyAPISecretAKVSecretNameLbl: Label 'ShopifyApiSecret', Locked = true;
         MissingAPIKeyTelemetryTxt: Label 'The api key has not been initialized.', Locked = true;
@@ -32,8 +32,8 @@ codeunit 30199 "Shpfy Authentication Mgt."
     [Scope('OnPrem')]
     local procedure GetApiSecret(): Text
     var
-    AzureKeyVault: Codeunit "Azure Key Vault";
-    ApiSecret: Text;
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        ApiSecret: Text;
     begin
         if not AzureKeyVault.GetAzureKeyVaultSecret(ShopifyAPISecretAKVSecretNameLbl, ApiSecret) then
             Session.LogMessage('0000HCB', MissingAPISecretTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok)
@@ -78,13 +78,13 @@ codeunit 30199 "Shpfy Authentication Mgt."
     [Scope('OnPrem')]
     local procedure GetToken(Store: Text; AuthorizationCode: Text)
     var
-        JHelper: Codeunit "Shpfy Json Helper";
+        JsonHelper: Codeunit "Shpfy Json Helper";
         Body: Text;
         Url: Text;
         HttpClient: HttpClient;
         RequestHeaders: HttpHeaders;
         RequestHttpContent: HttpContent;
-        ResponseMessage: HttpResponseMessage;
+        HttpResponseMessage: HttpResponseMessage;
         JObject: JsonObject;
         RequestBody: JsonObject;
         AccessTokenURLTxt: Label 'https://%1/admin/oauth/access_token', Comment = '%1 = Store', Locked = true;
@@ -101,13 +101,13 @@ codeunit 30199 "Shpfy Authentication Mgt."
         RequestHeaders.Clear();
         RequestHeaders.Add('Content-Type', 'application/json');
 
-        if not HttpClient.Post(Url, RequestHttpContent, ResponseMessage) then
+        if not HttpClient.Post(Url, RequestHttpContent, HttpResponseMessage) then
             exit;
 
         Clear(Body);
-        ResponseMessage.Content().ReadAs(Body);
+        HttpResponseMessage.Content().ReadAs(Body);
         JObject.ReadFrom(Body);
-        SaveStoreInfo(Store, JHelper.GetValueAsText(JObject.AsToken(), 'scope'), JHelper.GetValueAsText(JObject.AsToken(), 'access_token'));
+        SaveStoreInfo(Store, JsonHelper.GetValueAsText(JObject.AsToken(), 'scope'), JsonHelper.GetValueAsText(JObject.AsToken(), 'access_token'));
     end;
 
 
@@ -133,14 +133,14 @@ codeunit 30199 "Shpfy Authentication Mgt."
     [Scope('OnPrem')]
     internal procedure GetAccessToken(Store: Text): Text
     var
-        ShpfyRegisteredStoreNew: Record "Shpfy Registered Store New";
+        RegisteredStoreNew: Record "Shpfy Registered Store New";
         AccessToken: Text;
         NoAccessTokenErr: label 'No Access token for the store "%1".\Please request an access token for this store.', Comment = '%1 = Store';
         ChangedScopeErr: Label 'The application scope is changed, please request a new access token for the store "%1".', Comment = '%1 = Store';
     begin
-        if ShpfyRegisteredStoreNew.Get(Store) then
-            if ShpfyRegisteredStoreNew."Requested Scope" = ScopeTxt then begin
-                AccessToken := ShpfyRegisteredStoreNew.GetAccessToken();
+        if RegisteredStoreNew.Get(Store) then
+            if RegisteredStoreNew."Requested Scope" = ScopeTxt then begin
+                AccessToken := RegisteredStoreNew.GetAccessToken();
                 if AccessToken <> '' then
                     exit(AccessToken)
                 else

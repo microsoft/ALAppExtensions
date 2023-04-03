@@ -341,7 +341,6 @@ codeunit 139823 "APIV2 - Sales Quotes E2E"
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("No."), Database::"Sales Header");
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Posting Description"), Database::"Sales Header");
-        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo(Id), Database::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Order Date"), Database::"Sales Header");    // it is always set as Today() in API
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Shipment Date"), Database::"Sales Header"); // it is always set as Today() in API
         // Special ignore case for ES

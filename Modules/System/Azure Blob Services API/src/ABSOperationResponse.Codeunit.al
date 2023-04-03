@@ -9,6 +9,8 @@
 codeunit 9050 "ABS Operation Response"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Checks whether the operation was successful.

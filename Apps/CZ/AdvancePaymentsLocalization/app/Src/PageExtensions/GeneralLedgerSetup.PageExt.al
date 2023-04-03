@@ -12,13 +12,5 @@ pageextension 31022 "General Ledger Setup CZZ" extends "General Ledger Setup"
                 Visible = false;
             }
         }
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify(Advances)
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
     }
 }

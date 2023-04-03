@@ -232,11 +232,13 @@ table 149001 "BCPT Line"
             FieldClass = FlowField;
             CalcFormula = Sum("BCPT Log Entry"."No. of SQL Statements" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Base Version Filter"), Operation = const('Scenario')));
         }
+#pragma warning disable AS0080
         field(29; "Company Name"; Code[30])
         {
             Caption = 'Specify the test company';
             DataClassification = CustomerContent;
         }
+#pragma warning restore AS0080
     }
 
     keys

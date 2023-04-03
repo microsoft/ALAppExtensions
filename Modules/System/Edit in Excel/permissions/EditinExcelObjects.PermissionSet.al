@@ -8,11 +8,8 @@ permissionset 1488 "Edit in Excel - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Azure AD Tenant - Objects",
-                             "Environment Info. - Objects";
-
-    Permissions = Codeunit "Edit in Excel Impl." = X,
-                  Codeunit "Edit in Excel" = X,
+    Permissions = Codeunit "Edit in Excel" = X,
+                  Codeunit "Edit in Excel Workbook" = X,
                   Page "Excel Centralized Depl. Wizard" = X,
                   Table "Edit in Excel Settings" = X;
 }

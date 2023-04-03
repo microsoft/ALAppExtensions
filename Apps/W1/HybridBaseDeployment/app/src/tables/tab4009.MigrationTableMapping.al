@@ -91,6 +91,10 @@ table 4009 "Migration Table Mapping"
 
             trigger OnValidate()
             begin
+#pragma warning disable AA0139
+                Rec."Source Table Name" := Rec."Source Table Name".TrimEnd().TrimStart();
+#pragma warning restore AA0139
+
                 ValidateSourceTableName(Rec, Rec."Source Table Name")
             end;
         }

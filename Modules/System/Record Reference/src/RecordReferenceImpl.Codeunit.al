@@ -6,6 +6,8 @@
 codeunit 3918 "Record Reference Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure Initialize(RecordRef: RecordRef; var RecordReference: Interface "Record Reference"; CallerModule: ModuleInfo)
     var

@@ -58,14 +58,9 @@ page 18004 "GST Registration Nos."
                 begin
                     EditinExcel.EditPageInExcel(
                         'GST Registration Nos.',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(CodeValueLbl,
-                        Rec."Code"));
+                        Page::"GST Registration Nos.");
                 end;
             }
         }
     }
-
-    var
-        CodeValueLbl: Label 'Code %1', Comment = '%1 = GST Registration No.';
 }

@@ -8,7 +8,7 @@ permissionset 1566 "Priv. Notice - View"
     Access = Public;
     Assignable = false;
     Caption = 'Privacy Notice - View';
-    
+
     IncludedPermissionSets = "Privacy Notice - Read";
 
     Permissions = tabledata "Privacy Notice" = im,

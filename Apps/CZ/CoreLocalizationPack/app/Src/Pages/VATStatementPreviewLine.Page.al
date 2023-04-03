@@ -79,17 +79,6 @@ page 31136 "VAT Statement Preview Line CZL"
                     ToolTip = 'Specifies when the VAT entry will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
                     Visible = false;
                 }
-#if not CLEAN19
-                field("Prepayment Type"; Rec."Prepayment Type")
-                {
-                    ApplicationArea = Prepayments;
-                    ToolTip = 'Specifies the VAT statement prepayment type.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Replaced by Advance Payments Localization for Czech.';
-                    ObsoleteTag = '19.0';
-                }
-#endif
                 field("Tax Jurisdiction Code"; Rec."Tax Jurisdiction Code")
                 {
                     ApplicationArea = VAT;
@@ -125,7 +114,14 @@ page 31136 "VAT Statement Preview Line CZL"
                                         GLEntry.SetRange("VAT Bus. Posting Group", Rec."VAT Bus. Posting Group");
                                     if Rec."VAT Prod. Posting Group" <> '' then
                                         GLEntry.SetRange("VAT Prod. Posting Group", Rec."VAT Prod. Posting Group");
-                                    Rec.CopyFilter("Date Filter", GLEntry."VAT Date CZL");
+#if not CLEAN22
+#pragma warning disable AL0432
+                                    if not GLEntry.IsReplaceVATDateEnabled() then
+                                        Rec.CopyFilter("Date Filter", GLEntry."VAT Date CZL")
+                                    else
+#pragma warning restore AL0432
+#endif
+                                        Rec.CopyFilter("Date Filter", GLEntry."VAT Reporting Date");
 
                                     Page.Run(Page::"General Ledger Entries", GLEntry);
                                 end;
@@ -141,7 +137,7 @@ page 31136 "VAT Statement Preview Line CZL"
                                           Type, Closed, "Tax Jurisdiction Code", "Use Tax", "Posting Date");
                                     VATEntry.SetVATStatementLineFiltersCZL(Rec);
                                     if Rec.GetFilter("Date Filter") <> '' then
-                                        VATEntry.SetPeriodFilterCZL(VATStatementReportPeriodSelection, Rec.GetRangeMin("Date Filter"), Rec.GetRangeMax("Date Filter"), GeneralLedgerSetup."Use VAT Date CZL");
+                                        VATEntry.SetPeriodFilterCZL(VATStatementReportPeriodSelection, Rec.GetRangeMin("Date Filter"), Rec.GetRangeMax("Date Filter"), VATReportingDateMgt.IsVATDateEnabled());
                                     if SettlementNoFilter <> '' then
                                         VATEntry.SetRange("VAT Settlement No. CZL", SettlementNoFilter);
                                     VATEntry.SetClosedFilterCZL(VATStatementReportSelection);
@@ -149,11 +145,11 @@ page 31136 "VAT Statement Preview Line CZL"
                                     Page.Run(Page::"VAT Entries", VATEntry);
                                 end;
                             else begin
-                                    IsHandled := false;
-                                    OnColumnValueDrillDownVATStatementLineTypeCase(Rec, IsHandled);
-                                    if not IsHandled then
-                                        Error(DrilldownErr, Rec.FieldCaption(Type), Rec.Type);
-                                end;
+                                IsHandled := false;
+                                OnColumnValueDrillDownVATStatementLineTypeCase(Rec, IsHandled);
+                                if not IsHandled then
+                                    Error(DrilldownErr, Rec.FieldCaption(Type), Rec.Type);
+                            end;
                         end;
                     end;
                 }
@@ -183,6 +179,7 @@ page 31136 "VAT Statement Preview Line CZL"
         GLEntry: Record "G/L Entry";
         VATEntry: Record "VAT Entry";
         VATStatementCZL: Report "VAT Statement CZL";
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         UseAmtsInAddCurr: Boolean;
         ColumnValue: Decimal;
         VATStatementReportPeriodSelection: Enum "VAT Statement Report Period Selection";

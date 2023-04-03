@@ -220,6 +220,15 @@ codeunit 4016 "Hybrid GP Management"
         FixData := false;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnIsUpgradeSupported', '', false, false)]
+    local procedure OnIsUpgradeSupported(var UpgradeSupported: Boolean)
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
+    begin
+        if HybridGPWizard.GetGPMigrationEnabled() then
+            UpgradeSupported := true;
+    end;
+
     procedure InvokeCompanyUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50])
     var
         CreateSession: Boolean;

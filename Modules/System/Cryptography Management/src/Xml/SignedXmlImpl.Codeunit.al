@@ -6,6 +6,8 @@
 codeunit 1461 "SignedXml Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm;

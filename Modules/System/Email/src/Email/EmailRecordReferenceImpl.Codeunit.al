@@ -9,6 +9,8 @@
 codeunit 8903 "Email Record Reference Impl." implements "Record Reference"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Sent Email" = r,
                   tabledata "Email Outbox" = r;
 
@@ -18,7 +20,7 @@ codeunit 8903 "Email Record Reference Impl." implements "Record Reference"
         SystemApplicationAppIdTxt: Label '63ca2fa4-4f03-4f2b-a480-172fef340d3f', Locked = true;
         RetentionPolicyAppIdTxt: Label 'a8177fd4-0adb-4482-889c-2e123a13b50a', Locked = true;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Record Reference", 'OnInitialize', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Record Reference", OnInitialize, '', false, false)]
     local procedure OnSetRecordRefIndirectPermissionInterface(RecordRef: RecordRef; var RecordReference: Interface "Record Reference"; CallerModuleInfo: ModuleInfo; var IsInitialized: Boolean);
     var
         EmailRecordReferenceImpl: Codeunit "Email Record Reference Impl.";

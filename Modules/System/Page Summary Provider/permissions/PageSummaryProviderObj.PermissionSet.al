@@ -8,8 +8,8 @@ permissionset 2716 "Page Summary Provider - Obj."
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Base64 Convert - Objects";
-
-    Permissions = Codeunit "Page Summary Provider Impl." = X,
-                  Codeunit "Page Summary Provider" = X;
+    Permissions = codeunit "Page Summary Provider" = X,
+                  codeunit "Page Summary Settings" = X,
+                  page "Page Summary Settings" = X,
+                  table "Page Summary Settings" = X;
 }

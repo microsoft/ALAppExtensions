@@ -19,6 +19,8 @@ codeunit 132548 "Page Summary Provider Test"
         HandleOnAfterGetPageSummary: Boolean;
         InvalidBookmarkErrorCodeTok: Label 'InvalidBookmark', Locked = true;
         InvalidBookmarkErrorMessageTxt: Label 'The bookmark is invalid.';
+        PageNotFoundErrorCodeTok: Label 'PageNotFound', Locked = true;
+        PageNotFoundErrorMessageTxt: Label 'Page %1 is not found.', Comment = '%1 is a whole number, ex. 10';
         InvalidSystemIdErrorCodeTok: Label 'InvalidSystemId', Locked = true;
         InvalidSystemIdErrorMessageTxt: Label 'The system ID is invalid.';
         FailedGetSummaryFieldsCodeTok: Label 'FailedGettingPageSummaryFields', Locked = true;
@@ -162,7 +164,7 @@ codeunit 132548 "Page Summary Provider Test"
         PermissionsMock.Set('Page Summary Read');
         Init();
 
-        // [Given] 2 records
+        // [Given] a record
         PageProviderSummaryTest.TestInteger := 1;
         PageProviderSummaryTest.TestText := 'Page Summary';
         PageProviderSummaryTest.TestCode := 'PROVIDER';
@@ -177,7 +179,7 @@ codeunit 132548 "Page Summary Provider Test"
         PageSummaryJsonObject.ReadFrom(PageSummaryProvider.GetPageSummaryBySystemID(0, SystemId));
         ValidateSummaryHeader(PageSummaryJsonObject, 'Page 0', 'Card', 'Caption');
         LibraryAssert.IsFalse(FieldsExist(PageSummaryJsonObject), 'Page 0 should not have any fields.');
-        LibraryAssert.IsFalse(UrlExist(PageSummaryJsonObject), 'Page -100 should not have url.');
+        LibraryAssert.IsFalse(UrlExist(PageSummaryJsonObject), 'Page 0 should not have url.');
 
         // [When] We get the summary by system Id for a page that does not exist
         // [Then] An error is thrown
@@ -207,6 +209,88 @@ codeunit 132548 "Page Summary Provider Test"
         ValidateSummaryHeader(PageSummaryJsonObject, 'Page summary', 'Card', 'Caption');
         LibraryAssert.IsFalse(UrlExist(PageSummaryJsonObject), 'Response should not have url.');
         ValidateErrorObject(PageSummaryJsonObject, InvalidSystemIdErrorCodeTok, InvalidSystemIdErrorMessageTxt);
+    end;
+
+    [Test]
+    procedure UrlBySystemId()
+    var
+        PageProviderSummaryTest: Record "Page Provider Summary Test";
+        ActualPageUrlJsonObject: JsonObject;
+        ActualUrl: Text;
+    begin
+        PermissionsMock.Set('Page Summary Read');
+        Init();
+
+        // [Given] A record with system id
+        PageProviderSummaryTest.TestInteger := 1;
+        PageProviderSummaryTest.TestText := 'Page Summary';
+        PageProviderSummaryTest.TestCode := 'PROVIDER';
+        PageProviderSummaryTest.TestDateTime := CurrentDateTime();
+        PageProviderSummaryTest.Insert();
+        PageProviderSummaryTest.FindFirst();
+
+        // [When] We get the url for a page by system id for that record
+        ActualPageUrlJsonObject.ReadFrom(PageSummaryProvider.GetPageUrlBySystemID(Page::"Page Summary Test Card", PageProviderSummaryTest.SystemId));
+
+        // [Then] The response reflects correct url for the page and the record
+        LibraryAssert.IsTrue(UrlExist(ActualPageUrlJsonObject), 'json should have a url to the object.');
+        ActualUrl := ReadJsonString(ActualPageUrlJsonObject, 'url');
+        LibraryAssert.IsTrue(ActualUrl.Contains(GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Page Summary Test Card")), 'Incorrect base url');
+        LibraryAssert.IsTrue(ActualUrl.Contains('bookmark'), 'bookmark is not found');
+
+        // [Then] There are no error object
+        LibraryAssert.IsFalse(ActualPageUrlJsonObject.Contains('error'), 'json should not contain an error object');
+    end;
+
+    [Test]
+    procedure InvalidUrlBySystemId()
+    var
+        PageProviderSummaryTest: Record "Page Provider Summary Test";
+        ActualPageUrlJsonObject: JsonObject;
+        SystemId: Guid;
+    begin
+        PermissionsMock.Set('Page Summary Read');
+        Init();
+
+        // [Given] a records
+        PageProviderSummaryTest.TestInteger := 1;
+        PageProviderSummaryTest.TestText := 'Page Summary';
+        PageProviderSummaryTest.TestCode := 'PROVIDER';
+        PageProviderSummaryTest.TestDateTime := CurrentDateTime;
+        PageProviderSummaryTest.Insert();
+
+        PageProviderSummaryTest.FindFirst();
+        SystemId := PageProviderSummaryTest.SystemId;
+
+        // [When] We get the url by system Id for a page that does not exist
+        // [Then] An error is thrown
+        ActualPageUrlJsonObject.ReadFrom(PageSummaryProvider.GetPageUrlBySystemID(0, SystemId));
+        LibraryAssert.IsFalse(UrlExist(ActualPageUrlJsonObject), 'Page 0 should not have url.');
+        ValidateErrorObject(ActualPageUrlJsonObject, PageNotFoundErrorCodeTok, StrSubstNo(PageNotFoundErrorMessageTxt, 0));
+
+        // [When] We get the url by system Id for a page that does not exist
+        // [Then] An error is thrown
+        ActualPageUrlJsonObject.ReadFrom(PageSummaryProvider.GetPageUrlBySystemID(-100, SystemId));
+        LibraryAssert.IsFalse(UrlExist(ActualPageUrlJsonObject), 'Page -100 should not have url.');
+        ValidateErrorObject(ActualPageUrlJsonObject, PageNotFoundErrorCodeTok, StrSubstNo(PageNotFoundErrorMessageTxt, -100));
+
+        // [When] We get the url by system Id for a page with no source table
+        // [Then] An error is thrown
+        ActualPageUrlJsonObject.ReadFrom(PageSummaryProvider.GetPageUrlBySystemID(Page::"Page Summary Empty Page", SystemId));
+        LibraryAssert.IsFalse(UrlExist(ActualPageUrlJsonObject), 'Response should not have url.');
+        ValidateErrorObject(ActualPageUrlJsonObject, InvalidSystemIdErrorCodeTok, InvalidSystemIdErrorMessageTxt);
+
+        // [When] We get the url for a page with invalid system Id
+        // [Then] An error is thrown
+        ActualPageUrlJsonObject.ReadFrom(PageSummaryProvider.GetPageUrlBySystemID(Page::"Page Summary Test Card", CreateGuid()));
+        LibraryAssert.IsFalse(UrlExist(ActualPageUrlJsonObject), 'Response should not have url.');
+        ValidateErrorObject(ActualPageUrlJsonObject, InvalidSystemIdErrorCodeTok, InvalidSystemIdErrorMessageTxt);
+
+        // [When] We get the url by system Id for a page empty system Id
+        // [Then] An error is thrown
+        ActualPageUrlJsonObject.ReadFrom(PageSummaryProvider.GetPageUrlBySystemID(Page::"Page Summary Test Card", '00000000-0000-0000-0000-000000000000'));
+        LibraryAssert.IsFalse(UrlExist(ActualPageUrlJsonObject), 'Response should not have url.');
+        ValidateErrorObject(ActualPageUrlJsonObject, InvalidSystemIdErrorCodeTok, InvalidSystemIdErrorMessageTxt);
     end;
 
     [Test]
@@ -460,8 +544,10 @@ codeunit 132548 "Page Summary Provider Test"
     local procedure Init()
     var
         PageProviderSummaryTest: Record "Page Provider Summary Test";
+        PageProviderSummaryTest2: Record "Page Provider Summary Test2";
     begin
         PageProviderSummaryTest.DeleteAll();
+        PageProviderSummaryTest2.DeleteAll();
         Clear(OverrideFields);
         UnbindSubscription(PageSummaryProviderTest);
         Clear(PageSummaryProviderTest);

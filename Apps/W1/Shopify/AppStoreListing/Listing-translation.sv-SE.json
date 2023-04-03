@@ -2,7 +2,7 @@
   "target languages": [
     "Danska",
     "Nederländska",
-    "Finnish",
+    "Finska",
     "Franska",
     "Tyska",
     "Italienska",
@@ -75,6 +75,41 @@
       "property": "Screenshot 5",
       "value to translate": "Sparad filtrerad vy",
       "limit": 64
+    },
+    {
+      "property": "App introduction",
+      "value to translate": "Omfattande verksamhetssystem som underlättar för små och medelstora företag.",
+      "limit": 100
+    },
+    {
+      "property": "App details",
+      "value to translate": "Öka insynen i ekonomin: Få överblick över vinst och kostnader, och få kontroll över momsberäkning och -rapportering. Optimera lagret: Leverera produkter i tid och anpassa verksamheten efter nya affärsmodeller med insyn i inköp, tillverkning, lager och distributionslager. Hitta verksamhetsinsikter: Få översikt över lagervärdet, förutse framtida försäljning med AI, konfigurera automatisk produktbeställning och få kostnadskontroll.",
+      "limit": 500
+    },
+    {
+      "property": "Feature 1",
+      "value to translate": "Stöd för flera butiker, försäljningskanaler och lagerställen i Shopify.",
+      "limit": 80
+    },
+    {
+      "property": "Feature 2",
+      "value to translate": "Dubbelriktad synkronisering av artiklar eller produkter.",
+      "limit": 80
+    },
+    {
+      "property": "Feature 3",
+      "value to translate": "Synkronisering av lagernivåer.",
+      "limit": 80
+    },
+    {
+      "property": "Feature 4",
+      "value to translate": "Dubbelriktad synkronisering av kunder.",
+      "limit": 80
+    },
+    {
+      "property": "Feature 5",
+      "value to translate": "Importera order från Shopify och skicka uppfyllelseinformation till Shopify.",
+      "limit": 80
     },
     {
       "property": "Detailed description",

@@ -7,6 +7,8 @@ codeunit 3702 "Environment Information Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         NavTenantSettingsHelper: DotNet NavTenantSettingsHelper;
@@ -122,6 +124,11 @@ codeunit 3702 "Environment Information Impl."
             exit(TaskScheduler.CanCreateTask());
 
         exit(true);
+    end;
+
+    procedure EnableM365Collaboration()
+    begin
+        NavTenantSettingsHelper.EnableM365Collaboration();
     end;
 
     local procedure GetAppId() AppId: Text

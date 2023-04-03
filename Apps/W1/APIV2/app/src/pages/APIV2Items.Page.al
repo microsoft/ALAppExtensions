@@ -304,6 +304,13 @@ page 30008 "APIV2 - Items"
                     EntitySetName = 'itemVariants';
                     SubPageLink = "Item Id" = field(SystemId);
                 }
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Item);
+                }
             }
         }
     }

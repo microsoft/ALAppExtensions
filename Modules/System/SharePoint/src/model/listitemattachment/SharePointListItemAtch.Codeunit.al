@@ -6,6 +6,8 @@
 codeunit 9102 "SharePoint List Item Atch."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure Parse(Payload: Text; var SharePointListItemAtch: Record "SharePoint List Item Atch" temporary)

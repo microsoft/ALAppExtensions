@@ -1,0 +1,37 @@
+{
+    "id":  "87990153-0e35-4e5d-ba61-2e93077d1699",
+    "name":  "_Exclude_Review_General_Ledger_Entries",
+    "publisher":  "Microsoft",
+    "version":  "22.1.0.0",
+    "brief":  "_Exclude_Review_General_Ledger_Entries",
+    "description":  "_Exclude_Review_General_Ledger_Entries",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2206176",
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "ExtensionLogo.png",
+    "dependencies":  [
+
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "22.0.0.0",
+    "application":  "22.1.0.0",
+    "resourceExposurePolicy":  {
+                                   "allowDebugging":  true,
+                                   "allowDownloadingSource":  true,
+                                   "includeSourceInSymbolFile":  true
+                               },
+    "runtime":  "11.0",
+    "features":  [
+                     "NoImplicitWith"
+                 ],
+    "idRanges":  [
+                     {
+                         "from":  22200,
+                         "to":  22220
+                     }
+                 ]
+}

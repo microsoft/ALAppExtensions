@@ -134,7 +134,7 @@ page 30120 "Shpfy Log Entry Card"
         TempBlob.CreateInStream(InStream);
         TempBlob.CreateOutStream(OutStream);
         OutStream.Write(Rec.GetRequest());
-        ToFile := 'Request_' + format(Rec."Entry No.") + '.txt';
+        ToFile := 'Request_' + format(Rec."Entry No.") + '.json';
         File.DownloadFromStream(InStream, TitleLbl, '', '(*.*)|*.*', ToFile);
     end;
 
@@ -149,7 +149,7 @@ page 30120 "Shpfy Log Entry Card"
         TempBlob.CreateInStream(InStream);
         TempBlob.CreateOutStream(OutStream);
         OutStream.Write(Rec.GetResponse());
-        ToFile := 'Response_' + format(Rec."Entry No.") + '.txt';
+        ToFile := 'Response_' + format(Rec."Entry No.") + '.json';
         File.DownloadFromStream(InStream, TitleLbl, '', '(*.*)|*.*', ToFile);
     end;
 }

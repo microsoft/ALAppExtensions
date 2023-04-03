@@ -7,6 +7,8 @@ table 1995 "Checklist Item Buffer"
 {
     Access = Internal;
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

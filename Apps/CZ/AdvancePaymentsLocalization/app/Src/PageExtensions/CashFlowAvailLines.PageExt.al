@@ -2,18 +2,6 @@ pageextension 31197 "Cash Flow Avail. Lines CZZ" extends "Cash Flow Availability
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify(SalesAdvances)
-        {
-            Visible = false;
-        }
-        modify(PurchaseAdvances)
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter(Tax)
         {
             field(SalesAdvancesCZZ; Rec."Sales Advances CZZ")

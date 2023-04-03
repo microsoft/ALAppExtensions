@@ -2,14 +2,6 @@ pageextension 31039 "Purchase Invoice CZZ" extends "Purchase Invoice"
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Prepayment Type")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
 #if not CLEAN20
 #pragma warning disable AL0432
         modify("Prepayment %")
@@ -35,42 +27,6 @@ pageextension 31039 "Purchase Invoice CZZ" extends "Purchase Invoice"
 
     actions
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify(Prepayment)
-        {
-            Visible = false;
-        }
-        modify("Create Advance Letter")
-        {
-            Visible = false;
-        }
-        modify("Link Advance Letter")
-        {
-            Visible = false;
-        }
-        modify("Cancel All Adv. Payment Relations")
-        {
-            Visible = false;
-        }
-        modify("Adjust VAT by Adv. Payment Deduction")
-        {
-            Visible = false;
-        }
-        modify(Action1220050)
-        {
-            Visible = false;
-        }
-        modify("Assignment Ad&vance Letters")
-        {
-            Visible = false;
-        }
-        modify("Assigned Adv. Letters - detail")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addbefore("P&osting")
         {
             group(AdvanceLetterGrCZZ)

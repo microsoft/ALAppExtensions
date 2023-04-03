@@ -6810,12 +6810,6 @@ End Function</Code>
         <Field Name="AmountIncludingVAT_SalesInvoiceHeaderFormat">
           <DataField>AmountIncludingVAT_SalesInvoiceHeaderFormat</DataField>
         </Field>
-        <Field Name="PrepaymentAmt_SalesInvoiceHeader">
-          <DataField>PrepaymentAmt_SalesInvoiceHeader</DataField>
-        </Field>
-        <Field Name="PrepaymentAmt_SalesInvoiceHeaderFormat">
-          <DataField>PrepaymentAmt_SalesInvoiceHeaderFormat</DataField>
-        </Field>
         <Field Name="CalculatedExchRate">
           <DataField>CalculatedExchRate</DataField>
         </Field>
@@ -6959,9 +6953,6 @@ End Function</Code>
         </Field>
         <Field Name="AmountIncludingVAT_SalesInvoiceAdvance">
           <DataField>AmountIncludingVAT_SalesInvoiceAdvance</DataField>
-        </Field>
-        <Field Name="AmountIncludingVAT_SalesInvoiceAdvanceFormat">
-          <DataField>AmountIncludingVAT_SalesInvoiceAdvanceFormat</DataField>
         </Field>
         <Field Name="VATDocLetterNo_SalesInvoiceAdvanceCaption">
           <DataField>VATDocLetterNo_SalesInvoiceAdvanceCaption</DataField>

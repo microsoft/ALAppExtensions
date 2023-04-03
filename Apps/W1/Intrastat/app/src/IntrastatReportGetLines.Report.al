@@ -12,6 +12,7 @@
             trigger OnAfterGetRecord()
             var
                 ItemLedgEntry: Record "Item Ledger Entry";
+                CurrReportSkip, IsHandled : Boolean;
             begin
                 if not Item.Get("Item No.") then
                     CurrReport.Skip();
@@ -44,31 +45,56 @@
                     end;
                 end;
 
-                CalculateTotals("Item Ledger Entry");
-
-                if (TotalAmt = 0) and SkipZeroAmounts then
+                CurrReportSkip := false;
+                OnAfterCheckItemLedgerEntry(IntrastatReportHeader, "Item Ledger Entry", CurrReportSkip);
+                if CurrReportSkip then
                     CurrReport.Skip();
 
-                InsertItemJnlLine();
+                IsHandled := false;
+                CurrReportSkip := false;
+                OnBeforeCalculateTotalsCall(IntrastatReportHeader, IntrastatReportLine, ValueEntry, "Item Ledger Entry", StartDate, EndDate, SkipZeroAmounts, AddCurrencyFactor, IndirectCostPctReq, CurrReportSkip, IsHandled);
+
+                if CurrReportSkip then
+                    CurrReport.Skip();
+
+                if not IsHandled then begin
+                    CalculateTotals("Item Ledger Entry");
+                    if (TotalAmt = 0) and SkipZeroAmounts then
+                        CurrReport.Skip();
+                end;
+
+                IsHandled := false;
+                OnBeforeInsertItemLedgerLineCall(IntrastatReportHeader, IntrastatReportLine, ValueEntry, "Item Ledger Entry", IsHandled);
+                if not IsHandled then
+                    InsertItemLedgerLine();
             end;
 
             trigger OnPreDataItem()
+            var
+                IsHandled: Boolean;
             begin
-                SetRange("Posting Date", StartDate, EndDate);
-                if SkipNotInvoicedEntries then
-                    SetFilter("Invoiced Quantity", '<>0');
+                IsHandled := false;
+                OnBeforeFilterItemLedgerEntry(IntrastatReportHeader, "Item Ledger Entry", StartDate, EndDate, IsHandled);
+                if not IsHandled then begin
+                    SetRange("Posting Date", StartDate, EndDate);
+                    if SkipNotInvoicedEntries then
+                        SetFilter("Invoiced Quantity", '<>0');
+                end;
 
                 IntrastatReportLine2.SetCurrentKey("Source Type", "Source Entry No.");
                 IntrastatReportLine2.SetRange("Source Type", IntrastatReportLine2."Source Type"::"Item Entry");
 
-                ValueEntry.SetCurrentKey("Item Ledger Entry No.");
-                ValueEntry.SetRange("Entry Type", ValueEntry."Entry Type"::"Direct Cost");
-                ValueEntry.SetFilter(
-                  "Item Ledger Entry Type", '%1|%2|%3',
-                  "Item Ledger Entry Type"::Sale,
-                  "Item Ledger Entry Type"::Purchase,
-                  "Item Ledger Entry Type"::Transfer);
-
+                IsHandled := false;
+                OnBeforeFilterValueEntry(IntrastatReportHeader, ValueEntry, "Item Ledger Entry", StartDate, EndDate, IsHandled);
+                if not IsHandled then begin
+                    ValueEntry.SetCurrentKey("Item Ledger Entry No.");
+                    ValueEntry.SetRange("Entry Type", ValueEntry."Entry Type"::"Direct Cost");
+                    ValueEntry.SetFilter(
+                      "Item Ledger Entry Type", '%1|%2|%3',
+                      "Item Ledger Entry Type"::Sale,
+                      "Item Ledger Entry Type"::Purchase,
+                      "Item Ledger Entry Type"::Transfer);
+                end;
                 OnAfterItemLedgerEntryOnPreDataItem("Item Ledger Entry");
             end;
         }
@@ -177,6 +203,8 @@
                 IntrastatReportLine2.SetRange("Intrastat No.", IntrastatReportHeader."No.");
                 IntrastatReportLine2.SetCurrentKey("Source Type", "Source Entry No.");
                 IntrastatReportLine2.SetRange("Source Type", IntrastatReportLine2."Source Type"::"Item Entry");
+
+                OnAfterValueEntryOnPreDataItem(IntrastatReportHeader, "Value Entry", "Item Ledger Entry");
             end;
         }
     }
@@ -285,13 +313,17 @@
     begin
         IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
         IntrastatReportLine.LockTable();
-        if IntrastatReportLine.FindLast() then;
+        if not IntrastatReportLine.IsEmpty() then
+            if not Confirm(LinesDeletionConfirmationQst, true, IntrastatReportHeader."No.") then
+                CurrReport.Quit();
+
+        IntrastatReportLine.DeleteAll();
 
         GetGLSetup();
         if IntrastatReportHeader."Amounts in Add. Currency" then begin
             GLSetup.TestField("Additional Reporting Currency");
             AddCurrencyFactor :=
-              CurrExchRate.ExchangeRate(EndDate, GLSetup."Additional Reporting Currency");
+                CurrExchRate.ExchangeRate(EndDate, GLSetup."Additional Reporting Currency");
         end;
     end;
 
@@ -322,6 +354,7 @@
         GLSetupRead: Boolean;
         AmountInclItemCharges: Boolean;
         PricesIncludingVATErr: Label 'Prices including VAT cannot be calculated when %1 is %2.', Comment = '%1 - VAT Calculation Type caption, %2 - "VAT Calculation Type"';
+        LinesDeletionConfirmationQst: Label 'The existing lines for Intrastat report %1 will be deleted. Do you want to continue?', Comment = '%1 - Intrastat Report number';
         [InDataSet]
         CostRegulationEnable: Boolean;
 
@@ -341,7 +374,7 @@
         IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
     end;
 
-    local procedure InsertItemJnlLine()
+    local procedure InsertItemLedgerLine()
     var
         IsHandled: Boolean;
     begin
@@ -711,6 +744,11 @@
             case true of
                 ItemLedgEntry."Drop Shipment":
                     begin
+                        IsHandled := false;
+                        OnBeforeCheckDropShipment(IntrastatReportHeader, ItemLedgEntry, Country, Result, IsHandled);
+                        if IsHandled then
+                            exit(Result);
+
                         if Country.Code in [CompanyInfo."Country/Region Code", ''] then
                             exit(false);
                         if ItemLedgEntry."Applies-to Entry" = 0 then begin
@@ -1084,6 +1122,22 @@
                 IntrastatReportLine.Type := IntrastatReportLine.Type::Receipt;
     end;
 
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterCheckItemLedgerEntry(IntrastatReportHeader: Record "Intrastat Report Header"; ItemLedgerEntry: Record "Item Ledger Entry"; var CurrReportSkip: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeCalculateTotalsCall(IntrastatReportHeader: Record "Intrastat Report Header"; var IntrastatReportLine: Record "Intrastat Report Line"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry";
+        StartDate: Date; EndDate: Date; SkipZeroAmounts: Boolean; AddCurrencyFactor: Decimal; IndirectCostPctReq: Decimal; var CurrReportSkip: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeInsertItemLedgerLineCall(IntrastatReportHeader: Record "Intrastat Report Header"; var IntrastatReportLine: Record "Intrastat Report Line"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry"; var IsHandled: Boolean)
+    begin
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCalculateTotals(var ItemLedgerEntry: Record "Item Ledger Entry"; IntrastatReportHeader: Record "Intrastat Report Header";
         var TotalAmt: Decimal; var TotalCostAmt: Decimal; var TotalAmtExpected: Decimal; var TotalCostAmtExpected: Decimal;
@@ -1100,12 +1154,32 @@
     end;
 
     [IntegrationEvent(true, false)]
+    local procedure OnBeforeFilterItemLedgerEntry(IntrastatReportHeader: Record "Intrastat Report Header"; var ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeFilterValueEntry(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
     local procedure OnAfterItemLedgerEntryOnPreDataItem(var ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterValueEntryOnPreDataItem(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry")
     begin
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeHasCrossedBorder(ItemLedgerEntry: Record "Item Ledger Entry"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckDropShipment(IntrastatReportHeader: Record "Intrastat Report Header"; ItemLedgerEntry: Record "Item Ledger Entry"; Country: Record "Country/Region"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
 

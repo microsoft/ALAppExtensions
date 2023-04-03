@@ -369,7 +369,6 @@ procedure GetAvailablePlansCount(): Integer
 
 Returns the total number of available plans.
 ### CheckMixedPlans (Method) <a name="CheckMixedPlans"></a> 
-The OnCanCurrentUserManagePlansAndGroups event to ensure this API is called with the proper authorization.
 
 
  Checks whether the plan configuration mixes different plans.
@@ -562,25 +561,6 @@ The user to update.
 *UserGroupsAdded ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Whether the user groups were updated
-
-### OnCanCurrentUserManagePlansAndGroups (Event) <a name="OnCanCurrentUserManagePlansAndGroups"></a> 
-
- Integration event, raised from [CheckMixedPlans](#CheckMixedPlans).
- Subscribe to this event to check whether the user can manage plans and groups
- 
-
-#### Syntax
-```
-[IntegrationEvent(false, false)]
-[Scope('OnPrem')]
-[NonDebuggable]
-internal procedure OnCanCurrentUserManagePlansAndGroups(var CanManage: Boolean)
-```
-#### Parameters
-*CanManage ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
-
-Whether the user can manage plans and groups
-
 
 ## Plan Ids (Codeunit 9027)
 

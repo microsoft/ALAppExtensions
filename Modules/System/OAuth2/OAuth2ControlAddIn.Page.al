@@ -13,6 +13,8 @@ page 502 OAuth2ControlAddIn
     InsertAllowed = false;
     LinksAllowed = false;
     ModifyAllowed = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
 
     layout

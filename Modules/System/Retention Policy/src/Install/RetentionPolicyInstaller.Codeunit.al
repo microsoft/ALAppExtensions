@@ -9,6 +9,8 @@ codeunit 3907 "Retention Policy Installer"
 {
     Subtype = Install;
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Retention Period" = ri,
                   tabledata "Retention Policy Setup" = ri,
                   tabledata Company = r;
@@ -95,13 +97,13 @@ codeunit 3907 "Retention Policy Installer"
         exit(RetentionPolicyLogCategory::"Retention Policy - Setup");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", 'OnRefreshAllowedTables', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", OnRefreshAllowedTables, '', false, false)]
     local procedure AddAllowedTablesOnRefreshAllowedTables()
     begin
         AddAllowedTables(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", OnAfterLogin, '', false, false)]
     local procedure AddAllowedTablesOnAfterLogin()
     begin
         AddAllowedTables();

@@ -126,7 +126,7 @@ report 13631 "OIOUBL-Create Elec. Cr. Memos"
 
     procedure InitLogInteraction();
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(6) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(6) <> '';
     end;
 }
 

@@ -6,6 +6,8 @@
 codeunit 9043 "ABS Helper Library"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata Field = r;
 
     // #region Container-specific Helper

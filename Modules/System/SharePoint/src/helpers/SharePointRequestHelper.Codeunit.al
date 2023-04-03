@@ -6,6 +6,8 @@
 codeunit 9109 "SharePoint Request Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         HttpClient: HttpClient;

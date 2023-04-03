@@ -9,6 +9,8 @@
 codeunit 9111 "SharePoint Diagnostics" implements "HTTP Diagnostics"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ErrorMessage, ResponseReasonPhrase : Text;

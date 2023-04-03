@@ -19,6 +19,22 @@ page 9859 "Tenant Permission Subform"
         {
             repeater(Permissions)
             {
+                field("Role ID"; Rec."Role ID")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Permission Set';
+                    ToolTip = 'Specifies the permission set.';
+                    Visible = false;
+                    Editable = false;
+                }
+                field(Name; Rec."Role Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Permission Set Name';
+                    ToolTip = 'Specifies the name of the permission set.';
+                    Visible = false;
+                    Editable = false;
+                }
                 field(Type; Rec.Type)
                 {
                     ApplicationArea = All;

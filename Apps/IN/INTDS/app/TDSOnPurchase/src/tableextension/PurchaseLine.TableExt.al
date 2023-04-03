@@ -183,7 +183,7 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
                 if not ((((PreviousTransactionValue.Amount <> 0) and (CurrentTransactionValue.Amount <> 0))
                 and (PreviousTransactionValue.Percent = CurrentTransactionValue.Percent))) or
                 ((PreviousTransactionValue.Amount = 0) and (CurrentTransactionValue.Amount = 0))
-               then begin
+                then begin
                     CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
                     if PreviousTransactionValue.Amount = 0 then
                         PreviousTransactionValue := GetComponentValue(PurchaseLine);

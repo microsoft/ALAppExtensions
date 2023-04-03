@@ -9,6 +9,8 @@
 codeunit 1288 OAuth
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

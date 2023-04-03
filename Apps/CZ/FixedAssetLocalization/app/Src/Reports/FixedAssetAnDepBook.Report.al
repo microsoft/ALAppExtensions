@@ -271,7 +271,7 @@ report 31241 "Fixed Asset - An. Dep.Book CZF"
                     {
                         ApplicationArea = FixedAssets;
                         Caption = 'Amount Field 1';
-                        TableRelation = "FA Posting Type"."FA Posting Type Name" where("FA Entry" = const(true), "FA Posting Type No." = filter(16 | 24 | 25));
+                        TableRelation = "FA Posting Type"."FA Posting Type Name" where("FA Entry" = const(true));
                         ToolTip = 'Specifies the FA posting type which can be printed.';
                     }
                     field(Period1CZF; Period1)

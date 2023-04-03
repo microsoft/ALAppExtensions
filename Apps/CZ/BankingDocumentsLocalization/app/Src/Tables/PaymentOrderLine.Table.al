@@ -752,234 +752,23 @@ table 31257 "Payment Order Line CZB"
             Caption = 'Letter Type';
             OptionCaption = ' ,,Purchase';
             OptionMembers = " ",,Purchase;
-#if CLEAN19
             ObsoleteState = Removed;
-#else
-            ObsoleteState = Pending;
-#endif    
             ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '19.0';
-#if not CLEAN19
-            trigger OnValidate()
-            begin
-                TestStatusOpen();
-                "Applies-to Doc. Type" := "Applies-to Doc. Type"::" ";
-                "Applies-to Doc. No." := '';
-                "Applies-to C/V/E Entry No." := 0;
-                "Original Amount" := 0;
-                "Original Amount (LCY)" := 0;
-                "Orig. Amount(Pay.Order Curr.)" := 0;
-                "Original Due Date" := 0D;
-                "Pmt. Discount Date" := 0D;
-                "Pmt. Discount Possible" := false;
-                "Remaining Pmt. Disc. Possible" := 0;
-            end;
-#endif
+            ObsoleteTag = '22.0';
         }
         field(151; "Letter No."; Code[20])
         {
             Caption = 'Letter No.';
-#if CLEAN19
             ObsoleteState = Removed;
-#else
-            TableRelation = if ("Letter Type" = const(Purchase)) "Purch. Advance Letter Header";
-            ObsoleteState = Pending;
-#endif    
             ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '19.0';
-#if not CLEAN19
-            trigger OnValidate()
-            var
-                PurchAdvLetterHeader: Record "Purch. Advance Letter Header";
-                Vendor: Record Vendor;
-                Currency: Record Currency;
-                RemAmount: Decimal;
-            begin
-                TestStatusOpen();
-                GetPaymentOrder();
-                "Applies-to Doc. Type" := "Applies-to Doc. Type"::" ";
-                "Applies-to Doc. No." := '';
-                "Applies-to C/V/E Entry No." := 0;
-                "Original Amount" := 0;
-                "Original Amount (LCY)" := 0;
-                "Orig. Amount(Pay.Order Curr.)" := 0;
-                "Original Due Date" := 0D;
-                "Pmt. Discount Date" := 0D;
-                "Pmt. Discount Possible" := false;
-                "Remaining Pmt. Disc. Possible" := 0;
-                "Letter Line No." := 0;
-
-                RemAmount := 0;
-                PaymentOrderManagementCZB.ClearErrorMessageLog();
-                case "Letter Type" of
-                    "Letter Type"::Purchase:
-                        begin
-                            if "Letter No." <> '' then begin
-                                if CurrFieldNo = FieldNo("Letter No.") then
-                                    if not PaymentOrderManagementCZB.CheckPaymentOrderLineApply(Rec, false) then begin
-                                        if not Confirm(StrSubstNo(AdvanceAlreadyAppliedQst, "Letter No.")) then
-                                            Error('');
-                                        "Amount Must Be Checked" := true;
-                                    end;
-                                PurchAdvLetterHeader.Get("Letter No.");
-                                "Variable Symbol" := PurchAdvLetterHeader."Variable Symbol";
-                                if PurchAdvLetterHeader."Constant Symbol" <> '' then
-                                    "Constant Symbol" := PurchAdvLetterHeader."Constant Symbol";
-                                BankAccount.Get(PaymentOrderHeaderCZB."Bank Account No.");
-                                if BankAccount."Payment Order Line Description" = '' then
-                                    Description := PurchAdvLetterHeader."Posting Description"
-                                else begin
-                                    Vendor.Get(PurchAdvLetterHeader."Pay-to Vendor No.");
-                                    Description := CreateDescription(AdvancePaymentTxt, PurchAdvLetterHeader."No.",
-                                        Vendor."No.", Vendor.Name, PurchAdvLetterHeader."Vendor Adv. Payment No.");
-                                end;
-                                Type := Type::Vendor;
-                                "No." := PurchAdvLetterHeader."Pay-to Vendor No.";
-                                Validate("No.", PurchAdvLetterHeader."Pay-to Vendor No.");
-                                "Cust./Vendor Bank Account Code" := PurchAdvLetterHeader."Bank Account Code";
-                                "Account No." := PurchAdvLetterHeader."Bank Account No.";
-                                "Specific Symbol" := PurchAdvLetterHeader."Specific Symbol";
-                                "Transit No." := PurchAdvLetterHeader."Transit No.";
-                                IBAN := PurchAdvLetterHeader.IBAN;
-                                "SWIFT Code" := PurchAdvLetterHeader."SWIFT Code";
-                                "Applied Currency Code" := PurchAdvLetterHeader."Currency Code";
-                                if PurchAdvLetterHeader."Advance Due Date" > "Due Date" then
-                                    "Due Date" := PurchAdvLetterHeader."Advance Due Date";
-                                "Original Due Date" := PurchAdvLetterHeader."Advance Due Date";
-                                if Amount = 0 then begin
-                                    RemAmount := PurchAdvLetterHeader.GetRemAmount();
-                                    if "Payment Order Currency Code" = PurchAdvLetterHeader."Currency Code" then begin
-                                        "Amount (Paym. Order Currency)" := RemAmount;
-                                        Validate("Amount (Paym. Order Currency)");
-                                    end else begin
-                                        if PurchAdvLetterHeader."Currency Code" <> '' then begin
-                                            Currency.Get(PurchAdvLetterHeader."Currency Code");
-                                            Currency.InitRoundingPrecision();
-                                            "Amount (LCY)" := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PurchAdvLetterHeader."Document Date",
-                                                  PurchAdvLetterHeader."Currency Code",
-                                                  RemAmount,
-                                                  PurchAdvLetterHeader."Currency Factor"));
-                                        end else
-                                            "Amount (LCY)" := RemAmount;
-
-                                        Validate("Amount (LCY)");
-                                    end;
-                                end;
-                            end;
-                            "Original Amount" := Amount;
-                            "Original Amount (LCY)" := "Amount (LCY)";
-                            "Orig. Amount(Pay.Order Curr.)" := "Amount (Paym. Order Currency)";
-                        end;
-                    else
-                        FieldError(Type);
-                end;
-            end;
-#endif
+            ObsoleteTag = '22.0';
         }
         field(152; "Letter Line No."; Integer)
         {
             Caption = 'Letter Line No.';
-#if CLEAN19
             ObsoleteState = Removed;
-#else
-            TableRelation = IF ("Letter Type" = const(Purchase)) "Purch. Advance Letter Line"."Line No." where("Letter No." = field("Letter No."));
-            ObsoleteState = Pending;
-#endif    
             ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '19.0';
-#if not CLEAN19
-            trigger OnValidate()
-            var
-                PurchAdvLetterHeader: Record "Purch. Advance Letter Header";
-                PurchAdvLetterLine: Record "Purch. Advance Letter Line";
-                Vendor: Record Vendor;
-                Currency: Record Currency;
-                RemAmount: Decimal;
-            begin
-                TestStatusOpen();
-                GetPaymentOrder();
-                "Applies-to Doc. Type" := "Applies-to Doc. Type"::" ";
-                "Applies-to Doc. No." := '';
-                "Applies-to C/V/E Entry No." := 0;
-                "Original Amount" := 0;
-                "Original Amount (LCY)" := 0;
-                "Orig. Amount(Pay.Order Curr.)" := 0;
-                "Original Due Date" := 0D;
-                "Pmt. Discount Date" := 0D;
-                "Pmt. Discount Possible" := false;
-                "Remaining Pmt. Disc. Possible" := 0;
-
-                RemAmount := 0;
-                PaymentOrderManagementCZB.ClearErrorMessageLog();
-                case "Letter Type" of
-                    "Letter Type"::Purchase:
-                        begin
-                            if "Letter Line No." <> 0 then begin
-                                TestField("Letter No.");
-                                if CurrFieldNo = FieldNo("Letter Line No.") then
-                                    if not PaymentOrderManagementCZB.CheckPaymentOrderLineApply(Rec, false) then begin
-                                        if not Confirm(StrSubstNo(LedgerAlreadyAppliedLineQst, "Letter No.")) then
-                                            Error('');
-                                        "Amount Must Be Checked" := true;
-                                    end;
-
-                                PurchAdvLetterHeader.Get("Letter No.");
-                                PurchAdvLetterHeader.TestField("Due Date from Line", true);
-                                PurchAdvLetterLine.Get("Letter No.", "Letter Line No.");
-
-                                "Variable Symbol" := PurchAdvLetterHeader."Variable Symbol";
-                                if PurchAdvLetterHeader."Constant Symbol" <> '' then
-                                    "Constant Symbol" := PurchAdvLetterHeader."Constant Symbol";
-                                BankAccount.Get(PaymentOrderHeaderCZB."Bank Account No.");
-                                if BankAccount."Payment Order Line Description" = '' then
-                                    Description := PurchAdvLetterHeader."Posting Description"
-                                else begin
-                                    Vendor.Get(PurchAdvLetterHeader."Pay-to Vendor No.");
-                                    Description := CreateDescription(AdvancePaymentLineTxt, PurchAdvLetterHeader."No.",
-                                        Vendor."No.", Vendor.Name, PurchAdvLetterHeader."Vendor Adv. Payment No.");
-                                end;
-                                Type := Type::Vendor;
-                                "No." := PurchAdvLetterHeader."Pay-to Vendor No.";
-                                Validate("No.", PurchAdvLetterHeader."Pay-to Vendor No.");
-                                "Cust./Vendor Bank Account Code" := PurchAdvLetterHeader."Bank Account Code";
-                                "Account No." := PurchAdvLetterHeader."Bank Account No.";
-                                "Specific Symbol" := PurchAdvLetterHeader."Specific Symbol";
-                                "Transit No." := PurchAdvLetterHeader."Transit No.";
-                                IBAN := PurchAdvLetterHeader.IBAN;
-                                "SWIFT Code" := PurchAdvLetterHeader."SWIFT Code";
-                                "Applied Currency Code" := PurchAdvLetterHeader."Currency Code";
-                                if PurchAdvLetterLine."Advance Due Date" > "Due Date" then
-                                    "Due Date" := PurchAdvLetterLine."Advance Due Date";
-                                "Original Due Date" := PurchAdvLetterLine."Advance Due Date";
-                                if Amount = 0 then begin
-                                    RemAmount := PurchAdvLetterLine."Amount To Link";
-                                    if "Payment Order Currency Code" = PurchAdvLetterHeader."Currency Code" then begin
-                                        "Amount (Paym. Order Currency)" := RemAmount;
-                                        Validate("Amount (Paym. Order Currency)");
-                                    end else begin
-                                        if PurchAdvLetterHeader."Currency Code" <> '' then begin
-                                            Currency.Get(PurchAdvLetterHeader."Currency Code");
-                                            Currency.InitRoundingPrecision();
-                                            "Amount (LCY)" := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PurchAdvLetterHeader."Document Date",
-                                                  PurchAdvLetterHeader."Currency Code",
-                                                  RemAmount,
-                                                  PurchAdvLetterHeader."Currency Factor"))
-                                        end else
-                                            "Amount (LCY)" := RemAmount;
-
-                                        Validate("Amount (LCY)");
-                                    end;
-                                end;
-                            end;
-                            "Original Amount" := "Amount";
-                            "Original Amount (LCY)" := "Amount (LCY)";
-                            "Orig. Amount(Pay.Order Curr.)" := "Amount (Paym. Order Currency)";
-                        end;
-                    else
-                        FieldError(Type);
-                end;
-            end;
-#endif
+            ObsoleteTag = '22.0';
         }
 #pragma warning restore AL0432 
         field(190; "VAT Unreliable Payer"; Boolean)
@@ -1070,17 +859,9 @@ table 31257 "Payment Order Line CZB"
         PaymentOrderManagementCZB: Codeunit "Payment Order Management CZB";
         ConfirmManagement: Codeunit "Confirm Management";
         GLSetupRead: Boolean;
-#if not CLEAN19
-        AdvancePaymentTxt: Label 'Advance Payment';
-        AdvancePaymentLineTxt: Label 'Advance Payment Line';
-        AdvanceAlreadyAppliedQst: Label 'Advanced payment %1 is already applied on payment order. Continue?', Comment = '%1 = Letter No.';
-#endif
         ExistEntryErr: Label 'For the field %1 in table %2 exist more than one value %3.', Comment = '%1 = FieldCaption, %2 = TableCaption, %3 = Applies-to Doc. No.';
         NotExistEntryErr: Label 'For the field %1 in table %2 not exist value %3.', Comment = '%1 = FieldCaption, %2 = TableCaption, %3 = Applies-to Doc. No.';
         LedgerAlreadyAppliedQst: Label 'Ledger entry %1 is already applied on payment order. Continue?', Comment = '%1 = Applies-to C/V Entry No.';
-#if not CLEAN19
-        LedgerAlreadyAppliedLineQst: Label 'Advanced payment %1 is already applied on payment order. Continue?', Comment = '%1 = Letter No.';
-#endif
         StatusCheckSuspended: Boolean;
 
     procedure GetPaymentOrder()

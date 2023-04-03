@@ -8,9 +8,5 @@ permissionset 1817 "Advanced Settings - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Navigation Bar Subs. - Objects";
-
-    Permissions = Codeunit "Advanced Settings Impl." = X,
-                  Codeunit "Advanced Settings" = X,
-                  Page "Advanced Settings" = X;
+    Permissions = Page "Advanced Settings" = X;
 }

@@ -9,6 +9,8 @@
 codeunit 3800 "App Key Vault Secret Provider" implements "Secret Provider"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

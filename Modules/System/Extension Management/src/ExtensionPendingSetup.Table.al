@@ -8,6 +8,8 @@ table 2509 "Extension Pending Setup"
     Caption = 'Extension Pending Setup';
     Extensible = false;
     ReplicateData = false;
+    InherentEntitlements = rX;
+    InherentPermissions = rX;
 
     fields
     {

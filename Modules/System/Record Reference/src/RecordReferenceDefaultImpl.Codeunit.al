@@ -6,6 +6,8 @@
 codeunit 3919 "Record Reference Default Impl." implements "Record Reference"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         InitializedCallerModuleId: Guid;

@@ -1016,7 +1016,7 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
 
     local procedure InitLogInteraction()
     begin
-        LogInter := SegManagement.FindInteractTmplCode(14) <> '';
+        LogInter := SegManagement.FindInteractionTemplateCode(14) <> '';
     end;
 
     procedure InitializeRequest(NewNoOfCopies: Integer; NewShowInternalInfo: Boolean; NewLogInteraction: Boolean)

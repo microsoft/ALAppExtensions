@@ -6,6 +6,8 @@
 codeunit 9048 "ABS HttpHeader Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure HandleRequestHeaders(HttpRequestType: Enum "Http Request Type"; var HttpRequestMessage: HttpRequestMessage; var ABSOperationPayload: Codeunit "ABS Operation Payload")

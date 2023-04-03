@@ -487,7 +487,7 @@ report 31182 "Reminder CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(8) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(8) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

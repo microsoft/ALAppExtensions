@@ -10,6 +10,8 @@ codeunit 4110 "Base64 Convert"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         Base64ConvertImpl: Codeunit "Base64 Convert Impl.";

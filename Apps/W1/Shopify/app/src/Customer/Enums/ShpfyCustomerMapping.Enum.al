@@ -3,7 +3,6 @@
 /// </summary>
 enum 30106 "Shpfy Customer Mapping" implements "Shpfy ICustomer Mapping"
 {
-    Access = Internal;
     Caption = 'Shopify Customer Mapping';
     Extensible = true;
 

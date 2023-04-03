@@ -12,6 +12,7 @@ codeunit 30116 "Shpfy Customer Export"
         CustomerMapping: Codeunit "Shpfy Customer Mapping";
         CustomerId: BigInteger;
     begin
+        CustomerAPI.FillInMissingShopIds();
         Customer.CopyFilters(Rec);
         if Shop."Export Customer To Shopify" and Customer.FindSet(false, false) then begin
             CustomerMapping.SetShop(Shop);
@@ -35,8 +36,8 @@ codeunit 30116 "Shpfy Customer Export"
     /// Add Or Update Metadata.
     /// </summary>
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
-    /// <param name="MetadataField">Parameter of type FieldRef.</param>
-    internal procedure AddOrUpdateMetadata(ShopifyCustomer: Record "Shpfy Customer"; MetadataField: FieldRef)
+    /// <param name="MetadataFieldRef">Parameter of type FieldRef.</param>
+    internal procedure AddOrUpdateMetadata(ShopifyCustomer: Record "Shpfy Customer"; MetadataFieldRef: FieldRef)
     var
         Metafield: Record "Shpfy Metafield";
         Name: Text;
@@ -44,28 +45,28 @@ codeunit 30116 "Shpfy Customer Export"
         Metafield.SetRange("Parent Table No.", Database::"Shpfy Customer");
         Metafield.SetRange("Owner Id", ShopifyCustomer.Id);
         Metafield.SetRange(Namespace, 'Microsoft.Dynamics365.BusinessCentral');
-        Name := CleanName(MetadataField);
+        Name := CleanName(MetadataFieldRef);
         Metafield.SetRange(Name, Name);
         if Metafield.FindFirst() then begin
-            if Metafield.Value <> Format(MetadataField.Value) then;
+            if Metafield.Value <> Format(MetadataFieldRef.Value) then;
         end else begin
             Clear(Metafield);
             Metafield.Namespace := 'Microsoft.Dynamics365.BusinessCentral';
             Metafield.Validate("Parent Table No.", Database::"Shpfy Customer");
             Metafield."Owner Id" := ShopifyCustomer.Id;
             Metafield."Value Type" := Metafield."Value Type"::String;
-            Metafield.Value := Format(MetadataField.Value);
+            Metafield.Value := Format(MetadataFieldRef.Value);
         end;
     end;
 
     /// <summary> 
     /// Clean Name.
     /// </summary>
-    /// <param name="Field">Parameter of type FieldRef.</param>
+    /// <param name="FieldRef">Parameter of type FieldRef.</param>
     /// <returns>Return value of type Text.</returns>
-    local procedure CleanName(Field: FieldRef): Text
+    local procedure CleanName(FieldRef: FieldRef): Text
     begin
-        exit(DelChr(Field.Record().Name, '=', ' %.-+') + '.' + DelChr(Field.Name, '=', ' %-+'));
+        exit(DelChr(FieldRef.Record().Name, '=', ' %.-+') + '.' + DelChr(FieldRef.Name, '=', ' %-+'));
     end;
 
     /// <summary> 
@@ -75,19 +76,20 @@ codeunit 30116 "Shpfy Customer Export"
     local procedure CreateShopifyCustomer(Customer: Record Customer)
     var
         ShopifyCustomer: Record "Shpfy Customer";
-        ShopifyAddress: Record "Shpfy Customer Address";
+        CustomerAddress: Record "Shpfy Customer Address";
     begin
         if Customer."E-Mail" = '' then
             exit;
 
         Clear(ShopifyCustomer);
-        Clear(ShopifyAddress);
-        if FillInShopifyCustomerData(Customer, ShopifyCustomer, ShopifyAddress) then
-            if CustomerApi.CreateCustomer(ShopifyCustomer, ShopifyAddress) then begin
+        Clear(CustomerAddress);
+        if FillInShopifyCustomerData(Customer, ShopifyCustomer, CustomerAddress) then
+            if CustomerApi.CreateCustomer(ShopifyCustomer, CustomerAddress) then begin
                 ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                 ShopifyCustomer."Last Updated by BC" := CurrentDateTime;
+                ShopifyCustomer."Shop Id" := Shop."Shop Id";
                 ShopifyCustomer.Insert();
-                ShopifyAddress.Insert();
+                CustomerAddress.Insert();
             end;
         MetadataFields(Customer, ShopifyCustomer);
     end;
@@ -97,20 +99,20 @@ codeunit 30116 "Shpfy Customer Export"
     /// </summary>
     /// <param name="Customer">Parameter of type Record Customer.</param>
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
-    /// <param name="ShopAddress">Parameter of type Record "Shopify Customer Address".</param>
+    /// <param name="CustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
     /// <returns>Return value of type Boolean.</returns>
-    internal procedure FillInShopifyCustomerData(Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer"; var ShopAddress: Record "Shpfy Customer Address"): Boolean
+    internal procedure FillInShopifyCustomerData(Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer"; var CustomerAddress: Record "Shpfy Customer Address"): Boolean
     var
-        CompanyInfo: Record "Company Information";
-        Country: Record "Country/Region";
+        CompanyInformation: Record "Company Information";
+        CountryRegion: Record "Country/Region";
 #pragma warning disable AA0073
         xShopifyCustomer: Record "Shpfy Customer" temporary;
-        xShopAddress: Record "Shpfy Customer Address" temporary;
+        xCustomerAddress: Record "Shpfy Customer Address" temporary;
 #pragma warning restore AA0073
-        Province: Record "Shpfy Province";
+        TaxArea: Record "Shpfy Tax Area";
     begin
         xShopifyCustomer := ShopifyCustomer;
-        xShopAddress := ShopAddress;
+        xCustomerAddress := CustomerAddress;
 
         if (Customer.Contact <> '') and (Shop."Contact Source" <> Shop."Contact Source"::None) then
             SpiltNameIntoFirstAndLastName(Customer.Contact, ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Contact Source")
@@ -132,43 +134,54 @@ codeunit 30116 "Shpfy Customer Export"
         ShopifyCustomer."Phone No." := Customer."Phone No.";
 
         if Shop."Name Source" = Shop."Name Source"::CompanyName then
-            ShopAddress.Company := Customer.Name
+            CustomerAddress.Company := Customer.Name
         else
             if Shop."Name 2 Source" = Shop."Name 2 Source"::CompanyName then
-                ShopAddress.Company := Customer."Name 2";
-        ShopAddress."First Name" := CopyStr(ShopifyCustomer."First Name", 1, MaxStrLen(ShopAddress."First Name"));
-        ShopAddress."Last Name" := CopyStr(ShopifyCustomer."Last Name", 1, MaxStrLen(ShopAddress."Last Name"));
-        ShopAddress."Address 1" := Customer.Address;
-        ShopAddress."Address 2" := Customer."Address 2";
-        ShopAddress.Zip := Customer."Post Code";
-        ShopAddress.City := Customer.City;
+                CustomerAddress.Company := Customer."Name 2";
+        CustomerAddress."First Name" := CopyStr(ShopifyCustomer."First Name", 1, MaxStrLen(CustomerAddress."First Name"));
+        CustomerAddress."Last Name" := CopyStr(ShopifyCustomer."Last Name", 1, MaxStrLen(CustomerAddress."Last Name"));
+        CustomerAddress."Address 1" := Customer.Address;
+        CustomerAddress."Address 2" := Customer."Address 2";
+        CustomerAddress.Zip := Customer."Post Code";
+        CustomerAddress.City := Customer.City;
         if Customer.County <> '' then
             case Shop."County Source" of
                 Shop."County Source"::Code:
-                    ShopAddress."Province Code" := CopyStr(Customer.County, 1, MaxStrLen(ShopAddress."Province Code"));
+                    begin
+                        TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+                        TaxArea.SetRange("County Code", Customer.County);
+                        if TaxArea.FindFirst() then begin
+                            CustomerAddress."Province Code" := TaxArea."County Code";
+                            CustomerAddress."Province Name" := TaxArea.County;
+                        end;
+                    end;
                 Shop."County Source"::Name:
                     begin
-                        Province.SetRange(Name, Customer.County);
-                        if Province.FindFirst() then
-                            ShopAddress."Province Code" := CopyStr(Province.Code, 1, MaxStrLen(ShopAddress."Province Code"))
-                        else begin
-                            Province.SetFilter(Name, Customer.County + '*');
-                            if Province.FindFirst() then
-                                ShopAddress."Province Code" := CopyStr(Province.Code, 1, MaxStrLen(ShopAddress."Province Code"));
+                        TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+                        TaxArea.SetRange(County, Customer.County);
+                        if TaxArea.FindFirst() then begin
+                            CustomerAddress."Province Code" := TaxArea."County Code";
+                            CustomerAddress."Province Name" := TaxArea.County;
+                        end else begin
+                            TaxArea.SetFilter(County, Customer.County + '*');
+                            if TaxArea.FindFirst() then begin
+                                CustomerAddress."Province Code" := TaxArea."County Code";
+                                CustomerAddress."Province Name" := TaxArea.County;
+                            end;
                         end;
                     end;
             end;
-        if (Customer."Country/Region Code" = '') and CompanyInfo.Get() then
-            Customer."Country/Region Code" := CompanyInfo."Country/Region Code";
+        if (Customer."Country/Region Code" = '') and CompanyInformation.Get() then
+            Customer."Country/Region Code" := CompanyInformation."Country/Region Code";
 
-        if Country.Get(Customer."Country/Region Code") then begin
-            Country.TestField("ISO Code");
-            ShopAddress."Country/Region Code" := Country."ISO Code";
+        if CountryRegion.Get(Customer."Country/Region Code") then begin
+            CountryRegion.TestField("ISO Code");
+            CustomerAddress."Country/Region Code" := CountryRegion."ISO Code";
         end;
 
-        ShopAddress.Phone := Customer."Phone No.";
+        CustomerAddress.Phone := Customer."Phone No.";
 
-        if HasDiff(ShopifyCustomer, xShopifyCustomer) or HasDiff(ShopAddress, xShopAddress) then begin
+        if HasDiff(ShopifyCustomer, xShopifyCustomer) or HasDiff(CustomerAddress, xCustomerAddress) then begin
             ShopifyCustomer."Last Updated by BC" := CurrentDateTime;
             exit(true);
         end;
@@ -177,20 +190,20 @@ codeunit 30116 "Shpfy Customer Export"
     /// <summary> 
     /// Has Diff.
     /// </summary>
-    /// <param name="Rec">Parameter of type Variant.</param>
-    /// <param name="xRec">Parameter of type Variant.</param>
+    /// <param name="RecAsVariant">Parameter of type Variant.</param>
+    /// <param name="xRecAsVariant">Parameter of type Variant.</param>
     /// <returns>Return value of type Boolean.</returns>
-    local procedure HasDiff(Rec: Variant; xRec: Variant): Boolean
+    local procedure HasDiff(RecAsVariant: Variant; xRecAsVariant: Variant): Boolean
     var
-        RecRef: RecordRef;
-        xRecRef: RecordRef;
+        RecordRef: RecordRef;
+        xRecordRef: RecordRef;
         Index: Integer;
     begin
-        RecRef.GetTable(Rec);
-        xRecRef.GetTable(xRec);
-        if RecRef.Number = xRecRef.Number then
-            for Index := 1 to RecRef.FieldCount do
-                if RecRef.FieldIndex(Index).Value <> xRecRef.FieldIndex(Index).Value then
+        RecordRef.GetTable(RecAsVariant);
+        xRecordRef.GetTable(xRecAsVariant);
+        if RecordRef.Number = xRecordRef.Number then
+            for Index := 1 to RecordRef.FieldCount do
+                if RecordRef.FieldIndex(Index).Value <> xRecordRef.FieldIndex(Index).Value then
                     exit(true);
     end;
 
@@ -201,16 +214,16 @@ codeunit 30116 "Shpfy Customer Export"
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
     local procedure MetadataFields(Customer: Record Customer; ShopifyCustomer: Record "Shpfy Customer")
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.GetTable(Customer);
-        AddOrUpdateMetadata(ShopifyCustomer, RecRef.Field(Customer.FieldNo("No.")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecRef.Field(Customer.FieldNo("VAT Bus. Posting Group")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecRef.Field(Customer.FieldNo("VAT Registration No.")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecRef.Field(Customer.FieldNo(SystemId)));
-        AddOrUpdateMetadata(ShopifyCustomer, RecRef.Field(Customer.FieldNo("Customer Disc. Group")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecRef.Field(Customer.FieldNo("Customer Price Group")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecRef.Field(Customer.FieldNo("Customer Posting Group")));
+        RecordRef.GetTable(Customer);
+        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("No.")));
+        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("VAT Bus. Posting Group")));
+        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("VAT Registration No.")));
+        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo(SystemId)));
+        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("Customer Disc. Group")));
+        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("Customer Price Group")));
+        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("Customer Posting Group")));
     end;
 
     /// <summary> 
@@ -265,23 +278,23 @@ codeunit 30116 "Shpfy Customer Export"
     local procedure UpdateShopifyCustomer(Customer: Record Customer; CustomerId: BigInteger)
     var
         ShopifyCustomer: Record "Shpfy Customer";
-        ShopifyAddress: Record "Shpfy Customer Address";
+        CustomerAddress: Record "Shpfy Customer Address";
     begin
         ShopifyCustomer.Get(CustomerID);
         if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then
             exit;  // An other customer with the same e-mail or phone is the source of it.
 
-        ShopifyAddress.SetRange("Customer Id", CustomerId);
-        ShopifyAddress.SetRange(Default, true);
-        if not ShopifyAddress.FindFirst() then begin
-            ShopifyAddress.SetRange(Default);
-            ShopifyAddress.FindFirst();
+        CustomerAddress.SetRange("Customer Id", CustomerId);
+        CustomerAddress.SetRange(Default, true);
+        if not CustomerAddress.FindFirst() then begin
+            CustomerAddress.SetRange(Default);
+            CustomerAddress.FindFirst();
         end;
 
-        if FillInShopifyCustomerData(Customer, ShopifyCustomer, ShopifyAddress) then begin
-            CustomerApi.UpdateCustomer(ShopifyCustomer, ShopifyAddress);
+        if FillInShopifyCustomerData(Customer, ShopifyCustomer, CustomerAddress) then begin
+            CustomerApi.UpdateCustomer(ShopifyCustomer, CustomerAddress);
             ShopifyCustomer.Modify();
-            ShopifyAddress.Modify();
+            CustomerAddress.Modify();
         end;
     end;
 }

@@ -182,6 +182,7 @@ codeunit 132605 "Checklist Banner Test"
         UnbindSubscription(ChecklistBannerTest);
     end;
 
+
     local procedure InsertProfile(var ProfileID: Code[30])
     var
         AllProfile: Record "All Profile";

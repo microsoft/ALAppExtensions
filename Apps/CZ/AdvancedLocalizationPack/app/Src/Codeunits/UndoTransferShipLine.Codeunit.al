@@ -1,3 +1,4 @@
+#if not CLEAN22
 codeunit 31425 "Undo Transfer Ship. Line CZA"
 {
     Permissions = TableData "Item Application Entry" = rmd,
@@ -5,6 +6,9 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
                   TableData "Transfer Shipment Line" = imd,
                   TableData "Item Entry Relation" = ri;
     TableNo = "Transfer Shipment Line";
+    ObsoleteReason = 'Replaced by standard "Undo Transfer Shipment" codeunit.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
 
     trigger OnRun()
     var
@@ -354,9 +358,7 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
 
     procedure PostItemJnlLineAppliedToListTr(ItemJournalLine: Record "Item Journal Line"; var TempApplyToItemLedgerEntry: Record "Item Ledger Entry" temporary; UndoQty: Decimal; UndoQtyBase: Decimal; var TempItemLedgerEntry: Record "Item Ledger Entry" temporary; var TempItemEntryRelation: Record "Item Entry Relation" temporary)
     var
-#if CLEAN19
         ItemTrackingSetup: Record "Item Tracking Setup";
-#endif
         ItemJnlPostLine2: Codeunit "Item Jnl.-Post Line";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
         NonDistrQuantity: Decimal;
@@ -380,16 +382,6 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
             if (ItemJournalLine."Serial No." <> '') or
                (ItemJournalLine."Lot No." <> '')
             then begin
-#if not CLEAN19
-#pragma warning disable AL0432
-                ExpDate := ItemTrackingManagement.ExistingExpirationDate(
-                    ItemJournalLine."Item No.",
-                    ItemJournalLine."Variant Code",
-                    ItemJournalLine."Lot No.",
-                    ItemJournalLine."Serial No.",
-                    false, DummyEntriesExist);
-#pragma warning restore AL0432
-#else
                 ItemTrackingSetup."Serial No." := ItemJournalLine."Serial No.";
                 ItemTrackingSetup."Lot No." := ItemJournalLine."Lot No.";
                 ExpDate := ItemTrackingManagement.ExistingExpirationDate(
@@ -397,7 +389,6 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
                     ItemJournalLine."Variant Code",
                     ItemTrackingSetup,
                     false, DummyEntriesExist);
-#endif
                 ItemJournalLine."New Item Expiration Date" := ExpDate;
                 ItemJournalLine."Item Expiration Date" := ExpDate;
             end;
@@ -520,3 +511,4 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
 
     end;
 }
+#endif

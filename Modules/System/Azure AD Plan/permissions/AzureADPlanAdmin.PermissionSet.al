@@ -12,5 +12,6 @@ PermissionSet 9004 "Azure AD Plan - Admin"
 
     Permissions = tabledata "Access Control" = ri,
                   tabledata "Custom Permission Set In Plan" = imd,
+                  tabledata "Default Permission Set In Plan" = imd,
                   tabledata "Plan Configuration" = imd;
 }

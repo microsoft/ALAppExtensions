@@ -6,6 +6,8 @@
 codeunit 8900 "Email Impl"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Sent Email" = rimd,
                   tabledata "Email Outbox" = rimd,
                   tabledata "Email Related Record" = rid,
@@ -630,7 +632,7 @@ codeunit 8900 "Email Impl"
         FeatureTelemetry.LogUsage('0000GPD', EmailViewPolicyLbl, EmailViewPolicyUsedTxt, GetTelemetryDimensions(EmailViewPolicy));
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Email View Policy", 'OnAfterInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Email View Policy", OnAfterInsertEvent, '', false, false)]
     local procedure EmitSetupTelemetry(var Rec: Record "Email View Policy")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";

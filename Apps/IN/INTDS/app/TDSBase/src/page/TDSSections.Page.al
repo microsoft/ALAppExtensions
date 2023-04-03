@@ -71,9 +71,10 @@ page 18695 "TDS Sections"
                     trigger OnAction()
                     var
                         EditinExcel: Codeunit "Edit in Excel";
-                        TDSSectionLbl: Label 'Code eq %1', Comment = '%1 = TDS Section Code';
+                        EditinExcelFilters: Codeunit "Edit in Excel Filters";
                     begin
-                        EditinExcel.EditPageInExcel('Sections', CurrPage.ObjectId(false), StrSubstNo(TDSSectionLbl, Rec.Code));
+                        EditinExcelFilters.AddField('Code', Enum::"Edit in Excel Filter Type"::Equal, Rec.Code, Enum::"Edit in Excel Edm Type"::"Edm.String");
+                        EditinExcel.EditPageInExcel('Sections', Page::"TDS Sections", EditinExcelFilters);
                     end;
                 }
                 action(ClearFilter)

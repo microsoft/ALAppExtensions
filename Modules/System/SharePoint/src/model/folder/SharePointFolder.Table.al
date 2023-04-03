@@ -9,6 +9,8 @@
 table 9106 "SharePoint Folder"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     DataClassification = SystemMetadata; // Data classification is SystemMetadata as the table is temporary
     Caption = 'SharePoint Folder';
     TableType = Temporary;

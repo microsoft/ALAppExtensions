@@ -6,6 +6,8 @@
 codeunit 2503 "Extension Operation Impl"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     SingleInstance = false;
     Permissions = tabledata Media = r,
                   tabledata "NAV App Setting" = rm,

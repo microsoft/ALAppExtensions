@@ -6,6 +6,8 @@
 codeunit 8907 "Email Viewer"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Sent Email" = ri,
                   tabledata "Email View Policy" = r;
 

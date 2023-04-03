@@ -1,7 +1,15 @@
 table 11728 "Subst. Cust. Posting Group CZL"
 {
     Caption = 'Subst. Customer Posting Group';
+#if not CLEAN22
     LookupPageID = "Subst. Cust. Post. Groups CZL";
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '25.0';
+#endif
+    ObsoleteReason = 'Replaced by Alt. Customer Posting Group table.';
 
     fields
     {
@@ -16,12 +24,13 @@ table 11728 "Subst. Cust. Posting Group CZL"
             Caption = 'Customer Posting Group';
             TableRelation = "Customer Posting Group";
             DataClassification = CustomerContent;
-
+#if not CLEAN22
             trigger OnValidate()
             begin
                 if "Customer Posting Group" = "Parent Customer Posting Group" then
                     Error(PostGrpSubstErr);
             end;
+#endif
         }
     }
 
@@ -32,8 +41,9 @@ table 11728 "Subst. Cust. Posting Group CZL"
             Clustered = true;
         }
     }
-
+#if not CLEAN22
     var
         PostGrpSubstErr: Label 'Posting Group cannot substitute itself.';
+#endif
 }
 

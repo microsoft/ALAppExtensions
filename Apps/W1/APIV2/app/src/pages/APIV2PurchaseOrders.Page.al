@@ -537,6 +537,13 @@ page 30066 "APIV2 - Purchase Orders"
                     EntitySetName = 'dimensionSetLines';
                     SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const("Purchase Order");
                 }
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const("Purchase Order");
+                }
             }
         }
     }

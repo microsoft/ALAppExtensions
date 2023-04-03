@@ -92,8 +92,6 @@ page 31257 "Iss. Bank Statements CZB"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Statistics';
                 Image = Statistics;
-                Promoted = true;
-                PromotedCategory = Process;
                 ShortCutKey = 'F7';
                 ToolTip = 'View the statistics on the selected bank statement.';
 
@@ -153,9 +151,6 @@ page 31257 "Iss. Bank Statements CZB"
                 Caption = 'Find Entries';
                 Ellipsis = true;
                 Image = Navigate;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ShortCutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
@@ -185,15 +180,42 @@ page 31257 "Iss. Bank Statements CZB"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
                 begin
                     Rec.PrintToDocumentAttachment();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("&Navigate_Promoted"; "&Navigate")
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Print';
+
+                actionref(IssuedBankStatement_Promoted; IssuedBankStatement)
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Bank Statement';
+
+                actionref(Statistics_Promoted; Statistics)
+                {
+                }
             }
         }
     }

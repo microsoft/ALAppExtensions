@@ -27,10 +27,8 @@ PermissionSet 21 "System Application - Read"
                              "Object Selection - Read",
                              "Page Summary Provider - Read",
                              "Page Action Provider - Read",
-                             "Password - Exec",
                              "Printer Management - Read",
                              "Record Link Management - Read",
-                             "Record Reference - Exec",
                              "Recurrence Schedule - Read",
                              "Retention Policy - Read",
 #if not CLEAN20
@@ -46,13 +44,13 @@ PermissionSet 21 "System Application - Read"
 #pragma warning restore AL0432
 #endif
                              "System Initialization - Exec",
+                             "Security Groups - Read",
                              "Table Information - Read",
                              "Telemetry - Exec",
                              "Tenant License State - Read",
                              "Time Zone Selection - Read",
                              "Translation - Read",
                              "Upgrade Tags - Read",
-                             "User Login Times - Read",
                              "User Permissions - Read",
                              "User Selection - Read",
                              "Video - Read",

@@ -10,6 +10,8 @@
 codeunit 1258 "Rijndael Cryptography"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";

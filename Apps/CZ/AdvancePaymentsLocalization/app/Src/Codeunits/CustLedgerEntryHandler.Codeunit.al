@@ -63,17 +63,4 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
         then
             Error(AppliedToAdvanceLetterErr);
     end;
-#if not CLEAN19
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", 'OnBeforeCalcLinkAdvAmount', '', false, false)]
-#pragma warning restore AL0432
-    local procedure ResetAmountOnBeforeCalcLinkAdvAmount(var Amount: Decimal; var IsHandled: Boolean)
-    begin
-        if IsHandled then
-            exit;
-
-        Amount := 0;
-        IsHandled := true;
-    end;
-#endif
 }

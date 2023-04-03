@@ -3,7 +3,6 @@
 /// </summary>
 table 30116 "Shpfy Order Attribute"
 {
-    Access = Internal;
     Caption = 'Shopify Order Attributes';
     DataClassification = CustomerContent;
 

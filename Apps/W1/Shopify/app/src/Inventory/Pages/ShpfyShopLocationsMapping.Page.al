@@ -48,6 +48,7 @@ page 30117 "Shpfy Shop Locations Mapping"
                         Text := OldText + LocationList.GetSelectionFilter();
                         exit(true);
                     end;
+
                 }
 #if not CLEAN22
                 field(Disabled; Rec.Disabled)
@@ -64,6 +65,17 @@ page 30117 "Shpfy Shop Locations Mapping"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Select the stock calculation used for this location.';
+                }
+                field(Active; Rec.Active)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if the location is active in Shopify.';
+                    Visible = false;
+                }
+                field("Is Primary"; Rec."Is Primary")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if this the primary location in Shopify.';
                 }
             }
         }
@@ -111,13 +123,13 @@ page 30117 "Shpfy Shop Locations Mapping"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        ShpfyShopLocation: Record "Shpfy Shop Location";
+        ShopLocation: Record "Shpfy Shop Location";
         DisableQst: Label 'One or more lines have %1 specified, but stock synchronization is disabled. Do you want to close the page?', Comment = '%1 the name for location filter';
     begin
-        ShpfyShopLocation.SetRange("Shop Code", Rec.GetFilter("Shop Code"));
-        ShpfyShopLocation.SetFilter("Location Filter", '<>%1', '');
-        ShpfyShopLocation.SetRange("Stock Calculation", ShpfyShopLocation."Stock Calculation"::Disabled);
-        if ShpfyShopLocation.IsEmpty() then
+        ShopLocation.SetRange("Shop Code", Rec.GetFilter("Shop Code"));
+        ShopLocation.SetFilter("Location Filter", '<>%1', '');
+        ShopLocation.SetRange("Stock Calculation", ShopLocation."Stock Calculation"::Disabled);
+        if ShopLocation.IsEmpty() then
             exit(true);
         if not Confirm(StrSubstNo(DisableQst, Rec.FieldCaption("Location Filter"))) then
             exit(false);

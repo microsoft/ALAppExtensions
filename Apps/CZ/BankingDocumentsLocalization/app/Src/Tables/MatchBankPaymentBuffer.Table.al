@@ -80,15 +80,13 @@ table 31260 "Match Bank Payment Buffer CZB"
             Caption = 'Dimension Set ID';
             DataClassification = SystemMetadata;
         }
-#if not CLEAN19
         field(45; "Letter No."; Code[20])
         {
             Caption = 'Letter No.';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '19.0';
+            ObsoleteTag = '22.0';
         }
-#endif
     }
 
     keys
@@ -189,49 +187,6 @@ table 31260 "Match Bank Payment Buffer CZB"
         OnBeforeInsertFromEmployeeLedgerEntry(Rec, EmployeeLedgerEntry);
         Insert(true);
     end;
-#if not CLEAN19
-#pragma warning disable AL0432
-    procedure InsertFromSalesAdvance(SalesAdvanceLetterHeader: Record "Sales Advance Letter Header"; UseLCYAmounts: Boolean)
-    begin
-        Clear(Rec);
-        "Letter No." := SalesAdvanceLetterHeader."No.";
-        "Account Type" := "Account Type"::Customer;
-        "Account No." := SalesAdvanceLetterHeader."Bill-to Customer No.";
-        "Due Date" := SalesAdvanceLetterHeader."Advance Due Date";
-        "Posting Date" := SalesAdvanceLetterHeader."Posting Date";
-        "Specific Symbol" := SalesAdvanceLetterHeader."Specific Symbol";
-        "Variable Symbol" := SalesAdvanceLetterHeader."Variable Symbol";
-        "Constant Symbol" := SalesAdvanceLetterHeader."Constant Symbol";
-        if UseLCYAmounts then
-            "Remaining Amount" := SalesAdvanceLetterHeader.GetRemAmountLCY()
-        else
-            "Remaining Amount" := SalesAdvanceLetterHeader.GetRemAmount();
-        "Remaining Amt. Incl. Discount" := "Remaining Amount";
-        "Dimension Set ID" := SalesAdvanceLetterHeader."Dimension Set ID";
-        Insert(true);
-    end;
-
-    procedure InsertFromPurchAdvance(PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header"; UseLCYAmounts: Boolean)
-    begin
-        Clear(Rec);
-        "Letter No." := PurchAdvanceLetterHeader."No.";
-        "Account Type" := "Account Type"::Vendor;
-        "Account No." := PurchAdvanceLetterHeader."Pay-to Vendor No.";
-        "Due Date" := PurchAdvanceLetterHeader."Advance Due Date";
-        "Posting Date" := PurchAdvanceLetterHeader."Posting Date";
-        "Specific Symbol" := PurchAdvanceLetterHeader."Specific Symbol";
-        "Variable Symbol" := PurchAdvanceLetterHeader."Variable Symbol";
-        "Constant Symbol" := PurchAdvanceLetterHeader."Constant Symbol";
-        if UseLCYAmounts then
-            "Remaining Amount" := PurchAdvanceLetterHeader.GetRemAmountLCY()
-        else
-            "Remaining Amount" := PurchAdvanceLetterHeader.GetRemAmount();
-        "Remaining Amt. Incl. Discount" := "Remaining Amount";
-        "Dimension Set ID" := PurchAdvanceLetterHeader."Dimension Set ID";
-        Insert(true);
-    end;
-#pragma warning restore AL0432
-#endif
 
     local procedure GetCustomerLedgerEntryDiscountDueDate(CustLedgerEntry: Record "Cust. Ledger Entry"): Date
     begin

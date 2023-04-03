@@ -1,5 +1,10 @@
+#if not CLEAN22
 codeunit 31025 "Intrastat Jnl.Line Handler CZL"
 {
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+
     var
         Item: Record Item;
         TariffNumber: Record "Tariff Number";
@@ -133,3 +138,4 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
         IsHandled := false;
     end;
 }
+#endif

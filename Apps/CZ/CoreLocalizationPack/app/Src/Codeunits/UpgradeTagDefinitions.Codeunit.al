@@ -8,9 +8,7 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerDatabaseUpgradeTags.Add(GetDataVersion183PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion189PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion200PerDatabaseUpgradeTag());
-#if CLEAN20
-        PerDatabaseUpgradeTags.Add(GetDataVersion230PerDatabaseUpgradeTag());
-#endif
+        PerDatabaseUpgradeTags.Add(GetReplaceAllowAlterPostingGroupsPermissionUpgradeTag());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
@@ -21,6 +19,14 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetDataVersion183PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion189PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion200PerCompanyUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetReportBlanketPurchaseOrderCZUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetReplaceVATDateCZLVATEntriesUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetReplaceVATDateCZLGLEntriesUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetReplaceVATDateCZLSalesUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetReplaceVATDateCZLPurchaseUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetReplaceVATDateCZLServiceUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetReplaceVATDateCZLSetupUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetReplaceAllowAlterPostingGroupsUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -48,12 +54,6 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         exit('CZL-UpgradeCoreLocalizationPackForCzech-PerDatabase-20.0');
     end;
 
-#if CLEAN20
-    procedure GetDataVersion230PerDatabaseUpgradeTag(): Code[250]
-    begin
-        exit('CZL-UpgradeCoreLocalizationPackForCzech-PerDatabase-23.0');
-    end;
-#endif
     procedure GetDataVersion174PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZL-UpgradeCoreLocalizationPackForCzech-PerCompany-17.4');
@@ -77,5 +77,50 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetDataVersion200PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZL-UpgradeCoreLocalizationPackForCzech-PerCompany-20.0');
+    end;
+
+    procedure GetReportBlanketPurchaseOrderCZUpgradeTag(): Code[250]
+    begin
+        exit('CZL-460438-ReportBlanketPurchaseOrderCZ-20230112');
+    end;
+
+    procedure GetReplaceVATDateCZLVATEntriesUpgradeTag(): Code[250]
+    begin
+        exit('CZL-461982-ReplaceVATDateCZLVATEntriesUpgrade-20230203');
+    end;
+
+    procedure GetReplaceVATDateCZLGLEntriesUpgradeTag(): Code[250]
+    begin
+        exit('CZL-461982-ReplaceVATDateCZLGLEntriesUpgrade-20230203');
+    end;
+
+    procedure GetReplaceVATDateCZLSalesUpgradeTag(): Code[250]
+    begin
+        exit('CZL-461982-ReplaceVATDateCZLSalesUpgrade-20230203');
+    end;
+
+    procedure GetReplaceVATDateCZLPurchaseUpgradeTag(): Code[250]
+    begin
+        exit('CZL-461982-ReplaceVATDateCZLPurchaseUpgrade-20230203');
+    end;
+
+    procedure GetReplaceVATDateCZLServiceUpgradeTag(): Code[250]
+    begin
+        exit('CZL-461982-ReplaceVATDateCZLServiceUpgrade-20230203');
+    end;
+
+    procedure GetReplaceVATDateCZLSetupUpgradeTag(): Code[250]
+    begin
+        exit('CZL-461982-ReplaceVATDateCZLSetupUpgrade-20230203');
+    end;
+
+    procedure GetReplaceAllowAlterPostingGroupsUpgradeTag(): Code[250]
+    begin
+        exit('CZL-463956-ReplaceAllowAlterPostingGroupsUpgrade-20230217');
+    end;
+
+    procedure GetReplaceAllowAlterPostingGroupsPermissionUpgradeTag(): Code[250]
+    begin
+        exit('CZL-463956-ReplaceAllowAlterPostingGroupsPermissionUpgrade-20230217');
     end;
 }

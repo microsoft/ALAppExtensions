@@ -35,6 +35,9 @@ codeunit 30185 "Shpfy Sync Products"
         OnlySyncPrice: Boolean;
         NumberOfRecords: Integer;
         ErrMsg: Text;
+        DialogMsg: Label '#1#########################', Locked = true;
+        SyncInformationProgressLbl: Label 'Synchronizing information with Shopify.', Comment = 'Shopify is a product name.';
+        FinishSyncProgressLbl: Label 'Finishing up synchronization with Shopify.', Comment = 'Shopify is a product name.';
 
     /// <summary> 
     /// Export Items To Shopify.
@@ -55,7 +58,7 @@ codeunit 30185 "Shpfy Sync Products"
         TempProduct: Record "Shpfy Product" temporary;
         Id: BigInteger;
         UpdatedAt: DateTime;
-        Window: Dialog;
+        Dialog: Dialog;
         ProductIds: Dictionary of [BigInteger, DateTime];
         Imported: Integer;
         Skipped: Integer;
@@ -65,8 +68,8 @@ codeunit 30185 "Shpfy Sync Products"
         ProductApi.RetrieveShopifyProductIds(ProductIds, NumberOfRecords);
         if GuiAllowed then begin
             ToImport := ProductIds.Count;
-            Window.Open(Msg, ToImport, Skipped, Imported);
-            Window.Update(1, ToImport);
+            Dialog.Open(Msg, ToImport, Skipped, Imported);
+            Dialog.Update(1, ToImport);
         end;
         foreach Id in ProductIds.Keys do
             if Product.Get(Id) then begin
@@ -82,7 +85,7 @@ codeunit 30185 "Shpfy Sync Products"
             end;
         if GuiAllowed then begin
             Skipped := ToImport - TempProduct.Count;
-            Window.Update(2, Skipped);
+            Dialog.Update(2, Skipped);
         end;
         Clear(TempProduct);
         if TempProduct.FindSet(false, false) then begin
@@ -95,12 +98,12 @@ codeunit 30185 "Shpfy Sync Products"
                     ErrMsg := GetLastErrorText;
                 if GuiAllowed then begin
                     Imported += 1;
-                    Window.Update(3, Imported);
+                    Dialog.Update(3, Imported);
                 end;
             until TempProduct.Next() = 0;
         end;
         if GuiAllowed then
-            Window.Close();
+            Dialog.Close();
     end;
 
     internal procedure SetOnlySyncPriceOn()
@@ -126,4 +129,112 @@ codeunit 30185 "Shpfy Sync Products"
         ProductExport.SetShop(Shop);
     end;
 
+    internal procedure GetProductUrl(var ShopifyVariant: Record "Shpfy Variant"): Text
+    var
+        ShopifyProduct: Record "Shpfy Product";
+    begin
+        ShopifyVariant.FindFirst();
+        ShopifyProduct.Get(ShopifyVariant."Product Id");
+        if ShopifyProduct.URL <> '' then
+            exit(ShopifyProduct.URL);
+        if ShopifyProduct."Preview URL" <> '' then
+            exit(ShopifyProduct."Preview URL");
+    end;
+
+    internal procedure GetProductUrl(Item: Record Item; ShopCode: Code[20]): Text
+    var
+        ShopifyProduct: Record "Shpfy Product";
+    begin
+        ShopifyProduct.SetRange("Item SystemId", Item.SystemId);
+        ShopifyProduct.SetRange("Shop Code", ShopCode);
+        if ShopifyProduct.FindFirst() then begin
+            if ShopifyProduct.URL <> '' then
+                exit(ShopifyProduct.URL);
+            if ShopifyProduct."Preview URL" <> '' then
+                exit(ShopifyProduct."Preview URL");
+        end;
+    end;
+
+    internal procedure GetProductsOverview(var ShopifyVariant: Record "Shpfy Variant")
+    var
+        ShopifyProduct: Record "Shpfy Product";
+        ShopifyProductsOverview: Page "Shpfy Products Overview";
+        ProductIdFilter: Text;
+    begin
+        ShopifyVariant.FindSet();
+        repeat
+            ProductIdFilter += Format(ShopifyVariant."Product Id") + '|';
+        until ShopifyVariant.Next() = 0;
+        ProductIdFilter := ProductIdFilter.TrimEnd('|');
+        ShopifyProduct.SetFilter(Id, ProductIdFilter);
+        ShopifyProductsOverview.SetTableView(ShopifyProduct);
+        ShopifyProductsOverview.RunModal();
+    end;
+
+    internal procedure ConfirmAddItemToShopify(Item: Record Item; var ShopifyShop: Record "Shpfy Shop"): Boolean
+    var
+        ShopifyProduct: Record "Shpfy Product";
+        ShopSelection: Page "Shpfy Shop Selection";
+        AddItemConfirm: Page "Shpfy Add Item Confirm";
+        MappedShopsFilter: Text;
+    begin
+        ShopifyShop.SetRange(Enabled, true);
+        if ShopifyShop.Count = 1 then begin
+            ShopifyShop.FindFirst();
+            AddItemConfirm.SetItemDescription(Item.Description);
+            AddItemConfirm.SetShopCode(ShopifyShop.Code);
+            AddItemConfirm.SetIsActive(ShopifyShop."Status for Created Products" = ShopifyShop."Status for Created Products"::Active);
+            if AddItemConfirm.RunModal() = Action::OK then
+                exit(true);
+        end else begin
+            ShopifyProduct.SetRange("Item SystemId", Item.systemId);
+            if ShopifyProduct.FindSet() then begin
+                repeat
+                    MappedShopsFilter += '<>' + ShopifyProduct."Shop Code" + '&';
+                until ShopifyProduct.Next() = 0;
+                MappedShopsFilter := MappedShopsFilter.TrimEnd('&');
+                ShopifyShop.SetFilter(Code, MappedShopsFilter);
+            end;
+            ShopSelection.SetTableView(ShopifyShop);
+            if ShopifyShop.Count = 1 then begin
+                ShopifyShop.FindFirst();
+                AddItemConfirm.SetItemDescription(Item.Description);
+                AddItemConfirm.SetShopCode(ShopifyShop.Code);
+                AddItemConfirm.SetIsActive(ShopifyShop."Status for Created Products" = ShopifyShop."Status for Created Products"::Active);
+                if AddItemConfirm.RunModal() = Action::OK then
+                    exit(true);
+            end else begin
+                ShopSelection.LookupMode(true);
+                if ShopSelection.RunModal() = Action::LookupOK then begin
+                    ShopSelection.GetRecord(ShopifyShop);
+                    exit(true);
+                end;
+            end;
+        end;
+    end;
+
+    internal procedure AddItemToShopify(Item: Record Item; ShopifyShop: Record "Shpfy Shop")
+    var
+        ShopLocation: Record "Shpfy Shop Location";
+        ShopifyCreateProduct: Codeunit "Shpfy Create Product";
+        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
+        ProgressDialog: Dialog;
+    begin
+        if GuiAllowed then begin
+            ProgressDialog.Open(DialogMsg);
+            ProgressDialog.Update(1, SyncInformationProgressLbl);
+        end;
+        ShopifyCreateProduct.SetShop(ShopifyShop.Code);
+        ShopifyCreateProduct.Run(Item);
+        if ShopifyShop."Sync Item Images" = ShopifyShop."Sync Item Images"::"To Shopify" then begin
+            if GuiAllowed then
+                ProgressDialog.Update(1, FinishSyncProgressLbl);
+            BackgroundSyncs.ProductImagesSync(ShopifyShop.Code, Format(ShopifyCreateProduct.GetProductId()));
+        end;
+
+        ShopLocation.SetRange("Shop Code", ShopifyShop.Code);
+        ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
+        if not ShopLocation.IsEmpty() then
+            BackgroundSyncs.InventorySync(ShopifyShop.Code);
+    end;
 }

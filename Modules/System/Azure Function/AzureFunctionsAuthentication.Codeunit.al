@@ -9,6 +9,8 @@
 codeunit 7800 "Azure Functions Authentication"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Creates OAuth2 authentication instance of Azure function interface.

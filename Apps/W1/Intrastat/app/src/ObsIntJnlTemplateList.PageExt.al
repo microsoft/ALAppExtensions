@@ -1,5 +1,11 @@
+#if not CLEAN22
 pageextension 4818 "Obs. Int. Jnl. Template List" extends "Intrastat Jnl. Template List"
 {
+
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moving to Intrastat extension.';
+
     trigger OnOpenPage()
     var
         IntrastatReportMgt: Codeunit IntrastatReportManagement;
@@ -10,3 +16,4 @@ pageextension 4818 "Obs. Int. Jnl. Template List" extends "Intrastat Jnl. Templa
         end;
     end;
 }
+#endif

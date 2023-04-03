@@ -77,12 +77,9 @@ page 18244 "Bank Charges"
                 begin
                     EditinExcel.EditPageInExcel(
                         'Bank Charges',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(BankChargeMsg, Rec."Code"));
+                        Page::"Bank Charges");
                 end;
             }
         }
     }
-    var
-        BankChargeMsg: Label '%1', Comment = '%1=Bank Charge Code';
 }

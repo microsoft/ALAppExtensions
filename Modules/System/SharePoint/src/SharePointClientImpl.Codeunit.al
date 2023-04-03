@@ -6,6 +6,8 @@
 codeunit 9101 "SharePoint Client Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         SharePointUriBuilder: Codeunit "SharePoint Uri Builder";

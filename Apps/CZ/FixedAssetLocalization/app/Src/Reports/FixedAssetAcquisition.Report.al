@@ -57,9 +57,8 @@ report 31254 "Fixed Asset Acquisition CZF"
                 {
                     IncludeCaption = true;
                 }
-                column(FixedAsset_Inactive; Inactive)
+                column(FixedAsset_Inactive; FormatBoolean(Inactive))
                 {
-                    IncludeCaption = true;
                 }
                 column(FixedAsset_SerialNo; "Serial No.")
                 {
@@ -301,6 +300,7 @@ report 31254 "Fixed Asset Acquisition CZF"
         AcceptedLbl = 'Accepted by';
         ApprovedLbl = 'Approved by Committee Members';
         DateSignatureLbl = 'Date, Signature';
+        InactiveLbl = 'Inactive';
     }
 
     trigger OnPreReport()
@@ -339,6 +339,7 @@ report 31254 "Fixed Asset Acquisition CZF"
         EmptyNoErr: Label 'Acquisition report no. must not be empty.';
         EmptyDate1Err: Label 'Acquisition report date must not be empty.';
         EmptyDate2Err: Label 'Use report start date must not be empty.';
+        BooleanValuesTxt: Label 'Yes,No';
 
     local procedure PrintFALedgDateOnAfterValida()
     begin
@@ -350,5 +351,12 @@ report 31254 "Fixed Asset Acquisition CZF"
         FAAcquisitionNoCtrlEditable := not PrintFALedgDate;
         FAAcquisitionDateCtrlEditable := not PrintFALedgDate;
         FAUseStartReportDateCtrlEditable := not PrintFALedgDate;
+    end;
+
+    local procedure FormatBoolean(BoolValue: Boolean): Text
+    begin
+        if BoolValue then
+            exit(SelectStr(1, BooleanValuesTxt));
+        exit(SelectStr(2, BooleanValuesTxt));
     end;
 }

@@ -46,7 +46,7 @@ page 8889 "Email Attachments"
             {
                 ApplicationArea = All;
                 Image = Attach;
-                Caption = 'Add File';
+                Caption = 'Add file';
                 ToolTip = 'Attach files, such as documents or images, to the email.';
                 Scope = Page;
                 Visible = IsEmailEditable;
@@ -67,7 +67,7 @@ page 8889 "Email Attachments"
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 Image = Attach;
-                Caption = 'Add Files from Default Selection';
+                Caption = 'Add files from default selection';
                 ToolTip = 'Add additional attachments from default email attachments. These files are not attached by default.';
                 Scope = Page;
                 Visible = IsEmailEditable;
@@ -99,7 +99,7 @@ page 8889 "Email Attachments"
             {
                 ApplicationArea = All;
                 Image = Attach;
-                Caption = 'Add File from Source';
+                Caption = 'Add file from source document';
                 ToolTip = 'Attach a file that was originally attached to the source document, such as a Customer Record, Sales Invoice, etc.';
                 Scope = Page;
                 Visible = IsEmailEditable;
@@ -118,7 +118,7 @@ page 8889 "Email Attachments"
             {
                 ApplicationArea = All;
                 Image = Word;
-                Caption = 'Add File from Word Template';
+                Caption = 'Add file from Word template';
                 ToolTip = 'Create and attach a document using a Word Template.';
                 Scope = Page;
                 Visible = IsEmailEditable;
@@ -129,6 +129,47 @@ page 8889 "Email Attachments"
                 begin
                     EmailEditor.AttachFromWordTemplate(EmailMessageImpl, EmailMessageId);
                     UpdateDeleteActionEnablement();
+                end;
+            }
+
+            action(EditInOneDrive)
+            {
+                ApplicationArea = All;
+                Image = Cloud;
+                Caption = 'Edit in OneDrive';
+                ToolTip = 'Copy the file to your Business Central folder in OneDrive and open it in a new window so you can edit the file.', Comment = 'OneDrive should not be translated';
+                Scope = Repeater;
+                Visible = EditOptionVisible;
+
+                trigger OnAction()
+                var
+                    TempDocumentSharing: Record "Document Sharing" temporary;
+                    DocumentSharingCodeunit: Codeunit "Document Sharing";
+                    TextSplit: List of [Text];
+                    Value: Text;
+                    PreviousLength: Integer;
+                    InStream: InStream;
+                    OutStream: OutStream;
+                begin
+                    TempDocumentSharing.Name := Rec."Attachment Name";
+                    TextSplit := Rec."Attachment Name".Split('.');
+                    TextSplit.Get(TextSplit.Count(), Value);
+                    TempDocumentSharing.Extension := CopyStr('.' + Value, 1, MaxStrLen(TempDocumentSharing.Extension));
+
+                    TempDocumentSharing."Document Sharing Intent" := Enum::"Document Sharing Intent"::Edit;
+
+                    TempDocumentSharing.Data.CreateOutStream(OutStream);
+                    Rec.Data.ExportStream(OutStream);
+                    PreviousLength := TempDocumentSharing.Data.Length;
+
+                    TempDocumentSharing.Insert();
+                    DocumentSharingCodeunit.Share(TempDocumentSharing);
+
+                    if TempDocumentSharing.Data.Length <> PreviousLength then begin
+                        TempDocumentSharing.Data.CreateInStream(InStream);
+                        Rec.Data.ImportStream(InStream, '', Rec."Content Type");
+                        Rec.Modify();
+                    end;
                 end;
             }
 
@@ -155,6 +196,13 @@ page 8889 "Email Attachments"
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    var
+        DocumentSharing: Codeunit "Document Sharing";
+    begin
+        EditOptionVisible := DocumentSharing.ShareEnabled(Enum::"Document Sharing Source"::System) and DocumentSharing.EditEnabledForFile(Rec."Attachment Name");
+    end;
 
     protected procedure GetEmailMessage() EmailMessage: Codeunit "Email Message"
     begin
@@ -196,6 +244,7 @@ page 8889 "Email Attachments"
         [InDataSet]
         DeleteActionEnabled: Boolean;
         IsEmailEditable: Boolean;
+        EditOptionVisible: Boolean;
         EmailMessageId: Guid;
         EmailScenario: Enum "Email Scenario";
         DeleteQst: Label 'Go ahead and delete?';

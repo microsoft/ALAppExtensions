@@ -2,22 +2,45 @@ pageextension 31032 "Sales Journal CZL" extends "Sales Journal"
 {
     layout
     {
+#if not CLEAN22
+        modify("VAT Reporting Date")
+        {
+            Visible = ReplaceVATDateEnabled and VATDateEnabled;
+        }
+#endif
+#if not CLEAN22
         addafter("<Customer Name>")
         {
             field("Posting Group CZL"; Rec."Posting Group")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the posting group that will be used in posting the journal line.The field is used only if the account type is either customer or vendor.';
+#if not CLEAN20
+                Visible = not AllowMultiplePostingGroupsEnabled;
+#else
+                Visible = false;
+#endif
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by standard Posting Group field.';
             }
         }
+#endif
+#if not CLEAN22
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'VAT Date (Obsolete)';
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by VAT Reporting Date.';
+                Visible = not ReplaceVATDateEnabled;
             }
         }
+#endif
         addafter(Correction)
         {
             field("Specific Symbol CZL"; Rec."Specific Symbol CZL")
@@ -69,4 +92,28 @@ pageextension 31032 "Sales Journal CZL" extends "Sales Journal"
             }
         }
     }
+#if not CLEAN22
+    trigger OnOpenPage()
+    begin
+#if not CLEAN20
+        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
+#endif
+        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+    end;
+
+    var
+#if not CLEAN20
+#pragma warning disable AL0432
+        PostingGroupManagement: Codeunit "Posting Group Management CZL";
+#pragma warning restore AL0432
+#endif
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+        ReplaceVATDateEnabled: Boolean;
+        VATDateEnabled: Boolean;
+#if not CLEAN20
+        AllowMultiplePostingGroupsEnabled: Boolean;
+#endif
+#endif
 }

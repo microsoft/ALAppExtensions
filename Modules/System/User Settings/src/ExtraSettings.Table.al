@@ -9,6 +9,8 @@
 table 9173 "Extra Settings"
 {
     Access = Internal;
+    InherentEntitlements = rimX;
+    InherentPermissions = rimX;
     DataPerCompany = false;
 #if not CLEAN20
     ObsoleteState = Pending;

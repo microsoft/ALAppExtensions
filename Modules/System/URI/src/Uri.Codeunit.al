@@ -10,6 +10,8 @@
 codeunit 3060 Uri
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Initializes a new instance of the Uri class with the specified URI.
@@ -48,6 +50,16 @@ codeunit 3060 Uri
     procedure GetHost(): Text
     begin
         exit(Uri.Host);
+    end;
+
+    /// <summary>
+    /// Gets the authority of the URI.
+    /// </summary>
+    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.authority for more information.</remarks>
+    /// <returns>A text that contains the authority for this URI.</returns>
+    procedure GetAuthority(): Text
+    begin
+        exit(Uri.Authority);
     end;
 
     /// <summary>

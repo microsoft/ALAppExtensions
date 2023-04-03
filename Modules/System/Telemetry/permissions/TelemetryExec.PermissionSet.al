@@ -7,11 +7,8 @@ permissionset 8703 "Telemetry - Exec"
 {
     Assignable = false;
 
-    IncludedPermissionSets = "Telemetry - Objects",
-                             "Language - Read",
-                             "Environment Info. - Objects";
+    IncludedPermissionSets = "Language - Read";
 
     Permissions = tabledata Company = r,
-                  tabledata "User Personalization" = r,
-                  tabledata "Feature Uptake" = rimd;
+                  tabledata "User Personalization" = r;
 }

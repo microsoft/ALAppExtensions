@@ -30,7 +30,7 @@ page 4811 "Intrastat Report List"
                 field("Statistics Period"; Rec."Statistics Period")
                 {
                     ApplicationArea = BasicEU, BasicNO, BasicCH;
-                    ToolTip = 'Specifies the month to report data for. Enter the period as a four-digit number, with no spaces or symbols. Depending on your country, enter either the month first and then the year, or vice versa. For example, enter either 1706 or 0617 for June, 2017.';
+                    ToolTip = 'Specifies the month to report data for. Enter the period as a four-digit number, with no spaces or symbols. Enter the year first and then the month, for example, enter 1706 for June, 2017.';
                 }
                 field("Currency Identifier"; Rec."Currency Identifier")
                 {
@@ -65,6 +65,7 @@ page 4811 "Intrastat Report List"
         }
     }
 
+#if not CLEAN22
     trigger OnOpenPage()
     var
         IntrastatReportMgt: Codeunit IntrastatReportManagement;
@@ -79,4 +80,5 @@ page 4811 "Intrastat Report List"
             Error('');
         end;
     end;
+#endif
 }

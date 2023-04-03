@@ -5,6 +5,7 @@
 
 codeunit 2027 "Image Analyzer Ext. Mgt."
 {
+    Permissions = tabledata "Image Analysis Scenario" = RIMD;
 
     var
         TooManyCallsNotificationErrorNameTxt: Label 'Image analysis usage limit already reached';
@@ -12,13 +13,11 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         TooManyCallsErrorNotificationDescriptionTxt: Label 'Notify me that the maximum number of image analyses allowed in the period is already reached.';
         TooManyCallsWarningNotificationDescriptionTxt: Label 'Notify me when I reach the maximum number of image analyses allowed in the period.';
         TooManyCallsWarningMsg: Label 'You just reached the limit of analyzed images. You can analyze %1 images per %2. You''ll have to wait until the beginning of the next %2 to analyze more images.', Comment = '%1 is the number of calls per time unit allowed, %2 is the time unit duration (year, month, day, or hour)';
-        SetupNotificationMsg: Label 'If you want, we can assign attributes based on the images you import for items and contacts.';
         SetupNotificationNameTxt: Label 'Image Analyzer setup';
         SetupNotificationDescriptionTxt: Label 'Notify me that the Image Analyzer extension can suggest attributes detected in imported images.';
         ContactQuestionnairePopulatedNameTxt: Label 'Image Analyzer profile questionnaire completed';
         ContactQuestionnairePopulatedNotificationDescriptionTxt: Label 'Notify me when Image Analyzer has been used in profile questionnaire to analyze a picture of a contact.';
         AnalyzerDisabledMsg: Label 'Looks like the Image Analyzer extension is disabled. Do you want to learn more and enable it?';
-        DeactivateActionTxt: Label 'Don''t ask again';
         SetupActionTxt: Label 'Enable';
         GotItTxt: Label 'Got it';
         NeverShowAgainTxt: Label 'Don''t tell me again';
@@ -33,24 +32,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         ImageAnalysisWizardShortTitleTxt: Label 'Image Analyzer';
         ImageAnalysisWizardDescriptionTxt: Label 'The Image Analyzer extension uses powerful image analytics to detect attributes in the images that you add to items and contact persons, so you can easily review and assign them. Set it up now.';
 
-    [EventSubscriber(ObjectType::Page, Page::"Item Card", 'OnAfterGetCurrRecordEvent', '', false, false)]
-    local procedure OnOpenItemCard(var Rec: Record Item)
-    var
-        OnRecord: Option " ",Item,Contact;
-    begin
-        EnablePictureAnalyzerNotification(rec."No.", OnRecord::Item);
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"Contact Card", 'OnAfterGetCurrRecordEvent', '', false, false)]
-    local procedure OnOpenContactCard(var rec: Record Contact)
-    var
-        OnRecord: Option " ",Item,Contact;
-    begin
-        if IsSaasAndCannotUseRelationshipMgmt() then
-            exit;
-
-        EnablePictureAnalyzerNotification(rec."No.", OnRecord::Contact);
-    end;
 
     procedure IsSaasAndCannotUseRelationshipMgmt(): Boolean
     var
@@ -184,6 +165,8 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         Notification.Send();
     end;
 
+#if not CLEAN22
+    [Obsolete('Notifications to enable image analysis have been discontinued.', '22.0')]
     procedure SendEnableNotification(CodeToSet: Code[20]; OnRecord: Option " ",Item,Contact)
     var
         SetupNotification: Notification;
@@ -205,29 +188,7 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         OnSendEnableNotification();
     end;
 
-    local procedure EnablePictureAnalyzerNotification(CodeToSet: Code[20]; OnRecord: Option " ",Item,Contact)
-    var
-        SetupNotification: Notification;
-    begin
-        if not IsSetupNotificationEnabled() then
-            exit;
-
-        SetupNotification.Id := GetSetupNotificationId();
-        SetupNotification.Message := SetupNotificationMsg;
-        SetupNotification.SetData('NotificationId', GetSetupNotificationId());
-
-        case OnRecord of
-            OnRecord::Contact:
-                SetupNotification.SetData(GetContactNoForNotificationData(), Format(CodeToSet));
-
-            OnRecord::Item:
-                SetupNotification.SetData(GetItemNoForNotificationData(), Format(CodeToSet));
-        end;
-        SetupNotification.AddAction(SetupActionTxt, Codeunit::"Image Analyzer Ext. Mgt.", 'OpenSetupWizard');
-        SetupNotification.AddAction(DeactivateActionTxt, Codeunit::"Image Analyzer Ext. Mgt.", 'HandleDeactivateNotification');
-        SetupNotification.Send();
-    end;
-
+    [Obsolete('Notifications to enable image analysis have been discontinued.', '22.0')]
     procedure OpenSetupWizard(var SetupNotification: Notification)
     var
         Item: Record Item;
@@ -250,14 +211,20 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
 
         ImageAnalyzerWizard.RunModal();
     end;
+#endif
 
     procedure HandleSetupAndEnable()
     var
         ImageAnalyzerSetup: Record "Image Analysis Setup";
+        ImageAnalysisScenario: Record "Image Analysis Scenario";
     begin
         ImageAnalyzerSetup.GetSingleInstance();
         ImageAnalyzerSetup."Image-Based Attribute Recognition Enabled" := true;
         ImageAnalyzerSetup.Modify(true);
+
+        if ImageAnalysisScenario.WritePermission() then
+            ImageAnalysisScenario.EnableAllKnownAllCompanies();
+
         OnEnableImageAnalysis();
     end;
 

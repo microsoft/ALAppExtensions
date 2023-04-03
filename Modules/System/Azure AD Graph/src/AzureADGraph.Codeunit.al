@@ -10,6 +10,8 @@
 codeunit 9012 "Azure AD Graph"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]
@@ -145,6 +147,7 @@ codeunit 9012 "Azure AD Graph"
         exit(AzureADGraphImpl.IsM365CollaborationEnabled());
     end;
 
+#if not CLEAN22
     /// <summary>
     /// Gets the name of the AAD security group defined in tenant admin center.
     /// For more info, see https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-environments#manage-access-using-azure-active-directory-groups
@@ -152,9 +155,34 @@ codeunit 9012 "Azure AD Graph"
     /// <returns>The name of the AAD security group defined in tenant admin center.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
+    [Obsolete('Renamed to GetEnvironmentSecurityGroupId()', '22.0')]
     procedure GetEnvironmentDirectoryGroup(): Text
     begin
-        exit(AzureADGraphImpl.GetEnvironmentDirectoryGroup());
+        exit(AzureADGraphImpl.GetEnvironmentSecurityGroupId());
+    end;
+#endif
+
+    /// <summary>
+    /// Gets the name of the AAD security group defined in tenant admin center.
+    /// For more info, see https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-environments#manage-access-using-azure-active-directory-groups
+    /// </summary>
+    /// <returns>The name of the AAD security group defined in tenant admin center.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetEnvironmentSecurityGroupId(): Text
+    begin
+        exit(AzureADGraphImpl.GetEnvironmentSecurityGroupId());
+    end;
+
+    /// <summary>
+    /// Returns if the AAD security group is defined in tenant admin center.
+    /// </summary>
+    /// <returns>True if defined.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsEnvironmentSecurityGroupDefined(): Boolean
+    begin
+        exit(GetEnvironmentSecurityGroupId() <> '');
     end;
 
     /// <summary>
@@ -229,6 +257,17 @@ codeunit 9012 "Azure AD Graph"
     procedure IsMemberOfGroupWithId(GroupId: Text; GraphUserInfo: DotNet UserInfo): Boolean
     begin
         exit(AzureADGraphImpl.IsMemberOfGroupWithId(GroupId, GraphUserInfo));
+    end;
+
+    /// <summary>
+    /// Gets all of the AAD security groups.
+    /// </summary>
+    /// <returns>A dictionary of group AAD object ID and group display name.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetGroups(): Dictionary of [Text, Text];
+    begin
+        exit(AzureADGraphImpl.GetGroups());
     end;
 
     /// <summary>

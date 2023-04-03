@@ -6,6 +6,8 @@
 codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorization"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

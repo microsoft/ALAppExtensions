@@ -57,6 +57,8 @@ codeunit 30107 "Shpfy Sync Countries"
             ShopifyTaxArea.Init();
             ShopifyTaxArea."Country/Region Code" := CopyStr(CountrCode, 1, MaxStrLen(ShopifyTaxArea."Country/Region Code"));
             ShopifyTaxArea.County := CopyStr(JValue.AsText(), 1, MaxStrLen(ShopifyTaxArea.County));
+            if JsonHelper.GetJsonValue(JProvince, JValue, 'code') then
+                ShopifyTaxArea."County Code" := CopyStr(JValue.AsText(), 1, MaxStrLen(ShopifyTaxArea."County Code"));
             if ShopifyTaxArea.Insert() then;
         end;
     end;

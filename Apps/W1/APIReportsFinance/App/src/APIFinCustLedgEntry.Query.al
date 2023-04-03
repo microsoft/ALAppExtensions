@@ -85,6 +85,10 @@ query 30302 "API Fin - Cust Ledg Entry"
             {
                 Caption = 'Currency Code';
             }
+            column(yourReference; "Your Reference")
+            {
+                Caption = 'Your Reference';
+            }
             column(lastModifiedDateTime; SystemModifiedAt)
             {
                 Caption = 'Last  Modified Date Time';

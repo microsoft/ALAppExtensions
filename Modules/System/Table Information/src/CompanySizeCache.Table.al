@@ -9,6 +9,8 @@ table 8701 "Company Size Cache"
     ReplicateData = false;
     Access = Internal;
     DataClassification = SystemMetadata;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

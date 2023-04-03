@@ -17,7 +17,7 @@ page 4009 "Migration Table Mapping"
                 {
                     ApplicationArea = All;
                     Caption = 'Target Table Type';
-                    Description = 'Specifies the type of the target table.';
+                    ToolTip = 'Specifies the type of the target table.';
                     Visible = IsBCCloudMigration;
                 }
 
@@ -304,9 +304,6 @@ page 4009 "Migration Table Mapping"
     begin
         Rec.SetRange(Locked, false);
         OnIsBCMigration(IsBCCloudMigration);
-
-        // TODO: REmove
-        IsBCCloudMigration := true;
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)

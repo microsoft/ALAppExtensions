@@ -102,8 +102,6 @@ page 31279 "Posted Compensation List CZC"
                 Caption = '&Print';
                 Ellipsis = true;
                 Image = Print;
-                Promoted = true;
-                PromotedCategory = Report;
                 ToolTip = 'Prepare to print the document. A report request window for the document opens where you can specify what to include on the print-out.';
 
                 trigger OnAction()
@@ -120,9 +118,6 @@ page 31279 "Posted Compensation List CZC"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = Report;
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
@@ -139,9 +134,6 @@ page 31279 "Posted Compensation List CZC"
                 Caption = 'Find Entries';
                 Ellipsis = true;
                 Image = Navigate;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ShortcutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
@@ -150,11 +142,149 @@ page 31279 "Posted Compensation List CZC"
                     Rec.Navigation();
                 end;
             }
+            action(DocAttach)
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                Image = Attach;
+                ToolTip = 'Add a file as an attachment. You can attach images as well as documents.';
+
+                trigger OnAction()
+                var
+                    DocumentAttachmentDetails: Page "Document Attachment Details";
+                    RecRef: RecordRef;
+                begin
+                    RecRef.GetTable(Rec);
+                    DocumentAttachmentDetails.OpenForRecRef(RecRef);
+                    DocumentAttachmentDetails.RunModal();
+                end;
+            }
+            group(IncomingDocument)
+            {
+                Caption = 'Incoming Document';
+                Image = Documents;
+                action(IncomingDocCard)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'View Incoming Document';
+                    Enabled = HasIncomingDocument;
+                    Image = ViewOrder;
+                    ToolTip = 'Specifies incoming document';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocument: Record "Incoming Document";
+                    begin
+                        IncomingDocument.ShowCard(Rec."No.", Rec."Posting Date");
+                    end;
+                }
+                action(SelectIncomingDoc)
+                {
+                    AccessByPermission = tabledata "Incoming Document" = R;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Select Incoming Document';
+                    Enabled = not HasIncomingDocument;
+                    Image = SelectLineToApply;
+                    ToolTip = 'Selects incoming document';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocument: Record "Incoming Document";
+                    begin
+                        IncomingDocument.SelectIncomingDocumentForPostedDocument(Rec."No.", Rec."Posting Date", Rec.RecordId);
+                    end;
+                }
+                action(IncomingDocAttachFile)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create Incoming Document from File';
+                    Ellipsis = true;
+                    Enabled = not HasIncomingDocument;
+                    Image = Attach;
+                    ToolTip = 'Creates incoming document from file';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+                    begin
+                        IncomingDocumentAttachment.NewAttachmentFromPostedDocument(Rec."No.", Rec."Posting Date");
+                    end;
+                }
+                action(Approvals)
+                {
+                    AccessByPermission = TableData "Posted Approval Entry" = R;
+                    ApplicationArea = Suite;
+                    Caption = 'Approvals';
+                    Image = Approvals;
+                    ToolTip = 'View a list of the records that are waiting to be approved. For example, you can see who requested the record to be approved, when it was sent, and when it is due to be approved.';
+
+                    trigger OnAction()
+                    var
+                        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+                    begin
+                        ApprovalsMgmt.ShowPostedApprovalEntries(Rec.RecordId);
+                    end;
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(Navigate_Promoted; Navigate)
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Print';
+
+                actionref(Print_Promoted; Print)
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Compensation';
+
+                actionref(DocAttach_Promoted; DocAttach)
+                {
+                }
+                actionref(Approvals_Promoted; Approvals)
+                {
+                }
+                group(Category_Category10)
+                {
+                    Caption = 'Incoming Document';
+                    ShowAs = SplitButton;
+
+                    actionref(IncomingDocCard_Promoted; IncomingDocCard)
+                    {
+                    }
+                    actionref(SelectIncomingDoc_Promoted; SelectIncomingDoc)
+                    {
+                    }
+                    actionref(IncomingDocAttachFile_Promoted; IncomingDocAttachFile)
+                    {
+                    }
+                }
+            }
         }
     }
 
     trigger OnAfterGetCurrRecord()
+    var
+        ExistsIncomingDocument: Record "Incoming Document";
     begin
         CurrPage.IncomingDocAttachFactBox.PAGE.LoadDataFromRecord(Rec);
+        HasIncomingDocument := ExistsIncomingDocument.PostedDocExists(Rec."No.", Rec."Posting Date");
     end;
+
+    var
+        HasIncomingDocument: Boolean;
 }

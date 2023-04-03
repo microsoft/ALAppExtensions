@@ -359,6 +359,7 @@ report 11795 "Income Statement CZL"
                     group("Layout")
                     {
                         Caption = 'Layout';
+                        Visible = AccSchedNameEditable;
                         field(AccSchedNameCZL; AccSchedName)
                         {
                             ApplicationArea = Basic, Suite;
@@ -603,10 +604,14 @@ report 11795 "Income Statement CZL"
         end;
 
         trigger OnOpenPage()
+        var
+            FinancialReportMgt: Codeunit "Financial Report Mgt.";
         begin
+            FinancialReportMgt.Initialize();
             GeneralLedgerSetup.Get();
+            AccSchedName := '';
+            ColumnLayoutName := '';
             TransferValues();
-            UpdateFilters();
             if AccSchedName <> '' then
                 if ColumnLayoutName = '' then
                     ValidateAccSchedName();
@@ -636,6 +641,7 @@ report 11795 "Income Statement CZL"
     }
     trigger OnPreReport()
     var
+        FinancialReportMgt: Codeunit "Financial Report Mgt.";
         TableFieldUniqueErr: Label '%1 %2 must be unique!', Comment = '%1 = TableCaption, %2 = FieldCaption';
     begin
         if AccSchedName = '' then begin
@@ -644,6 +650,9 @@ report 11795 "Income Statement CZL"
             AccSchedName := AccScheduleName.GetRangeMin(Name);
         end;
 
+        FinancialReportMgt.Initialize();
+        TransferValues();
+        UpdateFilters();
         InitAccSched();
         CompanyInformation.Get();
     end;
@@ -660,6 +669,7 @@ report 11795 "Income Statement CZL"
         AccSchedNameHidden: Code[10];
         ColumnLayoutName: Code[10];
         ColumnLayoutNameHidden: Code[10];
+        FinancialReportName: Code[10];
         EndDate: Date;
         ShowError: Option "None","Division by Zero","Period Error",Both;
         DateFilter: Text;
@@ -705,6 +715,8 @@ report 11795 "Income Statement CZL"
         Dim3FilterEnable: Boolean;
         [InDataSet]
         Dim4FilterEnable: Boolean;
+        [InDataSet]
+        AccSchedNameEditable: Boolean;
         LineShadowed: Boolean;
         LineSkipped: Boolean;
         SkipEmptyLines: Boolean;
@@ -738,6 +750,23 @@ report 11795 "Income Statement CZL"
         AccSchedLineFilter := "Acc. Schedule Line".GetFilters;
         PeriodText := "Acc. Schedule Line".GetFilter("Date Filter");
         AccSchedManagement.CopyColumnsToTemp(ColumnLayoutName, TempColumnLayout);
+    end;
+
+    procedure SetFinancialReportNameNonEditable(NewAccSchedName: Code[10])
+    begin
+        SetFinancialReportName(NewAccSchedName);
+        AccSchedNameEditable := false;
+    end;
+
+    procedure SetFinancialReportName(NewFinancialReportName: Code[10])
+    var
+        FinancialReportLocal: Record "Financial Report";
+    begin
+        FinancialReportName := NewFinancialReportName;
+        if FinancialReportLocal.Get(FinancialReportName) then begin
+            AccSchedNameHidden := FinancialReportLocal."Financial Report Row Group";
+            AccSchedNameEditable := false;
+        end;
     end;
 
     procedure SetAccSchedName(NewAccSchedName: Code[10])
@@ -833,18 +862,21 @@ report 11795 "Income Statement CZL"
             Dim3Filter := Dim3FilterHidden;
             Dim4Filter := Dim4FilterHidden;
         end;
-
+#if not CLEAN21
         if ColumnLayoutName = '' then
             if AccScheduleName.Get(AccSchedName) then
                 ColumnLayoutName := AccScheduleName."Default Column Layout";
+#endif
     end;
 
     procedure ValidateAccSchedName()
     begin
         AccSchedManagement.CheckName(AccSchedName);
         AccScheduleName.Get(AccSchedName);
+#if not CLEAN21
         if AccScheduleName."Default Column Layout" <> '' then
             ColumnLayoutName := AccScheduleName."Default Column Layout";
+#endif
         if AccScheduleName."Analysis View Name" <> '' then
             AnalysisView.Get(AccScheduleName."Analysis View Name")
         else begin

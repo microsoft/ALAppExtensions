@@ -13,9 +13,16 @@ codeunit 4019 "GP Item Migrator"
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
         LastEntryNo: Integer;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
     procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
+    local procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     var
         GPItem: Record "GP Item";
     begin
@@ -33,7 +40,6 @@ codeunit 4019 "GP Item Migrator"
         MigrateItemDetails(GPItem, Sender);
     end;
 
-#pragma warning restore AA0207
     local procedure ShouldMigrateItem(var GPItem: Record "GP Item"): Boolean
     var
         GPIV00101: Record "GP IV00101";
@@ -79,9 +85,16 @@ codeunit 4019 "GP Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
     procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
+    local procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+#endif
     var
         GPItem: Record "GP Item";
     begin
@@ -95,8 +108,16 @@ codeunit 4019 "GP Item Migrator"
             MigrateItemInventoryPostingGroup(GPItem, Sender);
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
     procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
+    local procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+#endif
     var
         Item: Record Item;
         ItemJnlLine: Record "Item Journal Line";
@@ -209,7 +230,6 @@ codeunit 4019 "GP Item Migrator"
         if ErrorText <> '' then
             Error(ErrorText);
     end;
-#pragma warning restore AA0207
 
     procedure MigrateItemInventoryPostingGroup(GPItem: Record "GP Item"; var Sender: Codeunit "Item Data Migration Facade")
     var

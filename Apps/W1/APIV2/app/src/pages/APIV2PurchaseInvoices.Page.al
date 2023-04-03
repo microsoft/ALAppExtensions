@@ -496,6 +496,13 @@ page 30042 "APIV2 - Purchase Invoices"
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Purchase Invoice");
                 }
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Purchase Invoice");
+                }
             }
         }
     }

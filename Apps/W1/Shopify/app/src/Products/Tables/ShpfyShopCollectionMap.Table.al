@@ -67,6 +67,14 @@ table 30128 "Shpfy Shop Collection Map"
             TableRelation = "Config. Template Header".Code where("Table Id" = const(27));
             ValidateTableRelation = true;
             DataClassification = CustomerContent;
+            ObsoleteReason = 'Replaced by Item Templ. Code';
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
         }
 
         field(8; "Default for Export"; Boolean)
@@ -94,6 +102,13 @@ table 30128 "Shpfy Shop Collection Map"
             Caption = 'Version';
             DataClassification = SystemMetadata;
             SqlTimestamp = true;
+        }
+        field(10; "Item Templ. Code"; Code[20])
+        {
+            Caption = 'Item Template Code';
+            TableRelation = "Item Templ.".Code;
+            ValidateTableRelation = true;
+            DataClassification = CustomerContent;
         }
     }
 

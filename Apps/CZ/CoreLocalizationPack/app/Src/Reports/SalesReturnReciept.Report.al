@@ -384,7 +384,7 @@ report 31192 "Sales Return Reciept CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(20) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(20) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

@@ -362,7 +362,7 @@ page 30126 "Shpfy Products"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.ProductImagesSync(Rec."Shop Code");
+                        BackgroundSyncs.ProductImagesSync(Rec."Shop Code", '');
                     end;
                 }
                 action(SyncInventory)

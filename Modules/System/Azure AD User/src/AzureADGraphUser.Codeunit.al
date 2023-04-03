@@ -9,6 +9,8 @@
 codeunit 9024 "Azure AD Graph User"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnRun()
     begin

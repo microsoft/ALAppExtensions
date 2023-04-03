@@ -45,8 +45,12 @@ permissionset 11731 "CZ Core Pack - Edit CZL"
                   tabledata "Statistic Indication CZL" = IMD,
                   tabledata "Statutory Reporting Setup CZL" = IMD,
                   tabledata "Stockkeeping Unit Template CZL" = IMD,
+#if not CLEAN22
+#pragma warning disable AL0432
                   tabledata "Subst. Cust. Posting Group CZL" = IMD,
                   tabledata "Subst. Vend. Posting Group CZL" = IMD,
+#pragma warning restore AL0432
+#endif
                   tabledata "Unrel. Payer Service Setup CZL" = IMD,
                   tabledata "Unreliable Payer Entry CZL" = IMD,
                   tabledata "User Setup Line CZL" = IMD,

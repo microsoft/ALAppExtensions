@@ -6,6 +6,8 @@
 codeunit 1448 "DSACryptoServiceProvider Impl." implements SignatureAlgorithm
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

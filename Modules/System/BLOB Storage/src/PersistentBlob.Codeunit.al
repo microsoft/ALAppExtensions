@@ -9,6 +9,8 @@
 codeunit 4101 "Persistent Blob"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         PersistentBlobImpl: Codeunit "Persistent Blob Impl.";

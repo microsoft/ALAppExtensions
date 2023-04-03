@@ -127,6 +127,20 @@ codeunit 4008 "Hybrid BC Management"
 
                 HybridReplicationDetail.Modify();
             until HybridReplicationDetail.Next() = 0;
+
+        if HybridCloudManagement.CheckFixDataOnReplicationCompleted(NotificationText) then begin
+            HybridReplicationSummary."Data Repair Status" := HybridReplicationSummary."Data Repair Status"::Pending;
+            HybridReplicationSummary.Modify();
+            Commit();
+            HybridCloudManagement.ScheduleDataFixOnReplicationCompleted(HybridReplicationSummary."Run ID", SubscriptionId, NotificationText);
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'OnOpenNewUI', '', false, false)]
+    local procedure HandleOnOpenNewUI(var OpenNewUI: Boolean)
+    begin
+        if GetBCProductEnabled() then
+            OpenNewUI := true;
     end;
 
     local procedure GetBCProductEnabled(): Boolean

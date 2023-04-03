@@ -10,6 +10,8 @@ codeunit 45 "Auto Format"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         AutoFormatImpl: Codeunit "Auto Format Impl.";

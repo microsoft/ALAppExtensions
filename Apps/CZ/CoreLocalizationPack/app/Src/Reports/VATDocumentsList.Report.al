@@ -12,7 +12,13 @@ report 11756 "VAT Documents List CZL"
         dataitem(Request; "VAT Entry")
         {
             DataItemTableView = sorting(Type, Closed, "VAT Bus. Posting Group", "VAT Prod. Posting Group", "Posting Date");
+#if not CLEAN22
+#pragma warning disable AL0432
             RequestFilterFields = "VAT Date CZL", "VAT Bus. Posting Group", "VAT Prod. Posting Group", "VAT Settlement No. CZL", "Source Code";
+#pragma warning restore AL0432
+#else
+            RequestFilterFields = "VAT Reporting Date", "VAT Bus. Posting Group", "VAT Prod. Posting Group", "VAT Settlement No. CZL", "Source Code";
+#endif
 
             trigger OnPreDataItem()
             var
@@ -24,7 +30,14 @@ report 11756 "VAT Documents List CZL"
                 if VATEntry.FindSet() then
                     repeat
                         TempVATEntry.SetRange("Document No.", VATEntry."Document No.");
-                        TempVATEntry.SetRange("VAT Date CZL", VATEntry."VAT Date CZL");
+#if not CLEAN22
+#pragma warning disable AL0432
+                        if not TempVATEntry.IsReplaceVATDateEnabled() then
+                            TempVATEntry.SetRange("VAT Date CZL", VATEntry."VAT Date CZL")
+                        else
+#pragma warning restore AL0432
+#endif
+                        TempVATEntry.SetRange("VAT Reporting Date", VATEntry."VAT Reporting Date");
                         if not TempVATEntry.FindFirst() then begin
                             TempVATEntry := VATEntry;
                             TempVATEntry.Insert();
@@ -92,7 +105,7 @@ report 11756 "VAT Documents List CZL"
                 {
                     IncludeCaption = true;
                 }
-                column(VATEntry_VAT_Date; "VAT Date CZL")
+                column(VATEntry_VAT_Date; "VAT Reporting Date")
                 {
                     IncludeCaption = true;
                 }
@@ -130,19 +143,8 @@ report 11756 "VAT Documents List CZL"
                     TempDocVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
                     TempDocVATAmountLine."Tax Group Code" := "Tax Group Code";
                     TempDocVATAmountLine."VAT %" := VATPostingSetup."VAT %";
-#if not CLEAN19
-#pragma warning disable AL0432
-                    if "VAT Entry"."Advance Base" <> 0 then begin
-                        TempDocVATAmountLine."VAT Base" := "Advance Base";
-                        TempDocVATAmountLine."Amount Including VAT" := Amount + "Advance Base";
-                    end else begin
-#pragma warning restore AL0432
-#endif
-                        TempDocVATAmountLine."VAT Base" := Base;
-                        TempDocVATAmountLine."Amount Including VAT" := Amount + Base;
-#if not CLEAN19
-                    end;
-#endif
+                    TempDocVATAmountLine."VAT Base" := Base;
+                    TempDocVATAmountLine."Amount Including VAT" := Amount + Base;
                     TempDocVATAmountLine.InsertLine();
 
                     TempTotVATAmountLine.Init();
@@ -150,28 +152,11 @@ report 11756 "VAT Documents List CZL"
                     TempTotVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
                     TempTotVATAmountLine."Tax Group Code" := "Tax Group Code";
                     TempTotVATAmountLine."VAT %" := VATPostingSetup."VAT %";
-#if not CLEAN19
-#pragma warning disable AL0432
-                    if "VAT Entry"."Advance Base" <> 0 then begin
-                        TempTotVATAmountLine."VAT Base" := "Advance Base";
-                        TempTotVATAmountLine."Amount Including VAT" := Amount + "Advance Base";
-                    end else begin
-#pragma warning restore AL0432
-#endif
-                        TempTotVATAmountLine."VAT Base" := Base;
-                        TempTotVATAmountLine."Amount Including VAT" := Amount + Base;
-#if not CLEAN19
-                    end;
-#endif
+                    TempTotVATAmountLine."VAT Base" := Base;
+                    TempTotVATAmountLine."Amount Including VAT" := Amount + Base;
                     TempTotVATAmountLine.InsertLine();
 
                     Advance := IsAdvanceEntryCZL();
-#if not CLEAN19
-#pragma warning disable AL0432
-                    if "Advance Base" <> 0 then
-                        Base := "Advance Base";
-#pragma warning restore AL0432
-#endif                    
                     AmountWithReverseChargeVAT := Amount;
                     if "VAT Calculation Type" = "VAT Calculation Type"::"Reverse Charge VAT" then
                         AmountWithReverseChargeVAT := 0;
@@ -179,6 +164,12 @@ report 11756 "VAT Documents List CZL"
                     HiddenTotalForReverseChargeVAT :=
                       ("VAT Calculation Type" <> "VAT Calculation Type"::"Reverse Charge VAT") or
                       (Type <> Type::Purchase);
+#if not CLEAN22
+#pragma warning disable AL0432
+                    if not IsReplaceVATDateEnabled() then
+                        "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
                 end;
 
                 trigger OnPreDataItem()
@@ -189,7 +180,14 @@ report 11756 "VAT Documents List CZL"
 
                     CopyFilters(FilterVATEntry);
                     SetRange("Document No.", TempVATEntry."Document No.");
-                    SetRange("VAT Date CZL", TempVATEntry."VAT Date CZL");
+#if not CLEAN22
+#pragma warning disable AL0432
+                    if not IsReplaceVATDateEnabled() then
+                        SetRange("VAT Date CZL", TempVATEntry."VAT Date CZL")
+                    else
+#pragma warning restore AL0432
+#endif
+                    SetRange("VAT Reporting Date", TempVATEntry."VAT Reporting Date");
                 end;
             }
             dataitem(DocSummary; "Integer")
@@ -298,9 +296,6 @@ report 11756 "VAT Documents List CZL"
                     TempTotVATAmountLine.FindSet()
                 else
                     TempTotVATAmountLine.Next();
-
-                if TempTotVATAmountLine."VAT Calculation Type" = TempTotVATAmountLine."VAT Calculation Type"::"Reverse Charge VAT" then
-                    TempTotVATAmountLine."VAT Amount" := 0;
             end;
 
             trigger OnPreDataItem()
@@ -418,7 +413,14 @@ report 11756 "VAT Documents List CZL"
         end;
         if Request.GetFilters() <> '' then
             VATEntryFilters += '; ' + Request.TableCaption() + ': ' + Request.GetFilters();
-
+#if not CLEAN22
+#pragma warning disable AL0432
+        if Request.IsReplaceVATDateEnabled() then begin
+            Request.CopyFilter("VAT Date CZL", Request."VAT Reporting Date");
+            Request.SetRange("VAT Date CZL");
+        end;
+#pragma warning restore AL0432
+#endif
         FilterVATEntry.Copy(Request);
     end;
 

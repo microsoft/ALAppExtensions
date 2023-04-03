@@ -282,14 +282,9 @@ codeunit 130044 "User Login Time Tracker Test"
         UserLogin: Record "User Login";
     begin
         // [GIVEN] The User Login table contains a single entry no login dates yet
-        if not UserLogin.Get(UserSecurityId()) then begin
-            UserLogin."User SID" := UserSecurityId();
-            UserLogin."Last Login Date" := 0DT;
-            UserLogin.Insert();
-        end else begin
-            UserLogin."Last Login Date" := 0DT;
-            UserLogin.Modify();
-        end;
+        UserLogin.Get(UserSecurityId());
+        UserLogin."Last Login Date" := 0DT;
+        UserLogin.Modify();
 
         PermissionsMock.Set('User Login View');
 

@@ -14,6 +14,8 @@
 codeunit 8703 "Feature Telemetry"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         FeatureTelemetryImpl: Codeunit "Feature Telemetry Impl.";

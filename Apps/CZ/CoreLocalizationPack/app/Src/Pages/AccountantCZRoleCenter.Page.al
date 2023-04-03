@@ -182,6 +182,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 RunObject = Page "G/L Budget Names";
                 ToolTip = 'View or edit estimated amounts for a range of accounting periods.';
             }
+#if not CLEAN22
             action(Intrastat)
             {
                 ApplicationArea = Basic, Suite;
@@ -189,7 +190,11 @@ page 31210 "Accountant CZ Role Center CZL"
                 RunObject = Page "Intrastat Jnl. Batches";
                 ToolTip = 'Report your trade with other EU countries/regions for Intrastat reporting.';
                 Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
+#endif
             action(Items)
             {
                 ApplicationArea = Basic, Suite;
@@ -329,6 +334,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ToolTip = 'Post intercompany transactions. IC general journal lines must contain either an IC partner account or a customer or vendor account that has been assigned an intercompany partner code.';
                     Visible = false;
                 }
+#if not CLEAN22
                 action("Intrastat Journals")
                 {
                     ApplicationArea = Basic, Suite;
@@ -336,7 +342,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     Image = Report;
                     RunObject = Page "Intrastat Jnl. Batches";
                     ToolTip = 'Summarize the value of your purchases and sales with business partners in the EU for statistical purposes and prepare to send it to the relevant authority.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
                 }
+#endif
                 action("Posted General Journals")
                 {
                     ApplicationArea = Basic, Suite;
@@ -738,6 +748,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = Report "Post Inventory Cost to G/L";
                     ToolTip = 'Record the quantity and value changes to the inventory in the item ledger entries and the value entries when you post inventory transactions, such as sales shipments or purchase receipts.';
                 }
+#if not CLEAN22
                 action("Intrastat J1ournal")
                 {
                     ApplicationArea = Basic, Suite;
@@ -746,7 +757,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = Page "Intrastat Jnl. Batches";
                     ToolTip = 'Summarize the value of your purchases and sales with business partners in the EU for statistical purposes and prepare to send it to the relevant authority.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
                 }
+#endif
                 action("Create Reminders")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1435,6 +1450,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = Report "Retained Earnings Statement";
                     ToolTip = 'View a report that shows your company''s changes in retained earnings for a specified period by reconciling the beginning and ending retained earnings for the period, using information such as net income from the other financial statements.';
                 }
+#if not CLEAN22
                 action("Intrastat - Checklist")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1443,6 +1459,9 @@ page 31210 "Accountant CZ Role Center CZL"
                     Image = Report;
                     RunObject = Report "Intrastat - Checklist";
                     ToolTip = 'View a checklist that you can use to find possible errors before printing and also as documentation for what is printed. You can use the report to check the Intrastat journal before you use the Intrastat - Make Disk Tax Auth batch job.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
                 }
                 action("Intrastat - Form")
                 {
@@ -1453,7 +1472,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = Report "Intrastat - Form";
                     ToolTip = 'View all the information that must be transferred to the printed Intrastat form.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
                 }
+#endif
                 action("Cost Accounting P/L Statement")
                 {
                     ApplicationArea = Basic, Suite;

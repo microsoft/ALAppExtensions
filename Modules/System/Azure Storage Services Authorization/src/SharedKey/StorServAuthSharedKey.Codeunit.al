@@ -10,6 +10,8 @@
 codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authorization"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure Authorize(var HttpRequest: HttpRequestMessage; StorageAccount: Text)
     var

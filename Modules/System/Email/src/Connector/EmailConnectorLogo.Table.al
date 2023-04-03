@@ -7,6 +7,8 @@ table 8887 "Email Connector Logo"
 {
     DataClassification = SystemMetadata;
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {

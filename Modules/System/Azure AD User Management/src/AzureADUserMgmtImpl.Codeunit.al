@@ -6,6 +6,8 @@
 codeunit 9017 "Azure AD User Mgmt. Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     Permissions = TableData User = rm,
                   TableData "User Property" = r,
@@ -234,7 +236,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         CreateNewUsersFromAzureAD();
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::User, 'OnBeforeDeleteEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::User, OnBeforeDeleteEvent, '', true, true)]
     local procedure OnBeforeDeleteUser(var Rec: Record User; RunTrigger: Boolean)
     var
         UserPersonalization: Record "User Personalization";
@@ -252,7 +254,53 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             UserPersonalization.Delete();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Telemetry Custom Dimensions", 'OnAddCommonCustomDimensions', '', true, true)]
+    procedure ArePermissionsCustomized(UserSecId: Guid): Boolean
+    var
+        AccessControl: Record "Access Control";
+        TempAccessControlWithDefaultPermissions: Record "Access Control" temporary;
+        PermissionSetInPlanBuffer: Record "Permission Set In Plan Buffer";
+        PlanConfiguration: Codeunit "Plan Configuration";
+        UsersInPlans: Query "Users in Plans";
+    begin
+        // Check if the user is assigned any custom permission sets
+        // by comparing the plan configuration for all assigned plans.
+        UsersInPlans.SetFilter(User_Security_ID, UserSecId);
+        if not UsersInPlans.Open() then
+            exit(false);
+
+        while UsersInPlans.Read() do begin
+            if PlanConfiguration.IsCustomized(UsersInPlans.Plan_ID) then
+                PlanConfiguration.GetCustomPermissions(PermissionSetInPlanBuffer)
+            else
+                PlanConfiguration.GetDefaultPermissions(PermissionSetInPlanBuffer);
+
+            PermissionSetInPlanBuffer.SetRange("Plan ID", UsersInPlans.Plan_ID);
+            if PermissionSetInPlanBuffer.FindSet() then
+                repeat
+                    AccessControl.SetRange("User Security ID", UserSecId);
+                    AccessControl.SetRange("Role ID", PermissionSetInPlanBuffer."Role ID");
+                    AccessControl.SetRange(Scope, PermissionSetInPlanBuffer.Scope);
+                    AccessControl.SetRange("App ID", PermissionSetInPlanBuffer."App ID");
+                    if PlanConfiguration.IsCustomized(UsersInPlans.Plan_ID) then
+                        AccessControl.SetRange("Company Name", PermissionSetInPlanBuffer."Company Name");
+
+                    if not AccessControl.FindSet() then
+                        exit(true); // one of the permission sets for a plan configuration was deleted
+
+                    repeat
+                        TempAccessControlWithDefaultPermissions.Copy(AccessControl);
+                        TempAccessControlWithDefaultPermissions.Insert();
+                    until AccessControl.Next() = 0;
+                until PermissionSetInPlanBuffer.Next() = 0;
+        end;
+
+        AccessControl.Reset();
+        AccessControl.SetRange("User Security ID", UserSecId);
+        // if the user has more permissions than specified by the plan configuration, then the permissions are customized
+        exit(AccessControl.Count() > TempAccessControlWithDefaultPermissions.Count());
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Telemetry Custom Dimensions", OnAddCommonCustomDimensions, '', true, true)]
     local procedure OnAddCommonCustomDimensions(var Sender: Codeunit "Telemetry Custom Dimensions")
     var
         PlanIds: Codeunit "Plan Ids";

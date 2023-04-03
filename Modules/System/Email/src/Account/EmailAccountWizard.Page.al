@@ -123,9 +123,7 @@ page 8886 "Email Account Wizard"
                     FreezeColumn = Name;
                     Editable = false;
 
-#pragma warning disable
-                    field(Logo; Logo)
-#pragma warning enable 
+                    field(Logo; Rec.Logo)
                     {
                         ApplicationArea = All;
                         Caption = ' ';
@@ -136,7 +134,7 @@ page 8886 "Email Account Wizard"
                         Width = 1;
                     }
 
-                    field(Name; Connector)
+                    field(Name; Rec.Connector)
                     {
                         ApplicationArea = All;
                         Caption = 'Account Type';
@@ -144,7 +142,7 @@ page 8886 "Email Account Wizard"
                         Editable = false;
                     }
 
-                    field(Details; Description)
+                    field(Details; Rec.Description)
                     {
                         ApplicationArea = All;
                         Caption = 'Details';
@@ -457,7 +455,6 @@ page 8886 "Email Account Wizard"
     local procedure ShowRegisterAccountStep()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
         DefaultConnectorEmailRateLimit: Interface "Default Email Rate Limit";
         DefaultEmailRateLimit: Integer;
         AccountWasRegistered: Boolean;
@@ -539,12 +536,14 @@ page 8886 "Email Account Wizard"
     end;
 
     var
-        Step: Option Welcome,"Choose Connector","Register Account",Done;
-        RateLimit: Integer;
         RegisteredAccount: Record "Email Account";
         RegisteredRateLimit: Record "Email Rate Limit";
         MediaResourcesStandard: Record "Media Resources";
         MediaResourcesDone: Record "Media Resources";
+        [RunOnClient]
+        AppSource: DotNet AppSource;
+        Step: Option Welcome,"Choose Connector","Register Account",Done;
+        RateLimit: Integer;
         AppSourceTok: Label 'AppSource';
         ExtensionManagementTok: Label 'Extension Management';
         EmailCategoryLbl: Label 'Email', Locked = true;
@@ -554,8 +553,6 @@ page 8886 "Email Account Wizard"
         AccountCreationSuccessfullyCompletedDurationLbl: Label 'Successful creation of account completed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         AccountCreationFailureDurationLbl: Label 'Creation of account failed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         EmailConnectorHasBeenUninstalledMsg: Label 'The selected email extension has been uninstalled. You must reinstall the extension to add an account with it.';
-        [RunOnClient]
-        AppSource: DotNet AppSource;
         [InDataSet]
         AppSourceAvailable: Boolean;
         [InDataSet]
@@ -570,7 +567,6 @@ page 8886 "Email Account Wizard"
         WelcomeVisible: Boolean;
         ChooseConnectorVisible: Boolean;
         DoneVisible: Boolean;
-        AccountId: Guid;
         ConnectorsAvailable: Boolean;
         SetAsDefault: Boolean;
         StartTime: DateTime;

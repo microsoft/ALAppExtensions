@@ -14,8 +14,7 @@ page 9058 "Custom Permission Set In Plan"
     SourceTable = "Custom Permission Set In Plan";
     Editable = true;
     Permissions = tabledata "Custom Permission Set In Plan" = rimd,
-                  tabledata "Published Application" = r,
-                  tabledata "Permission Set" = r;
+                  tabledata "Published Application" = r;
 
     layout
     {
