@@ -440,8 +440,6 @@ codeunit 30189 "Shpfy Variant API"
         Result := true;
         ShopifyVariant."Updated At" := UpdatedAt;
         ShopifyVariant."Created At" := JsonHelper.GetValueAsDateTime(JVariant, 'createdAt');
-        if IsNullGuid(ShopifyVariant."Item SystemId") then
-            ShopifyVariant."Item SystemId" := ShopifyProduct."Item SystemId";
         ShopifyVariant."Available For Sales" := JsonHelper.GetValueAsBoolean(JVariant, 'availableForSale');
 #pragma warning disable AA0139
         ShopifyVariant.Barcode := JsonHelper.GetValueAsText(JVariant, 'barcode', MaxStrLen(ShopifyVariant.Barcode));
