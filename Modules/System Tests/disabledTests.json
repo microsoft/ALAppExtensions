@@ -118,5 +118,17 @@
         "VerifyCertificateExpirationFromBase64Cert",
         "VerifyCertificateNotBeforeFromBase64Cert"
       ]
+    },
+    {
+      "codeunitName": "Security Groups Test",
+      "method": "*"
+    },
+    {
+      "codeunitName": "Security Groups Upgrade Test",
+      "method": "*"
+    },
+    {
+      "codeunitName": "Media Cleanup Test",
+      "method": "*"
     }
 ]

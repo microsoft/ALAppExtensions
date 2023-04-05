@@ -6,6 +6,8 @@
 codeunit 1565 "Privacy Notice Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Privacy Notice" = im,
                   tabledata Company = r;
 
@@ -55,6 +57,11 @@ codeunit 1565 "Privacy Notice Impl."
     end;
 
     procedure ConfirmPrivacyNoticeApproval(PrivacyNoticeId: Code[50]): Boolean
+    begin
+        exit(ConfirmPrivacyNoticeApproval(PrivacyNoticeId, true));
+    end;
+
+    procedure ConfirmPrivacyNoticeApproval(PrivacyNoticeId: Code[50]; SkipCheckInEval: Boolean): Boolean
     var
         Company: Record Company;
         PrivacyNotice: Record "Privacy Notice";
@@ -84,8 +91,8 @@ codeunit 1565 "Privacy Notice Impl."
             exit(false);
         end;
 
-        // Admin did not make any decision //
-        if Company.Get(CompanyName()) and Company."Evaluation Company" then
+        // Admin did not make any decision
+        if SkipCheckInEval and Company.Get(CompanyName()) and Company."Evaluation Company" then
             exit(true); // Auto-agree for evaluation companies if admin has not explicitly disagreed
 
         // Check if user made a decision and if so, return that
@@ -103,6 +110,11 @@ codeunit 1565 "Privacy Notice Impl."
     end;
 
     procedure CheckPrivacyNoticeApprovalState(PrivacyNoticeId: Code[50]): Enum "Privacy Notice Approval State"
+    begin
+        exit(CheckPrivacyNoticeApprovalState(PrivacyNoticeId, true));
+    end;
+
+    procedure CheckPrivacyNoticeApprovalState(PrivacyNoticeId: Code[50]; SkipCheckInEval: Boolean): Enum "Privacy Notice Approval State"
     var
         Company: Record Company;
         PrivacyNotice: Record "Privacy Notice";
@@ -130,8 +142,8 @@ codeunit 1565 "Privacy Notice Impl."
             exit("Privacy Notice Approval State"::Disagreed);
         end;
 
-        // Admin did not make any decision //
-        if Company.Get(CompanyName()) and Company."Evaluation Company" then
+        // Admin did not make any decision
+        if SkipCheckInEval and Company.Get(CompanyName()) and Company."Evaluation Company" then
             exit("Privacy Notice Approval State"::Agreed); // Auto-agree for evaluation companies if admin has not explicitly disagreed
 
         // Check if user made a decision and if so, return that
@@ -253,7 +265,7 @@ codeunit 1565 "Privacy Notice Impl."
         exit(PrivacyNoticePage.GetUserApprovalState() = "Privacy Notice Approval State"::Agreed); // The user either accepted, rejected or cancelled the privacy notice. No matter the case we only return true if the privacy notice was accepted.
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'ConfirmPrivacyNoticeApproval', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", ConfirmPrivacyNoticeApproval, '', false, false)]
     local procedure ConfirmSystemPrivacyNoticeApproval(PrivacyNoticeIntegrationName: Text; var IsApproved: Boolean)
     var
         PrivacyNotice: Record "Privacy Notice";
@@ -287,7 +299,7 @@ codeunit 1565 "Privacy Notice Impl."
         IsApproved := false;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetPrivacyNoticeApprovalState', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", GetPrivacyNoticeApprovalState, '', true, true)]
     local procedure GetPrivacyNoticeApprovalState(PrivacyNoticeIntegrationName: Text; var PrivacyNoticeApprovalState: Integer)
     var
         PrivacyNoticeId: Code[50];

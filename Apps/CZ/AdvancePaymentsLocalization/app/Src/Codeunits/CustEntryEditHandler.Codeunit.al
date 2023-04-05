@@ -7,10 +7,4 @@ codeunit 31062 "Cust. Entry-Edit Handler CZZ"
         CustLedgEntry."Advance Letter No. CZZ" := FromCustLedgEntry."Advance Letter No. CZZ";
         CustLedgEntry.Prepayment := FromCustLedgEntry.Prepayment;
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCustLedgEntryModify', '', false, false)]
-    local procedure RemoveAdvTemplateCodeOnBeforeCustLedgEntryModify(var CustLedgerEntry: Record "Cust. Ledger Entry")
-    begin
-        CustLedgerEntry."Adv. Letter Template Code CZZ" := '';
-    end;
 }

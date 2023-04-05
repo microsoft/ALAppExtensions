@@ -5,7 +5,13 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
 #if not CLEAN20
         modify("Customer Posting Group")
         {
-            Editable = IsPostingGroupEditableCZL;
+            Visible = AllowMultiplePostingGroupsEnabled;
+        }
+#endif
+#if not CLEAN22
+        modify("VAT Reporting Date")
+        {
+            Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
         movelast(General; "Posting Description")
@@ -28,11 +34,18 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
         }
         addafter("Posting Date")
         {
+#if not CLEAN22
             field("VAT Date CZL"; Rec."VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'VAT Date (Obsolete)';
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by VAT Reporting Date.';
+                Visible = not ReplaceVATDateEnabled;
             }
+#endif
             field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -48,6 +61,27 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
                 ToolTip = 'Specifies if you need to post a corrective entry to an account.';
             }
         }
+#if not CLEAN22
+        addafter("Customer Posting Group")
+        {
+            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
+            {
+                ApplicationArea = Basic, Suite;
+#if not CLEAN20
+                Editable = IsPostingGroupEditableCZL;
+                Visible = not AllowMultiplePostingGroupsEnabled;
+#else
+                Editable = false;
+                Visible = false;
+#endif
+                Importance = Additional;
+                ToolTip = 'Specifies the customer''s market type to link business transactions to.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by Customer Posting Group field.';
+            }
+        }
+#endif
         addlast("Credit Memo Details")
         {
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
@@ -87,8 +121,14 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
                 var
                     ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    if Rec."VAT Date CZL" <> 0D then
-                        ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
+#if not CLEAN22
+#pragma warning disable AL0432
+                    if not ReplaceVATDateEnabled then
+                        Rec."VAT Reporting Date" := Rec."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
+                    if Rec."VAT Reporting Date" <> 0D then
+                        ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date")
                     else
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", WorkDate());
                     if ChangeExchangeRate.RunModal() = Action::OK then begin
@@ -203,18 +243,39 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
             }
         }
     }
-#if not CLEAN20
+#if not CLEAN22
 
     trigger OnOpenPage()
     begin
-        SalesReceivablesSetupCZL.GetRecordOnce();
+#if not CLEAN20
+        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
+        if not AllowMultiplePostingGroupsEnabled then begin
+            SalesReceivablesSetupCZL.GetRecordOnce();
 #pragma warning disable AL0432
-        IsPostingGroupEditableCZL := SalesReceivablesSetupCZL."Allow Alter Posting Groups CZL";
+            IsPostingGroupEditableCZL := SalesReceivablesSetupCZL."Allow Alter Posting Groups CZL";
 #pragma warning restore AL0432
+        end;
+#endif
+        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
     end;
 
     var
+#if not CLEAN20
         SalesReceivablesSetupCZL: Record "Sales & Receivables Setup";
+#pragma warning disable AL0432
+        PostingGroupManagement: Codeunit "Posting Group Management CZL";
+#pragma warning restore AL0432
+#endif
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+#pragma warning disable AL0432
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
+        ReplaceVATDateEnabled: Boolean;
+        VATDateEnabled: Boolean;
+#if not CLEAN20
+        AllowMultiplePostingGroupsEnabled: Boolean;
         IsPostingGroupEditableCZL: Boolean;
+#endif
 #endif
 }

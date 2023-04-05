@@ -6,6 +6,8 @@
 table 8703 "Feature Uptake"
 {
     Access = Internal;
+    InherentEntitlements = rimdX;
+    InherentPermissions = rimdX;
 
     fields
     {

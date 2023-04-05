@@ -313,17 +313,73 @@ page 31150 "Cash Desk List CZP"
         }
         area(Promoted)
         {
+#if not CLEAN22
             group(Category_New)
             {
                 Caption = 'New';
+                ObsoleteTag = '22.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'This group has been removed.';
+                Visible = false;
                 actionref(CashDocumentPromoted; "Cash &Document")
                 {
                 }
             }
+#endif
             group(Category_Process)
             {
                 Caption = 'Process';
+
+#if not CLEAN22
                 actionref(StatisticsPromoted; Statistics)
+                {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This actionref has been removed.';
+                    Visible = false;
+                }
+#endif
+                actionref(ResponsibilityHandOver_Promoted; "Responsibility Hand Over")
+                {
+                }
+            }
+            group(Category_Category4)
+            {
+                Caption = 'New Document';
+
+                actionref(CashDocument_Promoted; "Cash &Document")
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Print';
+                actionref(CashDeskBook_Promoted; CashDeskBook)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Cash Desk';
+
+                group(Category_Dimensions)
+                {
+                    Caption = 'Dimensions';
+                    ShowAs = SplitButton;
+                    actionref(DimensionMultiple_Promoted; "Dimensions-&Multiple")
+                    {
+                    }
+                    actionref(DimensionsSingle_Promoted; "Dimensions-Single")
+                    {
+                    }
+                }
+                actionref(Statistics_Promoted; Statistics)
+                {
+                }
+                actionref(Balance_Promoted; Balance)
+                {
+                }
+                actionref(LedgerEntires_Promoted; "Ledger E&ntries")
                 {
                 }
             }

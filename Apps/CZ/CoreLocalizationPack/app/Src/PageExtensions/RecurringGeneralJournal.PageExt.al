@@ -2,14 +2,27 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
 {
     layout
     {
+#if not CLEAN22
+        modify("VAT Reporting Date")
+        {
+            Visible = ReplaceVATDateEnabled and VATDateEnabled;
+        }
+#endif
         moveafter("Document No."; "External Document No.")
         addafter("Posting Date")
         {
+#if not CLEAN22
             field("VAT Date CZL"; Rec."VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'VAT Date (Obsolete)';
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by VAT Reporting Date.';
+                Visible = not ReplaceVATDateEnabled;
             }
+#endif
             field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -81,4 +94,17 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
             }
         }
     }
+#if not CLEAN22
+    trigger OnOpenPage()
+    begin
+        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+    end;
+
+    var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+        ReplaceVATDateEnabled: Boolean;
+        VATDateEnabled: Boolean;
+#endif
 }

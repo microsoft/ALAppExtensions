@@ -123,7 +123,7 @@ report 13632 "OIOUBL-Create Elec. Reminders"
 
     procedure InitLogInteraction();
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(8) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(8) <> '';
     end;
 }
 

@@ -338,7 +338,6 @@ codeunit 139650 "Hybrid Wizard Tests"
         end;
     end;
 
-
     [ConfirmHandler]
     procedure ConfirmYesHandler(Question: Text[1024]; var Reply: Boolean)
     begin

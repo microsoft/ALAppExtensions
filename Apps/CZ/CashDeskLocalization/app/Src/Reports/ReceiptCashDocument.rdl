@@ -133,7 +133,7 @@
                                                   <TextRun>
                                                     <Value>=
 Cstr(Fields!No_CashDocumentHeader.Value) + Chr(177) + 
-Cstr(Fields!Status_CashDocumentHeader.Value) + Chr(177) + 
+Cstr(IIf(Fields!Status_CashDocumentHeader.Value="1", " ", Parameters!TestLbl.Value)) + " " + Cstr(IIf(Fields!CopyNo.Value &gt; 1, Parameters!CopyLbl.Value, "")) + Chr(177) + 
 Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_Result"))</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
@@ -198,7 +198,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Code.IsNewPage(0,0,Fields!No_CashDocumentHeader.Value)</Value>
+                                                    <Value>=Code.IsNewPage(0,Fields!No_CashDocumentHeader.Value,Fields!CopyNo.Value)</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                     </Style>
@@ -3290,6 +3290,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                   <Group Name="Details">
                     <GroupExpressions>
                       <GroupExpression>=Fields!No_CashDocumentHeader.Value</GroupExpression>
+                      <GroupExpression>=Fields!CopyNo.Value</GroupExpression>
                     </GroupExpressions>
                     <PageBreak>
                       <BreakLocation>Between</BreakLocation>
@@ -3442,7 +3443,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=IIf(Code.GetData(2,1)="1", " ", Parameters!TestLbl.Value)</Value>
+                      <Value>=Code.GetData(2,1)</Value>
                       <Style>
                         <FontSize>9pt</FontSize>
                       </Style>
@@ -3673,6 +3674,15 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
       </DefaultValue>
       <Prompt>ReleasedLbl</Prompt>
     </ReportParameter>
+    <ReportParameter Name="CopyLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>CopyLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>CopyLbl</Prompt>
+    </ReportParameter>
     <ReportParameter Name="VATDate_CashDocumentHeaderCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -3803,7 +3813,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>27</NumberOfRows>
+      <NumberOfRows>28</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -3873,71 +3883,76 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>13</RowIndex>
-          <ParameterName>VATDate_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>CopyLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>14</RowIndex>
-          <ParameterName>DocumentDate_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>VATDate_CashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>15</RowIndex>
-          <ParameterName>PaymentPurpose_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>DocumentDate_CashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>16</RowIndex>
-          <ParameterName>RegistrationNo_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>PaymentPurpose_CashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>17</RowIndex>
-          <ParameterName>VATRegistrationNo_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>RegistrationNo_CashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>18</RowIndex>
-          <ParameterName>ReceivedFrom_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>VATRegistrationNo_CashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>19</RowIndex>
-          <ParameterName>IdentificationCardNo_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>ReceivedFrom_CashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>20</RowIndex>
-          <ParameterName>ReceivedBy_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>IdentificationCardNo_CashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>21</RowIndex>
-          <ParameterName>Description_CashDocumentLineCaption</ParameterName>
+          <ParameterName>ReceivedBy_CashDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>22</RowIndex>
-          <ParameterName>AmountIncludingVAT_CashDocumentLineCaption</ParameterName>
+          <ParameterName>Description_CashDocumentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>23</RowIndex>
-          <ParameterName>VAT_CashDocumentLineCaption</ParameterName>
+          <ParameterName>AmountIncludingVAT_CashDocumentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>24</RowIndex>
-          <ParameterName>VATAmount_CashDocumentLineCaption</ParameterName>
+          <ParameterName>VAT_CashDocumentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>25</RowIndex>
-          <ParameterName>VATBaseAmount_CashDocumentLineCaption</ParameterName>
+          <ParameterName>VATAmount_CashDocumentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>26</RowIndex>
+          <ParameterName>VATBaseAmount_CashDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>27</RowIndex>
           <ParameterName>VATAmtLineVATPerCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>
@@ -4148,6 +4163,9 @@ End Function</Code>
         </Field>
         <Field Name="FromAmountToDescription_CashDocumentHeader">
           <DataField>FromAmountToDescription_CashDocumentHeader</DataField>
+        </Field>
+        <Field Name="CopyNo">
+          <DataField>CopyNo</DataField>
         </Field>
         <Field Name="LineNo_CashDocumentLine">
           <DataField>LineNo_CashDocumentLine</DataField>

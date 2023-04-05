@@ -6,6 +6,8 @@
 codeunit 8906 "Email Editor"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email Outbox" = rimd,
                   tabledata "Tenant Media" = r,
                   tabledata "Email Related Record" = rd,
@@ -155,8 +157,9 @@ codeunit 8906 "Email Editor"
         AttachmentName, ContentType : Text[250];
         AttachamentSize: Integer;
     begin
-        if not UploadIntoStream('', '', '', FileName, Instream) then
-            Error(GetLastErrorText());
+        UploadIntoStream('', '', '', FileName, Instream);
+        if FileName = '' then
+            exit;
 
         AttachmentName := CopyStr(FileName, 1, 250);
         ContentType := EmailMessageImpl.GetContentTypeFromFilename(Filename);
@@ -346,7 +349,8 @@ codeunit 8906 "Email Editor"
             FileSize := EmailMessageImpl.AddAttachmentInternal(CopyStr(Filename, 1, 250), ContentType, Instream);
 
             Session.LogMessage('0000FL4', StrSubstNo(UploadingTemplateAttachmentMsg, FileSize, ContentType), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-        end;
+        end else
+            Error(NoEmailSourceEntitiesErr);
     end;
 
     procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachmentOut: Record "Email Related Attachment")
@@ -502,4 +506,5 @@ codeunit 8906 "Email Editor"
         NoPrimarySourceOnEmailErr: Label 'Failed to find the primary source entity';
         NoAttachmentContentMsg: Label 'The attachment content is no longer available.';
         EmailModifiedByEventTxt: Label 'Email has been modified by event', Locked = true;
+        NoEmailSourceEntitiesErr: Label 'There are no linked email source entities';
 }

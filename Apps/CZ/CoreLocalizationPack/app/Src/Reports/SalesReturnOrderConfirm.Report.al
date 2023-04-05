@@ -476,7 +476,7 @@ report 31188 "Sales Return Order Confirm CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(18) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(18) <> '';
     end;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean)

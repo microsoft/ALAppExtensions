@@ -6,6 +6,8 @@
 codeunit 8999 "Email Rate Limit Impl."
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email Rate Limit" = rimd,
                     tabledata "Email Account" = r,
                     tabledata "Email Outbox" = r,
@@ -39,7 +41,7 @@ codeunit 8999 "Email Rate Limit Impl."
     begin
         EmailRateLimit.Get(RegisteredAccount."Account Id", RegisteredAccount.Connector);
         EmailRateLimitWizard.SetRecord(EmailRateLimit);
-        EmailRateLimitWizard.SetEmailAccount(RegisteredAccount);
+        EmailRateLimitWizard.SetEmailAccountName(RegisteredAccount.Name);
         EmailRateLimitWizard.RunModal();
     end;
 

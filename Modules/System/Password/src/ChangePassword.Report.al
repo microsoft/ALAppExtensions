@@ -11,6 +11,8 @@ report 9810 "Change Password"
     ProcessingOnly = true;
     UseRequestPage = false;
     Permissions = tabledata User = r;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     dataset
     {

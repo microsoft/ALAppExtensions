@@ -32,10 +32,6 @@ permissionset 11742 "CZ Advance Pack - Objects CZA"
                   codeunit "Service Line Handler CZA" = X,
                   codeunit "Std. Item Journal Handler CZA" = X,
                   codeunit "Substitute Report Handler CZA" = X,
-#if not CLEAN19
-                  codeunit "Sync.Dep.Fld-DetGLEntry CZA" = X,
-                  codeunit "Sync.Dep.Fld-GLEntry CZA" = X,
-#endif
 #if not CLEAN20
                   codeunit "Sync.Dep.Fld-ItemEntryRel. CZA" = X,
 #endif
@@ -43,7 +39,9 @@ permissionset 11742 "CZ Advance Pack - Objects CZA"
                   codeunit "Transfer Line Handler CZA" = X,
                   codeunit "TransferOrder-Post Handler CZA" = X,
                   codeunit "Undo Shipment Line Handler CZA" = X,
+#if not CLEAN22
                   codeunit "Undo Transfer Ship. Line CZA" = X,
+#endif
                   codeunit "Upgrade Application CZA" = X,
                   codeunit "Upgrade Tag Definitions CZA" = X,
                   page "Applied G/L Entries CZA" = X,

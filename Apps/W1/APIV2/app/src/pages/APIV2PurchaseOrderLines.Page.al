@@ -139,21 +139,16 @@ page 30067 "APIV2 - Purchase Order Lines"
                     Caption = 'Unit Of Measure Id';
 
                     trigger OnValidate()
-                    var
-                        PurchInvAggregator: Codeunit "Purch. Inv. Aggregator";
                     begin
-                        PurchInvAggregator.VerifyCanUpdateUOM(Rec);
                         RegisterFieldSet(FieldNo("Unit of Measure Code"));
                     end;
                 }
                 field(unitOfMeasureCode; "Unit of Measure Code")
                 {
                     Caption = 'Unit Of Measure Code';
+
                     trigger OnValidate()
-                    var
-                        PurchInvAggregator: Codeunit "Purch. Inv. Aggregator";
                     begin
-                        PurchInvAggregator.VerifyCanUpdateUOM(Rec);
                         RegisterFieldSet(FieldNo("Unit of Measure Code"));
                     end;
                 }

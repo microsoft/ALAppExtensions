@@ -6,6 +6,8 @@
 codeunit 3970 "Image Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TempBlob: Codeunit "Temp Blob";

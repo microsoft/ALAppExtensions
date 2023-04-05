@@ -9,6 +9,8 @@
 codeunit 2916 "Page Action Provider Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Page Action" = r,
                   tabledata "User Personalization" = r,
                   tabledata "All Profile" = r;
@@ -114,7 +116,7 @@ codeunit 2916 "Page Action Provider Impl."
                 if ViewsJsonArray.Count() > 0 then
                     HomeItemActionJsonObject.Add('views', ViewsJsonArray);
 
-        HomeItemActionJsonObject.Add('url', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, NavPageActionAL.RunObjectId));
+        HomeItemActionJsonObject.Add('url', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, NavPageActionAL.RunObjectId));
         JsonArray.Add(HomeItemActionJsonObject);
     end;
 
@@ -172,7 +174,7 @@ codeunit 2916 "Page Action Provider Impl."
         viewsUrl: Text;
     begin
         PageViewActionJsonObject.Add('caption', NavPageActionAL.Caption.ToString());
-        viewsUrl := GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, NavPageActionAL.RunObjectId);
+        viewsUrl := GetUrl(ClientType::Web, CompanyName, ObjectType::Page, NavPageActionAL.RunObjectId);
         viewsUrl += '&view=' + NavPageActionAL.RunObjectView;
         viewsUrl += '&filter=' + NavPageActionAL.RunObjectViewFilter; // RunObjectViewFilter is url encoded.
         PageViewActionJsonObject.Add('url', viewsUrl);

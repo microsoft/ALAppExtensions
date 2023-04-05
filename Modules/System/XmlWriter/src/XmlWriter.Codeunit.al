@@ -9,6 +9,8 @@
 codeunit 1483 "XmlWriter"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         XmlWriterImpl: Codeunit "XmlWriter Impl.";

@@ -159,7 +159,7 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
         exit(true);
     end;
 
-    internal procedure UpdatePurchDocFromIncDoc(var PurchaseHeader: Record "Purchase Header"; var IncomingDocument: Record "Incoming Document")
+    procedure UpdatePurchDocFromIncDoc(var PurchaseHeader: Record "Purchase Header"; var IncomingDocument: Record "Incoming Document")
     begin
         with PurchaseHeader do begin
             if ("Buy-from Vendor No." = '') and (IncomingDocument."Vendor No." <> '') then begin

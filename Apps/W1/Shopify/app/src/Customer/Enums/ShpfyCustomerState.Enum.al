@@ -3,9 +3,8 @@
 /// </summary>
 enum 30107 "Shpfy Customer State"
 {
-    Access = Internal;
     Caption = 'Shopify Customer State';
-    Extensible = true;
+    Extensible = false;
 
     value(0; Disabled)
     {

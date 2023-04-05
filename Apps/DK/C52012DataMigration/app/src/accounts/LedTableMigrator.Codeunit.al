@@ -38,13 +38,19 @@ codeunit 1862 "C5 LedTable Migrator"
         exit(Result);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
     procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
+    local procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateGlAccount(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -56,13 +62,19 @@ codeunit 1862 "C5 LedTable Migrator"
         MigrateLedgerDetails(C5LedTable, Sender);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccountDimensions', '', true, true)]
     procedure OnMigrateGlAccountDimensions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccountDimensions', '', true, true)]
+    local procedure OnMigrateGlAccountDimensions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateGlAccountDimensions(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateGlAccountDimensions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var

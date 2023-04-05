@@ -9,6 +9,8 @@
 codeunit 2300 "Tenant License State"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TenantLicenseStateImpl: Codeunit "Tenant License State Impl.";

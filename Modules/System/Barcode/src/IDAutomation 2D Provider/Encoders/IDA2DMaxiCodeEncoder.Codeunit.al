@@ -6,6 +6,8 @@
 codeunit 9218 "IDA 2D Maxi Code Encoder" implements "Barcode Font Encoder 2D"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure EncodeFont(InputText: Text): Text
     var

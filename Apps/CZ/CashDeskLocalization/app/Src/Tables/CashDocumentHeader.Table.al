@@ -1286,25 +1286,13 @@ table 11732 "Cash Document Header CZP"
     var
         CashDocumentApprovMgtCZP: Codeunit "Cash Document Approv. Mgt. CZP";
     begin
-#if not CLEAN19
-#pragma warning disable AL0432
-#endif
         OnCheckCashDocReleaseRestrictions();
-#if not CLEAN19
-#pragma warning restore AL0432
-#endif
         CashDocumentApprovMgtCZP.PrePostApprovalCheckCashDoc(Rec)
     end;
 
     procedure CheckCashDocPostRestrictions()
     begin
-#if not CLEAN19
-#pragma warning disable AL0432
-#endif
         OnCheckCashDocPostRestrictions();
-#if not CLEAN19
-#pragma warning restore AL0432
-#endif
     end;
 
     local procedure DeleteRecordInApprovalRequest()
@@ -1345,22 +1333,12 @@ table 11732 "Cash Document Header CZP"
     end;
 
     [IntegrationEvent(true, false)]
-#if not CLEAN19
-    [Obsolete('The event will be changed to local. Use the CheckCashDocReleaseRestrictions function instead.', '19.0')]
-    procedure OnCheckCashDocReleaseRestrictions()
-#else
     local procedure OnCheckCashDocReleaseRestrictions()
-#endif
     begin
     end;
 
     [IntegrationEvent(true, false)]
-#if not CLEAN19
-    [Obsolete('The event will be changed to local. Use the CheckCashDocPostRestrictions function instead.', '19.0')]
-    procedure OnCheckCashDocPostRestrictions()
-#else
     local procedure OnCheckCashDocPostRestrictions()
-#endif
     begin
     end;
 

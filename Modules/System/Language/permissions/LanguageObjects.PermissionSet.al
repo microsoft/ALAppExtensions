@@ -8,9 +8,6 @@ permissionset 164 "Language - Objects"
     Access = Internal;
     Assignable = false;
 
-    Permissions = Codeunit "Language Impl." = X,
-                  Codeunit Language = X,
-                  Page "Windows Languages" = X,
-                  Page Languages = X,
-                  Table Language = X;
+    Permissions = Page "Windows Languages" = X,
+                  Page Languages = X;
 }

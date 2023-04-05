@@ -9,6 +9,8 @@
 codeunit 1378 "Rfc2898DeriveBytes"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Generates a base64 encoded hash from a string based on the provided hash algorithm.

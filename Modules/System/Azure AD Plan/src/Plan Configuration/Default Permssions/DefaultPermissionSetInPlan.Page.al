@@ -9,7 +9,15 @@
 page 9827 "Default Permission Set In Plan"
 {
     PageType = ListPart;
+#if not CLEAN22
+    SourceTable = "Permission Set In Plan Buffer";
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The source table will be changed to Default Permission Set In Plan.';
+    ObsoleteTag = '22.0';
+#else
     SourceTable = "Default Permission Set In Plan";
+    Permissions = tabledata "Custom Permission Set In Plan" = rimd;
+#endif
     Editable = false;
     Extensible = false;
     InsertAllowed = false;
@@ -64,13 +72,14 @@ page 9827 "Default Permission Set In Plan"
         }
     }
 
+#if not CLEAN22
     internal procedure Refresh(PlanId: Guid)
     var
         DefaultPermissionSetInPlan: Codeunit "Default Permission Set In Plan";
     begin
         DefaultPermissionSetInPlan.GetPermissionSets(PlanId, Rec);
     end;
-
+#endif
     var
         FirstCompanyTok: Label '(first company sign-in)', Comment = 'The brackets around should stay';
 }

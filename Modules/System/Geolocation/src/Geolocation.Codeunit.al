@@ -16,6 +16,8 @@
 codeunit 7568 Geolocation
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         GeolocationImpl: Codeunit "Geolocation Impl.";

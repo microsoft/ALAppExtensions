@@ -1,3 +1,4 @@
+#if not CLEAN22
 codeunit 139867 "APIV2 - Automation User Groups"
 {
     // version Test,ERM,W1,All
@@ -176,3 +177,4 @@ codeunit 139867 "APIV2 - Automation User Groups"
         exit(UserGroupJSON)
     end;
 }
+#endif

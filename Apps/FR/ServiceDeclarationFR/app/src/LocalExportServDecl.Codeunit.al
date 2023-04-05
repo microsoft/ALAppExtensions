@@ -22,12 +22,11 @@ codeunit 10891 "Local Export Serv. Decl."
         DataExchMapping.SetRange("Table ID", DATABASE::"Service Declaration Line");
         DataExchMapping.FindFirst();
 
-        DataExch.Init();
         DataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
         DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
         DataExch."Table Filters".CreateOutStream(OutStr);
         ServiceDeclarationLine.SetRange("Service Declaration No.", Rec."No.");
-        OutStr.WriteText(ServiceDeclarationLine.GetView());
+        OutStr.WriteText(ServiceDeclarationLine.GetView(false));
         DataExch.Insert(true);
 
         DataExchTableFilter."Data Exch. No." := DataExch."Entry No.";
@@ -35,7 +34,7 @@ codeunit 10891 "Local Export Serv. Decl."
         DataExchTableFilter."Table Filters".CreateOutStream(OutStr);
         ServiceDeclarationHeader := Rec;
         ServiceDeclarationHeader.SetRecFilter();
-        OutStr.WriteText(ServiceDeclarationHeader.GetView());
+        OutStr.WriteText(ServiceDeclarationHeader.GetView(false));
         DataExchTableFilter.Insert();
 
         DataExch.ExportFromDataExch(DataExchMapping);

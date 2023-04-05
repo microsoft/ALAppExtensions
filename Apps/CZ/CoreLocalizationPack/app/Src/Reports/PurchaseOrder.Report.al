@@ -62,6 +62,31 @@ report 31185 "Purchase Order CZL"
                     column(LCYCode_GeneralLedgerSetup; "LCY Code")
                     {
                     }
+                    dataitem(UserCreator; "User Setup")
+                    {
+                        DataItemTableView = sorting("User ID");
+                        dataitem(EmployeeCreator; Employee)
+                        {
+                            DataItemLink = "No." = field("Employee No. CZL");
+                            DataItemTableView = sorting("No.");
+                            column(CreatedByLbl; CreatedByLbl)
+                            {
+                            }
+                            column(FullName_EmployeeCreator; FullName())
+                            {
+                            }
+                            column(PhoneNo_EmployeeCreator; "Phone No.")
+                            {
+                            }
+                            column(CompanyEMail_EmployeeCreator; "Company E-Mail")
+                            {
+                            }
+                        }
+                        trigger OnPreDataItem()
+                        begin
+                            SetRange("User ID", UserId);
+                        end;
+                    }
                 }
             }
             trigger OnAfterGetRecord()
@@ -105,9 +130,14 @@ report 31185 "Purchase Order CZL"
             column(UoMLbl; UoMLbl)
             {
             }
-            column(CreatorLbl; CreatorLbl)
+#if not CLEAN22
+            column(CreatorLbl; CreatedByLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by column CreatedByLbl.';
             }
+#endif
             column(SubtotalLbl; SubtotalLbl)
             {
             }
@@ -339,21 +369,37 @@ report 31185 "Purchase Order CZL"
                     {
                     }
                 }
+#if not CLEAN22
                 dataitem("User Setup"; "User Setup")
                 {
                     DataItemTableView = sorting("User ID");
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Replaced by dataitem UserCreator.';
                     dataitem(Employee; Employee)
                     {
                         DataItemLink = "No." = field("Employee No. CZL");
                         DataItemTableView = sorting("No.");
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '22.0';
+                        ObsoleteReason = 'Replaced by dataitem EmployeeCreator.';
                         column(FullName_Employee; FullName())
                         {
+                            ObsoleteState = Pending;
+                            ObsoleteTag = '22.0';
+                            ObsoleteReason = 'Replaced by column FullName_EmployeeCreator.';
                         }
                         column(PhoneNo_Employee; "Phone No.")
                         {
+                            ObsoleteState = Pending;
+                            ObsoleteTag = '22.0';
+                            ObsoleteReason = 'Replaced by column PhoneNo_EmployeeCreator.';
                         }
                         column(CompanyEMail_Employee; "Company E-Mail")
                         {
+                            ObsoleteState = Pending;
+                            ObsoleteTag = '22.0';
+                            ObsoleteReason = 'Replaced by column CompanyEMail_EmployeeCreator.';
                         }
                     }
                     trigger OnPreDataItem()
@@ -361,6 +407,7 @@ report 31185 "Purchase Order CZL"
                         SetRange("User ID", UserId);
                     end;
                 }
+#endif
                 trigger OnPostDataItem()
                 begin
                     if not IsReportInPreviewMode() then
@@ -503,7 +550,7 @@ report 31185 "Purchase Order CZL"
         ShipmentMethodLbl: Label 'Shipment Method';
         PurchaserLbl: Label 'Purchaser';
         UoMLbl: Label 'UoM';
-        CreatorLbl: Label 'Posted by';
+        CreatedByLbl: Label 'Created by';
         SubtotalLbl: Label 'Subtotal';
         DiscPercentLbl: Label 'Discount %';
         TotalLbl: Label 'total';
@@ -522,7 +569,7 @@ report 31185 "Purchase Order CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(13) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(13) <> '';
     end;
 
     local procedure FormatDocumentFields(PurchaseHeader: Record "Purchase Header")

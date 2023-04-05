@@ -9,8 +9,10 @@
 table 9172 "User Settings"
 {
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     DataClassification = SystemMetadata;
-    
+
     fields
     {
         field(1; "User Security ID"; Guid)

@@ -2381,14 +2381,6 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportList.OK().Invoke();
     end;
 
-    [RequestPageHandler]
-    [Scope('OnPrem')]
-    procedure GetItemLedgerEntriesReportHandler(var GetItemLedgerEntries: TestRequestPage "Get Item Ledger Entries")
-    begin
-        GetItemLedgerEntries.ShowingItemCharges.SetValue(LibraryVariableStorage.DequeueBoolean());
-        GetItemLedgerEntries.OK().Invoke();
-    end;
-
     [ConfirmHandler]
     [Scope('OnPrem')]
     procedure UndoDocumentConfirmHandler(Message: Text[1024]; var Reply: Boolean)

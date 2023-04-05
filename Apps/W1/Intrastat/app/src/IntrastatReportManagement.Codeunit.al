@@ -543,6 +543,10 @@ codeunit 4810 IntrastatReportManagement
                 DataExch2.CalcFields("File Content");
                 IntrastatReportHeader.Validate("Dispatches Reported", true);
             end;
+
+            if not (DataExch1."File Content".HasValue() or DataExch2."File Content".HasValue()) then
+                Error(ExternalContentErr, DataExch1.FieldCaption("File Content"));
+
         end else begin
             IntrastatReportSetup.TestField("Data Exch. Def. Code");
             ExportOneDataExchangeDef(IntrastatReportHeader, IntrastatReportSetup."Data Exch. Def. Code", 0, DataExch1);
@@ -576,7 +580,7 @@ codeunit 4810 IntrastatReportManagement
         IntrastatReportHeader.Modify();
     end;
 
-    local procedure ExportOneDataExchangeDef(IntrastatReportHeader: Record "Intrastat Report Header"; DataExchDefCode: Code[20]; ExportType: Integer; var DataExch: Record "Data Exch.")
+    procedure ExportOneDataExchangeDef(IntrastatReportHeader: Record "Intrastat Report Header"; DataExchDefCode: Code[20]; ExportType: Integer; var DataExch: Record "Data Exch.")
     var
         DataExchFieldGrouping: Record "Data Exch. Field Grouping";
         IntrastatReportLine: Record "Intrastat Report Line";
@@ -667,7 +671,7 @@ codeunit 4810 IntrastatReportManagement
         DownloadFromStream(ZipInStream, '', '', '', ZipFileName);
     end;
 
-    local procedure ExportToFile(DataExch: Record "Data Exch."; var TempBlob: Codeunit "Temp Blob"; FileName: Text)
+    procedure ExportToFile(DataExch: Record "Data Exch."; var TempBlob: Codeunit "Temp Blob"; FileName: Text)
     var
         FileMgt: Codeunit "File Management";
         IsHandled: Boolean;
@@ -736,7 +740,9 @@ codeunit 4810 IntrastatReportManagement
     var
         DataExchDef: Record "Data Exch. Def";
         IntrastatReportChecklist: Record "Intrastat Report Checklist";
+#if not CLEAN22
         IntrastatSetup: Record "Intrastat Setup";
+#endif
         NoSeries: Record "No. Series";
         NoSeriesLine: Record "No. Series Line";
         TempBlob: Codeunit "Temp Blob";
@@ -768,6 +774,7 @@ codeunit 4810 IntrastatReportManagement
 
         IntrastatReportSetup.Init();
         IntrastatReportSetup.Validate("Intrastat Nos.", NoSeries.Code);
+#if not CLEAN22
         if IntrastatSetup.Get() then begin
             case IntrastatSetup."Company VAT No. on File" of
                 IntrastatSetup."Company VAT No. on File"::"EU Country Code + VAT Reg. No":
@@ -812,6 +819,7 @@ codeunit 4810 IntrastatReportManagement
             IntrastatReportSetup."Report Receipts" := IntrastatSetup."Report Receipts";
             IntrastatReportSetup."Report Shipments" := IntrastatSetup."Report Shipments";
         end;
+#endif
         IntrastatReportSetup.Insert();
 
         IsHandled := false;
@@ -1088,7 +1096,7 @@ codeunit 4810 IntrastatReportManagement
     local procedure OnBeforeDefineFileNames(var IntrastatReportHeader: Record "Intrastat Report Header"; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean)
     begin
     end;
-    
+
     [IntegrationEvent(true, false)]
     local procedure OnBeforeUpdateInternalRefNo(var IntrastatReportLine: Record "Intrastat Report Line"; var CompoundField: Text; var PrevCompoundField: Text);
     begin

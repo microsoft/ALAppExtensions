@@ -6,6 +6,8 @@
 codeunit 2502 "Extension License Impl"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     SingleInstance = false;
 
     procedure LicenseCount(ProductId: Text; SkuId: Text): Integer

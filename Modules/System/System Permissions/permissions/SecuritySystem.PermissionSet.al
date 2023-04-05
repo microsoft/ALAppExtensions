@@ -17,7 +17,11 @@ permissionset 162 "SECURITY (System)"
                   tabledata "All Profile" = IMD,
                   tabledata AllObj = imd,
                   tabledata AllObjWithCaption = Rimd,
+#if not CLEAN22
+#pragma warning disable AL0432
                   tabledata Chart = imd,
+#pragma warning restore AL0432
+#endif
                   tabledata "Code Coverage" = Rimd,
                   tabledata "Data Sensitivity" = RIMD,
                   tabledata Date = imd,
@@ -49,13 +53,16 @@ permissionset 162 "SECURITY (System)"
                   tabledata "Membership Entitlement" = imd,
                   tabledata "NAV App Setting" = RIMD,
                   tabledata "Object Metadata" = imd,
+#if not CLEAN22
+#pragma warning disable AL0432 // Disabling deprecation warning since these tables are being moved on prem and hence still need permissions
+#endif
                   tabledata Permission = imd,
-                  tabledata "Permission Range" = imd,
                   tabledata "Permission Set" = imd,
-                  tabledata Profile = IMD,
+#if not CLEAN22
+#pragma warning restore AL0432
+#endif
+                  tabledata "Permission Range" = imd,
                   tabledata "Profile Configuration Symbols" = IMD,
-                  tabledata "Profile Metadata" = IMD,
-                  tabledata "Profile Page Metadata" = IMD,
                   tabledata "Server Instance" = imd,
                   tabledata "SID - Account ID" = Rimd,
                   tabledata "System Object" = imd,

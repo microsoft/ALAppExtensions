@@ -5,6 +5,7 @@ table 4002 "Hybrid Replication Detail"
 
     // This table is populated during the replication process and as such can not be extended.
     Extensible = false;
+    Permissions = tabledata "Table Information" = rimd, tabledata "Intelligent Cloud Status" = rimd;
 
     fields
     {
@@ -85,6 +86,13 @@ table 4002 "Hybrid Replication Detail"
         key(Status; Status, "Company Name", "Table Name")
         {
         }
+        key(StatusPerRun; "Run ID", Status)
+        {
+        }
+
+        key(LastRecord; "End Time", "Company Name", "Table Name")
+        {
+        }
     }
 
     procedure GetCopiedRecords() Records: Integer
@@ -109,6 +117,61 @@ table 4002 "Hybrid Replication Detail"
             TableRecordRef.Open(IntelligentCloudStatus."Table Id", false, "Company Name");
             Records := TableRecordRef.Count();
         end;
+    end;
+
+    [TryFunction]
+    internal procedure GetCountOfRecordsInTheTableSafe(HybridReplicationDetail: Record "Hybrid Replication Detail"; var RecordCount: Integer)
+    begin
+        if not GetCountOfRecordsInTheTable(HybridReplicationDetail, RecordCount) then
+            Error('');
+    end;
+
+    internal procedure GetCountOfRecordsInTheTable(HybridReplicationDetail: Record "Hybrid Replication Detail"; var RecordCount: Integer): Boolean
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        TableMetadata: Record "Table Metadata";
+        TableRecordRef: RecordRef;
+    begin
+        // Use a wild card for the company name since the Company Name value
+        // doesn't necessarily match what's in the SQL table name.
+        IntelligentCloudStatus.SetFilter("Table Name", '%1|%2', '*$' + HybridReplicationDetail."Table Name", HybridReplicationDetail."Table Name");
+        IntelligentCloudStatus.SetRange("Company Name", HybridReplicationDetail."Company Name");
+        if not IntelligentCloudStatus.FindFirst() then
+            exit(false);
+
+        if not TableMetadata.Get(IntelligentCloudStatus."Table Id") then
+            exit(false);
+
+        if TableMetadata.ObsoleteState = TableMetadata.ObsoleteState::Removed then
+            exit(false);
+
+        TableRecordRef.Open(IntelligentCloudStatus."Table Id", false, "Company Name");
+        if not TableRecordRef.ReadPermission() then
+            exit(false);
+
+        RecordCount := TableRecordRef.Count();
+        exit(true);
+    end;
+
+    procedure GetApproxCountOfRecordsInTheTable(HybridReplicationDetail: Record "Hybrid Replication Detail"; var RecordCount: Integer): Boolean
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        TableInformation: Record "Table Information";
+        TableMetadata: Record "Table Metadata";
+    begin
+        IntelligentCloudStatus.SetFilter("Table Name", '%1|%2', '*$' + HybridReplicationDetail."Table Name", HybridReplicationDetail."Table Name");
+        IntelligentCloudStatus.SetRange("Company Name", HybridReplicationDetail."Company Name");
+        if not IntelligentCloudStatus.FindFirst() then
+            exit(false);
+
+        if not TableMetadata.Get(IntelligentCloudStatus."Table Id") then
+            exit(false);
+
+        if not TableInformation.Get(IntelligentCloudStatus."Company Name", TableMetadata.ID) then
+            exit(false);
+
+        RecordCount := TableInformation."No. of Records";
+        exit(true);
     end;
 
     procedure SetFailureStatus(RunId: Text[50]; TableName: Text[250]; CompanyName: Text[250]; FailureMessage: Text)

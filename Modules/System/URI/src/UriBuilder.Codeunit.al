@@ -10,6 +10,8 @@
 codeunit 3061 "Uri Builder"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Initializes a new instance of the UriBuilder class with the specified URI.

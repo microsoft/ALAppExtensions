@@ -28,7 +28,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure GLBankDeposit()
     var
         GLAccount: Record "G/L Account";
@@ -58,7 +57,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure DoNotPostBankDepositAsLumpSum()
     var
         GLAccount: Record "G/L Account";
@@ -92,7 +90,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure PostBankDepositAsLumpSum()
     var
         GLAccount: Record "G/L Account";
@@ -132,7 +129,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure FullyAppliedSalesInvoice()
     var
         Item: Record Item;
@@ -170,7 +166,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure ErrorOnPostVendPaymentBankDepositWithDefaultDimension()
     var
         Vendor: Record Vendor;
@@ -194,7 +189,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure ErrorOnPostCustPaymentBankDepositWithDefaultDimension()
     var
         Customer: Record Customer;
@@ -218,7 +212,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure PostedBankDepositAndBankAccLedger()
     var
         BankAccount: Record "Bank Account";
@@ -248,7 +241,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure BankDepositWithNewGenJournalBatch()
     var
         GLAccount: Record "G/L Account";
@@ -277,7 +269,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure PostBankDepositWithLink()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -303,7 +294,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler')]
-    [Scope('OnPrem')]
     procedure DuplicateBankDepositForSameBatchWithFilter()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -542,14 +532,12 @@ codeunit 139769 "Bank Deposit Posting Tests"
     end;
 
     [ModalPageHandler]
-    [Scope('OnPrem')]
     procedure GeneralJournalBatchesPageHandler(var GeneralJournalBatches: TestPage "General Journal Batches")
     begin
         GeneralJournalBatches.OK().Invoke();
     end;
 
     [ConfirmHandler]
-    [Scope('OnPrem')]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := true;

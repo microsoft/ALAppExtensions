@@ -1,5 +1,12 @@
 codeunit 13601 "DK Core Event Subscribers"
 {
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade User Groups", 'OnBeforeUpgradeUserGroups', '', false, false)]
+    local procedure TransferCustomPermissionsPerPlan()
+    var
+        UpgradeLocalPermissionSet: Codeunit "Upgrade Local Permission Set";
+    begin
+        UpgradeLocalPermissionSet.RunUpgrade();
+    end;
 
     [EventSubscriber(ObjectType::Table, Database::"Bank Account", 'OnValidateBankAccount', '', false, false)]
     local procedure ValidateBankAccount(var BankAccount: Record "Bank Account"; FieldToValidate: Text);

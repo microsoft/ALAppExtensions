@@ -18,6 +18,7 @@ permissionset 132585 "System Application Test Tables"
                   tabledata "Page Provider Summary Test" = RIMD,
                   tabledata "Page Provider Summary Test2" = RIMD,
                   tabledata "Record Link Record Test" = RIMD,
+                  tabledata "Record Selection Test Table" = RIMD,
                   tabledata "Retention Policy Test Data" = RIMD,
                   tabledata "Retention Policy Test Data Two" = RIMD,
                   tabledata "Retention Policy Test Data 3" = RIMD,

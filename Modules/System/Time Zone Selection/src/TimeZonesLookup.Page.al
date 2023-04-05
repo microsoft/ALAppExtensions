@@ -12,6 +12,8 @@ page 9216 "Time Zones Lookup"
     PageType = List;
     SourceTable = "Time Zone";
     Permissions = tabledata "Time Zone" = r;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {

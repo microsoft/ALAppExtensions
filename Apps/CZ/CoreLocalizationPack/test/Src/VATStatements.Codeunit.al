@@ -82,7 +82,13 @@ codeunit 148060 "VAT Statements CZL"
         VATStatementPreviewCZL.VATStatementLineSubForm.ColumnValue.Drilldown();
 
         // [THEN] Page "VAT Entries" will be opened with filter to VAT Date
+#if not CLEAN22
+#pragma warning disable AL0432
         Assert.AreEqual(VATEntries.Filter.GetFilter("VAT Date CZL"), StrSubstNo('%1..%2', StartingDate, EndingDate), '');
+#pragma warning restore AL0432
+#else
+        Assert.AreEqual(VATEntries.Filter.GetFilter("VAT Reporting Date"), StrSubstNo('%1..%2', StartingDate, EndingDate), '');
+#endif
         VATEntries.Close();
         VATStatement.Close();
         VATStatementPreviewCZL.Close();

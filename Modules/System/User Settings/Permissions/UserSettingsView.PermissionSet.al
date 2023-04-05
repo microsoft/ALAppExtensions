@@ -12,19 +12,12 @@ permissionset 9176 "User Settings - View"
                              "Tenant License State - Read",
                              "Time Zone Selection - Read",
                              "User Selection - Read",
-                             "User Login Times - View",
                              "User Permissions - Read",
                              "AAD User Management - Exec",
                              "Azure AD User - View";
 
     Permissions = tabledata "All Profile" = r,
                   tabledata Company = r,
-#if not CLEAN20
-#pragma warning disable AL0432
-                  tabledata "Extra Settings" = rim,
-#pragma warning restore AL0432
-#endif
-                  tabledata "Application User Settings" = rim,
                   tabledata "Tenant Profile" = r,
                   tabledata "Tenant Profile Setting" = rim,
                   tabledata "User Personalization" = rim;

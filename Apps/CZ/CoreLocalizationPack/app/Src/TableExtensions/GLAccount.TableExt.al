@@ -18,7 +18,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                     "Business Unit Code" = field("Business Unit Filter"),
                                                     "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                     "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
-                                                    "VAT Date CZL" = field("Date Filter")));
+                                                    "VAT Reporting Date" = field("Date Filter")));
             AutoFormatType = 1;
             BlankZero = true;
         }
@@ -32,7 +32,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                             "Business Unit Code" = field("Business Unit Filter"),
                                                             "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                             "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
-                                                            "VAT Date CZL" = field("Date Filter")));
+                                                            "VAT Reporting Date" = field("Date Filter")));
             AutoFormatType = 1;
             BlankZero = true;
         }
@@ -46,7 +46,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                             "Business Unit Code" = field("Business Unit Filter"),
                                                             "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                             "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
-                                                            "VAT Date CZL" = field("Date Filter")));
+                                                            "VAT Reporting Date" = field("Date Filter")));
             AutoFormatType = 1;
             BlankZero = true;
         }
@@ -60,7 +60,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                                               "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
-                                                                              "VAT Date CZL" = field("Date Filter")));
+                                                                              "VAT Reporting Date" = field("Date Filter")));
             AutoFormatExpression = GetCurrencyCode();
             AutoFormatType = 1;
         }
@@ -74,9 +74,9 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                                               "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
-                                                                              "VAT Date CZL" = field("Date Filter")));
+                                                                              "VAT Reporting Date" = field("Date Filter")));
             AutoFormatExpression = GetCurrencyCode();
-            AutoFormatType = 1;                                                                              
+            AutoFormatType = 1;
         }
         field(11785; "Credit Amt. ACY (VAT Date) CZL"; Decimal)
         {
@@ -88,7 +88,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                                               "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
-                                                                              "VAT Date CZL" = field("Date Filter")));
+                                                                              "VAT Reporting Date" = field("Date Filter")));
 
             AutoFormatExpression = GetCurrencyCode();
             AutoFormatType = 1;

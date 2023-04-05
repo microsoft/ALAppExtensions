@@ -9,6 +9,8 @@
 codeunit 9198 "Time Zone Selection"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Opens a window for viewing and selecting a Time Zone.

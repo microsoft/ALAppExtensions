@@ -7,6 +7,8 @@ codeunit 3703 "Server Setting Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ALConfigSettings: DotNet ALConfigSettings;

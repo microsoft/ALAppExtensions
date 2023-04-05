@@ -14,6 +14,8 @@ table 1461 "Signature Key"
     ObsoleteState = Pending;
     ObsoleteTag = '19.1';
     ObsoleteReason = 'The xml representation of key is used instead.';
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

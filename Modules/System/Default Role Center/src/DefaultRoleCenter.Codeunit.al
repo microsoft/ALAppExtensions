@@ -10,6 +10,8 @@
 codeunit 9172 "Default Role Center"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Integration event for setting the default Role Center ID.

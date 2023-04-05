@@ -7,6 +7,14 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
             Caption = 'VAT Date';
             Editable = false;
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Replaced by VAT Reporting Date.';
         }
         field(11711; "VAT Settlement No. CZL"; Code[20])
         {
@@ -110,18 +118,26 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
             VATStatementReportPeriodSelection::"Within Period":
                 SetDateFilterCZL(StartDate, EndDate, UseVATDate);
             else begin
-                    IsHandled := false;
-                    OnSetVATStatementReportPeriodSelectionFilterCaseCZL(Rec, VATStatementReportPeriodSelection, StartDate, EndDate, UseVATDate, IsHandled);
-                    if not IsHandled then
-                        Error(VATStmtPeriodSelectionNotSupportedErr, VATStatementReportPeriodSelection);
-                end;
+                IsHandled := false;
+                OnSetVATStatementReportPeriodSelectionFilterCaseCZL(Rec, VATStatementReportPeriodSelection, StartDate, EndDate, UseVATDate, IsHandled);
+                if not IsHandled then
+                    Error(VATStmtPeriodSelectionNotSupportedErr, VATStatementReportPeriodSelection);
+            end;
         end;
     end;
 
     procedure SetDateFilterCZL(StartDate: Date; EndDate: Date; UseVATDate: Boolean)
     begin
+#if not CLEAN22
+#pragma warning disable AL0432
+        if UseVATDate and not IsReplaceVATDateEnabled() then begin
+            SetRange("VAT Date CZL", StartDate, EndDate);
+            exit;
+        end;
+#pragma warning restore AL0432
+#endif
         if UseVATDate then
-            SetRange("VAT Date CZL", StartDate, EndDate)
+            SetRange("VAT Reporting Date", StartDate, EndDate)
         else
             SetRange("Posting Date", StartDate, EndDate);
     end;
@@ -164,14 +180,18 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
         AdvanceEntry: Boolean;
     begin
         AdvanceEntry := false;
-#if not CLEAN19
-#pragma warning disable AL0432
-        AdvanceEntry := "Advance Letter No." <> '';
-#pragma warning restore AL0432
-#endif
         OnAfterGetIsAdvanceEntryCZL(Rec, AdvanceEntry);
         exit(AdvanceEntry);
     end;
+#if not CLEAN22
+
+    internal procedure IsReplaceVATDateEnabled(): Boolean
+    var
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+    begin
+        exit(ReplaceVATDateMgtCZL.IsEnabled());
+    end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterSetVATStatementLineFiltersCZL(var VATEntry: Record "VAT Entry"; VATStatementLine: Record "VAT Statement Line")

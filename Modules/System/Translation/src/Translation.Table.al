@@ -7,6 +7,8 @@ table 3712 Translation
 {
     Caption = 'Translation';
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {
@@ -36,7 +38,7 @@ table 3712 Translation
         }
         field(6; "Language Name"; Text[50])
         {
-            CalcFormula = Lookup (Language.Name WHERE("Windows Language ID" = FIELD("Language ID")));
+            CalcFormula = Lookup(Language.Name WHERE("Windows Language ID" = FIELD("Language ID")));
             Caption = 'Language Name';
             Editable = false;
             FieldClass = FlowField;

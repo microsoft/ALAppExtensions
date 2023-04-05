@@ -9,6 +9,8 @@
 codeunit 1486 "Encoding"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         EncodingImpl: Codeunit "Encoding Impl.";

@@ -2,6 +2,8 @@ table 31011 "Purch. Adv. Letter Line CZZ"
 {
     Caption = 'Purchase Adv. Letter Line';
     DataClassification = CustomerContent;
+    DrillDownPageID = "Purch. Adv. Letter Lines CZZ";
+    LookupPageID = "Purch. Adv. Letter Lines CZZ";
 
     fields
     {

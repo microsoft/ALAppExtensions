@@ -183,6 +183,34 @@ page 31167 "Posted Cash Document List CZP"
                 {
                 }
             }
+#if not CLEANT22
+            group(Category_Report)
+            {
+                Caption = 'Report';
+                ObsoleteTag = '22.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'This group has been removed.';
+                Visible = false;
+
+                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
+                {
+                }
+                actionref(PrintPromoted; "&Print")
+                {
+                }
+            }
+#endif
+            group(Category_Category8)
+            {
+                Caption = 'Print';
+
+                actionref(Print_Promoted; "&Print")
+                {
+                }
+                actionref(PrinttoAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
             group(Category_Category6)
             {
                 Caption = 'Cash Document';
@@ -191,14 +219,6 @@ page 31167 "Posted Cash Document List CZP"
                 {
                 }
                 actionref(DocAttachPromoted; DocAttach)
-                {
-                }
-            }
-            group(Category_Report)
-            {
-                Caption = 'Report';
-
-                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
                 {
                 }
             }

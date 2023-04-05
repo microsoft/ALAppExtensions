@@ -13,11 +13,11 @@
         },
         "Performance Toolkit": {
             "includeInPackage": false,
-            "_comment": "Not enabled yet"
+            "_comment": "Not enabled yet."
         },
         "Performance Toolkit Tests": {
             "includeInPackage": false,
-            "_comment": "Not enabled yet"
+            "_comment": "Not enabled yet."
         },
         "Permissions Mock": {
             "includeInPackage": true

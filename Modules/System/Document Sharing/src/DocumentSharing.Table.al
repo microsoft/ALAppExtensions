@@ -8,9 +8,11 @@
 /// </summary>
 table 9560 "Document Sharing"
 {
-    TableType = Temporary;
     Access = Public;
+    TableType = Temporary;
     Extensible = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {
@@ -97,6 +99,14 @@ table 9560 "Document Sharing"
         /// Specifies the sharing source of the document.
         /// </summary>
         field(10; "Source"; Enum "Document Sharing Source")
+        {
+            DataClassification = SystemMetadata;
+        }
+
+        /// <summary>
+        /// Specifies the Id of the data in the Document Service
+        /// </summary>
+        field(11; "Item Id"; Text[2048])
         {
             DataClassification = SystemMetadata;
         }

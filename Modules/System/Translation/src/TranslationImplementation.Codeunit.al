@@ -6,6 +6,8 @@
 codeunit 3712 "Translation Implementation"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata Translation = rimd;
 
     var

@@ -8,19 +8,11 @@ permissionset 2504 "Extension Management - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Azure Key Vault - Objects",
-                             "Confirm Management - Objects",
-                             "Environment Info. - Objects",
-                             "Server Settings - Objects",
-                             "Guided Experience - Objects";
+    IncludedPermissionSets = "Guided Experience - Objects";
 
-    Permissions = Codeunit "Data Out Of Geo. App Impl." = X,
-                  Codeunit "Data Out Of Geo. App" = X,
-                  Codeunit "Extension Installation Impl" = X,
-                  Codeunit "Extension License Impl" = X,
+    Permissions = Codeunit "Data Out Of Geo. App" = X,
                   Codeunit "Extension Management" = X,
                   Codeunit "Extension Marketplace" = X,
-                  Codeunit "Extension Operation Impl" = X,
                   Page "Extension Deployment Status" = X,
                   Page "Extension Details Part" = X,
                   Page "Extension Details" = X,
@@ -34,6 +26,5 @@ permissionset 2504 "Extension Management - Objects"
                   Page "Marketplace Extn Deployment" = X,
                   Page "Upload And Deploy Extension" = X,
                   Page "Extension Setup Launcher" = X,
-                  Table "Extension Deployment Status" = X,
                   Table "Extension Pending Setup" = X;
 }

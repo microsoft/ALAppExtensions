@@ -6,6 +6,8 @@
 codeunit 9224 "Dynamics 2D QR-Code Encoder" implements "Barcode Image Encoder 2D"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure EncodeImage(InputText: Text; BarcodeEncodeSettings2D: Record "Barcode Encode Settings 2D") QRCodeImageTempBlob: Codeunit "Temp Blob"
     var

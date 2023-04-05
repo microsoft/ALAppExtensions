@@ -512,13 +512,23 @@ page 31284 "Apply G/L Entries CZA"
         GLEntry.Reset();
         GLEntry.Copy(Rec);
         CurrPage.SetSelectionFilter(GLEntry);
-        if GLEntry.FindSet(true, false) then
+        if GLEntry.FindSet(true) then
             repeat
-                GLEntryPostApplicationCZA.SetApplyingGLEntry(GLEntry, false, GLApplID);
+                SetApplyingGLEntry(GLEntry, false, GLApplID);
             until GLEntry.Next() = 0;
         Rec := GLEntry;
         CalcApplnAmount();
         CurrPage.Update(false);
+    end;
+
+    local procedure SetApplyingGLEntry(var GLEntry2: Record "G/L Entry"; IsApplyingEntry: Boolean; AppliesToID: Code[50])
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeSetApplyingGLEntry(GLEntry2, IsApplyingEntry, AppliesToID, GLEntryPostApplicationCZA, IsHandled);
+        if IsHandled then
+            exit;
+        GLEntryPostApplicationCZA.SetApplyingGLEntry(GLEntry2, false, GLApplID);
     end;
 
     local procedure CalcApplnAmount()
@@ -598,5 +608,10 @@ page 31284 "Apply G/L Entries CZA"
         TempGLEntry.Amount := GenJournalLine.Amount;
         ApplyingRemainingAmount := GenJournalLine.Amount;
         CalcApplnAmount();
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeSetApplyingGLEntry(var GLEntry: Record "G/L Entry"; IsApplyingEntry: Boolean; AppliesToID: Code[50]; var GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA"; var IsHandled: Boolean);
+    begin
     end;
 }

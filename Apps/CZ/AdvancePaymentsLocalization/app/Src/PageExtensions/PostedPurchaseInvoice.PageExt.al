@@ -2,14 +2,6 @@ pageextension 31064 "Posted Purchase Invoice CZZ" extends "Posted Purchase Invoi
 {
     actions
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Unpost Link Advance")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast(processing)
         {
             group(AdvanceLetterCZZ)

@@ -6,6 +6,8 @@
 codeunit 9046 "ABS URI Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

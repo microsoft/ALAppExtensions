@@ -6,6 +6,8 @@
 codeunit 8707 "Telemetry Custom Dims Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         AdditionalCommonCustomDimensions: Dictionary of [Text, Dictionary of [Text, Text]];

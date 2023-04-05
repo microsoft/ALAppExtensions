@@ -50,9 +50,8 @@ page 18812 "TCS Posting Setup"
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    CodeLbl: Label 'Code eq ''%1''', Comment = '%1=TCS Nature of Collection Code';
                 begin
-                    EditinExcel.EditPageInExcel('TCS Posting Setup', CurrPage.ObjectId(false), StrSubstNo(CodeLbl, Rec."TCS Nature of Collection"));
+                    EditinExcel.EditPageInExcel('TCS Posting Setup', Page::"TCS Posting Setup");
                 end;
             }
         }

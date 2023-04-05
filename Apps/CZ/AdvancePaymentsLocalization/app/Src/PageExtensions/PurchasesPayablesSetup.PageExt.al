@@ -10,10 +10,14 @@ pageextension 31108 "Purchases & Payables Setup CZZ" extends "Purchases & Payabl
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Show advance letter templates.';
                 Image = Setup;
-                Promoted = true;
-                PromotedCategory = Process;
                 RunObject = Page "Advance Letter Templates CZZ";
                 RunPageView = where("Sales/Purchase" = const(Purchase));
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref(AdvanceLetterTemplatesCZZ_Promoted; AdvanceLetterTemplatesCZZ)
+            {
             }
         }
     }

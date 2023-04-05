@@ -32,7 +32,7 @@ codeunit 148069 "Balance Sheet Reports CZL"
     end;
 
     [Test]
-    [HandlerFunctions('YesConfirmHandler,RequestPageCloseBalanceSheetHandler')]
+    [HandlerFunctions('YesConfirmHandler,RequestPageCloseBalanceSheetHandler,MessageHandler')]
     procedure FiscalYearAdditionalCurrency()
     var
         GenJournalBatch: Record "Gen. Journal Batch";
@@ -139,7 +139,7 @@ codeunit 148069 "Balance Sheet Reports CZL"
     end;
 
     [Test]
-    [HandlerFunctions('YesConfirmHandler,RequestPageCloseBalanceSheetHandler')]
+    [HandlerFunctions('YesConfirmHandler,RequestPageCloseBalanceSheetHandler,MessageHandler')]
     procedure NotRequiredMandatoryDimensionsForCloseBalance()
     var
         GenJournalBatch: Record "Gen. Journal Batch";

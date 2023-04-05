@@ -7,6 +7,8 @@
 codeunit 154 "Navigation Bar Subscribers"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>Notifies that the Default Open Company Settings has been invoked.</summary>
     /// <param name="Handled">The flag which if set, would stop executing the event.</param> 

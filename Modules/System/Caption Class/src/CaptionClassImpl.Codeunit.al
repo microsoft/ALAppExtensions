@@ -6,6 +6,8 @@
 codeunit 55 "Caption Class Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CaptionClass: Codeunit "Caption Class";
@@ -41,7 +43,7 @@ codeunit 55 "Caption Class Impl."
             Caption := CaptionClassExpr;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"UI Helper Triggers", 'CaptionClassTranslate', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"UI Helper Triggers", CaptionClassTranslate, '', false, false)]
     local procedure DoResolveCaptionClass(Language: Integer; CaptionExpr: Text[1024]; var Translation: Text[1024])
     begin
         Translation := CopyStr(ResolveCaptionClass(Language, CaptionExpr), 1, MaxStrLen(Translation));

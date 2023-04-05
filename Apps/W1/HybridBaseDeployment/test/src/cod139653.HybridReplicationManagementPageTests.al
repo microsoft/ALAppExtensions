@@ -8,6 +8,8 @@ codeunit 139653 "Replication Mgt Page Tests"
     var
         HybridDeploymentSetup: Record "Hybrid Deployment Setup";
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
         GuidedExperience: Codeunit "Guided Experience";
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
         PermissionManager: Codeunit "Permission Manager";
@@ -16,7 +18,9 @@ codeunit 139653 "Replication Mgt Page Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(IsSaas);
         PermissionManager.SetTestabilityIntelligentCloud(true);
         AssistedSetupTestLibrary.DeleteAll();
+        HybridReplicationDetail.DeleteAll();
         AssistedSetupTestLibrary.CallOnRegister();
+        HybridReplicationSummary.DeleteAll();
         GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard");
 
         IntelligentCloudSetup.DeleteAll();
@@ -44,7 +48,7 @@ codeunit 139653 "Replication Mgt Page Tests"
     procedure TestRunReplicationNow()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] User Opens up the Hybrid Replication Management Page and clicks 'Run Replication Now' button on the ribbon.
 
@@ -58,10 +62,10 @@ codeunit 139653 "Replication Mgt Page Tests"
 
         // [GIVEN] User Opens up the Hybrid Replication Management Page.
         Initialize(true);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
-        with IntelligentCloudManagement do
+        with CloudMigrationManagement do
             // [WHEN] User clicks 'Run Replication Now' action in the ribbon.
             RunReplicationNow.Invoke();
     end;
@@ -70,16 +74,16 @@ codeunit 139653 "Replication Mgt Page Tests"
     [HandlerFunctions('GetRuntimeKeyMessageHandler')]
     procedure TestGetRuntimeKey()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] User Opens up the Hybrid Replication Management Page and clicks 'Get Service Key' button on the ribbon.
 
         // [GIVEN] User Opens up the Hybrid Replication Management Page.
         Initialize(true);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
-        with IntelligentCloudManagement do
+        with CloudMigrationManagement do
             // [WHEN] User clicks 'Get Service Key' action in the ribbon.
             GetRuntimeKey.Invoke();
     end;
@@ -88,16 +92,16 @@ codeunit 139653 "Replication Mgt Page Tests"
     [HandlerFunctions('ConfirmYesHandler,GenerateNewKeyMessageHandler')]
     procedure TestGenerateNewKey()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] User Opens up the Hybrid Replication Management Page and clicks 'Get Service Key' button on the ribbon.
 
         // [GIVEN] User Opens up the Hybrid Replication Management Page.
         Initialize(true);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
-        with IntelligentCloudManagement do
+        with CloudMigrationManagement do
             // [WHEN] User clicks 'Get Service Key' action in the ribbon.
             GenerateNewKey.Invoke();
     end;
@@ -107,7 +111,7 @@ codeunit 139653 "Replication Mgt Page Tests"
     procedure TestRunReplication()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
         ExpectedRunId: Text;
         ExpectedSource: Text;
     begin
@@ -115,15 +119,15 @@ codeunit 139653 "Replication Mgt Page Tests"
 
         // [GIVEN] User Opens up the Hybrid Replication Management Page.
         Initialize(true);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [GIVEN] Intelligent Cloud is set up
         SetupIntelligentCloud(ExpectedRunId, ExpectedSource);
 
         // [WHEN] User clicks 'Replicate Now' action in the ribbon.
         HybridReplicationSummary.DeleteAll();
-        IntelligentCloudManagement.RunReplicationNow.Invoke();
+        CloudMigrationManagement.RunReplicationNow.Invoke();
 
         // [THEN] A Replication Summary record is created that has InProgress status
         with HybridReplicationSummary do begin
@@ -143,7 +147,7 @@ codeunit 139653 "Replication Mgt Page Tests"
     procedure TestCreateDiagnosticRun()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
         ExpectedRunId: Text;
         ExpectedSource: Text;
     begin
@@ -156,11 +160,11 @@ codeunit 139653 "Replication Mgt Page Tests"
         LibraryHybridManagement.SetDiagnosticRunsEnabled(true);
 
         // [WHEN] User Opens up the Hybrid Replication Management Page.
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [WHEN] User chooses to create a diagnostic run
-        IntelligentCloudManagement.RunDiagnostic.Invoke();
+        CloudMigrationManagement.RunDiagnostic.Invoke();
 
         // [THEN] A Replication Summary record is created that has InProgress status and Diagnostic Replication Type
         with HybridReplicationSummary do begin
@@ -179,7 +183,7 @@ codeunit 139653 "Replication Mgt Page Tests"
     [Test]
     procedure CreateDiagnosticRunIsNotVisibleIfUnsupported()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
         ExpectedRunId: Text;
         ExpectedSource: Text;
     begin
@@ -191,18 +195,18 @@ codeunit 139653 "Replication Mgt Page Tests"
         LibraryHybridManagement.SetDiagnosticRunsEnabled(false);
 
         // [WHEN] User Opens up the Hybrid Replication Management Page.
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] The diagnostic run button is not visible
-        Assert.IsFalse(IntelligentCloudManagement.RunDiagnostic.Visible(), 'Diagnostic run button should not be visible.');
+        Assert.IsFalse(CloudMigrationManagement.RunDiagnostic.Visible(), 'Diagnostic run button should not be visible.');
     end;
 
     [Test]
     procedure TestOpenManageCustomTables()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
         MigrationTableMapping: TestPage "Migration Table Mapping";
         ExpectedRunId: Text;
         ExpectedSource: Text;
@@ -216,12 +220,12 @@ codeunit 139653 "Replication Mgt Page Tests"
         LibraryHybridManagement.SetTableMappingEnabled(true);
 
         // [WHEN] User Opens up the Hybrid Replication Management Page.
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [WHEN] User chooses to manage custom tables
         MigrationTableMapping.Trap();
-        IntelligentCloudManagement.ManageCustomTables.Invoke();
+        CloudMigrationManagement.ManageCustomTables.Invoke();
 
         // [THEN] The migration table mapping page is opened in edit mode
         Assert.IsTrue(MigrationTableMapping.Editable, 'Page should be editable');
@@ -471,17 +475,17 @@ codeunit 139653 "Replication Mgt Page Tests"
     [Test]
     procedure TestIntelligentCloudManagementPagewithUpdateNotification()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
-        // [SCENARIO] User Opens up the Intelligent Cloud Management Page when update notification is available.
+        // [SCENARIO] User Opens up the Cloud Migration Management Page when update notification is available.
 
-        // [GIVEN] User Opens up the Intelligent Cloud Management Page.
+        // [GIVEN] User Opens up the Cloud Migration Management Page.
         Initialize(true);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] Check for Update action should be enabled
-        with IntelligentCloudManagement do
+        with CloudMigrationManagement do
             Assert.IsTrue(CheckForUpdate.Enabled(), 'Check for update action should be enabled');
     end;
 
@@ -512,30 +516,42 @@ codeunit 139653 "Replication Mgt Page Tests"
 
     [Test]
     [HandlerFunctions('DisableIntelligentCloudPageHandler')]
-    procedure TestDisableIntelligentCloud()
+    procedure TestCompleteCloudMigration()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
+        RunId: Guid;
     begin
-        // [SCENARIO] User can choose to disable intelligent cloud on the ribbon
+        // [SCENARIO] User can choose to complete intelligent cloud on the ribbon
 
         // [GIVEN] User Opens up the Hybrid Replication Management Page.
         Initialize(true);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
-        // [WHEN] User clicks the 'Disable Replication' action in the ribbon.
-        IntelligentCloudManagement.DisableIntelligentCloud.Invoke();
+        // [GIVEN] Last run was succesfull
+        RunId := CreateGuid();
+        HybridReplicationSummary.CreateInProgressRecord(RunId, HybridReplicationSummary.ReplicationType::Normal);
+        HybridReplicationSummary.FindLast();
+        HybridReplicationSummary.Status := HybridReplicationSummary.Status::Completed;
+        HybridReplicationSummary."Data Repair Status" := HybridReplicationSummary."Data Repair Status"::Completed;
+        HybridReplicationSummary.Modify();
+
+        // [WHEN] User clicks the 'Complete Replication' action in the ribbon.
+        CloudMigrationManagement.CompleteCloudMigration.Invoke();
     end;
 
     [Test]
     procedure TestUpdateStatusForInProgressRuns()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
         RunId: Text;
         Status: Text;
         Errors: Text;
     begin
+        Initialize(true);
+
         // [SCENARIO 291819] User can refresh replication status for in-progress runs
         // [GIVEN] There is at least one in-progress record in the Replication Summary table
         RunId := CreateGuid();
@@ -548,17 +564,16 @@ codeunit 139653 "Replication Mgt Page Tests"
         LibraryHybridManagement.SetExpectedStatus(Status, Errors);
 
         // [WHEN] The user opens the Hybrid Replication Management page in a SaaS environment
-        Initialize(true);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [WHEN] and chooses the "Refresh Status" action
-        IntelligentCloudManagement.RefreshStatus.Invoke();
+        CloudMigrationManagement.RefreshStatus.Invoke();
 
         // [THEN] The InProgress runs that have finished are updated accordingly
-        IntelligentCloudManagement.Last();
-        IntelligentCloudManagement.Status.AssertEquals(Format(HybridReplicationSummary.Status::Failed));
-        IntelligentCloudManagement.Details.AssertEquals('The thing failed');
+        CloudMigrationManagement.HybridMigrationLog.First();
+        CloudMigrationManagement.HybridMigrationLog.StatusDisplayName.AssertEquals(Format(HybridReplicationSummary.Status::Failed));
+        CloudMigrationManagement.HybridMigrationLog.Details.AssertEquals('The thing failed');
     end;
 
     [Test]
@@ -582,34 +597,34 @@ codeunit 139653 "Replication Mgt Page Tests"
     [Test]
     procedure TestOnPremActionVisible()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] User opens Hybrid Replication Mananagement page from on-premise.
 
         // [GIVEN] User opens the Hybrid Replication Management page.
         Initialize(false);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] Verify On-premise actions.
         // TODO: Fix (probably just need to settestabilitysoftwareasaserfice to false)
-        // VerifyActionsVisibleState(IntelligentCloudManagement, false);
+        // VerifyActionsVisibleState(CloudMigrationManagement, false);
     end;
 
     [Test]
     procedure TestSaasActionsVisible()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] User opens Hybrid Replication Mananagement page from cloud.
 
         // [GIVEN] User opens the Hybrid Replication Management page.
         Initialize(true);
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] Verify cloud actions.
-        VerifyActionsVisibleState(IntelligentCloudManagement, true);
+        VerifyActionsVisibleState(CloudMigrationManagement, true);
     end;
 
     [Test]
@@ -769,6 +784,8 @@ codeunit 139653 "Replication Mgt Page Tests"
         HybridReplicationDetail: Record "Hybrid Replication Detail";
         IntelligentCloudDetails: TestPage "Intelligent Cloud Details";
     begin
+        Initialize(true);
+
         // [SCENARIO] Intelligent Cloud Details page only shows record counts if non-zero
         // [GIVEN] A detail record exists with 0 copied records
         HybridReplicationDetail.DeleteAll();
@@ -784,7 +801,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         Page.Run(Page::"Intelligent Cloud Details", HybridReplicationDetail);
 
         // [THEN] The record count fields are not visible
-        Assert.IsFalse(IntelligentCloudDetails."Records Copied".Visible(), 'Record count should not be visible if all zero.');
+        Assert.IsFalse(IntelligentCloudDetails.RecordsCopiedLastRun.Visible(), 'Record count should not be visible if all zero.');
         Assert.IsFalse(IntelligentCloudDetails."Total Records".Visible(), 'Record count should not be visible if all zero.');
         IntelligentCloudDetails.Close();
 
@@ -801,7 +818,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         Page.Run(Page::"Intelligent Cloud Details", HybridReplicationDetail);
 
         // [THEN] The record count fields are not visible
-        Assert.IsTrue(IntelligentCloudDetails."Records Copied".Visible(), 'Record count should be visible for non-zero values.');
+        Assert.IsTrue(IntelligentCloudDetails.RecordsCopiedLastRun.Visible(), 'Record count should be visible for non-zero values.');
         Assert.IsTrue(IntelligentCloudDetails."Total Records".Visible(), 'Record count should be visible for non-zero values.');
         IntelligentCloudDetails.Close();
     end;
@@ -862,26 +879,26 @@ codeunit 139653 "Replication Mgt Page Tests"
         Assert.AreEqual(UpdateReplicationTxt, message, 'The run update message is not correct.');
     end;
 
-    [PageHandler]
+    [ModalPageHandler]
     procedure DisableIntelligentCloudPageHandler(var IntelligentCloudReady: TestPage "Intelligent Cloud Ready")
     begin
         Assert.IsTrue(IntelligentCloudReady.Editable(), 'Intelligent Cloud Ready page should be enabled.');
     end;
 
-    local procedure VerifyActionsVisibleState(IntelligentCloudManagement: TestPage "Intelligent Cloud Management"; IsSaas: Boolean)
+    local procedure VerifyActionsVisibleState(CloudMigrationManagement: TestPage "Cloud Migration Management"; IsSaas: Boolean)
     begin
         // Cloud only actions.
-        Assert.AreEqual(IsSaas, IntelligentCloudManagement.RefreshStatus.Visible(), 'RefreshStatus should be visible.');
-        Assert.AreEqual(IsSaas, IntelligentCloudManagement.GetRuntimeKey.Visible(), 'GetRuntimeKey should be visible.');
-        Assert.AreEqual(IsSaas, IntelligentCloudManagement.DisableIntelligentCloud.Visible(), 'DisableIntelligentCloud should be visible.');
-        Assert.AreEqual(IsSaas, IntelligentCloudManagement.UpdateReplicationCompanies.Visible(), 'UpdateReplicationCompanies should be visible.');
-        Assert.AreEqual(IsSaas, IntelligentCloudManagement.RunReplicationNow.Visible(), 'RunReplicationNow should be visible.');
-        Assert.AreEqual(IsSaas, IntelligentCloudManagement.ResetAllCloudData.Visible(), 'ResetAllCloudData should be visible.');
-        Assert.AreEqual(IsSaas, IntelligentCloudManagement.GenerateNewKey.Visible(), 'GenerateNewKey should be visible.');
-        Assert.AreEqual(IsSaas, IntelligentCloudManagement.CheckForUpdate.Visible(), 'CheckForUpdate should be visible.');
+        Assert.AreEqual(IsSaas, CloudMigrationManagement.RefreshStatus.Visible(), 'RefreshStatus should be visible.');
+        Assert.AreEqual(IsSaas, CloudMigrationManagement.GetRuntimeKey.Visible(), 'GetRuntimeKey should be visible.');
+        Assert.AreEqual(IsSaas, CloudMigrationManagement.CompleteCloudMigration.Visible(), 'DisableIntelligentCloud should be visible.');
+        Assert.AreEqual(IsSaas, CloudMigrationManagement.UpdateReplicationCompanies.Visible(), 'UpdateReplicationCompanies should be visible.');
+        Assert.AreEqual(IsSaas, CloudMigrationManagement.RunReplicationNow.Visible(), 'RunReplicationNow should be visible.');
+        Assert.AreEqual(IsSaas, CloudMigrationManagement.ResetAllCloudData.Visible(), 'ResetAllCloudData should be visible.');
+        Assert.AreEqual(IsSaas, CloudMigrationManagement.GenerateNewKey.Visible(), 'GenerateNewKey should be visible.');
+        Assert.AreEqual(IsSaas, CloudMigrationManagement.CheckForUpdate.Visible(), 'CheckForUpdate should be visible.');
 
         // On-Premise actions.
-        Assert.AreEqual(not IsSaas, IntelligentCloudManagement.PrepareTables.Visible(), 'PrepareTables should be visible.');
+        Assert.AreEqual(not IsSaas, CloudMigrationManagement.PrepareTables.Visible(), 'PrepareTables should be visible.');
     end;
 
     local procedure SetupTestHybridCompanies()

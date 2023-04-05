@@ -11,6 +11,8 @@ table 2609 "Feature Key Buffer"
 {
     Caption = 'Feature Key';
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Feature Key" = rm,
                   tabledata "Feature Data Update Status" = r,
                   tabledata "Feature Dependency" = r;
@@ -116,11 +118,6 @@ table 2609 "Feature Key Buffer"
     internal procedure CancelDataUpdateTask()
     begin
         FeatureManagementFacade.CancelTask(FeatureDataUpdateStatus, True);
-    end;
-
-    internal procedure UpdateDataUpdateStyle(var EnabledForStyle: Text; var DataUpdateStype: Text)
-    begin
-        // FeatureManagementFacade.UpdateDataUpdateStyle(Rec, FeatureDataUpdateStatus."Feature Status", EnabledForStyle, DataUpdateStype);
     end;
 
     internal procedure GetDataUpdateSessionId(): Integer

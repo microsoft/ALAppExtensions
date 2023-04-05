@@ -6,6 +6,8 @@
 table 1993 "Checklist Item User"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Caption = 'Checklist Item User';
 
     fields

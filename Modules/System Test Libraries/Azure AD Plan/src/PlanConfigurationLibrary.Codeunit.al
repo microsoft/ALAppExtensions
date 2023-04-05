@@ -9,7 +9,9 @@
 codeunit 132924 "Plan Configuration Library"
 {
     Access = Public;
-    Permissions = tabledata "Plan Configuration" = rid;
+    Permissions = tabledata "Plan Configuration" = rid,
+                  tabledata "Default Permission Set In Plan" = rimd,
+                  tabledata "Custom Permission Set In Plan" = rimd;
 
     /// <summary>
     /// Clears all plan configurations.
@@ -17,8 +19,12 @@ codeunit 132924 "Plan Configuration Library"
     procedure ClearPlanConfigurations()
     var
         PlanConfiguration: Record "Plan Configuration";
+        DefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
+        CustomPermissionSetInPlan: Record "Custom Permission Set In Plan";
     begin
         PlanConfiguration.DeleteAll();
+        DefaultPermissionSetInPlan.DeleteAll();
+        CustomPermissionSetInPlan.DeleteAll();
     end;
 
     /// <summary>
@@ -49,5 +55,17 @@ codeunit 132924 "Plan Configuration Library"
         PlanConfiguration.FindFirst();
 
         Page.Run(Page::"Plan Configuration Card", PlanConfiguration);
+    end;
+
+    /// <summary>
+    /// Assigns license 'D365 READ' to the 'Microsoft 365' license configuration.
+    /// Used as a notification action.
+    /// </summary>
+    /// <param name="Notification">The related notification</param>
+    procedure AssignD365ReadPermission(Notification: Notification)
+    var
+        M365License: Codeunit "Microsoft 365 License Impl.";
+    begin
+        M365License.AssignD365ReadPermission(Notification);
     end;
 }

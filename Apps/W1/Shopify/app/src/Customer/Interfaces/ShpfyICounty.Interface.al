@@ -10,5 +10,5 @@ interface "Shpfy ICounty"
     /// </summary>
     /// <param name="ShopifyCustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
     /// <returns>Return variable "Text".</returns>
-    internal procedure County(ShopifyCustomerAddress: Record "Shpfy Customer Address"): Text;
+    procedure County(ShopifyCustomerAddress: Record "Shpfy Customer Address"): Text;
 }

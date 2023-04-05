@@ -19,6 +19,7 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
     var
         AdvanceLetterTemplate: Record "Advance Letter Template CZZ";
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        IsHandled: Boolean;
     begin
         if "Document Type" <> "Document Type"::"Purchase Advance CZZ" then
             TestIfAlreadyExists();
@@ -38,7 +39,9 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
         PurchAdvLetterHeaderCZZ.Reset();
         PurchAdvLetterHeaderCZZ.Init();
         PurchAdvLetterHeaderCZZ."Advance Letter Code" := AdvanceLetterTemplate.Code;
+        OnCreatePurchAdvLetterOnBeforePurchAdvLetterHeaderInsertCZZ(PurchAdvLetterHeaderCZZ);
         PurchAdvLetterHeaderCZZ.Insert(true);
+        OnCreatePurchAdvLetterOnAfterPurchAdvLetterHeaderInsertCZZ(PurchAdvLetterHeaderCZZ);
         if GetURL() <> '' then
             PurchAdvLetterHeaderCZZ.AddLink(GetURL(), Description);
         PurchAdvLetterHeaderCZZ."Incoming Document Entry No." := "Entry No.";
@@ -46,7 +49,11 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
         "Document No." := PurchAdvLetterHeaderCZZ."No.";
         Modify(true);
         Commit();
-        ShowRecord();
+
+        IsHandled := false;
+        OnCreatePurchAdvLetterOnBeforeShowRecordCZZ(Rec, IsHandled);
+        if not IsHandled then
+            ShowRecord();
     end;
     #endregion purchase
 
@@ -69,6 +76,7 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
     var
         AdvanceLetterTemplate: Record "Advance Letter Template CZZ";
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        IsHandled: Boolean;
     begin
         if "Document Type" <> "Document Type"::"Sales Advance CZZ" then
             TestIfAlreadyExists();
@@ -88,7 +96,9 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
         SalesAdvLetterHeaderCZZ.Reset();
         SalesAdvLetterHeaderCZZ.Init();
         SalesAdvLetterHeaderCZZ."Advance Letter Code" := AdvanceLetterTemplate.Code;
+        OnCreateSalesAdvLetterOnBeforeSalesAdvLetterHeaderInsertCZZ(SalesAdvLetterHeaderCZZ);
         SalesAdvLetterHeaderCZZ.Insert(true);
+        OnCreateSalesAdvLetterOnAfterSalesAdvLetterHeaderInsertCZZ(SalesAdvLetterHeaderCZZ);
         if GetURL() <> '' then
             SalesAdvLetterHeaderCZZ.AddLink(GetURL(), Description);
         SalesAdvLetterHeaderCZZ."Incoming Document Entry No." := "Entry No.";
@@ -96,7 +106,41 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
         "Document No." := SalesAdvLetterHeaderCZZ."No.";
         Modify(true);
         Commit();
-        ShowRecord();
+
+        IsHandled := false;
+        OnCreateSalesAdvLetterOnBeforeShowRecordCZZ(Rec, IsHandled);
+        if not IsHandled then
+            ShowRecord();
     end;
     #endregion sales
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCreatePurchAdvLetterOnBeforePurchAdvLetterHeaderInsertCZZ(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCreatePurchAdvLetterOnAfterPurchAdvLetterHeaderInsertCZZ(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreatePurchAdvLetterOnBeforeShowRecordCZZ(IncomingDocument: Record "Incoming Document"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCreateSalesAdvLetterOnBeforeSalesAdvLetterHeaderInsertCZZ(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCreateSalesAdvLetterOnAfterSalesAdvLetterHeaderInsertCZZ(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateSalesAdvLetterOnBeforeShowRecordCZZ(IncomingDocument: Record "Incoming Document"; var IsHandled: Boolean)
+    begin
+    end;
 }

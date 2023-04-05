@@ -13,6 +13,10 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempDocumentBudgetBuffer: Record "Budget Buffer" temporary;
         TempErrorBuffer: Record "Error Buffer" temporary;
         TempGlobalVATEntry: Record "VAT Entry" temporary;
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#endif
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         WindowDialog: Dialog;
         ProgressDialogMsg: Label 'VAT Statement Line Progress     #1######## #2######## #3########', Comment = '%1 = Statement Template Name; %2 = Statement Name; %3 = Line No.';
         BufferCreateDialogMsg: Label 'VAT Control Report     #1########', Comment = '%1 = Statement Template Name';
@@ -233,20 +237,9 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 
                 TempVATEntry.Base := 0;
                 TempVATEntry.Amount := 0;
-#if not CLEAN19
-#pragma warning disable AL0432
-                TempVATEntry."Advance Base" := 0;
-#pragma warning restore AL0432                
-#endif
                 repeat
                     TempVATEntry.Base += TempGlobalVATEntry.Base;
                     TempVATEntry.Amount += TempGlobalVATEntry.Amount;
-#if not CLEAN19
-#pragma warning disable AL0432
-                    TempVATEntry."Advance Base" += TempGlobalVATEntry."Advance Base";
-#pragma warning restore AL0432
-#endif
-
                     if TempGlobalVATEntry."Entry No." <> TempVATEntry."Entry No." then begin
                         TempVATCtrlReportEntLinkCZL."VAT Ctrl. Report No." := '';
                         TempVATCtrlReportEntLinkCZL."Line No." := TempVATEntry."Entry No.";
@@ -302,16 +295,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                     if TempGlobalVATEntry."VAT Calculation Type" = TempGlobalVATEntry."VAT Calculation Type"::"Reverse Charge VAT" then
                         TempDocumentBudgetBuffer.Amount += TempGlobalVATEntry.Base
                     else
-#if not CLEAN19
-#pragma warning disable AL0432
-                        if (TempGlobalVATEntry."Prepayment Type" = TempGlobalVATEntry."Prepayment Type"::Advance) and
-                           (TempGlobalVATEntry."Advance Base" <> 0)
-                        then
-                            TempDocumentBudgetBuffer.Amount += (TempGlobalVATEntry."Advance Base" + TempGlobalVATEntry.Amount)
-                        else
-#pragma warning restore AL0432
-#endif
-                            TempDocumentBudgetBuffer.Amount += (TempGlobalVATEntry.Base + TempGlobalVATEntry.Amount);
+                        TempDocumentBudgetBuffer.Amount += (TempGlobalVATEntry.Base + TempGlobalVATEntry.Amount);
                 until TempGlobalVATEntry.Next() = 0;
                 OnGetDocumentAmountOnBeforeInsertTempDocumentBudgetBuffer(TempVATEntry, TempDocumentBudgetBuffer);
                 TempDocumentBudgetBuffer.Insert();
@@ -337,7 +321,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if VATCtrlReportHeaderCZL."No." = '' then
             exit;
         VATCtrlReportLineCZL.SetRange("VAT Ctrl. Report No.", VATCtrlReportHeaderCZL."No.");
-        if GeneralLedgerSetup."Use VAT Date CZL" then begin
+        if VATReportingDateMgt.IsVATDateEnabled() then begin
             VATCtrlReportLineCZL.SetCurrentKey("VAT Ctrl. Report No.", "VAT Date");
             VATCtrlReportLineCZL.SetRange("VAT Date", StartDate, EndDate);
         end else begin
@@ -412,12 +396,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if not TempVATCtrlReportBufferCZL.FindFirst() then
             InsertVATCtrlReportBuffer(TempVATCtrlReportBufferCZL, VATEntry, VATPostingSetup, SectionCode, CommodityCode)
         else begin
-#if not CLEAN19
-#pragma warning disable AL0432
-            if VATEntry."Advance Base" <> 0 then
-                VATEntry.Base += VATEntry."Advance Base";
-#pragma warning restore AL0432
-#endif
             TempVATCtrlReportBufferCZL."Total Base" += VATEntry.Base;
             TempVATCtrlReportBufferCZL."Total Amount" += VATEntry.Amount;
             TempVATCtrlReportBufferCZL.Modify();
@@ -435,7 +413,13 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         GlobalLineNo += 1;
         TempVATCtrlReportBufferCZL."Line No." := GlobalLineNo;
         TempVATCtrlReportBufferCZL."Posting Date" := VATEntry."Posting Date";
-        TempVATCtrlReportBufferCZL."VAT Date" := VATEntry."VAT Date CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not VATEntry.IsReplaceVATDateEnabled() then
+            VATEntry."VAT Reporting Date" := VATEntry."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
+        TempVATCtrlReportBufferCZL."VAT Date" := VATEntry."VAT Reporting Date";
         TempVATCtrlReportBufferCZL."Original Document VAT Date" := VATEntry."Original Doc. VAT Date CZL";
         TempVATCtrlReportBufferCZL."Bill-to/Pay-to No." := VATEntry."Bill-to/Pay-to No.";
         TempVATCtrlReportBufferCZL."VAT Registration No." := VATEntry."VAT Registration No.";
@@ -462,12 +446,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempVATCtrlReportBufferCZL."Supplies Mode Code" := VATPostingSetup."Supplies Mode Code CZL".AsInteger();
         TempVATCtrlReportBufferCZL."Corrections for Bad Receivable" := VATPostingSetup."Corrections Bad Receivable CZL";
         TempVATCtrlReportBufferCZL."Ratio Use" := VATPostingSetup."Ratio Coefficient CZL";
-#if not CLEAN19
-#pragma warning disable AL0432
-        if VATEntry."Advance Base" <> 0 then
-            VATEntry.Base += VATEntry."Advance Base";
-#pragma warning restore AL0432
-#endif
         TempVATCtrlReportBufferCZL."Total Base" := VATEntry.Base;
         TempVATCtrlReportBufferCZL."Total Amount" := VATEntry.Amount;
         OnInsertVATCtrlReportBufferOnBeforeInsert(VATEntry, VATPostingSetup, TempVATCtrlReportBufferCZL);
@@ -521,13 +499,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempDropShptPostBuffer.Reset();
         TempDropShptPostBuffer.DeleteAll();
 
-#if CLEAN19
         if VATEntry.Base <> 0 then
-#else
-#pragma warning disable AL0432
-        if (VATEntry.Base <> 0) or (VATEntry."Advance Base" <> 0) then
-#pragma warning restore AL0432
-#endif
             case SectionCode of
                 'A1':
                     begin
@@ -559,13 +531,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if not TempDropShptPostBuffer.FindFirst() then begin
             TempDropShptPostBuffer.Init();
             TempDropShptPostBuffer."Order No." := '';
-#if not CLEAN19
-#pragma warning disable AL0432
-            if VATEntry."Advance Base" <> 0 then
-                TempDropShptPostBuffer.Quantity := VATEntry."Advance Base"
-            else
-#pragma warning restore AL0432
-#endif
             TempDropShptPostBuffer.Quantity := VATEntry.Base;
             TempDropShptPostBuffer."Quantity (Base)" := VATEntry.Amount;
             TempDropShptPostBuffer.Insert();
@@ -588,12 +553,18 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if SalesInvoiceHeader."No." <> SalesInvoiceLine."Document No." then
                 SalesInvoiceHeader.Get(SalesInvoiceLine."Document No.");
             repeat
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    SalesInvoiceHeader."VAT Reporting Date" := SalesInvoiceHeader."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
                 IsHandled := false;
                 OnSplitFromSalesInvLineOnBeforeUpdateTempDropShptPostBuffer(SalesInvoiceHeader, SalesInvoiceLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
                     UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, SalesInvoiceLine."Tariff No. CZL",
                         SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group", SalesInvoiceLine."VAT Base Amount",
-                        SalesInvoiceHeader."Currency Code", SalesInvoiceHeader."VAT Currency Factor CZL", SalesInvoiceHeader."VAT Date CZL",
+                        SalesInvoiceHeader."Currency Code", SalesInvoiceHeader."VAT Currency Factor CZL", SalesInvoiceHeader."VAT Reporting Date",
                         false, SalesInvoiceLine.Amount);
             until SalesInvoiceLine.Next() = 0;
         end;
@@ -614,12 +585,18 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if SalesCrMemoHeader."No." <> SalesCrMemoLine."Document No." then
                 SalesCrMemoHeader.Get(SalesCrMemoLine."Document No.");
             repeat
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    SalesCrMemoHeader."VAT Reporting Date" := SalesCrMemoHeader."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
                 IsHandled := false;
                 OnSplitFromSalesCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(SalesCrMemoHeader, SalesCrMemoLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
                     UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, SalesCrMemoLine."Tariff No. CZL",
                         SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group", SalesCrMemoLine."VAT Base Amount",
-                        SalesCrMemoHeader."Currency Code", SalesCrMemoHeader."VAT Currency Factor CZL", SalesCrMemoHeader."VAT Date CZL",
+                        SalesCrMemoHeader."Currency Code", SalesCrMemoHeader."VAT Currency Factor CZL", SalesCrMemoHeader."VAT Reporting Date",
                         false, SalesCrMemoLine.Amount);
             until SalesCrMemoLine.Next() = 0;
         end;
@@ -641,12 +618,18 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if PurchInvHeader."No." <> PurchInvLine."Document No." then
                 PurchInvHeader.Get(PurchInvLine."Document No.");
             repeat
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    PurchInvHeader."VAT Reporting Date" := PurchInvHeader."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
                 IsHandled := false;
                 OnSplitFromPurchInvLineOnBeforeUpdateTempDropShptPostBuffer(PurchInvHeader, PurchInvLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
                     UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, PurchInvLine."Tariff No. CZL",
                         PurchInvLine."VAT Bus. Posting Group", PurchInvLine."VAT Prod. Posting Group", PurchInvLine."VAT Base Amount",
-                        PurchInvHeader."Currency Code", PurchInvHeader."VAT Currency Factor CZL", PurchInvHeader."VAT Date CZL",
+                        PurchInvHeader."Currency Code", PurchInvHeader."VAT Currency Factor CZL", PurchInvHeader."VAT Reporting Date",
                         true, PurchInvLine.Amount);
             until PurchInvLine.Next() = 0;
         end;
@@ -667,12 +650,18 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if PurchCrMemoHdr."No." <> PurchCrMemoLine."Document No." then
                 PurchCrMemoHdr.Get(PurchCrMemoLine."Document No.");
             repeat
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    PurchCrMemoHdr."VAT Reporting Date" := PurchCrMemoHdr."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
                 IsHandled := false;
                 OnSplitFromPurchCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(PurchCrMemoHdr, PurchCrMemoLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
                     UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, PurchCrMemoLine."Tariff No. CZL",
                         PurchCrMemoLine."VAT Bus. Posting Group", PurchCrMemoLine."VAT Prod. Posting Group", PurchCrMemoLine."VAT Base Amount",
-                        PurchCrMemoHdr."Currency Code", PurchCrMemoHdr."VAT Currency Factor CZL", PurchCrMemoHdr."VAT Date CZL",
+                        PurchCrMemoHdr."Currency Code", PurchCrMemoHdr."VAT Currency Factor CZL", PurchCrMemoHdr."VAT Reporting Date",
                         true, PurchCrMemoLine.Amount);
             until PurchCrMemoLine.Next() = 0;
         end;
@@ -858,7 +847,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                     end;
 
                     if VATCtrlReportSectionCZL."Group By" <> VATCtrlReportSectionCZL."Group By"::"Section Code" then
-                        if GeneralLedgerSetup."Use VAT Date CZL" then
+                        if VATReportingDateMgt.IsVATDateEnabled() then
                             TempVATCtrlReportBufferCZL.SetRange("Posting Date", VATCtrlReportLineCZL."VAT Date")
                         else
                             TempVATCtrlReportBufferCZL.SetRange("Posting Date", VATCtrlReportLineCZL."Posting Date");
@@ -869,7 +858,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                     CopyLineToBuffer(VATCtrlReportLineCZL, TempVATCtrlReportBufferCZL);
                     LineNo += 1;
                     TempVATCtrlReportBufferCZL."Line No." := LineNo;
-                    if GeneralLedgerSetup."Use VAT Date CZL" then begin
+                    if VATReportingDateMgt.IsVATDateEnabled() then begin
                         TempVATCtrlReportBufferCZL."VAT Date" := VATCtrlReportLineCZL."VAT Date";
                         TempVATCtrlReportBufferCZL."Posting Date" := VATCtrlReportLineCZL."VAT Date";
                         TempVATCtrlReportBufferCZL."Original Document VAT Date" := VATCtrlReportLineCZL."Original Document VAT Date";
@@ -1132,7 +1121,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
     begin
         VATEntry.SetVATStatementLineFiltersCZL(VATStatementLine);
         VATEntry.SetRange(Reversed, false);
-        VATEntry.SetDateFilterCZL(StartDate, EndDate, GeneralLedgerSetup."Use VAT Date CZL");
+        VATEntry.SetDateFilterCZL(StartDate, EndDate, VATReportingDateMgt.IsVATDateEnabled());
         OnAfterSetVATEntryFilters(VATEntry, VATStatementLine, VATCtrlReportHeaderCZL);
     end;
 
@@ -1268,7 +1257,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             exit;
 
         DeleteVATEntryBuffer(TempVATEntry);
-        VATEntry.SetDateFilterCZL(StartDate, EndDate, GeneralLedgerSetup."Use VAT Date CZL");
+        VATEntry.SetDateFilterCZL(StartDate, EndDate, VATReportingDateMgt.IsVATDateEnabled());
         if VATEntry.FindSet(false, false) then
             repeat
                 TempVATEntry.Init();

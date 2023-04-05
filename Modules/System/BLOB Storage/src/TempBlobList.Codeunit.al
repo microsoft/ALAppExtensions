@@ -9,6 +9,8 @@
 codeunit 4102 "Temp Blob List"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TempBlobListImpl: Codeunit "Temp Blob List Impl.";

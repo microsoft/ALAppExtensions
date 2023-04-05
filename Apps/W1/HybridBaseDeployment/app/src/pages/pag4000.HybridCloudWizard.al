@@ -1,4 +1,4 @@
-page 4000 "Hybrid Cloud Setup Wizard"
+﻿page 4000 "Hybrid Cloud Setup Wizard"
 {
     Caption = 'Cloud Migration Setup';
     AdditionalSearchTerms = 'migration,data migration,cloud migration,intelligent,cloud,sync,replication,hybrid';
@@ -135,7 +135,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                                 if HybridProduct.RunModal() in [Action::LookupOK, Action::OK, Action::Yes] then begin
                                     HybridProduct.GetRecord(TempHybridProductType);
                                     if TempHybridProductType.ID = '' then begin
-                                        Session.LogMessage('SmbMig-005', StrSubstNo(BlankProductFoundTxt, Format(TempHybridProductType)), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'CloudMigration');
+                                        Session.LogMessage('SmbMig-005', StrSubstNo(BlankProductFoundTxt, Format(TempHybridProductType)), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', 'CloudMigration');
                                         Error(BlankProductIdErr);
                                     end;
                                 end
@@ -659,6 +659,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
         GuidedExperience: Codeunit "Guided Experience";
+        IntelligentCloudManagement: Page "Intelligent Cloud Management";
         Handled: Boolean;
         CloseWizard: Boolean;
     begin
@@ -676,8 +677,14 @@ page 4000 "Hybrid Cloud Setup Wizard"
             exit;
 
         if GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, PAGE::"Hybrid Cloud Setup Wizard") then begin
-            if Confirm(OpenCloudMigrationPageQst, true) then
-                Page.Run(page::"Intelligent Cloud Management");
+            if not Confirm(OpenCloudMigrationPageQst, true) then
+                exit(true);
+
+            if not IntelligentCloudManagement.GetUseNewUI() then
+                Page.Run(page::"Intelligent Cloud Management")
+            else
+                Page.Run(Page::"Cloud Migration Management");
+
             exit(true);
         end else
             if not Confirm(HybridNotSetupQst, false) then

@@ -6,6 +6,8 @@
 codeunit 9108 "SharePoint Operation Response"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     [TryFunction]

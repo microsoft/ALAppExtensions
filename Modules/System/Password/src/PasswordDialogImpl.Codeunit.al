@@ -6,6 +6,8 @@
 codeunit 9811 "Password Dialog Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         PasswordMismatchErr: Label 'The passwords that you entered do not match.';

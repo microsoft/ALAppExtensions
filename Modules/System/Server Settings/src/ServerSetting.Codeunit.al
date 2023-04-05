@@ -10,6 +10,8 @@ codeunit 6723 "Server Setting"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ServerSettingImpl: Codeunit "Server Setting Impl.";

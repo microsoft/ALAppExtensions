@@ -107,7 +107,12 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         GenJournalLine."Document No." := VATLCYCorrectionBufferCZL."Document No.";
         GenJournalLine.Description := PostingDescriptionTxt;
         GenJournalLine."Posting Date" := VATLCYCorrectionBufferCZL."Posting Date";
+#if not CLEAN22
+#pragma warning disable AL0432
         GenJournalLine."VAT Date CZL" := VATLCYCorrectionBufferCZL."VAT Date";
+#pragma warning restore AL0432
+#endif
+        GenJournalLine."VAT Reporting Date" := VATLCYCorrectionBufferCZL."VAT Date";
         GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
         GenJournalLine."System-Created Entry" := true;
         GenJournalLine."Source Code" := SourceCode.Code;
@@ -145,24 +150,25 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
     local procedure SetDefaultDimensions(var GenJournalLine: Record "Gen. Journal Line")
     var
         DefaultDimension: Record "Default Dimension";
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
         if GenJournalLine."Account Type" = GenJournalLine."Account Type"::"G/L Account" then begin
-            TableID[1] := DATABASE::"G/L Account";
-            No[1] := GenJournalLine."Account No.";
-            DefaultDimension.SetRange("Table ID", TableID[1]);
-            DefaultDimension.SetRange("No.", No[1]);
+            DimensionManagement.AddDimSource(DefaultDimSource, Database::"G/L Account", GenJournalLine."Account No.");
+            DefaultDimension.SetRange("Table ID", Database::"G/L Account");
+            DefaultDimension.SetRange("No.", GenJournalLine."Account No.");
             if not DefaultDimension.IsEmpty() then
                 GenJournalLine."Dimension Set ID" := DimensionManagement.GetDefaultDimID(
-                    TableID, No, GenJournalLine."Source Code", GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code", GenJournalLine."Dimension Set ID", 0);
+                    DefaultDimSource, GenJournalLine."Source Code",
+                    GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code",
+                    GenJournalLine."Dimension Set ID", 0);
         end;
     end;
 
     local procedure CheckVATDateCZL(VATLCYCorrectionBufferCZL: Record "VAT LCY Correction Buffer CZL")
     var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
     begin
-        if not GeneralLedgerSetup."Use VAT Date CZL" then
+        if not VATReportingDateMgt.IsVATDateEnabled() then
             VATLCYCorrectionBufferCZL.TestField("VAT Date", VATLCYCorrectionBufferCZL."Posting Date")
         else begin
             VATLCYCorrectionBufferCZL.TestField("VAT Date");

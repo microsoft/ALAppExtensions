@@ -6,6 +6,8 @@
 codeunit 9215 "IDAutomation 1D Provider" implements "Barcode Font Provider"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CannotFindBarcodeEncoderErr: Label 'Provider %1: Barcode symbol encoder %2 is not implemented by this provider!', comment = '%1 Provider Caption, %2 = Symbology Caption';

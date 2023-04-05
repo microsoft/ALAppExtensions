@@ -473,7 +473,6 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
         GeneralLedgerSetup: Record "General Ledger Setup";
         CompanyInformation: Record "Company Information";
         TempCurrency: Record Currency temporary;
-        TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
         CompanyOfficialCZL: Record "Company Official CZL";
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
         Employee: Record Employee;
@@ -536,6 +535,8 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
         RemainingAmtLCYLbl: Label 'Remaining Amt. (%1)', Comment = '%1 = LCY Code';
         DateFormatTok: Label '<Day>.<Month>.<Year4>', Locked = true;
 
+    protected var
+        TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
 
     procedure CalcDebitCredit(TotalAmt: Decimal)
     begin

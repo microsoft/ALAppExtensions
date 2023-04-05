@@ -28,6 +28,10 @@ codeunit 139554 "Library - Intrastat"
         IntrastatReportSetup.Init();
         IntrastatReportSetup.Validate("Intrastat Nos.", NoSeriesCode);
         IntrastatReportSetup.Insert();
+
+        IntrastatReportSetup.Validate("Report Receipts", true);
+        IntrastatReportSetup.Validate("Report Shipments", true);
+        IntrastatReportSetup.Modify(true);
     end;
 
     procedure CreateIntrastatReport(ReportDate: Date; var IntrastatReportNo: Code[20])
@@ -39,7 +43,6 @@ codeunit 139554 "Library - Intrastat"
         IntrastatReportHeader.Insert();
 
         IntrastatReportHeader.Validate("Statistics Period", GetStatisticalPeriod(ReportDate));
-        IntrastatReportHeader.Validate("Currency Identifier", 'S');
         IntrastatReportHeader.Modify();
 
         IntrastatReportNo := IntrastatReportHeader."No.";
@@ -376,6 +379,29 @@ codeunit 139554 "Library - Intrastat"
             exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false));
     end;
 
+    procedure CreateAndPostPurchaseOrderWithInvoice(var PurchaseLine: Record "Purchase Line"; PostingDate: Date): Code[20]
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        exit(
+          CreateAndPostPurchaseDocumentMultiLineWithInvoice(
+            PurchaseLine, PurchaseHeader."Document Type"::Order, PostingDate, PurchaseLine.Type::Item, CreateItem(), 1));
+    end;
+
+    procedure CreateAndPostPurchaseDocumentMultiLineWithInvoice(var PurchaseLine: Record "Purchase Line"; DocumentType: Enum "Purchase Document Type"; PostingDate: Date;
+                                                                                                                       LineType: Enum "Purchase Line Type";
+                                                                                                                       ItemNo: Code[20];
+                                                                                                                       NoOfLines: Integer): Code[20]
+    var
+        PurchaseHeader: Record "Purchase Header";
+        i: Integer;
+    begin
+        CreatePurchaseHeader(PurchaseHeader, DocumentType, PostingDate, CreateVendor(GetCountryRegionCode()));
+        for i := 1 to NoOfLines do
+            CreatePurchaseLine(PurchaseHeader, PurchaseLine, LineType, ItemNo);
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+    end;
+
     procedure CreateItem(): Code[20]
     var
         Item: Record Item;
@@ -556,6 +582,26 @@ codeunit 139554 "Library - Intrastat"
             exit(LibrarySales.PostSalesDocument(SalesHeader, true, true))
         else
             exit(LibrarySales.PostSalesDocument(SalesHeader, true, false));
+    end;
+
+    procedure CreateAndPostSalesOrderWithInvoice(var SalesLine: Record "Sales Line"; PostingDate: Date): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        exit(
+          CreateAndPostSalesDocumentMultiLineWithInvoice(
+            SalesLine, SalesHeader."Document Type"::Order, PostingDate, SalesLine.Type::Item, CreateItem(), 1));
+    end;
+
+    procedure CreateAndPostSalesDocumentMultiLineWithInvoice(var SalesLine: Record "Sales Line"; DocumentType: Enum "Sales Document Type"; PostingDate: Date;
+                                                                                                         LineType: Enum "Sales Line Type";
+                                                                                                         ItemNo: Code[20];
+                                                                                                         NoOfSalesLines: Integer): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesDocument(SalesHeader, SalesLine, CreateCustomer(), PostingDate, DocumentType, LineType, ItemNo, NoOfSalesLines);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
     procedure CreateAndPostTransferOrder(var TransferLine: Record "Transfer Line"; FromLocation: Code[10]; ToLocation: Code[10]; ItemNo: Code[20])

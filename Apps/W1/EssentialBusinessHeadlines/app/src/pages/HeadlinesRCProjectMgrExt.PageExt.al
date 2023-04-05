@@ -19,6 +19,7 @@ pageextension 1443 "Headlines RC Project Mgr. Ext" extends "Headline RC Project 
                 field(Headline1Text; Headline1Text)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
                 }
             }
         }

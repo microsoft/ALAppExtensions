@@ -6,6 +6,8 @@
 codeunit 8902 "Email Scenario Attach Impl."
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email Attachments" = rimd,
                   tabledata "Email Scenario Attachments" = rimd;
 

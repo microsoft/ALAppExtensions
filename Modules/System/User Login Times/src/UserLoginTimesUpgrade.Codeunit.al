@@ -6,6 +6,8 @@
 codeunit 9028 "User Login Times Upgrade"
 {
     Subtype = Upgrade;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "User Environment Login" = ri,
                   tabledata "User Login" = r;
 
@@ -40,7 +42,7 @@ codeunit 9028 "User Login Times Upgrade"
         until UserLogin.Next() = 0;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", OnGetPerCompanyUpgradeTags, '', false, false)]
     local procedure AddUpgradeTag(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         if not PerCompanyUpgradeTags.Contains(GetMoveUserLoginUpgradeTag()) then

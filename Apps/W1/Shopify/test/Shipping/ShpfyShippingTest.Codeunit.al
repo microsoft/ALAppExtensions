@@ -12,13 +12,14 @@ codeunit 139606 "Shpfy Shipping Test"
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesShipmentLine: Record "Sales Shipment Line";
-        ShpfyExportShipment: Codeunit "Shpfy Export Shipments";
-        JHelper: Codeunit "Shpfy Json Helper";
-        JFulFillmentRequest: JsonToken;
-        JFulFillment: JsonObject;
+        ExportShipments: Codeunit "Shpfy Export Shipments";
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        FulfillmentRequest: Text;
+        JFulfillment: JsonObject;
         JLineItems: JsonArray;
         JLineItem: JsonToken;
         ShopifyOrderId: BigInteger;
+        ShopifyFulfillmentOrderId: BigInteger;
         LocationId: BigInteger;
         LocationCode: Code[10];
     begin
@@ -27,46 +28,77 @@ codeunit 139606 "Shpfy Shipping Test"
         LocationId := Any.IntegerInRange(10000, 99999);
         LocationCode := Any.AlphanumericText(MaxStrLen(LocationCode));
         ShopifyOrderId := CreateRandomShopifyOrder();
+        ShopifyFulfillmentOrderId := CreateShopifyFulfillmentOrder(ShopifyOrderId);
         CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId, LocationCode);
 
         // [WHEN] Invoke the function CreateFulfillmentRequest()
-        JFulFillmentRequest.ReadFrom(ShpfyExportShipment.CreateFulfillmentRequest(SalesShipmentHeader, LocationId, LocationCode));
+        FulfillmentRequest := ExportShipments.CreateFulfillmentOrderRequest(SalesShipmentHeader, LocationId, LocationCode);
 
         // [THEN] We must find the correct fulfilment data in the json token
-        JHelper.GetJsonObject(JFulFillmentRequest, JFulFillment, 'fulfillment');
-        LibraryAssert.AreEqual(LocationId, JHelper.GetValueAsBigInteger(JFulFillment, 'location_id'), 'location Id check');
-        LibraryAssert.AreEqual(SalesShipmentHeader."Package Tracking No.", JHelper.GetValueAsText(JFulFillment, 'tracking_number'), 'tracking number check');
+        LibraryAssert.IsTrue(FulfillmentRequest.Contains(Format(ShopifyFulfillmentOrderId)), 'Fulfillmentorder Id Check');
+        LibraryAssert.IsTrue(FulFillmentRequest.Contains(SalesShipmentHeader."Package Tracking No."), 'tracking number check');
 
         // [THEN] We must find the fulfilment lines in the json token
-        JHelper.GetJsonArray(JFulFillment, JLineItems, 'line_items');
+        JsonHelper.GetJsonArray(JFulfillment, JLineItems, 'line_items');
         foreach JLineItem in JLineItems do begin
-            SalesShipmentLine.SetRange("Shpfy Order Line Id", JHelper.GetValueAsBigInteger(JLineItem, 'id'));
+            SalesShipmentLine.SetRange("Shpfy Order Line Id", JsonHelper.GetValueAsBigInteger(JLineItem, 'id'));
             SalesShipmentLine.FindFirst();
-            LibraryAssert.AreEqual(SalesShipmentLine.Quantity, JHelper.GetValueAsDecimal(JLineItem, 'quantity'), 'quanity check');
+            LibraryAssert.AreEqual(SalesShipmentLine.Quantity, JsonHelper.GetValueAsDecimal(JLineItem, 'quantity'), 'quanity check');
         end;
     end;
 
-    local procedure CreateRandomShopifyOrder(): BigInteger;
+    local procedure CreateRandomShopifyOrder(): BigInteger
     var
-        ShopifyOrderHeader: Record "Shpfy Order Header";
-        ShopifyOrderLine: Record "Shpfy Order Line";
+        OrderHeader: Record "Shpfy Order Header";
+        OrderLine: Record "Shpfy Order Line";
     begin
-        Clear(ShopifyOrderHeader);
-        ShopifyOrderHeader."Shopify Order Id" := Any.IntegerInRange(10000, 99999);
-        ShopifyOrderHeader.Insert();
+        Clear(OrderHeader);
+        OrderHeader."Shopify Order Id" := Any.IntegerInRange(10000, 99999);
+        OrderHeader.Insert();
 
-        Clear(ShopifyOrderLine);
-        ShopifyOrderLine."Shopify Order Id" := ShopifyOrderHeader."Shopify Order Id";
-        ShopifyOrderLine."Line Id" := Any.IntegerInRange(10000, 99999);
-        ShopifyOrderLine.Insert();
+        Clear(OrderLine);
+        OrderLine."Shopify Order Id" := OrderHeader."Shopify Order Id";
+        OrderLine."Shopify Product Id" := Any.IntegerInRange(10000, 99999);
+        OrderLine."Shopify Variant Id" := Any.IntegerInRange(10000, 99999);
+        OrderLine."Line Id" := Any.IntegerInRange(10000, 99999);
+        OrderLine.Quantity := Any.IntegerInRange(1, 10);
+        OrderLine.Insert();
 
-        exit(ShopifyOrderHeader."Shopify Order Id");
+        exit(OrderHeader."Shopify Order Id");
     end;
 
-    local procedure CreateRandomSalesShipment(var SalesShipmentHeader: record "Sales Shipment Header"; ShopifyOrderId: BigInteger; LocationCode: Code[10])
+    local procedure CreateShopifyFulfillmentOrder(ShopifyOrderId: BigInteger): BigInteger
+    var
+        OrderLine: Record "Shpfy Order Line";
+        FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
+        FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
+    begin
+        Clear(FulfillmentOrderHeader);
+        FulfillmentOrderHeader."Shopify Fulfillment Order Id" := Any.IntegerInRange(10000, 99999);
+        FulfillmentOrderHeader."Shopify Order Id" := ShopifyOrderId;
+        FulfillmentOrderHeader.Insert();
+
+        OrderLine.Reset();
+        OrderLine.SetRange("Shopify Order Id", ShopifyOrderId);
+        if OrderLine.FindSet() then
+            repeat
+                Clear(FulfillmentOrderLine);
+                FulfillmentOrderLine."Shopify Fulfillment Order Id" := FulfillmentOrderHeader."Shopify Fulfillment Order Id";
+                FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id" := Any.IntegerInRange(10000, 99999);
+                FulfillmentOrderLine."Shopify Order Id" := FulfillmentOrderHeader."Shopify Order Id";
+                FulfillmentOrderLine."Shopify Product Id" := OrderLine."Shopify Product Id";
+                FulfillmentOrderLine."Shopify Variant Id" := OrderLine."Shopify Variant Id";
+                FulfillmentOrderLine."Remaining Quantity" := OrderLine.Quantity;
+                FulfillmentOrderLine.Insert();
+            until OrderLine.Next() = 0;
+
+        exit(FulfillmentOrderHeader."Shopify Fulfillment Order Id");
+    end;
+
+    local procedure CreateRandomSalesShipment(var SalesShipmentHeader: Record "Sales Shipment Header"; ShopifyOrderId: BigInteger; LocationCode: Code[10])
     var
         SalesShipmentLine: Record "Sales Shipment Line";
-        ShopifyOrderLine: Record "Shpfy Order Line";
+        OrderLine: Record "Shpfy Order Line";
     begin
         Clear(SalesShipmentHeader);
         SalesShipmentHeader."No." := Any.AlphanumericText(MaxStrLen(SalesShipmentHeader."No."));
@@ -74,18 +106,18 @@ codeunit 139606 "Shpfy Shipping Test"
         SalesShipmentHeader."Package Tracking No." := Any.AlphanumericText(MaxStrLen(SalesShipmentHeader."Package Tracking No."));
         SalesShipmentHeader.Insert();
 
-        ShopifyOrderLine.Reset();
-        ShopifyOrderLine.SetRange("Shopify Order Id", ShopifyOrderId);
-        if ShopifyOrderLine.FindSet() then
+        OrderLine.Reset();
+        OrderLine.SetRange("Shopify Order Id", ShopifyOrderId);
+        if OrderLine.FindSet() then
             repeat
                 Clear(SalesShipmentLine);
                 SalesShipmentLine."Document No." := SalesShipmentHeader."No.";
                 SalesShipmentLine.Type := SalesShipmentLine.type::Item;
                 SalesShipmentLine."No." := Any.AlphanumericText(MaxStrLen(SalesShipmentLine."No."));
-                SalesShipmentLine."Shpfy Order Line Id" := ShopifyOrderLine."Line Id";
-                SalesShipmentLine.Quantity := Any.DecimalInRange(10, 0);
+                SalesShipmentLine."Shpfy Order Line Id" := OrderLine."Line Id";
+                SalesShipmentLine.Quantity := OrderLine.Quantity;
                 SalesShipmentLine."Location Code" := LocationCode;
                 SalesShipmentLine.Insert();
-            until ShopifyOrderLine.Next() = 0;
+            until OrderLine.Next() = 0;
     end;
 }

@@ -1000,6 +1000,82 @@ codeunit 139835 "APIV2 - Sales Order Lines E2E"
         asserterror LibraryGraphMgt.PostToWebService(TargetURL, OrderLineJSON, ResponseText);
     end;
 
+    [Test]
+    procedure TestCreatingOrderLineWithAssemblyBOM()
+    var
+        Item1: Record "Item";
+        Item2: Record "Item";
+        Item3: Record "Item";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        BOMComponent: Record "BOM Component";
+        AssemblyLine: Record "Assembly Line";
+        AssembletoOrderLink: Record "Assemble-to-Order Link";
+        ReservationEntry: Record "Reservation Entry";
+        LibraryAssembly: Codeunit "Library - Assembly";
+        ResponseText: Text;
+        TargetURL: Text;
+        OrderLineJSON: Text;
+        OrderId: Text;
+        LineNoFromJSON: Text;
+        LineNo: Integer;
+    begin
+        // [SCENARIO] POST a new line to an order with assembly BOM creates assembly orders and reservation links
+        // [GIVEN] An existing order and a valid JSON describing the new order line with item with assembly BOM
+        Initialize();
+        OrderId := CreateSalesOrderWithLines(SalesHeader);
+        LibraryInventory.CreateItem(Item1);
+        LibraryInventory.CreateItem(Item2);
+        LibraryInventory.CreateItem(Item3);
+        Item1."Assembly Policy" := Item1."Assembly Policy"::"Assemble-to-Order";
+        Item1."Assembly BOM" := true;
+        Item1.Modify();
+        LibraryAssembly.CreateAssemblyListComponent(
+          BOMComponent.Type::Item, Item2."No.", Item1."No.", '', BOMComponent."Resource Usage Type", LibraryRandom.RandInt(5), true);
+        LibraryAssembly.CreateAssemblyListComponent(
+          BOMComponent.Type::Item, Item3."No.", Item1."No.", '', BOMComponent."Resource Usage Type", LibraryRandom.RandInt(5), true);
+        Commit();
+
+        // [WHEN] we POST the JSON to the web service
+        OrderLineJSON := CreateOrderLineJSON(Item1.SystemId, LibraryRandom.RandIntInRange(1, 100));
+        TargetURL := LibraryGraphMgt
+                  .CreateTargetURLWithSubpage(
+                    OrderId,
+                    Page::"APIV2 - Sales Orders",
+                    OrderServiceNameTxt,
+                    OrderServiceLinesNameTxt);
+        LibraryGraphMgt.PostToWebService(TargetURL, OrderLineJSON, ResponseText);
+
+        // [THEN] the response text should not be empty and assembly orders and reservation links should be created
+        Assert.AreNotEqual('', ResponseText, 'response JSON should not be blank');
+        Assert.IsTrue(
+          LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, 'sequence', LineNoFromJSON), 'Could not find sequence');
+
+        Evaluate(LineNo, LineNoFromJSON);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type"::Order);
+        SalesLine.SetRange("Line No.", LineNo);
+        Assert.IsTrue(SalesLine.FindFirst(), 'The order line should exist');
+        SalesLine.CalcFields("Reserved Quantity");
+        Assert.AreNotEqual(SalesLine."Qty. to Assemble to Order", 0, 'Assembly to order should not be zero');
+        Assert.AreNotEqual(SalesLine."Reserved Quantity", 0, 'Reserved quantity should not be zero');
+
+        AssembletoOrderLink.SetRange(Type, AssembletoOrderLink.Type::Sale);
+        AssembletoOrderLink.SetRange("Document Type", SalesLine."Document Type");
+        AssembletoOrderLink.SetRange("Document No.", SalesLine."Document No.");
+        AssembletoOrderLink.SetRange("Document Line No.", SalesLine."Line No.");
+        Assert.IsTrue(AssembletoOrderLink.FindFirst(), 'Assemble to order link should be created');
+        AssemblyLine.SetRange("Document Type", AssembletoOrderLink."Assembly Document Type");
+        AssemblyLine.SetRange("Document No.", AssembletoOrderLink."Assembly Document No.");
+        Assert.IsFalse(AssemblyLine.IsEmpty(), 'Assembly orders should be created');
+
+        ReservationEntry.SetRange("Source ID", SalesLine."Document No.");
+        ReservationEntry.SetRange("Source Ref. No.", SalesLine."Line No.");
+        ReservationEntry.SetRange("Source Type", 37);
+        ReservationEntry.SetRange("Source Subtype", SalesLine."Document Type");
+        Assert.IsFalse(ReservationEntry.IsEmpty(), 'Reservation links should be created');
+    end;
+
     local procedure CreateOrderWithAllPossibleLineTypes(var SalesHeader: Record "Sales Header"; var ExpectedNumberOfLines: Integer)
     var
         SalesLine: Record "Sales Line";

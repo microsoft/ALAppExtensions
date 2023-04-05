@@ -9,6 +9,8 @@
 codeunit 501 OAuth2
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

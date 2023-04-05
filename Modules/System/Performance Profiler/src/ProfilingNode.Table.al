@@ -10,6 +10,8 @@ table 1921 "Profiling Node"
 {
     Access = Public;
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

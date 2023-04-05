@@ -6,6 +6,8 @@
 codeunit 1922 "Camera Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         Camera: Page Camera;

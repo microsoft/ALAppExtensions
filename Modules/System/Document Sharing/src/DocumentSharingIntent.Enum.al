@@ -34,4 +34,12 @@ enum 9560 "Document Sharing Intent"
     {
         Caption = 'Prompt';
     }
+
+    /// <summary>
+    /// Intent to open a preview of the document for editing and then download the resulting document.
+    /// </summary>
+    value(3; Edit)
+    {
+        Caption = 'Edit';
+    }
 }

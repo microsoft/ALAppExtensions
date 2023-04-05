@@ -349,7 +349,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
                 OutText += InText[i];
     end;
 
-    internal procedure GetNextReferenceNo(ReferenceType: Enum "Swiss QR-Bill Payment Reference Type"; UpdateLastUsed: Boolean): Code[50]
+    internal procedure GetNextReferenceNo(ReferenceType: Enum "Swiss QR-Bill Payment Reference Type"; UpdateLastUsed: Boolean) Result: Code[50]
     var
         SwissQRBillSetup: Record "Swiss QR-Bill Setup";
         TempReferenceNo: Text;

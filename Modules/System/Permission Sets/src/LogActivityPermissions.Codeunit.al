@@ -17,7 +17,11 @@ codeunit 9802 "Log Activity Permissions"
         EventReceiver: DotNet NavPermissionEventReceiver;
 
     procedure Start()
+    var
+        SessionIdVar: Integer;
     begin
+        SessionIdVar := SessionId();
+        OnBeforeStart(SessionIdVar);
         TempTablePermissionBuffer.DeleteAll();
         if IsNull(EventReceiver) then
             EventReceiver := EventReceiver.NavPermissionEventReceiver(SessionId());
@@ -92,6 +96,8 @@ codeunit 9802 "Log Activity Permissions"
                   GetMaxPermission(TempTablePermissionBuffer."Execute Permission", TempTablePermissionBuffer."Execute Permission"::Indirect);
         end;
         TempTablePermissionBuffer.Modify();
+
+        OnAfterLogTableUsage(TempTablePermissionBuffer);
     end;
 
     internal procedure GetMaxPermission(CurrentPermission: Option; NewPermission: Option): Integer
@@ -103,15 +109,15 @@ codeunit 9802 "Log Activity Permissions"
 
     local procedure IsFirstPermissionHigherThanSecond(First: Option; Second: Option): Boolean
     var
-        Permission: Record Permission;
+        TempExpandedPermission: Record "Expanded Permission" temporary;
     begin
         case First of
-            Permission."Read Permission"::" ":
+            TempExpandedPermission."Read Permission"::" ":
                 exit(false);
-            Permission."Read Permission"::Indirect:
-                exit(Second = Permission."Read Permission"::" ");
-            Permission."Read Permission"::Yes:
-                exit(Second in [Permission."Read Permission"::Indirect, Permission."Read Permission"::" "]);
+            TempExpandedPermission."Read Permission"::Indirect:
+                exit(Second = TempExpandedPermission."Read Permission"::" ");
+            TempExpandedPermission."Read Permission"::Yes:
+                exit(Second in [TempExpandedPermission."Read Permission"::Indirect, TempExpandedPermission."Read Permission"::" "]);
         end;
     end;
 
@@ -120,6 +126,16 @@ codeunit 9802 "Log Activity Permissions"
         if IndirectPermission = 0 then
             exit(DirectPermission);
         exit(IndirectPermission);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeStart(var SessionId: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterLogTableUsage(var TempTablePermissionBuffer: Record "Tenant Permission" temporary)
+    begin
     end;
 
     trigger EventReceiver::OnPermissionCheckEvent(sender: Variant; e: DotNet PermissionCheckEventArgs)

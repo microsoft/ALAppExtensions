@@ -9,6 +9,8 @@
 codeunit 7805 "Azure Functions Response"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Checks whether the request was successful.

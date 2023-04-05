@@ -134,10 +134,7 @@ page 30046 "APIV2 - Sales Credit Mem Lines"
                     Caption = 'Unit Of Measure Id';
 
                     trigger OnValidate()
-                    var
-                        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
                     begin
-                        SalesInvoiceAggregator.VerifyCanUpdateUOM(Rec);
                         RegisterFieldSet(FieldNo("Unit of Measure Code"));
                     end;
                 }
@@ -145,10 +142,7 @@ page 30046 "APIV2 - Sales Credit Mem Lines"
                 {
                     Caption = 'Unit Of Measure Code';
                     trigger OnValidate()
-                    var
-                        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
                     begin
-                        SalesInvoiceAggregator.VerifyCanUpdateUOM(Rec);
                         RegisterFieldSet(FieldNo("Unit of Measure Code"));
                     end;
                 }

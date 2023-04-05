@@ -139,7 +139,7 @@
       <DataExchColumnDef ColumnNo="16" Name="natureOfTransactionBCode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionBCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="17" Name="modeOfTransportCode" Show="false" DataType="0" Path="/Item/modeOfTransportCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="18" Name="regionCode" Show="false" DataType="0" Path="/Item/regionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269" PreMappingCodeunit="11031">
+      <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269" PreMappingCodeunit="11031" PostMappingCodeunit="11033">
         <DataExchFieldMapping ColumnNo="2" FieldID="23" Optional="true" />
         <DataExchFieldMapping ColumnNo="4" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />
         <DataExchFieldMapping ColumnNo="5" FieldID="6" Optional="true" />
@@ -369,7 +369,7 @@
       <DataExchColumnDef ColumnNo="16" Name="natureOfTransactionBCode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionBCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="17" Name="modeOfTransportCode" Show="false" DataType="0" Path="/Item/modeOfTransportCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="18" Name="regionCode" Show="false" DataType="0" Path="/Item/regionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269" PreMappingCodeunit="11032">
+      <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269" PreMappingCodeunit="11032" PostMappingCodeunit="11033">
         <DataExchFieldMapping ColumnNo="2" FieldID="23" Optional="true" />
         <DataExchFieldMapping ColumnNo="4" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />
         <DataExchFieldMapping ColumnNo="5" FieldID="6" Optional="true" />

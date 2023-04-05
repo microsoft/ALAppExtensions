@@ -125,7 +125,7 @@ report 13630 "OIOUBL-Create Elec. Invoices"
 
     procedure InitLogInteraction();
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(4) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(4) <> '';
     end;
 }
 

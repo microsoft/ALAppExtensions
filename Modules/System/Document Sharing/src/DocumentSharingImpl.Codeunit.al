@@ -10,16 +10,15 @@ codeunit 9561 "Document Sharing Impl."
 {
     Access = Internal;
     TableNo = "Document Sharing";
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnRun()
     var
         DocumentSharing: Codeunit "Document Sharing";
-        FeatureTelemetry: Codeunit "Feature Telemetry";
-        UploadDialog: Dialog;
         CanHandle: Boolean;
         CanShare: Boolean;
         CanOpen: Boolean;
-        Handled: Boolean;
     begin
         if Rec.IsEmpty() then
             Error(NoDocToShareErr);
@@ -32,67 +31,106 @@ codeunit 9561 "Document Sharing Impl."
         if not CanHandle then
             Error(NoDocServiceConfiguredErr);
 
-        if Rec."Document Sharing Intent" = Rec."Document Sharing Intent"::Share then
+        Upload(Rec, CanShare, CanOpen);
+
+        ValidateRecordIntent(Rec, CanShare, CanOpen);
+
+        PerformRecordIntent(Rec, CanShare, CanOpen);
+    end;
+
+    local procedure Upload(var DocumentSharing: Record "Document Sharing"; var CanShare: Boolean; var CanOpen: Boolean)
+    var
+        DocumentSharingCodeunit: Codeunit "Document Sharing";
+        UploadDialog: Dialog;
+        Handled: Boolean;
+    begin
+        if DocumentSharing."Document Sharing Intent" = DocumentSharing."Document Sharing Intent"::Share then
             UploadDialog.Open(StrSubstNo(UploadingToShareBlobTxt, ProductName.Short()))
         else
             UploadDialog.Open(StrSubstNo(UploadingBlobTxt, ProductName.Short()));
 
-        Session.LogMessage('0000FKT', StrSubstNo(UploadingBlobTelemetryTxt, Rec.Source), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DocumentSharingCategoryLbl);
-        DocumentSharing.OnUploadDocument(Rec, Handled);
+        Session.LogMessage('0000FKT', StrSubstNo(UploadingBlobTelemetryTxt, DocumentSharing.Source), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DocumentSharingCategoryLbl);
+        DocumentSharingCodeunit.OnUploadDocument(DocumentSharing, Handled);
         UploadDialog.Close();
 
         if not Handled then
             Error('');
 
-        Rec.CalcFields(Rec.Token);
-        CanShare := (Rec.Token.Length > 0) and (Rec.DocumentUri <> '') and (Rec.DocumentRootUri <> '');
-        CanOpen := (Rec.DocumentPreviewUri <> '') or (Rec.DocumentUri <> '');
+        DocumentSharing.CalcFields(DocumentSharing.Token);
+        CanShare := (DocumentSharing.Token.Length > 0) and (DocumentSharing.DocumentUri <> '') and (DocumentSharing.DocumentRootUri <> '');
+        CanOpen := (DocumentSharing.DocumentPreviewUri <> '') or (DocumentSharing.DocumentUri <> '');
 
-        Session.LogMessage('0000GGK', StrSubstNo(DocumentSharingIntentTelemetryTxt, Rec."Document Sharing Intent", CanShare, CanOpen), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DocumentSharingCategoryLbl);
+        Session.LogMessage('0000GGK', StrSubstNo(DocumentSharingIntentTelemetryTxt, DocumentSharing."Document Sharing Intent", CanShare, CanOpen), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DocumentSharingCategoryLbl);
 
         if not (CanShare or CanOpen) then
             Error(NoDocUploadedErr);
+    end;
 
+    local procedure ValidateRecordIntent(var DocumentSharing: Record "Document Sharing"; CanShare: Boolean; CanOpen: Boolean)
+    begin
         // Validate intent
-        case Rec."Document Sharing Intent" of
-            Rec."Document Sharing Intent"::Open:
-                ValidateIntent(Rec, CanOpen, NoOpenQst, Rec."Document Sharing Intent"::Share); // here for readability, but will never fail
-            Rec."Document Sharing Intent"::Share:
-                ValidateIntent(Rec, CanShare, NoShareQst, Rec."Document Sharing Intent"::Open);
+        case DocumentSharing."Document Sharing Intent" of
+            DocumentSharing."Document Sharing Intent"::Open,
+            DocumentSharing."Document Sharing Intent"::Edit:
+                ValidateIntent(DocumentSharing, CanOpen, NoOpenQst, DocumentSharing."Document Sharing Intent"::Share); // here for readability, but will never fail
+            DocumentSharing."Document Sharing Intent"::Share:
+                ValidateIntent(DocumentSharing, CanShare, NoShareQst, DocumentSharing."Document Sharing Intent"::Open);
             else begin
                 if not GuiAllowed() then
                     Error(PromptNoGuiErr);
 
-                ValidateIntent(Rec, CanOpen, NoPromptShareOnlyQst, Rec."Document Sharing Intent"::Share);
-                ValidateIntent(Rec, CanShare, NoPromptOpenOnlyQst, Rec."Document Sharing Intent"::Open);
+                ValidateIntent(DocumentSharing, CanOpen, NoPromptShareOnlyQst, DocumentSharing."Document Sharing Intent"::Share);
+                ValidateIntent(DocumentSharing, CanShare, NoPromptOpenOnlyQst, DocumentSharing."Document Sharing Intent"::Open);
 
                 // If the prior validations have not changed the intent, continue with the prompt.
-                if Rec."Document Sharing Intent" = Rec."Document Sharing Intent"::Prompt then
-                    case StrMenu(StrSubstNo(ConcatenatedStringTxt, Rec."Document Sharing Intent"::Open, Rec."Document Sharing Intent"::Share), 1, PromptQst) of
+                if DocumentSharing."Document Sharing Intent" = DocumentSharing."Document Sharing Intent"::Prompt then
+                    case StrMenu(StrSubstNo(ConcatenatedStringTxt, DocumentSharing."Document Sharing Intent"::Open, DocumentSharing."Document Sharing Intent"::Share), 1, PromptQst) of
                         1:
-                            Rec."Document Sharing Intent" := Rec."Document Sharing Intent"::Open;
+                            DocumentSharing."Document Sharing Intent" := DocumentSharing."Document Sharing Intent"::Open;
                         2:
-                            Rec."Document Sharing Intent" := Rec."Document Sharing Intent"::Share;
+                            DocumentSharing."Document Sharing Intent" := DocumentSharing."Document Sharing Intent"::Share;
                         else
                             Error(NoDocToShareErr);
                     end
             end;
         end;
+    end;
 
+    local procedure PerformRecordIntent(var DocumentSharing: Record "Document Sharing"; CanShare: Boolean; CanOpen: Boolean)
+    var
+        DocumentSharingCodeunit: Codeunit "Document Sharing";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        Handled: Boolean;
+    begin
         // Perform intent
-        case Rec."Document Sharing Intent" of
-            Rec."Document Sharing Intent"::Open:
+        case DocumentSharing."Document Sharing Intent" of
+            DocumentSharing."Document Sharing Intent"::Open:
                 begin
-                    FeatureTelemetry.LogUsage('0000HUK', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, Rec."Document Sharing Intent"));
-                    OpenDocument(Rec);
+                    FeatureTelemetry.LogUsage('0000HUK', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharing."Document Sharing Intent"));
+                    OpenDocument(DocumentSharing);
                 end;
-            Rec."Document Sharing Intent"::Share:
+            DocumentSharing."Document Sharing Intent"::Share:
                 begin
-                    FeatureTelemetry.LogUsage('0000HUL', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, Rec."Document Sharing Intent"));
-                    OpenShare(Rec);
+                    FeatureTelemetry.LogUsage('0000HUL', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharing."Document Sharing Intent"));
+                    OpenShare(DocumentSharing);
+                end;
+            DocumentSharing."Document Sharing Intent"::Edit:
+                begin
+                    FeatureTelemetry.LogUsage('0000J1A', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharing."Document Sharing Intent"));
+                    OpenDocument(DocumentSharing);
+
+                    // Downloads file into DocumentSharing.Data, otherwise uploaded file is in DocumentSharing.Data
+                    if Dialog.Confirm(FinishedEditingDocumentLbl, true) then begin
+                        Sleep(2000); // This sleep is to ensure the OneDrive clears the lock on the file after the user saves and closes.
+                        Handled := False;
+                        DocumentSharingCodeunit.OnGetFileContents(DocumentSharing, Handled);
+                    end;
+
+                    Handled := False;
+                    DocumentSharingCodeunit.OnDeleteDocument(DocumentSharing, Handled);
                 end;
             else begin
-                Session.LogMessage('0000GGL', StrSubstNo(DocumentSharingIntentTelemetryTxt, Rec."Document Sharing Intent", CanShare, CanOpen), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DocumentSharingCategoryLbl);
+                Session.LogMessage('0000GGL', StrSubstNo(DocumentSharingIntentTelemetryTxt, DocumentSharing."Document Sharing Intent", CanShare, CanOpen), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DocumentSharingCategoryLbl);
                 Error(NoDocUploadedErr);
             end;
         end;
@@ -138,6 +176,22 @@ codeunit 9561 "Document Sharing Impl."
         TempDocumentSharing.Insert();
 
         Codeunit.Run(Codeunit::"Document Sharing Impl.", TempDocumentSharing);
+    end;
+
+    procedure EditEnabledForFile(FileName: Text): Boolean
+    begin
+        if FileName.EndsWith('.docx') then
+            exit(true);
+        if FileName.EndsWith('.pptx') then
+            exit(true);
+        if FileName.EndsWith('.xlsx') then
+            exit(true);
+        if FileName.EndsWith('.odt') then
+            exit(true);
+        if FileName.EndsWith('.txt') then
+            exit(true);
+
+        exit(false);
     end;
 
     local procedure ValidateIntent(var TempDocumentSharing: Record "Document Sharing" temporary; ValidIntent: Boolean; Prompt: Text; AlternateDocumentSharingIntent: Enum "Document Sharing Intent")
@@ -187,6 +241,7 @@ codeunit 9561 "Document Sharing Impl."
         UploadingBlobTxt: Label 'We''re copying this file to your %1 folder in OneDrive', Comment = '%1 is the short product name (e.g. Business Central)';
         UploadingToShareBlobTxt: Label 'We''re copying this file to your %1 folder in OneDrive so you can share it', Comment = '%1 is the short product name (e.g. Business Central)';
         DocumentSharingCategoryLbl: Label 'AL DocumentSharing';
+        FinishedEditingDocumentLbl: Label 'Do you want to add the document you edited and saved?';
         UploadingBlobTelemetryTxt: Label 'Uploading document for %1.', Locked = true;
         ShareUxOpenTxt: Label 'Opening share dialog.', Locked = true;
         PreviewOpenTxt: Label 'Opening document preview.', Locked = true;

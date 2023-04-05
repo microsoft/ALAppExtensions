@@ -313,8 +313,6 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                 Caption = '&Send by Email';
                 Enabled = ("Entry Type" = "Entry Type"::"VAT Payment") or ("Entry Type" = "Entry Type"::"VAT Usage") or ("Entry Type" = "Entry Type"::"VAT Close");
                 Image = Email;
-                Promoted = true;
-                PromotedCategory = Report;
                 ToolTip = 'Prepare to email the document. The Send Email window opens prefilled with the customer''s email address so you can add or edit information.';
 
                 trigger OnAction()
@@ -325,6 +323,17 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     CurrPage.SetSelectionFilter(SalesAdvLetterEntryCZZ);
                     SalesAdvLetterEntryCZZ.EmailRecords(true);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Report)
+            {
+                Caption = 'Reports';
+
+                actionref(Email_Promoted; Email)
+                {
+                }
             }
         }
     }

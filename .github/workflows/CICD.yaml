@@ -228,18 +228,6 @@ jobs:
           settingsJson: ${{ env.Settings }}
           secretsJson: ${{ env.RepoSecrets }}
           buildMode: ${{ matrix.buildMode }}
-      
-      - name: Sign
-        id: signApps
-        uses: aholstrup1/AL-Go-Actions/Sign@main
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          azureKeyVaultURI: ${{ secrets.KEY_VAULT_URL }}
-          azureKeyVaultClientID: ${{ secrets.KEY_VAULT_CLIENT_ID }}
-          azureKeyVaultClientSecret: ${{ secrets.KEY_VAULT_CLIENT_SECRET }}
-          azureKeyVaultTenantID: ${{ secrets.KEY_VAULT_TENANT_ID }}
-          azureKeyVaultCertificateName: ${{ secrets.KEY_VAULT_CERTIFICATE_NAME }}
-          pathToFiles: ${{ matrix.project }}/.buildartifacts/Apps/
 
       - name: Calculate Artifact names
         id: calculateArtifactsNames

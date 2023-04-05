@@ -52,9 +52,8 @@ page 18685 "Acknowledgement Setup"
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    FinancialYearLbl: Label 'Code eq %1', Comment = '%1 = Financial Year';
                 begin
-                    EditinExcel.EditPageInExcel('Acknowledgement Setup', CurrPage.ObjectId(false), StrSubstNo(FinancialYearLbl, Rec."Financial Year"));
+                    EditinExcel.EditPageInExcel('Acknowledgement Setup', Page::"Acknowledgement Setup");
                 end;
             }
         }

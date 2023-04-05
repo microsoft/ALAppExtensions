@@ -8,7 +8,7 @@
 /// </summary>
 page 8883 "Sent Emails"
 {
-    PageType = List;
+    PageType = Worksheet;
     Caption = 'Sent Emails';
     ApplicationArea = All;
     UsageCategory = Administration;

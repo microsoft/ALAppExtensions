@@ -1,14 +1,14 @@
 {
   "type": "PTE",
   "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
-  "bcContainerHelperVersion": "preview",
+  "bcContainerHelperVersion": "private",
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "bcinsider//21.5/base/latest/{INSIDERSASTOKEN}",
+  "artifact": "bcartifacts//22.0/base/latest",
   "country": "base",
   "useProjectDependencies": true,
-  "repoVersion": "21.6",
+  "repoVersion": "22.1",
   "cleanModePreprocessorSymbols": [
     "CLEAN17",
     "CLEAN18",

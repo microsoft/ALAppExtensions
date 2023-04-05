@@ -7,9 +7,18 @@ tableextension 11789 "Det. CV Ledg. Entry Buffer CZL" extends "Detailed CV Ledg.
             Caption = 'Application Across Posting Groups';
             Editable = false;
             DataClassification = SystemMetadata;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'The "Alter Posting Groups" feature is replaced by standard "Multiple Posting Groups" feature.';
         }
     }
-
+#if not CLEAN22
+    [Obsolete('The "Alter Posting Groups" feature is replaced by standard "Multiple Posting Groups" feature.', '22.0')]
     procedure SetApplAcrossPostGroupsCZL(DifferentPostingGroups: Boolean)
     var
         TempDetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer" temporary;
@@ -27,4 +36,5 @@ tableextension 11789 "Det. CV Ledg. Entry Buffer CZL" extends "Detailed CV Ledg.
             if not TempDetailedCVLedgEntryBuffer.IsEmpty() then
                 TempDetailedCVLedgEntryBuffer.ModifyAll("Appl. Across Post. Groups CZL", true);
     end;
+#endif
 }

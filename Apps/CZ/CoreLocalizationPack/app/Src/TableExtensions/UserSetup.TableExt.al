@@ -52,7 +52,7 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
                 GLSetup: Record "General Ledger Setup";
             begin
                 GLSetup.Get();
-                GLSetup.TestField("Use VAT Date CZL");
+                GLSetup.TestIsVATDateEnabledCZL();
             end;
         }
         field(11779; "Allow VAT Posting To CZL"; Date)
@@ -65,7 +65,7 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
                 GLSetup: Record "General Ledger Setup";
             begin
                 GLSetup.Get();
-                GLSetup.TestField("Use VAT Date CZL");
+                GLSetup.TestIsVATDateEnabledCZL();
             end;
         }
         field(11780; "Allow Complete Job CZL"; Boolean)

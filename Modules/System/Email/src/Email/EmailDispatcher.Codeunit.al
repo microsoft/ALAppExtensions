@@ -48,7 +48,7 @@ codeunit 8888 "Email Dispatcher"
     var
         EmailMessage: Record "Email Message";
         SentEmail: Record "Sent Email";
-        SendEmail: Codeunit "Send Email";
+        SendEmailCodeunit: Codeunit "Send Email";
         Email: Codeunit Email;
 #if not CLEAN20
         ClientTypeManagement: Codeunit "Client Type Management";
@@ -65,11 +65,11 @@ codeunit 8888 "Email Dispatcher"
         if EmailMessageImpl.Get(EmailOutbox."Message Id") then begin
             LogAttachments();
 
-            SendEmail.SetConnector(EmailOutbox.Connector);
-            SendEmail.SetAccount(EmailOutbox."Account Id");
+            SendEmailCodeunit.SetConnector(EmailOutbox.Connector);
+            SendEmailCodeunit.SetAccount(EmailOutbox."Account Id");
 
             EmailMessageImpl.GetEmailMessage(EmailMessage);
-            Success := SendEmail.Run(EmailMessage);
+            Success := SendEmailCodeunit.Run(EmailMessage);
 
             if Success then begin
                 FeatureTelemetry.LogUsage('0000CTV', EmailFeatureNameLbl, 'Email sent', Dimensions);

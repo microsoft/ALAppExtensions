@@ -8,6 +8,8 @@ codeunit 9993 "Upgrade Tag Install"
 #pragma warning restore AA0235
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Subtype = Install;
 
     trigger OnInstallAppPerCompany()

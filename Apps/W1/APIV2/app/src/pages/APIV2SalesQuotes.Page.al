@@ -594,6 +594,14 @@ page 30037 "APIV2 - Sales Quotes"
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Quote");
                 }
+
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const("Sales Quote");
+                }
             }
         }
     }

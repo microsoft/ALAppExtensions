@@ -87,6 +87,14 @@ tableextension 11736 "Service Cr.Memo Header CZL" extends "Service Cr.Memo Heade
         {
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Replaced by VAT Reporting Date.';
         }
         field(11781; "Registration No. CZL"; Text[20])
         {

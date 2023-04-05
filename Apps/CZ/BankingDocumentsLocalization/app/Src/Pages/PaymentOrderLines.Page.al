@@ -1,9 +1,11 @@
 page 31264 "Payment Order Lines CZB"
 {
+    ApplicationArea = Basic, Suite;
     Caption = 'Payment Order Lines';
     Editable = false;
     PageType = List;
     SourceTable = "Payment Order Line CZB";
+    UsageCategory = Lists;
 
     layout
     {
@@ -112,6 +114,45 @@ page 31264 "Payment Order Lines CZB"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if the account is third party bank account.';
+                }
+            }
+        }
+    }
+    actions
+    {
+        area(navigation)
+        {
+            group("&Line")
+            {
+                Caption = '&Line';
+                Image = Line;
+                action("Show Document")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Show Document';
+                    Image = View;
+                    ShortCutKey = 'Shift+F7';
+                    ToolTip = 'Open the document that the selected line exists on.';
+
+                    trigger OnAction()
+                    var
+                        PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
+                        PageManagement: Codeunit "Page Management";
+                    begin
+                        PaymentOrderHeaderCZB.Get(Rec."Payment Order No.");
+                        PageManagement.PageRun(PaymentOrderHeaderCZB);
+                    end;
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("Show Document_Promoted"; "Show Document")
+                {
                 }
             }
         }

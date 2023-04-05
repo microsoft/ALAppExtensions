@@ -79,7 +79,7 @@ table 30113 "Shpfy Shop Location"
         {
             Caption = 'Disabled';
             DataClassification = CustomerContent;
-#if not CLEAN22
+#if not CLEAN22            
             ObsoleteReason = 'Replaced by Stock Calculation field.';
             ObsoleteTag = '22.0';
             ObsoleteState = Pending;
@@ -97,6 +97,13 @@ table 30113 "Shpfy Shop Location"
             Caption = 'Active';
             DataClassification = SystemMetadata;
             Description = 'Active in Shopfy';
+            Editable = false;
+        }
+        field(9; "Is Primary"; Boolean)
+        {
+            Caption = 'Is Primary';
+            DataClassification = SystemMetadata;
+            Description = 'Is primary location in Shopify';
             Editable = false;
         }
         field(10; "Stock Calculation"; Enum "Shpfy Stock Calculation")
@@ -131,13 +138,13 @@ table 30113 "Shpfy Shop Location"
     internal procedure CreateLocationFilter()
     var
         Location: Record Location;
-        LocationFilter: Report "Shpfy Create Location Filter";
+        CreateLocationFilter: Report "Shpfy Create Location Filter";
     begin
         if "Location Filter" <> '' then
             Location.SetFilter(Code, "Location Filter");
-        LocationFilter.SetTableView(Location);
-        LocationFilter.RunModal();
-        "Location Filter" := CopyStr(LocationFilter.GetLocationFilter(), 1, MaxStrLen("Location Filter"));
+        CreateLocationFilter.SetTableView(Location);
+        CreateLocationFilter.RunModal();
+        "Location Filter" := CopyStr(CreateLocationFilter.GetLocationFilter(), 1, MaxStrLen("Location Filter"));
     end;
 
 }

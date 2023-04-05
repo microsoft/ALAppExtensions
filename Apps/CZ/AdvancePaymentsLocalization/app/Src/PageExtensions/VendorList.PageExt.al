@@ -14,8 +14,6 @@ pageextension 31063 "Vendor List CZZ" extends "Vendor List"
                 ToolTip = 'Create purchase advance letter.';
                 ApplicationArea = Basic, Suite;
                 Image = NewDocument;
-                Promoted = true;
-                PromotedCategory = Category4;
 
                 trigger OnAction()
                 var
@@ -36,6 +34,12 @@ pageextension 31063 "Vendor List CZZ" extends "Vendor List"
 
                     Page.Run(Page::"Purch. Advance Letter CZZ", PurchAdvLetterHeaderCZZ);
                 end;
+            }
+        }
+        addlast(Category_Category4)
+        {
+            actionref(NewPurchAdvanceLetterCZZ_Promoted; NewPurchAdvanceLetterCZZ)
+            {
             }
         }
     }

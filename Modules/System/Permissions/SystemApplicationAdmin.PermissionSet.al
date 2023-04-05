@@ -10,15 +10,12 @@ permissionset 154 "System Application - Admin"
 
     IncludedPermissionSets = "System Application - Basic",
                              "Company - Edit",
+                             "D365 ATTACH DEBUG",
                              "D365 BACKUP/RESTORE",
                              "D365 SNAPSHOT DEBUG",
+                             "Data Cleanup - Admin",
                              "Email - Admin",
                              "Exten. Mgt. - Admin",
-#if not CLEAN19
-#pragma warning disable AL0432
-                             "EXCEL EXPORT ACTION",
-#pragma warning restore
-#endif
 #if not CLEAN20
 #pragma warning disable AL0432
                              "SMARTLIST DESIGNER",
@@ -29,5 +26,6 @@ permissionset 154 "System Application - Admin"
                              "Permissions & Licenses - Edit",
                              "Priv. Notice - Admin",
                              "Retention Policy - Admin",
+                             "Page Summary - Admin",
                              "TROUBLESHOOT TOOLS";
 }

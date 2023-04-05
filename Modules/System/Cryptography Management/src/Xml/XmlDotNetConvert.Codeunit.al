@@ -6,6 +6,8 @@
 codeunit 1462 "Xml DotNet Convert"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [TryFunction]
     procedure ToDotNet(InputXmlDocument: XmlDocument; var OutputXmlDocument: DotNet XmlDocument)

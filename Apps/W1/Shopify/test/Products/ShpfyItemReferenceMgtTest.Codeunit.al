@@ -12,8 +12,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     var
         Item: Record Item;
         ItemReference: Record "Item Reference";
-        ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ProductInitTest: Codeunit "Shpfy Product Init Test";
         UoM: Code[10];
         VariantCode: Code[10];
         BarCode: Code[50];
@@ -21,7 +21,7 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [SCENARION] Create a barcode for an item and check if this bar code exists in the "Item Reference" table.
 
         // [GIVEN] Item."No."
-        Item := ShpfyProductInitTest.CreateItem();
+        Item := ProductInitTest.CreateItem();
         // [GIVEN] VariantCode
         VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
         // [GIVEN] UoM
@@ -29,8 +29,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] BarCode
         BarCode := Any.AlphanumericText(MaxStrLen(BarCode));
 
-        // [WHEN] Invoke ShpfyItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
-        ShpfyItemReferenceMgt.CreateItemBarCode(Item."No.", VariantCode, UoM, BarCode);
+        // [WHEN] Invoke ItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
+        ItemReferenceMgt.CreateItemBarCode(Item."No.", VariantCode, UoM, BarCode);
 
         // [THEN] Find the Item Reference record with the barcode.
         ItemReference.SetRange("Reference Type", "Item Reference Type"::"Bar Code");
@@ -51,8 +51,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     var
         Item: Record Item;
         ItemReference: Record "Item Reference";
-        ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ProductInitTest: Codeunit "Shpfy Product Init Test";
         UoM: Code[10];
         VariantCode: Code[10];
         VendorNo: Code[20];
@@ -61,7 +61,7 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [SCENARION] Create a vendor item no. reference for an item and check if this reference exists in the "Item Reference" table.
 
         // [GIVEN] Item."No."
-        Item := ShpfyProductInitTest.CreateItem();
+        Item := ProductInitTest.CreateItem();
         // [GIVEN] VariantCode
         VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
         // [GIVEN] UoM
@@ -72,8 +72,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] VendorItemNo
         VendorItemNo := Any.AlphanumericText(MaxStrLen(VendorItemNo));
 
-        // [WHEN] Invoke ShpfyItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
-        ShpfyItemReferenceMgt.CreateItemReference(Item."No.", VariantCode, UoM, "Item Reference Type"::Vendor, VendorNo, VendorItemNo);
+        // [WHEN] Invoke ItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
+        ItemReferenceMgt.CreateItemReference(Item."No.", VariantCode, UoM, "Item Reference Type"::Vendor, VendorNo, VendorItemNo);
 
         // [THEN] Find the Item Reference record with the VendorItemNo.
         ItemReference.SetRange("Reference Type", "Item Reference Type"::Vendor);
@@ -94,8 +94,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     var
         Item: Record Item;
         ItemReference: Record "Item Reference";
-        ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ProductInitTest: Codeunit "Shpfy Product Init Test";
         Result: boolean;
         FoundVariantCode: Code[10];
         UoM: Code[10];
@@ -105,7 +105,7 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     begin
         // [SCENARION] Create a bar code reference for an item and check if this reference exists in the "Item Reference" table.
 
-        Item := ShpfyProductInitTest.CreateItem();
+        Item := ProductInitTest.CreateItem();
         VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
         UoM := Any.AlphabeticText(MaxStrLen(UoM));
         BarCode := Any.AlphabeticText(MaxStrLen(BarCode));
@@ -122,8 +122,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] FoundItemNo as output
         // [GIVEN] FoundVariantCode as output
 
-        // [WHEN] Invoke ShpfyItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
-        Result := ShpfyItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode);
+        // [WHEN] Invoke ItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+        Result := ItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode);
 
         // [THEN] Result is true
         LibraryAssert.IsTrue(Result, 'Result = true');
@@ -140,8 +140,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     var
         Item: Record Item;
         ItemReference: Record "Item Reference";
-        ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ProductInitTest: Codeunit "Shpfy Product Init Test";
         Result: boolean;
         FoundVariantCode: Code[10];
         UoM: Code[10];
@@ -151,7 +151,7 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     begin
         // [SCENARION] Create a vendor item reference for an item and check if this reference exists in the "Item Reference" table.
 
-        Item := ShpfyProductInitTest.CreateItem();
+        Item := ProductInitTest.CreateItem();
         VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
         UoM := Any.AlphabeticText(MaxStrLen(UoM));
         ReferenceNo := Any.AlphabeticText(MaxStrLen(ReferenceNo));
@@ -170,8 +170,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] FoundItemNo as output
         // [GIVEN] FoundVariantCode as output
 
-        // [WHEN] Invoke ShpfyItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
-        Result := ShpfyItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode);
+        // [WHEN] Invoke ItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+        Result := ItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode);
 
         // [THEN] Result is true
         LibraryAssert.IsTrue(Result, 'Result = true');
@@ -188,8 +188,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     var
         Item: Record Item;
         ItemReference: Record "Item Reference";
-        ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ProductInitTest: Codeunit "Shpfy Product Init Test";
         UoM: Code[10];
         VariantCode: Code[10];
         Result: Code[50];
@@ -197,7 +197,7 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     begin
         // [SCENARION] Create a bar code reference for an item and check if get the bar code with the function GetItemBarcode.
 
-        Item := ShpfyProductInitTest.CreateItem();
+        Item := ProductInitTest.CreateItem();
         VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
         UoM := Any.AlphabeticText(MaxStrLen(UoM));
         BarCode := Any.AlphabeticText(MaxStrLen(BarCode));
@@ -213,8 +213,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] VariantCode
         // [GIVEN] UoM
 
-        // [WHEN] Invoke ShpfyItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
-        Result := ShpfyItemReferenceMgt.GetItemBarcode(Item."No.", VariantCode, UoM);
+        // [WHEN] Invoke ItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+        Result := ItemReferenceMgt.GetItemBarcode(Item."No.", VariantCode, UoM);
 
         // [THEN] Result = BarCode
         LibraryAssert.AreEqual(BarCode, Result, 'Result = BarCode');
@@ -225,8 +225,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     var
         Item: Record Item;
         ItemReference: Record "Item Reference";
-        ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ProductInitTest: Codeunit "Shpfy Product Init Test";
         UoM: Code[10];
         VariantCode: Code[10];
         ReferenceNo: Code[50];
@@ -234,7 +234,7 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
     begin
         // [SCENARION] Create a vendor item reference for an item and check if this reference exists in the "Item Reference" table.
 
-        Item := ShpfyProductInitTest.CreateItem();
+        Item := ProductInitTest.CreateItem();
         VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
         UoM := Any.AlphabeticText(MaxStrLen(UoM));
         ReferenceNo := Any.AlphabeticText(MaxStrLen(ReferenceNo));
@@ -253,8 +253,8 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] "Item Reference Type"::Vendor
         // [GIVEN] ItemReference."Reference Type No."
 
-        // [WHEN] Invoke ShpfyItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
-        Result := ShpfyItemReferenceMgt.GetItemReference(Item."No.", VariantCode, UoM, "Item Reference Type"::Vendor, ItemReference."Reference Type No.");
+        // [WHEN] Invoke ItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+        Result := ItemReferenceMgt.GetItemReference(Item."No.", VariantCode, UoM, "Item Reference Type"::Vendor, ItemReference."Reference Type No.");
 
         // [THEN] Result = ReferenceNo
         LibraryAssert.AreEqual(ReferenceNo, Result, 'Result = ReferenceNo');

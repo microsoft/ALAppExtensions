@@ -7,8 +7,10 @@ table 1997 "Spotlight Tour Text"
 {
     Caption = 'Spotlight Tour Text';
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     ReplicateData = false;
-    
+
     fields
     {
         field(1; "Guided Experience Item Code"; Code[300])

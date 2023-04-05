@@ -8,6 +8,10 @@
 /// </summary>
 codeunit 1463 CertificateRequest
 {
+    Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     var
         CertSigningRequestImpl: Codeunit "CertificateRequest Impl.";
 

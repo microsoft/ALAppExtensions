@@ -6,6 +6,8 @@
 codeunit 1991 "Guided Experience Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata AllObj = r,
                   tabledata "Guided Experience Item" = rimd,
                   tabledata "Primary Guided Experience Item" = rimd,
@@ -176,7 +178,6 @@ codeunit 1991 "Guided Experience Impl."
 
         TempGuidedExperienceItem.SetRange("Extension ID", AppId);
         TempGuidedExperienceItem.SetFilter("Guided Experience Type", '%1|%2', TempGuidedExperienceItem."Guided Experience Type"::"Assisted Setup", TempGuidedExperienceItem."Guided Experience Type"::"Manual Setup");
-        TempGuidedExperienceItem.SetRange("Object Type to Run", TempGuidedExperienceItem."Object Type to Run"::Page);
         GuidedExperienceImpl.GetContentForAllSetups(TempGuidedExperienceItem);
 
         if TempGuidedExperienceItem.IsEmpty then begin
@@ -550,9 +551,11 @@ codeunit 1991 "Guided Experience Impl."
             then
                     InsertItem := true;
 
-            if InsertItem then
+            if InsertItem then begin
                 InsertGuidedExperienceItemIfValid(GuidedExperienceItemTemp, GuidedExperienceItem);
-
+                InsertItem := false;
+            end;
+            
             PrevGuidedExperienceItem := GuidedExperienceItem;
         until GuidedExperienceItem.Next() = 0;
     end;
@@ -1025,7 +1028,7 @@ codeunit 1991 "Guided Experience Impl."
         GuidedExperienceItemTemp.Insert();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, 'OnRegisterVideo', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, OnRegisterVideo, '', false, false)]
     local procedure OnRegisterVideo(Sender: Codeunit Video)
     var
         GuidedExperienceItem: Record "Guided Experience Item";
@@ -1051,7 +1054,7 @@ codeunit 1991 "Guided Experience Impl."
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Navigation Bar Subscribers", 'OnBeforeDefaultOpenRoleBasedSetupExperience', '', false, false)] // Assisted setup module
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Navigation Bar Subscribers", OnBeforeDefaultOpenRoleBasedSetupExperience, '', false, false)] // Assisted setup module
     local procedure OpenRoleBasedSetupExperience(var Handled: Boolean)
     var
         GuidedExperience: Codeunit "Guided Experience";
@@ -1202,7 +1205,7 @@ codeunit 1991 "Guided Experience Impl."
             TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", 'OnAfterDeleteEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", OnAfterDeleteEvent, '', true, true)]
     local procedure OnAfterGuidedExperienceItemDelete(var Rec: Record "Guided Experience Item")
     begin
         if Rec.IsTemporary() then

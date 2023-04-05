@@ -6,6 +6,8 @@
 table 1750 "Fields Sync Status"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

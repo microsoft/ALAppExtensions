@@ -24,8 +24,8 @@ page 1152 "COHUB Company Summary"
                     ToolTip = 'Specifies the name of the company.';
                     Visible = true;
                     StyleExpr = DisplayNameStyle;
-                    Enabled = Not IsGroup;
-                    Editable = Not IsGroup;
+                    Enabled = not IsGroup;
+                    Editable = not IsGroup;
 
                     trigger OnDrillDown();
                     var
@@ -44,8 +44,8 @@ page 1152 "COHUB Company Summary"
                     Caption = 'Enviroment Name';
                     ToolTip = 'Specifies the name of the environment. Specify your own name for the environment, or use the original name that has been defined in this environment.';
                     Visible = true;
-                    Enabled = Not IsGroup;
-                    Editable = Not IsGroup;
+                    Enabled = not IsGroup;
+                    Editable = not IsGroup;
 
                     trigger OnDrillDown();
                     begin

@@ -12,6 +12,8 @@ table 9004 Plan
     DataPerCompany = false;
     ReplicateData = false;
     Access = Internal;
+    InherentEntitlements = rX;
+    InherentPermissions = rX;
 
     fields
     {

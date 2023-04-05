@@ -304,7 +304,7 @@ table 4812 "Intrastat Report Line"
             begin
                 if "Suppl. Unit of Measure" <> '' then begin
                     ItemUOM.Get("Item No.", "Suppl. Unit of Measure");
-                    Validate("Suppl. Conversion Factor", ItemUOM."Qty. per Unit of Measure");
+                    Validate("Suppl. Conversion Factor", 1 / ItemUOM."Qty. per Unit of Measure");
                 end else
                     Validate("Suppl. Conversion Factor", 0);
             end;
@@ -360,7 +360,8 @@ table 4812 "Intrastat Report Line"
                     IntrastatReportHeader.CheckEUServAndCorrection("Intrastat No.", true, false);
             end;
         }
-        field(44; "Corrected Intrastat Report No."; Code[10])
+#pragma warning disable AS0086
+        field(44; "Corrected Intrastat Report No."; Code[20])
         {
             Caption = 'Corrected Intrastat Report No.';
 
@@ -369,9 +370,9 @@ table 4812 "Intrastat Report Line"
                 IntrastatReportHeader2: Record "Intrastat Report Header";
             begin
                 SetIntrastatReportHeaderFilters(IntrastatReportHeader2);
-                IntrastatReportHeader2.Description := "Corrected Intrastat Report No.";
-                if Page.RunModal(0, IntrastatReportHeader2, IntrastatReportHeader2.Description) = Action::LookupOK then
-                    Validate("Corrected Intrastat Report No.", IntrastatReportHeader2.Description);
+                IntrastatReportHeader2."No." := "Corrected Intrastat Report No.";
+                if Page.RunModal(0, IntrastatReportHeader2, IntrastatReportHeader2."No.") = Action::LookupOK then
+                    Validate("Corrected Intrastat Report No.", IntrastatReportHeader2."No.");
             end;
 
             trigger OnValidate()
@@ -381,7 +382,7 @@ table 4812 "Intrastat Report Line"
                 if "Corrected Intrastat Report No." <> '' then begin
                     IntrastatReportHeader.CheckEUServAndCorrection("Intrastat No.", false, true);
                     SetIntrastatReportHeaderFilters(IntrastatReportHeader2);
-                    IntrastatReportHeader2.SetRange(Description, "Corrected Intrastat Report No.");
+                    IntrastatReportHeader2.SetRange("No.", "Corrected Intrastat Report No.");
                     if not IntrastatReportHeader2.FindFirst() then
                         FieldError("Corrected Intrastat Report No.")
                     else
@@ -389,6 +390,7 @@ table 4812 "Intrastat Report Line"
                 end;
             end;
         }
+#pragma warning restore AS0086
         field(45; "Country/Region of Payment Code"; Code[10])
         {
             Caption = 'Country/Region of Payment Code';
@@ -401,6 +403,39 @@ table 4812 "Intrastat Report Line"
         field(47; "Obligation Level"; Code[20])
         {
             Caption = 'Obligation Level';
+        }
+        field(48; "Corrected Document No."; Code[20])
+        {
+            Caption = 'Corrected Document No.';
+
+            trigger OnLookup()
+            var
+                IntrastatReportLine: Record "Intrastat Report Line";
+                IntrastatReportLines: Page "Intrastat Report Lines";
+            begin
+                IntrastatReportLines.LookupMode := true;
+                IntrastatReportLine.SetRange("Intrastat No.", "Corrected Intrastat Report No.");
+                IntrastatReportLines.SetTableView(IntrastatReportLine);
+                IntrastatReportLines.SetRecord(IntrastatReportLine);
+                if IntrastatReportLines.RunModal() = Action::LookupOK then begin
+                    IntrastatReportLines.GetRecord(IntrastatReportLine);
+                    Validate("Corrected Document No.", IntrastatReportLine."Document No.");
+                end;
+            end;
+
+            trigger OnValidate()
+            var
+                IntrastatReportLine: Record "Intrastat Report Line";
+            begin
+                if "Corrected Document No." <> '' then begin
+                    IntrastatReportHeader.CheckEUServAndCorrection("Intrastat No.", false, true);
+                    IntrastatReportLine.SetRange("Intrastat No.", "Corrected Intrastat Report No.");
+                    IntrastatReportLine.SetRange("Document No.", "Corrected Document No.");
+                    if IntrastatReportLine.IsEmpty() then
+                        Error(
+                          NoDocumentNumberWithinTheFilterErr, FieldCaption("Document No."), "Document No.", IntrastatReportLine.GetFilters);
+                end;
+            end;
         }
         field(100; "Record ID Filter"; Text[250])
         {
@@ -438,6 +473,9 @@ table 4812 "Intrastat Report Line"
         key(Key9; "Intrastat No.", Type)
         {
         }
+        key(Key10; "Partner VAT ID", "Transaction Type", "Tariff No.", "Group Code", "Transport Method", "Transaction Specification", "Country/Region of Origin Code", "Area", "Corrective entry")
+        {
+        }
     }
 
     trigger OnDelete()
@@ -471,6 +509,7 @@ table 4812 "Intrastat Report Line"
         FixedAsset: Record "Fixed Asset";
         TariffNumber: Record "Tariff Number";
         DateNotInRageErr: Label 'Date %1 is not within the reporting period.', Comment = '%1 - Date';
+        NoDocumentNumberWithinTheFilterErr: Label 'There is no %1 %2 with in the filter.\\Filters: %3', Comment = '%1 - Document No. caption, %2 - Document No., %3 - Filters';
 
     local procedure GetTariffDescription()
     var
@@ -537,7 +576,6 @@ table 4812 "Intrastat Report Line"
                 exit(GetPartnerIDFromItemEntry());
             "Source Type"::"FA Entry":
                 exit(GetPartnerIDFromFAEntry());
-
         end;
     end;
 
@@ -792,7 +830,6 @@ table 4812 "Intrastat Report Line"
         IntrastatReportHeader2.SetRange("EU Service", IntrastatReportHeader3."EU Service");
         IntrastatReportHeader2.SetRange(Periodicity, IntrastatReportHeader3.Periodicity);
         IntrastatReportHeader2.SetRange(Type, IntrastatReportHeader3.Type);
-        IntrastatReportHeader2.SetRange("No.", IntrastatReportHeader3."No.");
     end;
 
     local procedure GetPartnerNo(SellTo: Code[20]; BillTo: Code[20]) PartnerNo: Code[20]

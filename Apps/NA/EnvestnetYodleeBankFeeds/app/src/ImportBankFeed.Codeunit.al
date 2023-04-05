@@ -57,7 +57,7 @@ codeunit 1451 "MS - Yodlee Import Bank Feed"
         BankAccount.GET(BankAccReconciliationLine."Bank Account No.");
 
         // Check currency code match
-        DataExchFieldDetails.SETFILTER(FieldValue, '<>%1&<>%2', '', GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code"));
+        DataExchFieldDetails.SETFILTER(FieldValue, '<>%1&<>%2&<>%3', '', GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code"), BankAccount."Currency Code");
         IF PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", TransactionCurrencyPathTxt) THEN
             ERROR(BankAccCurrErr, BankAccount.FIELDCAPTION("Currency Code"),
               GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code"), BankAccount."No.");

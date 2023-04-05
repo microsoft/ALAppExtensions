@@ -266,6 +266,9 @@ dotnet
 
     assembly("Microsoft.Dynamics.Nav.AzureADGraphClient")
     {
+        type("Microsoft.Dynamics.Nav.AzureADGraphClient.GroupInfoPage"; "GroupInfoPage")
+        {
+        }
 
         type("Microsoft.Dynamics.Nav.AzureADGraphClient.GraphQuery"; "GraphQuery")
         {
@@ -883,20 +886,6 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Dynamics.Nav.PowerShellRunner")
-    {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.PowerShellRunner"; "PowerShellRunner")
-        {
-        }
-
-        type("Microsoft.Dynamics.Nav.PSObjectAdapter"; "PSObjectAdapter")
-        {
-        }
-    }
-
     assembly("Microsoft.Dynamics.Nav.SMTP")
     {
         Culture = 'neutral';
@@ -1027,57 +1016,6 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Office.Interop.Word")
-    {
-        Version = '15.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = '71e9bce111e9429c';
-
-        type("Microsoft.Office.Interop.Word.ApplicationClass"; "ApplicationClass")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.Bookmark"; "Bookmark")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.Document"; "Document")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.DocumentClass"; "DocumentClass")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.InlineShape"; "InlineShape")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.LinkFormat"; "LinkFormat")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.OLEFormat"; "OLEFormat")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.Shape"; "Shape")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.WdWindowState"; "WdWindowState")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.Fields"; "Microsoft.Office.Interop.Word.Fields")
-        {
-        }
-
-        type("Microsoft.Office.Interop.Word.Range"; "Microsoft.Office.Interop.Word.Range")
-        {
-        }
-    }
-
     assembly("Newtonsoft.Json")
     {
 
@@ -1122,13 +1060,9 @@ dotnet
         }
     }
 
-    assembly("System.Data.Entity.Design")
+    assembly("Microsoft.Dynamics.Nav.PluralizationService")
     {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b77a5c561934e089';
-
-        type("System.Data.Entity.Design.PluralizationServices.PluralizationService"; "PluralizationService")
+        type("Microsoft.Dynamics.Nav.PluralizationService.PluralizationService"; "PluralizationService")
         {
         }
     }
@@ -1215,18 +1149,6 @@ dotnet
         }
     }
 
-    assembly("System.Management.Automation")
-    {
-
-        type("System.Management.Automation.ErrorRecord"; "ErrorRecord")
-        {
-        }
-
-        type("System.Management.Automation.PSCredential"; "PSCredential")
-        {
-        }
-    }
-
     assembly("System.Security.Cryptography.Xml")
     {
 
@@ -1297,17 +1219,6 @@ dotnet
     assembly("System.ServiceModel.Primitives")
     {
         type("System.ServiceModel.FaultException"; "FaultException")
-        {
-        }
-    }
-
-    assembly("System.Web")
-    {
-        Version = '4.0.0.0';
-        Culture = 'neutral';
-        PublicKeyToken = 'b03f5f7f11d50a3a';
-
-        type("System.Web.MimeMapping"; "MimeMapping")
         {
         }
     }

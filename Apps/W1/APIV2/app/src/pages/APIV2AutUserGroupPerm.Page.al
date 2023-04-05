@@ -1,3 +1,4 @@
+#if not CLEAN22
 page 30075 "APIV2 - Aut. User Group Perm."
 {
     APIGroup = 'automation';
@@ -12,6 +13,9 @@ page 30075 "APIV2 - Aut. User Group Perm."
     PageType = API;
     SourceTable = "User Group Permission Set";
     ODataKeyFields = SystemId;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The User Group Permission Set table is deprecated.';
+    ObsoleteTag = '22.0';
 
     layout
     {
@@ -125,3 +129,4 @@ page 30075 "APIV2 - Aut. User Group Perm."
     end;
 }
 
+#endif

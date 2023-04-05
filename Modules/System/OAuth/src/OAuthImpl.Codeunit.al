@@ -6,6 +6,8 @@ codeunit 1289 "OAuth Impl."
 {
     Access = Internal;
     SingleInstance = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TelemetrySecurityTok: Label 'AL Security', Locked = true;

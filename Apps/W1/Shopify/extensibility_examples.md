@@ -174,8 +174,10 @@ codeunit 50106 "Shpfy Product Export Manuf"
     var
         Manufacturer: Record Manufacturer;
     begin
-        if Manufacturer.Get(Item."Manufacturer Code") then
+        if Manufacturer.Get(Item."Manufacturer Code") then begin
             ShopifyProduct.Vendor := Manufacturer.Name;
+            ShopifyProduct.Modify();
+        end;
     end;
 }
 ```
@@ -232,12 +234,12 @@ For more information about order synchronization, see [Synchronize and Fulfill S
 ```
 codeunit 50113 "Shpfy Order Set Customer"
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Order Events", 'OnAfterNewShopifyOrder', '', false, false)]
-    procedure OnAfterNewShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Order Events", 'OnAfterImportShopifyOrderHeader', '', false, false)]
+    procedure OnAfterImportShopifyOrderHeader(var ShopifyOrderHeader: Record "Shpfy Order Header", IsNew: Boolean)
     var
         ShopifyShop: Record "Shpfy Shop";
     begin
-        if ShopifyOrderHeader."Source Name" = 'POS' then begin
+        if ShopifyOrderHeader."Channel Name" = 'Point of Sale' then begin
             ShopifyShop.Get(ShopifyOrderHeader."Shop Code");
             ShopifyShop.TestField("POS Customer No.");
             ShopifyOrderHeader."Bill-to Customer No." := ShopifyShop."POS Customer No.";
@@ -317,7 +319,7 @@ codeunit 50111 "Shpfy Order Line Dim"
         TempDimSetEntry: Record "Dimension Set Entry" temporary;
         DimensionValue: Record "Dimension Value";
     begin
-        FindShpfyDimension(ShopifyOrderHeader."Source Name", DimensionValue);
+        FindShpfyDimension(ShopifyOrderHeader."Channel Name", DimensionValue);
 
         DimMgt.GetDimensionSet(TempDimSetEntry, SalesLine."Dimension Set ID");
         TempDimSetEntry.Init();
@@ -359,9 +361,9 @@ tableextension 50101 "Shpfy Sales Header Extend" extends "Sales Header"
 {
     fields
     {
-        field(50100; "Source Name"; CODE[20])
+        field(50100; "Channel Name"; Text[100])
         {
-            CalcFormula = lookup("Shpfy Order Header"."Source Name" WHERE("Shopify Order Id" = FIELD("Shpfy Order Id")));
+            CalcFormula = lookup("Shpfy Order Header"."Channel Name" WHERE("Shopify Order Id" = FIELD("Shpfy Order Id")));
             FieldClass = FlowField;
             Editable = false;
         }
@@ -373,7 +375,7 @@ pageextension 50100 "Shpfy SI Extend" extends "Sales Invoice"
     {
         addafter(ShpfyOrderNo)
         {
-            field("Source Name"; Rec."Source Name")
+            field("Channel Name"; Rec."Channel Name")
             {
                 ApplicationArea = All;
                 Visible = true;

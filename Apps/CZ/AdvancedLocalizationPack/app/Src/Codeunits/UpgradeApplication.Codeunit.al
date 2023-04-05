@@ -96,18 +96,16 @@ codeunit 31251 "Upgrade Application CZA"
     local procedure UpgradeGLEntry();
     var
         GLEntry: Record "G/L Entry";
+        GLEntryDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
             exit;
 
-        GLEntry.SetLoadFields(Closed, "Closed at Date", "Applied Amount");
-        if GLEntry.FindSet(true) then
-            repeat
-                GLEntry."Closed CZA" := GLEntry.Closed;
-                GLEntry."Closed at Date CZA" := GLEntry."Closed at Date";
-                GLEntry."Applied Amount CZA" := GLEntry."Applied Amount";
-                GLEntry.Modify(false);
-            until GLEntry.Next() = 0;
+        GLEntryDataTransfer.SetTables(Database::"G/L Entry", Database::"G/L Entry");
+        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo(Closed), GLEntry.FieldNo("Closed CZA"));
+        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("Closed at Date"), GLEntry.FieldNo("Closed at Date CZA"));
+        GLEntryDataTransfer.AddSourceFilter(GLEntry.FieldNo(Closed), '%1', true);
+        GLEntryDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeDefaultDimension();
@@ -118,30 +116,29 @@ codeunit 31251 "Upgrade Application CZA"
             exit;
 
         DefaultDimension.SetLoadFields("Automatic Create", "Dimension Description Field ID", "Dimension Description Format", "Dimension Description Update", "Automatic Cr. Value Posting");
+        DefaultDimension.SetRange("Automatic Create", true);
         if DefaultDimension.FindSet(true) then
             repeat
-                if DefaultDimension."Automatic Create" then begin
-                    DefaultDimension."Automatic Create CZA" := DefaultDimension."Automatic Create";
-                    DefaultDimension."Dim. Description Field ID CZA" := DefaultDimension."Dimension Description Field ID";
-                    DefaultDimension."Dim. Description Format CZA" := DefaultDimension."Dimension Description Format";
-                    DefaultDimension."Dim. Description Update CZA" := DefaultDimension."Dimension Description Update";
-                    case DefaultDimension."Automatic Cr. Value Posting" of
-                        DefaultDimension."Automatic Cr. Value Posting"::" ":
-                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::" ";
-                        DefaultDimension."Automatic Cr. Value Posting"::"No Code":
-                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"No Code";
-                        DefaultDimension."Automatic Cr. Value Posting"::"Same Code":
-                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Same Code";
-                        DefaultDimension."Automatic Cr. Value Posting"::"Code Mandatory":
-                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Code Mandatory";
-                    end;
-                    Clear(DefaultDimension."Automatic Create");
-                    Clear(DefaultDimension."Dimension Description Field ID");
-                    Clear(DefaultDimension."Dimension Description Format");
-                    Clear(DefaultDimension."Dimension Description Update");
-                    Clear(DefaultDimension."Automatic Cr. Value Posting");
-                    DefaultDimension.Modify(false);
+                DefaultDimension."Automatic Create CZA" := DefaultDimension."Automatic Create";
+                DefaultDimension."Dim. Description Field ID CZA" := DefaultDimension."Dimension Description Field ID";
+                DefaultDimension."Dim. Description Format CZA" := DefaultDimension."Dimension Description Format";
+                DefaultDimension."Dim. Description Update CZA" := DefaultDimension."Dimension Description Update";
+                case DefaultDimension."Automatic Cr. Value Posting" of
+                    DefaultDimension."Automatic Cr. Value Posting"::" ":
+                        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::" ";
+                    DefaultDimension."Automatic Cr. Value Posting"::"No Code":
+                        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"No Code";
+                    DefaultDimension."Automatic Cr. Value Posting"::"Same Code":
+                        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Same Code";
+                    DefaultDimension."Automatic Cr. Value Posting"::"Code Mandatory":
+                        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Code Mandatory";
                 end;
+                Clear(DefaultDimension."Automatic Create");
+                Clear(DefaultDimension."Dimension Description Field ID");
+                Clear(DefaultDimension."Dimension Description Format");
+                Clear(DefaultDimension."Dimension Description Update");
+                Clear(DefaultDimension."Automatic Cr. Value Posting");
+                DefaultDimension.Modify(false);
             until DefaultDimension.Next() = 0;
     end;
 
@@ -174,47 +171,41 @@ codeunit 31251 "Upgrade Application CZA"
     local procedure UpgradeTransferShipmentLine();
     var
         TransferShipmentLine: Record "Transfer Shipment Line";
+        TransferShipmentLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
             exit;
 
-        TransferShipmentLine.SetLoadFields(Correction, "Transfer Order Line No.");
-        if TransferShipmentLine.FindSet(true) then
-            repeat
-                TransferShipmentLine."Correction CZA" := TransferShipmentLine.Correction;
-                TransferShipmentLine."Transfer Order Line No. CZA" := TransferShipmentLine."Transfer Order Line No.";
-                TransferShipmentLine.Modify(false);
-            until TransferShipmentLine.Next() = 0;
+        TransferShipmentLineDataTransfer.SetTables(Database::"Transfer Shipment Line", Database::"Transfer Shipment Line");
+        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo(Correction), TransferShipmentLine.FieldNo("Correction CZA"));
+        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo("Transfer Order Line No."), TransferShipmentLine.FieldNo("Transfer Order Line No. CZA"));
+        TransferShipmentLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeItemEntryRelation();
     var
         ItemEntryRelation: Record "Item Entry Relation";
+        ItemEntryRelationDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
             exit;
 
-        ItemEntryRelation.SetLoadFields(Undo);
-        if ItemEntryRelation.FindSet(true) then
-            repeat
-                ItemEntryRelation."Undo CZA" := ItemEntryRelation.Undo;
-                ItemEntryRelation.Modify(false);
-            until ItemEntryRelation.Next() = 0;
+        ItemEntryRelationDataTransfer.SetTables(Database::"Item Entry Relation", Database::"Item Entry Relation");
+        ItemEntryRelationDataTransfer.AddFieldValue(ItemEntryRelation.FieldNo(Undo), ItemEntryRelation.FieldNo("Undo CZA"));
+        ItemEntryRelationDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeStandardItemJournalLine();
     var
         StandardItemJournalLine: Record "Standard Item Journal Line";
+        StandardItemJournalLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion210PerCompanyUpgradeTag()) then
             exit;
 
-        StandardItemJournalLine.SetLoadFields("New Location Code");
-        if StandardItemJournalLine.FindSet(true) then
-            repeat
-                StandardItemJournalLine."New Location Code CZA" := StandardItemJournalLine."New Location Code";
-                StandardItemJournalLine.Modify(false);
-            until StandardItemJournalLine.Next() = 0;
+        StandardItemJournalLineDataTransfer.SetTables(Database::"Standard Item Journal Line", Database::"Standard Item Journal Line");
+        StandardItemJournalLineDataTransfer.AddFieldValue(StandardItemJournalLine.FieldNo("New Location Code"), StandardItemJournalLine.FieldNo("New Location Code CZA"));
+        StandardItemJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure SetDatabaseUpgradeTags();

@@ -637,8 +637,10 @@ codeunit 11724 "Cash Desk Management CZP"
         end;
         exit(false);
     end;
-
+#if not CLEAN22
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Posting Group Management CZL", 'OnCheckPostingGroupChange', '', false, false)]
+#pragma warning restore AL0432
     local procedure OnCheckPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20]; SourceRecordRef: RecordRef; var CheckedPostingGroup: Option "None",Customer,CustomerInService,Vendor; var CustomerVendorNo: Code[20])
     var
         CashDocumentLineCZP: Record "Cash Document Line CZP";
@@ -660,6 +662,7 @@ codeunit 11724 "Cash Desk Management CZP"
                 end;
         end;
     end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; var IsHandled: Boolean)

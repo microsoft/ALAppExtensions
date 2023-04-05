@@ -9,6 +9,8 @@
 table 9105 "SharePoint List"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     DataClassification = SystemMetadata; // Data classification is SystemMetadata as the table is temporary
     Caption = 'SharePoint List';
     TableType = Temporary;

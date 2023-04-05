@@ -27,9 +27,15 @@ page 9849 "Included PermissionSet FactBox"
             {
                 field("Role ID"; Rec."Role ID")
                 {
-                    Caption = 'Permission Set';
                     ApplicationArea = All;
-                    ToolTip = 'Name of Permission Set';
+                    Caption = 'Permission Set';
+                    ToolTip = 'Specifies the permission set.';
+                }
+                field(Name; Rec.Name)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Name';
+                    ToolTip = 'Specifies the name of the permission set.';
                 }
             }
         }

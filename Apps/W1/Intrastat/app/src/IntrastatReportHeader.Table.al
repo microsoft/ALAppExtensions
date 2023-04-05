@@ -44,7 +44,7 @@ table 4811 "Intrastat Report Header"
                 TestField(Reported, false);
                 if StrLen("Statistics Period") <> 4 then
                     Error(
-                      StatistiscPeriodFormetErr,
+                      StatistiscPeriodFormatErr,
                       FieldCaption("Statistics Period"));
                 Evaluate(Month, CopyStr("Statistics Period", 3, 2));
                 if (Month < 1) or (Month > 12) then
@@ -97,7 +97,7 @@ table 4811 "Intrastat Report Header"
 
             trigger OnValidate()
             begin
-                "Statistics Period" := '';
+                Validate("Statistics Period");
             end;
         }
         field(22; "File Disk No."; Code[20])
@@ -196,7 +196,7 @@ table 4811 "Intrastat Report Header"
         IntrastatReportSetup: Record "Intrastat Report Setup";
         NoSeriesMgt: Codeunit NoSeriesManagement;
         Month: Integer;
-        StatistiscPeriodFormetErr: Label '%1 must be 4 characters, for example, 9410 for October, 1994.', Comment = '%1 - Statistics Period';
+        StatistiscPeriodFormatErr: Label '%1 must be 4 characters, for example, 9410 for October, 1994.', Comment = '%1 - Statistics Period';
         MonthNrErr: Label 'Please check the month number.';
         LinesExistErr: Label 'You cannot change %1 when Intrastat Report Lines for report %2 exists.', Comment = '%1 - Changed Field Name, %2 - Intrastat Report No.';
 

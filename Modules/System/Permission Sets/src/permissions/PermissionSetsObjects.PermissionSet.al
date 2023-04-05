@@ -8,12 +8,6 @@ permissionset 9862 "Permission Sets - Objects"
     Access = Internal;
     Assignable = false;
     Permissions =
-        table "Permission Lookup Buffer" = X,
-        table "PermissionSet Buffer" = X,
-        table "Permission Set Relation Buffer" = X,
-        codeunit "Permission Impl." = X,
-        codeunit "Permission Set Copy Impl." = X,
-        codeunit "Permission Set Relation Impl." = X,
         codeunit "Permission Set Relation" = X,
         codeunit "Log Activity Permissions" = X,
         page "Expanded Permissions" = X,

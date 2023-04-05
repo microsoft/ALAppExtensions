@@ -1,5 +1,10 @@
+#if not CLEAN22
 codeunit 31262 "Posting Group Mgt. Handler CZC"
 {
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'The Posting Group Management codeunit is replaced by Posting Group Change codeunit.';
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Posting Group Management CZL", 'OnCheckPostingGroupChange', '', false, false)]
     local procedure CheckCompensationLineCZCOnCheckPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20]; SourceRecordRef: RecordRef)
     var
@@ -26,3 +31,4 @@ codeunit 31262 "Posting Group Mgt. Handler CZC"
         end;
     end;
 }
+#endif

@@ -264,7 +264,7 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
     begin
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Allowed Table", 'OnBeforeInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Allowed Table", OnBeforeInsertEvent, '', false, false)]
     local procedure VerifyInsertAllowed(var Rec: Record "Retention Policy Allowed Table")
     var
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
@@ -275,7 +275,7 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
         RetenPolAllowedTblImpl.VerifyInsertAllowed(Rec."Table Id");
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Allowed Table", 'OnBeforeRenameEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Allowed Table", OnBeforeRenameEvent, '', false, false)]
     local procedure ErrorOnBeforeRenameAllowedTable(var Rec: Record "Retention Policy Allowed Table"; var xRec: Record "Retention Policy Allowed Table")
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
@@ -287,7 +287,7 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
         RetentionPolicyLog.LogError(RetentionPolicyLogCategory::"Retention Policy - Setup", StrSubstNo(RetenPolAllowedTblRenameErr, xRec."Table Id", Rec."Table Id"));
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Allowed Table", 'OnBeforeModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Allowed Table", OnBeforeModifyEvent, '', false, false)]
     local procedure VerifyModifyAllowed(var Rec: Record "Retention Policy Allowed Table")
     var
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";

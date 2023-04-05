@@ -125,7 +125,7 @@ codeunit 3902 "Retention Policy Setup"
 
     // these event subscribers are here because the Impl. codeunit has a manual subscriber
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", OnRegisterManualSetup, '', true, true)]
     local procedure AddRetentionPolicyOnRegisterManualSetup(sender: Codeunit "Guided Experience")
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
@@ -133,7 +133,7 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicySetupImpl.AddRetentionPolicyOnRegisterManualSetup(Sender)
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Period", 'OnBeforeDeleteEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Period", OnBeforeDeleteEvent, '', true, true)]
     local procedure VerifyRetentionPolicySetupOnbeforeDeleteRetentionPeriod(var Rec: Record "Retention Period")
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
@@ -141,7 +141,7 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicySetupImpl.VerifyRetentionPolicySetupOnBeforeDeleteRetentionPeriod(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Period", 'OnBeforeModifyEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Period", OnBeforeModifyEvent, '', true, true)]
     local procedure VerifyRetentionPolicySetupOnbeforeModifyRetentionPeriod(var Rec: Record "Retention Period")
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
@@ -149,7 +149,7 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicySetupImpl.VerifyRetentionPolicySetupOnBeforeModifyRetentionPeriod(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnBeforeInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnBeforeInsertEvent, '', false, false)]
     local procedure VerifyRetentionPolicyAllowedTablesOnBeforeInsertRetenPolSetup(var Rec: Record "Retention Policy Setup")
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
@@ -157,7 +157,7 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicySetupImpl.VerifyRetentionPolicyAllowedTablesOnBeforeInsertRetenPolSetup(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnAfterInsertEvent, '', false, false)]
     local procedure InsertDefaultTableFiltersOnAfterInsertRetenPolSetup(var Rec: Record "Retention Policy Setup")
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
@@ -165,7 +165,7 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicySetupImpl.InsertDefaultTableFiltersOnAfterInsertRetenPolSetup(Rec)
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnBeforeRenameEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnBeforeRenameEvent, '', false, false)]
     local procedure ErrorOnBeforeRenameRetentionPolicySetup(var Rec: Record "Retention Policy Setup"; var xRec: Record "Retention Policy Setup")
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
@@ -177,7 +177,7 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicyLog.LogError(RetentionPolicySetupImpl.LogCategory(), StrSubstNo(RetenPolSetupRenameErr, xRec."Table Id", Rec."Table Id"));
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnBeforeRenameEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", OnBeforeRenameEvent, '', false, false)]
     local procedure ErrorOnBeforeRenameRetentionPolicySetupLine(var Rec: Record "Retention Policy Setup Line"; var xRec: Record "Retention Policy Setup Line")
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
@@ -189,7 +189,7 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicyLog.LogError(RetentionPolicySetupImpl.LogCategory(), StrSubstNo(RetenPolSetupLineRenameErr, xRec."Table Id", Rec."Table Id"));
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnBeforeModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", OnBeforeModifyEvent, '', false, false)]
     local procedure CheckRecordLockedOnRetentionPolicySetupLineOnAfterModify(var Rec: Record "Retention Policy Setup Line"; var xRec: Record "Retention Policy Setup Line")
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
@@ -200,7 +200,7 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicySetupImpl.CheckRecordLockedOnRetentionPolicySetupLine(xRec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnBeforeDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", OnBeforeDeleteEvent, '', false, false)]
     local procedure CheckRecordLockedOnRetentionPolicySetupLineOnAfterDelete(var Rec: Record "Retention Policy Setup Line")
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";

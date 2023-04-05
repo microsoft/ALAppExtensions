@@ -6,6 +6,8 @@
 table 1876 "Business Setup Icon"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Caption = 'Business Setup Icon';
     DataPerCompany = false;
 #if CLEAN18

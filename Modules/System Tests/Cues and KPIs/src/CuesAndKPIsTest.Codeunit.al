@@ -561,7 +561,9 @@ codeunit 135039 "Cues And KPIs Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cues And KPIs", 'OnConvertStyleToStyleText', '', true, true)]
     [Normal]
+#pragma warning disable AA0244
     local procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; VAR Result: Text; VAR Resolved: Boolean)
+#pragma warning restore AA0244
     begin
         if CueStyle.AsInteger() = 4 then begin
             Result := 'CustomValue';

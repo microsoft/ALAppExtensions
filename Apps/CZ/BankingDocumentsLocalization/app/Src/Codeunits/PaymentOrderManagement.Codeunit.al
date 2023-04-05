@@ -192,9 +192,6 @@ codeunit 31356 "Payment Order Management CZB"
         ErrorMessageLogSuspended := false;
 
         CheckPaymentOrderLineApplyToOtherEntries(PaymentOrderLineCZB, false);
-#if not CLEAN19
-        CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB, false);
-#endif
 
         ErrorMessageLogSuspended := TempErrorMessageLogSuspended;
 
@@ -321,58 +318,6 @@ codeunit 31356 "Payment Order Management CZB"
         if GeneralLedgerSetup."User Checks Allowed CZL" then
             UserSetupAdvManagementCZB.CheckBankAccountNo(UserSetupLineTypeCZL::"Payment Order", BankAccountNo);
     end;
-
-#if not CLEAN19
-#pragma warning disable AL0432
-    local procedure CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB: Record "Payment Order Line CZB"; ShowErrorMessages: Boolean): Boolean
-    var
-        TempErrorMessage2: Record "Error Message" temporary;
-        AdvanceAlreadyAppliedErr: Label '%1 %2 in %3 is already applied on other or the same payment order.', Comment = '%1 = fieldcaption of Letter No.; %2 = Letter No.; %3 = recordid';
-        AdvanceLineAlreadyAppliedErr: Label '%1 and %2 %3 %4 in %5 is already applied on other or the same payment order.', Comment = '%1 = fieldcaption of Letter No.; %2 = fieldcaption of Letter Line No.; %3 = Letter No.; %4 = Letter Line No.; %5 = recordid';
-    begin
-        if not IsAdvanceLetterApplied(PaymentOrderLineCZB) then
-            exit(true);
-
-        if (PaymentOrderLineCZB."Letter No." <> '') and (PaymentOrderLineCZB."Letter Line No." <> 0) then
-            TempErrorMessage2.LogMessage(
-                PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo("Letter Line No."), TempErrorMessage2."Message Type"::Warning,
-                StrSubstNo(
-                    AdvanceLineAlreadyAppliedErr,
-                    PaymentOrderLineCZB.FieldCaption("Letter No."), PaymentOrderLineCZB."Letter No.",
-                    PaymentOrderLineCZB.FieldCaption("Letter Line No."), PaymentOrderLineCZB."Letter Line No.", PaymentOrderLineCZB.RecordId));
-
-        if (PaymentOrderLineCZB."Letter No." <> '') and (PaymentOrderLineCZB."Letter Line No." = 0) then
-            TempErrorMessage2.LogMessage(
-                PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo("Letter No."), TempErrorMessage2."Message Type"::Warning,
-                StrSubstNo(
-                    AdvanceAlreadyAppliedErr,
-                    PaymentOrderLineCZB.FieldCaption("Letter No."), PaymentOrderLineCZB."Letter No.", PaymentOrderLineCZB.RecordId));
-
-        SaveErrorMessage(TempErrorMessage2);
-        exit(not HasErrorMessages(TempErrorMessage2, ShowErrorMessages));
-    end;
-
-    local procedure IsAdvanceLetterApplied(PaymentOrderLineCZB: Record "Payment Order Line CZB"): Boolean
-    var
-        PaymentOrderLineCZB2: Record "Payment Order Line CZB";
-    begin
-        if PaymentOrderLineCZB."Letter No." = '' then
-            exit(false);
-
-        PaymentOrderLineCZB2.SetRange("Letter Type", PaymentOrderLineCZB."Letter Type");
-        PaymentOrderLineCZB2.SetRange("Letter No.", PaymentOrderLineCZB."Letter No.");
-        PaymentOrderLineCZB2.SetRange("Letter Line No.", PaymentOrderLineCZB."Letter Line No.");
-        PaymentOrderLineCZB2.SetFilter("Payment Order No.", '<>%1', PaymentOrderLineCZB."Payment Order No.");
-        if not PaymentOrderLineCZB2.IsEmpty() then
-            exit(true);
-
-        PaymentOrderLineCZB2.SetRange("Payment Order No.", PaymentOrderLineCZB."Payment Order No.");
-        PaymentOrderLineCZB2.SetFilter("Line No.", '<>%1', PaymentOrderLineCZB."Line No.");
-        if not PaymentOrderLineCZB2.IsEmpty() then
-            exit(true);
-    end;
-#pragma warning restore AL0432
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePaymentOrderSelection(var PaymentOrderHeaderCZB: Record "Payment Order Header CZB"; var BankSelected: Boolean; var IsHandled: Boolean)

@@ -10,30 +10,10 @@ codeunit 31434 "Navigate Handler CZB"
     local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text;
                                                 PostingDateFilter: Text; Sender: Page Navigate)
     begin
-#if not CLEAN19
-        DeleteObsoleteTables(DocumentEntry);
-#endif
         FindIssuedBankStatementHeader(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
         FindIssuedPaymentOrderHeader(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
     end;
 
-#if not CLEAN19
-#pragma warning disable AL0432
-    local procedure DeleteObsoleteTables(var DocumentEntry: Record "Document Entry")
-    var
-        TempDocumentEntry: Record "Document Entry" temporary;
-    begin
-        TempDocumentEntry.CopyFilters(DocumentEntry);
-        DocumentEntry.Reset();
-        DocumentEntry.SetRange("Table ID", Database::"Issued Bank Statement Header");
-        DocumentEntry.DeleteAll();
-        DocumentEntry.SetRange("Table ID", Database::"Issued Payment Order Header");
-        DocumentEntry.DeleteAll();
-        DocumentEntry.CopyFilters(TempDocumentEntry);
-    end;
-
-#pragma warning restore AL0432
-#endif
     local procedure FindIssuedBankStatementHeader(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Navigate: Page Navigate)
     begin
         if not IssBankStatementHeaderCZB.ReadPermission() then

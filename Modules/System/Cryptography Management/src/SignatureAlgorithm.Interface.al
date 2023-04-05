@@ -5,7 +5,7 @@
 
 interface SignatureAlgorithm
 {
-    internal procedure GetInstance(var DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm);
+    procedure GetInstance(var DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm);
     procedure FromXmlString(XmlString: Text);
     procedure SignData(DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream);
     procedure ToXmlString(IncludePrivateParameters: Boolean): Text;

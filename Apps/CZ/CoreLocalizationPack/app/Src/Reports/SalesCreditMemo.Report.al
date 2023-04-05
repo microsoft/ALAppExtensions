@@ -185,10 +185,10 @@ report 31190 "Sales Credit Memo CZL"
             column(PostingDate_SalesCrMemoHeader; "Posting Date")
             {
             }
-            column(VATDate_SalesCrMemoHeaderCaption; FieldCaption("VAT Date CZL"))
+            column(VATDate_SalesCrMemoHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_SalesCrMemoHeader; "VAT Date CZL")
+            column(VATDate_SalesCrMemoHeader; "VAT Reporting Date")
             {
             }
             column(DueDate_SalesCrMemoHeaderCaption; FieldCaption("Due Date"))
@@ -537,6 +537,12 @@ report 31190 "Sales Credit Memo CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
         }
     }
@@ -598,6 +604,9 @@ report 31190 "Sales Credit Memo CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#endif
         SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
         VATClauseText: Text;
@@ -649,7 +658,7 @@ report 31190 "Sales Credit Memo CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(6) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(6) <> '';
     end;
 
     local procedure FormatDocumentFields(SalesCrMemoHeader: Record "Sales Cr.Memo Header")

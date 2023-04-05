@@ -503,7 +503,7 @@ report 31184 "Purchase Quote CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(11) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(11) <> '';
     end;
 
     local procedure FormatDocumentFields(PurchaseHeader: Record "Purchase Header")
