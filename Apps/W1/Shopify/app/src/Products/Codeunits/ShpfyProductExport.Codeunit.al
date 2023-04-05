@@ -219,9 +219,9 @@ codeunit 30178 "Shpfy Product Export"
         ItemTranslation.SetRange("Language Code", Shop."Language Code");
         ItemTranslation.SetRange("Variant Code", '');
         if ItemTranslation.FindFirst() and (ItemTranslation.Description <> '') then
-            Title := ItemTranslation.Description
+            Title := RemoveTabChars(ItemTranslation.Description)
         else
-            Title := Item.Description;
+            Title := RemoveTabChars(Item.Description);
         ProductEvents.OnBeforSetProductTitle(Item, Shop."Language Code", Title, IsHandled);
         if not IsHandled then begin
             ProductEvents.OnAfterSetProductTitle(Item, Shop."Language Code", Title);
@@ -231,6 +231,14 @@ codeunit 30178 "Shpfy Product Export"
         ShopifyProduct."Product Type" := CopyStr(GetProductType(Item."Item Category Code"), 1, MaxStrLen(ShopifyProduct."Product Type"));
         ShopifyProduct.SetDescriptionHtml(CreateProductBody(Item."No."));
         ShopifyProduct."Tags Hash" := ShopifyProduct.CalcTagsHash();
+    end;
+
+    local procedure RemoveTabChars(Source: Text): Text
+    var
+        Tab: Text[1];
+    begin
+        Tab[0] := 9;
+        exit(Source.Replace(Tab, ' '));
     end;
 
     /// <summary> 
@@ -280,7 +288,7 @@ codeunit 30178 "Shpfy Product Export"
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(ShopifyVariant.Barcode));
-            ShopifyVariant.Title := ItemVariant.Description;
+            ShopifyVariant.Title := RemoveTabChars(ItemVariant.Description);
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":
@@ -325,7 +333,7 @@ codeunit 30178 "Shpfy Product Export"
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
-            ShopifyVariant.Title := ItemVariant.Description;
+            ShopifyVariant.Title := RemoveTabChars(ItemVariant.Description);
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":
