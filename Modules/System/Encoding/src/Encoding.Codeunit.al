@@ -24,4 +24,16 @@ codeunit 1486 "Encoding"
     begin
         exit(EncodingImpl.Convert(SourceCodepage, DestinationCodepage, Text));
     end;
+
+    /// <summary>
+    /// Converts a text from one encoding to another.
+    /// </summary>
+    /// <param name="SourceCodepage">Encoding code page identifier of the source text. Valid values are between 0 and 65535.</param>
+    /// <param name="DestinationCodepage">Encoding code page identifier for the result text. Valid values are between 0 and 65535.</param>
+    /// <param name="TextInStream">The InStream containing the text to convert.</param>
+    /// <returns>The Instream containing text in the destination encoding.</returns>
+    procedure Convert(SourceCodepage: Integer; DestinationCodepage: Integer; TextInStream: InStream): InStream
+    begin
+        exit(EncodingImpl.Convert(SourceCodepage, DestinationCodepage, TextInStream));
+    end;
 }

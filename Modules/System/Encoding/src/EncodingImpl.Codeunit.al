@@ -22,4 +22,16 @@ codeunit 1487 "Encoding Impl."
         DestinationBytes := Encoding.Convert(SourceEncoding, DestinationEncoding, SourceBytes);
         ConvertedText := DestinationEncoding.GetString(DestinationBytes);
     end;
+
+    procedure Convert(SourceCodepage: Integer; DestinationCodepage: Integer; TextInStream: InStream) ConvertedTextInStream: InStream
+    var
+        Encoding: DotNet Encoding;
+        SourceEncoding: DotNet Encoding;
+        DestinationEncoding: DotNet Encoding;
+    begin
+        SourceEncoding := Encoding.GetEncoding(SourceCodepage);
+        DestinationEncoding := Encoding.GetEncoding(DestinationCodepage);
+
+        ConvertedTextInStream := Encoding.CreateTranscodingStream(TextInStream, SourceEncoding, DestinationEncoding, true);
+    end;
 }
