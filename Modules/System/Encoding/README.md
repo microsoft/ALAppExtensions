@@ -34,3 +34,32 @@ The text to convert.
 *[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The text in the destination encoding.
+
+
+### Convert (Method) <a name="Convert"></a> 
+
+Convert a text contained in an InStream from one encoding to another.
+ 
+
+#### Syntax
+```
+procedure Convert(SourceCodepage: Integer; DestinationCodepage: Integer; TextInStream: InStream): InStream
+```
+#### Parameters
+*SourceCodepage ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
+
+Encoding code page identifier of the source text. Valid values are between 0 and 65535.
+
+*DestinationCodepage ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
+
+Encoding code page identifier for the result text. Valid values are between 0 and 65535.
+
+*TextInStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
+
+The InStream containing the text to convert.
+
+#### Return Value
+*[InStream](https://go.microsoft.com/fwlink/?linkid=2210033)* 
+
+The InStream containing the text in the destination encoding.
+
