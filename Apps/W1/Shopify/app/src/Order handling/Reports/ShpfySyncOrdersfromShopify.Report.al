@@ -23,18 +23,17 @@ report 30104 "Shpfy Sync Orders from Shopify"
 
                 trigger OnPreDataItem()
                 var
-                    OrdersToImport: Record "Shpfy Orders to Import";
+                    OrdersToImport2: Record "Shpfy Orders to Import";
                 begin
-                    OrdersToImport.SetView(ToImportView);
-                    OrdersToImport.SetRange("Shop Id", Shop."Shop Id");
-                    OrdersToImport.SetRange("Shop Code", '');
-                    OrdersToImport.ModifyAll("Shop Code", Shop.Code);
-                    OrdersToImport.SetRange("Shop Code", Shop.Code);
+                    OrdersToImport2.SetView(ToImportView);
+                    OrdersToImport2.SetRange("Shop Id", Shop."Shop Id");
+                    OrdersToImport2.SetRange("Shop Code", '');
+                    OrdersToImport2.ModifyAll("Shop Code", Shop.Code);
                     Commit();
                     OrdersToImport.SetRange("Shop Code", Shop.Code);
 
                     if GuiAllowed then begin
-                        ToProcess := OrdersToImport.Count;
+                        ToProcess := OrdersToImport2.Count;
                         Dialog.Open(OrderTypeTxt + ProcessMsg, ToProcess);
                         Dialog.Update();
                     end;

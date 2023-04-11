@@ -659,6 +659,7 @@ table 30118 "Shpfy Order Header"
     trigger OnDelete()
     var
         ShopifyReturnHeader: Record "Shpfy Return Header";
+        ShopifyRefundHeader: Record "Shpfy Refund Header";
         DataCapture: Record "Shpfy Data Capture";
         FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
     begin
@@ -668,6 +669,9 @@ table 30118 "Shpfy Order Header"
         ShopifyReturnHeader.SetRange("Order Id", "Shopify Order Id");
         if not ShopifyReturnHeader.IsEmpty then
             ShopifyReturnHeader.DeleteAll(true);
+        ShopifyRefundHeader.SetRange("Order Id", "Shopify Order Id");
+        if not ShopifyRefundHeader.IsEmpty then
+            ShopifyRefundHeader.DeleteAll();
         DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
         DataCapture.SetRange("Linked To Table", Database::"Shpfy Order Header");
         DataCapture.SetRange("Linked To Id", Rec.SystemId);
