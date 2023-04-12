@@ -25,6 +25,7 @@ function Enable-BreakingChangesCheck {
     # Get name of the app from app.json
     $appJson = Join-Path $AppProjectFolder "app.json"
     $applicationName = (Get-Content -Path $appJson | ConvertFrom-Json).Name
+    [System.Version] $applicationVersion = (Get-Content -Path $appJson | ConvertFrom-Json).Version
 
     # Get the baseline version
     $baselineVersion = Get-BaselineVersion -BuildMode $BuildMode
@@ -35,7 +36,12 @@ function Enable-BreakingChangesCheck {
 
     # Restore the baseline package and place it in the app symbols folder
     if ($BuildMode -eq 'Clean') {
-        $baselinePackageRestored = Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
+        $appMajorMinor = "$($applicationVersion.Major).$($applicationVersion.Minor)"
+        if ($baselineVersion -match $appMajorMinor) {
+            $baselinePackageRestored = Restore-BaselinesFromNuget -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
+        } else {
+            Write-Host "Skipping breaking changes check because of version change. Baseline version is $baselineVersion and app version is $appMajorMinor"
+        }
     } else {
         $baselinePackageRestored = Restore-BaselinesFromArtifacts -AppSymbolsFolder $AppSymbolsFolder -ExtensionName $applicationName -BaselineVersion $baselineVersion
     }
