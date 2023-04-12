@@ -6,6 +6,8 @@
 codeunit 1996 "Checklist Banner"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     Permissions = tabledata "Checklist Item Buffer" = rimd,
                   tabledata "User Checklist Status" = rim,
@@ -284,11 +286,15 @@ codeunit 1996 "Checklist Banner"
     var
         GuidedExperienceItem: Record "Guided Experience Item";
         ChecklistItem: Record "Checklist Item";
+        EntityText: Codeunit "Entity Text";
     begin
         GuidedExperienceItem.SetCurrentKey(Code, Version);
         GuidedExperienceItem.SetRange(Code, Code);
         if Version <> 0 then
             GuidedExperienceItem.SetRange(Version, Version);
+
+        if (not EntityText.CanSuggest()) or IsThereThirdPartyGuidedExperienceItem() then
+            GuidedExperienceItem.SetFilter("Spotlight Tour Type", '<>%1', GuidedExperienceItem."Spotlight Tour Type"::Copilot);
 
         if GuidedExperienceItem.FindLast() then begin
             if CheckForDuplicate then
@@ -304,6 +310,15 @@ codeunit 1996 "Checklist Banner"
 
             InsertChecklistItemInBuffer(ChecklistItemBuffer, GuidedExperienceItem, Status, ChecklistItem, RoleID);
         end;
+    end;
+
+    local procedure IsThereThirdPartyGuidedExperienceItem(): Boolean
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+    begin
+        GuidedExperienceItem.SetFilter("Extension Publisher", '<>%1', 'Microsoft');
+
+        exit(not GuidedExperienceItem.IsEmpty());
     end;
 
     local procedure HasTheItemBeenCompleted(GuidedExperienceItem: Record "Guided Experience Item"; ChecklistItem: Record "Checklist Item"): Boolean
@@ -625,6 +640,8 @@ codeunit 1996 "Checklist Banner"
                 SpotlightTour := SpotlightTour::OpenInExcel;
             SpotlightTourType::"Share to Teams":
                 SpotlightTour := SpotlightTour::ShareToTeams;
+            SpotlightTourType::Copilot:
+                SpotlightTour := SpotlightTour::Copilot;
             else
                 SpotlightTour := SpotlightTour::None;
         end;
@@ -797,7 +814,7 @@ codeunit 1996 "Checklist Banner"
         OnGetRoleCenterBannerPartID(PartID);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetRoleCenterBannerPartID', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", GetRoleCenterBannerPartID, '', true, true)]
     local procedure OnGetRoleCenterBannerPartID(var PartID: Integer)
     begin
         if Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop] then

@@ -27,7 +27,36 @@ codeunit 27009 "Loc. Manufacturing Demodata-CA"
         ManufacturingDemoAccounts.AddAccount(ManufacturingDemoAccount.PurchaseVarianceRetail(), '54703');
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Whse Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyWhseDemoAccounts()
+    begin
+        WhseDemoAccount.ReturnAccountKey(true);
+
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '13100');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '14100');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '14101');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '22300');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '44100');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '54100');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesVAT(), '');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '');
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Manufacturing Demo Data Setup", 'OnBeforeInsertEvent', '', false, false)]
+    local procedure ModifySeriesCode(var Rec: Record "Manufacturing Demo Data Setup")
+    begin
+        Rec."Company Type" := Rec."Company Type"::"Sales Tax";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Whse Demo Data Setup", 'OnBeforeInsertEvent', '', false, false)]
+    local procedure ModifyWhseTaxSetting(var Rec: Record "Whse Demo Data Setup")
+    begin
+        Rec."Company Type" := Rec."Company Type"::"Sales Tax";
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
+        WhseDemoAccount: Record "Whse. Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
+        WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
 }

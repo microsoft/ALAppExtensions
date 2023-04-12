@@ -1,4 +1,4 @@
-#if not CLEAN19
+#if not CLEAN21
 pageextension 18152 "GST Sales Prices Ext" extends "Sales Prices"
 {
     layout

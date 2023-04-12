@@ -9,6 +9,8 @@
 codeunit 8910 "Email Attachment Upgrade"
 {
     Subtype = Upgrade;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     trigger OnUpgradePerCompany()
     begin
@@ -55,7 +57,7 @@ codeunit 8910 "Email Attachment Upgrade"
             Session.LogMessage('0000CTY', StrSubstNo(MediaConversionMsg, EmailMessageAttachment.Length, EmailMessageAttachment."Content Type"), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", OnGetPerCompanyUpgradeTags, '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetEmailAttachmentUpgradeTag());

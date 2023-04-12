@@ -6,6 +6,8 @@
 codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure Authorize(var HttpRequestMessage: HttpRequestMessage; StorageAccount: Text)

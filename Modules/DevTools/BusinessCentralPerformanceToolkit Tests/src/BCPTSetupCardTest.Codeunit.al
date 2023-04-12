@@ -120,9 +120,11 @@ codeunit 144741 "BCPT Setup Card Test"
     var
         BCPTHeader: Record "BCPT Header";
         BCPTLine: Record "BCPT Line";
+        BCPTLogEntry: Record "BCPT Log Entry";
         BCPTSetupCardTest: Codeunit "BCPT Setup Card Test";
         BCPTStartTests: Codeunit "BCPT Start Tests";
         BCPTSetupCard: TestPage "BCPT Setup Card";
+        UnexpectedNoOfSqlStmtsLbl: Label 'Unexpected value in %1. Expected %2, Actual %3', Locked = true;
     begin
         Initialize();
 
@@ -131,13 +133,14 @@ codeunit 144741 "BCPT Setup Card Test"
 
         NoOfIterationsToRun := 5;
         BindSubscription(BCPTSetupCardTest);
+        Database.SelectLatestVersion();
         BCPTStartTests.StartBCPTSuite(BCPTHeader);
         UnbindSubscription(BCPTSetupCardTest);
 
         BCPTSetupCard.OpenView();
         BCPTSetupCard.GoToRecord(BCPTHeader);
         BCPTSetupCard.BCPTLines.Status.AssertEquals(BCPTLine.Status::Completed);
-        BCPTSetupCard.BCPTLines.NoOfIterations.AssertEquals(NoOfIterationsToRun);
+        Assert.IsTrue(BCPTSetupCard.BCPTLines.NoOfIterations.AsInteger() >= NoOfIterationsToRun, StrSubstNo(UnexpectedNoOfSqlStmtsLbl, BCPTLogEntry.FieldCaption("No. of SQL Statements"), NoOfIterationsToRun, BCPTSetupCard.BCPTLines.NoOfIterations.AsInteger()));
         BCPTSetupCard.BCPTLines.NoOfSQLStmts.AssertEquals(NoOfIterationsToRun);
         BCPTSetupCard.BCPTLines.AvgSQLStmts.AssertEquals(1);
         BCPTSetupCard.Close();

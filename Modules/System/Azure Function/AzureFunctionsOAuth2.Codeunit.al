@@ -6,6 +6,8 @@
 codeunit 7802 "Azure Functions OAuth2" implements "Azure Functions Authentication"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

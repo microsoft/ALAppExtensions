@@ -23,6 +23,7 @@ codeunit 2718 "Page Summary Provider"
     ///   "pageCaption":"Customer Card",
     ///   "pageType":"Card",
     ///   "summaryType":"Brick",
+    ///   "cardPageId": "0",
     ///   "fields":[
     ///      {"caption":"No.","fieldValue":"01445544","type":"Code"},
     ///      {"caption":"Name","fieldValue":"Progressive Home Furnishings","type":"Text"},
@@ -66,6 +67,7 @@ codeunit 2718 "Page Summary Provider"
     ///   "pageCaption":"Customer Card",
     ///   "pageType":"Card",
     ///   "summaryType":"Brick",
+    ///   "cardPageId": "0",
     ///   "url":"https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&amp;page=22&amp;bookmark=27%3bEgAAAAJ7CDAAMQA5ADAANQA4ADkAMw%3d%3",
     ///   "fields":[
     ///      {"caption":"No.","fieldValue":"01445544","type":"Code"},
@@ -124,6 +126,38 @@ codeunit 2718 "Page Summary Provider"
         SummaryProviderImpl: Codeunit "Page Summary Provider Impl.";
     begin
         exit(SummaryProviderImpl.GetPageSummary(PageID, ''));
+    end;
+
+    /// <summary>
+    /// Gets the web client url info for a given Page ID and System ID.
+    /// </summary>
+    //  <param name="PageId">The ID of the page for which to retrieve the url info.</param>
+    //  <param name="SystemId">The system ID of the record in the page for which to retrieve the url info.
+    //  Following GUID formats are supported:
+    //  1. 32 digits seperated by hyphens.
+    //  2. 32 digits seperated by hyphens and enclosed in braces.
+    //  </param>
+    /// <returns>Text value for the page url info in JSON format.</returns>
+    /// <example>
+    /// {
+    ///   "version":"1.1",
+    ///   "url":"https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&amp;page=22&amp;bookmark=27%3bEgAAAAJ7CDAAMQA5ADAANQA4ADkAMw%3d%3",
+    /// }
+    /// 
+    /// In case of an error:
+    /// {
+    ///   "version":"1.1",
+    ///   "error":[
+    ///     "code":"InvalidSystemId"
+    ///     "message":"The system id is invalid."
+    ///   ]
+    /// }
+    /// </example>
+    procedure GetPageUrlBySystemID(PageId: Integer; SystemId: Guid): Text
+    var
+        SummaryProviderImpl: Codeunit "Page Summary Provider Impl.";
+    begin
+        exit(SummaryProviderImpl.GetPageUrlBySystemID(PageID, SystemId));
     end;
 
     /// <summary>

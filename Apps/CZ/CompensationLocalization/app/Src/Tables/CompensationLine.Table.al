@@ -47,6 +47,7 @@ table 31273 "Compensation Line CZC"
             TableRelation = if ("Source Type" = const(Customer)) "Customer Posting Group" else
             if ("Source Type" = const(Vendor)) "Vendor Posting Group";
             DataClassification = CustomerContent;
+#if not CLEAN22
 
             trigger OnValidate()
             var
@@ -55,6 +56,16 @@ table 31273 "Compensation Line CZC"
                 if CurrFieldNo = FieldNo("Posting Group") then
                     PostingGroupManagementCZL.CheckPostingGroupChange("Posting Group", xRec."Posting Group", Rec);
             end;
+#else
+
+            trigger OnValidate()
+            var
+                PostingGroupChange: Codeunit "Posting Group Change";
+            begin
+                if CurrFieldNo = FieldNo("Posting Group") then
+                    PostingGroupChange.ChangePostingGroup("Posting Group", xRec."Posting Group", Rec);
+            end;
+#endif
         }
         field(23; "Shortcut Dimension 1 Code"; Code[20])
         {
@@ -143,11 +154,6 @@ table 31273 "Compensation Line CZC"
                                 CustLedgerEntry.TestField(Prepayment, false);
                                 if CustLedgerEntry.RelatedToAdvanceLetterCZL() then
                                     Error(RelatedToAdvanceLetterErr, CustLedgerEntry.TableCaption(), CustLedgerEntry."Entry No.");
-#if not CLEAN19
-#pragma warning disable AL0432
-                                CustLedgerEntry.TestField("Prepayment Type", CustLedgerEntry."Prepayment Type"::" ");
-#pragma warning restore AL0432
-#endif
                             end;
                             CustLedgerEntry.TestField("Compensation Amount (LCY) CZC", 0);
                             "Source No." := CustLedgerEntry."Customer No.";
@@ -175,11 +181,6 @@ table 31273 "Compensation Line CZC"
                                 VendorLedgerEntry.TestField(Prepayment, false);
                                 if VendorLedgerEntry.RelatedToAdvanceLetterCZL() then
                                     Error(RelatedToAdvanceLetterErr, VendorLedgerEntry.TableCaption(), VendorLedgerEntry."Entry No.");
-#if not CLEAN19
-#pragma warning disable AL0432
-                                VendorLedgerEntry.TestField("Prepayment Type", VendorLedgerEntry."Prepayment Type"::" ");
-#pragma warning restore AL0432
-#endif
                             end;
                             VendorLedgerEntry.TestField("Compensation Amount (LCY) CZC", 0);
                             "Source No." := VendorLedgerEntry."Vendor No.";

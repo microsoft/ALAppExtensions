@@ -10,6 +10,8 @@
 codeunit 9209 "IDA 1D I2of5 Encoder" implements "Barcode Font Encoder"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure EncodeFont(InputText: Text; var BarcodeEncodeSettings: Record "Barcode Encode Settings"): Text
     var

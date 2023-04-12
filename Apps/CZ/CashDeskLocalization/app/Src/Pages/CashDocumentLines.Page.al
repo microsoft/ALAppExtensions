@@ -65,6 +65,66 @@ page 31163 "Cash Document Lines CZP"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code of the Shortcut Dimension 2, which is defined in the Shortcut Dimension 2 Code field in the General Ledger Setup window.';
                 }
+                field("ShortcutDimCode[3]"; ShortcutDimCode[3])
+                {
+                    ApplicationArea = Dimensions;
+                    CaptionClass = '1,2,3';
+                    TableRelation = "Dimension Value".Code where("Global Dimension No." = const(3),
+                                                                  "Dimension Value Type" = const(Standard),
+                                                                  Blocked = const(false));
+                    ToolTip = 'Specifies shortcut dimension code No. 3 of line';
+                    Visible = false;
+                }
+                field("ShortcutDimCode[4]"; ShortcutDimCode[4])
+                {
+                    ApplicationArea = Dimensions;
+                    CaptionClass = '1,2,4';
+                    TableRelation = "Dimension Value".Code where("Global Dimension No." = const(4),
+                                                                  "Dimension Value Type" = const(Standard),
+                                                                  Blocked = const(false));
+                    ToolTip = 'Specifies shortcut dimension code No. 4 of line';
+                    Visible = false;
+                }
+                field("ShortcutDimCode[5]"; ShortcutDimCode[5])
+                {
+                    ApplicationArea = Dimensions;
+                    CaptionClass = '1,2,5';
+                    TableRelation = "Dimension Value".Code where("Global Dimension No." = const(5),
+                                                                  "Dimension Value Type" = const(Standard),
+                                                                  Blocked = const(false));
+                    ToolTip = 'Specifies shortcut dimension code No. 5 of line';
+                    Visible = false;
+                }
+                field("ShortcutDimCode[6]"; ShortcutDimCode[6])
+                {
+                    ApplicationArea = Dimensions;
+                    CaptionClass = '1,2,6';
+                    TableRelation = "Dimension Value".Code where("Global Dimension No." = const(6),
+                                                                  "Dimension Value Type" = const(Standard),
+                                                                  Blocked = const(false));
+                    ToolTip = 'Specifies shortcut dimension code No. 6 of line';
+                    Visible = false;
+                }
+                field("ShortcutDimCode[7]"; ShortcutDimCode[7])
+                {
+                    ApplicationArea = Dimensions;
+                    CaptionClass = '1,2,7';
+                    TableRelation = "Dimension Value".Code where("Global Dimension No." = const(7),
+                                                                  "Dimension Value Type" = const(Standard),
+                                                                  Blocked = const(false));
+                    ToolTip = 'Specifies shortcut dimension code No. 7 of line';
+                    Visible = false;
+                }
+                field("ShortcutDimCode[8]"; ShortcutDimCode[8])
+                {
+                    ApplicationArea = Dimensions;
+                    CaptionClass = '1,2,8';
+                    TableRelation = "Dimension Value".Code where("Global Dimension No." = const(8),
+                                                                  "Dimension Value Type" = const(Standard),
+                                                                  Blocked = const(false));
+                    ToolTip = 'Specifies shortcut dimension code No. 8 of line';
+                    Visible = false;
+                }
                 field("Amount Including VAT"; Rec."Amount Including VAT")
                 {
                     ApplicationArea = Basic, Suite;
@@ -95,4 +155,56 @@ page 31163 "Cash Document Lines CZP"
             }
         }
     }
+    actions
+    {
+        area(navigation)
+        {
+            group("&Line")
+            {
+                Caption = '&Line';
+                Image = Line;
+                action("Show Document")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Show Document';
+                    Image = View;
+                    ShortCutKey = 'Shift+F7';
+                    ToolTip = 'Open the document that the selected line exists on.';
+
+                    trigger OnAction()
+                    var
+                        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
+                        PageManagement: Codeunit "Page Management";
+                    begin
+                        CashDocumentHeaderCZP.Get(Rec."Cash Desk No.", Rec."Cash Document No.");
+                        PageManagement.PageRun(CashDocumentHeaderCZP);
+                    end;
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("Show Document_Promoted"; "Show Document")
+                {
+                }
+            }
+        }
+    }
+
+    trigger OnAfterGetRecord()
+    begin
+        Rec.ShowShortcutDimCode(ShortcutDimCode);
+    end;
+
+    trigger OnNewRecord(BelowxRec: Boolean)
+    begin
+        Clear(ShortcutDimCode);
+    end;
+
+    protected var
+        ShortcutDimCode: array[8] of Code[20];
 }

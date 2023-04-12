@@ -22,6 +22,8 @@
 table 3907 "Reten. Pol. Deleting Param"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Extensible = true;
     TableType = Temporary;
     DataClassification = SystemMetadata;

@@ -6,6 +6,8 @@
 codeunit 2500 "Extension Installation Impl"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "NAV App Installed App" = rimd,
                   tabledata "Published Application" = rimd;
     SingleInstance = false;

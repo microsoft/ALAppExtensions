@@ -11,6 +11,8 @@ table 9203 "Barcode Encode Settings"
     Access = Public;
     Extensible = true;
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     DataClassification = SystemMetadata;
 
     fields

@@ -22,7 +22,12 @@ codeunit 11749 "Reminder Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder-Issue", 'OnAfterInitGenJnlLine', '', false, false)]
     local procedure UpdateBankInfoOnAfterInitGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; ReminderHeader: Record "Reminder Header")
     begin
+#if not CLEAN22
+#pragma warning disable AL0432
         GenJournalLine."VAT Date CZL" := ReminderHeader."Posting Date";
+#pragma warning restore AL0432
+#endif
+        GenJournalLine."VAT Reporting Date" := ReminderHeader."Posting Date";
         if GenJournalLine."Account Type" <> GenJournalLine."Account Type"::Customer then
             exit;
 

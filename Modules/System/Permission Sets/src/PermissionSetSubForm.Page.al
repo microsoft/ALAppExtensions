@@ -38,7 +38,6 @@ page 9864 "Permission Set Subform"
                                 RefreshTreeView();
                     end;
                 }
-
                 field("Related Role ID"; Rec."Related Role ID")
                 {
                     ApplicationArea = All;
@@ -52,6 +51,13 @@ page 9864 "Permission Set Subform"
                         if PermissionSetRelationImpl.ModifyPermissionSet(CurrAppId, CurrRoleId, CurrScope, Rec."Related App ID", Rec."Related Role ID", Rec.Type) then
                             RefreshTreeView();
                     end;
+                }
+                field("Related Name"; Rec."Related Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Name';
+                    ToolTip = 'Specifies the name of the permission set.';
+                    Editable = false;
                 }
                 field("Related Scope"; Rec."Related Scope")
                 {

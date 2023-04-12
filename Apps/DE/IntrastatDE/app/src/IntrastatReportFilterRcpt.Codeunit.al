@@ -9,7 +9,7 @@ codeunit 11031 "Intrastat Report Filter Rcpt."
         InStreamFilters: InStream;
         OutStreamFilters: OutStream;
     begin
-        Rec."Table Filters".CreateInStream(InStreamFilters, TextEncoding::Windows);
+        Rec."Table Filters".CreateInStream(InStreamFilters);
         InStreamFilters.ReadText(IntrastatReportLineFilters);
         IntrastatReportLine.SetView(IntrastatReportLineFilters);
         IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Receipt);

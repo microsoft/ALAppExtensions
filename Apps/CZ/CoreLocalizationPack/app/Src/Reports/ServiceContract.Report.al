@@ -409,7 +409,7 @@ report 31196 "Service Contract CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(23) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(23) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

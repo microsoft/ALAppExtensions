@@ -10,10 +10,10 @@ codeunit 148059 "Financial Reports CZL"
     end;
 
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         GLAccount: Record "G/L Account";
         LibraryRandom: Codeunit "Library - Random";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
+        LibraryTaxCZL: Codeunit "Library - Tax CZL";
         RequestPageXML: Text;
         isInitialized: Boolean;
 
@@ -26,9 +26,7 @@ codeunit 148059 "Financial Reports CZL"
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Financial Reports CZL");
 
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup."Use VAT Date CZL" := true;
-        GeneralLedgerSetup.Modify();
+        LibraryTaxCZL.SetUseVATDate(true);
 
         isInitialized := true;
         Commit();

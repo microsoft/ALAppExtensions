@@ -2,26 +2,6 @@ pageextension 31199 "Customer Stat. FactBox CZZ" extends "Customer Statistics Fa
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Bill-To No. of Open. Adv. L.")
-        {
-            Visible = false;
-        }
-        modify("Bill-To No. of P.F.Inv.Adv. L.")
-        {
-            Visible = false;
-        }
-        modify("Bill-To No. of P.Inv. Adv. L.")
-        {
-            Visible = false;
-        }
-        modify("Bill-To No. of P.Pay. Adv. L.")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast(content)
         {
             field("Advances"; AdvancesCZZ)

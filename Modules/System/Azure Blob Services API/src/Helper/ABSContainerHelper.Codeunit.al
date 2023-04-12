@@ -6,6 +6,8 @@
 codeunit 9055 "ABS Container Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure AddNewEntryFromNode(var ABSContainer: Record "ABS Container"; var Node: XmlNode; XPathName: Text)

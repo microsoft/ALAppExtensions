@@ -6,6 +6,8 @@
 codeunit 9049 "ABS HttpContent Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ContentLengthLbl: Label '%1', Comment = '%1 = Length', Locked = true;

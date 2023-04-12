@@ -9,6 +9,9 @@
 codeunit 9052 "ABS Container Client"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
 
     /// <summary>
     /// Initializes the Azure BLOB Storage container client.

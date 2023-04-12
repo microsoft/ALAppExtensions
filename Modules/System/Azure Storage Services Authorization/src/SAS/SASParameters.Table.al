@@ -12,6 +12,8 @@ table 9064 "SAS Parameters"
     Access = Public;
     Extensible = false;
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

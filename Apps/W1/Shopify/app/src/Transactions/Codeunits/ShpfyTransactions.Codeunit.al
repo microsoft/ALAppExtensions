@@ -50,7 +50,7 @@ codeunit 30194 "Shpfy Transactions"
         OrderTransaction: Record "Shpfy Order Transaction";
         PaymentMethodMapping: Record "Shpfy Payment Method Mapping";
         TransactionGateway: Record "Shpfy Transaction Gateway";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         Id: BigInteger;
         IsNew: Boolean;
         JTransactions: JsonArray;
@@ -72,29 +72,29 @@ codeunit 30194 "Shpfy Transactions"
                 end;
                 OrderTransaction.Status := ConvertToTranscationStatus(JsonHelper.GetValueAsText(JToken, 'status'));
                 OrderTransaction.Type := ConvertToTranscationType(JsonHelper.GetValueAsText(JToken, 'kind'));
-                RecRef.GetTable(OrderTransaction);
-                JsonHelper.GetValueIntoField(JToken, 'order_id', RecRef, OrderTransaction.FieldNo("Shopify Order Id"));
-                JsonHelper.GetValueIntoField(JToken, 'gateway', RecRef, OrderTransaction.FieldNo(Gateway));
-                JsonHelper.GetValueIntoField(JToken, 'message', RecRef, OrderTransaction.FieldNo(Message));
-                JsonHelper.GetValueIntoField(JToken, 'created_at', RecRef, OrderTransaction.FieldNo("Created At"));
-                JsonHelper.GetValueIntoField(JToken, 'test', RecRef, OrderTransaction.FieldNo(Test));
-                JsonHelper.GetValueIntoField(JToken, 'authorization', RecRef, OrderTransaction.FieldNo(Authorization));
-                JsonHelper.GetValueIntoField(JToken, 'receipt.gift_card_id', RecRef, OrderTransaction.FieldNo("Gift Card Id"));
-                JsonHelper.GetValueIntoField(JToken, 'error_code', RecRef, OrderTransaction.FieldNo("Error Code"));
-                JsonHelper.GetValueIntoField(JToken, 'source_name', RecRef, OrderTransaction.FieldNo("Source Name"));
-                JsonHelper.GetValueIntoField(JToken, 'amount', RecRef, OrderTransaction.FieldNo(Amount));
-                JsonHelper.GetValueIntoField(JToken, 'currency', RecRef, OrderTransaction.FieldNo(Currency));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_bin', RecRef, OrderTransaction.FieldNo("Credit Card Bin"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.avs_result_code', RecRef, OrderTransaction.FieldNo("AVS Result Code"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.cvv_result_code', RecRef, OrderTransaction.FieldNo("CVV Result Code"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_number', RecRef, OrderTransaction.FieldNo("Credit Card Number"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_company', RecRef, OrderTransaction.FieldNo("Credit Card Company"));
+                RecordRef.GetTable(OrderTransaction);
+                JsonHelper.GetValueIntoField(JToken, 'order_id', RecordRef, OrderTransaction.FieldNo("Shopify Order Id"));
+                JsonHelper.GetValueIntoField(JToken, 'gateway', RecordRef, OrderTransaction.FieldNo(Gateway));
+                JsonHelper.GetValueIntoField(JToken, 'message', RecordRef, OrderTransaction.FieldNo(Message));
+                JsonHelper.GetValueIntoField(JToken, 'created_at', RecordRef, OrderTransaction.FieldNo("Created At"));
+                JsonHelper.GetValueIntoField(JToken, 'test', RecordRef, OrderTransaction.FieldNo(Test));
+                JsonHelper.GetValueIntoField(JToken, 'authorization', RecordRef, OrderTransaction.FieldNo(Authorization));
+                JsonHelper.GetValueIntoField(JToken, 'receipt.gift_card_id', RecordRef, OrderTransaction.FieldNo("Gift Card Id"));
+                JsonHelper.GetValueIntoField(JToken, 'error_code', RecordRef, OrderTransaction.FieldNo("Error Code"));
+                JsonHelper.GetValueIntoField(JToken, 'source_name', RecordRef, OrderTransaction.FieldNo("Source Name"));
+                JsonHelper.GetValueIntoField(JToken, 'amount', RecordRef, OrderTransaction.FieldNo(Amount));
+                JsonHelper.GetValueIntoField(JToken, 'currency', RecordRef, OrderTransaction.FieldNo(Currency));
+                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_bin', RecordRef, OrderTransaction.FieldNo("Credit Card Bin"));
+                JsonHelper.GetValueIntoField(JToken, 'payment_details.avs_result_code', RecordRef, OrderTransaction.FieldNo("AVS Result Code"));
+                JsonHelper.GetValueIntoField(JToken, 'payment_details.cvv_result_code', RecordRef, OrderTransaction.FieldNo("CVV Result Code"));
+                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_number', RecordRef, OrderTransaction.FieldNo("Credit Card Number"));
+                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_company', RecordRef, OrderTransaction.FieldNo("Credit Card Company"));
                 if IsNew then
-                    RecRef.Insert()
+                    RecordRef.Insert()
                 else
-                    RecRef.Modify();
-                RecRef.SetTable(OrderTransaction);
-                RecRef.Close();
+                    RecordRef.Modify();
+                RecordRef.SetTable(OrderTransaction);
+                RecordRef.Close();
                 if OrderTransaction.Gateway <> '' then begin
                     Clear(TransactionGateway);
                     TransactionGateway.SetRange(Name, OrderTransaction.Gateway);

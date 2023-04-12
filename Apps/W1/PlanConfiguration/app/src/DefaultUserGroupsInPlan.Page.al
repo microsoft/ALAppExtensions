@@ -1,3 +1,4 @@
+#if not CLEAN22
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -16,6 +17,9 @@ page 9049 "Default User Groups In Plan"
     ModifyAllowed = false;
     DeleteAllowed = false;
     LinksAllowed = false;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Use the Default Permission Sets in Plan page instead.';
+    ObsoleteTag = '22.0';
 
     layout
     {
@@ -49,3 +53,4 @@ page 9049 "Default User Groups In Plan"
     var
         FirstCompanyTok: Label '(first company sign-in)', Comment = 'The brackets around should stay';
 }
+#endif

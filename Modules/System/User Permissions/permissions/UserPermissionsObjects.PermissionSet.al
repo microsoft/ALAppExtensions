@@ -8,9 +8,6 @@ permissionset 166 "User Permissions - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Environment Info. - Objects";
-
-    Permissions = Codeunit "User Permissions Impl." = X,
-                  Codeunit "User Permissions" = X,
+    Permissions = Codeunit "User Permissions" = X,
                   Page "Lookup Permission Set" = X;
 }

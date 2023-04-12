@@ -7,6 +7,9 @@
 codeunit 9051 "ABS Client Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
 
     var
         ABSOperationPayload: Codeunit "ABS Operation Payload";

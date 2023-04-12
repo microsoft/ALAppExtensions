@@ -6,6 +6,8 @@
 table 1803 "Assisted Setup"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Caption = 'Assisted Setup';
     ReplicateData = false;
 #if CLEAN18

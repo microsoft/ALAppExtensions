@@ -52,13 +52,9 @@ page 18146 "E-Comm. Merchant Id"
                 begin
                     EditinExcel.EditPageInExcel(
                         'e-Commerce Merchant Id',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(CustomerNumLbl, Rec."Customer No."));
+                        Page::"E-Comm. Merchant Id");
                 end;
             }
         }
     }
-
-    var
-        CustomerNumLbl: Label 'Code %1', Comment = '%1 = Customer No.';
 }

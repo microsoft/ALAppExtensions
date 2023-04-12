@@ -9,6 +9,8 @@
 table 8912 "Email Rate Limit"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {

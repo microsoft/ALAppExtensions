@@ -13,6 +13,8 @@ table 3965 Matches
 {
     TableType = Temporary;
     Extensible = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

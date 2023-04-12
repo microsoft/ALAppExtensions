@@ -7,6 +7,8 @@ codeunit 4032 "Client Type Mgt. Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure GetCurrentClientType() CurrClientType: ClientType
     begin

@@ -206,7 +206,11 @@ report 31287 "Create General Journal CZB"
             IssBankStatementLineCZB.Type::"Bank Account":
                 GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::"Bank Account");
             IssBankStatementLineCZB.Type::Employee:
-                GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Employee);
+                begin
+                    GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Employee);
+                    if not IssBankStatementLineCZB.Positive then
+                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
+                end;
         end;
         if IssBankStatementLineCZB."No." <> '' then
             GenJournalLine.Validate("Account No.", IssBankStatementLineCZB."No.")

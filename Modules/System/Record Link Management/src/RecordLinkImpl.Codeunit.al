@@ -6,6 +6,8 @@
 codeunit 4470 "Record Link Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     SingleInstance = true;
     Permissions = tabledata "Record Link" = rimd;
 

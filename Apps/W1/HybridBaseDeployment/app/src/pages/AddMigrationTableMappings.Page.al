@@ -185,6 +185,7 @@ page 40010 "Add Migration Table Mappings"
 
     local procedure UpdateObjectsFilter(var PublishedApplication: Record "Published Application")
     begin
+        PublishedApplication.SetRange(Installed, true);
         if not PublishedApplication.FindSet() then begin
             ClearExtensionsFilter();
             exit;

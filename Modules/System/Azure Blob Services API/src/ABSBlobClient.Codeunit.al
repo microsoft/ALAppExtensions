@@ -9,6 +9,8 @@
 codeunit 9053 "ABS Blob Client"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Initializes the Azure Blob storage client.

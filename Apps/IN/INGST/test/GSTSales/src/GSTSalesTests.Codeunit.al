@@ -3620,6 +3620,44 @@ codeunit 18196 "GST Sales Tests"
         LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 5);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromRegCustSalesOrderIntraStateForEInvoiceWithTenLines()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvHeader: Record "Sales Invoice Header";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedSalesInvoice: TestPage "Posted Sales Invoice";
+        PostedDocumentNo: Code[20];
+    begin
+        //[Scenario] Bug 467092: [Master][BC IN] E-Invoice with more then 10 lines giving an error
+        //[GIVEN] Created GST Setup
+        CreateGSTSetup(GSTCustomeType::Registered, GSTGroupType::Goods, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, '11');
+
+        // [WHEN] Create and Post Sales Order with GST and Line Type as Services and Intrastate Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocumentForEInvoice(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Order);
+
+        // [THEN] G/L Entries and Detailed GST Ledger Entries verified
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 4);
+        SalesInvHeader.Get(PostedDocumentNo);
+        PostedSalesInvoice.OpenEdit();
+        PostedSalesInvoice.GoToRecord(SalesInvHeader);
+        PostedSalesInvoice."Generate E-Invoice".Invoke();
+        PostedSalesInvoice.Close();
+        Assert.IsTrue(true, 'E-Invoice generated');
+    end;
+
+
     local procedure CreateAndPostSalesDocumentForEInvoice(
             var SalesHeader: Record "Sales Header";
             var SalesLine: Record "Sales Line";

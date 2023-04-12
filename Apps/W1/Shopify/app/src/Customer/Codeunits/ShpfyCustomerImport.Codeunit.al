@@ -7,9 +7,9 @@ codeunit 30117 "Shpfy Customer Import"
 
     trigger OnRun()
     var
-        Address: Record "Shpfy Customer Address";
+        CustomerAddress: Record "Shpfy Customer Address";
         CreateCustomer: Codeunit "Shpfy Create Customer";
-        Mapping: Codeunit "Shpfy Customer Mapping";
+        CustomerMapping: Codeunit "Shpfy Customer Mapping";
         UpdateCustomer: Codeunit "Shpfy Update Customer";
     begin
         if ShopifyCustomer.Id = 0 then
@@ -17,21 +17,23 @@ codeunit 30117 "Shpfy Customer Import"
         CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer);
         ClearLastError();
         Commit();
-        if Mapping.FindMapping(ShopifyCustomer) and Shop."Shopify Can Update Customer" then begin
-            UpdateCustomer.SetShop(Shop);
-            UpdateCustomer.Run(ShopifyCustomer);
+        if CustomerMapping.FindMapping(ShopifyCustomer) then begin
+            if Shop."Shopify Can Update Customer" then begin
+                UpdateCustomer.SetShop(Shop);
+                UpdateCustomer.Run(ShopifyCustomer);
+            end;
         end else
             if Shop."Auto Create Unknown Customers" or AllowCreate then begin
                 CreateCustomer.SetShop(Shop);
                 CreateCustomer.SetTemplateCode(TemplateCode);
-                Address.SetRange("Customer Id", ShopifyCustomer.Id);
-                Address.SetRange(Default, true);
-                if Address.FindFirst() then
-                    CreateCustomer.Run(Address)
+                CustomerAddress.SetRange("Customer Id", ShopifyCustomer.Id);
+                CustomerAddress.SetRange(Default, true);
+                if CustomerAddress.FindFirst() then
+                    CreateCustomer.Run(CustomerAddress)
                 else begin
-                    Address.SetRange(Default);
-                    if Address.FindFirst() then
-                        CreateCustomer.Run(Address);
+                    CustomerAddress.SetRange(Default);
+                    if CustomerAddress.FindFirst() then
+                        CreateCustomer.Run(CustomerAddress);
                 end;
             end;
     end;
@@ -68,6 +70,7 @@ codeunit 30117 "Shpfy Customer Import"
             ShopifyCustomer.SetRange(Id, Id);
             if not ShopifyCustomer.FindFirst() then begin
                 ShopifyCustomer.Id := Id;
+                ShopifyCustomer."Shop Id" := Shop."Shop Id";
                 ShopifyCustomer.Insert(false);
                 if not CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer) then
                     ShopifyCustomer.Delete();

@@ -6,6 +6,8 @@
 codeunit 9018 "Azure AD Plan Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     Permissions = TableData Company = r,
                   TableData Plan = rimd,
@@ -21,9 +23,9 @@ codeunit 9018 "Azure AD Plan Impl."
         DeviceGroupNameTxt: Label 'Dynamics 365 Business Central Device Users', Locked = true;
         DevicePlanFoundMsg: Label 'Device plan %1 found for user with authentication object ID %2', Locked = true;
         NotBCUserMsg: Label 'User with authentication object ID %1 is not a Business Central user', Locked = true;
-        MixedPlansNonAdminErr: Label 'All users must be assigned to the same license, either Basic, Essential, or Premium. %1 and %2 are assigned to different licenses, for example, but there may be other mismatches. Your system administrator or Microsoft partner can verify license assignments in your Microsoft 365 admin portal.\\We will sign you out when you choose the OK button.', Comment = '%1 = %2 = Authnetication email.';
-        MixedPlansAdminErr: Label 'Before you can update user information, go to your Microsoft 365 admin center and make sure that all users are assigned to the same Business Central license, either Basic, Essential, or Premium. For example, we found that users %1 and %2 are assigned to different licenses, but there may be other mismatches.', Comment = '%1 = %2 = Authnetication email.';
-        MixedPlansMsg: Label 'One or more users are not assigned to the same Business Central license. For example, we found that users %1 and %2 are assigned to different licenses, but there may be other mismatches. In your Microsoft 365 admin center, make sure that all users are assigned to the same Business Central license, either Basic, Essential, or Premium.  Afterward, update Business Central by opening the Users page and using the ''Update Users from Office 365'' action.', Comment = '%1 = %2 = Authnetication email.';
+        MixedPlansNonAdminErr: Label 'All users must be assigned to the same license, either Basic, Essential, or Premium. %1 and %2 are assigned to different licenses, for example, but there may be other mismatches. Your system administrator or Microsoft partner can verify license assignments in your Microsoft 365 admin portal.\\We will sign you out when you choose the OK button.', Comment = '%1 = %2 = Authentication email.';
+        MixedPlansAdminErr: Label 'Before you can update user information, go to your Microsoft 365 admin center and make sure that all users are assigned to the same Business Central license, either Basic, Essential, or Premium. For example, we found that users %1 and %2 are assigned to different licenses, but there may be other mismatches.', Comment = '%1 = %2 = Authentication email.';
+        MixedPlansMsg: Label 'One or more users are not assigned to the same Business Central license. For example, we found that users %1 and %2 are assigned to different licenses, but there may be other mismatches. In your Microsoft 365 admin center, make sure that all users are assigned to the same Business Central license, either Basic, Essential, or Premium.  Afterward, update Business Central by opening the Users page and using the ''Update Users from Office 365'' action.', Comment = '%1 = %2 = Authentication email.';
         UserPlanAssignedMsg: Label 'User with authentication object ID %1 is assigned plan %2', Locked = true;
         PlanNotEnabledMsg: Label 'Plan is assigned to user but it is not enabled. Plan ID: %1', Locked = true;
         NotBCPlanAssignedMsg: Label 'Plan is assigned to user but it is not recognized as a BC plan. Plan ID: %1', Locked = true;
@@ -44,7 +46,7 @@ codeunit 9018 "Azure AD Plan Impl."
         BasicPlanNameTxt: Label 'D365 Business Central Basic Financials', Locked = true;
         EssentialsPlanNameTxt: Label 'Dynamics 365 Business Central Essential', Locked = true;
         PremiumPlanNameTxt: Label 'Dynamics 365 Business Central Premium', Locked = true;
-        ClearPersonalizationTxt: Label 'Clear company in User Pesonalization', Locked = true;
+        ClearPersonalizationTxt: Label 'Clear company in User Personalization', Locked = true;
         NoDelegatedRoleTxt: Label 'User does not have a delegated role (e.g. Delegated Admin or Delegated Helpdesk)', Locked = true;
         AssigningPlanForDelegatedRoleTxt: Label 'Assigning plan %1 for a user with a delegated role (e.g. Delegated Admin or Delegated Helpdesk)', Comment = '%1 = the plan ID', Locked = true;
         RemovedSUPERFromUserTxt: Label 'Removed SUPER from the current user', Locked = true;
@@ -98,7 +100,7 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUserInfo: DotNet UserInfo; AppendPermissionsOnNewPlan: Boolean; RemoveUserGroupsOnDeletePlan: Boolean)
+    procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUserInfo: DotNet UserInfo; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean)
     var
         TempPlan: Record Plan temporary;
         UserPlan: Record "User Plan";
@@ -111,31 +113,32 @@ codeunit 9018 "Azure AD Plan Impl."
         HasUserBeenSetupBefore := not (UserPlan.IsEmpty() and (not UserLoginTimeTracker.UserLoggedInEnvironment(UserSecurityId)));
 
         // Have any plans been removed from this user in O365, since last time he logged-in to NAV?
-        RemoveUnassignedUserPlans(TempPlan, UserSecurityId, RemoveUserGroupsOnDeletePlan);
+        RemoveUnassignedUserPlans(TempPlan, UserSecurityId, RemovePermissionsOnDeletePlan);
 
         // Have any plans been added to this user in O365, since last time he logged-in to NAV?
         AddNewlyAssignedUserPlans(TempPlan, UserSecurityId, HasUserBeenSetupBefore, AppendPermissionsOnNewPlan);
     end;
 
     [NonDebuggable]
-    procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemoveUserGroupsOnDeletePlan: Boolean; RemovePlansOnDeleteUser: Boolean)
+    procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean; RemovePlansOnDeleteUser: Boolean)
     var
         TempDummyPlan: Record Plan temporary;
         GraphUserInfo: DotNet UserInfo;
     begin
         if AzureADGraphUser.GetGraphUser(UserSecurityID, true, GraphUserInfo) then
-            UpdateUserPlans(UserSecurityId, GraphUserInfo, AppendPermissionsOnNewPlan, RemoveUserGroupsOnDeletePlan)
+            UpdateUserPlans(UserSecurityId, GraphUserInfo, AppendPermissionsOnNewPlan, RemovePermissionsOnDeletePlan)
         else
             if RemovePlansOnDeleteUser then
-                RemoveUnassignedUserPlans(TempDummyPlan, UserSecurityId, RemoveUserGroupsOnDeletePlan);
+                RemoveUnassignedUserPlans(TempDummyPlan, UserSecurityId, RemovePermissionsOnDeletePlan);
     end;
 
     [NonDebuggable]
     procedure UpdateUserPlans()
     var
         User: Record User;
+        UserSelection: Codeunit "User Selection";
     begin
-        User.SetFilter("License Type", '<>%1', User."License Type"::"External User");
+        UserSelection.FilterSystemUserAndAADGroupUsers(User);
         User.SetFilter("Windows Security ID", '%1', '');
 
         if not User.FindSet() then
@@ -246,7 +249,7 @@ codeunit 9018 "Azure AD Plan Impl."
     procedure CheckMixedPlans(PlanNamesPerUserFromGraph: Dictionary of [Text, List of [Text]]; ErrorOutForAdmin: Boolean)
     var
         Company: Record Company;
-        AzureADPlan: Codeunit "Azure AD Plan";
+        AccessControl: Record "Access Control";
         EnvironmentInformation: Codeunit "Environment Information";
         CanManageUsers: Boolean;
         UserAuthenticationEmailFirst: Text;
@@ -274,7 +277,7 @@ codeunit 9018 "Azure AD Plan Impl."
         if not MixedPlansExist(PlanNamesPerUserFromGraph, UserAuthenticationEmailFirst, UserAuthenticationEmailSecond, FirstConflictingPlanName, SecondConflictingPlanName) then
             exit;
 
-        AzureADPlan.OnCanCurrentUserManagePlansAndGroups(CanManageUsers);
+        CanManageUsers := AccessControl.WritePermission();
         if not CanManageUsers then
             Error(MixedPlansNonAdminErr, UserAuthenticationEmailFirst, UserAuthenticationEmailSecond);
 
@@ -397,11 +400,15 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    local procedure RemoveUnassignedUserPlans(var TempPlan: Record Plan temporary; UserSecurityID: Guid; RemoveUserGroupsOnDeletePlan: Boolean)
+    local procedure RemoveUnassignedUserPlans(var TempPlan: Record Plan temporary; UserSecurityID: Guid; RemovePermissionsOnDeletePlan: Boolean)
     var
         NavUserPlan: Record "User Plan";
         TempNavUserPlan: Record "User Plan" temporary;
+#if not CLEAN22
         AzureADPlan: Codeunit "Azure AD Plan";
+#endif
+        PlanConfiguration: Codeunit "Plan Configuration";
+        IsCustomized: Boolean;
     begin
         // Have any plans been removed from this user in O365, since last time he logged-in to Business Central?
 
@@ -432,8 +439,16 @@ codeunit 9018 "Azure AD Plan Impl."
                 if NavUserPlan.FindFirst() then begin
                     NavUserPlan.LockTable();
                     NavUserPlan.Delete();
-                    if RemoveUserGroupsOnDeletePlan then
+                    if RemovePermissionsOnDeletePlan then begin
+#if not CLEAN22
                         AzureADPlan.OnRemoveUserGroupsForUserAndPlan(NavUserPlan."Plan ID", NavUserPlan."User Security ID");
+#endif
+                        IsCustomized := PlanConfiguration.IsCustomized(NavUserPlan."Plan ID");
+                        if IsCustomized then
+                            PlanConfiguration.RemoveCustomPermissionsFromUser(NavUserPlan."Plan ID", UserSecurityID)
+                        else
+                            PlanConfiguration.RemoveDefaultPermissionsFromUser(NavUserPlan."Plan ID", UserSecurityID);
+                    end;
 
                     Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of privilege
                 end;
@@ -455,8 +470,8 @@ codeunit 9018 "Azure AD Plan Impl."
         TempPlan.DeleteAll();
 
         // Do not consider plans of non-admin users who are not members of the environment security group
-        if AzureADGraph.GetEnvironmentDirectoryGroup() <> '' then
-            if (not AzureADGraph.IsMemberOfGroupWithId(AzureADGraph.GetEnvironmentDirectoryGroup(), GraphUserInfo)) then
+        if AzureADGraph.IsEnvironmentSecurityGroupDefined() then
+            if (not AzureADGraph.IsMemberOfGroupWithId(AzureADGraph.GetEnvironmentSecurityGroupId(), GraphUserInfo)) then
                 if not IsInternalAdmin(GraphUserInfo) then
                     exit;
 
@@ -684,7 +699,7 @@ codeunit 9018 "Azure AD Plan Impl."
         AzureADPlan.OnUpdateUserAccessForSaaS(UserPlan."User Security ID", UserGroupsAdded);
 
         // Users with delegated roles (Delegated Admin or Delegated Helpdesk) has SUPER assigned by default
-        // Remove SUPER from the user only if the plan permssions have been configured and that configuration does not contain SUPER
+        // Remove SUPER from the user only if the plan permissions have been configured and that configuration does not contain SUPER
         ShouldRemoveSuper := PlanConfigurationImpl.IsCustomized(PlanId) and (not PlanConfigurationImpl.ConfigurationContainsSuper(PlanId));
         if UserGroupsAdded and ShouldRemoveSuper then begin
             if UserPermissions.RemoveSuperPermissions(UserSID) then

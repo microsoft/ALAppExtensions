@@ -4,7 +4,9 @@ codeunit 1681 "Email Logging Management"
     Permissions = tabledata "Email Logging Setup" = rimd;
 
     var
+#if not CLEAN22
         EmailLoggingUsingGraphApiFeatureIdTok: Label 'EmailLoggingUsingGraphApi', Locked = true;
+#endif
         EmailLoggingSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2115467', Locked = true;
         CategoryTok: Label 'Email Logging', Locked = true;
         ActivityLogRelatedRecordCodeTxt: Label 'EMLLOGGING', Locked = true;
@@ -14,8 +16,6 @@ codeunit 1681 "Email Logging Management"
         NoPermissionsForJobErr: Label 'Your license does not allow you to schedule the email logging task or register interaction log entries. To view details about your permissions, see the Effective Permissions page.';
         EmailLoggingSetupTitleTxt: Label 'Set up the Email Logging Using the Microsoft Graph API feature.';
         EmailLoggingSetupShortTitleTxt: Label 'Set up email logging', MaxLength = 50;
-        FeatureDisabledTxt: Label 'The Email Logging Using the Microsoft Graph API feature is not enabled.', Locked = true;
-        FeatureDisabledErr: Label 'The Email Logging Using the Microsoft Graph API feature is not enabled.';
         EmailLoggingDisabledTxt: Label 'The Email Logging Using the Microsoft Graph API feature is not enabled.', Locked = true;
         EmailLoggingDisabledErr: Label 'The Email Logging Using the Microsoft Graph API feature is not enabled.';
         EmptyEmailAddressTxt: Label 'Email address is empty.', Locked = true;
@@ -39,6 +39,8 @@ codeunit 1681 "Email Logging Management"
         CannotExtractTenantIdTxt: Label 'Cannot extract the tenant ID from the access token.', Locked = true;
         CannotExtractTenantIdErr: Label 'Cannot extract the tenant ID from the access token.';
 
+#if not CLEAN22
+    [Obsolete('Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0', '22.0')]
     internal procedure IsEmailLoggingUsingGraphApiFeatureEnabled() FeatureEnabled: Boolean;
     var
         FeatureManagementFacade: Codeunit "Feature Management Facade";
@@ -47,6 +49,7 @@ codeunit 1681 "Email Logging Management"
         OnIsEmailLoggingUsingGraphApiFeatureEnabled(FeatureEnabled);
     end;
 
+    [Obsolete('Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0', '22.0')]
     [IntegrationEvent(false, false)]
     local procedure OnIsEmailLoggingUsingGraphApiFeatureEnabled(var FeatureEnabled: Boolean)
     begin
@@ -56,14 +59,12 @@ codeunit 1681 "Email Logging Management"
     begin
         exit(EmailLoggingUsingGraphApiFeatureIdTok);
     end;
+#endif
 
     internal procedure IsEmailLoggingEnabled(): Boolean
     var
         EmailLoggingSetup: Record "Email Logging Setup";
     begin
-        if not IsEmailLoggingUsingGraphApiFeatureEnabled() then
-            exit(false);
-
         if not EmailLoggingSetup.Get() then
             exit(false);
 
@@ -78,9 +79,6 @@ codeunit 1681 "Email Logging Management"
         GuidedExperience: Codeunit "Guided Experience";
         GuidedExperienceType: Enum "Guided Experience Type";
     begin
-        if not IsEmailLoggingUsingGraphApiFeatureEnabled() then
-            exit;
-
         if IsEmailLoggingEnabled() then
             exit;
 
@@ -94,9 +92,6 @@ codeunit 1681 "Email Logging Management"
     var
         EmailLoggingSetup: Record "Email Logging Setup";
     begin
-        if not IsEmailLoggingUsingGraphApiFeatureEnabled() then
-            Error(FeatureDisabledErr);
-
         if not EmailLoggingSetup.ReadPermission() then
             Error(NoPermissionsTxt);
 
@@ -118,15 +113,6 @@ codeunit 1681 "Email Logging Management"
         end;
 
         CheckInteractionTemplateSetup();
-    end;
-
-    internal procedure CheckFeatureEnabled()
-    begin
-        if IsEmailLoggingUsingGraphApiFeatureEnabled() then
-            exit;
-
-        Session.LogMessage('0000FZR', FeatureDisabledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-        Error(FeatureDisabledErr);
     end;
 
     internal procedure CheckInteractionTemplateSetup(): Boolean
@@ -163,13 +149,12 @@ codeunit 1681 "Email Logging Management"
         CurrentGlobalLanguage: Integer;
         NeedCommit: Boolean;
     begin
-        if not IsEmailLoggingUsingGraphApiFeatureEnabled() then
-            exit(false);
-
+#if not CLEAN22        
         if GuidedExperience.Exists(GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Setup Email Logging") then begin
             GuidedExperience.Remove(GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Setup Email Logging");
             NeedCommit := true;
         end;
+#endif
 
         if GuidedExperience.Exists(GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Email Logging Setup Wizard") then begin
             if NeedCommit then
@@ -434,9 +419,7 @@ codeunit 1681 "Email Logging Management"
     [EventSubscriber(ObjectType::Page, Page::"Marketing Setup", 'OnRunEmailLoggingSetup', '', false, false)]
     local procedure HandleOnRunEmailLoggingSetup()
     begin
-        if IsEmailLoggingUsingGraphApiFeatureEnabled() then begin
-            Commit();
-            Page.RunModal(Page::"Email Logging Setup");
-        end;
+        Commit();
+        Page.RunModal(Page::"Email Logging Setup");
     end;
 }

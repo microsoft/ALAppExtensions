@@ -9,6 +9,8 @@
 codeunit 9856 "Permission Set Relation Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TempPermissionSetRelationBufferList: Record "Permission Set Relation Buffer" temporary;
@@ -41,7 +43,6 @@ codeunit 9856 "Permission Set Relation Impl."
         TempPermissionSetBuffer.Init();
         TempPermissionSetBuffer."App ID" := AppId;
         TempPermissionSetBuffer."Role ID" := RoleId;
-        TempPermissionSetBuffer.Name := CopyStr(Name, 1, MaxStrLen(TempPermissionSetBuffer.Name));
         TempPermissionSetBuffer.Scope := Scope;
         Page.Run(Page::"Permission Set", TempPermissionSetBuffer);
     end;

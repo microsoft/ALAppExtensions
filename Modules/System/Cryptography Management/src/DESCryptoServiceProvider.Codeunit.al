@@ -9,6 +9,8 @@
 codeunit 1379 DESCryptoServiceProvider
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DESCryptoServiceProviderImpl: Codeunit "DESCryptoServiceProvider Impl.";

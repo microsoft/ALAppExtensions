@@ -9,39 +9,62 @@ codeunit 139565 "Shpfy Create Customer Test"
 
     var
         LibraryAssert: Codeunit "Library Assert";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        This: Codeunit "Shpfy Create Customer Test";
-        ShpfyCustomerInitTest: Codeunit "Shpfy Customer Init Test";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        CreateCustomerTest: Codeunit "Shpfy Create Customer Test";
+        CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         OnCreateCustomerEventMsg: Label 'OnCreateCustomer', Locked = true;
 
     [Test]
     [HandlerFunctions('OnCreateCustomerHandler')]
     procedure UniTestCreateCustomerFromShopifyInfo()
     var
+#if not CLEAN22
         ConfigTemplateHeader: Record "Config. Template Header";
+#endif
         Customer: Record Customer;
+        CustomerTempl: Record "Customer Templ.";
         ShpfyCustomerAddress: Record "Shpfy Customer Address";
         ShpfyCreateCustomer: Codeunit "Shpfy Create Customer";
+#if not CLEAN22
+        ShpfyTemplates: Codeunit "Shpfy Templates";
+#endif
     begin
         // Creating Test data. The database must have a Config Template for creating a customer.
         Init();
-        ShpfyCreateCustomer.SetShop(ShpfyCommunicationMgt.GetShopRecord());
-        ConfigTemplateHeader.SetRange("Table ID", Database::Customer);
-        if not ConfigTemplateHeader.FindFirst() then
+        ShpfyCreateCustomer.SetShop(CommunicationMgt.GetShopRecord());
+#if not CLEAN22
+        if not ShpfyTemplates.NewTemplatesEnabled() then begin
+            ConfigTemplateHeader.SetRange("Table ID", Database::Customer);
+            if not ConfigTemplateHeader.FindFirst() then
+                exit;
+        end
+        else
+            if not CustomerTempl.FindFirst() then
+                exit;
+#else
+        if not CustomerTempl.FindFirst() then
             exit;
+#endif
 
         // [SCENARIO] Create a customer from an new Shopify Customer Address.
-        ShpfyCustomerAddress := ShpfyCustomerInitTest.CreateShopifyCustomerAddress();
+        ShpfyCustomerAddress := CustomerInitTest.CreateShopifyCustomerAddress();
         ShpfyCustomerAddress.SetRecFilter();
 
         // [GIVEN] The shop
-        ShpfyCreateCustomer.SetShop(ShpfyCommunicationMgt.GetShopRecord());
+        ShpfyCreateCustomer.SetShop(CommunicationMgt.GetShopRecord());
         // [GIVEN] The customer template code
-        ShpfyCreateCustomer.SetTemplateCode(ConfigTemplateHeader.Code);
+#if not CLEAN22
+        if not ShpfyTemplates.NewTemplatesEnabled() then
+            ShpfyCreateCustomer.SetTemplateCode(ConfigTemplateHeader.Code)
+        else
+            ShpfyCreateCustomer.SetTemplateCode(CustomerTempl.Code);
+#else
+        ShpfyCreateCustomer.SetTemplateCode(CustomerTempl.Code);
+#endif
         // [GIVEN] The Shopify Customer Address record.
-        BindSubscription(This);
+        BindSubscription(CreateCustomerTest);
         ShpfyCreateCustomer.Run(ShpfyCustomerAddress);
-        UnbindSubscription(This);
+        UnbindSubscription(CreateCustomerTest);
         // [THEN] The customer record can be found by the link of CustomerSystemId.
         ShpfyCustomerAddress.Get(ShpfyCustomerAddress.Id);
         if not Customer.GetBySystemId(ShpfyCustomerAddress.CustomerSystemId) then
@@ -50,16 +73,16 @@ codeunit 139565 "Shpfy Create Customer Test"
 
     local procedure Init()
     var
-        ShpfyShop: Record "Shpfy Shop";
+        Shop: Record "Shpfy Shop";
     begin
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-        if ShpfyShop."Default Customer No." = '' then begin
-            ShpfyShop."Name Source" := "Shpfy Name Source"::CompanyName;
-            ShpfyShop."Name 2 Source" := "Shpfy Name Source"::FirstAndLastName;
-            if not ShpfyShop.Modify(false) then
-                ShpfyShop.Insert();
-            ShpfyCommunicationMgt.SetShop(ShpfyShop);
+        Shop := CommunicationMgt.GetShopRecord();
+        if Shop."Default Customer No." = '' then begin
+            Shop."Name Source" := "Shpfy Name Source"::CompanyName;
+            Shop."Name 2 Source" := "Shpfy Name Source"::FirstAndLastName;
+            if not Shop.Modify(false) then
+                Shop.Insert();
+            CommunicationMgt.SetShop(Shop);
         end;
     end;
 

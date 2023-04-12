@@ -10,7 +10,11 @@ codeunit 11741 "VAT Entry Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"VAT Entry", 'OnAfterCopyFromGenJnlLine', '', false, false)]
     local procedure UpdateFieldsOnAfterCopyFromGenJnlLine(var VATEntry: Record "VAT Entry"; GenJournalLine: Record "Gen. Journal Line")
     begin
+#if not CLEAN22
+#pragma warning disable AL0432
         VATEntry."VAT Date CZL" := GenJournalLine."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
         VATEntry."Original Doc. VAT Date CZL" := GenJournalLine."Original Doc. VAT Date CZL";
         VATEntry."EU 3-Party Intermed. Role CZL" := GenJournalLine."EU 3-Party Intermed. Role CZL";
         VATEntry."VAT Delay CZL" := GenJournalLine."VAT Delay CZL";
@@ -24,7 +28,11 @@ codeunit 11741 "VAT Entry Handler CZL"
     local procedure EditEU3PartyIntermedRoleOnBeforeVATEntryModify(var VATEntry: Record "VAT Entry"; FromVATEntry: Record "VAT Entry")
     begin
         VATEntry."EU 3-Party Intermed. Role CZL" := FromVATEntry."EU 3-Party Intermed. Role CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
         VATEntry."VAT Date CZL" := FromVATEntry."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnInsertVATOnAfterAssignVATEntryFields', '', false, false)]

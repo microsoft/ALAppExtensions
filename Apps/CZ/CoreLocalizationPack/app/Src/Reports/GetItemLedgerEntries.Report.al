@@ -1,8 +1,12 @@
+#if not CLEAN22
 report 31006 "Get Item Ledger Entries CZL"
 {
     Caption = 'Get Item Ledger Entries';
     Permissions = tabledata "General Posting Setup" = imd;
     ProcessingOnly = true;
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
     dataset
     {
@@ -597,13 +601,13 @@ report 31006 "Get Item Ledger Entries CZL"
                         exit(false);
                 end;
             else begin
-                    if ItemLedgerEntry."Entry Type" = ItemLedgerEntry."Entry Type"::Purchase then
-                        if not CountryOfOrigin(CompanyInformation."Ship-to Country/Region Code") then
-                            exit(false);
-                    if ItemLedgerEntry."Entry Type" = ItemLedgerEntry."Entry Type"::Sale then
-                        if not CountryOfOrigin(CompanyInformation."Country/Region Code") then
-                            exit(false);
-                end;
+                if ItemLedgerEntry."Entry Type" = ItemLedgerEntry."Entry Type"::Purchase then
+                    if not CountryOfOrigin(CompanyInformation."Ship-to Country/Region Code") then
+                        exit(false);
+                if ItemLedgerEntry."Entry Type" = ItemLedgerEntry."Entry Type"::Sale then
+                    if not CountryOfOrigin(CompanyInformation."Country/Region Code") then
+                        exit(false);
+            end;
         end;
         exit(true);
     end;
@@ -1230,3 +1234,4 @@ report 31006 "Get Item Ledger Entries CZL"
     end;
 }
 
+#endif

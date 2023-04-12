@@ -28,8 +28,8 @@ codeunit 132616 "Page Action Provider Test"
 
         // [Then] The result reflects the page actions
         LibraryAssert.AreEqual(2, GetNumberOfItems(ResultJsonObject), 'Incorrect number of home items returned.');
-        ValidateHomeItemAction(ResultJsonObject, 0, 'Page with views', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, Page::"Views Page Action Test"));
-        ValidateHomeItemAction(ResultJsonObject, 1, 'Empty card page', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, Page::"Empty Card Page Action Test"));
+        ValidateHomeItemAction(ResultJsonObject, 0, 'Page with views', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Views Page Action Test"));
+        ValidateHomeItemAction(ResultJsonObject, 1, 'Empty card page', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Empty Card Page Action Test"));
 
         // [Then] There are no error object
         LibraryAssert.IsFalse(ResultJsonObject.Contains('error'), 'Page Action json should not contain an error object');
@@ -49,13 +49,13 @@ codeunit 132616 "Page Action Provider Test"
 
         // [Then] The result reflects the page actions
         LibraryAssert.AreEqual(2, GetNumberOfItems(ResultJsonObject), 'Incorrect number of home items returned.');
-        ValidateHomeItemAction(ResultJsonObject, 0, 'Page with views', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, Page::"Views Page Action Test"));
+        ValidateHomeItemAction(ResultJsonObject, 0, 'Page with views', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Views Page Action Test"));
         ActionWithViewsJsonObject := GetActionObject(ResultJsonObject, 'items', 0);
-        ValidateViewAction(ActionWithViewsJsonObject, 0, 'TestBoolean', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, Page::"Views Page Action Test"), 'BooleanView', '%27Page%20Action%20Provider%20Test%27.TestBoolean%20IS%20%271%27');
-        ValidateViewAction(ActionWithViewsJsonObject, 1, 'TestBoolean TestDecimal', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, Page::"Views Page Action Test"), 'BooleanDecimalView', '&filter=%27Page%20Action%20Provider%20Test%27.TestBoolean%20IS%20%271%27%20AND%20%27Page%20Action%20Provider%20Test%27.TestDecimal%20IS%20%2710%27');
+        ValidateViewAction(ActionWithViewsJsonObject, 0, 'TestBoolean', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Views Page Action Test"), 'BooleanView', '%27Page%20Action%20Provider%20Test%27.TestBoolean%20IS%20%271%27');
+        ValidateViewAction(ActionWithViewsJsonObject, 1, 'TestBoolean TestDecimal', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Views Page Action Test"), 'BooleanDecimalView', '&filter=%27Page%20Action%20Provider%20Test%27.TestBoolean%20IS%20%271%27%20AND%20%27Page%20Action%20Provider%20Test%27.TestDecimal%20IS%20%2710%27');
         // Validating filter string with spaces in table and field name
-        ValidateViewAction(ActionWithViewsJsonObject, 2, 'TestSpaces', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, Page::"Views Page Action Test"), 'SpacesView', '&filter=%27Page%20Action%20Provider%20Test%27.%27Field%20With%20Spaces%27%20IS%20%2720%27');
-        ValidateHomeItemAction(ResultJsonObject, 1, 'Empty card page', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, Page::"Empty Card Page Action Test"));
+        ValidateViewAction(ActionWithViewsJsonObject, 2, 'TestSpaces', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Views Page Action Test"), 'SpacesView', '&filter=%27Page%20Action%20Provider%20Test%27.%27Field%20With%20Spaces%27%20IS%20%2720%27');
+        ValidateHomeItemAction(ResultJsonObject, 1, 'Empty card page', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Empty Card Page Action Test"));
 
         // [Then] There are no error object
         LibraryAssert.IsFalse(ResultJsonObject.Contains('error'), 'Page Action json should not contain an error object');
@@ -96,9 +96,9 @@ codeunit 132616 "Page Action Provider Test"
 
         // [Then] The result reflects the modified actions
         LibraryAssert.AreEqual(3, GetNumberOfItems(ResultJsonObject), 'Incorrect number of home items returned.');
-        ValidateHomeItemAction(ResultJsonObject, 0, 'Page with views', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, 22));
-        ValidateHomeItemAction(ResultJsonObject, 1, 'Empty card page', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, Page::"Empty Card Page Action Test"));
-        ValidateHomeItemAction(ResultJsonObject, 2, 'Customers', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, 22));
+        ValidateHomeItemAction(ResultJsonObject, 0, 'Page with views', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, 22));
+        ValidateHomeItemAction(ResultJsonObject, 1, 'Empty card page', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Empty Card Page Action Test"));
+        ValidateHomeItemAction(ResultJsonObject, 2, 'Customers', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, 22));
 
         // [Then] There are no error object
         LibraryAssert.IsFalse(ResultJsonObject.Contains('error'), 'Page Action json should not contain an error object');
@@ -178,14 +178,14 @@ codeunit 132616 "Page Action Provider Test"
             exit;
 
         if PageId = Page::"Home Items Page Action Test" then begin
-            AddAction(ItemsJsonArray, 'Customers', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, 22));
+            AddAction(ItemsJsonArray, 'Customers', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, 22));
 
             // Change url of action caption
             for actionNo := 0 to ItemsJsonArray.Count() - 1 do begin
                 ItemsJsonArray.Get(actionNo, ItemJsonToken);
                 ItemJsonToken.AsObject().Get('caption', CaptionToken);
                 if CaptionToken.AsValue().AsText() = 'Page with views' then begin
-                    ItemJsonToken.AsObject().Replace('url', GetUrl(ClientType::Teams, CompanyName, ObjectType::Page, 22));
+                    ItemJsonToken.AsObject().Replace('url', GetUrl(ClientType::Web, CompanyName, ObjectType::Page, 22));
                     ItemsJsonArray.Set(actionNo, ItemJsonToken);
                 end;
             end;

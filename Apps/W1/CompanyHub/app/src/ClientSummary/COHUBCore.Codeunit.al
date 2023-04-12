@@ -128,6 +128,7 @@ codeunit 1151 "COHUB Core"
                         Codeunit.Run(Codeunit::"COHUB Url Error Handler", COHUBEnviroment);
             until COHUBEnviroment.Next() = 0;
         end;
+
         Session.LogMessage('0000164', COHUBTelemetryReloadCompaniesTxt + Format(COHUBEnviroment.Count()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', COHUBTelemetryCategoryTxt);
     end;
 

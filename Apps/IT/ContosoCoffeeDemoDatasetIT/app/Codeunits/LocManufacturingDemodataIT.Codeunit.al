@@ -80,7 +80,24 @@ codeunit 12164 "Loc. Manufacturing Demodata-IT"
         NoSeries.Modify();
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Whse Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyWhseDemoAccounts()
+    begin
+        WhseDemoAccount.ReturnAccountKey(true);
+
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '2310');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '2110');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '2111');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '5410');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '6410');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '7110');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesVAT(), '5610');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '5630');
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
+        WhseDemoAccount: Record "Whse. Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
+        WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
 }

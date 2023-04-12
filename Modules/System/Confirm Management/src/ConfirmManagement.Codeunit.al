@@ -10,6 +10,8 @@ codeunit 27 "Confirm Management"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ConfirmManagementImpl: Codeunit "Confirm Management Impl.";

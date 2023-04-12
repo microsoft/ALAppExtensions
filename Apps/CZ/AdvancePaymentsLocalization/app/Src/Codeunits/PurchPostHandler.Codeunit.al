@@ -46,14 +46,12 @@ codeunit 31022 "Purch.-Post Handler CZZ"
     begin
         IsHandled := true;
     end;
-#if CLEAN19
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeTestStatusRelease', '', false, false)]
     local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
     begin
         IsHandled := true;
     end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnRunOnBeforeMakeInventoryAdjustment', '', false, false)]
     local procedure SuppressInventoryAdjustmentOnRunOnBeforeMakeInventoryAdjustment(PurchInvHeader: Record "Purch. Inv. Header"; var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)

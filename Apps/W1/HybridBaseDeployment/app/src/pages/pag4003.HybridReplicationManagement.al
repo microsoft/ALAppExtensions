@@ -1,4 +1,4 @@
-page 4003 "Intelligent Cloud Management"
+﻿page 4003 "Intelligent Cloud Management"
 {
     SourceTable = "Hybrid Replication Summary";
     Caption = 'Cloud Migration Management';
@@ -11,6 +11,7 @@ page 4003 "Intelligent Cloud Management"
     ApplicationArea = Basic, Suite;
     PromotedActionCategories = 'Process';
     RefreshOnActivate = true;
+    Permissions = tabledata "Intelligent Cloud Status" = rimd;
 
     layout
     {
@@ -18,33 +19,33 @@ page 4003 "Intelligent Cloud Management"
         {
             repeater(Group)
             {
-                field("Start Time"; "Start Time")
+                field("Start Time"; Rec."Start Time")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the start time of the migration.';
                 }
-                field("End Time"; "End Time")
+                field("End Time"; Rec."End Time")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the end time of the migration.';
                 }
-                field("Trigger Type"; "Trigger Type")
+                field("Trigger Type"; Rec."Trigger Type")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the trigger type of the migration.';
                     Visible = false;
                 }
-                field("Replication Type"; ReplicationType)
+                field("Replication Type"; Rec.ReplicationType)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the type of migration.';
                 }
-                field("Status"; Status)
+                field("Status"; Rec.Status)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the status of the migration run.';
                 }
-                field("Source"; Source)
+                field("Source"; Rec.Source)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the source of the migration run.';
@@ -380,6 +381,61 @@ page 4003 "Intelligent Cloud Management"
                 ToolTip = 'Migrate your on-premises data to Azure Data Lake.';
                 Image = TransmitElectronicDoc;
             }
+
+            action(InsertSetupRecords)
+            {
+                ApplicationArea = All;
+                Caption = 'Create Seutp records';
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+
+                trigger OnAction()
+                var
+                    IntelligentCloud: Record "Intelligent Cloud";
+                    IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+                    HybridReplicationDetail: Record "Hybrid Replication Detail";
+                begin
+                    if not IntelligentCloud.Get() then
+                        IntelligentCloud.Insert();
+                    IntelligentCloud.Enabled := true;
+                    IntelligentCloud.Modify();
+
+                    if not IntelligentCloudSetup.Get() then
+                        IntelligentCloudSetup.Insert();
+
+                    IntelligentCloudSetup."Replication Enabled" := true;
+                    IntelligentCloudSetup."Company Creation Task Status" := IntelligentCloudSetup."Company Creation Task Status"::Completed;
+                    IntelligentCloudSetup."Product ID" := 'DynamicsBCLast';
+                    IntelligentCloudSetup.Modify();
+
+                    HybridReplicationDetail."Run ID" := CreateGuid();
+                    HybridReplicationDetail."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(HybridReplicationDetail."Company Name"));
+                    HybridReplicationDetail.Status := HybridReplicationDetail.Status::Successful;
+                    HybridReplicationDetail."Table Name" := 'Customer';
+                    HybridReplicationDetail.Insert();
+                end;
+            }
+            action(EnableDisableNewUI)
+            {
+                Enabled = IsSuper and IsSetupComplete;
+                Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable new UI';
+                ToolTip = 'Allows to enable or disable the new UI.';
+                Image = ChangeLog;
+
+                trigger OnAction()
+                var
+                    IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+                begin
+                    if IntelligentCloudSetup.ChangeUI() then
+                        if GetUseNewUI() then begin
+                            Page.Run(Page::"Cloud Migration Management");
+                            CurrPage.Close();
+                        end;
+                end;
+            }
         }
     }
 
@@ -393,19 +449,23 @@ page 4003 "Intelligent Cloud Management"
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         EnvironmentInformation: Codeunit "Environment Information";
         IntelligentCloudNotifier: Codeunit "Intelligent Cloud Notifier";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000JMI', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
+        if GetUseNewUI() then begin
+            Page.Run(Page::"Cloud Migration Management");
+            Error('');
+        end;
 
+        FeatureTelemetry.LogUptake('0000JMI', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         IsSuper := UserPermissions.IsSuper(UserSecurityId());
         if not IsSuper then
             SendUserIsNotSuperNotification();
 
         SendRepairDataNotification();
-        IsOnPrem := NOT EnvironmentInformation.IsSaaS();
+        IsOnPrem := not EnvironmentInformation.IsSaaS();
 
         if (not PermissionManager.IsIntelligentCloud()) and (not IsOnPrem) then
             SendSetupIntelligentCloudNotification();
@@ -428,9 +488,28 @@ page 4003 "Intelligent Cloud Management"
             exit;
     end;
 
+    internal procedure GetUseNewUI(): Boolean;
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        OpenNewUI: Boolean;
+    begin
+        OpenNewUI := false;
+        if IntelligentCloudSetup.Get() then
+            case IntelligentCloudSetup."Use New UI" of
+                IntelligentCloudSetup."Use New UI"::No:
+                    exit(false);
+                IntelligentCloudSetup."Use New UI"::Yes:
+                    OpenNewUI := true;
+                else
+                    OnOpenNewUI(OpenNewUI);
+            end;
+
+        exit(OpenNewUI);
+    end;
+
     trigger OnAfterGetRecord()
     begin
-        DetailsValue := GetDetails();
+        DetailsValue := Rec.GetDetails();
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -569,6 +648,11 @@ page 4003 "Intelligent Cloud Management"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnOpenNewUI(var OpenNewUI: Boolean)
+    begin
+    end;
+
     var
         HybridDeployment: Codeunit "Hybrid Deployment";
         LastRefresh: DateTime;
@@ -597,4 +681,5 @@ page 4003 "Intelligent Cloud Management"
         IntelligentCloudNotSetupMsg: Label 'Cloud migration was not set up. To migrate data to the cloud, complete the wizard.';
         RunReplicationConfirmQst: Label 'Are you sure you want to trigger migration?';
         DataRepairNotCompletedMsg: Label 'Data repair has not completed. Before you complete the cloud migration or trigger an upgrade, invoke the ''Repair Companion Table Records'' action';
+
 }

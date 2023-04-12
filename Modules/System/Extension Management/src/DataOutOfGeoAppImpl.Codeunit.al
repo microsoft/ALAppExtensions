@@ -6,6 +6,8 @@
 codeunit 2505 "Data Out Of Geo. App Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         GeoNotificationNewAppsMsg: Label 'This app may transfer data to other geographies than the current geography of your Dynamics 365 Business Central environment. This is to ensure proper functionality of the app.';

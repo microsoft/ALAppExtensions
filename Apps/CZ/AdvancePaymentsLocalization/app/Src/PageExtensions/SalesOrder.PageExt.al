@@ -30,14 +30,6 @@ pageextension 31023 "Sales Order CZZ" extends "Sales Order"
         {
             Visible = false;
         }
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Prepayment Type")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast(General)
         {
             field("Unpaid Advance Letter CZZ"; Rec."Unpaid Advance Letter CZZ")
@@ -72,38 +64,6 @@ pageextension 31023 "Sales Order CZZ" extends "Sales Order"
         {
             Visible = false;
         }
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Assignment Ad&vance Letters")
-        {
-            Visible = false;
-        }
-        modify("Assigned Adv. Letters - detail")
-        {
-            Visible = false;
-        }
-        modify(Action1220019)
-        {
-            Visible = false;
-        }
-        modify("Create Ad&vance Letter")
-        {
-            Visible = false;
-        }
-        modify("Link Advance Letter")
-        {
-            Visible = false;
-        }
-        modify("Cancel All Adv. Payment Relations")
-        {
-            Visible = false;
-        }
-        modify("Adjust VAT by Adv. Payment Deduction")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         modify("Prepa&yment")
         {
             Visible = false;

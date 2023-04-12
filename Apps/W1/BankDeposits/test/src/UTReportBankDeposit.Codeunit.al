@@ -31,7 +31,6 @@ codeunit 139767 "UT Report Bank Deposit"
 
     [Test]
     [HandlerFunctions('DepositRequestPageHandler')]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordCustLedgerEntryDeposit()
     var
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
@@ -62,7 +61,6 @@ codeunit 139767 "UT Report Bank Deposit"
 
     [Test]
     [HandlerFunctions('DepositRequestPageHandler')]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordVendLedgerEntryDeposit()
     var
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
@@ -93,7 +91,6 @@ codeunit 139767 "UT Report Bank Deposit"
 
     [Test]
     [HandlerFunctions('DepositRequestPageHandler')]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordBankAccountDeposit()
     var
         PostedBankDepositHeader: Record "Posted Bank Deposit Header";
@@ -120,7 +117,6 @@ codeunit 139767 "UT Report Bank Deposit"
 
     [Test]
     [HandlerFunctions('DepositRequestPageHandler')]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordGLAccountDeposit()
     var
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
@@ -147,7 +143,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordGenJournalLineBlankICDepositTestReport()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -173,7 +168,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordGenJournalLineTypeICDepositTestReport()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -199,7 +193,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordVendLedgerEntryDepositTestReport()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -232,7 +225,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordCustLedgerEntryDepositTestReport()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -265,7 +257,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordApplyCustLedgerDepositTestReport()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -297,7 +288,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordApplyVendLedgerDepositTestReport()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -329,7 +319,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordDimLoopTypeBankDepositTestReport()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -359,7 +348,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordDimLoopTypeGLDepositTestReport()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -389,7 +377,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure DepositTestReportForEmployee()
     var
         Employee: Record Employee;
@@ -421,7 +408,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure DepositTestReportForEmployeeWithLineDescription()
     var
         Employee: Record Employee;
@@ -454,7 +440,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure DepositTestReportForRemovedEmployee()
     var
         Employee: Record Employee;
@@ -482,7 +467,6 @@ codeunit 139767 "UT Report Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnAfterGetRecordDimLoopTypeGLDepositTestReport2()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -744,7 +728,6 @@ codeunit 139767 "UT Report Bank Deposit"
     end;
 
     [RequestPageHandler]
-    [Scope('OnPrem')]
     procedure DepositRequestPageHandler(var BankDeposit: TestRequestPage "Bank Deposit")
     var
         No: Variant;
@@ -758,7 +741,6 @@ codeunit 139767 "UT Report Bank Deposit"
     end;
 
     [RequestPageHandler]
-    [Scope('OnPrem')]
     procedure DepositTestReportRequestPageHandler(var BankDepositTestReport: TestRequestPage "Bank Deposit Test Report")
     var
         NoVariant: Variant;

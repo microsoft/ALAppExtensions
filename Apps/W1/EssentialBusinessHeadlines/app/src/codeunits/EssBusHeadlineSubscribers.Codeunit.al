@@ -13,23 +13,6 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         exit(Session.GetExecutionContext() = Session.GetExecutionContext() ::Normal);
     end;
 
-#if not CLEAN19
-#pragma warning disable AS0072, AS0022, AS0018
-    [Obsolete('My Settings has been obsoleted', '19.0')]
-    [EventSubscriber(ObjectType::Page, Page::"My Settings", 'OnBeforeLanguageChange', '', true, true)]
-    procedure OnBeforeUpdateLanguage(OldLanguageId: Integer; NewLanguageId: Integer);
-    begin
-        InvalidateHeadlines();
-    end;
-
-    [Obsolete('My Settings has been obsoleted', '19.0')]
-    [EventSubscriber(ObjectType::Page, Page::"My Settings", 'OnBeforeWorkdateChange', '', true, true)]
-    procedure OnBeforeUpdateWorkdate(OldWorkdate: Date; NewWorkdate: Date);
-    begin
-        InvalidateHeadlines();
-    end;
-#pragma warning restore
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"User Settings", 'OnUpdateUserSettings', '', true, true)]
     local procedure OnBeforeUpdateUserSettings(NewSettings: Record "User Settings"; OldSettings: Record "User Settings");
     begin
@@ -38,7 +21,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         then
             InvalidateHeadlines();
     end;
-#endif
+
     local procedure InvalidateHeadlines()
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
@@ -63,8 +46,16 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
             HeadlineVisible := false;
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"RC Headlines Executor", 'OnComputeHeadlines', '', true, true)]
     procedure OnComputeRoleCenterHeadlines(RoleCenterPageID: Integer)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"RC Headlines Executor", 'OnComputeHeadlines', '', true, true)]
+    local procedure OnComputeRoleCenterHeadlines(RoleCenterPageID: Integer)
+#endif
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -103,8 +94,16 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
 
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"RC Headlines Page Common", 'OnIsAnyExtensionHeadlineVisible', '', true, true)]
     procedure OnIsAnyExtensionHeadlineVisible(var ExtensionHeadlinesVisible: Boolean; RoleCenterPageID: Integer)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"RC Headlines Page Common", 'OnIsAnyExtensionHeadlineVisible', '', true, true)]
+    local procedure OnIsAnyExtensionHeadlineVisible(var ExtensionHeadlinesVisible: Boolean; RoleCenterPageID: Integer)
+#endif
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
         AtLeastOneHeadlineVisible: Boolean;
@@ -149,14 +148,28 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
             ExtensionHeadlinesVisible := true;
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnSetVisibility', '', true, true)]
     procedure OnSetVisibilityBusinessManager(var MostPopularItemVisible: Boolean; var MostPopularItemText: Text[250];
+                                         var LargestOrderVisible: Boolean; var LargestOrderText: Text[250];
+                                         var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
+                                         var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250];
+                                         var BusiestResourceVisible: Boolean; var BusiestResourceText: Text[250];
+                                         var TopCustomerVisible: Boolean; var TopCustomerText: Text[250];
+                                         var RecentlyOverdueInvoicesVisible: Boolean; var RecentlyOverdueInvoicesText: Text[250])
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnSetVisibility', '', true, true)]
+    local procedure OnSetVisibilityBusinessManager(var MostPopularItemVisible: Boolean; var MostPopularItemText: Text[250];
                                              var LargestOrderVisible: Boolean; var LargestOrderText: Text[250];
                                              var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
                                              var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250];
                                              var BusiestResourceVisible: Boolean; var BusiestResourceText: Text[250];
                                              var TopCustomerVisible: Boolean; var TopCustomerText: Text[250];
                                              var RecentlyOverdueInvoicesVisible: Boolean; var RecentlyOverdueInvoicesText: Text[250])
+#endif
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -174,8 +187,16 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices, RecentlyOverdueInvoicesText, RecentlyOverdueInvoicesVisible);
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnSetVisibilityOpenVATReturn', '', true, true)]
     procedure OnSetVisibilityBusinessManagerOpenVATReturn(var OpenVATReturnVisible: Boolean; var OpenVATReturnText: Text[250])
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnSetVisibilityOpenVATReturn', '', true, true)]
+    local procedure OnSetVisibilityBusinessManagerOpenVATReturn(var OpenVATReturnVisible: Boolean; var OpenVATReturnText: Text[250])
+#endif
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -187,8 +208,16 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::OpenVATReturn, OpenVATReturnText, OpenVATReturnVisible);
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnSetVisibilityOverdueVATReturn', '', true, true)]
     procedure OnSetVisibilityBusinessManagerOverdueVATReturn(var OverdueVATReturnVisible: Boolean; var OverdueVATReturnText: Text[250])
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Page, Page::"Headline RC Business Manager", 'OnSetVisibilityOverdueVATReturn', '', true, true)]
+    local procedure OnSetVisibilityBusinessManagerOverdueVATReturn(var OverdueVATReturnVisible: Boolean; var OverdueVATReturnText: Text[250])
+#endif
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -200,8 +229,16 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn, OverdueVATReturnText, OverdueVATReturnVisible);
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Order Processor", 'OnSetVisibility', '', true, true)]
     procedure OnSetVisibilityOrderProcessor(var LargestOrderVisible: Boolean; var LargestOrderText: Text[250]; var LargestSaleVisible: Boolean; var LargestSaleText: Text[250])
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Page, Page::"Headline RC Order Processor", 'OnSetVisibility', '', true, true)]
+    local procedure OnSetVisibilityOrderProcessor(var LargestOrderVisible: Boolean; var LargestOrderText: Text[250]; var LargestSaleVisible: Boolean; var LargestSaleText: Text[250])
+#endif
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -214,10 +251,20 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::LargestSale, LargestSaleText, LargestSaleVisible);
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Accountant", 'OnSetVisibility', '', true, true)]
     procedure OnSetVisibilityAccountant(var LargestOrderVisible: Boolean; var LargestOrderText: Text[250];
+                                    var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
+                                    var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250])
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Page, Page::"Headline RC Accountant", 'OnSetVisibility', '', true, true)]
+    local procedure OnSetVisibilityAccountant(var LargestOrderVisible: Boolean; var LargestOrderText: Text[250];
                                         var LargestSaleVisible: Boolean; var LargestSaleText: Text[250];
                                         var SalesIncreaseVisible: Boolean; var SalesIncreaseText: Text[250])
+#endif
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -231,8 +278,16 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::SalesIncrease, SalesIncreaseText, SalesIncreaseVisible);
     end;
 
+#if not CLEAN22
+#pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Page, Page::"Headline RC Relationship Mgt.", 'OnSetVisibility', '', true, true)]
     procedure OnSetVisibilityRelMgt(var TopCustomerVisible: Boolean; var TopCustomerText: Text[250])
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Page, Page::"Headline RC Relationship Mgt.", 'OnSetVisibility', '', true, true)]
+    local procedure OnSetVisibilityRelMgt(var TopCustomerVisible: Boolean; var TopCustomerText: Text[250])
+#endif
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
@@ -243,5 +298,4 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
 
         TransferHeadlineToPage(EssentialBusinessHeadline."Headline Name"::TopCustomer, TopCustomerText, TopCustomerVisible);
     end;
-
 }

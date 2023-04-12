@@ -6,6 +6,8 @@
 codeunit 9045 "ABS Web Request Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ReadResponseFailedErr: Label 'Could not read response.';

@@ -6,6 +6,8 @@
 codeunit 1470 "Headlines Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata User = r;
 
     var

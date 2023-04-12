@@ -637,7 +637,7 @@ report 18012 "Purchase - Quote GST"
 
         trigger OnOpenPage()
         begin
-            LogInterLbl := SegManagement.FindInteractTmplCode(11) <> '';
+            LogInterLbl := SegManagement.FindInteractionTemplateCode(11) <> '';
             LogInteractionEnable := LogInterLbl;
         end;
     }

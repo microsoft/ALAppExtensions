@@ -17,6 +17,7 @@ permissionset 2502 "Exten. Mgt. - Admin"
                   tabledata "Application Resource" = Rimd,
                   tabledata "Extension Pending Setup" = rimd,
                   tabledata "Installed Application" = Rimd,
+                  tabledata "Inplace Installed Application" = Rimd,
                   tabledata "NAV App Capabilities" = Rimd,
                   tabledata "NAV App Data Archive" = Rimd,
                   tabledata "NAV App Installed App" = Rimd,

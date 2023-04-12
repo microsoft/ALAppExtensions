@@ -9,6 +9,8 @@
 codeunit 9047 "ABS Optional Parameters"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     #region Headers
     /// <summary>

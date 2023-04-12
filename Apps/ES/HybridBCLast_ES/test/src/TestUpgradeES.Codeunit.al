@@ -112,7 +112,7 @@ codeunit 148111 "Test Upgrade ES"
         // [THEN] The Source Table Mapping table is populated with staged tables
         SourceTableMapping.SetRange("Country Code", CountryCodeTxt);
         SourceTableMapping.SetRange(Staged, true);
-        Assert.AreEqual(2, SourceTableMapping.Count(), 'Unexpected number of mapped, staged tables.');
+        Assert.AreEqual(0, SourceTableMapping.Count(), 'Unexpected number of mapped, staged tables.');
     end;
 
     [Test]
@@ -128,7 +128,7 @@ codeunit 148111 "Test Upgrade ES"
         // [THEN] The Source Table Mapping table is populated with the correct tables
         SourceTableMapping.SetRange("Country Code", CountryCodeTxt);
         SourceTableMapping.SetRange(Staged, false);
-        Assert.AreEqual(2, SourceTableMapping.Count(), 'Unexpected number of mapped, unstaged tables.');
+        Assert.AreEqual(0, SourceTableMapping.Count(), 'Unexpected number of mapped, unstaged tables.');
     end;
 
 #pragma warning disable AL0432

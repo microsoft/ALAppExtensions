@@ -9,7 +9,7 @@ codeunit 139573 "Shpfy Hash Test"
     [Test]
     procedure UnitTestCalcHash()
     var
-        ShpfyHash: codeunit "Shpfy Hash";
+        Hash: Codeunit "Shpfy Hash";
         HashA: Integer;
         HashB: Integer;
         TextA: Text;
@@ -22,8 +22,8 @@ codeunit 139573 "Shpfy Hash Test"
         TextB := TextA;
 
         // [WHEN] Calculate the has values for TextA and TextB
-        HashA := ShpfyHash.CalcHash(TextA);
-        HashB := ShpfyHash.CalcHash(TextB);
+        HashA := Hash.CalcHash(TextA);
+        HashB := Hash.CalcHash(TextB);
 
         // [THEN] HashA = HashB
         LibraryAssert.AreEqual(HashA, HashB, 'HashA = HashB');
@@ -35,8 +35,8 @@ codeunit 139573 "Shpfy Hash Test"
         TextB := Any.AlphanumericText(20);
 
         // [WHEN] Calculate the has values for TextA and TextB
-        HashA := ShpfyHash.CalcHash(TextA);
-        HashB := ShpfyHash.CalcHash(TextB);
+        HashA := Hash.CalcHash(TextA);
+        HashB := Hash.CalcHash(TextB);
 
         // [THEN] HashA <> HashB
         LibraryAssert.AreNotEqual(HashA, HashB, 'HashA <> HashB');

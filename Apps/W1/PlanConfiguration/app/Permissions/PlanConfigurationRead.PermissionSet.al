@@ -1,3 +1,4 @@
+#if not CLEAN22
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -13,3 +14,5 @@ permissionset 9049 "Plan Configuration - Read"
 
     Permissions = tabledata "Custom User Group In Plan" = r;
 }
+
+#endif

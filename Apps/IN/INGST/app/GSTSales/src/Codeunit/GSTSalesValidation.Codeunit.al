@@ -128,7 +128,7 @@ codeunit 18143 "GST Sales Validation"
         SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
     end;
 
-#if not CLEAN19
+#if not CLEAN21
     //AssignPrice Inclusice of Tax
 #pragma warning disable AS0072
     [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
@@ -217,7 +217,7 @@ codeunit 18143 "GST Sales Validation"
         InvoiceType(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'E-Commerce Merchant Id', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'E-Comm. Merchant Id', false, false)]
     local procedure validateEcommerceMerchantId(var Rec: Record "Sales Header")
     begin
         EcommerceMerchantId(Rec);

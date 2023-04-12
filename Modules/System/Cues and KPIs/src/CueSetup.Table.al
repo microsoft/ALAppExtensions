@@ -6,6 +6,8 @@
 table 9701 "Cue Setup"
 {
     Access = Internal;
+    InherentEntitlements = rX;
+    InherentPermissions = rX;
     Caption = 'Cue Setup';
     Permissions = tabledata Field = r;
 

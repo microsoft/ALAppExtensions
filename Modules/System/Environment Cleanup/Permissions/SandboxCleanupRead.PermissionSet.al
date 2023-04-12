@@ -11,8 +11,6 @@ permissionset 1884 "Sandbox Cleanup - Read"
     ObsoleteTag = '20.0';
     Assignable = false;
 
-    IncludedPermissionSets = "Sandbox Cleanup - Objects";
-
     Permissions = tabledata Company = r;
 }
 #endif

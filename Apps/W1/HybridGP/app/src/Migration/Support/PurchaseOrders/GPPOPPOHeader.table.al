@@ -794,6 +794,8 @@ table 40102 "GP POPPOHeader"
         PostingDescriptionTxt: Label 'Migrated from GP';
         PostingGroupTxt: Label 'GP', Locked = true;
 
+#if not CLEAN22
+    [Obsolete('Logic moved to GP PO Migrator codeunit', '22.0')]
     procedure MoveStagingData()
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
@@ -840,6 +842,7 @@ table 40102 "GP POPPOHeader"
             until Next() = 0;
         end;
     end;
+#endif
 
     local procedure UpdateShipToAddress(CountryCode: Code[10]; var PurchaseHeader: Record "Purchase Header")
     begin

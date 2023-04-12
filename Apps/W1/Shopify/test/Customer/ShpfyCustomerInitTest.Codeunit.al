@@ -10,7 +10,7 @@ codeunit 139585 "Shpfy Customer Init Test"
         Any: codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
 
-    internal procedure CreateShopifyCustomerAddress() ShpfyCustomerAddress: Record "Shpfy Customer Address"
+    internal procedure CreateShopifyCustomerAddress() CustomerAddress: Record "Shpfy Customer Address"
     var
         ShpfyCustomer: Record "Shpfy Customer";
     begin
@@ -18,42 +18,42 @@ codeunit 139585 "Shpfy Customer Init Test"
         exit(CreateShopifyCustomerAddress(ShpfyCustomer));
     end;
 
-    internal procedure CreateShopifyCustomerAddress(ShpfyCustomer: Record "Shpfy Customer") ShpfyCustomerAddress: Record "Shpfy Customer Address"
+    internal procedure CreateShopifyCustomerAddress(ShopifyCustomer: Record "Shpfy Customer") CustomerAddress: Record "Shpfy Customer Address"
     begin
-        ShpfyCustomerAddress.DeleteAll();
-        ShpfyCustomerAddress.Init();
-        ShpfyCustomerAddress.Id := Any.IntegerInRange(1, 99999);
-        ShpfyCustomerAddress."Customer Id" := ShpfyCustomer.Id;
-        ShpfyCustomerAddress.Company := 'Company';
-        ShpfyCustomerAddress."First Name" := 'Firstname';
-        ShpfyCustomerAddress."Last Name" := 'Lastname';
-        ShpfyCustomerAddress."Address 1" := 'Address';
-        ShpfyCustomerAddress."Address 2" := 'Address 2';
-        ShpfyCustomerAddress.Phone := '111';
-        ShpfyCustomerAddress.Zip := '1111';
-        ShpfyCustomerAddress.City := 'City';
-        ShpfyCustomerAddress."Country/Region Code" := 'US';
-        ShpfyCustomerAddress.Insert();
+        CustomerAddress.DeleteAll();
+        CustomerAddress.Init();
+        CustomerAddress.Id := Any.IntegerInRange(1, 99999);
+        CustomerAddress."Customer Id" := ShopifyCustomer.Id;
+        CustomerAddress.Company := 'Company';
+        CustomerAddress."First Name" := 'Firstname';
+        CustomerAddress."Last Name" := 'Lastname';
+        CustomerAddress."Address 1" := 'Address';
+        CustomerAddress."Address 2" := 'Address 2';
+        CustomerAddress.Phone := '111';
+        CustomerAddress.Zip := '1111';
+        CustomerAddress.City := 'City';
+        CustomerAddress."Country/Region Code" := 'US';
+        CustomerAddress.Insert();
     end;
 
-    internal procedure CreateShopifyCustomer(var ShpfyCustomer: Record "Shpfy Customer"): BigInteger
+    internal procedure CreateShopifyCustomer(var ShopifyCustomer: Record "Shpfy Customer"): BigInteger
     var
         CustomerId: BigInteger;
     begin
-        ShpfyCustomer.DeleteAll();
+        ShopifyCustomer.DeleteAll();
         CustomerId := Any.IntegerInRange(1000, 99999);
-        ShpfyCustomer.Init();
-        ShpfyCustomer.Id := CustomerId;
-        ShpfyCustomer."First Name" := 'Firstname';
-        ShpfyCustomer."Last Name" := 'Lastname';
-        ShpfyCustomer.Email := 'mail@domain.com';
-        ShpfyCustomer."Phone No." := '111';
-        ShpfyCustomer.Insert();
+        ShopifyCustomer.Init();
+        ShopifyCustomer.Id := CustomerId;
+        ShopifyCustomer."First Name" := 'Firstname';
+        ShopifyCustomer."Last Name" := 'Lastname';
+        ShopifyCustomer.Email := 'mail@domain.com';
+        ShopifyCustomer."Phone No." := '111';
+        ShopifyCustomer.Insert();
         exit(CustomerId);
     end;
 
 
-    internal procedure CreateJsonCustomerInfo(NameSource: Enum "Shpfy Name Source"; Name2Source: Enum "Shpfy Name Source"): JsonObject
+    internal procedure CreateJsonCustomerInfo(NameSource: Enum "Shpfy Name Source"; NameSource2: Enum "Shpfy Name Source"): JsonObject
     var
         Name: Text;
         Name2: Text;
@@ -69,7 +69,7 @@ codeunit 139585 "Shpfy Customer Init Test"
             "Shpfy Name Source"::None:
                 Name := '';
         end;
-        case Name2Source of
+        case NameSource2 of
             "Shpfy Name Source"::CompanyName:
                 Name2 := 'Company';
             "Shpfy Name Source"::FirstAndLastName:

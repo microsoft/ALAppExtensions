@@ -203,6 +203,13 @@ page 30017 "APIV2 - Employees"
                     EntitySetName = 'timeRegistrationEntries';
                     SubPageLink = "Employee Id" = Field(SystemId);
                 }
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Employee);
+                }
             }
         }
     }

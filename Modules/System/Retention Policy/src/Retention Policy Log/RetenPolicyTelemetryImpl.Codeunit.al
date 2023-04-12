@@ -1,6 +1,8 @@
 codeunit 3912 "Reten. Policy Telemetry Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Retention Policy Log Entry" = r;
 
     var
@@ -103,7 +105,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         Session.LogMessage('0000F6K', StartSessionFailureErr, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnAfterInsertEvent, '', false, false)]
     local procedure SendTelemetryOnAfterInsert(var Rec: Record "Retention Policy Setup")
     var
         RetentionPolicySetup: Record "Retention Policy Setup";
@@ -119,7 +121,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         end;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnAfterModifyEvent, '', false, false)]
     local procedure SendTelemetryOnAfterModify(var Rec: Record "Retention Policy Setup"; var xRec: Record "Retention Policy Setup")
     var
         RetentionPolicySetup: Record "Retention Policy Setup";
@@ -143,7 +145,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         end;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnAfterDeleteEvent, '', false, false)]
     local procedure SendTelemetryOnAfterDelete(var Rec: Record "Retention Policy Setup")
     var
         RetentionPolicySetup: Record "Retention Policy Setup";
@@ -197,7 +199,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
         Session.LogMessage('0000D6J', StrSubstNo(LastRetenPolDisabledLbl, CompanyName()), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnAfterModifyEvent, '', false, false)]
     local procedure OnModifyRetentionPolicySetup(var Rec: Record "Retention Policy Setup"; var xRec: Record "Retention Policy Setup"; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary then
@@ -207,7 +209,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
                 StrSubstNo(RetentionPolicySetupValuesLbl, Rec.Enabled, Rec."Table Id", Rec."Retention Period"), AuditCategory::PolicyManagement);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnAfterInsertEvent, '', false, false)]
     local procedure OnInsertRetentionPolicySetup(var Rec: Record "Retention Policy Setup"; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary then
@@ -216,7 +218,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
             StrSubstNo(RetentionPolicySetupValuesLbl, Rec.Enabled, Rec."Table Id", Rec."Retention Period"), AuditCategory::PolicyManagement);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup", OnAfterDeleteEvent, '', false, false)]
     local procedure OnDeleteRetentionPolicySetup(var Rec: Record "Retention Policy Setup"; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary then
@@ -225,7 +227,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
             StrSubstNo(RetentionPolicySetupValuesLbl, EntryDeletedLbl, Rec."Table Id", Rec."Retention Period"), AuditCategory::PolicyManagement);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnAfterModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", OnAfterModifyEvent, '', false, false)]
     local procedure OnModifyRetentionPolicySetupLine(var Rec: Record "Retention Policy Setup Line"; var xRec: Record "Retention Policy Setup Line"; RunTrigger: Boolean)
     var
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
@@ -240,7 +242,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
                 StrSubstNo(RetentionPolicySetupLineValuesLbl, Rec.Enabled, Rec."Table Id", Rec."Retention Period", FilterTxt), AuditCategory::PolicyManagement);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnAfterInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", OnAfterInsertEvent, '', false, false)]
     local procedure OnInsertRetentionPolicySetupLine(var Rec: Record "Retention Policy Setup Line"; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary then
@@ -250,7 +252,7 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
             AuditCategory::PolicyManagement);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Retention Policy Setup Line", OnAfterDeleteEvent, '', false, false)]
     local procedure OnDeleteRetentionPolicySetupLine(var Rec: Record "Retention Policy Setup Line"; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary then

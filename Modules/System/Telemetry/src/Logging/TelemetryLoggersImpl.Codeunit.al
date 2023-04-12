@@ -6,6 +6,8 @@
 codeunit 8709 "Telemetry Loggers Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CurrentTelemetryLogger: Interface "Telemetry Logger";

@@ -6,8 +6,10 @@
 codeunit 1818 "Navigation Bar Sub. Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", 'OpenCompanySettings', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", OpenCompanySettings, '', false, false)]
     local procedure DefaultOpenCompanySettings()
     var
         NavigationBarSubscribers: Codeunit "Navigation Bar Subscribers";
@@ -18,7 +20,7 @@ codeunit 1818 "Navigation Bar Sub. Impl."
             Error(SettingsNotAvailableErr);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OpenRoleBasedSetupExperience', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", OpenRoleBasedSetupExperience, '', false, false)]
     local procedure DefaultOpenRoleBasedSetupExperience()
     var
         NavigationBarSubscribers: Codeunit "Navigation Bar Subscribers";
@@ -30,7 +32,7 @@ codeunit 1818 "Navigation Bar Sub. Impl."
     end;
 
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OpenGeneralSetupExperience', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", OpenGeneralSetupExperience, '', false, false)]
     local procedure DefaultOpenGeneralSetupExperience()
     var
         NavigationBarSubscribers: Codeunit "Navigation Bar Subscribers";

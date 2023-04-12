@@ -19,6 +19,7 @@ pageextension 1444 "Headlines RC Rel. Mgt. Ext." extends "Headline RC Relationsh
                 field(TopCustomerText; TopCustomerText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var

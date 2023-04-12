@@ -1,3 +1,4 @@
+#if not CLEAN22
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,8 +10,12 @@
 codeunit 9823 "Default Permission Set In Plan"
 {
     Access = Public;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Getting the default permissions will be done only inside the Azure AD Plan module.';
+    ObsoleteTag = '22.0';
 
-    #region Public
+    var
+        DefaultPSInPlanImpl: Codeunit "Default PS in Plan Impl";
 
     /// <summary>
     /// Event to fetch the default permission sets for a plan.
@@ -25,42 +30,19 @@ codeunit 9823 "Default Permission Set In Plan"
     /// <summary>
     /// Add a default permission set for a plan.
     /// </summary>
-    /// <see cref="OnGetDefautPermissions"/>
+    /// <see cref="OnGetDefaultPermissions"/>
     /// <param name="RoleId">The ID of the role (permission set).</param>
     /// <param name="AppId">The ID of the app from which the permission set originates.</param>
     /// <param name="Scope">The scope of the permission set.</param>
     [Scope('OnPrem')]
     procedure AddPermissionSetToPlan(RoleId: Code[20]; AppId: Guid; Scope: Option)
     begin
-        LocalDefaultPermissionSetInPlan.Init();
-        LocalDefaultPermissionSetInPlan."Plan ID" := SelectedPlanId;
-        LocalDefaultPermissionSetInPlan."Role ID" := RoleId;
-        LocalDefaultPermissionSetInPlan.Scope := Scope;
-        LocalDefaultPermissionSetInPlan."App ID" := AppId;
-
-        if LocalDefaultPermissionSetInPlan.Insert() then;
+        DefaultPSInPlanImpl.AddPermissionSetToPlan(RoleId, AppId, Scope);
     end;
 
-    #endregion
-
-    #region Internal
-    internal procedure GetPermissionSets(PlanId: Guid; var DefaultPermissionSetInPlan: Record "Default Permission Set In Plan")
+    internal procedure GetPermissionSets(PlanId: Guid; var DefaultPermissionSetInPlanBuffer: Record "Permission Set In Plan Buffer")
     begin
-        SelectedPlanId := PlanId;
-        DefaultPermissionSetInPlan.DeleteAll();
-        LocalDefaultPermissionSetInPlan.DeleteAll();
-
-        OnGetDefaultPermissions(SelectedPlanId);
-
-        if LocalDefaultPermissionSetInPlan.FindSet() then
-            repeat
-                DefaultPermissionSetInPlan.TransferFields(LocalDefaultPermissionSetInPlan);
-                DefaultPermissionSetInPlan.Insert();
-            until LocalDefaultPermissionSetInPlan.Next() = 0;
+        DefaultPSInPlanImpl.GetPermissionSets(PlanId, DefaultPermissionSetInPlanBuffer);
     end;
-
-    var
-        LocalDefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
-        SelectedPlanId: Guid;
-    #endregion
 }
+#endif

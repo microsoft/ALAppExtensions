@@ -7,6 +7,8 @@ table 9018 "Custom Permission Set In Plan"
 {
     Caption = 'Custom Permissions In License';
     Access = Internal;
+    InherentEntitlements = rX;
+    InherentPermissions = rX;
     Extensible = false;
     DataPerCompany = false;
     ReplicateData = false;
@@ -32,7 +34,7 @@ table 9018 "Custom Permission Set In Plan"
         }
         field(4; "Role Name"; Text[30])
         {
-            CalcFormula = Lookup("Permission Set".Name Where("Role ID" = Field("Role ID")));
+            CalcFormula = Lookup("Aggregate Permission Set".Name Where("Role ID" = Field("Role ID")));
             Caption = 'Name';
             Editable = false;
             FieldClass = FlowField;
@@ -85,23 +87,27 @@ table 9018 "Custom Permission Set In Plan"
     trigger OnDelete()
     begin
         PlanConfiguration.VerifyUserHasRequiredPermissionSet(Rec."Role ID", Rec."App ID", Rec.Scope, Rec."Company Name");
+#if not CLEAN22
         PlanConfiguration.OnCustomPermissionSetChange(Rec."Plan ID", Rec."Role ID", Rec."App ID", Rec.Scope, Rec."Company Name");
+#endif
     end;
 
     trigger OnModify()
     begin
         PlanConfiguration.VerifyUserHasRequiredPermissionSet(Rec."Role ID", Rec."App ID", Rec.Scope, Rec."Company Name");
-
+#if not CLEAN22
         if (Rec."Company Name" <> xRec."Company Name") or (Rec."Role ID" <> xRec."Role ID") then
             PlanConfiguration.OnCustomPermissionSetChange(xRec."Plan ID", xRec."Role ID", xRec."App ID", xRec.Scope, xRec."Company Name");
+#endif
     end;
 
     trigger OnRename()
     begin
         PlanConfiguration.VerifyUserHasRequiredPermissionSet(Rec."Role ID", Rec."App ID", Rec.Scope, Rec."Company Name");
-
+#if not CLEAN22
         if (Rec."Company Name" <> xRec."Company Name") or (Rec."Role ID" <> xRec."Role ID") then
             PlanConfiguration.OnCustomPermissionSetChange(xRec."Plan ID", xRec."Role ID", xRec."App ID", xRec.Scope, xRec."Company Name");
+#endif
     end;
 
     var

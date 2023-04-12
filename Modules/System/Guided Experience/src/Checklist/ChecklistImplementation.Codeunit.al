@@ -6,6 +6,8 @@
 codeunit 1993 "Checklist Implementation"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Guided Experience Item" = r,
                     tabledata "Checklist Item" = rimd,
                     tabledata "Checklist Item User" = rimd,
@@ -693,7 +695,7 @@ codeunit 1993 "Checklist Implementation"
             TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Checklist Item", 'OnAfterInsertEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::"Checklist Item", OnAfterInsertEvent, '', true, true)]
     local procedure OnAfterChecklistItemInsert(var Rec: Record "Checklist Item")
     begin
         if Rec.IsTemporary() then
@@ -702,7 +704,7 @@ codeunit 1993 "Checklist Implementation"
         LogMessageOnDatabaseEvent(Rec.Code, '0000EIO', ChecklistItemInsertedLbl);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Checklist Item", 'OnAfterDeleteEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::"Checklist Item", OnAfterDeleteEvent, '', true, true)]
     local procedure OnAfterChecklistItemDelete(var Rec: Record "Checklist Item")
     begin
         if Rec.IsTemporary() then

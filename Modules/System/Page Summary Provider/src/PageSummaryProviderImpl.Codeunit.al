@@ -9,7 +9,11 @@
 codeunit 2717 "Page Summary Provider Impl."
 {
     Access = Internal;
-    Permissions = tabledata "Page Metadata" = r, tabledata "Tenant Media Set" = r, tabledata "Tenant Media Thumbnails" = r;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+    Permissions = tabledata "Page Metadata" = r,
+                  tabledata "Tenant Media Set" = r,
+                  tabledata "Tenant Media Thumbnails" = r;
 
     procedure GetPageSummary(PageId: Integer; Bookmark: Text): Text
     var
@@ -18,6 +22,11 @@ codeunit 2717 "Page Summary Provider Impl."
     begin
         // Add header
         AddPageSummaryHeader(PageId, ResultJsonObject);
+
+        // If show summary record is false, then exit with summary type caption
+        if not PageSummarySettings.IsShowRecordSummaryEnabled() then
+            exit(Format(ResultJsonObject));
+
         if Bookmark = '' then
             exit(Format(ResultJsonObject)); // There is no bookmark, so just return page header
 
@@ -26,7 +35,6 @@ codeunit 2717 "Page Summary Provider Impl."
             AddErrorMessage(ResultJsonObject, InvalidBookmarkErrorCodeTok, InvalidBookmarkErrorMessageTxt);
             exit(Format(ResultJsonObject)); // Bookmark is invalid, so returning the information we actually have about the page
         end;
-
         exit(GetFieldsSummary(PageId, RecId, Bookmark, ResultJsonObject));
     end;
 
@@ -40,6 +48,10 @@ codeunit 2717 "Page Summary Provider Impl."
     begin
         // Add header
         AddPageSummaryHeader(PageId, ResultJsonObject);
+
+        // If show summary record is false, then exit with summary type caption
+        if not PageSummarySettings.IsShowRecordSummaryEnabled() then
+            exit(Format(ResultJsonObject));
 
         // Initialize variables
         if not PageMetadata.Get(PageId) then
@@ -58,8 +70,32 @@ codeunit 2717 "Page Summary Provider Impl."
         Bookmark := Format(RecId, 0, 10); // 10 = Format RecordId into string
         if Bookmark = '' then
             exit(Format(ResultJsonObject));
-
         exit(GetFieldsSummary(PageId, RecId, Bookmark, ResultJsonObject));
+    end;
+
+    procedure GetPageUrlBySystemID(PageId: Integer; SystemId: Guid): Text
+    var
+        PageMetadata: Record "Page Metadata";
+        SourceRecordRef: RecordRef;
+        ResultJsonObject: JsonObject;
+    begin
+        ResultJsonObject.Add('version', GetVersion());
+
+        if not PageMetadata.Get(PageId) then begin
+            AddErrorMessage(ResultJsonObject, PageNotFoundErrorCodeTok, StrSubstNo(PageNotFoundErrorMessageTxt, PageId));
+            exit(Format(ResultJsonObject));
+        end;
+
+        SourceRecordRef.Open(PageMetadata.SourceTable);
+
+        if not SourceRecordRef.GetBySystemId(SystemId) then begin
+            AddErrorMessage(ResultJsonObject, InvalidSystemIdErrorCodeTok, InvalidSystemIdErrorMessageTxt);
+            exit(Format(ResultJsonObject));
+        end;
+
+        AddUrl(ResultJsonObject, PageId, SourceRecordRef);
+        Session.LogMessage('0000JAT', StrSubstNo(GetPageUrlSuccessTelemetryTxt, PageId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PageSummaryCategoryLbl);
+        exit(Format(ResultJsonObject));
     end;
 
     procedure GetFieldsSummary(PageId: Integer; RecId: RecordId; Bookmark: Text; var ResultJsonObject: JsonObject): Text
@@ -262,6 +298,7 @@ codeunit 2717 "Page Summary Provider Impl."
     end;
 
     var
+        PageSummarySettings: Codeunit "Page Summary Settings";
         PageTxt: Label 'Page %1', Comment = '%1 is a whole number, ex. 10';
         PageSummaryCategoryLbl: Label 'Page Summary Provider', Locked = true;
         OnBeforeGetPageSummaryWasHandledTxt: Label 'OnBeforeGetPageSummary event was handled for page %1.', Locked = true;
@@ -271,4 +308,7 @@ codeunit 2717 "Page Summary Provider Impl."
         FailedGetSummaryFieldsCodeTok: Label 'FailedGettingPageSummaryFields', Locked = true;
         InvalidSystemIdErrorCodeTok: Label 'InvalidSystemId', Locked = true;
         InvalidSystemIdErrorMessageTxt: Label 'The system ID is invalid.';
+        PageNotFoundErrorCodeTok: Label 'PageNotFound', Locked = true;
+        PageNotFoundErrorMessageTxt: Label 'Page %1 is not found.', Comment = '%1 is a whole number, ex. 10';
+        GetPageUrlSuccessTelemetryTxt: Label 'Successfully added url for page %1.', Locked = true;
 }

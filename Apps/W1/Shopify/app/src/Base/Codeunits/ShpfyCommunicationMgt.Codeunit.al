@@ -7,11 +7,11 @@ codeunit 30103 "Shpfy Communication Mgt."
     SingleInstance = true;
 
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyCommunicationEvents: Codeunit "Shpfy Communication Events";
-        ShpfyGraphQLQueries: Codeunit "Shpfy GraphQL Queries";
+        Shop: Record "Shpfy Shop";
+        CommunicationEvents: Codeunit "Shpfy Communication Events";
+        GraphQLQueries: Codeunit "Shpfy GraphQL Queries";
         NextExecutionTime: DateTime;
-        VersionTok: Label '2022-04', Locked = true;
+        VersionTok: Label '2023-01', Locked = true;
         OutgoingRequestsNotEnabledConfirmLbl: Label 'Importing data to your Shopify shop is not enabled, do you want to go to shop card to enable?';
         OutgoingRequestsNotEnabledErr: Label 'Importing data to your Shopify shop is not enabled, navigate to shop card to enable.';
         IsTestInProgress: Boolean;
@@ -34,17 +34,17 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <returns>Return value of type Text.</returns>
     internal procedure CreateWebRequestURL(UrlPath: Text; ApiVersion: Text): Text
     begin
-        ShpfyShop.TestField("Shopify URL");
+        Shop.TestField("Shopify URL");
         if UrlPath.StartsWith('gift_cards') then
-            if ShpfyShop."Shopify URL".EndsWith('/') then
-                exit(ShpfyShop."Shopify URL" + 'admin/' + UrlPath)
+            if Shop."Shopify URL".EndsWith('/') then
+                exit(Shop."Shopify URL" + 'admin/' + UrlPath)
             else
-                exit(ShpfyShop."Shopify URL" + '/admin/' + UrlPath)
+                exit(Shop."Shopify URL" + '/admin/' + UrlPath)
         else
-            if ShpfyShop."Shopify URL".EndsWith('/') then
-                exit(ShpfyShop."Shopify URL" + 'admin/api/' + ApiVersion + '/' + UrlPath)
+            if Shop."Shopify URL".EndsWith('/') then
+                exit(Shop."Shopify URL" + 'admin/api/' + ApiVersion + '/' + UrlPath)
             else
-                exit(ShpfyShop."Shopify URL" + '/admin/api/' + ApiVersion + '/' + UrlPath);
+                exit(Shop."Shopify URL" + '/admin/api/' + ApiVersion + '/' + UrlPath);
     end;
 
     /// <summary> 
@@ -70,7 +70,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         ExpectedCost: Integer;
         GraphQLQuery: Text;
     begin
-        GraphQLQuery := ShpfyGraphQLQueries.GetQuery(GraphQLType, Parameters, ExpectedCost);
+        GraphQLQuery := GraphQLQueries.GetQuery(GraphQLType, Parameters, ExpectedCost);
         exit(ExecuteGraphQL(GraphQLQuery, ExpectedCost));
     end;
 
@@ -234,16 +234,16 @@ codeunit 30103 "Shpfy Communication Mgt."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Wait: Duration;
-        Client: HttpClient;
-        HttpRequestMsg: HttpRequestMessage;
-        HttpResponseMsg: HttpResponseMessage;
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
+        HttpResponseMessage: HttpResponseMessage;
         RetryCounter: Integer;
     begin
         FeatureTelemetry.LogUptake('0000HUV', 'Shopify', Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000IF5', 'Shopify', 'Shopify web request executed.');
         CheckOutgoingRequests(Url, Method, Request);
 
-        CreateHttpRequestMessage(Url, Method, Request, HttpRequestMsg);
+        CreateHttpRequestMessage(Url, Method, Request, HttpRequestMessage);
 
         Wait := 100;
 
@@ -257,24 +257,24 @@ codeunit 30103 "Shpfy Communication Mgt."
         end;
 
         if IsTestInProgress then
-            ShpfyCommunicationEvents.OnClientSend(HttpRequestMsg, HttpResponseMsg)
+            CommunicationEvents.OnClientSend(HttpRequestMessage, HttpResponseMessage)
         else
-            if Client.Send(HttpRequestMsg, HttpResponseMsg) then begin
+            if HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then begin
                 Clear(RetryCounter);
-                while (not HttpResponseMsg.IsBlockedByEnvironment) and (EvaluateResponse(HttpResponseMsg)) and (RetryCounter < MaxRetries) do begin
+                while (not HttpResponseMessage.IsBlockedByEnvironment) and (EvaluateResponse(HttpResponseMessage)) and (RetryCounter < MaxRetries) do begin
                     RetryCounter += 1;
                     Sleep(1000);
-                    CreateShopifyLogEntry(Url, Method, Request, HttpResponseMsg, Response);
-                    Clear(Client);
-                    Clear(HttpRequestMsg);
-                    Clear(HttpResponseMsg);
-                    CreateHttpRequestMessage(Url, Method, Request, HttpRequestMsg);
-                    Client.Send(HttpRequestMsg, HttpResponseMsg);
+                    CreateShopifyLogEntry(Url, Method, Request, HttpResponseMessage, Response);
+                    Clear(HttpClient);
+                    Clear(HttpRequestMessage);
+                    Clear(HttpResponseMessage);
+                    CreateHttpRequestMessage(Url, Method, Request, HttpRequestMessage);
+                    HttpClient.Send(HttpRequestMessage, HttpResponseMessage);
                 end;
             end;
-        if GetContent(HttpResponseMsg, Response) then;
-        ResponseHeaders := HttpResponseMsg.Headers();
-        CreateShopifyLogEntry(Url, Method, Request, HttpResponseMsg, Response);
+        if GetContent(HttpResponseMessage, Response) then;
+        ResponseHeaders := HttpResponseMessage.Headers();
+        CreateShopifyLogEntry(Url, Method, Request, HttpResponseMessage, Response);
         Commit();
     end;
 
@@ -282,7 +282,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     local procedure GetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
     begin
         if IsTestInProgress then
-            ShpfyCommunicationEvents.OnGetContent(HttpResponseMsg, Response)
+            CommunicationEvents.OnGetContent(HttpResponseMsg, Response)
         else
             HttpResponseMsg.Content.ReadAs(Response);
     end;
@@ -305,10 +305,10 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <summary> 
     /// Set Shop.
     /// </summary>
-    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
-    internal procedure SetShop(Shop: Record "Shpfy Shop")
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
+    internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
-        ShpfyShop := Shop;
+        Shop := ShopifyShop;
     end;
 
     /// <summary> 
@@ -352,30 +352,30 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="HttpRequestMsg">Parameter of type HttpRequestMessage.</param>
     local procedure CreateHttpRequestMessage(Url: text; Method: Text; Request: Text; var HttpRequestMsg: HttpRequestMessage)
     var
-        Content: HttpContent;
-        ContentHeaders: HttpHeaders;
-        Headers: HttpHeaders;
+        HttpContent: HttpContent;
+        ContentHttpHeaders: HttpHeaders;
+        HttpHeaders: HttpHeaders;
         AccessToken: Text;
     begin
         HttpRequestMsg.SetRequestUri(url);
-        HttpRequestMsg.GetHeaders(Headers);
+        HttpRequestMsg.GetHeaders(HttpHeaders);
 
 
         if IsTestInProgress then
-            ShpfyCommunicationEvents.OnGetAccessToken(AccessToken)
+            CommunicationEvents.OnGetAccessToken(AccessToken)
         else
-            AccessToken := ShpfyShop.GetAccessToken();
+            AccessToken := Shop.GetAccessToken();
 
-        Headers.Add('X-Shopify-Access-Token', AccessToken);
+        HttpHeaders.Add('X-Shopify-Access-Token', AccessToken);
         HttpRequestMsg.Method := Method;
 
         if Method in ['POST', 'PUT'] then begin
-            Content.WriteFrom(Request);
-            Content.GetHeaders(ContentHeaders);
-            if ContentHeaders.Contains('Content-Type') then
-                ContentHeaders.Remove('Content-Type');
-            ContentHeaders.Add('Content-Type', 'application/json');
-            HttpRequestMsg.Content(Content);
+            HttpContent.WriteFrom(Request);
+            HttpContent.GetHeaders(ContentHttpHeaders);
+            if ContentHttpHeaders.Contains('Content-Type') then
+                ContentHttpHeaders.Remove('Content-Type');
+            ContentHttpHeaders.Add('Content-Type', 'application/json');
+            HttpRequestMsg.Content(HttpContent);
         end;
     end;
 
@@ -391,7 +391,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     var
         ShopifyLogEntry: Record "Shpfy Log Entry";
     begin
-        if ShpfyShop."Log Enabled" then begin
+        if Shop."Log Enabled" then begin
             ShopifyLogEntry.Init();
             ShopifyLogEntry."Date and Time" := CurrentDateTime;
             ShopifyLogEntry.Time := TIME;
@@ -416,9 +416,9 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <summary> 
     /// Evaluate Response.
     /// </summary>
-    /// <param name="HttpResponseMsg">Parameter of type HttpResponseMessage.</param>
+    /// <param name="HttpResponseMessage">Parameter of type HttpResponseMessage.</param>
     /// <returns>Return variable "Retry" of type Boolean.</returns>
-    local procedure EvaluateResponse(HttpResponseMsg: HttpResponseMessage) Retry: Boolean
+    local procedure EvaluateResponse(HttpResponseMessage: HttpResponseMessage) Retry: Boolean
     var
         BucketPerc: Decimal;
         WaitTime: Duration;
@@ -427,7 +427,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         Status: Integer;
         Values: array[10] of Text;
     begin
-        Status := HttpResponseMsg.HttpStatusCode();
+        Status := HttpResponseMessage.HttpStatusCode();
         case Status of
             429:
                 begin
@@ -440,7 +440,7 @@ codeunit 30103 "Shpfy Communication Mgt."
                     Retry := true;
                 end;
             else
-                if HttpResponseMsg.Headers().GetValues('X-Shopify-Shop-Api-Call-Limit', Values) then
+                if HttpResponseMessage.Headers().GetValues('X-Shopify-Shop-Api-Call-Limit', Values) then
                     if Evaluate(BucketUse, Values[1].Split('/').Get(1)) and Evaluate(BucketSize, Values[1].Split('/').Get(2)) then begin
                         BucketPerc := 100 * BucketUse / BucketSize;
                         if BucketPerc >= 90 then
@@ -470,9 +470,9 @@ codeunit 30103 "Shpfy Communication Mgt."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        Clear(ShpfyShop);
-        ShpfyShop.Get(ShopCode);
-        FeatureTelemetry.LogUsage('0000IU1', 'Shopify', ShpfyShop."Shopify URL");
+        Clear(Shop);
+        Shop.Get(ShopCode);
+        FeatureTelemetry.LogUsage('0000JW7', 'Shopify', Format(Shop."Shop Id"));
     end;
 
     /// <summary>
@@ -498,9 +498,10 @@ codeunit 30103 "Shpfy Communication Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure GetShopRecord() Shop: Record "Shpfy Shop";
+    internal procedure GetShopRecord() ShopifyShop: Record "Shpfy Shop";
     begin
-        Shop := ShpfyShop;
+        if not ShopifyShop.Get(Shop.Code) then
+            Clear(ShopifyShop);
     end;
 
     internal procedure CheckOutgoingRequests(Url: Text; Method: Text; Request: Text)
@@ -510,10 +511,10 @@ codeunit 30103 "Shpfy Communication Mgt."
                 if not Request.Contains('"mutation') then
                     exit;
 
-            if not ShpfyShop."Allow Outgoing Requests" then
+            if not Shop."Allow Outgoing Requests" then
                 if GuiAllowed then begin
                     if Confirm(OutgoingRequestsNotEnabledConfirmLbl) then
-                        Page.Run(Page::"Shpfy Shop Card", ShpfyShop);
+                        Page.Run(Page::"Shpfy Shop Card", Shop);
                     Error('');
                 end else
                     Error(OutgoingRequestsNotEnabledErr);

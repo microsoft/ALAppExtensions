@@ -14,6 +14,8 @@
 codeunit 8711 "Telemetry"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TelemetryImpl: Codeunit "Telemetry Impl.";

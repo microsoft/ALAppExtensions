@@ -9,6 +9,8 @@
 table 8907 "Email Account Scenario"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     TableType = Temporary;
 
     fields

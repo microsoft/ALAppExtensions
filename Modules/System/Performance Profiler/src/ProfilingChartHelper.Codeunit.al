@@ -6,6 +6,8 @@
 codeunit 1926 "Profiling Chart Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         BusinessChart: Codeunit "Business Chart";

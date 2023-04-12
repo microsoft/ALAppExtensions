@@ -2,26 +2,6 @@ pageextension 31220 "Sales Hist.Bill-to FactBox CZZ" extends "Sales Hist. Bill-t
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Bill-To No. of Out. Adv. L.")
-        {
-            Visible = false;
-        }
-        modify("Bill-To No. of Closed Adv. L.")
-        {
-            Visible = false;
-        }
-        modify(BillToNoOfOutAdvLettersTile)
-        {
-            Visible = false;
-        }
-        modify(BillToNoOfClosedAdvLettersTile)
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast(Control2)
         {
             field(AdvancesCZZ; AdvancesCZZ)

@@ -20,6 +20,7 @@ codeunit 139829 "APIV2 - Purchase Invoices E2E"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryPurchase: Codeunit "Library - Purchase";
         InvoiceServiceNameTxt: Label 'purchaseInvoices';
+        PostedInvoiceIdServiceNameTxt: Label 'postedSalesInvoices';
         ActionPostTxt: Label 'Microsoft.NAV.post', Locked = true;
         NotEmptyResponseErr: Label 'Response body should be empty.';
         CannotFindDraftInvoiceErr: Label 'Cannot find the draft invoice.';
@@ -354,7 +355,6 @@ codeunit 139829 "APIV2 - Purchase Invoices E2E"
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiPurchaseHeader.FieldNo("No."), Database::"Purchase Header");
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiPurchaseHeader.FieldNo("Posting Description"), Database::"Purchase Header");
-        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiPurchaseHeader.FieldNo(Id), Database::"Purchase Header");
         // Special ignore case for ES
         RecordField.SetRange(TableNo, Database::"Purchase Header");
         RecordField.SetRange(FieldName, 'Due Date Modified');
@@ -429,6 +429,58 @@ codeunit 139829 "APIV2 - Purchase Invoices E2E"
         // [THEN] Invoice is posted
         FindPostedPurchaseInvoiceByPreAssignedNo(DocumentNo, PurchInvHeader);
         VerifyPostedPurchaseInvoice(PurchInvHeader."Draft Invoice SystemId", TempPurchInvEntityAggregate.Status::Open.AsInteger());
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetPurchaseInvoiceFromDraftId()
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        TempPurchInvEntityAggregate: Record "Purch. Inv. Entity Aggregate" temporary;
+        DocumentId: Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can map systemId with Draft Invoice SystemId
+
+        // [GIVEN] Posted purchase invoice exists
+        CreatePostedPurchaseInvoice(PurchInvHeader);
+        DocumentId := PurchInvHeader."Draft Invoice SystemId";
+        Commit();
+        VerifyPostedPurchaseInvoice(DocumentId, TempPurchInvEntityAggregate.Status::Open.AsInteger());
+
+        // [WHEN] A GET request is made to the API
+        TargetURL := LibraryGraphMgt.CreateTargetURL(PurchInvHeader.SystemId, Page::"Posted Purchase Invoice API", PostedInvoiceIdServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] A GET request can be made to purchase invoice API
+        TargetURL := LibraryGraphMgt.CreateTargetURL(GetAPIId(ResponseText), Page::"APIV2 - Purchase Invoices", InvoiceServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+        Assert.AreNotEqual('', ResponseText, 'Response JSON should not be blank');
+    end;
+
+    local procedure GetAPIId(ResponseText: Text): Text
+    var
+        APIId: Text;
+    begin
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText, 'apiId', APIId);
+        exit(APIId);
+    end;
+
+    local procedure CreatePostedPurchaseInvoice(var PurchInvHeader: Record "Purch. Inv. Header")
+    var
+        PurchaseHeader: Record "Purchase Header";
+        InvoiceCode: Code[20];
+    begin
+        CreateDraftPurchaseInvoice(PurchaseHeader);
+        InvoiceCode := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
+        PurchInvHeader.Get(InvoiceCode);
+    end;
+
+    local procedure CreateDraftPurchaseInvoice(var PurchaseHeader: Record "Purchase Header")
+    begin
+        LibraryPurchase.CreatePurchaseInvoice(PurchaseHeader);
+        ModifyPurchaseHeaderPostingDate(PurchaseHeader, WorkDate());
     end;
 
     local procedure CreatePurchaseInvoices(var InvoiceID1: Text; var InvoiceID2: Text)

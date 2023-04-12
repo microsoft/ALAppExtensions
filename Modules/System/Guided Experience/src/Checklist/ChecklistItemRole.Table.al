@@ -6,6 +6,8 @@
 table 1992 "Checklist Item Role"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Caption = 'Checklist Item Role';
     Permissions = tabledata "All Profile" = r;
 

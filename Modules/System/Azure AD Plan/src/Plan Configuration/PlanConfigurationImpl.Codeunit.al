@@ -6,9 +6,33 @@
 codeunit 9822 "Plan Configuration Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     Permissions = tabledata "Plan Configuration" = rimd,
-                  tabledata "Custom Permission Set In Plan" = rimd;
+                  tabledata "Custom Permission Set In Plan" = rimd,
+                  tabledata "Default Permission Set In Plan" = rimd;
+
+    var
+        ConfirmRemoveCustomizationsQst: Label 'Restoring the default permissions will delete the customization for the selected license. Do you want to continue?';
+        ConfigurationAlreadyExistsErr: Label 'Configuration for license %1 already exists. To edit it, select it from the list.', Comment = '%1 = License name, e.g. Dynamics 365 Business Central Essentials';
+        MissingSecurityErr: Label 'You do not have permissions to configure licenses. Contact your system administrator.';
+        MissingPermissionSetErr: Label 'You don''t have rights to manage the %1 permission set for licenses. The SECURITY permission set only grants you rights to manage those permission sets that are also assigned to your account.', Comment = '%1 = permssion set name, e.g. ''D365 READ''';
+        CustomizePermissionsNotificationTxt: Label 'Customizing permissions below will affect only newly created users who are assigned %1 license. Permissions for existing users who are assigned the license will not be affected.', Comment = '%1 = license name, e.g. e.g. Dynamics 365 Business Central Essentials';
+        DefaultConfigurationNotificationTxt: Label 'One or more of the license configurations use implicit company permissions, which is not recommended.';
+        LearnMoreTok: Label 'Learn more';
+        DocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2186490', Locked = true;
+        BCAdminCenterSaaSLinkTxt: Label '%1/admin', Locked = true, Comment = '%1 = Base URL (including tenant ID Guid)';
+        BCAdminCenterOnPremLinkTxt: Label '%1%2/admin', Locked = true, Comment = '%1 = Base URL, %2 = Tenant ID (Guid)';
+        M365AdminCenterLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2211746', Locked = true;
+        CustomizationNotificationIdTok: Label '9d730988-ff4a-43ca-8b4f-80ee476fa3c4', Locked = true;
+        PlanConfigurationFeatureNameTok: Label 'Custom Permissions Assignment Per Plan', Locked = true;
+        PermissionSetAssignedToUserTxt: Label 'Custom Permission Set Assigned To User', Locked = true;
+        CustomPermissionSetLbl: Label 'role id %1, app id %2, scope %3, company %4 and plan %5', Locked = true;
+        CustomPermissionSetInPlanAddedLbl: Label 'Custom Permission Set In Plan was added with %1.', Locked = true;
+        CustomPermissionSetInPlanRemovedLbl: Label 'Custom Permission Set In Plan was removed with %1.', Locked = true;
+        CustomPermissionSetInPlanModifiedLbl: Label 'Custom Permission Set In Plan was modified from %1 to %2.', Locked = true;
+        PlanConfigurationUpdatedLbl: Label 'Plan Configuration was modified for plan %1. Customized: %2.', Locked = true;
 
     procedure IsCustomized(PlanId: Guid): Boolean
     var
@@ -54,10 +78,7 @@ codeunit 9822 "Plan Configuration Impl."
     procedure AssignCustomPermissionsToUser(PlanId: Guid; UserSecurityId: Guid)
     var
         CustomPermissionSetInPlan: Record "Custom Permission Set In Plan";
-        AccessControl: Record "Access Control";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        AccessControlExists: Boolean;
-        NullGuid: Guid;
     begin
         FeatureTelemetry.LogUptake('0000GLO', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::Used);
 
@@ -67,34 +88,165 @@ codeunit 9822 "Plan Configuration Impl."
 
         repeat
             FeatureTelemetry.LogUsage('0000GMJ', PlanConfigurationFeatureNameTok, PermissionSetAssignedToUserTxt, GetTelemetryDimensions(CustomPermissionSetInPlan, true));
-
-            AccessControl.SetRange("User Security ID", UserSecurityID);
-            AccessControl.SetRange("Role ID", CustomPermissionSetInPlan."Role ID");
-            AccessControl.SetRange("Company Name", CustomPermissionSetInPlan."Company Name");
-            AccessControl.SetRange(Scope, CustomPermissionSetInPlan.Scope);
-
-            // SUPER and SECURITY always have null guids
-            if CustomPermissionSetInPlan."Role ID" in ['SUPER', 'SECURITY'] then
-                AccessControl.SetRange("App ID", NullGuid)
-            else
-                // If scope is system and App ID is null, filter to non-null App IDs
-                if (CustomPermissionSetInPlan.Scope = AccessControl.Scope::System) and IsNullGuid(CustomPermissionSetInPlan."App ID") then
-                    AccessControl.SetFilter("App ID", '<>%1', NullGuid)
-                else
-                    AccessControl.SetRange("App ID", CustomPermissionSetInPlan."App ID");
-
-            AccessControlExists := not AccessControl.IsEmpty();
-            if not AccessControlExists then begin
-                AccessControl.Init();
-                AccessControl."User Security ID" := UserSecurityID;
-                AccessControl."Role ID" := CustomPermissionSetInPlan."Role ID";
-                AccessControl."Company Name" := CustomPermissionSetInPlan."Company Name";
-                AccessControl.Scope := CustomPermissionSetInPlan.Scope;
-                AccessControl."App ID" := CustomPermissionSetInPlan."App ID";
-                AccessControl.Insert();
-            end;
-
+            AddPermissionSetToAccessControl(UserSecurityId, CustomPermissionSetInPlan."Role ID", CustomPermissionSetInPlan."App ID", CustomPermissionSetInPlan.Scope, CustomPermissionSetInPlan."Company Name");
         until CustomPermissionSetInPlan.Next() = 0;
+    end;
+
+    procedure RemoveCustomPermissionsFromUser(PlanId: Guid; UserSecurityId: Guid)
+    var
+        CustomPermissionSetInPlan: Record "Custom Permission Set In Plan";
+        CustomPermissionSetInOtherPlans: Record "Custom Permission Set In Plan";
+        AccessControl: Record "Access Control";
+#if not CLEAN22
+        PlanConfiguration: Codeunit "Plan Configuration";
+        IsAssignedViaUserGroups: Boolean;
+#endif
+        PlanIdFilter: Text;
+    begin
+        CustomPermissionSetInPlan.SetRange("Plan ID", PlanId);
+        if not CustomPermissionSetInPlan.FindSet() then
+            exit;
+
+        repeat
+            if AccessControl.Get(UserSecurityID, CustomPermissionSetInPlan."Role ID", CustomPermissionSetInPlan."Company Name", CustomPermissionSetInPlan.Scope, CustomPermissionSetInPlan."App ID") then
+#if not CLEAN22
+#pragma warning disable AA0013
+            begin
+#pragma warning restore AA0013
+                PlanConfiguration.OnBeforeRemoveCustomPermissionsFromUser(AccessControl, IsAssignedViaUserGroups);
+                if not IsAssignedViaUserGroups then
+#endif
+                    if not GetUserPlansAsFilter(UserSecurityId, PlanId, PlanIdFilter) then
+                        AccessControl.Delete() // there are no plans assigned to this user or we are deleting permissions for the only assigned plan
+                    else begin
+                        // Check if the permission set is assigned to other user plans that the user still has assigned
+                        CustomPermissionSetInOtherPlans.SetFilter("Plan ID", PlanIdFilter);
+                        CustomPermissionSetInOtherPlans.SetRange("Role ID", CustomPermissionSetInPlan."Role ID");
+                        CustomPermissionSetInOtherPlans.SetRange("Company Name", CustomPermissionSetInPlan."Company Name");
+                        CustomPermissionSetInOtherPlans.SetRange(Scope, CustomPermissionSetInPlan.Scope);
+                        CustomPermissionSetInOtherPlans.SetRange("App ID", CustomPermissionSetInPlan."App ID");
+
+                        // If not, we remove the assigned permission set
+                        if CustomPermissionSetInOtherPlans.IsEmpty() then
+                            AccessControl.Delete();
+                    end;
+#if not CLEAN22
+            end;
+#endif
+        until CustomPermissionSetInPlan.Next() = 0;
+    end;
+
+    procedure GetCustomPermissions(var PermissionSetInPlanBuffer: Record "Permission Set In Plan Buffer")
+    var
+        CustomPermissionSetInPlan: Record "Custom Permission Set In Plan";
+    begin
+        PermissionSetInPlanBuffer.Reset();
+        PermissionSetInPlanBuffer.DeleteAll();
+
+        if not CustomPermissionSetInPlan.FindSet() then
+            exit;
+
+        repeat
+            PermissionSetInPlanBuffer.TransferFields(CustomPermissionSetInPlan);
+            PermissionSetInPlanBuffer.Insert();
+        until CustomPermissionSetInPlan.Next() = 0;
+    end;
+
+    procedure AddDefaultPermissionSetToPlan(PlanId: Guid; RoleId: Code[20]; AppId: Guid; Scope: Option)
+    var
+        DefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
+    begin
+        DefaultPermissionSetInPlan."Plan ID" := PlanId;
+        DefaultPermissionSetInPlan."Role ID" := RoleId;
+        DefaultPermissionSetInPlan.Scope := Scope;
+        DefaultPermissionSetInPlan."App ID" := AppId;
+
+        if DefaultPermissionSetInPlan.Insert() then;
+    end;
+
+    procedure RemoveDefaultPermissionSetFromPlan(PlanId: Guid; RoleId: Code[20]; AppId: Guid; Scope: Option)
+    var
+        DefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
+    begin
+        if DefaultPermissionSetInPlan.Get(PlanId, RoleId, Scope, AppId) then
+            DefaultPermissionSetInPlan.Delete();
+    end;
+
+    procedure AssignDefaultPermissionsToUser(PlanId: Guid; UserSecurityId: Guid; Company: Text[30])
+    var
+        DefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
+    begin
+        DefaultPermissionSetInPlan.SetRange("Plan ID", PlanId);
+        if not DefaultPermissionSetInPlan.FindSet() then
+            exit;
+
+        repeat
+            AddPermissionSetToAccessControl(UserSecurityId, DefaultPermissionSetInPlan."Role ID", DefaultPermissionSetInPlan."App ID", DefaultPermissionSetInPlan.Scope, Company);
+        until DefaultPermissionSetInPlan.Next() = 0;
+    end;
+
+    procedure RemoveDefaultPermissionsFromUser(PlanId: Guid; UserSecurityId: Guid)
+    var
+        DefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
+        DefaultPermissionSetInOtherPlans: Record "Default Permission Set In Plan";
+        AccessControl: Record "Access Control";
+#if not CLEAN22
+        PlanConfiguration: Codeunit "Plan Configuration";
+        IsAssignedViaUserGroups: Boolean;
+#endif
+        PlanIdFilter: Text;
+    begin
+        DefaultPermissionSetInPlan.SetRange("Plan ID", PlanId);
+        if not DefaultPermissionSetInPlan.FindSet() then
+            exit;
+
+        repeat
+            AccessControl.SetRange("User Security ID", UserSecurityID);
+            AccessControl.SetRange("Role ID", DefaultPermissionSetInPlan."Role ID");
+            AccessControl.SetRange(Scope, DefaultPermissionSetInPlan.Scope);
+            AccessControl.SetRange("App ID", DefaultPermissionSetInPlan."App ID");
+
+            if AccessControl.FindFirst() then
+#if not CLEAN22
+#pragma warning disable AA0013
+            begin
+#pragma warning restore AA0013
+                PlanConfiguration.OnBeforeRemoveDefaultPermissionsFromUser(AccessControl, IsAssignedViaUserGroups);
+                if not IsAssignedViaUserGroups then
+#endif
+                    if not GetUserPlansAsFilter(UserSecurityId, PlanId, PlanIdFilter) then
+                        AccessControl.DeleteAll() // there are no plans assigned to this user or we are deleting permissions for the only assigned plan
+                    else begin
+                        // Check if the permission set is assigned to other user plans that the user still has assigned
+                        DefaultPermissionSetInOtherPlans.SetFilter("Plan ID", PlanIdFilter);
+                        DefaultPermissionSetInOtherPlans.SetRange("Role ID", DefaultPermissionSetInPlan."Role ID");
+                        DefaultPermissionSetInOtherPlans.SetRange(Scope, DefaultPermissionSetInPlan.Scope);
+                        DefaultPermissionSetInOtherPlans.SetRange("App ID", DefaultPermissionSetInPlan."App ID");
+
+                        // If not, we remove all the assigned permission sets
+                        if DefaultPermissionSetInOtherPlans.IsEmpty() then
+                            AccessControl.DeleteAll();
+                    end;
+#if not CLEAN22
+            end;
+#endif
+        until DefaultPermissionSetInPlan.Next() = 0;
+    end;
+
+    procedure GetDefaultPermissions(var PermissionSetInPlanBuffer: Record "Permission Set In Plan Buffer")
+    var
+        DefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
+    begin
+        PermissionSetInPlanBuffer.Reset();
+        PermissionSetInPlanBuffer.DeleteAll();
+
+        if not DefaultPermissionSetInPlan.FindSet() then
+            exit;
+
+        repeat
+            PermissionSetInPlanBuffer.TransferFields(DefaultPermissionSetInPlan);
+            PermissionSetInPlanBuffer.Insert();
+        until DefaultPermissionSetInPlan.Next() = 0;
     end;
 
     [Scope('OnPrem')]
@@ -112,11 +264,6 @@ codeunit 9822 "Plan Configuration Impl."
 
         if not UserPermissions.HasUserPermissionSetAssigned(UserSecurityId(), Company, RoleId, Scope, AppId) then
             Error(MissingPermissionSetErr, RoleId);
-    end;
-
-    [IntegrationEvent(false, false)]
-    internal procedure OnPermissionSetChange(PlanId: Guid; RoleId: Code[20]; AppId: Guid; Scope: Option; Company: Text[30]);
-    begin
     end;
 
     procedure ConfigurationContainsSuper(PlanId: Guid): Boolean
@@ -164,41 +311,53 @@ codeunit 9822 "Plan Configuration Impl."
         end;
     end;
 
-    local procedure TransferPermissions(PlanId: Guid)
+    internal procedure TransferPermissions(PlanId: Guid)
     var
         CustomPermissionSetInPlan: Record "Custom Permission Set In Plan";
-        DefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
+#if not CLEAN22
+        DefaultPermissionSetInPlan: Record "Permission Set In Plan Buffer";
         DefaultPermissionSetInPlanController: Codeunit "Default Permission Set In Plan";
+#else
+        DefaultPermissionSetInPlan: Record "Default Permission Set In Plan";
+#endif
+#if not CLEAN22
         PlanConfiguration: Codeunit "Plan Configuration";
+#endif
     begin
+#if not CLEAN22
         DefaultPermissionSetInPlanController.GetPermissionSets(PlanId, DefaultPermissionSetInPlan);
-
+#endif
+        DefaultPermissionSetInPlan.SetRange("Plan ID", PlanId);
         if DefaultPermissionSetInPlan.FindSet() then
             repeat
                 Clear(CustomPermissionSetInPlan.Id);
 
                 CustomPermissionSetInPlan.TransferFields(DefaultPermissionSetInPlan);
                 CustomPermissionSetInPlan."Plan ID" := PlanId;
-                CustomPermissionSetInPlan."Company Name" := StrSubstNo(CompanyName(), MaxStrLen(CustomPermissionSetInPlan."Company Name"));
+                CustomPermissionSetInPlan."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(CustomPermissionSetInPlan."Company Name"));
 
                 if CustomPermissionSetInPlan.Insert() then;
             until DefaultPermissionSetInPlan.Next() = 0;
-
+#if not CLEAN22
         PlanConfiguration.OnAfterTransferPermissions(PlanId);
+#endif
     end;
 
     local procedure DeleteCustomizations(PlanId: Guid)
     var
         CustomPermissionSetInPlan: Record "Custom Permission Set In Plan";
+#if not CLEAN22
         PlanConfiguration: Codeunit "Plan Configuration";
+#endif
     begin
         CustomPermissionSetInPlan.SetRange("Plan ID", PlanId);
         CustomPermissionSetInPlan.DeleteAll();
-
+#if not CLEAN22
         PlanConfiguration.OnAfterDeleteCustomPermissions(PlanId);
+#endif
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Plan Configuration Card", 'OnAfterValidateEvent', 'Customized', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"Plan Configuration Card", OnAfterValidateEvent, Customized, false, false)]
     local procedure OnAfterConfigaritonCustomize(var Rec: Record "Plan Configuration")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -258,7 +417,79 @@ codeunit 9822 "Plan Configuration Impl."
         Hyperlink(DocumentationLinkTxt);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Plan Configuration", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure AddPermissionSetToAccessControl(UserSecurityId: Guid; RoleId: Code[20]; AppId: Guid; Scope: Option; Company: Text[30])
+    var
+        AccessControl: Record "Access Control";
+        NullGuid: Guid;
+    begin
+        AccessControl.SetRange("User Security ID", UserSecurityID);
+        AccessControl.SetRange("Role ID", RoleId);
+        AccessControl.SetRange("Company Name", Company);
+        AccessControl.SetRange(Scope, Scope);
+
+        // SUPER and SECURITY always have null guids
+        if RoleId in ['SUPER', 'SECURITY'] then
+            AccessControl.SetRange("App ID", NullGuid)
+        else
+            // If scope is system and App ID is null, filter to non-null App IDs
+            if (Scope = AccessControl.Scope::System) and IsNullGuid(AppId) then
+                AccessControl.SetFilter("App ID", '<>%1', NullGuid)
+            else
+                AccessControl.SetRange("App ID", AppId);
+
+        if AccessControl.IsEmpty() then begin
+            AccessControl.Init();
+            AccessControl."User Security ID" := UserSecurityID;
+            AccessControl."Role ID" := RoleId;
+            AccessControl."Company Name" := Company;
+            AccessControl.Scope := Scope;
+            AccessControl."App ID" := AppId;
+            AccessControl.Insert();
+        end;
+    end;
+
+    local procedure GetUserPlansAsFilter(UserSecurityId: Guid; ExcludePlanId: Guid; var PlanIdFilter: Text): Boolean
+    var
+        UserPlan: Record "User Plan";
+        PlanIdFilterBuilder: TextBuilder;
+    begin
+        UserPlan.SetRange("User Security ID", UserSecurityId);
+        UserPlan.SetFilter("Plan ID", '<>%1', ExcludePlanId); // allow deleting permissions for own plan
+        if UserPlan.IsEmpty() then
+            exit(false);
+
+        repeat
+            PlanIdFilterBuilder.Append(UserPlan."Plan ID");
+            PlanIdFilterBuilder.Append('|');
+        until UserPlan.Next() = 0;
+        PlanIdFilter := PlanIdFilterBuilder.ToText().TrimEnd('|');
+        exit(true);
+    end;
+
+    internal procedure OpenBCAdminCenter()
+    begin
+        Hyperlink(BCAdminCenterUrl());
+    end;
+
+    internal procedure OpenM365AdminCenter()
+    begin
+        Hyperlink(M365AdminCenterLinkTxt);
+    end;
+
+    local procedure BCAdminCenterUrl(): Text
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+        AzureADTenant: Codeunit "Azure AD Tenant";
+        Url: Text;
+    begin
+        Url := GetUrl(ClientType::Web);
+        if EnvironmentInformation.IsSaaS() then
+            exit(StrSubstNo(BCAdminCenterSaaSLinkTxt, CopyStr(Url, 1, Url.LastIndexOf('/') - 1))) // Remove environment segment from URL
+        else
+            exit(StrSubstNo(BCAdminCenterOnPremLinkTxt, Url, AzureADTenant.GetAadTenantId())); // Add tenant ID segment to URL
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Plan Configuration", OnAfterDeleteEvent, '', false, false)]
     local procedure DeleteCustomPermissionSet(var Rec: Record "Plan Configuration")
     begin
         DeleteCustomizations(Rec."Plan ID")
@@ -287,7 +518,7 @@ codeunit 9822 "Plan Configuration Impl."
     #endregion
 
     #region Telemetry
-    [EventSubscriber(ObjectType::Page, Page::"Plan Configuration Card", 'OnOpenPageEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"Plan Configuration Card", OnOpenPageEvent, '', false, false)]
     local procedure LogFeatureTelemetryPlanConfigurationCard()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -295,7 +526,7 @@ codeunit 9822 "Plan Configuration Impl."
         FeatureTelemetry.LogUptake('0000GLQ', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::Discovered);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Plan Configuration List", 'OnOpenPageEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"Plan Configuration List", OnOpenPageEvent, '', false, false)]
     local procedure LogFeatureTelemetryPlanConfigurationList()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -303,7 +534,7 @@ codeunit 9822 "Plan Configuration Impl."
         FeatureTelemetry.LogUptake('0000GLR', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::Discovered);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Custom Permission Set In Plan", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Custom Permission Set In Plan", OnAfterDeleteEvent, '', false, false)]
     local procedure LogTelemeteryOnDeleteCustomPermissioSet(var Rec: Record "Custom Permission Set In Plan")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -313,7 +544,7 @@ codeunit 9822 "Plan Configuration Impl."
         FeatureTelemetry.LogUptake('0000GLT', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(Rec, false));
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Custom Permission Set In Plan", 'OnAfterInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Custom Permission Set In Plan", OnAfterInsertEvent, '', false, false)]
     local procedure LogTelemeteryOnInsertCustomPermissioSet(var Rec: Record "Custom Permission Set In Plan")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -324,7 +555,7 @@ codeunit 9822 "Plan Configuration Impl."
             StrSubstNo(CustomPermissionSetInPlanAddedLbl, StrSubstNo(CustomPermissionSetLbl, Rec."Role ID", Rec."App ID", Rec.Scope, Rec."Company Name", Rec."Plan ID")), AuditCategory::UserManagement);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Custom Permission Set In Plan", 'OnAfterModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Custom Permission Set In Plan", OnAfterModifyEvent, '', false, false)]
     local procedure LogTelemeteryOnModifyCustomPermissioSet(var Rec: Record "Custom Permission Set In Plan"; var xRec: Record "Custom Permission Set In Plan")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -350,22 +581,4 @@ codeunit 9822 "Plan Configuration Impl."
         TelemetryDimensions.Add('PermissionSetAdded', Format(PermissionSetAdded));
     end;
     #endregion
-
-    var
-        ConfirmRemoveCustomizationsQst: Label 'Restoring the default permissions will delete the customization for the selected license. Do you want to continue?';
-        ConfigurationAlreadyExistsErr: Label 'Configration for license %1 already exists. To edit it, select it from the list.', Comment = '%1 = License name, e.g. Dynamics 365 Business Central Essentials';
-        MissingSecurityErr: Label 'You do not have permissions to configure licenses. Contact your system administrator.';
-        MissingPermissionSetErr: Label 'You don''t have rights to manage the %1 permission set for licenses. The SECURITY permission set only grants you rights to manage those permission sets that are also assigned to your account.', Comment = '%1 = permssion set name, e.g. ''D365 READ''';
-        CustomizePermissionsNotificationTxt: Label 'Customizing permissions below will affect only newly created users who are assigned %1 license. Permissions for existing users who are assigned the license will not be affected.', Comment = '%1 = license name, e.g. e.g. Dynamics 365 Business Central Essentials';
-        DefaultConfigurationNotificationTxt: Label 'One or more of the license configurations use implicit company permissions, which is not recommended.';
-        LearnMoreTok: Label 'Learn more';
-        DocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2186490', Locked = true;
-        CustomizationNotificationIdTok: Label '9d730988-ff4a-43ca-8b4f-80ee476fa3c4', Locked = true;
-        PlanConfigurationFeatureNameTok: Label 'Custom Permissions Assignment Per Plan', Locked = true;
-        PermissionSetAssignedToUserTxt: Label 'Custom Permission Set Assigned To User', Locked = true;
-        CustomPermissionSetLbl: Label 'role id %1, app id %2, scope %3, company %4 and plan %5', Locked = true;
-        CustomPermissionSetInPlanAddedLbl: Label 'Custom Permission Set In Plan was added with %1.', Locked = true;
-        CustomPermissionSetInPlanRemovedLbl: Label 'Custom Permission Set In Plan was removed with %1.', Locked = true;
-        CustomPermissionSetInPlanModifiedLbl: Label 'Custom Permission Set In Plan was modified from %1 to %2.', Locked = true;
-        PlanConfigurationUpdatedLbl: Label 'Plan Configuration was modified for plan %1. Customized: %2.', Locked = true;
 }

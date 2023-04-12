@@ -202,7 +202,7 @@ codeunit 138702 "Retention Policy Test"
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
 
         // Execute
-        AssertError ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+        asserterror ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
 
         // Verify
         Assert.ExpectedError(StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
@@ -430,7 +430,7 @@ codeunit 138702 "Retention Policy Test"
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
 
         // Execute
-        AssertError ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+        asserterror ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
 
         // Verify
         Assert.ExpectedError(StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
@@ -652,7 +652,7 @@ codeunit 138702 "Retention Policy Test"
         Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
 
         // Execute
-        AssertError ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+        asserterror ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
 
         // Verify
         Assert.ExpectedError(StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
@@ -719,7 +719,7 @@ codeunit 138702 "Retention Policy Test"
         Assert.AreEqual(1, RetentionPolicyTestDataTwo.Count(), 'Incorrect number of records before applying retention policy');
 
         // Exercise
-        AssertError
+        asserterror
             ApplyRetentionPolicy.ApplyRetentionPolicy(RetentionPolicySetup, false);
 
         // Verify
@@ -1234,7 +1234,7 @@ codeunit 138702 "Retention Policy Test"
         InsertOneMonthRetentionPeriod(RetentionPeriod);
         InsertEnabledRetentionPolicySetupForAllRecords(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData.FieldNo("Date Field"));
 
-        For i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by >1k
+        for i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by >1k
             InsertRetentionPolicyTestData('<-2M>');
 
         Assert.AreEqual((MaxRecordsToDelete + Buffer), RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
@@ -1266,7 +1266,7 @@ codeunit 138702 "Retention Policy Test"
         InsertOneMonthRetentionPeriod(RetentionPeriod);
         InsertEnabledRetentionPolicySetupForAllRecords(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData.FieldNo("Date Field"));
 
-        For i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by <1k
+        for i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by <1k
             InsertRetentionPolicyTestData('<-2M>');
 
         Assert.AreEqual(MaxRecordsToDelete + Buffer, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
@@ -1301,9 +1301,9 @@ codeunit 138702 "Retention Policy Test"
         InsertEnabledRetentionPolicySetupForAllRecords(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData.FieldNo("Date Field"));
         InsertRetentionPolicySetupTable3(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData3.FieldNo("Datetime Field"));
 
-        For i := 1 to (RecordsTableOne) do
+        for i := 1 to (RecordsTableOne) do
             InsertRetentionPolicyTestData('<-2M>');
-        For i := (RecordsTableOne + 1) to (MaxRecordsToDelete + Buffer) do
+        for i := (RecordsTableOne + 1) to (MaxRecordsToDelete + Buffer) do
             InsertRetentionPolicyTestData3('<-2M>');
 
         Assert.AreEqual(RecordsTableOne, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
@@ -1344,9 +1344,9 @@ codeunit 138702 "Retention Policy Test"
         InsertEnabledRetentionPolicySetupForAllRecords(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData.FieldNo("Date Field"));
         InsertRetentionPolicySetupTable3(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData3.FieldNo("Datetime Field"));
 
-        For i := 1 to (RecordsTableOne) do
+        for i := 1 to (RecordsTableOne) do
             InsertRetentionPolicyTestData('<-2M>');
-        For i := (RecordsTableOne + 1) to (MaxRecordsToDelete + Buffer) do
+        for i := (RecordsTableOne + 1) to (MaxRecordsToDelete + Buffer) do
             InsertRetentionPolicyTestData3('<-2M>');
 
         Assert.AreEqual(RecordsTableOne, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
@@ -1380,7 +1380,7 @@ codeunit 138702 "Retention Policy Test"
         InsertOneMonthRetentionPeriod(RetentionPeriod);
         InsertEnabledRetentionPolicySetupForAllRecords(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData.FieldNo("Date Field"));
 
-        For i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by >1k
+        for i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by >1k
             InsertRetentionPolicyTestData('<-2M>');
 
         Assert.AreEqual((MaxRecordsToDelete + Buffer), RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
@@ -1412,7 +1412,7 @@ codeunit 138702 "Retention Policy Test"
         InsertOneMonthRetentionPeriod(RetentionPeriod);
         InsertEnabledRetentionPolicySetupForAllRecords(RetentionPolicySetup, RetentionPeriod, RetentionPolicyTestData.FieldNo("Date Field"));
 
-        For i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by >1k
+        for i := 1 to (MaxRecordsToDelete + Buffer) do // must exceed the hardcoded limit by >1k
             InsertRetentionPolicyTestData('<-2M>');
 
         Assert.AreEqual((MaxRecordsToDelete + Buffer), RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
@@ -1511,6 +1511,34 @@ codeunit 138702 "Retention Policy Test"
         RetentionPolicyTestData.SetRange(Description, 'Subset A');
         RetentionPolicyTestData.SetRange("Description 2", 'Subset E');
         Assert.RecordIsEmpty(RetentionPolicyTestData);
+    end;
+
+    [HandlerFunctions('RetentionPolicyFilterPageHandler')]
+    [Test]
+    procedure TestApplyRetentionPolicyOldestRecordMatchesExpirationDate()
+    var
+        RetentionPeriod: Record "Retention Period";
+        RetentionPolicySetup: Record "Retention Policy Setup";
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+    begin
+        PermissionsMock.Set('Retention Pol. Admin');
+        // Setup
+        ClearTestData();
+        InsertEnabledRetentionPolicySetupForSubsets(RetentionPolicySetup, RetentionPolicyTestData.FieldNo("Date Field"));
+        InsertOneWeekRetentionPeriod(RetentionPeriod);
+        InsertEnabledRetentionPolicySetupLine(RetentionPolicySetup, RetentionPeriod, RetentionPolicySetup."Date Field No.", '', RetentionPolicyTestData.FieldNo(Description));
+
+        InsertRetentionPolicyTestData('<-7D>', ''); // keep, matches expiration date
+
+        Assert.AreEqual(1, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
+
+        // Exercise
+        ApplyRetentionPolicy.ApplyRetentionPolicy(RetentionPolicySetup, false);
+
+        // Verify
+        Assert.RecordIsNotEmpty(RetentionPolicyTestData);
+        Assert.AreEqual(1, RetentionPolicyTestData.Count(), 'Incorrect number of records after applying retention policy');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Apply Retention Policy", 'OnApplyRetentionPolicyRecordLimitExceeded', '', false, false)]

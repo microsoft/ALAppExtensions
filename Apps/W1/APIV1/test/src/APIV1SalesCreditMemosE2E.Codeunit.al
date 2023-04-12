@@ -935,9 +935,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         // Ignore these fields when comparing Page and API CreditMemos
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("No."), DATABASE::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Posting Description"), DATABASE::"Sales Header");
-#pragma warning disable AL0432
-        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO(Id), DATABASE::"Sales Header");
-#pragma warning restore AL0432
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Order Date"), DATABASE::"Sales Header");      // it is always set as Today() in API
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FIELDNO("Shipment Date"), DATABASE::"Sales Header");   // it is always set as Today() in API
         // Special ignore case for ES

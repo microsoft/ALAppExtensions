@@ -63,6 +63,7 @@ codeunit 130443 "Word Templates Test"
     [Test]
     procedure TestCreateDocumentInternalsForRecord()
     var
+        TempWordTemplateFields: Record "Word Template Field" temporary;
         WordTemplatesImpl: Codeunit "Word Template Impl.";
         MergeFields: List of [Text];
     begin
@@ -70,7 +71,7 @@ codeunit 130443 "Word Templates Test"
         PermissionsMock.Set('Word Templates Edit');
 
         // [WHEN] Run create document with merge fields and save zip to temp blob
-        WordTemplatesImpl.Create(Database::"Word Template");
+        WordTemplatesImpl.Create(Database::"Word Template", TempWordTemplateFields);
 
         // [THEN] Verify the Merge fields are set correctly
         WordTemplatesImpl.GetMergeFields(MergeFields);
@@ -190,14 +191,14 @@ codeunit 130443 "Word Templates Test"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGetTemplateName()
     var
+        TempWordTemplateFields: Record "Word Template Field" temporary;
         WordTemplateImpl: Codeunit "Word Template Impl.";
     begin
         // [SCENARIO] Check that reserved characters are removed from the template name.
         PermissionsMock.Set('Word Templates Edit');
-        WordTemplateImpl.Create(130443); // Caption = Word Templates Test / Table "<>:/\|?*
+        WordTemplateImpl.Create(130443, TempWordTemplateFields); // Caption = Word Templates Test / Table "<>:/\|?*
         Assert.AreEqual('Word Templates Test _ Table __________Template.docx', WordTemplateImpl.GetTemplateName('docx'), 'Template name is incorrect.');
     end;
-
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]

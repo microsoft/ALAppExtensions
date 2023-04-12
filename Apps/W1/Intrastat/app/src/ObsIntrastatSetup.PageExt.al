@@ -1,5 +1,11 @@
+#if not CLEAN22
 pageextension 4822 "Obs. Intrastat Setup" extends "Intrastat Setup"
 {
+
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moving to Intrastat extension.';
+
     trigger OnOpenPage()
     var
         IntrastatReportMgt: Codeunit IntrastatReportManagement;
@@ -13,3 +19,4 @@ pageextension 4822 "Obs. Intrastat Setup" extends "Intrastat Setup"
             IntrastatReportMgt.NotifyUserAboutIntrastatFeature();
     end;
 }
+#endif

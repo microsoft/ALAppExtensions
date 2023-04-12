@@ -6,6 +6,8 @@
 codeunit 3903 "Retention Policy Setup Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     EventSubscriberInstance = Manual;
     Permissions = tabledata AllObj = r,
                   tabledata AllObjWithCaption = r,
@@ -442,7 +444,7 @@ codeunit 3903 "Retention Policy Setup Impl."
     begin
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Retention Policy Setup Impl.", 'OnVerifyDeleteAllowed', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Retention Policy Setup Impl.", OnVerifyDeleteAllowed, '', false, false)]
     local procedure AllowRetentionPolicySetupLineDelete(TableId: Integer; var DeleteAllowed: Boolean)
     begin
         DeleteAllowed := DeleteAllowedList.Contains(TableId);

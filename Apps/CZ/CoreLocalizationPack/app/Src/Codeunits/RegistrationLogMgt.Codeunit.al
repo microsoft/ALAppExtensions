@@ -281,20 +281,6 @@ codeunit 11755 "Registration Log Mgt. CZL"
         end;
     end;
 
-#if not CLEAN19
-    [Obsolete('The ARES Update report is discontinued, use the Registration Log Details page instead.', '19.0')]
-    procedure RunARESUpdate(var RecordRef: RecordRef; RecordVariant: Variant; RegistrationLogCZL: Record "Registration Log CZL")
-    var
-#pragma warning disable AL0432
-        AresUpdateCZL: Report "Ares Update CZL";
-#pragma warning restore AL0432
-    begin
-        AresUpdateCZL.InitializeReport(RecordVariant, RegistrationLogCZL);
-        AresUpdateCZL.UseRequestPage(true);
-        AresUpdateCZL.RunModal();
-        AresUpdateCZL.GetRecord(RecordRef);
-    end;
-#endif
     procedure ValidateRegNoWithARES(var RecordRef: RecordRef; RecordVariant: Variant; EntryNo: Code[20]; AccountType: Enum "Reg. Log Account Type CZL")
     var
         UpdatedRegistrationLogCZL: Record "Registration Log CZL";

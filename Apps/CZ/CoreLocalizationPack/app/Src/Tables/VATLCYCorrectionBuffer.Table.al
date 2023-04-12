@@ -180,7 +180,13 @@ table 11727 "VAT LCY Correction Buffer CZL"
         Rec.Type := VATEntry.Type;
         Rec."VAT Base" := VATEntry.Base;
         Rec."VAT Amount" := VATEntry.Amount;
-        Rec."VAT Date" := VATEntry."VAT Date CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not VATEntry.IsReplaceVATDateEnabled() then
+            VATEntry."VAT Reporting Date" := VATEntry."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
+        Rec."VAT Date" := VATEntry."VAT Reporting Date";
         Rec."Bill-to/Pay-to No." := VATEntry."Bill-to/Pay-to No.";
         Rec."Source Code" := VATEntry."Source Code";
         Rec."Country/Region Code" := VATEntry."Country/Region Code";

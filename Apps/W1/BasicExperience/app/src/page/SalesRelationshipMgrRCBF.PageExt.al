@@ -62,7 +62,7 @@ pageextension 20654 "Sales Relation ship Mgr RC BF" extends "Sales & Relationshi
         {
             ApplicationArea = RelationshipMgmt, BFBasic;
         }
-#if not CLEAN19
+#if not CLEAN21
         modify("Sales &Prices")
         {
             ApplicationArea = RelationshipMgmt, BFBasic;

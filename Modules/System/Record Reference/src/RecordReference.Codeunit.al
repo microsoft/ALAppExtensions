@@ -10,6 +10,8 @@
 codeunit 3917 "Record Reference"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Initializes the Record Reference interface. The method raises the OnInitialize event. If no subscriber initializes the interface, a default implementation is assigned.

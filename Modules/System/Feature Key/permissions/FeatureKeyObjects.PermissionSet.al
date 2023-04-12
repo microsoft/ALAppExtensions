@@ -8,17 +8,13 @@ permissionset 2609 "Feature Key - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Date-Time Dialog - Objects",
-                             "URI - Objects";
+    IncludedPermissionSets = "Date-Time Dialog - Objects";
 
     Permissions = Codeunit "Feature Data Error Handler" = X,
                   Codeunit "Feature Management Facade" = X,
-                  Codeunit "Feature Management Impl." = X,
                   Codeunit "Update Feature Data" = X,
                   Page "Feature Management" = X,
                   Page "Schedule Feature Data Update" = X,
                   Page "Upcoming Changes Factbox" = X,
-                  Table "Feature Data Update Status" = X,
-                  Table "Feature Key Buffer" = X,
-                  Table "Feature Dependency" = X;
+                  Table "Feature Data Update Status" = X;
 }

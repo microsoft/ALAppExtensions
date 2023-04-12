@@ -59,8 +59,7 @@ table 1693 "Bank Acc. Comment Line"
     {
     }
 
-    [Scope('OnPrem')]
-    procedure SetUpNewLine()
+    internal procedure SetUpNewLine()
     var
         BankAccCommentLine: Record "Bank Acc. Comment Line";
     begin

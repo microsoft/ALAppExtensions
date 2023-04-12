@@ -6,6 +6,8 @@
 codeunit 8700 "Table Information Cache Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Table Information Cache" = rimd,
                   tabledata "Company Size Cache" = rimd;
 

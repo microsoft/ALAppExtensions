@@ -22,7 +22,6 @@ codeunit 139592 "Item Attr Populate Test"
         ItemAttrPopulate: Codeunit "Item Attr Populate";
         JsonManagement: Codeunit "JSON Management";
         ConfidencePercent: Decimal;
-        AnalysisType: Option Tags,Faces,Color;
         UpdatedDescription: Text[100];
     begin
         // [Scenario] Check the item is populated correctly in a success case
@@ -34,7 +33,7 @@ codeunit 139592 "Item Attr Populate Test"
       '{"name":"chair","confidence":0.978925347328186},{"name":"blue","confidence":0.90790148973464966}],"requestId":"2c15a4c1-9271-4584-a30e-342d7fdf206b"' +
       ',"metadata":{"width":500,"height":600,"format":"Jpeg"},"faces":[],"color":{"dominantColorForeground":"White","dominantColorBackground":"White",' +
       '"dominantColors":["White","Blue"],"accentColor":"0D48BE","isBWImg":false}}');
-        ImageAnalysisResult.SetJson(JsonManagement, AnalysisType::Tags);
+        ImageAnalysisResult.SetResult(JsonManagement, Enum::"Image Analysis Type"::Tags);
 
         // [When] We try to populate the tags table
         ItemAttrPopulate.BuildTagListPrepopulateCategoryAndAttributes(Item, ImageAnalysisResult, ImageAnalysisTags, ConfidencePercent);
@@ -120,7 +119,6 @@ codeunit 139592 "Item Attr Populate Test"
         ItemAttrPopulate: Codeunit "Item Attr Populate";
         JsonManagement: Codeunit "JSON Management";
         ConfidencePercent: Decimal;
-        AnalysisType: Option Tags,Faces,Color;
     begin
         // [Scenario] Check the item is not populated correctly in a success case
         // [Given] An item and an analysis result with low confidence for everything
@@ -130,7 +128,7 @@ codeunit 139592 "Item Attr Populate Test"
         JsonManagement.InitializeObject('{"tags":[{"name":"furniture","confidence":0.098513400554657},{"name":"seat","confidence":0.09785393476486206},' +
       '{"name":"chair","confidence":0.078925347328186},{"name":"blue","confidence":0.00790148973464966}],"requestId":"2c15a4c1-9271-4584-a30e-342d7fdf206b"' +
       ',"metadata":{"width":500,"height":600,"format":"Jpeg"}}');
-        ImageAnalysisResult.SetJson(JsonManagement, AnalysisType::Tags);
+        ImageAnalysisResult.SetResult(JsonManagement, Enum::"Image Analysis Type"::Tags);
 
         // [When] We try to populate the item
         ItemAttrPopulate.BuildTagListPrepopulateCategoryAndAttributes(Item, ImageAnalysisResult, ImageAnalysisTags, ConfidencePercent);

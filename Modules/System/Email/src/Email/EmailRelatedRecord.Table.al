@@ -10,6 +10,8 @@ table 8909 "Email Related Record"
 {
     DataClassification = SystemMetadata;
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {

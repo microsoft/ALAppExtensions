@@ -7,6 +7,8 @@ table 3905 "Retention Policy Log Entry"
 {
     Extensible = false;
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

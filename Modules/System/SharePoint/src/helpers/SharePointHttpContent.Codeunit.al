@@ -6,6 +6,8 @@
 codeunit 9107 "SharePoint Http Content"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         HttpContent: HttpContent;

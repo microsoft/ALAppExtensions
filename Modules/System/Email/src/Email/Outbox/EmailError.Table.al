@@ -7,6 +7,8 @@ table 8901 "Email Error"
 {
     Extensible = false;
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {

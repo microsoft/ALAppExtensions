@@ -1,9 +1,11 @@
 page 31256 "Bank Statement Lines CZB"
 {
+    ApplicationArea = Basic, Suite;
     Caption = 'Bank Statement Lines';
     Editable = false;
     PageType = List;
     SourceTable = "Bank Statement Line CZB";
+    UsageCategory = Lists;
 
     layout
     {
@@ -91,6 +93,51 @@ page 31256 "Bank Statement Lines CZB"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the number of bank statement.';
                     Visible = false;
+                }
+                field("Line No."; Rec."Line No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Line No. field.';
+                    Visible = false;
+                }
+            }
+        }
+    }
+    actions
+    {
+        area(navigation)
+        {
+            group("&Line")
+            {
+                Caption = '&Line';
+                Image = Line;
+                action("Show Document")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Show Document';
+                    Image = View;
+                    ShortCutKey = 'Shift+F7';
+                    ToolTip = 'Open the document that the selected line exists on.';
+
+                    trigger OnAction()
+                    var
+                        BankStatementHeaderCZB: Record "Bank Statement Header CZB";
+                        PageManagement: Codeunit "Page Management";
+                    begin
+                        BankStatementHeaderCZB.Get(Rec."Bank Statement No.");
+                        PageManagement.PageRun(BankStatementHeaderCZB);
+                    end;
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("Show Document_Promoted"; "Show Document")
+                {
                 }
             }
         }

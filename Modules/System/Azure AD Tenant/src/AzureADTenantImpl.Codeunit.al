@@ -7,6 +7,8 @@ codeunit 3705 "Azure AD Tenant Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         NavTenantSettingsHelper: DotNet NavTenantSettingsHelper;

@@ -10,6 +10,8 @@ codeunit 457 "Environment Information"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         EnvironmentInformationImpl: Codeunit "Environment Information Impl.";
@@ -22,7 +24,6 @@ codeunit 457 "Environment Information"
     begin
         exit(EnvironmentInformationImpl.IsProduction());
     end;
-
 
     /// <summary>
     /// Gets the name of the environment.
@@ -106,4 +107,13 @@ codeunit 457 "Environment Information"
     begin
         exit(EnvironmentInformationImpl.CanStartSession());
     end;
+
+    /// <summary>
+    /// Sets M365 Collaboration to enabled in the tenant admin center
+    /// </summary>
+    procedure EnableM365Collaboration()
+    begin
+        EnvironmentInformationImpl.EnableM365Collaboration();
+    end;
+
 }

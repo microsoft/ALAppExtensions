@@ -1,7 +1,11 @@
+#if not CLEAN22
 report 31107 "Intrastat Declaration Exp. CZL"
 {
     Caption = 'Intrastat Declaration Export';
     ProcessingOnly = true;
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
     dataset
     {
@@ -335,3 +339,4 @@ report 31107 "Intrastat Declaration Exp. CZL"
     end;
 
 }
+#endif

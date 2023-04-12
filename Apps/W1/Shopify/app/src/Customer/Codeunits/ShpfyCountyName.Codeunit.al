@@ -8,12 +8,12 @@ codeunit 30109 "Shpfy County Name" implements "Shpfy ICounty"
     /// <summary> 
     /// Description for County.
     /// </summary>
-    /// <param name="ShpfyCustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
+    /// <param name="CustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
     /// <returns>Return variable "Text".</returns>
-    internal procedure County(ShpfyCustomerAddress: Record "Shpfy Customer Address"): Text
+    internal procedure County(CustomerAddress: Record "Shpfy Customer Address"): Text
     var
         Customer: Record Customer;
     begin
-        exit(CopyStr(ShpfyCustomerAddress."Province Name".Trim(), 1, MaxStrLen(Customer.County)));
+        exit(CopyStr(CustomerAddress."Province Name".Trim(), 1, MaxStrLen(Customer.County)));
     end;
 }

@@ -5,7 +5,7 @@ codeunit 139568 "Shpfy Customer Export Test"
 
     var
         LibraryAssert: Codeunit "Library Assert";
-        ShpfyCustomerExport: Codeunit "Shpfy Customer Export";
+        CustomerExport: Codeunit "Shpfy Customer Export";
 
     [Test]
     procedure UnitTestSpiltNameIntoFirstAndLastName()
@@ -21,7 +21,7 @@ codeunit 139568 "Shpfy Customer Export Test"
         // [GIVEN] NameSource::FirstAndLastName
 
         // [WHEN] Invoke ShpfyCustomerExport.SpiltNameIntoFirstAndLastName(Name, FirstName, LastName, NameSource::FirstAndLastName)
-        ShpfyCustomerExport.SpiltNameIntoFirstAndLastName(Name, FirstName, LastName, NameSource::FirstAndLastName);
+        CustomerExport.SpiltNameIntoFirstAndLastName(Name, FirstName, LastName, NameSource::FirstAndLastName);
 
         // [THEN] FirstName = 'Firstname' and LastName = 'Last name'
         LibraryAssert.AreEqual('Firstname', FirstName, 'NameSource::FirstAndLastName');
@@ -32,7 +32,7 @@ codeunit 139568 "Shpfy Customer Export Test"
         // [GIVEN] NameSource::LastAndFirstName
 
         // [WHEN] Invoke ShpfyCustomerExport.SpiltNameIntoFirstAndLastName(Name, FirstName, LastName, NameSource::LastAndFirstName)
-        ShpfyCustomerExport.SpiltNameIntoFirstAndLastName(Name, FirstName, LastName, NameSource::LastAndFirstName);
+        CustomerExport.SpiltNameIntoFirstAndLastName(Name, FirstName, LastName, NameSource::LastAndFirstName);
 
         // [THEN] FirstName = 'Firstname' and LastName = 'Last name'
         LibraryAssert.AreEqual('Firstname', FirstName, 'NameSource::LastAndFirstName');
@@ -43,40 +43,40 @@ codeunit 139568 "Shpfy Customer Export Test"
     procedure UnitTestFillInShopifyCustomerData()
     var
         Customer: Record Customer;
-        ShpfyCustomer: Record "Shpfy Customer";
-        ShpfyCustomerAddress: Record "Shpfy Customer Address";
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
+        ShopifyCustomer: Record "Shpfy Customer";
+        CustomerAddress: Record "Shpfy Customer Address";
+        Shop: Record "Shpfy Shop";
+        InitializeTest: Codeunit "Shpfy Initialize Test";
         Result: boolean;
     begin
         // [SCENARION] Convert an existing customer record to a "Shpfy Customer" and "Shpfy Customer Address" record.
 
         if not Customer.FindFirst() then
             exit;
-        ShpfyShop := ShpfyInitializeTest.CreateShop();
-        ShpfyShop."Name Source" := Enum::"Shpfy Name Source"::CompanyName;
-        ShpfyShop."Name 2 Source" := Enum::"Shpfy Name Source"::None;
-        ShpfyShop."Contact Source" := Enum::"Shpfy Name Source"::None;
-        ShpfyShop."County Source" := Enum::"Shpfy County Source"::Name;
-        ShpfyCustomer.Init();
-        ShpfyCustomerAddress.Init();
+        Shop := InitializeTest.CreateShop();
+        Shop."Name Source" := Enum::"Shpfy Name Source"::CompanyName;
+        Shop."Name 2 Source" := Enum::"Shpfy Name Source"::None;
+        Shop."Contact Source" := Enum::"Shpfy Name Source"::None;
+        Shop."County Source" := Enum::"Shpfy County Source"::Name;
+        ShopifyCustomer.Init();
+        CustomerAddress.Init();
 
         // [GIVEN] Shop
-        ShpfyCustomerExport.SetShop(ShpfyShop);
+        CustomerExport.SetShop(Shop);
 
         // [GIVEN] Customer record
         // [WHEN] Invoke ShpfyCustomerExport.FillInShopifyCustomerData(Customer, ShpfyCustomer, ShpfyCustomerAddres)
-        Result := ShpfyCustomerExport.FillInShopifyCustomerData(Customer, ShpfyCustomer, ShpfyCustomerAddress);
+        Result := CustomerExport.FillInShopifyCustomerData(Customer, ShopifyCustomer, CustomerAddress);
 
         // [THEN] The result is true and the content of address fields can be found in the shpfy records.
         LibraryAssert.IsTrue(Result, 'Result');
-        LibraryAssert.AreEqual('', ShpfyCustomer."First Name", 'Firstname');
-        LibraryAssert.AreEqual('', ShpfyCustomer."Last Name", 'Last name');
-        LibraryAssert.IsTrue(Customer."E-Mail".StartsWith(ShpfyCustomer.Email), 'E-Mail');
-        LibraryAssert.AreEqual(Customer."Phone No.", ShpfyCustomer."Phone No.", 'Phone No.');
-        LibraryAssert.AreEqual(Customer.Name, ShpfyCustomerAddress.Company, 'Company');
-        LibraryAssert.AreEqual(Customer.Address, ShpfyCustomerAddress."Address 1", 'Address 1');
-        LibraryAssert.AreEqual(Customer."Address 2", ShpfyCustomerAddress."Address 2", 'Address 2');
-        LibraryAssert.AreEqual(Customer."Post Code", ShpfyCustomerAddress.Zip, 'Post Code');
+        LibraryAssert.AreEqual('', ShopifyCustomer."First Name", 'Firstname');
+        LibraryAssert.AreEqual('', ShopifyCustomer."Last Name", 'Last name');
+        LibraryAssert.IsTrue(Customer."E-Mail".StartsWith(ShopifyCustomer.Email), 'E-Mail');
+        LibraryAssert.AreEqual(Customer."Phone No.", ShopifyCustomer."Phone No.", 'Phone No.');
+        LibraryAssert.AreEqual(Customer.Name, CustomerAddress.Company, 'Company');
+        LibraryAssert.AreEqual(Customer.Address, CustomerAddress."Address 1", 'Address 1');
+        LibraryAssert.AreEqual(Customer."Address 2", CustomerAddress."Address 2", 'Address 2');
+        LibraryAssert.AreEqual(Customer."Post Code", CustomerAddress.Zip, 'Post Code');
     end;
 }

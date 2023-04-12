@@ -6,7 +6,6 @@
 /// <summary>This page shows all registered setups.</summary>
 page 1991 "App Setup List"
 {
-    ApplicationArea = All;
     Caption = 'App Setups';
     DeleteAllowed = false;
     Editable = false;
@@ -18,7 +17,6 @@ page 1991 "App Setup List"
     ShowFilter = false;
     SourceTable = "Guided Experience Item";
     SourceTableTemporary = true;
-    UsageCategory = Administration;
     Extensible = true;
     ContextSensitiveHelpPage = 'ui-get-ready-business';
     Permissions = TableData "Guided Experience Item" = r,

@@ -10,7 +10,6 @@ codeunit 148067 "VIES Declaration CZL"
     end;
 
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
         VATPeriodCZL: Record "VAT Period CZL";
         CountryRegion: Record "Country/Region";
@@ -25,6 +24,7 @@ codeunit 148067 "VIES Declaration CZL"
         LibraryRandom: Codeunit "Library - Random";
         LibraryERM: Codeunit "Library - ERM";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
+        LibraryTaxCZL: Codeunit "Library - Tax CZL";
         SalesPost: Codeunit "Sales-Post";
         ReleaseVIESDeclarationCZL: Codeunit "Release VIES Declaration CZL";
         TypeHelper: Codeunit "Type Helper";
@@ -50,9 +50,7 @@ codeunit 148067 "VIES Declaration CZL"
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"VIES Declaration CZL");
 
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup."Use VAT Date CZL" := true;
-        GeneralLedgerSetup.Modify();
+        LibraryTaxCZL.SetUseVATDate(true);
 
         StatutoryReportingSetupCZL.Get();
         StatutoryReportingSetupCZL."VIES Declaration Nos." := LibraryERM.CreateNoSeriesCode();

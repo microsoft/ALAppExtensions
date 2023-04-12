@@ -557,6 +557,13 @@ page 30038 "APIV2 - Sales Credit Memos"
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Credit Memo");
                 }
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Credit Memo");
+                }
             }
         }
     }

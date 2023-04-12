@@ -10,6 +10,8 @@
 codeunit 8931 "View Only Own Emails Policy" implements "Email View Policy"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Sent Email" = r,
                   tabledata "Email Outbox" = r;
 

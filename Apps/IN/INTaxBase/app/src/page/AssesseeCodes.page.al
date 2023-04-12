@@ -48,12 +48,14 @@ page 18543 "Assessee Codes"
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    AssesseeCodeLbl: Label 'Code eq %1', Comment = '%1= Assessee Code';
+                    EditinExcelFilters: Codeunit "Edit in Excel Filters";
                 begin
+                    EditinExcelFilters.AddField('Code', Enum::"Edit in Excel Filter Type"::Equal, Rec.Code, Enum::"Edit in Excel Edm Type"::"Edm.String");
+
                     EditinExcel.EditPageInExcel(
                         'Assesse Codes',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(AssesseeCodeLbl, Rec.Code));
+                        Page::"Assessee Codes",
+                        EditinExcelFilters);
                 end;
             }
         }

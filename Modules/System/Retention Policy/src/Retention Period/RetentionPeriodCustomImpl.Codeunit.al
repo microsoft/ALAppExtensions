@@ -6,6 +6,8 @@
 codeunit 3901 "Retention Period Custom Impl." implements "Retention Period"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         WrongInterfaceImplementationErr: Label 'This implementation of the interface does not support the enum value selected. Contact your Microsoft partner for assistance. The following information can help them address the issue: Value: %1, Interface: Interface Retention Period, Implementation: codeunit 3901 Retention Period Custom Impl.', Comment = '%1 = a value such as 1 Week, 1 Month, 3 Months, or Custom.';

@@ -6,6 +6,8 @@
 codeunit 9219 "IDA 2D PDF417 Encoder" implements "Barcode Font Encoder 2D"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure EncodeFont(InputText: Text): Text
     var

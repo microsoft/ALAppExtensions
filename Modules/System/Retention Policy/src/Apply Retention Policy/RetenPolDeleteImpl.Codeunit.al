@@ -6,6 +6,8 @@
 codeunit 3916 "Reten. Pol. Delete. Impl." implements "Reten. Pol. Deleting"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TooManyRecordsToDeleteLbl: Label 'Reached the maximum number of records that can be deleted at the same time. The maximum number allowed is %1.', Comment = '%1 = integer';

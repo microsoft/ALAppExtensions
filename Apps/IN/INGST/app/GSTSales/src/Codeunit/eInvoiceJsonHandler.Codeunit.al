@@ -1144,7 +1144,7 @@ codeunit 18147 "e-Invoice Json Handler"
         SalesInvoiceLine: Record "Sales Invoice Line";
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
         AssessableAmount: Decimal;
-        GstRate: Integer;
+        GstRate: Decimal;
         CGSTRate: Decimal;
         SGSTRate: Decimal;
         IGSTRate: Decimal;
@@ -1299,10 +1299,10 @@ codeunit 18147 "e-Invoice Json Handler"
     end;
 
     local procedure WriteItem(
-        SlNo: Text[1];
+        SlNo: Text[10];
         ProductName: Text;
         HSNCode: Text[10];
-        GstRate: Integer;
+        GstRate: Decimal;
         Quantity: Decimal;
         Unit: Text[3];
         UnitPrice: Decimal;

@@ -547,7 +547,7 @@ report 31187 "Sales Order Confirmation CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(3) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(3) <> '';
     end;
 
     local procedure FormatDocumentFields(SalesHeader: Record "Sales Header")

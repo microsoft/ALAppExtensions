@@ -7,6 +7,8 @@ codeunit 151 "System Initialization Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         SignupContextCallerModuleInfo: ModuleInfo;
@@ -20,7 +22,7 @@ codeunit 151 "System Initialization Impl."
 #if not CLEAN20
 #pragma warning disable AL0432
 #endif
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", 'OnCompanyOpen', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", OnCompanyOpen, '', false, false)]
 #if not CLEAN20
 #pragma warning restore AL0432
 #endif
@@ -129,7 +131,7 @@ codeunit 151 "System Initialization Impl."
         exit(Company.Count() <= 1);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", 'OnCompanyOpenCompleted', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", OnCompanyOpenCompleted, '', false, false)]
     local procedure InitCompany()
     var
         SystemInitialization: Codeunit "System Initialization";
@@ -159,7 +161,7 @@ codeunit 151 "System Initialization Impl."
         DisableSystemUserCheck := true;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Signup Context Values", 'OnBeforeInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Signup Context Values", OnBeforeInsertEvent, '', false, false)]
     local procedure SetCallerModuleOnBeforeInsertSignupContext()
     begin
         NavApp.GetCallerModuleInfo(SignupContextCallerModuleInfo);

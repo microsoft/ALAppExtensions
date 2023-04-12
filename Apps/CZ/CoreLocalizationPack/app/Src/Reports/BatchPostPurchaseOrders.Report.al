@@ -20,8 +20,8 @@ report 31115 "Batch Post Purchase Orders CZL"
                 if ReplaceVATDateReq and (VATDateReq = 0D) then
                     Error(EnterVATDateErr);
 
-                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDateReq);
-                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"VAT Date CZL", VATDateReq);
+                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDateReq);
+                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"VAT Date", VATDateReq);
 
                 PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::Print, PrintDocReq);
                 PurchaseBatchPostMgt.RunBatch(
@@ -136,15 +136,14 @@ report 31115 "Batch Post Purchase Orders CZL"
 
         trigger OnOpenPage()
         var
-            GeneralLedgerSetup: Record "General Ledger Setup";
             PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+            VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         begin
-            GeneralLedgerSetup.Get();
             PurchasesPayablesSetup.Get();
             CalcInvDiscReq := PurchasesPayablesSetup."Calc. Inv. Discount";
             PrintDocReq := false;
             PrintDocVisible := PurchasesPayablesSetup."Post & Print with Job Queue";
-            VATDateVisible := GeneralLedgerSetup."Use VAT Date CZL";
+            VATDateVisible := VATReportingDateMgt.IsVATDateEnabled();
         end;
     }
 
@@ -171,7 +170,7 @@ report 31115 "Batch Post Purchase Orders CZL"
     begin
         GeneralLedgerSetup.Get();
         if NewReplaceVATDateReq or (NewVATDateReq <> 0D) then
-            GeneralLedgerSetup.TestField("Use VAT Date CZL");
+            GeneralLedgerSetup.TestIsVATDateEnabledCZL();
         VATDateReq := NewVATDateReq;
         ReplaceVATDateReq := NewReplaceVATDateReq;
         InitializeRequest(NewReceiveReq, NewInvReq, NewPostingDateReq, NewReplacePostingDateReq, NewReplaceDocumentDateReq, NewCalcInvDiscReq);

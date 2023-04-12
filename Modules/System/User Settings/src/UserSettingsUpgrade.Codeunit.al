@@ -7,6 +7,8 @@ codeunit 9222 "User Settings Upgrade"
 {
     Subtype = Upgrade;
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Extra Settings" = r,
                   tabledata "Application User Settings" = rim;
 
@@ -40,7 +42,7 @@ codeunit 9222 "User Settings Upgrade"
         exit('MS-417094-UserSettingsTransferFields-20211125');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", OnGetPerDatabaseUpgradeTags, '', false, false)]
     local procedure RegisterPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
     begin
         PerDatabaseUpgradeTags.Add(GetUserSettingsUpgradeTag());

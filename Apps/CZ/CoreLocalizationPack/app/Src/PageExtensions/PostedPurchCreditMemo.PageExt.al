@@ -7,6 +7,12 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
         movelast(General; "Posting Description")
 #pragma warning restore AL0432
 #else
+#if not CLEAN22
+        modify("VAT Reporting Date")
+        {
+            Visible = ReplaceVATDateEnabled and VATDateEnabled;
+        }
+#endif
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -20,12 +26,19 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
 #endif
         addafter("Posting Date")
         {
+#if not CLEAN22
             field("VAT Date CZL"; Rec."VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'VAT Date (Obsolete)';
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
                 Editable = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by VAT Reporting Date.';
+                Visible = not ReplaceVATDateEnabled;
             }
+#endif
             field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -95,7 +108,13 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
                 var
                     ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL");
+#if not CLEAN22
+#pragma warning disable AL0432
+                    if not ReplaceVATDateEnabled then
+                        Rec."VAT Reporting Date" := Rec."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
+                    ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date");
                     ChangeExchangeRate.Editable(false);
                     ChangeExchangeRate.RunModal();
                 end;
@@ -264,6 +283,13 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
             }
         }
     }
+#if not CLEAN22
+
+    trigger OnOpenPage()
+    begin
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+    end;
+#endif
 
     trigger OnAfterGetCurrRecord()
     begin
@@ -271,6 +297,10 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
     end;
 
     var
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+        ReplaceVATDateEnabled: Boolean;
+#endif
         VATLCYCorrectionCZLVisible: Boolean;
 
     procedure SetRecPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection: Boolean)

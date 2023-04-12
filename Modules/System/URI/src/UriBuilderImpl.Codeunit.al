@@ -6,6 +6,8 @@
 codeunit 3062 "Uri Builder Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure Init(Uri: Text)
     begin

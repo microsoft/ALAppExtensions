@@ -36,6 +36,53 @@ codeunit 4020 "Hybrid BC Last Wizard"
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanRunDiagnostic', '', false, false)]
     local procedure OnCanRunDiagnostic(var CanRun: Boolean)
+    begin
+        CanRunDiagnostic(CanRun);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Migration Management", 'CanRunDiagnostic', '', false, false)]
+    local procedure HandleOnCanRunDiagnostic(var CanRun: Boolean)
+    begin
+        CanRunDiagnostic(CanRun);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowMapUsers', '', false, false)]
+    local procedure OnCanShowMapUsers(var Enabled: Boolean)
+    begin
+        CanShowMapUsers(Enabled);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Migration Management", 'CanShowMapUsers', '', false, false)]
+    local procedure HandleOnCanShowMapUsers(var Enabled: Boolean)
+    begin
+        CanShowMapUsers(Enabled);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowSetupChecklist', '', false, false)]
+    local procedure OnCanShowSetupChecklist(var Enabled: Boolean)
+    begin
+        CanShowSetupChecklist(Enabled);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Migration Management", 'CanShowSetupChecklist', '', false, false)]
+    local procedure HandleOnCanShowSetupChecklist(var Enabled: Boolean)
+    begin
+        CanShowSetupChecklist(Enabled);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanMapCustomTables', '', false, false)]
+    local procedure OnCanMapCustomTables(var Enabled: Boolean)
+    begin
+        CanMapCustomTables(Enabled);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Migration Management", 'CanMapCustomTables', '', false, false)]
+    local procedure HandleOnCanMapCustomTables(var Enabled: Boolean)
+    begin
+        CanMapCustomTables(Enabled);
+    end;
+
+    local procedure CanRunDiagnostic(var CanRun: Boolean)
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
@@ -45,8 +92,7 @@ codeunit 4020 "Hybrid BC Last Wizard"
         CanRun := true;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowMapUsers', '', false, false)]
-    local procedure OnCanShowMapUsers(var Enabled: Boolean)
+    local procedure CanShowMapUsers(var Enabled: Boolean)
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
@@ -56,8 +102,7 @@ codeunit 4020 "Hybrid BC Last Wizard"
         Enabled := true;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowSetupChecklist', '', false, false)]
-    local procedure OnCanShowSetupChecklist(var Enabled: Boolean)
+    local procedure CanShowSetupChecklist(var Enabled: Boolean)
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
@@ -67,8 +112,7 @@ codeunit 4020 "Hybrid BC Last Wizard"
         Enabled := true;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanMapCustomTables', '', false, false)]
-    local procedure OnCanMapCustomTables(var Enabled: Boolean)
+    local procedure CanMapCustomTables(var Enabled: Boolean)
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin

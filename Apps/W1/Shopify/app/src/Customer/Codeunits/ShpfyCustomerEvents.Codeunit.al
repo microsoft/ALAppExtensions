@@ -3,9 +3,7 @@
 /// </summary>
 codeunit 30115 "Shpfy Customer Events"
 {
-    Access = Internal;
-
-    [InternalEvent(false)]
+    [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised After Create Customer.
     /// </summary>
@@ -23,12 +21,12 @@ codeunit 30115 "Shpfy Customer Events"
     /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="CountryCode">Parameter of type code[20].</param>
     /// <param name="TemplateCode">Parameter of type Code[20].</param>
-    internal procedure OnAfterFindCustomerTemplate(Shop: Record "Shpfy Shop"; CountryCode: code[20]; var TemplateCode: Code[10]);
+    internal procedure OnAfterFindCustomerTemplate(Shop: Record "Shpfy Shop"; CountryCode: code[20]; var TemplateCode: Code[20]);
     begin
     end;
 
 
-    [InternalEvent(false)]
+    [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised Before Create Customer.
     /// </summary>
@@ -40,7 +38,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [InternalEvent(false)]
+    [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised Before Send Create Shopify Customer.
     /// </summary>
@@ -51,7 +49,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [InternalEvent(false)]
+    [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised Before Send Update Shopify Customer.
     /// </summary>
@@ -72,7 +70,7 @@ codeunit 30115 "Shpfy Customer Events"
     /// <param name="CountryCode">Parameter of type code[20].</param>
     /// <param name="TemplateCode">Parameter of type Code[20].</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
-    internal procedure OnBeforeFindCustomerTemplate(Shop: Record "Shpfy Shop"; CountryCode: code[20]; var TemplateCode: Code[10]; var Handled: Boolean);
+    internal procedure OnBeforeFindCustomerTemplate(Shop: Record "Shpfy Shop"; CountryCode: code[20]; var TemplateCode: Code[20]; var Handled: Boolean);
     begin
     end;
 
@@ -87,7 +85,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [InternalEvent(false)]
+    [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised Before Find Mapping.
     /// </summary>
@@ -99,7 +97,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [InternalEvent(false)]
+    [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised After Update Customer.
     /// </summary>
@@ -110,7 +108,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [InternalEvent(false)]
+    [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised Before Update Customer.
     /// </summary>

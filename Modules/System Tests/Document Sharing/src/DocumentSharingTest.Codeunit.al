@@ -18,6 +18,8 @@ codeunit 132593 "Document Sharing Test"
         NoDocUploadedErr: Label 'We couldn''t share or open this file.';
         PromptQst: Label 'The file has been copied to OneDrive. What would you like to do with it?';
         NoPromptOpenOnlyQst: Label 'Would you like to open this file?';
+        AddEditedDocQst: Label 'Do you want to add the document you edited and saved?';
+        ExpectedResultTxt: Label 'This is the resulting text';
 
     [Test]
     procedure InvalidDocumentSharingRecGivesError()
@@ -337,12 +339,74 @@ codeunit 132593 "Document Sharing Test"
         LibraryAssert.ExpectedError(NoDocToShareErr);
     end;
 
+    [Test]
+    [HandlerFunctions('AddEditedDocument,HandleHyperlink')]
+    procedure EditIntentOpensAndGetsEditedDocumentWhenValid()
+    var
+        TempDocumentSharingRec: Record "Document Sharing" temporary;
+        DocumentSharing: Codeunit "Document Sharing";
+        Result: Text;
+        Instream: InStream;
+    begin
+        Init();
+
+        // [Given] A valid document sharing record and there is a document service to handle it.
+        BindSubscription(DocumentSharingTest);
+        InitDocumentSharingRec(TempDocumentSharingRec, '.docx');
+        TempDocumentSharingRec."Document Sharing Intent" := TempDocumentSharingRec."Document Sharing Intent"::Edit;
+        TempDocumentSharingRec.Modify();
+
+        // [When] Document Sharing is invoked.
+        DocumentSharing.Run(TempDocumentSharingRec);
+
+        // [Then] The document returned is correct.
+        TempDocumentSharingRec.Data.CreateInStream(InStream);
+        Instream.ReadText(Result);
+
+        LibraryAssert.AreEqual(ExpectedResultTxt, Result, 'Returned document does not match expected document');
+    end;
+
+    [Test]
+    procedure EditEnabledForFileTypes()
+    var
+        DocumentSharing: Codeunit "Document Sharing";
+        FilenameTxt: Label 'filename';
+        EditShouldBeEnabledErr: Label '%1 extension should be enabled for editing';
+        EditShouldNotBeEnabledErr: Label '%1 extension should not be enabled for editing';
+        Extension: Text;
+        ExtensionsString: Text;
+        Extensions: List of [Text];
+    begin
+        // [Given] A list of valid file extensions ('docx,xlsx'...)
+        ExtensionsString := 'docx,xlsx,pptx,odt,txt';
+        Extensions := ExtensionsString.Split(',');
+
+        // [When] Document Sharing check is invoked
+        // [Then] Edit is enabled for file extension
+        foreach Extension in Extensions do
+            LibraryAssert.IsTrue(DocumentSharing.EditEnabledForFile(FilenameTxt + '.' + Extension), StrSubstNo(EditShouldBeEnabledErr, Extension));
+
+        // [Given] A list of invalid file extensions ('doc,xls,xml'...)
+        ExtensionsString := 'doc,xls,xml';
+        Extensions := ExtensionsString.Split(',');
+
+        // [When] Document Sharing check is invoked
+        // [Then] Edit is not enabled for file extension
+        foreach Extension in Extensions do
+            LibraryAssert.IsFalse(DocumentSharing.EditEnabledForFile(FilenameTxt + '.' + Extension), StrSubstNo(EditShouldNotBeEnabledErr, Extension));
+    end;
+
     local procedure InitDocumentSharingRec(var DocumentSharingRec: Record "Document Sharing")
+    begin
+        InitDocumentSharingRec(DocumentSharingRec, '.pdf');
+    end;
+
+    local procedure InitDocumentSharingRec(var DocumentSharingRec: Record "Document Sharing"; Extension: Text)
     var
         OutStr: OutStream;
     begin
-        DocumentSharingRec.Name := 'My File.pdf';
-        DocumentSharingRec.Extension := '.pdf';
+        DocumentSharingRec.Name := 'My File' + Extension;
+        DocumentSharingRec.Extension := CopyStr(Extension, 1, MaxStrLen(DocumentSharingRec.Extension));
         DocumentSharingRec.Data.CreateOutStream(OutStr);
         OutStr.WriteText('data');
         DocumentSharingRec.Insert();
@@ -351,6 +415,30 @@ codeunit 132593 "Document Sharing Test"
     local procedure Init()
     begin
         UnbindSubscription(DocumentSharingTest);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Sharing", 'OnDeleteDocument', '', false, false)]
+    local procedure OnDeleteDocument(var DocumentSharing: Record "Document Sharing" temporary; var Handled: Boolean)
+    begin
+        if Handled then
+            exit;
+
+        Handled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Sharing", 'OnGetFileContents', '', false, false)]
+    local procedure OnGetFileContents(var DocumentSharing: Record "Document Sharing" temporary; var Handled: Boolean)
+    var
+        OutStream: OutStream;
+    begin
+        if Handled then
+            exit;
+
+        Handled := true;
+
+        DocumentSharing.Data.CreateOutStream(OutStream);
+        OutStream.WriteText(ExpectedResultTxt);
+        DocumentSharing.Modify();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Sharing", 'OnUploadDocument', '', false, false)]
@@ -404,6 +492,13 @@ codeunit 132593 "Document Sharing Test"
         LibraryAssert.AreEqual('Definitely a valid token', DocumentSharing.SharingToken.Value, 'Should match the provided token');
 
         DocumentSharing.Close();
+    end;
+
+    [ConfirmHandler]
+    procedure AddEditedDocument(Question: Text[1024]; var Reply: Boolean)
+    begin
+        LibraryAssert.AreEqual(AddEditedDocQst, Question, 'The prompt does not match the expected question');
+        Reply := True;
     end;
 
     [ConfirmHandler]

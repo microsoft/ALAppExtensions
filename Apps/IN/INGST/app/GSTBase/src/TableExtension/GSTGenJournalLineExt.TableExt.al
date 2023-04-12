@@ -430,6 +430,7 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
             TableRelation = Customer where("e-Commerce Operator" = const(true));
             DataClassification = CustomerContent;
         }
+
         field(18038; "e-Commerce Merchant Id"; Code[30])
         {
             Caption = 'e-Commerce Merchant Id';
@@ -438,10 +439,16 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
                 where(
                     "Merchant Id" = field("e-Commerce Merchant Id"),
                     "Customer No." = field("e-Commerce Customer"));
-            ObsoleteState = Pending;
             ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
+#if CLEAN23
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Pending;
             ObsoleteTag = '23.0';
+#endif
         }
+
         field(18052; "E-Comm. Merchant Id"; Code[30])
         {
             Caption = 'e-Commerce Merchant Id';

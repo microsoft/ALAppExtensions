@@ -10,5 +10,6 @@ permissionset 160 SECURITY
 
     IncludedPermissionSets = "SECURITY (System)",
                              "Azure AD Plan - Admin",
+                             "Security Groups - Admin",
                              "LOGIN";
 }

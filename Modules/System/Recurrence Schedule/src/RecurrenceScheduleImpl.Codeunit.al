@@ -5,6 +5,8 @@
 codeunit 4691 "Recurrence Schedule Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata Date = r,
                   tabledata "Recurrence Schedule" = ri;
 

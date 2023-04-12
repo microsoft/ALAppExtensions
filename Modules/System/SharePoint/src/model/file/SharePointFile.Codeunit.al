@@ -6,6 +6,8 @@
 codeunit 9106 "SharePoint File"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure Parse(Payload: Text; var SharePointFile: Record "SharePoint File" temporary)
