@@ -130,5 +130,17 @@
     {
       "codeunitName": "Media Cleanup Test",
       "method": "*"
+    },
+    {
+      "codeunitName": "User Login Time Tracker Test",
+      "method": "*"
+    },
+    {
+      "codeunitName": "Password Handler Test",
+      "method": "*"
+    },
+    {
+      "codeunitName": "Password Dialog Test",
+      "method": "*"
     }
 ]
