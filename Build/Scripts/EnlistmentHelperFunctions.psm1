@@ -113,14 +113,11 @@ function Get-PackageFromNuget() {
 
     $NugetExePath = Restore-NugetExe
 
-    $NugetPackagePath = Join-Path $OutputPath "$PackageId.$Version"
-    if (!(Test-Path $NugetPackagePath)) {
+    if (!(Test-Path $OutputPath)) {
         Write-Host "install $PackageId -Version $Version -OutputDirectory $OutputPath -Source https://api.nuget.org/v3/index.json"
         $NugetExeArguments = "install $PackageId -Version $Version -OutputDirectory $OutputPath -Source https://api.nuget.org/v3/index.json"
         Invoke-Expression "$NugetExePath $NugetExeArguments" | Out-Null
     }
-
-    return $NugetPackagePath
 }
 
 Export-ModuleMember -Function *-*

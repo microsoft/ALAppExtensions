@@ -76,22 +76,17 @@ function Restore-BaselinesFromArtifacts {
     )
     Import-Module -Name $PSScriptRoot\EnlistmentHelperFunctions.psm1
     $baselineFolder = Join-Path (Get-BaseFolder) "out/baselineartifacts/$BaselineVersion"
-
-    if (Test-Path $baselineFolder) {
-        Write-Host "Baseline folder $baselineFolder already exists. Skipping download."
-        return $true
-    } 
-
-    $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $BaselineVersion
-    if (-not $baselineURL) {
-        throw "Unable to find URL for baseline version $BaselineVersion"
-    }
-
     $baselineRestored = $false
 
-    Write-Host "Downloading from $baselineURL to $baselineFolder"
+    if (-not (Test-Path $baselineFolder)) {
+        $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $BaselineVersion
+        if (-not $baselineURL) {
+            throw "Unable to find URL for baseline version $BaselineVersion"
+        }
+        Write-Host "Downloading from $baselineURL to $baselineFolder"
+        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder | Out-Null
+    } 
 
-    Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder | Out-Null
     $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app" -ErrorAction SilentlyContinue
 
     if (-not $baselineApp) {
@@ -132,17 +127,13 @@ function Restore-BaselinesFromNuget {
     )
     Import-Module -Name $PSScriptRoot\EnlistmentHelperFunctions.psm1
     $baselineFolder = Join-Path (Get-BaseFolder) "out/baselinenugets/$BaselineVersion"
-
-    if (Test-Path $baselineFolder) {
-        Write-Host "Baseline folder $baselineFolder already exists. Skipping download."
-        return $true
-    } 
-
     $baselineRestored = $false
-    Write-Host "Downloading from nuget to $baselineFolder"
-    
-    $packagePath = Get-PackageFromNuget -PackageId "microsoft-ALAppExtensions-Modules-preview" -Version $BaselineVersion -OutputPath $baselineFolder
-    $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app" -ErrorAction SilentlyContinue
+
+    if (-not (Test-Path $baselineFolder)) {
+        Write-Host "Downloading from nuget to $baselineFolder"
+        Get-PackageFromNuget -PackageId "microsoft-ALAppExtensions-Modules-preview" -Version $BaselineVersion -OutputPath $baselineFolder
+    } 
+    $baselineApp = Get-ChildItem -Path "$baselineFolder/*/Apps/$ExtensionName/Default/*.app" -ErrorAction SilentlyContinue
 
     if (-not $baselineApp) {
         Write-Host "Unable to find baseline app for $ExtensionName in $packagePath"
