@@ -74,7 +74,13 @@ function Restore-BaselinesFromArtifacts {
         [Parameter(Mandatory = $true)] 
         [string] $AppSymbolsFolder
     )
-    $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+    Import-Module -Name $PSScriptRoot\EnlistmentHelperFunctions.psm1
+    $baselineFolder = Join-Path (Get-BaseFolder) "out/baselineartifacts/$BaselineVersion"
+
+    if (Test-Path $baselineFolder) {
+        Write-Host "Baseline folder $baselineFolder already exists. Skipping download."
+        return $true
+    } 
 
     $baselineURL = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $BaselineVersion
     if (-not $baselineURL) {
@@ -83,27 +89,23 @@ function Restore-BaselinesFromArtifacts {
 
     $baselineRestored = $false
 
-    try {
-        Write-Host "Downloading from $baselineURL to $baselineFolder"
+    Write-Host "Downloading from $baselineURL to $baselineFolder"
 
-        Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder | Out-Null
-        $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app" -ErrorAction SilentlyContinue
+    Download-Artifacts -artifactUrl $baselineURL -basePath $baselineFolder | Out-Null
+    $baselineApp = Get-ChildItem -Path "$baselineFolder/sandbox/$BaselineVersion/W1/Extensions" -Filter "*$($ExtensionName)_$($BaselineVersion).app" -ErrorAction SilentlyContinue
 
-        if (-not $baselineApp) {
-            Write-Host "Unable to find baseline app for $ExtensionName in $baselineFolder"
-        } else {
-            Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+    if (-not $baselineApp) {
+        Write-Host "Unable to find baseline app for $ExtensionName in $baselineFolder"
+    } else {
+        Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
 
-            if (-not (Test-Path $AppSymbolsFolder)) {
-                Write-Host "Creating folder $AppSymbolsFolder"
-                New-Item -ItemType Directory -Path $AppSymbolsFolder | Out-Null
-            }
-    
-            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder | Out-Null
-            $baselineRestored = $true
+        if (-not (Test-Path $AppSymbolsFolder)) {
+            Write-Host "Creating folder $AppSymbolsFolder"
+            New-Item -ItemType Directory -Path $AppSymbolsFolder | Out-Null
         }
-    } finally {
-        Remove-Item -Path $baselineFolder -Recurse -Force
+    
+        Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder | Out-Null
+        $baselineRestored = $true
     }
 
     return $baselineRestored
@@ -128,30 +130,31 @@ function Restore-BaselinesFromNuget {
         [Parameter(Mandatory = $true)] 
         [string] $AppSymbolsFolder
     )
+    Import-Module -Name $PSScriptRoot\EnlistmentHelperFunctions.psm1
+    $baselineFolder = Join-Path (Get-BaseFolder) "out/baselinenugets/$BaselineVersion"
 
-    $baselineFolder = Join-Path $([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+    if (Test-Path $baselineFolder) {
+        Write-Host "Baseline folder $baselineFolder already exists. Skipping download."
+        return $true
+    } 
+
     $baselineRestored = $false
-
-    try {
-        Write-Host "Downloading from nuget to $baselineFolder"
+    Write-Host "Downloading from nuget to $baselineFolder"
     
-        $packagePath = Get-PackageFromNuget -PackageId "microsoft-ALAppExtensions-Modules-preview" -Version $BaselineVersion -OutputPath $baselineFolder
-        $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app" -ErrorAction SilentlyContinue
+    $packagePath = Get-PackageFromNuget -PackageId "microsoft-ALAppExtensions-Modules-preview" -Version $BaselineVersion -OutputPath $baselineFolder
+    $baselineApp = Get-ChildItem -Path "$packagePath/Apps/$ExtensionName/Default/" -Filter "*.app" -ErrorAction SilentlyContinue
 
-        if (-not $baselineApp) {
-            Write-Host "Unable to find baseline app for $ExtensionName in $packagePath"
-        } else {
-            if (-not (Test-Path $AppSymbolsFolder)) {
-                Write-Host "Creating folder $AppSymbolsFolder"
-                New-Item -ItemType Directory -Path $AppSymbolsFolder | Out-Null
-            }
-
-            Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
-            Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder | Out-Null
-            $baselineRestored = $true
+    if (-not $baselineApp) {
+        Write-Host "Unable to find baseline app for $ExtensionName in $packagePath"
+    } else {
+        if (-not (Test-Path $AppSymbolsFolder)) {
+            Write-Host "Creating folder $AppSymbolsFolder"
+            New-Item -ItemType Directory -Path $AppSymbolsFolder | Out-Null
         }
-    } finally {
-        Remove-Item -Path $baselineFolder -Recurse -Force
+
+        Write-Host "Copying $($baselineApp.FullName) to $AppSymbolsFolder"
+        Copy-Item -Path $baselineApp.FullName -Destination $AppSymbolsFolder | Out-Null
+        $baselineRestored = $true
     }
 
     return $baselineRestored

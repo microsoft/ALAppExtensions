@@ -77,10 +77,7 @@ function Set-ConfigValue() {
     The path where the nuget.exe will be downloaded to
 #>
 function Restore-NugetExe() {
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$OutputPath
-    )
+    $OutputPath = Join-Path (Get-BaseFolder) "out"
 
     if (!(Test-Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath | Out-Null
@@ -114,7 +111,7 @@ function Get-PackageFromNuget() {
         [string]$OutputPath
     )
 
-    $NugetExePath = Restore-NugetExe -OutputPath $OutputPath
+    $NugetExePath = Restore-NugetExe
 
     $NugetPackagePath = Join-Path $OutputPath "$PackageId.$Version"
     if (!(Test-Path $NugetPackagePath)) {
