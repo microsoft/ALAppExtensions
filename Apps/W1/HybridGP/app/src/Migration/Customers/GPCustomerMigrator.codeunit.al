@@ -53,9 +53,11 @@ codeunit 4018 "GP Customer Migrator"
             CopyStr(PostingGroupDescriptionTxt, 1, 20),
             HelperFunctions.GetPostingAccountNumber('ReceivablesAccount')
         );
-        // Set the other two accounts here?
+
         Sender.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         Sender.ModifyCustomer(true);
+
+        CreateCustomerPostingGroupIfNeeded(Sender, RecordIdToMigrate);
     end;
 
 #if not CLEAN22
@@ -73,8 +75,8 @@ codeunit 4018 "GP Customer Migrator"
         MigrationGPCustTrans: Record "GP Customer Transactions";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
-        HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
+        ReceivablesAccountNo: Code[20];
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -86,6 +88,8 @@ codeunit 4018 "GP Customer Migrator"
             exit;
 
         MigrationGPCustomer.Get(RecordIdToMigrate);
+        GetCustomerReceivablesAccount(MigrationGPCustomer, GPCompanyAdditionalSettings, ReceivablesAccountNo);
+
         Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(CustomerBatchNameTxt, 1, 7), '', '');
         MigrationGPCustTrans.SetRange(CUSTNMBR, MigrationGPCustomer.CUSTNMBR);
         MigrationGPCustTrans.SetRange(TransType, MigrationGPCustTrans.TransType::Invoice);
@@ -100,7 +104,7 @@ codeunit 4018 "GP Customer Migrator"
                     MigrationGPCustTrans.CURTRXAM,
                     MigrationGPCustTrans.CURTRXAM,
                     '',
-                    HelperFunctions.GetPostingAccountNumber('ReceivablesAccount')
+                    ReceivablesAccountNo
                 );
                 Sender.SetGeneralJournalLineDocumentType(MigrationGPCustTrans.TransType);
                 DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, 10));
@@ -130,7 +134,7 @@ codeunit 4018 "GP Customer Migrator"
                     -MigrationGPCustTrans.CURTRXAM,
                     -MigrationGPCustTrans.CURTRXAM,
                     '',
-                    HelperFunctions.GetPostingAccountNumber('ReceivablesAccount')
+                    ReceivablesAccountNo
                 );
                 Sender.SetGeneralJournalLineDocumentType(MigrationGPCustTrans.TransType);
                 Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, 10));
@@ -157,7 +161,7 @@ codeunit 4018 "GP Customer Migrator"
                     -MigrationGPCustTrans.CURTRXAM,
                     -MigrationGPCustTrans.CURTRXAM,
                     '',
-                    HelperFunctions.GetPostingAccountNumber('ReceivablesAccount')
+                    ReceivablesAccountNo
                 );
                 Sender.SetGeneralJournalLineDocumentType(MigrationGPCustTrans.TransType);
                 Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, 10));
@@ -171,6 +175,86 @@ codeunit 4018 "GP Customer Migrator"
                 Sender.SetGeneralJournalLinePaymentTerms(CopyStr(MigrationGPCustTrans.PYMTRMID, 1, 10));
                 Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR, 1, 20) + '-' + CopyStr(MigrationGPCustTrans.GLDocNo, 1, 14));
             until MigrationGPCustTrans.Next() = 0;
+    end;
+#pragma warning restore AA0207
+
+    local procedure CreateCustomerPostingGroupIfNeeded(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPCustomer: Record "GP Customer";
+        GPRM00201: Record "GP RM00201";
+        GPRM00101: Record "GP RM00101";
+        CustomerPostingGroup: Record "Customer Posting Group";
+        HelperFunctions: Codeunit "Helper Functions";
+        ClassId: Text[20];
+        AccountNumber: Code[20];
+    begin
+        if not GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+            exit;
+
+        if not GPCustomer.Get(RecordIdToMigrate) then
+            exit;
+
+        if not GPRM00101.Get(GPCustomer.CUSTNMBR) then
+            exit;
+
+#pragma warning disable AA0139
+        ClassId := GPRM00101.CUSTCLAS.Trim();
+#pragma warning restore AA0139
+
+        if ClassId = '' then
+            exit;
+
+        if CustomerPostingGroup.Get(ClassId) then
+            exit;
+
+        if not GPRM00201.Get(ClassId) then
+            exit;
+
+        CustomerPostingGroup.Validate("Code", ClassId);
+        CustomerPostingGroup.Validate("Description", GPRM00201.CLASDSCR);
+
+        // Receivables Account
+        AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMARACC);
+        if AccountNumber <> '' then begin
+            HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+            CustomerPostingGroup.Validate("Receivables Account", AccountNumber);
+        end;
+
+        // Payment Disc. Debit Acc.
+        AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMTAKACC);
+        if AccountNumber <> '' then begin
+            HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+            CustomerPostingGroup.Validate("Payment Disc. Debit Acc.", AccountNumber);
+        end;
+
+        // Additional Fee Account
+        AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMFCGACC);
+        if AccountNumber <> '' then begin
+            HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+            CustomerPostingGroup.Validate("Additional Fee Account", AccountNumber);
+        end;
+
+        // Payment Disc. Credit Acc.
+        AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMAVACC);
+        if AccountNumber <> '' then begin
+            HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+            CustomerPostingGroup.Validate("Payment Disc. Credit Acc.", AccountNumber);
+        end;
+
+        // Payment Tolerance Debit Acc.
+        // Payment Tolerance Credit Acc.
+        AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMWRACC);
+        if AccountNumber <> '' then begin
+            HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+            CustomerPostingGroup.Validate("Payment Tolerance Debit Acc.", AccountNumber);
+            CustomerPostingGroup.Validate("Payment Tolerance Credit Acc.", AccountNumber);
+        end;
+
+        CustomerPostingGroup.Insert();
+
+        Sender.SetCustomerPostingGroup(ClassId);
+        Sender.ModifyCustomer(true);
     end;
 
     local procedure MigrateCustomerDetails(MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
@@ -422,89 +506,40 @@ codeunit 4018 "GP Customer Migrator"
         HelperFunctions.UpdateFieldWithValue(RecordVariant, MigrationGPCustTrans.FieldNo(GLDocNo), DocumentNo);
     end;
 
-    procedure MigrateCustomerClasses()
+    local procedure GetCustomerReceivablesAccount(var GPCustomer: Record "GP Customer"; var GPCompanyAdditionalSettings: Record "GP Company Additional Settings"; var ReceivablesAccountNo: Code[20])
     var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPRM00101: Record "GP RM00101";
         GPRM00201: Record "GP RM00201";
-        CustomerPostingGroup: Record "Customer Posting Group";
-        Customer: Record Customer;
         HelperFunctions: Codeunit "Helper Functions";
-        ClassId: Text[20];
-        AccountNumber: Code[20];
+        CustomerClassId: Text[20];
+        DefaultReceivablesAccount: Code[20];
     begin
+        DefaultReceivablesAccount := HelperFunctions.GetPostingAccountNumber('ReceivablesAccount');
+        ReceivablesAccountNo := DefaultReceivablesAccount;
+
         if not GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
             exit;
 
-        if not GPRM00101.FindSet() then
+        if not GPRM00101.Get(GPCustomer.CUSTNMBR) then
             exit;
 
-        if not GPRM00201.FindSet() then
+#pragma warning disable AA0139
+        CustomerClassId := GPRM00101.CUSTCLAS.Trim();
+#pragma warning restore AA0139
+
+        if CustomerClassId = '' then
             exit;
 
-        // Create the Customer Posting Groups
-        repeat
-            Clear(CustomerPostingGroup);
-#pragma warning disable AA0139
-            ClassId := GPRM00201.CLASSID.Trim();
-#pragma warning restore AA0139
+        if not GPRM00201.Get(CustomerClassId) then
+            exit;
 
-            if ClassId <> '' then
-                if not CustomerPostingGroup.Get(ClassId) then begin
-                    CustomerPostingGroup.Validate("Code", ClassId);
-                    CustomerPostingGroup.Validate("Description", GPRM00201.CLASDSCR);
-
-                    // Receivables Account
-                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMARACC);
-                    if AccountNumber <> '' then begin
-                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
-                        CustomerPostingGroup.Validate("Receivables Account", AccountNumber);
-                    end;
-
-                    // Payment Disc. Debit Acc.
-                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMTAKACC);
-                    if AccountNumber <> '' then begin
-                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
-                        CustomerPostingGroup.Validate("Payment Disc. Debit Acc.", AccountNumber);
-                    end;
-
-                    // Additional Fee Account
-                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMFCGACC);
-                    if AccountNumber <> '' then begin
-                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
-                        CustomerPostingGroup.Validate("Additional Fee Account", AccountNumber);
-                    end;
-
-                    // Payment Disc. Credit Acc.
-                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMAVACC);
-                    if AccountNumber <> '' then begin
-                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
-                        CustomerPostingGroup.Validate("Payment Disc. Credit Acc.", AccountNumber);
-                    end;
-
-                    // Payment Tolerance Debit Acc.
-                    // Payment Tolerance Credit Acc.
-                    AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMWRACC);
-                    if AccountNumber <> '' then begin
-                        HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
-                        CustomerPostingGroup.Validate("Payment Tolerance Debit Acc.", AccountNumber);
-                        CustomerPostingGroup.Validate("Payment Tolerance Credit Acc.", AccountNumber);
-                    end;
-
-                    CustomerPostingGroup.Insert();
-                end;
-        until GPRM00201.Next() = 0;
-
-        // Assign the Customer Posting Groups to the Customers
-        repeat
-#pragma warning disable AA0139
-            ClassId := GPRM00101.CUSTCLAS.Trim();
-#pragma warning restore AA0139
-            if ClassId <> '' then
-                if Customer.Get(GPRM00101.CUSTNMBR) then begin
-                    Customer.Validate("Customer Posting Group", ClassId);
-                    Customer.Modify(true);
-                end;
-        until GPRM00101.Next() = 0;
+        ReceivablesAccountNo := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMARACC);
     end;
+
+#if not CLEAN22
+    [Obsolete('Updated to use the OnMigrateCustomerPostingGroups event subscriber.', '22.0')]
+    procedure MigrateCustomerClasses()
+    begin
+    end;
+#endif
 }

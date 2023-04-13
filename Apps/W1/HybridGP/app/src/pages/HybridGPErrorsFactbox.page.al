@@ -39,6 +39,10 @@ page 4031 "Hybrid GP Errors Factbox"
                     Style = Unfavorable;
                     StyleExpr = (Rec.PostingErrorCount > 0);
                     ToolTip = 'Indicates the number of posting errors that occurred during the migration.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Removed functionality because of false positives and performance issues.';
+                    ObsoleteTag = '22.0';
 
                     trigger OnDrillDown()
                     begin
