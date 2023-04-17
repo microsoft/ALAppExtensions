@@ -273,7 +273,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppName := 'Bankfeed - Bank Statement Import & Reconciliation';
         AppPublisher := 'Softera Baltic';
         AppDescription := 'Bank statement import & reconciliation.';
-        AppProviderSupportURL := 'https://www.softera.lt/en/banking-automation-payment-management-bankfeed/';
+        AppProviderSupportURL := 'https://www.softera.lt/en/supported-banks-softera-bankfeed/';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.8051ee19-8246-489f-9f2c-4d89e1710f7e';
         AppApprovedFor := 'LT,DK,HU';
         AppWorksOn := 'LT,DK,HU';
