@@ -340,7 +340,7 @@ codeunit 9100 "SharePoint Client"
     /// <returns>True if the operation was successful; otherwise - false.</returns>
     procedure DeleteFileByServerRelativeUrl(ServerRelativeUrl: Text): Boolean
     begin
-        exit(SharePointClientImpl.DeleteFileByServerRelativeUrl(OdataId));
+        exit(SharePointClientImpl.DeleteFileByServerRelativeUrl(ServerRelativeUrl));
     end;
 
     /// <summary>
