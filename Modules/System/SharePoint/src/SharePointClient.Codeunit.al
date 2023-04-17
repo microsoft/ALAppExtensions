@@ -325,6 +325,16 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
+    /// Deletes a folder.
+    /// </summary>
+    /// <param name="OdataId">The odata.id parameter of the folder entity.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DeleteFolder(OdataId: Text): Boolean
+    begin
+        exit(SharePointClientImpl.DeleteFolder(OdataId));
+    end;
+
+    /// <summary>
     /// Adds a file to specific folder.
     /// </summary>
     /// <remarks>Requires UI interaction to pick a file.</remarks>
