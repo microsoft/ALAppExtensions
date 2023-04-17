@@ -291,6 +291,39 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
+    /// Downloads a file to an InStream.
+    /// </summary>
+    /// <param name="ServerRelativeUrl">URL of the file to Download.</param>
+    /// <param name="FileInStream">The InStream that will be populated with the file content.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; var FileInStream: InStream): Boolean
+    begin
+        exit(SharePointClientImpl.DownloadFileContentByServerRelativeUrl(ServerRelativeUrl, FileInStream));
+    end;
+
+    /// <summary>
+    /// Downloads a file to the client.
+    /// </summary>
+    /// <param name="ServerRelativeUrl">URL of the file to Download.</param>
+    /// <param name="FileName">Name to be given to the file on the client side. Does not need to match the server side name.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; FileName: Text): Boolean
+    begin
+        exit(SharePointClientImpl.DownloadFileContentByServerRelativeUrl(ServerRelativeUrl, FileName));
+    end;
+
+    /// <summary>
+    /// Downloads a file to a TempBlob.
+    /// </summary>
+    /// <param name="ServerRelativeUrl">URL of the file to Download.</param>
+    /// <param name="TempBlob">The TempBlob that will be populated with the file content.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
+    begin
+        exit(SharePointClientImpl.DownloadFileContentByServerRelativeUrl(ServerRelativeUrl, TempBlob));
+    end;
+
+    /// <summary>
     /// Deletes a file.
     /// </summary>
     /// <param name="OdataId">The odata.id parameter of the file entity.</param>
@@ -298,6 +331,16 @@ codeunit 9100 "SharePoint Client"
     procedure DeleteFile(OdataId: Text): Boolean
     begin
         exit(SharePointClientImpl.DeleteFile(OdataId));
+    end;
+
+    /// <summary>
+    /// Deletes a file.
+    /// </summary>
+    /// <param name="ServerRelativeUrl">URL of the file to delete.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DeleteFileByServerRelativeUrl(ServerRelativeUrl: Text): Boolean
+    begin
+        exit(SharePointClientImpl.DeleteFileByServerRelativeUrl(OdataId));
     end;
 
     /// <summary>
@@ -332,6 +375,16 @@ codeunit 9100 "SharePoint Client"
     procedure DeleteFolder(OdataId: Text): Boolean
     begin
         exit(SharePointClientImpl.DeleteFolder(OdataId));
+    end;
+
+    /// <summary>
+    /// Deletes a folder.
+    /// </summary>
+    /// <param name="ServerRelativeUrl">URL of the folder to delete.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DeleteFolderByServerRelativeUrl(ServerRelativeUrl: Text): Boolean
+    begin
+        exit(SharePointClientImpl.DeleteFolderByServerRelativeUrl(ServerRelativeUrl));
     end;
 
     /// <summary>

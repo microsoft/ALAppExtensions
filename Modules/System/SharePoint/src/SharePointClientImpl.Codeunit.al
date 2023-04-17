@@ -513,10 +513,63 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; var FileInStream: InStream): Boolean
+    begin
+        //GET https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')/$value
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('GetFileByServerRelativeUrl', ServerRelativeUrl);
+        SharePointUriBuilder.SetObject('$value');
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        SharePointOperationResponse.GetResultAsStream(FileInStream);
+        exit(true);
+    end;
+
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; FileName: Text): Boolean
+    var
+        FileInStream: InStream;
+    begin
+        if not DownloadFileContentByServerRelativeUrl(ServerRelativeUrl, FileInStream) then
+            exit(false);
+
+        DownloadFromStream(FileInStream, '', '', '', FileName);
+        exit(true);
+    end;
+
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        FileInStream: InStream;
+        FileOutStream: OutStream;
+    begin
+        if not DownloadFileContentByServerRelativeUrl(ServerRelativeUrl, FileInStream) then
+            exit(false);
+        TempBlob.CreateOutStream(FileOutStream);
+        CopyStream(FileOutStream, FileInStream);
+        exit(true);
+    end;
+
     procedure DeleteFile(OdataId: Text): Boolean
     begin
         //DELETE https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')
         SharePointUriBuilder.ResetPath(OdataId);
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Delete(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        exit(true);
+    end;
+
+    procedure DeleteFileByServerRelativeUrl(ServerRelativeUrl: Text): Boolean
+    begin
+        //DELETE https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('GetFileByServerRelativeUrl', ServerRelativeUrl);
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Delete(SharePointUriBuilder);
@@ -575,6 +628,20 @@ codeunit 9101 "SharePoint Client Impl."
     begin
         //DELETE https://{site_url}/_api/web/GetFolderByServerRelativeUrl('{folder_name}')
         SharePointUriBuilder.ResetPath(OdataId);
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Delete(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        exit(true);
+    end;
+
+    procedure DeleteFolderByServerRelativeUrl(ServerRelativeUrl: Text): Boolean
+    begin
+        //DELETE https://{site_url}/_api/web/GetFolderByServerRelativeUrl('{folder_name}')
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Delete(SharePointUriBuilder);
