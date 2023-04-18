@@ -35,6 +35,11 @@ table 30143 "Shpfy FulFillment Order Header"
             Caption = 'Shopify Location Id';
             DataClassification = SystemMetadata;
         }
+        field(7; "Updated At"; DateTime)
+        {
+            Caption = 'Updated At';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
