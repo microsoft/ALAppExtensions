@@ -46,14 +46,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v3.0
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
           shell: powershell
           eventId: "DO0091"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -61,7 +61,7 @@ jobs:
           
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: microsoft/AL-Go-Actions/DetermineProjectsToBuild@v3.0
+        uses: microsoft/AL-Go-Actions/DetermineProjectsToBuild@preview
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -80,7 +80,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "Secrets=$($deliveryTargetSecrets -join ',')"
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -155,14 +155,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           get: templateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v3.0
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@preview
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -199,14 +199,14 @@ jobs:
           path: '.dependencies'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -215,9 +215,25 @@ jobs:
           settingsJson: ${{ env.Settings }}
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,storageContext,gitHubPackagesContext'
 
+      - name: Determine ArtifactUrl
+        uses: microsoft/AL-Go-Actions/DetermineArtifactUrl@preview
+        id: determineArtifactUrl
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secretsJson: ${{ env.RepoSecrets }}
+
+      - name: Cache Business Central Artifacts
+        if: env.useCompilerFolder == 'True' && steps.determineArtifactUrl.outputs.ArtifactUrl && !contains(env.artifact,'INSIDERSASTOKEN')
+        uses: actions/cache@v3
+        with:
+          path: .artifactcache
+          key: ${{ steps.determineArtifactUrl.outputs.ArtifactUrl }}
+
       - name: Run pipeline
         id: RunPipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@v3.0
+        uses: microsoft/AL-Go-Actions/RunPipeline@preview
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
@@ -231,7 +247,7 @@ jobs:
 
       - name: Calculate Artifact names
         id: calculateArtifactsNames
-        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@v3.0
+        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
         if: success() || failure()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
@@ -317,7 +333,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@v3.0
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -325,7 +341,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@v3.0
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -362,14 +378,14 @@ jobs:
           path: '.dependencies'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -378,9 +394,25 @@ jobs:
           settingsJson: ${{ env.Settings }}
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,storageContext,gitHubPackagesContext'
 
+      - name: Determine ArtifactUrl
+        uses: microsoft/AL-Go-Actions/DetermineArtifactUrl@preview
+        id: determineArtifactUrl
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secretsJson: ${{ env.RepoSecrets }}
+
+      - name: Cache Business Central Artifacts
+        if: env.useCompilerFolder == 'True' && steps.determineArtifactUrl.outputs.ArtifactUrl && !contains(env.artifact,'INSIDERSASTOKEN')
+        uses: actions/cache@v3
+        with:
+          path: .artifactcache
+          key: ${{ steps.determineArtifactUrl.outputs.ArtifactUrl }}
+
       - name: Run pipeline
         id: RunPipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@v3.0
+        uses: microsoft/AL-Go-Actions/RunPipeline@preview
         env:
           BuildMode: ${{ matrix.buildMode }}
         with:
@@ -394,7 +426,7 @@ jobs:
 
       - name: Calculate Artifact names
         id: calculateArtifactsNames
-        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@v3.0
+        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
         if: success() || failure()
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
@@ -480,7 +512,7 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@v3.0
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -488,7 +520,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@v3.0
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -520,12 +552,12 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -608,7 +640,7 @@ jobs:
           Write-Host "projects=$projects"
 
       - name: Deploy
-        uses: microsoft/AL-Go-Actions/Deploy@v3.0
+        uses: microsoft/AL-Go-Actions/Deploy@preview
         env:
           AuthContext: ${{ steps.authContext.outputs.authContext }}
         with:
@@ -637,12 +669,12 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           shell: powershell
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -661,7 +693,7 @@ jobs:
           Write-Host "deliveryContext=$deliveryContext"
 
       - name: Deliver
-        uses: microsoft/AL-Go-Actions/Deliver@v3.0
+        uses: microsoft/AL-Go-Actions/Deliver@preview
         env:
           deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
         with:
@@ -681,7 +713,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v3.0
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
           shell: powershell
           eventId: "DO0091"
