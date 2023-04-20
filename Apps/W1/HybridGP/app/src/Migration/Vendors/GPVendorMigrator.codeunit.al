@@ -171,7 +171,7 @@ codeunit 4022 "GP Vendor Migrator"
     end;
 #pragma warning restore AA0207
 
-    local procedure CreateVendorPostingGroupIfNeeded(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure CreateVendorPostingGroupIfNeeded(var VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPPM00200: Record "GP PM00200";
@@ -246,8 +246,8 @@ codeunit 4022 "GP Vendor Migrator"
 
         VendorPostingGroup.Insert();
 
-        Sender.SetVendorPostingGroup(ClassId);
-        Sender.ModifyVendor(true);
+        VendorDataMigrationFacade.SetVendorPostingGroup(ClassId);
+        VendorDataMigrationFacade.ModifyVendor(true);
     end;
 
     local procedure MigrateVendorDetails(GPVendor: Record "GP Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")

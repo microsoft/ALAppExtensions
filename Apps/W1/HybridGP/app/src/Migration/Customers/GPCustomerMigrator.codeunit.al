@@ -178,7 +178,7 @@ codeunit 4018 "GP Customer Migrator"
     end;
 #pragma warning restore AA0207
 
-    local procedure CreateCustomerPostingGroupIfNeeded(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure CreateCustomerPostingGroupIfNeeded(var CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPCustomer: Record "GP Customer";
@@ -253,8 +253,8 @@ codeunit 4018 "GP Customer Migrator"
 
         CustomerPostingGroup.Insert();
 
-        Sender.SetCustomerPostingGroup(ClassId);
-        Sender.ModifyCustomer(true);
+        CustomerDataMigrationFacade.SetCustomerPostingGroup(ClassId);
+        CustomerDataMigrationFacade.ModifyCustomer(true);
     end;
 
     local procedure MigrateCustomerDetails(MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
