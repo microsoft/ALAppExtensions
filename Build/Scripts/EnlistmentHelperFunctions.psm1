@@ -73,14 +73,9 @@ function Set-ConfigValue() {
 .Synopsis
     Get the nuget.exe if it doesn't exist
     Downloads the nuget.exe if it doesn't exist
-.Parameter OutputPath
-    The path where the nuget.exe will be downloaded to
 #>
 function Restore-NugetExe() {
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$OutputPath
-    )
+    $OutputPath = Join-Path (Get-BaseFolder) "out"
 
     if (!(Test-Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath | Out-Null
@@ -114,16 +109,11 @@ function Get-PackageFromNuget() {
         [string]$OutputPath
     )
 
-    $NugetExePath = Restore-NugetExe -OutputPath $OutputPath
+    $NugetExePath = Restore-NugetExe
 
-    $NugetPackagePath = Join-Path $OutputPath "$PackageId.$Version"
-    if (!(Test-Path $NugetPackagePath)) {
-        Write-Host "install $PackageId -Version $Version -OutputDirectory $OutputPath -Source https://api.nuget.org/v3/index.json"
-        $NugetExeArguments = "install $PackageId -Version $Version -OutputDirectory $OutputPath -Source https://api.nuget.org/v3/index.json"
-        Invoke-Expression "$NugetExePath $NugetExeArguments" | Out-Null
-    }
-
-    return $NugetPackagePath
+    Write-Host "install $PackageId -Version $Version -OutputDirectory $OutputPath -Source https://api.nuget.org/v3/index.json"
+    $NugetExeArguments = "install $PackageId -Version $Version -OutputDirectory $OutputPath -Source https://api.nuget.org/v3/index.json"
+    Invoke-Expression "$NugetExePath $NugetExeArguments" | Out-Null
 }
 
 Export-ModuleMember -Function *-*
