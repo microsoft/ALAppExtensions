@@ -13,17 +13,46 @@ schedules:
 pool:
   name: dynamics-bc-managed-xl
 
-steps:
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@3
-  displayName: 'Security Tools - Run CredScan'
+resources:
+  repositories:
+  - repository: PipelineTemplates
+    type: git
+    name: Infrastructure-PipelineTemplates
+    ref: master
 
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@2
-  displayName: 'Security Tools - Run PoliCheck'
-  inputs:
-    targetType: F
-    targetArgument: $(Build.SourcesDirectory)
-    SOMEnabled: true
+variables:
+- template: corext-bootstrap-variables.yml@PipelineTemplates
+- template: security-tools-full-variables.yml@PipelineTemplates
+- name: OutputPath # Path where the build output from NAV-OfficialBuild is downloaded. It needs to be outside of the enlistment.
+  value: $(Pipeline.Workspace)\out
+- name: SourcePath
+  value: $(Build.SourcesDirectory)
+  readonly: true
+- name: PackagesPath
+  value: $(Build.ArtifactStagingDirectory)\packages
+  readonly: true
+- name: runCodesignValidationInjection
+  value: false
 
-# TODO: AntiMalware 
 
-# TODO: Component Governance (Should this be run?)
+jobs:
+- job: default_job
+  displayName: Run security tools
+  timeoutInMinutes: 480
+  steps:
+  - template: get-sources.yml@PipelineTemplates
+    parameters:
+      fetchTags: false
+  - template: security-tools-full.yml@PipelineTemplates
+    parameters:
+      OutputPath: $(OutputPath)
+      SourcePath: $(SourcePath)
+      BuildCommand: 'Powershell.exe -NonInteractive "cd $(Build.SourcesDirectory)"'
+      ExcludeSecurityTools:
+      - Semmle # Not applicable
+      - CodeSignValidation
+      IncludeOfficialBuildTools:
+      - ComponentGovernance
+      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+        TSA: true
+        TSAIncludeTools: 'PoliCheck'
