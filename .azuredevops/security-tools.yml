@@ -40,9 +40,6 @@ jobs:
   displayName: Run security tools
   timeoutInMinutes: 480
   steps:
-  - template: get-sources.yml@PipelineTemplates
-    parameters:
-      fetchTags: false
   - template: security-tools-full.yml@PipelineTemplates
     parameters:
       OutputPath: $(OutputPath)
