@@ -1,19 +1,29 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Security tools
 
-trigger:
-- main
+name: 1.0.$(Year:yy)$(DayOfYear).$(Rev:r) # This is the build number
+
+trigger: none
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily at midnight
+  branches:
+    include:
+    - main
 
 pool:
-  vmImage: ubuntu-latest
+  name: dynamics-bc-managed-xl
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@3
+  displayName: 'Security Tools - Run CredScan'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@2
+  displayName: 'Security Tools - Run PoliCheck'
+  inputs:
+    targetType: F
+    targetArgument: $(Build.SourcesDirectory)
+    SOMEnabled: true
+
+# TODO: AntiMalware 
+
+# TODO: Component Governance (Should this be run?)
