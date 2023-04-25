@@ -23,7 +23,7 @@ resources:
 variables:
 - template: corext-bootstrap-variables.yml@PipelineTemplates
 - template: security-tools-full-variables.yml@PipelineTemplates
-- name: OutputPath # Path where the build output from NAV-OfficialBuild is downloaded. It needs to be outside of the enlistment.
+- name: OutputPath
   value: $(Pipeline.Workspace)\out
 - name: SourcePath
   value: $(Build.SourcesDirectory)
@@ -40,6 +40,16 @@ jobs:
   displayName: Run security tools
   timeoutInMinutes: 480
   steps:
+  #- task: DownloadPackage@1
+  #  inputs:
+  #    feed: ''
+  #    definition: 'microsoft-ALAppExtensions-Modules-preview'
+  #    version: '22.1.957'
+  #    downloadPath: $(OutputPath)
+  - task: DownloadGitHubNugetPackage@1
+    inputs:
+      packageName: 'microsoft-ALAppExtensions-Modules-preview'
+      version: '22.1.957' 
   - template: security-tools-full.yml@PipelineTemplates
     parameters:
       OutputPath: $(OutputPath)
@@ -50,6 +60,3 @@ jobs:
       - CodeSignValidation
       IncludeOfficialBuildTools:
       - ComponentGovernance
-      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
-        TSA: true
-        TSAIncludeTools: 'PoliCheck'
