@@ -2,4 +2,5 @@ Param(
     [Hashtable]$parameters
 )
 
-. "$env:GITHUB_WORKSPACE/Build/Scripts/NewBcContainer.ps1" -parameters $parameters
+$newContainerScript = Join-Path $PSScriptRoot "../../Build/Scripts/NewBcContainer.ps1"
+. $newContainerScript -parameters $parameters
