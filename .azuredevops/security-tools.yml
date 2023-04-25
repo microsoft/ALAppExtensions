@@ -42,15 +42,10 @@ jobs:
   steps:
   - task: DownloadPackage@1
     inputs:
-      packageType: 'nuget'
-      feed: 'nuget.org'
+      feed: '/DynamicsSMBPackages'
       definition: 'microsoft-ALAppExtensions-Modules-preview'
       version: '22.1.957'
       downloadPath: $(OutputPath)
-  - task: DownloadGitHubNugetPackage@1
-    inputs:
-      packageName: 'microsoft-ALAppExtensions-Modules-preview'
-      version: '22.1.957' 
   - template: security-tools-full.yml@PipelineTemplates
     parameters:
       OutputPath: $(OutputPath)
