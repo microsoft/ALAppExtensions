@@ -50,7 +50,7 @@ jobs:
     parameters:
       OutputPath: $(OutputPath)
       SourcePath: $(SourcePath)
-      BuildCommand: 'Powershell.exe -NonInteractive "Add-Type -AssemblyName System.Web; $(Build.SourcesDirectory)\System Application\.AL-Go\localDevEnv.ps1 -containerName test -auth UserPassword -credential (New-Object pscredential admin, (ConvertTo-SecureString -String ([System.Web.Security.Membership]::GeneratePassword(10, 3)) -AsPlainText -Force))"'
+      BuildCommand: 'Powershell.exe -NonInteractive "$(Build.SourcesDirectory)\build.ps1"'
       GdnSuppressFile: $(Build.SourcesDirectory)\.azuredevops\security-tools.gdnsuppress
       ExcludeSecurityTools:
       - Semmle # Not applicable (AL not supported)
