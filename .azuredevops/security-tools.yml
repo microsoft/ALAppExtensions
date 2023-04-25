@@ -40,12 +40,13 @@ jobs:
   displayName: Run security tools
   timeoutInMinutes: 480
   steps:
-  #- task: DownloadPackage@1
-  #  inputs:
-  #    feed: ''
-  #    definition: 'microsoft-ALAppExtensions-Modules-preview'
-  #    version: '22.1.957'
-  #    downloadPath: $(OutputPath)
+  - task: DownloadPackage@1
+    inputs:
+      packageType: 'nuget'
+      feed: 'nuget.org'
+      definition: 'microsoft-ALAppExtensions-Modules-preview'
+      version: '22.1.957'
+      downloadPath: $(OutputPath)
   - task: DownloadGitHubNugetPackage@1
     inputs:
       packageName: 'microsoft-ALAppExtensions-Modules-preview'
