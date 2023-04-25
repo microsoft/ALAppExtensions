@@ -50,7 +50,7 @@ jobs:
     parameters:
       OutputPath: $(OutputPath)
       SourcePath: $(SourcePath)
-      BuildCommand: 'Powershell.exe -NonInteractive "$(Build.SourcesDirectory)\build.ps1"'
+      BuildCommand: 'Powershell.exe -NonInteractive "cd $(Build.SourcesDirectory); .\build.ps1"'
       GdnSuppressFile: $(Build.SourcesDirectory)\.azuredevops\security-tools.gdnsuppress
       ExcludeSecurityTools:
       - Semmle # Not applicable (AL not supported)
