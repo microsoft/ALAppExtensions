@@ -40,6 +40,11 @@ jobs:
   displayName: Run security tools
   timeoutInMinutes: 480
   steps:
+  - powershell: |
+      $gitcommit = $(Build.SourceVersion)
+      Write-Host "Commit: $gitcommit"
+      $gittag = git tag --contains $gitcommit
+      Write-Host "Tag: $gittag"
   - task: DownloadPackage@1
     inputs:
       feed: '/DynamicsSMBPackages'
