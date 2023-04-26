@@ -41,7 +41,7 @@ jobs:
   timeoutInMinutes: 480
   steps:
   - powershell: |
-      $gitcommit = $(Build.SourceVersion)
+      $gitcommit = "$(Build.SourceVersion)"
       Write-Host "Commit: $gitcommit"
       $gittag = git tag --contains $gitcommit
       Write-Host "Tag: $gittag"
