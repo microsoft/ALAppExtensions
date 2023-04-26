@@ -51,7 +51,8 @@ jobs:
       Write-Host "Repo version is: $repoVersion"
       $latestVersion = (Find-Package "microsoft-ALAppExtensions-Modules-preview" -Source "nuget.org" -AllVersions -MinimumVersion $repoVersion | Select Version -First 1).Version
       Write-Host "Latest version is: $latestVersion"
-      
+      # Updating the build number to the latest version
+      Write-Host "##vso[build.updatebuildnumber]$latestVersion"
       Write-Host "Build Number is now: $(Build.BuildNumber)"
   - task: DownloadPackage@1
     inputs:
