@@ -43,7 +43,7 @@ jobs:
   - checkout: self
     fetchTags: 'true'
   - powershell: |
-      $gitTag = git describe --tags --match "builds/*" --abbrev=0
+      $gitTag = git describe --tags --match "builds/*" --abbrev=0 --always
       $buildNumber = $gitTag -replace 'builds/', ''
       Write-Host "##vso[build.updatebuildnumber]$buildNumber"
       Write-Host "Build Number is now: $(Build.BuildNumber)"
