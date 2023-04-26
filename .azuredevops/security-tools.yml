@@ -43,18 +43,15 @@ jobs:
   - checkout: self
     fetchTags: 'true'
   - powershell: |
-      $tags = git tag -l
-      Write-Host "Tags: $($tags[0])"
-      Write-Host "Tags: $($tags.Count)"
-      $gitcommit = "$(Build.SourceVersion)"
-      Write-Host "Commit: $gitcommit"
-      $gittag = git tag --contains $gitcommit
-      Write-Host "Tag: $gittag"
+      $gitTag = git describe --tags --match "builds/*" --abbrev=0
+      $buildNumber = $gitTag -replace 'builds/', ''
+      Write-Host "##vso[build.updatebuildnumber]$buildNumber"
+      Write-Host "Build Number is now: $(Build.BuildNumber)"
   - task: DownloadPackage@1
     inputs:
       feed: '/DynamicsSMBPackages'
       definition: 'microsoft-ALAppExtensions-Modules-preview'
-      version: '22.1.957'
+      version: $(Build.BuildNumber)
       downloadPath: $(OutputPath)
   - template: security-tools-full.yml@PipelineTemplates
     parameters:
