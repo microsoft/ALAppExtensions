@@ -49,7 +49,7 @@ jobs:
       Import-Module $(Build.SourcesDirectory)\Build\Scripts\EnlistmentHelperFunctions.psm1
       $repoVersion = Get-ConfigValue -Key 'repoVersion'
       Write-Host "Repo version is: $repoVersion"
-      $latestVersion = (Find-Package "microsoft-ALAppExtensions-Modules-preview" -Source "nuget.org" -AllVersions -MinimumVersion $repoVersion | Select Version -First 1).Version)
+      $latestVersion = (Find-Package "microsoft-ALAppExtensions-Modules-preview" -Source "nuget.org" -AllVersions -MinimumVersion $repoVersion | Select Version -First 1).Version
       Write-Host "Latest version is: $latestVersion"
       
       Write-Host "Build Number is now: $(Build.BuildNumber)"
