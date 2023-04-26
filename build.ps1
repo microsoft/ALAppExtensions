@@ -1,6 +1,7 @@
 param
 (
-    [string] $ALGoProject = 'Test Stability Tools'
+    [Parameter(Mandatory=$true)]
+    [string] $ALGoProject
 )
 
 Add-Type -AssemblyName System.Web
