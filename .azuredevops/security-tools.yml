@@ -25,7 +25,7 @@ variables:
 - template: security-tools-full-variables.yml@PipelineTemplates
 - name: OutputPath
   value: $(Pipeline.Workspace)\out
-- name: SourcePath
+- name: SourcePath  
   value: $(Build.SourcesDirectory)
   readonly: true
 - name: PackagesPath
@@ -43,6 +43,9 @@ jobs:
   - checkout: self
     fetchTags: 'true'
   - powershell: |
+      $tags = git tag -l
+      Write-Host "Tags: $($tags[0])"
+      Write-Host "Tags: $($tags.Count)"
       $gitcommit = "$(Build.SourceVersion)"
       Write-Host "Commit: $gitcommit"
       $gittag = git tag --contains $gitcommit
