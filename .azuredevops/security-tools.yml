@@ -40,6 +40,8 @@ jobs:
   displayName: Run security tools
   timeoutInMinutes: 480
   steps:
+  - checkout: self
+    fetchTags: 'true'
   - powershell: |
       $gitcommit = "$(Build.SourceVersion)"
       Write-Host "Commit: $gitcommit"
