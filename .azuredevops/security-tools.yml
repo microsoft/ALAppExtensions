@@ -21,19 +21,8 @@ resources:
     ref: master
 
 variables:
-- template: corext-bootstrap-variables.yml@PipelineTemplates
 - template: security-tools-full-variables.yml@PipelineTemplates
-- name: OutputPath
-  value: $(Pipeline.Workspace)\out
-- name: SourcePath  
-  value: $(Build.SourcesDirectory)
-  readonly: true
-- name: PackagesPath
-  value: $(Build.ArtifactStagingDirectory)\packages
-  readonly: true
-- name: runCodesignValidationInjection
-  value: false
-
+- template: ./variables-common.yml
 
 jobs:
 - job: default_job
@@ -43,17 +32,10 @@ jobs:
   - checkout: self
     fetchTags: 'true'
   - powershell: |
-      #$gitTag = git describe --tags --match "builds/*" --abbrev=0 --always
-      #$buildNumber = $gitTag -replace 'builds/', ''
-      
       Import-Module $(Build.SourcesDirectory)\Build\Scripts\EnlistmentHelperFunctions.psm1
       $repoVersion = Get-ConfigValue -Key 'repoVersion'
-      Write-Host "Repo version is: $repoVersion"
       $latestVersion = (Find-Package "microsoft-ALAppExtensions-Modules-preview" -Source "nuget.org" -AllVersions -MinimumVersion $repoVersion | Select Version -First 1).Version
-      Write-Host "Latest version is: $latestVersion"
-      # Updating the build number to the latest version
       Write-Host "##vso[build.updatebuildnumber]$latestVersion"
-      Write-Host "Build Number is now: $(Build.BuildNumber)"
   - task: DownloadPackage@1
     inputs:
       feed: '/DynamicsSMBPackages'
