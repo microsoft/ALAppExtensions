@@ -9,3 +9,5 @@ $credential = New-Object pscredential admin, (ConvertTo-SecureString -String ([S
 
 $scriptPath = Join-Path $PSScriptRoot "$ALGoProject\.AL-Go\localDevEnv.ps1" -Resolve
 & $scriptPath -containerName test -auth UserPassword -credential $credential -licenseFileUrl 'none'
+
+Write-Host "Last exit code: $LASTEXITCODE"
