@@ -5,7 +5,7 @@
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "bcartifacts//22.0/base/latest",
+  "artifact": "bcinsider//22.1/base/latest/{INSIDERSASTOKEN}",
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "22.1",

@@ -1,4 +1,5 @@
 variables:
+- group: Infrastructure - AlAppExtensions
 - name: OutputPath
   value: $(Pipeline.Workspace)\out
 - name: SourcePath  

@@ -47,7 +47,7 @@ jobs:
     parameters:
       OutputPath: $(OutputPath)
       SourcePath: $(SourcePath)
-      BuildCommand: Powershell.exe -NonInteractive "cd $(Build.SourcesDirectory); .\build.ps1 -ALGoProject 'System Application'"
+      BuildCommand: Powershell.exe -NonInteractive "cd $(Build.SourcesDirectory); .\build.ps1 -ALGoProject 'System Application'" -InsiderSasToken $(InsiderSasToken) 
       GdnSuppressFile: $(Build.SourcesDirectory)\.azuredevops\security-tools.gdnsuppress
       ExcludeSecurityTools:
       - Semmle # Not applicable (AL not supported)
