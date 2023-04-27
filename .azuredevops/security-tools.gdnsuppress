@@ -3,8 +3,8 @@
   "suppressionSets": {
     "default": {
       "name": "default",
-      "createdDate": "2023-04-25 06:14:38Z",
-      "lastUpdatedDate": "2023-04-25 06:14:38Z"
+      "createdDate": "2023-04-26 19:48:13Z",
+      "lastUpdatedDate": "2023-04-26 19:48:13Z"
     }
   },
   "results": {
@@ -20,7 +20,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -36,7 +36,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -52,7 +52,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -68,7 +68,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -84,7 +84,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -100,7 +100,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -116,7 +116,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -132,7 +132,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -148,7 +148,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     },
@@ -164,7 +164,7 @@
       "tool": "credscan",
       "ruleId": "CSCAN-GENERAL0060",
       "justification": null,
-      "createdDate": "2023-04-25 06:14:38Z",
+      "createdDate": "2023-04-26 19:48:13Z",
       "expirationDate": null,
       "type": null
     }
