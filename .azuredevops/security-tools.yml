@@ -1,11 +1,10 @@
 # Security tools
-
 name: 1.0.$(Year:yy)$(DayOfYear).$(Rev:r) # This is the build number
 
 trigger: none
 schedules:
-- cron: "0 0 * * *"
-  displayName: Daily at midnight
+- cron: "0 0 * * 1"
+  displayName: Monday at midnight
   branches:
     include:
     - main
@@ -38,7 +37,7 @@ jobs:
       Write-Host "##vso[build.updatebuildnumber]$latestVersion"
     displayName: Get Latest Version
   - task: DownloadPackage@1
-    displayName: Download Package version $(Build.BuildNumber)
+    displayName: Download Package from NuGet
     inputs:
       feed: '/DynamicsSMBPackages'
       definition: 'microsoft-ALAppExtensions-Modules-preview'
