@@ -4,5 +4,6 @@
 # AL-Go files are owned by Engineering Systems
 .AL-Go/ @microsoft/dynamics-smb-engineering-systems
 
+/.azuredevops @microsoft/dynamics-smb-engineering-systems
 /.github @microsoft/dynamics-smb-engineering-systems
 /CODEOWNERS @microsoft/dynamics-smb-engineering-systems

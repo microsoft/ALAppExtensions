@@ -36,7 +36,9 @@ jobs:
       $repoVersion = Get-ConfigValue -Key 'repoVersion'
       $latestVersion = (Find-Package "microsoft-ALAppExtensions-Modules-preview" -Source "nuget.org" -AllVersions -MinimumVersion $repoVersion | Select Version -First 1).Version
       Write-Host "##vso[build.updatebuildnumber]$latestVersion"
+    displayName: Get Latest Version
   - task: DownloadPackage@1
+    displayName: Download Package version $(Build.BuildNumber)
     inputs:
       feed: '/DynamicsSMBPackages'
       definition: 'microsoft-ALAppExtensions-Modules-preview'
