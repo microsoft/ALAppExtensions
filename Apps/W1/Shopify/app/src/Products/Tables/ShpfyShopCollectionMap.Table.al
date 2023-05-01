@@ -40,7 +40,7 @@ table 30128 "Shpfy Shop Collection Map"
             DataClassification = CustomerContent;
         }
 
-        field(4; "Product Group Code"; Code[10])
+        field(4; "Product Group Code"; Code[20])
         {
             Caption = 'Product Group Code';
             DataClassification = CustomerContent;
