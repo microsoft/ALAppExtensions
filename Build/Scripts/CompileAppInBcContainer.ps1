@@ -4,7 +4,6 @@ Param(
     [Hashtable] $parameters
 )
 
-Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
 Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 
 $appBuildMode = Get-BuildMode
@@ -24,11 +23,13 @@ if($app)
     }
 
     if($appBuildMode -eq 'Translated') {
+        Import-Module $PSScriptRoot\AppTranslations.psm1
         Restore-TranslationsForApp -AppProjectFolder $parameters["appProjectFolder"]
     }
 
     # Restore the baseline app and generate the AppSourceCop.json file
     if (($parameters.ContainsKey("EnableAppSourceCop") -and $parameters["EnableAppSourceCop"]) -or ($parameters.ContainsKey("EnablePerTenantExtensionCop") -and $parameters["EnablePerTenantExtensionCop"])) {
+        Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
         Enable-BreakingChangesCheck -AppSymbolsFolder $parameters["appSymbolsFolder"] -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode | Out-Null
     }
 }
