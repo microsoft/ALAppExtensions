@@ -206,7 +206,7 @@ function Update-AppSourceCopVersion
 
     # All major versions greater than current but less or equal to main should be allowed
     $currentBuildVersion = [int] $buildVersion.Split('.')[0]
-    $maxAllowedObsoleteVersion = [int] (Get-ConfigValue -ConfigType "BuildConfig" -Key "MaxAllowedObsoleteVersion")
+    $maxAllowedObsoleteVersion = [int] (Get-ConfigValue -ConfigType BuildConfig -Key "MaxAllowedObsoleteVersion")
     $obsoleteTagAllowedVersions = @()
 
     for ($i = $currentBuildVersion + 1; $i -le $maxAllowedObsoleteVersion; $i++) {
@@ -241,38 +241,12 @@ function Get-BaselineVersion {
     Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 
     if ($BuildMode -eq "Clean") {
-        # Use latest available version from nuget if build mode is clean
-        return (Find-Package -Name "microsoft-ALAppExtensions-Modules-preview" -Source "https://nuget.org/api/v2/").Version
-    } else {
         $baselinePackage = Get-ConfigValue -Key "AppBaselines" -ConfigType Packages
-        return $baselinePackage.Version
-    }
-}
-
-<#
-.Synopsis
-    Gets the latest baseline version to use for the breaking change check
-#>
-function Get-LatestBaselineVersionFromArtifacts {
-
-    Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
-
-    [System.Version] $repoVersion = Get-ConfigValue -Key "repoVersion" -ConfigType AL-Go
-
-    if ($repoVersion.Minor -gt 0) {
-        $baselineMajorMinor = "$($repoVersion.Major).$($repoVersion.Minor - 1)"
     } else {
-        $baselineMajorMinor = "$($repoVersion.Major - 1)"
+        $baselinePackage = Get-ConfigValue -Key "AppBaselines-BCArtifacts" -ConfigType Packages
     }
-    $artifactUrl = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $baselineMajorMinor -select 'Latest'
-
-    if ($artifactUrl -and ($artifactUrl -match "\d+\.\d+\.\d+\.\d+")) {
-        $updatedBaseline = $Matches[0]
-    } else {
-        throw "Could not find baseline version from artifact url: $artifactUrl"
-    }
-
-    return $updatedBaseline
+    
+    return $baselinePackage.Version
 }
 
 Export-ModuleMember -Function *-*

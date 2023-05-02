@@ -1,4 +1,4 @@
-name: Update Baseline Version
+name: Update Packages Versions 
 
 on:
   workflow_dispatch:
@@ -24,6 +24,6 @@ jobs:
       
       - name: Update Baseline Version
         run: | 
-          Build/Scripts/UpdateBaselineVersion.ps1 -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
+          Build/Scripts/UpdatePackagesVersions.ps1 -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
         env:
           GITHUB_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
