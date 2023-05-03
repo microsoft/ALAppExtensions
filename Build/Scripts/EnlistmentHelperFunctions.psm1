@@ -97,7 +97,7 @@ function Get-PackageLatestVersion() {
     }
 
     $majorMinorVersion = Get-ConfigValue -Key "repoVersion" -ConfigType AL-Go
-    $maxVerion = "$majorMinorVersion.99999999.99"
+    $maxVerion = "$majorMinorVersion.99999999.99" # maximun version for the given major/minor
     $package = Get-ConfigValue -Key $PackageName -ConfigType Packages
 
     if(!$package) {
