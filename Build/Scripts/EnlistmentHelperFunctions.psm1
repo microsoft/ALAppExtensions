@@ -84,6 +84,15 @@ function Set-ConfigValue() {
     $BuildConfig | ConvertTo-Json -Depth 100 | Set-Content -Path $ConfigPath
 }
 
+<#
+.Synopsis
+    Gets the latest version of a package from a NuGet.org feed based on the repo version.
+.Description
+    The function will look for the latest version of the package that matches the `repoVersion` setting.
+    For example, if the repo version is 1.2, the function will look for the latest version of the package that has major.minor = 1.2.
+.Parameter PackageName
+    The name of the package
+#>
 function Get-PackageLatestVersion() {
     param(
         [Parameter(Mandatory=$true)]
@@ -98,16 +107,10 @@ function Get-PackageLatestVersion() {
 
     $majorMinorVersion = Get-ConfigValue -Key "repoVersion" -ConfigType AL-Go
     $maxVerion = "$majorMinorVersion.99999999.99" # maximun version for the given major/minor
-    $package = Get-ConfigValue -Key $PackageName -ConfigType Packages
 
-    if(!$package) {
-        throw "Package $PackageName not found in Packages config"
-    }
-
-    $packageId = $package.Id
     $packageSource = "https://api.nuget.org/v3/index.json" # default source
 
-    $latestVersion = (Find-Package $packageId -Source $packageSource -MaximumVersion $maxVerion -AllVersions | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
+    $latestVersion = (Find-Package $PackageName -Source $packageSource -MaximumVersion $maxVerion -AllVersions | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
 
     return $latestVersion
 }
