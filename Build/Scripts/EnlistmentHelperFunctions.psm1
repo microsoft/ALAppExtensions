@@ -156,14 +156,14 @@ function Install-PackageFromConfig
     [string] $OutputPath,
     [switch] $Force
 ) {
-    $package = Get-ConfigValue -Key $PackageName -ConfigType Packages
+    $packageConfig = Get-ConfigValue -Key $PackageName -ConfigType Packages
     
-    if(!$package) {
+    if(!$packageConfig) {
         throw "Package $PackageName not found in Packages config"
     }
 
-    $packageId = $package.Id
-    $packageVersion = $package.Version
+    $packageId = $packageConfig.Id
+    $packageVersion = $packageConfig.Version
     $packageSource = "https://api.nuget.org/v3/index.json" # default source
 
     $packagePath = Join-Path $OutputPath "$packageId.$packageVersion"
@@ -179,7 +179,7 @@ function Install-PackageFromConfig
     }
 
     Write-Host "Installing package $packageId; source $packageSource; version: $packageVersion; destination: $OutputPath"
-    Install-Package $packageId -Source $packageSource -RequiredVersion $latestpackageVersion -Destination $OutputPath -Force | Out-Null
+    Install-Package $packageId -Source $packageSource -RequiredVersion $packageVersion -Destination $OutputPath -Force | Out-Null
 
     return $packagePath
 }
