@@ -1,7 +1,7 @@
 {
     "AppTranslations": {
         "Id": "Microsoft.Dynamics.BusinessCentral.Translations",
-        "Version": "23.0.20230501.6"
+        "Version": "22.1.20230503.4"
     },
     "AppBaselines": {
         "Id": "microsoft-ALAppExtensions-Modules-preview",
