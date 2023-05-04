@@ -106,7 +106,7 @@ function Get-PackageLatestVersion() {
     }
 
     $majorMinorVersion = Get-ConfigValue -Key "repoVersion" -ConfigType AL-Go
-    $maxVerion = "$majorMinorVersion.99999999.99" # maximun version for the given major/minor
+    $maxVerion = "$majorMinorVersion.99999999.99" # maximum version for the given major/minor
 
     $packageSource = "https://api.nuget.org/v3/index.json" # default source
 
