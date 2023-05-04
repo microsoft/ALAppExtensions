@@ -1,10 +1,8 @@
 {
-    "AppTranslations": {
-        "Id": "Microsoft.Dynamics.BusinessCentral.Translations",
+    "Microsoft.Dynamics.BusinessCentral.Translations": {
         "Version": "22.1.20230503.4"
     },
-    "AppBaselines": {
-        "Id": "microsoft-ALAppExtensions-Modules-preview",
+    "microsoft-ALAppExtensions-Modules-preview": {
         "Version":  "22.1.963"
     },
     "AppBaselines-BCArtifacts": {

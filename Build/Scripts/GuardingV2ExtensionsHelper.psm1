@@ -126,7 +126,7 @@ function Restore-BaselinesFromNuget {
     $baselineFolder = Join-Path (Get-BaseFolder) "out/baselines/"
     $baselineRestored = $false
 
-    $baselineFolder = Install-PackageFromConfig -PackageName 'AppBaselines' -OutputPath $baselineFolder
+    $baselineFolder = Install-PackageFromConfig -PackageName 'microsoft-ALAppExtensions-Modules-preview' -OutputPath $baselineFolder
  
     $baselineApp = Get-ChildItem -Path "$baselineFolder/Apps/$AppName/Default/*.app" -ErrorAction SilentlyContinue
 
@@ -241,11 +241,11 @@ function Get-BaselineVersion {
     Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 
     if ($BuildMode -eq "Clean") {
-        $baselinePackage = Get-ConfigValue -Key "AppBaselines" -ConfigType Packages
+        $baselinePackage = Get-ConfigValue -Key "microsoft-ALAppExtensions-Modules-preview" -ConfigType Packages
     } else {
         $baselinePackage = Get-ConfigValue -Key "AppBaselines-BCArtifacts" -ConfigType Packages
     }
-    
+
     return $baselinePackage.Version
 }
 

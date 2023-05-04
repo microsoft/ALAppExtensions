@@ -162,24 +162,23 @@ function Install-PackageFromConfig
         throw "Package $PackageName not found in Packages config"
     }
 
-    $packageId = $packageConfig.Id
     $packageVersion = $packageConfig.Version
     $packageSource = "https://api.nuget.org/v3/index.json" # default source
 
-    $packagePath = Join-Path $OutputPath "$packageId.$packageVersion"
+    $packagePath = Join-Path $OutputPath "$PackageName.$packageVersion"
 
     if((Test-Path $packagePath) -and !$Force) {
-        Write-Host "Package $packageId is already installed; version: $packageVersion"
+        Write-Host "Package $PackageName is already installed; version: $packageVersion"
         return $packagePath
     }
 
-    $package = Find-Package $packageId -Source $packageSource -RequiredVersion $packageVersion
+    $package = Find-Package $PackageName -Source $packageSource -RequiredVersion $packageVersion
     if(!$package) {
-        throw "Package $packageId not found; source $packageSource. Version: $packageVersion"
+        throw "Package $PackageName not found; source $packageSource. Version: $packageVersion"
     }
 
-    Write-Host "Installing package $packageId; source $packageSource; version: $packageVersion; destination: $OutputPath"
-    Install-Package $packageId -Source $packageSource -RequiredVersion $packageVersion -Destination $OutputPath -Force | Out-Null
+    Write-Host "Installing package $PackageName; source $packageSource; version: $packageVersion; destination: $OutputPath"
+    Install-Package $PackageName -Source $packageSource -RequiredVersion $packageVersion -Destination $OutputPath -Force | Out-Null
 
     return $packagePath
 }
