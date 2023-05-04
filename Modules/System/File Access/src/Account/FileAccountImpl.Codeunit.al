@@ -196,6 +196,19 @@ codeunit 70001 "File Account Impl."
         FileScenario.SetDefaultFileAccount(FileAccount);
     end;
 
+    procedure BrowseAccount(var FileAccount: Record "File Account")
+    var
+        FileAccountBrowser: Page "File Account Browser";
+    begin
+        CheckPermissions();
+
+        if IsNullGuid(FileAccount."Account Id") then
+            exit;
+
+        FileAccountBrowser.BrowseFileAccount(FileAccount);
+        FileAccountBrowser.Run();
+    end;
+
     internal procedure CheckPermissions()
     begin
         if not IsUserFileAdmin() then

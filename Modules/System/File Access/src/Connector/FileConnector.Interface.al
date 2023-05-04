@@ -14,7 +14,7 @@ interface "File Connector"
     /// <param name="Path">The file path to list.</param>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
     /// <param name="Files">A list with all files stored in the path.</param>
-    procedure ListFiles(Path: Text; AccountId: Guid; var Files: List of [Text]);
+    procedure ListFiles(Path: Text; AccountId: Guid; var FileAccountContent: Record "File Account Content" temporary);
 
     /// <summary>
     /// Gets a file from the provided account.
@@ -30,7 +30,7 @@ interface "File Connector"
     /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
     /// <param name="Stream">The Stream were the file is read from.</param>
-    procedure SetFile(Path: Text; AccountId: Guid; Stream: OutStream);
+    procedure SetFile(Path: Text; AccountId: Guid; Stream: InStream);
 
     /// <summary>
     /// Checks if a file exists on the provided account.
@@ -53,7 +53,7 @@ interface "File Connector"
     /// <param name="Path">The file path to list.</param>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
     /// <param name="Files">A list with all directories stored in the path.</param>
-    procedure ListDirectories(Path: Text; AccountId: Guid; var Directiories: List of [Text]);
+    procedure ListDirectories(Path: Text; AccountId: Guid; var FileAccountContent: Record "File Account Content" temporary);
 
     /// <summary>
     /// Creates a directory on the provided account.

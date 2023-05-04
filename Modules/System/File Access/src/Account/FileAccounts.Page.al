@@ -128,7 +128,6 @@ page 70000 "File Accounts"
 
         area(Processing)
         {
-            //TODO add file browser here
             action(MakeDefault)
             {
                 ApplicationArea = All;
@@ -146,6 +145,27 @@ page 70000 "File Accounts"
                 trigger OnAction()
                 begin
                     FileAccountImpl.MakeDefault(Rec);
+
+                    UpdateAccounts := true;
+                    CurrPage.Update(false);
+                end;
+            }
+            action(BrowseAccount)
+            {
+                ApplicationArea = All;
+                Image = SelectField;
+                Caption = 'Browse Account';
+                ToolTip = 'Opens a File Browser and shows the content of the selected account.';
+                Visible = (not IsInLookupMode) and CanUserManageFileSetup;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                Scope = Repeater;
+
+                trigger OnAction()
+                begin
+                    FileAccountImpl.BrowseAccount(Rec);
 
                     UpdateAccounts := true;
                     CurrPage.Update(false);

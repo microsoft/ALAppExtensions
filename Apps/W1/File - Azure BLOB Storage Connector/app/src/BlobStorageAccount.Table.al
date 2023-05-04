@@ -25,11 +25,11 @@ table 80100 "Blob Storage Account"
             DataClassification = CustomerContent;
             Caption = 'Name of account';
         }
-        field(3; "Storage Account Name"; Text[50])
+        field(3; "Storage Account Name"; Text[2048])
         {
             Caption = 'Storage Account Name';
         }
-        field(4; "Container Name"; Text[50])
+        field(4; "Container Name"; Text[2048])
         {
             Caption = 'Container Name';
         }

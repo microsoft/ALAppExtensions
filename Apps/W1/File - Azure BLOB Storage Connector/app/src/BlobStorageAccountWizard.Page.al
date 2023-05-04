@@ -78,6 +78,14 @@ page 80101 "Blob Storage Account Wizard"
                 ToolTip = 'Specifies the container to use of the Storage Blob.';
                 ShowMandatory = true;
 
+                trigger OnLookup(var Text: Text): Boolean
+                var
+                    BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
+                begin
+                    BlobStorageConnectorImpl.LookUpContainer(Rec, Password, Text);
+                    exit(true);
+                end;
+
                 trigger OnValidate()
                 begin
                     IsNextEnabled := BlobStorageConnectorImpl.IsAccountValid(Rec);
