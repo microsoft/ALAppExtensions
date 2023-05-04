@@ -17,7 +17,7 @@ $updatesAvailable = $false
 
 foreach($package in $packages)
 {
-    $currentVersion = Get-ConfigValue -Key $package -ConfigType Packages
+    $currentVersion = $(Get-ConfigValue -Key $package -ConfigType Packages).Version
     $latestVersion = Get-PackageLatestVersion -PackageName $package
 
     if ([System.Version] $latestVersion -gt [System.Version] $currentVersion) {
@@ -32,7 +32,7 @@ foreach($package in $packages)
 if ($updatesAvailable) {
     # Create branch and push changes
     Set-GitConfig -Actor $Actor
-    $BranchName = New-TopicBranch -Category "UpdatePackagesVersions/$latestBaseline"
+    $BranchName = New-TopicBranch -Category "UpdatePackageVersions"
     $title = "Update package versions"
     Push-GitBranch -BranchName $BranchName -Files @("Build/Packages.json") -CommitMessage $title
 
