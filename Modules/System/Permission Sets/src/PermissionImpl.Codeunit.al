@@ -156,6 +156,22 @@ codeunit 9864 "Permission Impl."
         end;
     end;
 
+    procedure GetObjectionCaptionAndName(var ExpandedPermission: Record "Expanded Permission"; var ObjectCaption: Text; var ObjectName: Text)
+    var
+        AllObj: Record AllObj;
+    begin
+        if ExpandedPermission."Object ID" <> 0 then begin
+            ExpandedPermission.CalcFields("Object Name");
+            ObjectCaption := ExpandedPermission."Object Name";
+            ObjectName := '';
+            if AllObj.Get(ExpandedPermission."Object Type", ExpandedPermission."Object ID") then
+                ObjectName := AllObj."Object Name";
+        end else begin
+            ObjectName := CopyStr(StrSubstNo(AllObjExceptTxt, ExpandedPermission."Object Type"), 1, MaxStrLen(ExpandedPermission."Object Name"));
+            ObjectCaption := ObjectName;
+        end;
+    end;
+
     procedure GetObjectName(var ExpandedPermission: Record "Expanded Permission"; var ObjectName: Text)
     begin
         if ExpandedPermission."Object ID" <> 0 then begin
