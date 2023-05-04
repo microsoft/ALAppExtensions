@@ -22,6 +22,8 @@ function Restore-TranslationsForApp {
     $translationsOutputFolder = Join-Path (Get-BaseFolder) "out/translations/"
     $translationPackagePath = Install-PackageFromConfig -PackageName "AppTranslations" -OutputPath $translationsOutputFolder
     $tranlationsPath = Join-Path $translationPackagePath "Translations"
+
+    $translationsFound = $false
     
     # Copy the translations from the package to the app folder
     Get-ChildItem $tranlationsPath -Filter *-* -Directory | ForEach-Object {
@@ -31,9 +33,15 @@ function Restore-TranslationsForApp {
         # Translations are located in the ExtensionsV2 folder
         $translationFilePath = Join-Path $localeFolder "ExtensionsV2/$appName.$locale.xlf" 
         if(Test-Path $translationFilePath) {
-            Write-Host "Found translation for $appName in $locale"
+            Write-Host "Using translation for $appName in $locale"
+            $translationsFound = $true
+
             Copy-Item -Path $translationFilePath -Destination $appTranslationsFolder -Force | Out-Null
         }
+    }
+
+    if (-not $translationsFound) {
+        Write-Host "No translations found for $appName"
     }
 }
 
