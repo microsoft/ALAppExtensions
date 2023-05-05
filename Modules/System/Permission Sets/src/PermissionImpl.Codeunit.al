@@ -117,9 +117,9 @@ codeunit 9864 "Permission Impl."
     begin
         if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then begin
             TenantPermission."Read Permission" := TenantPermission."Read Permission"::Yes;
-            TenantPermission."Insert Permission" := TenantPermission."Insert Permission"::Yes;
-            TenantPermission."Modify Permission" := TenantPermission."Modify Permission"::Yes;
-            TenantPermission."Delete Permission" := TenantPermission."Delete Permission"::Yes;
+            TenantPermission."Insert Permission" := TenantPermission."Insert Permission"::" ";
+            TenantPermission."Modify Permission" := TenantPermission."Modify Permission"::" ";
+            TenantPermission."Delete Permission" := TenantPermission."Delete Permission"::" ";
         end else
             TenantPermission."Execute Permission" := TenantPermission."Execute Permission"::Yes;
     end;
