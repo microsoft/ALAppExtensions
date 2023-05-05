@@ -180,7 +180,7 @@ page 70005 "File Account Browser"
     local procedure BrowseFolder(Path: Text)
     begin
         CurrPath := Path;
-        ParentFolderExists := FileSystem.GetParentPath(Path) <> '';
+        ParentFolderExists := Path <> '';
         Rec.DeleteAll();
 
         FileSystem.ListDirectories(Path, Rec);
