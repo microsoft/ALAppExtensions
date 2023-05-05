@@ -3,7 +3,9 @@ page 70005 "File Account Browser"
     Caption = 'File Account Browser';
     PageType = List;
     SourceTable = "File Account Content";
-    Editable = false;
+    ModifyAllowed = false;
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {
@@ -22,13 +24,26 @@ page 70005 "File Account Browser"
                         if Rec.Type = Rec.Type::Directory then
                             BrowseFolder(Rec)
                         else
-                            DownloadFile(Rec);
+                            if not IsInLookupMode then
+                                DownloadFile(Rec);
                     end;
                 }
                 field("Type"; Rec."Type")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Type field.';
+                }
+            }
+
+            group(SaveFileNameGroup)
+            {
+                Caption = '', Locked = true;
+                ShowCaption = false;
+                Visible = ShowFileName;
+
+                field(SaveFileNameField; SaveFileName)
+                {
+                    Caption = 'Filename';
                 }
             }
         }
@@ -55,9 +70,7 @@ page 70005 "File Account Browser"
                     if CurrPath = '' then
                         exit;
 
-                    if (CurrPath.TrimEnd(IFileConnector.PathSeparator()).Contains(IFileConnector.PathSeparator())) then
-                        Path := CurrPath.TrimEnd(IFileConnector.PathSeparator()).Substring(1, CurrPath.LastIndexOf(IFileConnector.PathSeparator()));
-
+                    Path := FileSystem.GetParentPath(CurrPath);
                     BrowseFolder(Path);
                 end;
             }
@@ -69,6 +82,8 @@ page 70005 "File Account Browser"
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
+                Visible = not IsInLookupMode;
+                Enabled = not IsInLookupMode;
 
                 trigger OnAction()
                 begin
@@ -80,61 +95,89 @@ page 70005 "File Account Browser"
     }
 
     var
-        IFileConnector: Interface "File Connector";
-        AccountId: Guid;
-        CurrPath: Text;
-        ParentFolderExists: Boolean;
+        FileSystem: Codeunit "File System";
+        CurrPath, CurrFileFilter, SaveFileName : Text;
+        ParentFolderExists, DoNotLoadFields, IsInLookupMode, ShowFileName : Boolean;
 
-    procedure BrowseFileAccount(FileAccount: Record "File Account")
+    internal procedure SetFileAcconut(FileAccount: Record "File Account")
     begin
-        BrowseFileAccount(FileAccount, '');
+        FileSystem.Initialize(FileAccount);
     end;
 
-    procedure BrowseFileAccount(FileAccount: Record "File Account"; Path: Text)
+    internal procedure BrowseFileAccount(Path: Text)
     begin
-        AccountId := FileAccount."Account Id";
-        IFileConnector := FileAccount.Connector;
         BrowseFolder('');
+    end;
+
+    internal procedure EnableFileLookupMode(Path: Text; FileFilter: Text)
+    begin
+        CurrFileFilter := FileFilter;
+        ApplyFileFilter();
+        EnableLookupMode();
+        BrowseFolder(Path);
+    end;
+
+    internal procedure EnableDirectoryLookupMode(Path: Text)
+    begin
+        DoNotLoadFields := true;
+        EnableLookupMode();
+        BrowseFolder(Path);
+    end;
+
+    internal procedure EnableSaveFileLookupMode(Path: Text; FileExtension: Text)
+    var
+        FileFilterTok: Label '*.%1', Locked = true;
+    begin
+        ShowFileName := true;
+        EnableLookupMode();
+        BrowseFolder(Path);
+        CurrFileFilter := StrSubstNo(FileFilterTok, FileExtension);
+        ApplyFileFilter();
+    end;
+
+    internal procedure GetCurrentDirectory(): Text
+    begin
+        exit(CurrPath);
+    end;
+
+    internal procedure GetFileName(): Text
+    begin
+        exit(SaveFileName);
+    end;
+
+    local procedure EnableLookupMode()
+    begin
+        IsInLookupMode := true;
+        CurrPage.LookupMode(true);
     end;
 
     local procedure BrowseFolder(var TempFileAccountContent: Record "File Account Content" temporary)
     var
         Path: Text;
     begin
-        Path := CombinePath(TempFileAccountContent."Parent Directory", TempFileAccountContent.Name);
+        Path := FileSystem.CombinePath(TempFileAccountContent."Parent Directory", TempFileAccountContent.Name);
         BrowseFolder(Path);
     end;
 
     local procedure BrowseFolder(Path: Text)
-    var
-        Directiories: List of [Text];
-        Files: List of [Text];
-        Entry: Text;
     begin
         CurrPath := Path;
         ParentFolderExists := CurrPath <> '';
         Rec.DeleteAll();
-        IFileConnector.ListDirectories(Path, AccountId, Rec);
-        IFileConnector.ListFiles(Path, AccountId, Rec);
-        IF Rec.FindFirst() then;
-    end;
 
-    local procedure CombinePath(ParentDirectory: Text; Name: Text): Text
-    begin
-        if ParentDirectory = '' then
-            exit(Name);
+        FileSystem.ListDirectories(Path, Rec);
+        if not DoNotLoadFields then
+            FileSystem.ListFiles(Path, Rec);
 
-        if not ParentDirectory.EndsWith(IFileConnector.PathSeparator()) then
-            ParentDirectory += IFileConnector.PathSeparator();
-
-        exit(ParentDirectory + Name);
+        ApplyFileFilter();
+        if Rec.FindFirst() then;
     end;
 
     local procedure DownloadFile(var TempFileAccountContent: Record "File Account Content" temporary)
     var
         Stream: InStream;
     begin
-        IFileConnector.GetFile(CombinePath(TempFileAccountContent."Parent Directory", TempFileAccountContent.Name), AccountId, Stream);
+        FileSystem.GetFile(FileSystem.CombinePath(TempFileAccountContent."Parent Directory", TempFileAccountContent.Name), Stream);
         DownloadFromStream(Stream, '', '', '', TempFileAccountContent.Name);
     end;
 
@@ -147,6 +190,20 @@ page 70005 "File Account Browser"
         if not UploadIntoStream(UploadDialogTxt, '', '', FromFile, Stream) then
             exit;
 
-        IFileConnector.SetFile(CombinePath(CurrPath, FromFile), AccountId, Stream);
+        FileSystem.SetFile(FileSystem.CombinePath(CurrPath, FromFile), Stream);
+    end;
+
+    local procedure ApplyFileFilter()
+    var
+        CurrFilterGroup: Integer;
+    begin
+        if CurrFileFilter = '' then
+            exit;
+
+        CurrFilterGroup := Rec.FilterGroup();
+        Rec.FilterGroup(-1);
+        Rec.SetRange(Type, Type::Directory);
+        Rec.SetFilter(Name, CurrFileFilter);
+        Rec.FilterGroup(CurrFilterGroup);
     end;
 }
