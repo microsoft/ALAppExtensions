@@ -27,49 +27,68 @@ codeunit 70005 "File System Impl."
     internal procedure ListFiles(Path: Text; var FileAccountContent: Record "File Account Content" temporary)
     begin
         CheckInitialization();
-        IFileConnector.ListFiles(Path, CurrFileAccount."Account Id", FileAccountContent);
+        IFileConnector.ListFiles(CurrFileAccount."Account Id", Path, FileAccountContent);
     end;
 
     internal procedure GetFile(Path: Text; Stream: InStream)
     begin
         CheckInitialization();
-        IFileConnector.GetFile(Path, CurrFileAccount."Account Id", Stream);
+        IFileConnector.GetFile(CurrFileAccount."Account Id", Path, Stream);
     end;
 
     internal procedure SetFile(Path: Text; Stream: InStream)
     begin
         CheckInitialization();
-        IFileConnector.SetFile(Path, CurrFileAccount."Account Id", Stream);
+        IFileConnector.SetFile(CurrFileAccount."Account Id", Path, Stream);
+    end;
+
+
+    internal procedure CopyFile(SourcePath: Text; TargetPath: Text)
+    begin
+        CheckInitialization();
+        IFileConnector.CopyFile(CurrFileAccount."Account Id", SourcePath, TargetPath);
+    end;
+
+    internal procedure MoveFile(SourcePath: Text; TargetPath: Text)
+    begin
+        CheckInitialization();
+        IFileConnector.MoveFile(CurrFileAccount."Account Id", SourcePath, TargetPath);
     end;
 
     internal procedure FileExists(Path: Text): Boolean
     begin
         CheckInitialization();
-        exit(IFileConnector.FileExists(Path, CurrFileAccount."Account Id"));
+        exit(IFileConnector.FileExists(CurrFileAccount."Account Id", Path));
     end;
 
     internal procedure DeleteFile(Path: Text)
     begin
         CheckInitialization();
-        IFileConnector.DeleteFile(Path, CurrFileAccount."Account Id");
+        IFileConnector.DeleteFile(CurrFileAccount."Account Id", Path);
     end;
 
     internal procedure ListDirectories(Path: Text; var FileAccountContent: Record "File Account Content" temporary)
     begin
         CheckInitialization();
-        IFileConnector.ListDirectories(Path, CurrFileAccount."Account Id", FileAccountContent);
+        IFileConnector.ListDirectories(CurrFileAccount."Account Id", Path, FileAccountContent);
     end;
 
     internal procedure CreateDirectory(Path: Text)
     begin
         CheckInitialization();
-        IFileConnector.CreateDirectory(Path, CurrFileAccount."Account Id");
+        IFileConnector.CreateDirectory(CurrFileAccount."Account Id", Path);
     end;
 
     internal procedure DirectoryExists(Path: Text): Boolean
     begin
         CheckInitialization();
-        exit(IFileConnector.DirectoryExists(Path, CurrFileAccount."Account Id"));
+        exit(IFileConnector.DirectoryExists(CurrFileAccount."Account Id", Path));
+    end;
+
+    internal procedure DeleteDirectory(Path: Text)
+    begin
+        CheckInitialization();
+        IFileConnector.DeleteDirectory(CurrFileAccount."Account Id", Path);
     end;
 
     internal procedure PathSeparator(): Text
@@ -95,11 +114,12 @@ codeunit 70005 "File System Impl."
             ParentPath := Path.TrimEnd(PathSeparator()).Substring(1, Path.LastIndexOf(PathSeparator()));
     end;
 
-    internal procedure SelectFolderUI(Path: Text): Text
+    internal procedure SelectFolderUI(Path: Text; DialogTitle: Text): Text
     var
         FileAccountContent: Record "File Account Content";
         FileAccountBrowser: Page "File Account Browser";
     begin
+        FileAccountBrowser.SetPageCaption(DialogTitle);
         FileAccountBrowser.SetFileAcconut(CurrFileAccount);
         FileAccountBrowser.EnableDirectoryLookupMode(Path);
         if FileAccountBrowser.RunModal() <> Action::LookupOK then
@@ -112,11 +132,12 @@ codeunit 70005 "File System Impl."
         exit(CombinePath(FileAccountContent."Parent Directory", FileAccountContent.Name));
     end;
 
-    internal procedure SelectFileUI(Path: Text; FileFilter: Text): Text
+    internal procedure SelectFileUI(Path: Text; FileFilter: Text; DialogTitle: Text): Text
     var
         FileAccountContent: Record "File Account Content";
         FileAccountBrowser: Page "File Account Browser";
     begin
+        FileAccountBrowser.SetPageCaption(DialogTitle);
         FileAccountBrowser.SetFileAcconut(CurrFileAccount);
         FileAccountBrowser.EnableFileLookupMode(Path, FileFilter);
         if FileAccountBrowser.RunModal() <> Action::LookupOK then
@@ -129,7 +150,7 @@ codeunit 70005 "File System Impl."
         exit(CombinePath(FileAccountContent."Parent Directory", FileAccountContent.Name));
     end;
 
-    internal procedure SaveFileUI(Path: Text; FileExtension: Text): Text
+    internal procedure SaveFileUI(Path: Text; FileExtension: Text; DialogTitle: Text): Text
     var
         FileAccountContent: Record "File Account Content";
         FileAccountBrowser: Page "File Account Browser";
@@ -140,6 +161,7 @@ codeunit 70005 "File System Impl."
         if FileExtension = '' then
             Error(PleaseProvideFileExtensionErr);
 
+        FileAccountBrowser.SetPageCaption(DialogTitle);
         FileAccountBrowser.SetFileAcconut(CurrFileAccount);
         FileAccountBrowser.EnableSaveFileLookupMode(Path, FileExtension);
         if FileAccountBrowser.RunModal() <> Action::LookupOK then

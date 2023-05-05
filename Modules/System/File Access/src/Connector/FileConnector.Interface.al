@@ -11,71 +11,89 @@ interface "File Connector"
     /// <summary>
     /// Gets a List of Files stored on the provided account.
     /// </summary>
-    /// <param name="Path">The file path to list.</param>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
+    /// <param name="Path">The file path to list.</param>
     /// <param name="Files">A list with all files stored in the path.</param>
-    procedure ListFiles(Path: Text; AccountId: Guid; var FileAccountContent: Record "File Account Content" temporary);
+    procedure ListFiles(AccountId: Guid; Path: Text; var FileAccountContent: Record "File Account Content" temporary);
 
     /// <summary>
     /// Gets a file from the provided account.
     /// </summary>
-    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
+    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="Stream">The Stream were the file is read to.</param>
-    procedure GetFile(Path: Text; AccountId: Guid; Stream: InStream);
+    procedure GetFile(AccountId: Guid; Path: Text; Stream: InStream);
 
     /// <summary>
     /// Gets a file to the provided account.
     /// </summary>
-    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="Stream">The Stream were the file is read from.</param>
-    procedure SetFile(Path: Text; AccountId: Guid; Stream: InStream);
+    procedure SetFile(AccountId: Guid; Path: Text; Stream: InStream);
+
+
+    /// <summary>
+    /// Copies as file inside the provided account.
+    /// </summary>
+    /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="SourcePath">The source file path.</param>
+    /// <param name="TargetPath">The target file path.</param>
+    procedure CopyFile(AccountId: Guid; SourcePath: Text; TargetPath: Text);
+
+
+    /// <summary>
+    /// Move as file inside the provided account.
+    /// </summary>
+    /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="SourcePath">The source file path.</param>
+    /// <param name="TargetPath">The target file path.</param>
+    procedure MoveFile(AccountId: Guid; SourcePath: Text; TargetPath: Text);
 
     /// <summary>
     /// Checks if a file exists on the provided account.
     /// </summary>
-    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="Path">The file path inside the file account.</param>
     /// <returns>Returns true if the file exists</returns>
-    procedure FileExists(Path: Text; AccountId: Guid): Boolean;
+    procedure FileExists(AccountId: Guid; Path: Text): Boolean;
 
     /// <summary>
     /// Deletes a file exists on the provided account.
     /// </summary>
-    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
-    procedure DeleteFile(Path: Text; AccountId: Guid);
+    /// <param name="Path">The file path inside the file account.</param>
+    procedure DeleteFile(AccountId: Guid; Path: Text);
 
     /// <summary>
     /// Gets a List of Directories stored on the provided account.
     /// </summary>
-    /// <param name="Path">The file path to list.</param>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
+    /// <param name="Path">The file path to list.</param>
     /// <param name="Files">A list with all directories stored in the path.</param>
-    procedure ListDirectories(Path: Text; AccountId: Guid; var FileAccountContent: Record "File Account Content" temporary);
+    procedure ListDirectories(AccountId: Guid; Path: Text; var FileAccountContent: Record "File Account Content" temporary);
 
     /// <summary>
     /// Creates a directory on the provided account.
     /// </summary>
     /// <param name="Path">The directory path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
-    procedure CreateDirectory(Path: Text; AccountId: Guid);
+    procedure CreateDirectory(AccountId: Guid; Path: Text);
 
     /// <summary>
     /// Checks if a directory exists on the provided account.
     /// </summary>
-    /// <param name="Path">The directory path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="Path">The directory path inside the file account.</param>
     /// <returns>Returns true if the directory exists</returns>
-    procedure DirectoryExists(Path: Text; AccountId: Guid): Boolean;
+    procedure DirectoryExists(AccountId: Guid; Path: Text): Boolean;
 
     /// <summary>
     /// Deletes a directory exists on the provided account.
     /// </summary>
-    /// <param name="Path">The directory path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
-    procedure DeleteDirectory(Path: Text; AccountId: Guid);
+    /// <param name="Path">The directory path inside the file account.</param>
+    procedure DeleteDirectory(AccountId: Guid; Path: Text);
 
     /// <summary>
     /// Returns the path separator of the file account.

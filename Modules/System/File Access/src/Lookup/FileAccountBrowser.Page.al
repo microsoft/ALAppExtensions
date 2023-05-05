@@ -96,8 +96,14 @@ page 70005 "File Account Browser"
 
     var
         FileSystem: Codeunit "File System";
-        CurrPath, CurrFileFilter, SaveFileName : Text;
+        CurrPath, CurrFileFilter, SaveFileName, CurrPageCaption : Text;
         ParentFolderExists, DoNotLoadFields, IsInLookupMode, ShowFileName : Boolean;
+
+    trigger OnOpenPage()
+    begin
+        if CurrPageCaption <> '' then
+            CurrPage.Caption(CurrPageCaption);
+    end;
 
     internal procedure SetFileAcconut(FileAccount: Record "File Account")
     begin
@@ -112,7 +118,6 @@ page 70005 "File Account Browser"
     internal procedure EnableFileLookupMode(Path: Text; FileFilter: Text)
     begin
         CurrFileFilter := FileFilter;
-        ApplyFileFilter();
         EnableLookupMode();
         BrowseFolder(Path);
     end;
@@ -129,10 +134,9 @@ page 70005 "File Account Browser"
         FileFilterTok: Label '*.%1', Locked = true;
     begin
         ShowFileName := true;
+        CurrFileFilter := StrSubstNo(FileFilterTok, FileExtension);
         EnableLookupMode();
         BrowseFolder(Path);
-        CurrFileFilter := StrSubstNo(FileFilterTok, FileExtension);
-        ApplyFileFilter();
     end;
 
     internal procedure GetCurrentDirectory(): Text
@@ -143,6 +147,20 @@ page 70005 "File Account Browser"
     internal procedure GetFileName(): Text
     begin
         exit(SaveFileName);
+    end;
+
+
+    internal procedure SetPageCaption(NewCaption: Text)
+    begin
+        CurrPageCaption := NewCaption;
+    end;
+
+    local procedure StripNotsupportChrInFileName(InText: Text): Text
+    var
+        InvalidChrStringTxt: Label '"#%&*:<>?\/{|}~', Locked = true;
+    begin
+        InText := DelChr(InText, '=', InvalidChrStringTxt);
+        exit(InText);
     end;
 
     local procedure EnableLookupMode()
@@ -162,14 +180,12 @@ page 70005 "File Account Browser"
     local procedure BrowseFolder(Path: Text)
     begin
         CurrPath := Path;
-        ParentFolderExists := CurrPath <> '';
+        ParentFolderExists := FileSystem.GetParentPath(Path) <> '';
         Rec.DeleteAll();
 
         FileSystem.ListDirectories(Path, Rec);
-        if not DoNotLoadFields then
-            FileSystem.ListFiles(Path, Rec);
+        ListFiles(Path);
 
-        ApplyFileFilter();
         if Rec.FindFirst() then;
     end;
 
@@ -193,17 +209,24 @@ page 70005 "File Account Browser"
         FileSystem.SetFile(FileSystem.CombinePath(CurrPath, FromFile), Stream);
     end;
 
-    local procedure ApplyFileFilter()
+    local procedure ListFiles(var Path: Text)
     var
-        CurrFilterGroup: Integer;
+        FileAccountContent: Record "File Account Content" temporary;
     begin
-        if CurrFileFilter = '' then
+        if DoNotLoadFields then
             exit;
 
-        CurrFilterGroup := Rec.FilterGroup();
-        Rec.FilterGroup(-1);
-        Rec.SetRange(Type, Type::Directory);
-        Rec.SetFilter(Name, CurrFileFilter);
-        Rec.FilterGroup(CurrFilterGroup);
+        FileSystem.ListFiles(Path, FileAccountContent);
+        if CurrFileFilter <> '' then
+            FileAccountContent.SetFilter(Name, CurrFileFilter);
+
+        if not FileAccountContent.FindSet() then
+            exit;
+
+        repeat
+            Rec.Init();
+            Rec.TransferFields(FileAccountContent);
+            Rec.Insert();
+        until FileAccountContent.Next() = 0;
     end;
 }

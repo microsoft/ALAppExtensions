@@ -16,10 +16,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     /// <summary>
     /// Gets a List of Files stored on the provided account.
     /// </summary>
-    /// <param name="Path">The file path to list.</param>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
+    /// <param name="Path">The file path to list.</param>
     /// <param name="Files">A list with all files stored in the path.</param>
-    procedure ListFiles(Path: Text; AccountId: Guid; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListFiles(AccountId: Guid; Path: Text; var FileAccountContent: Record "File Account Content" temporary)
     var
         ABSContainerContent: Record "ABS Container Content";
         ABSBlobClient: Codeunit "ABS Blob Client";
@@ -52,10 +52,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     /// <summary>
     /// Gets a file from the provided account.
     /// </summary>
-    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
+    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="Stream">The Stream were the file is read to.</param>
-    procedure GetFile(Path: Text; AccountId: Guid; Stream: InStream)
+    procedure GetFile(AccountId: Guid; Path: Text; Stream: InStream)
     var
         ABSBlobClient: Codeunit "ABS Blob Client";
         ABSOperationResponse: Codeunit "ABS Operation Response";
@@ -72,10 +72,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     /// <summary>
     /// Gets a file to the provided account.
     /// </summary>
-    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="Stream">The Stream were the file is read from.</param>
-    procedure SetFile(Path: Text; AccountId: Guid; Stream: InStream)
+    procedure SetFile(AccountId: Guid; Path: Text; Stream: InStream)
     var
         ABSBlobClient: Codeunit "ABS Blob Client";
         ABSOperationResponse: Codeunit "ABS Operation Response";
@@ -90,25 +90,77 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     end;
 
     /// <summary>
-    /// Checks if a file exists on the provided account.
+    /// Copies as file inside the provided account.
     /// </summary>
-    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
-    /// <returns>Returns true if the file exists</returns>
-    procedure FileExists(Path: Text; AccountId: Guid): Boolean
+    /// <param name="SourcePath">The source file path.</param>
+    /// <param name="TargetPath">The target file path.</param>
+    procedure CopyFile(AccountId: Guid; SourcePath: Text; TargetPath: Text)
     var
         ABSBlobClient: Codeunit "ABS Blob Client";
         ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
         InitBlobClient(AccountId, ABSBlobClient);
+        ABSOperationResponse := ABSBlobClient.CopyBlob(TargetPath, SourcePath);
+
+        if ABSOperationResponse.IsSuccessful() then
+            exit;
+
+        Error(ABSOperationResponse.GetError());
+    end;
+
+    /// <summary>
+    /// Move as file inside the provided account.
+    /// </summary>
+    /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="SourcePath">The source file path.</param>
+    /// <param name="TargetPath">The target file path.</param>
+    procedure MoveFile(AccountId: Guid; SourcePath: Text; TargetPath: Text)
+    var
+        ABSBlobClient: Codeunit "ABS Blob Client";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+    begin
+        InitBlobClient(AccountId, ABSBlobClient);
+        ABSOperationResponse := ABSBlobClient.CopyBlob(TargetPath, SourcePath);
+        if not ABSOperationResponse.IsSuccessful() then
+            Error(ABSOperationResponse.GetError());
+
+        ABSOperationResponse := ABSBlobClient.DeleteBlob(SourcePath);
+        if not ABSOperationResponse.IsSuccessful() then
+            Error(ABSOperationResponse.GetError());
+    end;
+
+    /// <summary>
+    /// Checks if a file exists on the provided account.
+    /// </summary>
+    /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="Path">The file path inside the file account.</param>
+    /// <returns>Returns true if the file exists</returns>
+    procedure FileExists(AccountId: Guid; Path: Text): Boolean
+    var
+        ABSBlobClient: Codeunit "ABS Blob Client";
+        ABSContainerContent: Record "ABS Container Content";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        if Path = '' then
+            exit(false);
+
+        InitBlobClient(AccountId, ABSBlobClient);
+        ABSOptionalParameters.Prefix(Path);
+        ABSOperationResponse := ABSBlobClient.ListBlobs(ABSContainerContent, ABSOptionalParameters);
+        if not ABSOperationResponse.IsSuccessful() then
+            Error(ABSOperationResponse.GetError());
+
+        exit(not ABSContainerContent.IsEmpty());
     end;
 
     /// <summary>
     /// Deletes a file exists on the provided account.
     /// </summary>
-    /// <param name="Path">The file path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
-    procedure DeleteFile(Path: Text; AccountId: Guid)
+    /// <param name="Path">The file path inside the file account.</param>
+    procedure DeleteFile(AccountId: Guid; Path: Text)
     var
         ABSBlobClient: Codeunit "ABS Blob Client";
         ABSOperationResponse: Codeunit "ABS Operation Response";
@@ -125,10 +177,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     /// <summary>
     /// Gets a List of Directories stored on the provided account.
     /// </summary>
-    /// <param name="Path">The file path to list.</param>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
+    /// <param name="Path">The file path to list.</param>
     /// <param name="Files">A list with all directories stored in the path.</param>
-    procedure ListDirectories(Path: Text; AccountId: Guid; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListDirectories(AccountId: Guid; Path: Text; var FileAccountContent: Record "File Account Content" temporary)
     var
         ABSContainerContent: Record "ABS Container Content";
         ABSBlobClient: Codeunit "ABS Blob Client";
@@ -163,9 +215,9 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     /// <summary>
     /// Creates a directory on the provided account.
     /// </summary>
-    /// <param name="Path">The directory path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
-    procedure CreateDirectory(Path: Text; AccountId: Guid)
+    /// <param name="Path">The directory path inside the file account.</param>
+    procedure CreateDirectory(AccountId: Guid; Path: Text)
     begin
 
     end;
@@ -173,20 +225,35 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     /// <summary>
     /// Checks if a directory exists on the provided account.
     /// </summary>
-    /// <param name="Path">The directory path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
+    /// <param name="Path">The directory path inside the file account.</param>
     /// <returns>Returns true if the directory exists</returns>
-    procedure DirectoryExists(Path: Text; AccountId: Guid): Boolean
+    procedure DirectoryExists(AccountId: Guid; Path: Text): Boolean
+    var
+        ABSBlobClient: Codeunit "ABS Blob Client";
+        ABSContainerContent: Record "ABS Container Content";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
+        if Path = '' then
+            exit(true);
 
+        InitBlobClient(AccountId, ABSBlobClient);
+        ABSOptionalParameters.Prefix(Path);
+        ABSOptionalParameters.MaxResults(1);
+        ABSOperationResponse := ABSBlobClient.ListBlobs(ABSContainerContent, ABSOptionalParameters);
+        if not ABSOperationResponse.IsSuccessful() then
+            Error(ABSOperationResponse.GetError());
+
+        exit(not ABSContainerContent.IsEmpty());
     end;
 
     /// <summary>
     /// Deletes a directory exists on the provided account.
     /// </summary>
-    /// <param name="Path">The directory path inside the file account.</param>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
-    procedure DeleteDirectory(Path: Text; AccountId: Guid)
+    /// <param name="Path">The directory path inside the file account.</param>
+    procedure DeleteDirectory(AccountId: Guid; Path: Text)
     begin
 
     end;
