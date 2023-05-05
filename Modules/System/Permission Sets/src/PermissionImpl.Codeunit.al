@@ -229,6 +229,7 @@ codeunit 9864 "Permission Impl."
 
         VerifyPermissionAlreadyExists(TenantPermission);
         EmptyIrrelevantPermissionFields(TenantPermission);
+        SetRelevantPermissionFieldsToYes(TenantPermission);
 
         TenantPermission.Insert();
     end;
