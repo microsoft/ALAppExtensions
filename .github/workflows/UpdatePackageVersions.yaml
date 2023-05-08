@@ -1,4 +1,4 @@
-name: Update Baseline Version
+name: Update Package Versions
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ defaults:
     shell: powershell
 
 jobs:
-  UpdateBaseline:
+  UpdatePackageVersions:
     if: github.repository_owner == 'microsoft'
     runs-on: windows-latest
     strategy:
@@ -22,8 +22,8 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
       
-      - name: Update Baseline Version
+      - name: Update Package Versions
         run: | 
-          Build/Scripts/UpdateBaselineVersion.ps1 -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
+          Build/Scripts/UpdatePackageVersions.ps1 -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
         env:
           GITHUB_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}

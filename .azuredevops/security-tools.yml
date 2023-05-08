@@ -32,7 +32,7 @@ jobs:
     fetchTags: 'true'
   - powershell: |
       Import-Module $(Build.SourcesDirectory)\Build\Scripts\EnlistmentHelperFunctions.psm1
-      $repoVersion = Get-ConfigValue -Key 'repoVersion'
+      $repoVersion = Get-ConfigValue -Key 'repoVersion' -ConfigType AL-Go
       $latestVersion = (Find-Package "microsoft-ALAppExtensions-Modules-preview" -Source "nuget.org" -AllVersions -MinimumVersion $repoVersion | Select Version -First 1).Version
       Write-Host "##vso[build.updatebuildnumber]$latestVersion"
     displayName: Get Latest Version
