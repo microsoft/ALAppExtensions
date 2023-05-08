@@ -23,8 +23,6 @@ if($app)
     }
 
     if($appBuildMode -eq 'Translated') {
-        $parameters["Features"] += @("translationfile")
-
         Import-Module $PSScriptRoot\AppTranslations.psm1
         Restore-TranslationsForApp -AppProjectFolder $parameters["appProjectFolder"]
     }
