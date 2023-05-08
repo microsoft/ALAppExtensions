@@ -36,7 +36,7 @@ function Restore-TranslationsForApp {
         # Translations are located in the ExtensionsV2 folder
         $translationFilePath = Join-Path $localeFolder "ExtensionsV2/$appName.$locale.xlf" 
         if(Test-Path $translationFilePath) {
-            Write-Host "Using translation for $appName in $locale. FileName: $translationFilePath"
+            Write-Host "Using translation for $appName in locale $locale."
             $translationsFound = $true
 
             Copy-Item -Path $translationFilePath -Destination $appTranslationsFolder -Force | Out-Null
