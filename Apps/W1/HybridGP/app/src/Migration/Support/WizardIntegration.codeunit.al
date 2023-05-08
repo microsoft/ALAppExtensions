@@ -50,7 +50,6 @@ codeunit 4035 "Wizard Integration"
     var
         GPConfiguration: Record "GP Configuration";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        DataSyncStatus: Page "Data Sync Status";
         Flag: Boolean;
     begin
         if not (DataMigrationStatus."Migration Type" = HelperFunctions.GetMigrationTypeTxt()) then
@@ -72,7 +71,6 @@ codeunit 4035 "Wizard Integration"
                 HelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
             end;
 
-        DataSyncStatus.ParsePosting();
         HelperFunctions.PostGLTransactions();
         HelperFunctions.SetProcessesRunning(false);
 
@@ -115,7 +113,7 @@ codeunit 4035 "Wizard Integration"
 
     local procedure GetDefaultGPHistoricalMigrationJobTimeoutDuration(): Integer
     begin
-        exit(3600000 * 60); // 60 hours
+        exit(48 * 60 * 60 * 1000); // 48 hours
     end;
 
     local procedure GetDefaultGPHistoricalMigrationJobMaxAttempts(): Integer

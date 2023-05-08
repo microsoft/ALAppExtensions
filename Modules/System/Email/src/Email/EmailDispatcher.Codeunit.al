@@ -127,6 +127,7 @@ codeunit 8888 "Email Dispatcher"
     begin
         Clear(SentEmail);
         SentEmail.TransferFields(EmailOutbox);
+        Clear(SentEmail.Id);
         SentEmail."Date Time Sent" := CurrentDateTime();
         SentEmail.Insert();
 

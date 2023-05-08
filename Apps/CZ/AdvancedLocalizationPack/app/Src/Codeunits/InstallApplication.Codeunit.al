@@ -179,7 +179,7 @@ codeunit 31250 "Install Application CZA"
     begin
         if NonstockItemSetup.Get() then begin
             if NonstockItemSetup."No. From No. Series" then
-                NonstockItemSetup."No. Format" := NonstockItemSetup."No. Format"::"Item No. Series CZA";
+                NonstockItemSetup."No. Format" := NonstockItemSetup."No. Format"::"Item No. Series";
             NonstockItemSetup.Modify(false);
         end;
     end;

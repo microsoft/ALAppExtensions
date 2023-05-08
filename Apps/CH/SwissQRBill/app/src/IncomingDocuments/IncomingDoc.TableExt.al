@@ -71,6 +71,18 @@ tableextension 11510 "Swiss QR-Bill Incoming Doc" extends "Incoming Document"
         {
             Caption = 'Payment Reference';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                BankMgt: Codeunit BankMgt;
+            begin
+                if BankMgt.IsQRReference("Swiss QR-Bill Reference No.") then
+                    "Swiss QR-Bill Reference Type" := "Swiss QR-Bill Payment Reference Type"::"QR Reference"
+                else
+                    if BankMgt.IsCreditReferenceISO11649("Swiss QR-Bill Reference No.") then
+                        "Swiss QR-Bill Reference Type" := "Swiss QR-Bill Payment Reference Type"::"Creditor Reference (ISO 11649)";
+
+            end;
         }
         field(11514; "Swiss QR-Bill Unstr. Message"; Text[140])
         {

@@ -15,6 +15,11 @@ page 5266 "Audit File Export Documents"
         {
             repeater(General)
             {
+                field(DocumentId; Rec.ID)
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the unique identifier of the audit file export document.';
+                }
                 field(GLAccountMappingCode; Rec."G/L Account Mapping Code")
                 {
                     ApplicationArea = Basic, Suite;

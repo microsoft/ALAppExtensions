@@ -279,8 +279,8 @@ codeunit 20352 "Connectivity App Definitions"
         AppWorksOn := 'LT,DK,HU';
 
         AddDescriptionTranslation(AppId, 'Banko išrašo importas ir suderinimas.', 1063);
-		AddDescriptionTranslation(AppId, 'Kontoudtog import & afstemning.', 1030);
-		AddDescriptionTranslation(AppId, 'Banki kivonat importálása és egyeztetése.', 1038);
+        AddDescriptionTranslation(AppId, 'Kontoudtog import & afstemning.', 1030);
+        AddDescriptionTranslation(AppId, 'Banki kivonat importálása és egyeztetése.', 1038);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 

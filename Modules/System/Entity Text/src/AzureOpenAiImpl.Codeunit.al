@@ -189,6 +189,9 @@ codeunit 2011 "Azure OpenAi Impl."
         if Secret = '' then
             Error(NoSecretErr);
 
+        if AzureOpenAiSettings.IncludeSource(CallerModuleInfo) then
+            Payload.Add('source', 'businesscentral');
+
         Payload.WriteTo(PayloadText);
 
         MaxAttempts := 3;
@@ -214,15 +217,18 @@ codeunit 2011 "Azure OpenAi Impl."
     [TryFunction]
     local procedure SendRequest(Endpoint: Text; BearerAuth: Boolean; Secret: Text; Payload: Text; var StatusCode: Integer; var Completion: Text)
     var
+        AzureAdTenant: Codeunit "Azure AD Tenant";
         HttpClient: HttpClient;
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
         RequestHeaders: HttpHeaders;
         HttpContent: HttpContent;
         ResponseText: Text;
-        RequestId: List of [Text];
+        RequestIds: List of [Text];
         ResponseJson: JsonObject;
         CompletionToken: JsonToken;
+        CorrelationId: Guid;
+        TenantGuid: Guid;
     begin
         HttpRequestMessage.Method('POST');
         HttpRequestMessage.SetRequestUri(Endpoint);
@@ -233,10 +239,16 @@ codeunit 2011 "Azure OpenAi Impl."
             HttpClient.DefaultRequestHeaders().Add('api-key', Secret);
 
         HttpContent.WriteFrom(Payload);
+        CorrelationId := CreateGuid();
+
+        if not Evaluate(TenantGuid, AzureAdTenant.GetAadTenantId()) then
+            Session.LogMessage('0000K5I', TelemetryUnknownTenantIdLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
 
         HttpContent.GetHeaders(RequestHeaders);
         RequestHeaders.Remove('Content-Type');
         RequestHeaders.Add('Content-Type', 'application/json');
+        RequestHeaders.Add('x-ms-correlation-id', Format(CorrelationId, 0, 4));
+        RequestHeaders.Add('x-ms-organization-tenant-id', Format(TenantGuid, 0, 4));
 
         HttpRequestMessage.Content(HttpContent);
 
@@ -251,10 +263,10 @@ codeunit 2011 "Azure OpenAi Impl."
         ResponseJson.SelectToken('$.choices[:].text', CompletionToken);
         CompletionToken.WriteTo(Completion);
 
-        if not HttpResponseMessage.Headers().GetValues('x-request-id', RequestId) then
-            RequestId.Add('Unknown');
+        if not HttpResponseMessage.Headers().GetValues('x-request-id', RequestIds) then
+            RequestIds.Add('Unknown');
 
-        Session.LogMessage('0000JVT', StrSubstNo(TelemetryRequestCompletedTxt, RequestId.Get(1)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+        Session.LogMessage('0000JVT', StrSubstNo(TelemetryRequestCompletedTxt, RequestIds.Get(1), CorrelationId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
 
         if ContainsWordsInDenyList(Completion) then begin
             Clear(Completion);
@@ -348,6 +360,7 @@ codeunit 2011 "Azure OpenAi Impl."
         TelemetryMissingPermissionTxt: Label 'Feature is disabled due to missing write permissions.', Locked = true;
         TelemetryCompletionOverviewTxt: Label 'Sending a completion request. Prompt size: %1, max tokens: %2, temperature: %3, calling module: %4 (%5).', Locked = true;
         TelemetryRequestFailedTxt: Label 'The request failed to send with error code %1. Attempt %2 of %3.', Locked = true;
-        TelemetryRequestCompletedTxt: Label 'The request completed successfully, request id: %1.', Locked = true;
+        TelemetryRequestCompletedTxt: Label 'The request completed successfully, request id: %1, ms request id: %2.', Locked = true;
+        TelemetryUnknownTenantIdLbl: Label 'The tenant id was not a valid guid', Locked = true;
         TelemetryUnsupportedLanguageTxt: Label 'The user is not using a supported language.', Locked = true;
 }

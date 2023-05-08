@@ -1,30 +1,50 @@
+#if not CLEAN22
 codeunit 31260 "Nonstock Item Handler CZA"
 {
+    ObsoleteReason = 'Replaced by standard "Item No. Series"';
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+
     var
         NonstockItemSetup: Record "Nonstock Item Setup";
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Catalog Item Management", 'OnBeforeGetNewItemNo', '', false, false)]
-    local procedure ItemNoFromItemSeriesOnBeforeGetNewItemNo(var NewItemNo: Code[20]; var IsHandled: Boolean)
-    var
-        NewItem: Record Item;
-        AssistEditErr: Label 'Item No. Serie was not selected.';
+    [EventSubscriber(ObjectType::Table, Database::"Nonstock Item", 'OnModifyOnNoFormatElseCase', '', false, false)]
+    local procedure ItemFromItemSeriesOnModifyOnNoFormatElseCase(NonstockItem: Record "Nonstock Item"; var ItemNo: Code[20])
     begin
         NonstockItemSetup.Get();
-        if NonstockItemSetup."No. Format" <> NonstockItemSetup."No. Format"::"Item No. Series CZA" then
-            exit;
-
-        NewItem.Init();
-        if not NewItem.AssistEdit() then
-            Error(AssistEditErr);
-        NewItemNo := NewItem."No.";
-        IsHandled := true;
+        case NonStockItemSetup."No. Format" of
+            NonStockItemSetup."No. Format"::"Item No. Series CZA":
+                ItemNo := NonstockItem."Item No.";
+        end;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Nonstock Item", 'OnModifyOnBeforeError', '', false, false)]
-    local procedure CheckItemOnModifyOnBeforeError(var IsHandled: Boolean)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Catalog Item Management", 'OnAfterDetermineItemNoAndItemNoSeries', '', false, false)]
+    local procedure ItemNoFromItemSeriesOnAfterDetermineItemNoAndItemNoSeries(var NonstockItem: Record "Nonstock Item")
     begin
         NonstockItemSetup.Get();
-        if NonstockItemSetup."No. Format" = NonstockItemSetup."No. Format"::"Item No. Series CZA" then
-            IsHandled := true;
+        case NonStockItemSetup."No. Format" of
+            NonStockItemSetup."No. Format"::"Item No. Series CZA":
+                GetItemNoFromNoSeries(NonstockItem);
+        end;
+    end;
+
+    local procedure GetItemNoFromNoSeries(var NonstockItem: Record "Nonstock Item")
+    var
+        InvtSetup: Record "Inventory Setup";
+        ItemTempl: Record "Item Templ.";
+        NoSeriesMgt: Codeunit NoSeriesManagement;
+    begin
+        ItemTempl.SetLoadFields("No. Series");
+        ItemTempl.Get(NonstockItem."Item Templ. Code");
+        NonstockItem."Item No. Series" := ItemTempl."No. Series";
+
+        if NonstockItem."Item No. Series" = '' then begin
+            InvtSetup.Get();
+            InvtSetup.TestField("Item Nos.");
+            NonstockItem."Item No. Series" := InvtSetup."Item Nos.";
+        end;
+
+        NoSeriesMgt.InitSeries(NonstockItem."Item No. Series", '', 0D, NonstockItem."Item No.", NonstockItem."Item No. Series");
     end;
 }
+#endif

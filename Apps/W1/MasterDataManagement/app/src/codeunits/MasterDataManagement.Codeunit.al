@@ -1428,6 +1428,9 @@ codeunit 7233 "Master Data Management"
         if not MasterDataMgtSubscriber.ReadPermission() then
             exit;
 
+        if GetExecutionContext() = ExecutionContext::Upgrade then
+            exit;
+
         if (OnDatabaseInsert and OnDatabaseModify and OnDatabaseRename) then
             exit;
 

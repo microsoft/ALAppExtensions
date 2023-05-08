@@ -29,7 +29,7 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlanAssignedMsg: Label 'User with authentication object ID %1 is assigned plan %2', Locked = true;
         PlanNotEnabledMsg: Label 'Plan is assigned to user but it is not enabled. Plan ID: %1', Locked = true;
         NotBCPlanAssignedMsg: Label 'Plan is assigned to user but it is not recognized as a BC plan. Plan ID: %1', Locked = true;
-        UserHasNoPlansMsg: Label 'User with authentication object ID %1 has no Business Central plans assigned', Locked = true;
+        DeviceUserWithBcPlanMsg: Label 'User with authentication object ID %1 is a member of the Device group, but also has Business Central plans assigned. The Device plan will not be assigned to this user.', Locked = true;
         DeviceUserCannotBeFirstUserErr: Label 'The device user cannot be the first user to log into the system.';
         UserGotPlanTxt: Label 'The Graph User with the authentication object ID %1 has a plan with ID %2 named %3.', Comment = '%1 = Authentication email (email); %2 = subscription plan ID (guid); %3 = Plan name (tex1t)', Locked = true;
         PlansDifferentCheckTxt: Label 'Checking if plans different for graph user with authentication object ID %1 and BC user with security ID %2.', Comment = '%1 = Authentication email (email); %2 = user security ID (guid)', Locked = true;
@@ -458,13 +458,12 @@ codeunit 9018 "Azure AD Plan Impl."
     [NonDebuggable]
     local procedure GetGraphUserPlans(var TempPlan: Record "Plan" temporary; var GraphUserInfo: DotNet UserInfo)
     var
+        PlanIds: Codeunit "Plan Ids";
         AssignedPlan: DotNet ServicePlanInfo;
         DirectoryRole: DotNet RoleInfo;
         ServicePlanIdValue: Variant;
-        HaveAssignedPlans: Boolean;
         DevicesPlanId: Guid;
         DevicesPlanName: Text;
-        SystemRoleAdded: Boolean;
     begin
         TempPlan.Reset();
         TempPlan.DeleteAll();
@@ -482,7 +481,6 @@ codeunit 9018 "Azure AD Plan Impl."
 
                 if Format(AssignedPlan.CapabilityStatus()) = 'Enabled' then begin
                     if IsBCServicePlan(ServicePlanIdValue) then begin
-                        HaveAssignedPlans := true;
                         AddToTempPlan(ServicePlanIdValue, Format(AssignedPlan.ServicePlanName()), TempPlan);
                         Session.LogMessage('00009KY', StrSubstNo(UserPlanAssignedMsg, Format(GraphUserInfo.ObjectId()), Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                     end else
@@ -491,27 +489,34 @@ codeunit 9018 "Azure AD Plan Impl."
                     Session.LogMessage('0000I95', StrSubstNo(PlanNotEnabledMsg, Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             end;
 
-        if not HaveAssignedPlans then
-            Session.LogMessage('00009KZ', StrSubstNo(UserHasNoPlansMsg, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
-
         // Loop through Azure AD Roles
         if not IsNull(GraphUserInfo.Roles()) then
             foreach DirectoryRole in GraphUserInfo.Roles() do
                 if IsBCServicePlan(DirectoryRole.RoleTemplateId()) then begin
                     AddToTempPlan(Format(DirectoryRole.RoleTemplateId()), Format(DirectoryRole.DisplayName()), TempPlan);
                     Session.LogMessage('00009L0', StrSubstNo(UserPlanAssignedMsg, Format(GraphUserInfo.ObjectId()), Format(DirectoryRole.RoleTemplateId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
-                    SystemRoleAdded := true;
                 end;
 
-        // If there are no Azure AD Plans and no system roles assigned, then check if its a device user
-        if HaveAssignedPlans or SystemRoleAdded then
-            exit;
-
+        // Check if the user is a member of the Device group
         if IsDeviceRole(GraphUserInfo) then begin
-            GetDevicesPlanInfo(DevicesPlanId, DevicesPlanName);
-            Session.LogMessage('00009L6', StrSubstNo(DevicePlanFoundMsg, DevicesPlanName, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
-            AddToTempPlan(DevicesPlanId, DevicesPlanName, TempPlan);
-        end else
+            // Only assign the device plan if the user doesn't have any other plans (except possibly Internal Admin or M365 Collaboration)
+            TempPlan.SetFilter("Plan ID", '<>%1&<>%2', PlanIDs.GetInternalAdminPlanId(), PlanIDs.GetMicrosoft365PlanId());
+
+            if TempPlan.IsEmpty() then begin
+                // Remove the Internal Admin and M365 Collaboration plans, if assigned
+                TempPlan.Reset();
+                TempPlan.DeleteAll();
+
+                GetDevicesPlanInfo(DevicesPlanId, DevicesPlanName);
+                Session.LogMessage('00009L6', StrSubstNo(DevicePlanFoundMsg, DevicesPlanName, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                AddToTempPlan(DevicesPlanId, DevicesPlanName, TempPlan);
+            end else begin
+                Session.LogMessage('0000K5Z', StrSubstNo(DeviceUserWithBcPlanMsg, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                TempPlan.Reset();
+            end;
+        end;
+
+        if TempPlan.IsEmpty() then
             Session.LogMessage('00009L7', StrSubstNo(NotBCUserMsg, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
     end;
 

@@ -576,7 +576,9 @@ codeunit 8900 "Email Impl"
     procedure GetEmailOutboxSentEmailWithinRateLimit(var SentEmail: Record "Sent Email"; var EmailOutbox: Record "Email Outbox"; AccountId: Guid): Duration
     var
         EmailCheckWindowTime: DateTime;
+        EmailOutboxWindowTime: DateTime;
         RateLimitDuration: Duration;
+        OneHourDuration: Duration;
     begin
         RateLimitDuration := 1000 * 60; // one minute, rate limit is defined as emails per minute
         EmailCheckWindowTime := CurrentDateTime() - RateLimitDuration;
@@ -584,6 +586,9 @@ codeunit 8900 "Email Impl"
         SentEmail.SetFilter("Date Time Sent", '>%1', EmailCheckWindowTime);
         EmailOutbox.SetRange("Account Id", AccountId);
         EmailOutbox.SetRange(Status, Enum::"Email Status"::Processing);
+        OneHourDuration := 1000 * 60 * 60; // one hour
+        EmailOutboxWindowTime := CurrentDateTime() - OneHourDuration;
+        EmailOutbox.SetFilter(SystemModifiedAt, '>%1', EmailOutboxWindowTime); // If the email was last processed more than an hour ago, then it's stuck in processing and we should not base rate limit on it
         exit(RateLimitDuration);
     end;
 

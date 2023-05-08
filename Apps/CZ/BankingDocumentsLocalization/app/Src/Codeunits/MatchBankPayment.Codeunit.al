@@ -53,6 +53,10 @@ codeunit 31362 "Match Bank Payment CZB"
                     GenJournalLine.SetFilter("Constant Symbol CZL", SearchRuleLineCZB."Constant Symbol Filter");
                 if SearchRuleLineCZB."Specific Symbol Filter" <> '' then
                     GenJournalLine.SetFilter("Specific Symbol CZL", SearchRuleLineCZB."Specific Symbol Filter");
+                if SearchRuleLineCZB."Bank Account Filter" <> '' then
+                    GenJournalLine.SetFilter("Bank Account No. CZL", SearchRuleLineCZB."Bank Account Filter");
+                if SearchRuleLineCZB."IBAN Filter" <> '' then
+                    GenJournalLine.SetFilter("IBAN CZL", SearchRuleLineCZB."IBAN Filter");
                 case SearchRuleLineCZB."Banking Transaction Type" of
                     SearchRuleLineCZB."Banking Transaction Type"::Credit:
                         GenJournalLine.SetFilter("Amount (LCY)", '>0');
@@ -84,6 +88,8 @@ codeunit 31362 "Match Bank Payment CZB"
                 GenJournalLine.SetRange("Variable Symbol CZL");
                 GenJournalLine.SetRange("Constant Symbol CZL");
                 GenJournalLine.SetRange("Specific Symbol CZL");
+                GenJournalLine.SetRange("Bank Account No. CZL");
+                GenJournalLine.SetRange("IBAN CZL");
                 GenJournalLine.SetRange("Amount (LCY)");
             end else begin
                 // search rule

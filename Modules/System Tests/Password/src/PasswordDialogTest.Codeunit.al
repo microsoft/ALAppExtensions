@@ -30,7 +30,7 @@ Codeunit 135033 "Password Dialog Test"
         Password: Text;
     begin
         // [SCENARIO] A valid password must be at least 8 characters long and contain one capital case letter,
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
         // one lower case letter and one number.
         PasswordToUse := 'Password1@';
         Password := PasswordDialogManagement.OpenPasswordDialog();
@@ -42,7 +42,7 @@ Codeunit 135033 "Password Dialog Test"
     procedure TestPasswordWithoutNumericCharacter();
     begin
         // [SCENARIO] A password without a numeric character cannot be entered.
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
         PasswordToUse := 'Password';
         asserterror PasswordDialogManagement.OpenPasswordDialog();
         Assert.ExpectedError('Validation error for Field');
@@ -53,7 +53,7 @@ Codeunit 135033 "Password Dialog Test"
     procedure TestPasswordWithoutCapitalCaseCharacter();
     begin
         // [SCENARIO] A password without a capital case character cannot be entered.
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
         PasswordToUse := 'password1';
         asserterror PasswordDialogManagement.OpenPasswordDialog();
         Assert.ExpectedError('Validation error for Field');
@@ -68,7 +68,7 @@ Codeunit 135033 "Password Dialog Test"
     procedure TestPasswordWithoutLowerCaseCharacter();
     begin
         // [SCENARIO] A password without a lower case character cannot be entered.
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
         PasswordToUse := 'PASSWORD1';
         asserterror PasswordDialogManagement.OpenPasswordDialog();
         Assert.ExpectedError('Validation error for Field');
@@ -79,7 +79,7 @@ Codeunit 135033 "Password Dialog Test"
     procedure TestShortPassword();
     begin
         // [SCENARIO] A password with length less than 8 characters cannot be entered.
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
         PasswordToUse := 'Pass1';
         asserterror PasswordDialogManagement.OpenPasswordDialog();
         Assert.ExpectedError('Validation error for Field');
@@ -92,7 +92,7 @@ Codeunit 135033 "Password Dialog Test"
         Password: Text;
     begin
         // [SCENARIO] Minimum Password Length can be increased
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
         if BindSubscription(PasswordDialogTest) then;
 
         MinimumPasswordLength := 16;
@@ -112,7 +112,7 @@ Codeunit 135033 "Password Dialog Test"
     procedure DecreaseMinimumCharactersTest();
     begin
         // [SCENARIO] Minimum Password Length can not be decreased
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
         if BindSubscription(PasswordDialogTest) then;
         MinimumPasswordLength := 5;
         PasswordToUse := 'Pass1';
@@ -129,7 +129,7 @@ Codeunit 135033 "Password Dialog Test"
         Password: Text;
     begin
         // [SCENARIO] Password Confirmation and Validation are enabled and Blank password is not allowed
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
         DisablePasswordValidation := false;
         DisablePasswordConfirmation := false;
         PasswordMissmatch := false;
@@ -161,7 +161,7 @@ Codeunit 135033 "Password Dialog Test"
         Password: Text;
     begin
         // [SCENARIO] Password dialog can be opened and Password confirmation can be disabled.
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
 
         // [WHEN] Password Confirmation and validation are disabled.
         // [THEN] An invalid password can be retrieved by only filling the password field.
@@ -180,7 +180,7 @@ Codeunit 135033 "Password Dialog Test"
         Password: Text;
     begin
         // [SCENARIO] Password dialog can be opened and Password Validation can be disabled.
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
 
         // [WHEN] Password Validation is disabled.
         // [THEN] An invalid password can be retrieved by filling both Password and Confirm Password fields.
@@ -205,7 +205,7 @@ Codeunit 135033 "Password Dialog Test"
         OldPassword: Text;
     begin
         // [SCENARIO] Open Password dialog in change password mode.
-        PermissionsMock.Set('Password Exec');
+        PermissionsMock.Set('All Objects');
 
         // [WHEN] The password dialog is opened in change password mode.
         PasswordDialogManagement.OpenChangePasswordDialog(OldPassword, Password);

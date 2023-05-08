@@ -19,7 +19,7 @@ codeunit 1379 DESCryptoServiceProvider
     /// Encrypts text with DotNet Cryptography.DESCryptoServiceProvider
     /// </summary>
     /// <remark>
-    /// For more information, visit https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.descryptoserviceprovider.
+    /// For more information, visit https://learn.microsoft.com/dotnet/api/system.security.cryptography.descryptoserviceprovider.
     /// </remark>
     /// <param name="Password">Represents the password to be used to initialize a new instance of DotNet System.Security.Cryptography.Rfc2898DeriveBytes</param>
     /// <param name="Salt">Represents the salt to be used to initialize a new instance of System.Security.Cryptography.Rfc2898DeriveBytes</param>

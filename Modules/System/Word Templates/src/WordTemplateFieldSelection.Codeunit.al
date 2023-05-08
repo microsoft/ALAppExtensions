@@ -39,6 +39,30 @@ codeunit 9989 "Word Template Field Selection"
         end;
     end;
 
+    procedure SetIncludeFields(WordTemplateCode: Code[30]; TableId: Integer; IncludeFieldNames: List of [Text[30]]; var WordTemplateField: Record "Word Template Field")
+    var
+        Field: Record Field;
+        IncludeFieldName: Text[30];
+    begin
+        foreach IncludeFieldName in IncludeFieldNames do
+            if WordTemplateField.Get(WordTemplateCode, TableId, IncludeFieldName) then begin
+                WordTemplateField.Exclude := false;
+                WordTemplateField.Modify();
+            end else begin
+                WordTemplateField.Init();
+                WordTemplateField."Word Template Code" := WordTemplateCode;
+                WordTemplateField."Table ID" := TableId;
+                WordTemplateField."Field Name" := IncludeFieldName;
+                WordTemplateField.Exclude := false;
+
+                Field.SetRange(TableNo, TableId);
+                Field.SetRange(FieldName, IncludeFieldName);
+                if field.FindFirst() then
+                    WordTemplateField."Field No." := Field."No.";
+                WordTemplateField.Insert();
+            end;
+    end;
+
     procedure GetExcludedFields(WordTemplateCode: Code[30]; TableId: Integer) ExcludedFieldNames: List of [Text[30]]
     var
         WordTemplateField: Record "Word Template Field";

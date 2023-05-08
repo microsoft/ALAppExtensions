@@ -405,7 +405,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         ResponseText: Text;
         TargetURL: Text;
         DiscountPct: Decimal;
-        DiscountAmt: Decimal;
+        DiscountAmt, InvDiscAmount : Decimal;
     begin
         // [SCENARIO] When a quote is created, the GET Method should update the quote and redistribute the discount amount
 
@@ -415,6 +415,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         DiscountAmt := LibraryRandom.RandDecInRange(1, ROUND(SalesHeader.Amount / 2, 1), 1);
         SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(DiscountAmt, SalesHeader);
         GetFirstSalesQuoteLine(SalesHeader, SalesLine);
+        InvDiscAmount := SalesLine."Inv. Discount Amount";
         SalesLine.Validate(Quantity, SalesLine.Quantity + 1);
         SalesLine.Modify(true);
         SalesHeader.CalcFields("Recalculate Invoice Disc.");
@@ -427,7 +428,7 @@ codeunit 139723 "APIV1 - Sales Quotes E2E"
         // [THEN] the quote should exist in the response and Discount Should be Applied
         LibraryGraphMgt.VerifyIDInJson(ResponseText);
         LibraryGraphDocumentTools.VerifySalesTotals(
-          SalesHeader, ResponseText, DiscountAmt, SalesHeader."Invoice Discount Calculation"::Amount);
+          SalesHeader, ResponseText, DiscountAmt - InvDiscAmount, SalesHeader."Invoice Discount Calculation"::Amount);
     end;
 
     [Test]

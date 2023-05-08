@@ -294,23 +294,6 @@ codeunit 9856 "Permission Set Relation Impl."
             FeatureTelemetry.LogUsage('0000HZT', ComposablePermissionSetsTok, 'Permission set excluded.', GetCustomDimensions(CurrRoleID, CurrAppId, RelatedRoleId, RelatedAppId, RelatedScope));
     end;
 
-    local procedure LookupPermissionSet(AllowMultiselect: Boolean; var TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary): Boolean
-    var
-        LookupPermissionSetPage: Page "Lookup Permission Set";
-    begin
-        LookupPermissionSetPage.LookupMode(true);
-
-        if LookupPermissionSetPage.RunModal() = ACTION::LookupOK then begin
-            if AllowMultiselect then
-                LookupPermissionSetPage.GetSelectedRecords(TempAggregatePermissionSet)
-            else
-                LookupPermissionSetPage.GetSelectedRecord(TempAggregatePermissionSet);
-            exit(true);
-        end;
-
-        exit(false);
-    end;
-
     local procedure GetPermissionSetsOfType(PermissionType: Option Include,Exclude; PermissionSetRelationArray: DotNet NavPermissionSetRelationArray; var ExcludedSets: Dictionary of [Text, Boolean])
     var
         PermissionSetRelation: DotNet NavPermissionSetRelation;
@@ -406,5 +389,20 @@ codeunit 9856 "Permission Set Relation Impl."
     local procedure GetMaxTreeLevel(): Integer
     begin
         exit(10);
+    end;
+
+    procedure LookupPermissionSet(AllowMultiselect: Boolean; var AggregatePermissionSet: Record "Aggregate Permission Set"): Boolean
+    var
+        LookupPermissionSetPage: Page "Lookup Permission Set";
+    begin
+        LookupPermissionSetPage.LookupMode(true);
+        if LookupPermissionSetPage.RunModal() = Action::LookupOK then begin
+            if AllowMultiselect then
+                LookupPermissionSetPage.GetSelectedRecords(AggregatePermissionSet)
+            else
+                LookupPermissionSetPage.GetSelectedRecord(AggregatePermissionSet);
+            exit(true);
+        end;
+        exit(false);
     end;
 }

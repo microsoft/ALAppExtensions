@@ -52,15 +52,9 @@ page 9058 "Custom Permission Set In Plan"
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         PermissionSetLookupRecord: Record "Aggregate Permission Set";
-                        LookupPermissionSet: Page "Lookup Permission Set";
+                        PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
                     begin
-                        LookupPermissionSet.LookupMode := true;
-                        if LookupPermissionSet.RunModal() = ACTION::LookupOK then begin
-                            LookupPermissionSet.GetRecord(PermissionSetLookupRecord);
-                            Rec.Scope := PermissionSetLookupRecord.Scope;
-                            Rec."App ID" := PermissionSetLookupRecord."App ID";
-                            Rec."Role ID" := PermissionSetLookupRecord."Role ID";
-                            Rec.CalcFields("App Name", "Role Name");
+                        if PlanConfigurationImpl.LookupPermissionSet(false, Rec, PermissionSetLookupRecord) then begin
                             SkipValidation := true;
                             PermissionScope := Format(PermissionSetLookupRecord.Scope);
                         end;

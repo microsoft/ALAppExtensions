@@ -103,5 +103,6 @@ permissionsetextension 4025 "D365 BASIC - HGP" extends "D365 BASIC"
                   tabledata "GP Hist. Source Progress" = RIMD,
                   tabledata "GP Hist. Source Error" = RIMD,
                   tabledata "GP POP10100" = RIMD,
-                  tabledata "GP POP10110" = RIMD;
+                  tabledata "GP POP10110" = RIMD,
+                  tabledata "GP PM00204" = RIMD;
 }

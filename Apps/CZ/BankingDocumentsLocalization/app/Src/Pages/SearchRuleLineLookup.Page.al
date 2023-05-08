@@ -84,6 +84,16 @@ page 31244 "Search Rule Line Lookup CZB"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the transaction specific symbol filter from the bank statement. If the system finds a match in the bank statement line based on the specified filters, then the account type and account number from the rule line are entered in the financial journal line.';
                 }
+                field("Bank Account Filter"; Rec."Bank Account Filter")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the transaction Account No. filter from the bank statement. If the system finds a match in the bank statement line based on the specified filters, then the account type and account number from the rule line are entered in the financial journal line.';
+                }
+                field("IBAN Filter"; Rec."IBAN Filter")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the transaction IBAN filter from the bank statement. If the system finds a match in the bank statement line based on the specified filters, then the account type and account number from the rule line are entered in the financial journal line.';
+                }
                 field("Account Type"; Rec."Account Type")
                 {
                     ApplicationArea = Basic, Suite;

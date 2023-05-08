@@ -37,6 +37,8 @@ codeunit 139664 "GP Data Migration Tests"
 #pragma warning disable AA0240
         ValidIBANStrTxt: Label 'GB33BUKB20201555555555', Comment = 'Valid IBAN code', Locked = true;
 #pragma warning restore AA0240
+        InvalidIBANStr1Txt: Label 'GB33555559', Comment = 'Invalid IBAN code', Locked = true;
+        InvalidIBANStr2Txt: Label '`', Comment = 'Invalid IBAN code', Locked = true;
         AddressCodeRemitToTxt: Label 'REMIT TO', Comment = 'GP ADRSCODE', Locked = true;
         AddressCodePrimaryTxt: Label 'PRIMARY', Comment = 'GP ADRSCODE', Locked = true;
         AddressCodeWarehouseTxt: Label 'WAREHOUSE', Comment = 'GP ADRSCODE', Locked = true;
@@ -64,9 +66,10 @@ codeunit 139664 "GP Data Migration Tests"
 
         GPTestHelperFunctions.CreateConfigurationSettings();
 
-        // Enable Receivables Module setting
+        // Enable Receivables Module and Customer classes settings
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", true);
         GPCompanyAdditionalSettings.Modify();
 
         // When adding Customers, update the expected count here
@@ -74,6 +77,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateCustomerData();
+        CreateCustomerClassData();
         CreateCustomerTrx();
 
         GPTestHelperFunctions.InitializeMigration();
@@ -150,7 +154,24 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('31847240200000', Customer."Fax No.", 'Fax No. of Migrated Customer is wrong');
 
         // [THEN] Transactions will be created
-        Assert.RecordCount(GenJournalLine, 1 + InitialGenJournalLineCount);
+        Assert.RecordCount(GenJournalLine, 2 + InitialGenJournalLineCount);
+
+        // [WHEN] Customer classes are migrated
+        Assert.AreEqual('100', HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), 'Default Receivables account is incorrect.');
+
+        // [THEN] The class Receivables account will be used for transactions when an account is configured for the class
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Customer);
+        GenJournalLine.SetRange("Account No.", '!WOW!');
+        Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
+        Assert.AreEqual('TEST987', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+
+        // [THEN] No account will be set for the Bal. Account No. where class has no account configured
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Customer);
+        GenJournalLine.SetRange("Account No.", '#1');
+        Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
+        Assert.AreEqual('', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
     end;
 
     [Test]
@@ -181,6 +202,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateCustomerData();
+        CreateCustomerClassData();
         CreateCustomerTrx();
 
         GPTestHelperFunctions.InitializeMigration();
@@ -318,13 +340,15 @@ codeunit 139664 "GP Data Migration Tests"
 
         GPTestHelperFunctions.CreateConfigurationSettings();
 
-        // Enable Payables Module setting
+        // Enable Payables Module and Vendor Classes settings
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
         CreateVendorData();
+        CreateVendorClassData();
         CreateVendorTrx();
 
         GPTestHelperFunctions.InitializeMigration();
@@ -336,7 +360,7 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
         Assert.AreEqual(VendorCount, HelperFunctions.GetNumberOfVendors(), 'Wrong number of Vendors calculated.');
 
-        // [then] Then fields for Vendor 1 are correctly imported to temporary table
+        // [THEN] Then fields for Vendor 1 are correctly imported to temporary table
         GPVendor.SetRange(VENDORID, '1160');
         GPVendor.FindFirst();
         Assert.AreEqual('Risco, Inc.', GPVendor.VENDNAME, 'VENDNAME of Vendor is wrong');
@@ -457,7 +481,7 @@ codeunit 139664 "GP Data Migration Tests"
         Vendor.SetRange("No.", 'ACETRAVE0002');
         Vendor.FindFirst();
 
-        // [then] The phone and/or fax values are empty
+        // [THEN] The phone and/or fax values are empty
         Assert.AreEqual('', Vendor."Phone No.", 'Phone No. of Migrated Vendor should be empty');
         Assert.AreEqual('', Vendor."Fax No.", 'Fax No. of Migrated Vendor should be empty');
 
@@ -467,7 +491,7 @@ codeunit 139664 "GP Data Migration Tests"
         OrderAddress.SetRange(Code, 'WAREHOUSE');
         OrderAddress.FindFirst();
 
-        // [then] The phone and/or fax values are empty
+        // [THEN] The phone and/or fax values are empty
         Assert.AreEqual('', OrderAddress."Phone No.", 'Phone No. of Migrated Vendor Address should be empty');
         Assert.AreEqual('', OrderAddress."Fax No.", 'Fax No. of Migrated Vendor Address should be empty');
 
@@ -477,12 +501,29 @@ codeunit 139664 "GP Data Migration Tests"
         OrderAddress.SetRange(Code, 'Primary');
         OrderAddress.FindFirst();
 
-        // [then] The phone and/or fax values will be set to the migrated value
+        // [THEN] The phone and/or fax values will be set to the migrated value
         Assert.AreEqual('61855501040000', OrderAddress."Phone No.", 'Phone No. of Migrated Vendor Address should be empty');
         Assert.AreEqual('61855501040000', OrderAddress."Fax No.", 'Fax No. of Migrated Vendor Address should be empty');
 
         // [THEN] Vendor transactions will be created
-        Assert.RecordCount(GenJournalLine, 1 + InitialGenJournalLineCount);
+        Assert.RecordCount(GenJournalLine, 2 + InitialGenJournalLineCount);
+
+        // [WHEN] Vendor classes are migrated
+        Assert.AreEqual('1', HelperFunctions.GetPostingAccountNumber('PayablesAccount'), 'Default Payables account is incorrect.');
+
+        // [THEN] The class Payables account will be used for transactions when an account is configured for the class
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Vendor);
+        GenJournalLine.SetRange("Account No.", '1160');
+        Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
+        Assert.AreEqual('TEST123', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+
+        // [THEN] The default Payables account is used when no class is set on the Vender
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Vendor);
+        GenJournalLine.SetRange("Account No.", 'V3130');
+        Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
+        Assert.AreEqual('1', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
     end;
 
     [Test]
@@ -505,6 +546,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateVendorData();
+        CreateVendorClassData();
         GPTestHelperFunctions.InitializeMigration();
 
         // [Then] The fields for the Vendor are correctly imported to temporary table
@@ -585,6 +627,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateVendorData();
+        CreateVendorClassData();
         CreateVendorTrx();
 
         GPTestHelperFunctions.InitializeMigration();
@@ -906,13 +949,14 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateGPVendorBankInformation();
+        CreateVendorClassData();
 
         GPTestHelperFunctions.InitializeMigration();
 
-        // [then] Then the correct number of GPSY06000 are imported
+        // [THEN] The correct number of GPSY06000 are imported
         Assert.AreEqual(VendorBankAccountCount, GPSY06000.Count(), 'Wrong number of GPSY06000 read.');
 
-        // [then] Then fields for the first record are correctly imported to temporary table
+        // [THEN] The fields for the first record are correctly imported to temporary table
         GPSY06000.SetRange(CustomerVendor_ID, VendorIdWithBankStr1Txt);
         GPSY06000.SetRange(ADRSCODE, AddressCodeRemitToTxt);
         GPSY06000.FindFirst();
@@ -928,24 +972,24 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual(ValidIBANStrTxt, GPSY06000.IntlBankAcctNum, 'IntlBankAcctNum of GPSY06000 is wrong.');
         Assert.AreEqual(ValidSwiftCodeStrTxt, GPSY06000.SWIFTADDR, 'SWIFTADDR of GPSY06000 is wrong.');
 
-        // [WHEN] data is migrated
-        GPVendor.Reset();
+        // [WHEN] Data is migrated
+        Clear(GPVendor);
         GPVendor.SetFilter(VENDORID, '%1|%2|%3|%4', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt);
         MigrateVendors(GPVendor);
         RunPostMigration();
 
-        // [then] Then the currencies will be migrated
-        Currency.Reset();
+        // [THEN] The currencies will be migrated
+        Clear(Currency);
         Currency.SetRange(Code, CurrencyCodeUSTxt);
         Assert.IsFalse(Currency.IsEmpty(), 'Currency was not created.');
 
-        // [then] Then the correct number of Vendor Bank Accounts are imported
-        VendorBankAccount.Reset();
+        // [THEN] The correct number of Vendor Bank Accounts are imported
+        Clear(VendorBankAccount);
         VendorBankAccount.SetFilter("Vendor No.", '%1|%2|%3|%4', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt);
         Assert.AreEqual(ActiveVendorBankAccountCount, VendorBankAccount.Count(), 'Wrong number of migrated Vendor Bank Accounts read');
 
-        // [then] Then fields for Vendors 1 are correctly applied
-        VendorBankAccount.Reset();
+        // [THEN] The fields for Vendors 1 are correctly applied
+        Clear(VendorBankAccount);
         VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr1Txt);
         VendorBankAccount.SetRange(Code, 'V01_REMITTO');
         VendorBankAccount.FindFirst();
@@ -957,40 +1001,83 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('123456789', VendorBankAccount."Bank Account No.", 'Bank Account No. of VendorBankAccount is wrong.');
         Assert.AreEqual('123456789', VendorBankAccount."Transit No.", 'Transit No. of VendorBankAccount is wrong.');
         Assert.AreEqual(CurrencyCodeUSTxt, VendorBankAccount."Currency Code", 'Currency Code of VendorBankAccount is wrong.');
-        Assert.AreEqual(ValidIBANStrTxt, VendorBankAccount.IBAN, 'IBAN of VendorBankAccount is wrong.');
+        Assert.AreEqual(ValidIBANStrTxt, VendorBankAccount.IBAN, 'IBAN of VendorBankAccount is wrong. V01_REMITTO');
         Assert.AreEqual(ValidSwiftCodeStrTxt, VendorBankAccount."SWIFT Code", 'SWIFT Code of VendorBankAccount is wrong.');
 
-        // [WHEN] the Vendor has a Remit To bank account
-        Vendor.Reset();
+        // [WHEN] The Vendor has a Remit To bank account
+        Clear(Vendor);
         Vendor.SetRange("No.", VendorIdWithBankStr1Txt);
         Vendor.FindFirst();
 
-        // [then] The Remit To bank account will be the Vendor's preferred bank account
+        // [THEN] The Remit To bank account will be the Vendor's preferred bank account
         Assert.AreEqual('V01_REMITTO', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Remit To account.');
 
-        // [WHEN] the Vendor does not have a Remit To bank account, but has a Primary bank account
-        Vendor.Reset();
+        // [WHEN] The Vendor does not have a Remit To bank account, but has a Primary bank account
+        Clear(Vendor);
         Vendor.SetRange("No.", VendorIdWithBankStr2Txt);
         Vendor.FindFirst();
 
-        // [then] The Primary bank account will be the Vendor's preferred bank account
+        // [THEN] The Primary bank account will be the Vendor's preferred bank account
         Assert.AreEqual('V02_PRIMARY', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Primary account.');
 
-        // [WHEN] the Vendor does not have either a Remit To or Primary bank account
-        Vendor.Reset();
+        // [WHEN] The Vendor does not have either a Remit To or Primary bank account
+        Clear(Vendor);
         Vendor.SetRange("No.", VendorIdWithBankStr3Txt);
         Vendor.FindFirst();
 
-        // [then] The Vendor's preferred bank account will be blank
+        // [THEN] The Vendor's preferred bank account will be blank
         Assert.AreEqual('', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be blank.');
 
-        // [WHEN] the Vendor does not have an active Remit To but has a Primary bank account
-        Vendor.Reset();
+        // [WHEN] The Vendor does not have an active Remit To but has a Primary bank account
+        Clear(Vendor);
         Vendor.SetRange("No.", VendorIdWithBankStr4Txt);
         Vendor.FindFirst();
 
-        // [then] The Primary bank account will be the Vendor's preferred bank account
+        // [THEN] The Primary bank account will be the Vendor's preferred bank account
         Assert.AreEqual('V04_PRIMARY', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Primary account.');
+
+        // [WHEN] The Vendor Bank Accounts are created
+        // [THEN] The IBAN field will get populated only if it passed validation checks
+
+        // Vendor 2, V02_Primary - Invalid IBAN
+        Clear(VendorBankAccount);
+        VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr2Txt);
+        VendorBankAccount.SetRange(Code, 'V02_Primary');
+        VendorBankAccount.FindFirst();
+
+        Assert.AreEqual(VendorIdWithBankStr2Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
+        Assert.AreEqual('V02_PRIMARY', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.AreEqual('', VendorBankAccount.IBAN, 'IBAN of VendorBankAccount should be empty because it was invalid. V02_PRIMARY');
+
+        // Vendor 2, V02_Other - Valid IBAN
+        Clear(VendorBankAccount);
+        VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr2Txt);
+        VendorBankAccount.SetRange(Code, 'V02_Other');
+        VendorBankAccount.FindFirst();
+
+        Assert.AreEqual(VendorIdWithBankStr2Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
+        Assert.AreEqual('V02_OTHER', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.AreEqual(ValidIBANStrTxt, VendorBankAccount.IBAN, 'IBAN of VendorBankAccount is wrong. V02_OTHER');
+
+        // Vendor 3, V03_Other2 - Invalid IBAN
+        Clear(VendorBankAccount);
+        VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr3Txt);
+        VendorBankAccount.SetRange(Code, 'V03_Other2');
+        VendorBankAccount.FindFirst();
+
+        Assert.AreEqual(VendorIdWithBankStr3Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
+        Assert.AreEqual('V03_OTHER2', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.AreEqual('', VendorBankAccount.IBAN, 'IBAN of VendorBankAccount should be empty because it was invalid. V03_OTHER2');
+
+        // Vendor 3, V03_Other - Valid IBAN
+        Clear(VendorBankAccount);
+        VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr3Txt);
+        VendorBankAccount.SetRange(Code, 'V03_Other');
+        VendorBankAccount.FindFirst();
+
+        Assert.AreEqual(VendorIdWithBankStr3Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
+        Assert.AreEqual('V03_OTHER', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.AreEqual(ValidIBANStrTxt, VendorBankAccount.IBAN, 'IBAN of VendorBankAccount is wrong. V03_OTHER');
     end;
 
     [Test]
@@ -1124,13 +1211,14 @@ codeunit 139664 "GP Data Migration Tests"
         Initialize();
 
         // [WHEN] Data is imported, and data is migrated
-        CreateCustomerData();
-        CreateCustomerTrx();
-        CreateCustomerClassData();
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", true);
         GPCompanyAdditionalSettings.Modify();
+
+        CreateCustomerData();
+        CreateCustomerClassData();
+        CreateCustomerTrx();
 
         GPTestHelperFunctions.InitializeMigration();
 
@@ -1165,7 +1253,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [then] The correct Customer Posting Groups are set
         Customer.Get('!WOW!');
-        Assert.AreEqual('', Customer."Customer Posting Group", 'Customer Posting Group of migrated Customer should not be set.');
+        Assert.AreEqual('TEST', Customer."Customer Posting Group", 'Customer Posting Group of migrated Customer should not be set.');
 
         Customer.Get('"AMERICAN"');
         Assert.AreEqual('USA-TEST-1', Customer."Customer Posting Group", 'Customer Posting Group of migrated Customer should be set.');
@@ -1186,6 +1274,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported and migrated, but configured to NOT import open POs
         CreateVendorData();
+        CreateVendorClassData();
         CreateOpenPOData();
         GPTestHelperFunctions.CreateConfigurationSettings();
 
@@ -1221,6 +1310,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported and migrated
         CreateVendorData();
+        CreateVendorClassData();
         CreateOpenPOData();
         GPTestHelperFunctions.CreateConfigurationSettings();
 
@@ -1267,6 +1357,7 @@ codeunit 139664 "GP Data Migration Tests"
         GenBusPostingGroup: Record "Gen. Business Posting Group";
         VendorPostingGroup: Record "Vendor Posting Group";
         GPConfiguration: Record "GP Configuration";
+        GPPostingAccounts: Record "GP Posting Accounts";
     begin
         if not BindSubscription(GPDataMigrationTests) then
             exit;
@@ -1277,7 +1368,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer.DeleteAll();
         GPVendorAddress.DeleteAll();
         GPVendor.DeleteAll();
-        GPSY06000.DeleteAll();
         GPPM00100.DeleteAll();
         GPPM00200.DeleteAll();
         GPRM00101.DeleteAll();
@@ -1295,32 +1385,40 @@ codeunit 139664 "GP Data Migration Tests"
             VendorPostingGroup.Insert(true);
         end;
 
+        if not GPPostingAccounts.Get() then begin
+            GPPostingAccounts.PayablesAccount := '1';
+            GPPostingAccounts.ReceivablesAccount := '100';
+            GPPostingAccounts.Insert();
+        end;
+
         if UnbindSubscription(GPDataMigrationTests) then
             exit;
     end;
 
-    local procedure MigrateCustomers(Customers: Record "GP Customer")
+    local procedure MigrateCustomers(var GPCustomers: Record "GP Customer")
     begin
         if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Customer) then
             exit;
 
-        if Customers.FindSet() then
+        if GPCustomers.FindSet() then
             repeat
-                CustomerMigrator.OnMigrateCustomer(CustomerFacade, Customers.RecordId());
-                CustomerMigrator.OnMigrateCustomerTransactions(CustomerFacade, Customers.RecordId(), true);
-            until Customers.Next() = 0;
+                CustomerMigrator.OnMigrateCustomer(CustomerFacade, GPCustomers.RecordId());
+                CustomerMigrator.OnMigrateCustomerPostingGroups(CustomerFacade, GPCustomers.RecordId(), true);
+                CustomerMigrator.OnMigrateCustomerTransactions(CustomerFacade, GPCustomers.RecordId(), true);
+            until GPCustomers.Next() = 0;
     end;
 
-    local procedure MigrateVendors(Vendors: Record "GP Vendor")
+    local procedure MigrateVendors(var GPVendors: Record "GP Vendor")
     begin
         if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Vendor) then
             exit;
 
-        if Vendors.FindSet() then
+        if GPVendors.FindSet() then
             repeat
-                VendorMigrator.OnMigrateVendor(VendorFacade, Vendors.RecordId());
-                VendorMigrator.OnMigrateVendorTransactions(VendorFacade, Vendors.RecordId(), true);
-            until Vendors.Next() = 0;
+                VendorMigrator.OnMigrateVendor(VendorFacade, GPVendors.RecordId());
+                VendorMigrator.OnMigrateVendorPostingGroups(VendorFacade, GPVendors.RecordId(), true);
+                VendorMigrator.OnMigrateVendorTransactions(VendorFacade, GPVendors.RecordId(), true);
+            until GPVendors.Next() = 0;
     end;
 
     local procedure RunPostMigration()
@@ -1418,6 +1516,7 @@ codeunit 139664 "GP Data Migration Tests"
     var
         GPCustomerTransactions: Record "GP Customer Transactions";
     begin
+        Clear(GPCustomerTransactions);
         GPCustomerTransactions.Id := '1';
         GPCustomerTransactions.CUSTNMBR := '#1';
         GPCustomerTransactions.DOCNUMBR := '1';
@@ -1427,12 +1526,23 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomerTransactions.TransType := GPCustomerTransactions.TransType::Invoice;
         GPCustomerTransactions.PYMTRMID := '2.5% EOM/EOM';
         GPCustomerTransactions.Insert();
+
+        Clear(GPCustomerTransactions);
+        GPCustomerTransactions.Id := '2';
+        GPCustomerTransactions.CUSTNMBR := '!WOW!';
+        GPCustomerTransactions.DOCNUMBR := '2';
+        GPCustomerTransactions.GLDocNo := '2';
+        GPCustomerTransactions.DOCDATE := DMY2Date(11, 8, 2022);
+        GPCustomerTransactions.CURTRXAM := 2;
+        GPCustomerTransactions.TransType := GPCustomerTransactions.TransType::Invoice;
+        GPCustomerTransactions.PYMTRMID := '2.5% EOM/EOM';
+        GPCustomerTransactions.Insert();
     end;
 
     local procedure CreateCustomerClassData()
     var
-        GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";
+        GPAccount: Record "GP Account";
     begin
         GPRM00201.DeleteAll();
         GPRM00101.DeleteAll();
@@ -1443,8 +1553,9 @@ codeunit 139664 "GP Data Migration Tests"
             GPAccount.Name := 'Test account 1';
             GPAccount.Active := true;
             GPAccount.Insert();
+        end;
 
-            GLAccount.Init();
+        if not GLAccount.Get(GPAccount.AcctNum) then begin
             GLAccount.Validate("No.", GPAccount.AcctNum);
             GLAccount.Validate(Name, GPAccount.Name);
             GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
@@ -1457,8 +1568,24 @@ codeunit 139664 "GP Data Migration Tests"
             GPAccount.Name := 'Test account 2';
             GPAccount.Active := true;
             GPAccount.Insert();
+        end;
 
-            GLAccount.Init();
+        if not GLAccount.Get(GPAccount.AcctNum) then begin
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get('100') then begin
+            GPAccount.AcctNum := '100';
+            GPAccount.AcctIndex := 100;
+            GPAccount.Name := 'Test account 100';
+            GPAccount.Active := true;
+            GPAccount.Insert();
+        end;
+
+        if not GLAccount.Get(GPAccount.AcctNum) then begin
             GLAccount.Validate("No.", GPAccount.AcctNum);
             GLAccount.Validate(Name, GPAccount.Name);
             GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
@@ -1488,7 +1615,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPRM00101.Init();
         GPRM00101.CUSTNMBR := '!WOW!';
         GPRM00101.CUSTNAME := 'Oh! What a feeling!';
-        GPRM00101.CUSTCLAS := '';
+        GPRM00101.CUSTCLAS := 'TEST';
         GPRM00101.Insert();
 
         GPRM00101.Init();
@@ -1502,6 +1629,24 @@ codeunit 139664 "GP Data Migration Tests"
         GPRM00101.CUSTNAME := '#1 Company';
         GPRM00101.CUSTCLAS := 'USA-TEST-2';
         GPRM00101.Insert();
+
+        GPAccount.Init();
+        GPAccount.AcctNum := 'TEST987';
+        GPAccount.AcctIndex := 1000;
+        GPAccount.Name := 'Accounts Receivable';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        GLAccount.Init();
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        Clear(GPRM00201);
+        GPRM00201.CLASSID := 'TEST';
+        GPRM00201.RMARACC := 1000;
+        GPRM00201.Insert();
     end;
 
     local procedure CreateVendorData()
@@ -2968,8 +3113,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.FAXNUMBR := '41327348300000';
         GPVendorAddress.Insert();
 
-        GPPM00200.Init();
-        GPPM00200.VENDORID := GPVendor.VENDORID;
+        Clear(GPPM00200);
+        GPPM00200.VENDORID := 'V3130';
         GPPM00200.VADDCDPR := AddressCodePrimaryTxt;
         GPPM00200.Insert();
     end;
@@ -2978,12 +3123,24 @@ codeunit 139664 "GP Data Migration Tests"
     var
         GPVendorTransactions: Record "GP Vendor Transactions";
     begin
+        Clear(GPVendorTransactions);
         GPVendorTransactions.Id := '1';
         GPVendorTransactions.VENDORID := 'V3130';
         GPVendorTransactions.DOCNUMBR := '1';
         GPVendorTransactions.GLDocNo := '1';
         GPVendorTransactions.DOCDATE := DMY2Date(11, 8, 2022);
         GPVendorTransactions.CURTRXAM := 1;
+        GPVendorTransactions.TransType := GPVendorTransactions.TransType::Invoice;
+        GPVendorTransactions.PYMTRMID := '3% 15th/Net 30';
+        GPVendorTransactions.Insert();
+
+        Clear(GPVendorTransactions);
+        GPVendorTransactions.Id := '2';
+        GPVendorTransactions.VENDORID := '1160';
+        GPVendorTransactions.DOCNUMBR := '2';
+        GPVendorTransactions.GLDocNo := '2';
+        GPVendorTransactions.DOCDATE := DMY2Date(11, 8, 2022);
+        GPVendorTransactions.CURTRXAM := 2;
         GPVendorTransactions.TransType := GPVendorTransactions.TransType::Invoice;
         GPVendorTransactions.PYMTRMID := '3% 15th/Net 30';
         GPVendorTransactions.Insert();
@@ -3016,14 +3173,16 @@ codeunit 139664 "GP Data Migration Tests"
         SwiftCode.DeleteAll();
 
         GPMC40200.DeleteAll();
-        GPMC40200.Init();
+        GPSY06000.DeleteAll();
+
+        Clear(GPMC40200);
         GPMC40200.CURNCYID := CurrencyCodeUSTxt;
         GPMC40200.CRNCYSYM := '$';
         GPMC40200.CRNCYDSC := 'US Dollar';
         GPMC40200.Insert();
 
         // Vendor 1
-        GPVendor.Init();
+        Clear(GPVendor);
         GPVendor.VENDORID := VendorIdWithBankStr1Txt;
         GPVendor.VENDNAME := 'Vendor with bank account 1';
         GPVendor.SEARCHNAME := GPVendor.VENDNAME;
@@ -3048,7 +3207,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.TXIDNMBR := '';
         GPVendor.Insert();
 
-        GPVendorAddress.Init();
+        Clear(GPVendorAddress);
 #pragma warning disable AA0139
         GPVendorAddress.VENDORID := GPVendor.VENDORID;
         GPVendorAddress.ADRSCODE := AddressCodeRemitToTxt;
@@ -3062,7 +3221,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
         GPVendorAddress.Insert();
 
-        GPVendorAddress.Init();
+        Clear(GPVendorAddress);
         GPVendorAddress.VENDORID := GPVendor.VENDORID;
         GPVendorAddress.ADRSCODE := AddressCodePrimaryTxt;
         GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
@@ -3075,7 +3234,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
         GPVendorAddress.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodeRemitToTxt;
         GPSY06000.EFTBankCode := 'V01_RemitTo';
@@ -3088,7 +3247,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodePrimaryTxt;
         GPSY06000.EFTBankCode := 'V01_Primary';
@@ -3101,7 +3260,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodeOtherTxt;
         GPSY06000.EFTBankCode := 'V01_Other';
@@ -3114,14 +3273,14 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
 
-        GPPM00200.Init();
+        Clear(GPPM00200);
         GPPM00200.VENDORID := GPVendor.VENDORID;
         GPPM00200.VADDCDPR := AddressCodePrimaryTxt;
         GPPM00200.VADCDTRO := AddressCodeRemitToTxt;
         GPPM00200.Insert();
 
         // Vendor 2
-        GPVendor.Init();
+        Clear(GPVendor);
         GPVendor.VENDORID := VendorIdWithBankStr2Txt;
         GPVendor.VENDNAME := 'Vendor with bank account 2';
         GPVendor.SEARCHNAME := GPVendor.VENDNAME;
@@ -3146,7 +3305,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.TXIDNMBR := '';
         GPVendor.Insert();
 
-        GPVendorAddress.Init();
+        Clear(GPVendorAddress);
         GPVendorAddress.VENDORID := GPVendor.VENDORID;
         GPVendorAddress.ADRSCODE := AddressCodePrimaryTxt;
         GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
@@ -3159,12 +3318,12 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
         GPVendorAddress.Insert();
 
-        GPPM00200.Init();
+        Clear(GPPM00200);
         GPPM00200.VENDORID := GPVendor.VENDORID;
         GPPM00200.VADDCDPR := AddressCodePrimaryTxt;
         GPPM00200.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodePrimaryTxt;
         GPSY06000.EFTBankCode := 'V02_Primary';
@@ -3173,11 +3332,11 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.EFTBankAcct := '345678901';
         GPSY06000.EFTTransitRoutingNo := '345678910';
         GPSY06000.CURNCYID := CurrencyCodeUSTxt;
-        GPSY06000.IntlBankAcctNum := ValidIBANStrTxt;
+        GPSY06000.IntlBankAcctNum := InvalidIBANStr1Txt;
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodeOtherTxt;
         GPSY06000.EFTBankCode := 'V02_Other';
@@ -3191,7 +3350,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.Insert();
 
         // Vendor 3
-        GPVendor.Init();
+        Clear(GPVendor);
         GPVendor.VENDORID := VendorIdWithBankStr3Txt;
         GPVendor.VENDNAME := 'Vendor with bank account 3';
         GPVendor.SEARCHNAME := GPVendor.VENDNAME;
@@ -3216,7 +3375,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.TXIDNMBR := '';
         GPVendor.Insert();
 
-        GPVendorAddress.Init();
+        Clear(GPVendorAddress);
         GPVendorAddress.VENDORID := GPVendor.VENDORID;
         GPVendorAddress.ADRSCODE := AddressCodePrimaryTxt;
         GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
@@ -3229,7 +3388,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
         GPVendorAddress.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodeOtherTxt;
         GPSY06000.EFTBankCode := 'V03_Other';
@@ -3242,7 +3401,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodeOther2Txt;
         GPSY06000.EFTBankCode := 'V03_Other2';
@@ -3251,17 +3410,17 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.EFTBankAcct := '456789014';
         GPSY06000.EFTTransitRoutingNo := '456789104';
         GPSY06000.CURNCYID := CurrencyCodeUSTxt;
-        GPSY06000.IntlBankAcctNum := ValidIBANStrTxt;
+        GPSY06000.IntlBankAcctNum := InvalidIBANStr2Txt;
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
 
-        GPPM00200.Init();
+        Clear(GPPM00200);
         GPPM00200.VENDORID := GPVendor.VENDORID;
         GPPM00200.VADDCDPR := AddressCodePrimaryTxt;
         GPPM00200.Insert();
 
         // Vendor 4
-        GPVendor.Init();
+        Clear(GPVendor);
         GPVendor.VENDORID := VendorIdWithBankStr4Txt;
         GPVendor.VENDNAME := 'Vendor with bank account 4';
         GPVendor.SEARCHNAME := GPVendor.VENDNAME;
@@ -3286,7 +3445,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.TXIDNMBR := '';
         GPVendor.Insert();
 
-        GPVendorAddress.Init();
+        Clear(GPVendorAddress);
         GPVendorAddress.VENDORID := GPVendor.VENDORID;
         GPVendorAddress.ADRSCODE := AddressCodePrimaryTxt;
         GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
@@ -3299,7 +3458,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
         GPVendorAddress.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodeRemitToTxt;
         GPSY06000.INACTIVE := true;
@@ -3313,7 +3472,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodePrimaryTxt;
         GPSY06000.EFTBankCode := 'V04_Primary';
@@ -3326,7 +3485,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
 
-        GPSY06000.Init();
+        Clear(GPSY06000);
         GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
         GPSY06000.ADRSCODE := AddressCodeOtherTxt;
         GPSY06000.EFTBankCode := 'V04_Other';
@@ -3338,19 +3497,20 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.IntlBankAcctNum := ValidIBANStrTxt;
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
-#pragma warning restore AA0139
 
-        GPPM00200.Init();
+
+        Clear(GPPM00200);
         GPPM00200.VENDORID := GPVendor.VENDORID;
         GPPM00200.VADDCDPR := AddressCodePrimaryTxt;
         GPPM00200.VADCDTRO := AddressCodeRemitToTxt;
         GPPM00200.Insert();
+#pragma warning restore AA0139
     end;
 
     local procedure CreateVendorClassData()
     var
-        GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";
+        GPAccount: Record "GP Account";
     begin
         GPAccount.Init();
         GPAccount.AcctNum := '1';
@@ -3395,6 +3555,19 @@ codeunit 139664 "GP Data Migration Tests"
         GPAccount.AcctNum := '4';
         GPAccount.AcctIndex := 190;
         GPAccount.Name := 'Finance Charge Expense';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        GLAccount.Init();
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        GPAccount.Init();
+        GPAccount.AcctNum := 'TEST123';
+        GPAccount.AcctIndex := 999;
+        GPAccount.Name := 'Test 123';
         GPAccount.Active := true;
         GPAccount.Insert();
 
@@ -3461,9 +3634,10 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00100.PURPVIDX := 0;
         GPPM00100.Insert();
 
-        GPPM00200.Get('ACME');
-        GPPM00200.VNDCLSID := 'USA-US-C';
-        GPPM00200.Modify();
+        if GPPM00200.Get('ACME') then begin
+            GPPM00200.VNDCLSID := 'USA-US-C';
+            GPPM00200.Modify();
+        end;
 
         GPPM00200.Init();
         GPPM00200.VENDORID := 'ADEMCO';
@@ -3476,6 +3650,16 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00200.VENDNAME := 'American Airlines Cargo';
         GPPM00200.VNDCLSID := 'USA-US-M';
         GPPM00200.Insert();
+
+        Clear(GPPM00200);
+        GPPM00200.VENDORID := '1160';
+        GPPM00200.VNDCLSID := 'TEST';
+        GPPM00200.Insert();
+
+        Clear(GPPM00100);
+        GPPM00100.VNDCLSID := 'TEST';
+        GPPM00100.PMAPINDX := 999;
+        GPPM00100.Insert();
     end;
 
     local procedure CreateOpenPOData()

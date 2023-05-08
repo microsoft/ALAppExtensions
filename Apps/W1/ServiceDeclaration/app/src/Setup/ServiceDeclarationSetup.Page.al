@@ -70,16 +70,31 @@ page 5010 "Service Declaration Setup"
 
     actions
     {
+        area(processing)
+        {
+            action(ImportDefaultDataExchangeDef)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Create Default Data Exch. Def.';
+                Image = Create;
+                ToolTip = 'Create/Restore Default Data Exchange Definition(-s)';
+                trigger OnAction()
+                var
+                    ServDeclMgt: Codeunit "Service Declaration Mgt.";
+                begin
+                    ServDeclMgt.CreateDefaultDataExchangeDef();
+                end;
+            }
+        }
     }
 
     trigger OnOpenPage()
     var
         ServiceDeclarationMgt: Codeunit "Service Declaration Mgt.";
     begin
-        if not ServiceDeclarationMgt.IsFeatureEnabled() then begin
+        if not ServiceDeclarationMgt.IsFeatureEnabledWithoutSetup() then begin
             ServiceDeclarationMgt.ShowNotEnabledMessage(CurrPage.Caption());
             Error('');
         end;
     end;
 }
-

@@ -49,10 +49,6 @@ codeunit 2717 "Page Summary Provider Impl."
         // Add header
         AddPageSummaryHeader(PageId, ResultJsonObject);
 
-        // If show summary record is false, then exit with summary type caption
-        if not PageSummarySettings.IsShowRecordSummaryEnabled() then
-            exit(Format(ResultJsonObject));
-
         // Initialize variables
         if not PageMetadata.Get(PageId) then
             exit(Format(ResultJsonObject));
@@ -65,6 +61,10 @@ codeunit 2717 "Page Summary Provider Impl."
         end;
 
         AddUrl(ResultJsonObject, PageId, SourceRecordRef);
+
+        // If show summary record is false, then exit with summary type caption
+        if not PageSummarySettings.IsShowRecordSummaryEnabled() then
+            exit(Format(ResultJsonObject));
 
         RecId := SourceRecordRef.RecordId;
         Bookmark := Format(RecId, 0, 10); // 10 = Format RecordId into string

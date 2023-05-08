@@ -161,6 +161,13 @@ table 31006 "Sales Adv. Letter Entry CZZ"
             DataClassification = CustomerContent;
             TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2));
         }
+        field(70; "Customer No."; Code[20])
+        {
+            Caption = 'Customer No.';
+            DataClassification = CustomerContent;
+            TableRelation = Customer;
+            Editable = false;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -215,7 +222,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         OnBeforePrintRecords(DummyReportSelections, Rec, ShowRequestPage, IsHandled);
         if not IsHandled then
             DocumentSendingProfile.TrySendToPrinter(
-              DummyReportSelections.Usage::"Sales Advance VAT Document CZZ".AsInteger(), Rec, 0, ShowRequestPage);
+              DummyReportSelections.Usage::"Sales Advance VAT Document CZZ".AsInteger(), Rec, FieldNo("Customer No."), ShowRequestPage);
     end;
 
     procedure EmailRecords(ShowDialog: Boolean)
@@ -232,7 +239,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         OnBeforeEmailRecords(DummyReportSelections, Rec, DocumentTypeTxt, ShowDialog, IsHandled);
         if not IsHandled then
             DocumentSendingProfile.TrySendToEMail(
-              DummyReportSelections.Usage::"Sales Advance VAT Document CZZ".AsInteger(), Rec, FieldNo("Document No."), DocumentTypeTxt, 0, ShowDialog);
+              DummyReportSelections.Usage::"Sales Advance VAT Document CZZ".AsInteger(), Rec, FieldNo("Document No."), DocumentTypeTxt, FieldNo("Customer No."), ShowDialog);
     end;
 
     procedure CalcUsageVATAmountLines(var SalesInvoiceHeader: Record "Sales Invoice Header"; var VATAmountLine: Record "VAT Amount Line")
@@ -268,6 +275,14 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         SalesAdvLetterEntryCZZ.SetRange("Document No.", "Document No.");
         SalesAdvLetterEntryCZZ.CalcSums(Amount);
         exit(SalesAdvLetterEntryCZZ.Amount)
+    end;
+
+    internal procedure GetCustomerNo(): Code[20]
+    var
+        SalesAdvLetterHeader: Record "Sales Adv. Letter Header CZZ";
+    begin
+        SalesAdvLetterHeader.Get("Sales Adv. Letter No.");
+        exit(SalesAdvLetterHeader."Bill-to Customer No.");
     end;
 
     [IntegrationEvent(false, false)]

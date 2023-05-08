@@ -29,7 +29,7 @@ tableextension 148121 "Intrastat Report Header IT" extends "Intrastat Report Hea
             var
                 IntrastatReportHeader2: Record "Intrastat Report Header";
             begin
-                SetIntrastatJnlBatchFilter(IntrastatReportHeader2);
+                SetIntrastatReportFilter(IntrastatReportHeader2);
                 if Page.RunModal(0, IntrastatReportHeader2) = Action::LookupOK then
                     "Corrected Intrastat Rep. No." := IntrastatReportHeader2."No.";
             end;
@@ -38,7 +38,7 @@ tableextension 148121 "Intrastat Report Header IT" extends "Intrastat Report Hea
             var
                 IntrastatReportHeader2: Record "Intrastat Report Header";
             begin
-                SetIntrastatJnlBatchFilter(IntrastatReportHeader2);
+                SetIntrastatReportFilter(IntrastatReportHeader2);
                 IntrastatReportHeader2.SetRange("No.", "Corrected Intrastat Rep. No.");
                 if IntrastatReportHeader2.IsEmpty() then
                     Error(NoValueWithinTheFilterErr, "Corrected Intrastat Rep. No.", IntrastatReportHeader2.GetFilters());
@@ -50,7 +50,7 @@ tableextension 148121 "Intrastat Report Header IT" extends "Intrastat Report Hea
             DataClassification = CustomerContent;
         }
     }
-    internal procedure SetIntrastatJnlBatchFilter(var IntrastatReportHeader2: Record "Intrastat Report Header")
+    internal procedure SetIntrastatReportFilter(var IntrastatReportHeader2: Record "Intrastat Report Header")
     begin
         IntrastatReportHeader2.SetRange(Reported, true);
         IntrastatReportHeader2.SetRange("EU Service", Rec."EU Service");

@@ -15,6 +15,11 @@ codeunit 18544 "Tax Base Subscribers"
         OnAfterGetTDSAmount(Amount);
     end;
 
+    procedure GetAmountFromDocumentNoForEInv(DocumentNo: Code[20]; var Amount: Decimal)
+    begin
+        OnAfterGetAmountFromDocumentNoForEInv(DocumentNo, Amount);
+    end;
+
     procedure GetTDSAmountFromTransNo(TransactionNo: Integer; var Amount: Decimal)
     begin
         OnAfterGetTDSAmountFromTransNo(TransactionNo, Amount);
@@ -336,6 +341,11 @@ codeunit 18544 "Tax Base Subscribers"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterGetGSTAmountForSalesInvLines(SalesInvoiceLine: Record "Sales Invoice Line"; var GSTBaseAmount: Decimal; var GSTAmount: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAmountFromDocumentNoForEInv(DocumentNo: Code[20]; var Amount: Decimal)
     begin
     end;
 }

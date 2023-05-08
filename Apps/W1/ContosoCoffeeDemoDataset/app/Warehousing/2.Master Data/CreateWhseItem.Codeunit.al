@@ -16,7 +16,7 @@ codeunit 4793 "Create Whse Item"
         BEANSTok: Label 'BEANS', MaxLength = 10;
 
         STDTok: Label 'STD', Locked = true, Comment = 'Should be the same as the Put Away Template code.';
-        BeansDesc1Tok: Label 'Whole Roasted Beans, Columbia', MaxLength = 100;
+        BeansDesc1Tok: Label 'Whole Roasted Beans, Colombia', MaxLength = 100;
         BeansDesc2Tok: Label 'Whole Roasted Beans, Brazil', MaxLength = 100;
         BeansDesc3Tok: Label 'Whole Roasted Beans, Indonesia', MaxLength = 100;
 

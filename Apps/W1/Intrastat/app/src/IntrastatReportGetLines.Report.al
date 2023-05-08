@@ -81,6 +81,15 @@
                         SetFilter("Invoiced Quantity", '<>0');
                 end;
 
+                case true of
+                    (not IntrastatReportSetup."Report Receipts") and (not IntrastatReportSetup."Report Shipments"):
+                        CurrReport.Break();
+                    IntrastatReportSetup."Report Receipts" and (not IntrastatReportSetup."Report Shipments"):
+                        SetFilter(Quantity, '>%1', 0);
+                    IntrastatReportSetup."Report Shipments" and (not IntrastatReportSetup."Report Receipts"):
+                        SetFilter(Quantity, '<%1', 0);
+                end;
+
                 IntrastatReportLine2.SetCurrentKey("Source Type", "Source Entry No.");
                 IntrastatReportLine2.SetRange("Source Type", IntrastatReportLine2."Source Type"::"Item Entry");
 
@@ -131,6 +140,15 @@
                 SetRange("Posting Date", StartDate, EndDate);
                 IntrastatReportLine2.SetCurrentKey("Source Type", "Source Entry No.");
                 IntrastatReportLine2.SetRange("Source Type", IntrastatReportLine2."Source Type"::"Job Entry");
+
+                case true of
+                    (not IntrastatReportSetup."Report Receipts") and (not IntrastatReportSetup."Report Shipments"):
+                        CurrReport.Break();
+                    IntrastatReportSetup."Report Receipts" and (not IntrastatReportSetup."Report Shipments"):
+                        SetFilter("Quantity (Base)", '>%1', 0);
+                    IntrastatReportSetup."Report Shipments" and (not IntrastatReportSetup."Report Receipts"):
+                        SetFilter("Quantity (Base)", '<%1', 0);
+                end;
             end;
         }
 
@@ -220,19 +238,19 @@
                     Caption = 'Options';
                     field(StartingDate; StartDate)
                     {
-                        ApplicationArea = BasicEU, BasicNO, BasicCH;
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
                         Caption = 'Starting Date';
                         ToolTip = 'Specifies the date from which the report or batch job processes information.';
                     }
                     field(EndingDate; EndDate)
                     {
-                        ApplicationArea = BasicEU, BasicNO, BasicCH;
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
                         Caption = 'Ending Date';
                         ToolTip = 'Specifies the date to which the report or batch job processes information.';
                     }
-                    field(AmountInclItemCharges; AmountInclItemCharges)
+                    field(AmtInclItemCharges; AmountInclItemCharges)
                     {
-                        ApplicationArea = BasicEU, BasicNO, BasicCH;
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
                         Caption = 'Amount incl. Item Charges';
                         ToolTip = 'Specifies the amount of the entry including any item charges.';
 
@@ -248,7 +266,7 @@
                     }
                     field(IndCostPctReq; IndirectCostPctReq)
                     {
-                        ApplicationArea = BasicEU, BasicNO, BasicCH;
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
                         Caption = 'Cost Regulation %';
                         DecimalPlaces = 0 : 5;
                         MaxValue = 100;
@@ -262,25 +280,25 @@
                     Caption = 'Additional';
                     field(SkipRecalcForZeros; SkipRecalcZeroAmounts)
                     {
-                        ApplicationArea = BasicEU, BasicNO, BasicCH;
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
                         Caption = 'Skip Recalculation for Zero Amounts';
                         ToolTip = 'Specifies that lines without amounts will not be recalculated during the batch job.';
                     }
                     field(SkipZeros; SkipZeroAmounts)
                     {
-                        ApplicationArea = BasicEU, BasicNO, BasicCH;
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
                         Caption = 'Skip Zero Amounts';
                         ToolTip = 'Specifies that item ledger entries without amounts will not be included in the batch job.';
                     }
                     field(ShowingItemCharges; ShowItemCharges)
                     {
-                        ApplicationArea = BasicEU, BasicNO, BasicCH;
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
                         Caption = 'Show Item Charge Entries';
                         ToolTip = 'Specifies if you want to show direct costs that your company has assigned and posted as item charges.';
                     }
                     field(SkipNotInvoiced; SkipNotInvoicedEntries)
                     {
-                        ApplicationArea = BasicEU, BasicNO, BasicCH;
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
                         Caption = 'Skip Non-Invoiced Entries';
                         ToolTip = 'Specifies if item ledger entries that are shipped or received but not yet invoiced must be excluded from the process.';
                     }
@@ -305,6 +323,7 @@
     trigger OnInitReport()
     begin
         CompanyInfo.FindFirst();
+        IntrastatReportSetup.Get();
         CostRegulationEnable := true;
         AmountInclItemCharges := true;
     end;
@@ -327,10 +346,18 @@
         end;
     end;
 
+    trigger OnPostReport()
+    begin
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
+        if IntrastatReportLine.IsEmpty() then
+            Message(NoLinesMsg, IntrastatReportSetup.TableCaption());
+    end;
+
     var
         IntrastatReportHeader: Record "Intrastat Report Header";
         IntrastatReportLine: Record "Intrastat Report Line";
         IntrastatReportLine2: Record "Intrastat Report Line";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
         Item: Record Item;
         FixedAsset: Record "Fixed Asset";
         ValueEntry: Record "Value Entry";
@@ -355,7 +382,7 @@
         AmountInclItemCharges: Boolean;
         PricesIncludingVATErr: Label 'Prices including VAT cannot be calculated when %1 is %2.', Comment = '%1 - VAT Calculation Type caption, %2 - "VAT Calculation Type"';
         LinesDeletionConfirmationQst: Label 'The existing lines for Intrastat report %1 will be deleted. Do you want to continue?', Comment = '%1 - Intrastat Report number';
-        [InDataSet]
+        NoLinesMsg: Label 'No lines are suggested for the period. Please check %1.', Comment = '%1 - Intrastat Report Setup caption';
         CostRegulationEnable: Boolean;
 
     protected var
@@ -558,6 +585,11 @@
                 IntrastatReportLine.Type := IntrastatReportLine.Type::Shipment
             else
                 IntrastatReportLine.Type := IntrastatReportLine.Type::Receipt;
+
+        if (IntrastatReportLine.Type = IntrastatReportLine.Type::Receipt) and (not IntrastatReportSetup."Report Receipts") or
+            (IntrastatReportLine.Type = IntrastatReportLine.Type::Shipment) and (not IntrastatReportSetup."Report Shipments")
+        then
+            CurrReport.Skip();
 
         IntrastatReportLine."Document No." := "FA Ledger Entry"."Document No.";
         IntrastatReportLine.Date := "FA Ledger Entry"."FA Posting Date";
@@ -766,21 +798,38 @@
                     begin
                         if Country.Code in [CompanyInfo."Country/Region Code", ''] then
                             exit(false);
-                        if (ItemLedgEntry."Order Type" <> ItemLedgEntry."Order Type"::Transfer) or (ItemLedgEntry."Order No." = '') then begin
-                            Location.Get(ItemLedgEntry."Location Code");
-                            if (Location."Country/Region Code" <> '') and
-                               (Location."Country/Region Code" <> CompanyInfo."Country/Region Code")
-                            then
-                                exit(false);
-                        end else begin
-                            ItemLedgEntry2.SetCurrentKey("Order Type", "Order No.");
-                            ItemLedgEntry2.SetRange("Order Type", ItemLedgEntry."Order Type"::Transfer);
-                            ItemLedgEntry2.SetRange("Order No.", ItemLedgEntry."Order No.");
-                            ItemLedgEntry2.SetRange("Document Type", ItemLedgEntry2."Document Type"::"Transfer Shipment");
-                            ItemLedgEntry2.SetFilter("Country/Region Code", '%1 | %2', '', CompanyInfo."Country/Region Code");
-                            ItemLedgEntry2.SetRange(Positive, true);
-                            if ItemLedgEntry2.IsEmpty() then
-                                exit(false);
+                        case true of
+                            ((ItemLedgEntry."Order Type" <> ItemLedgEntry."Order Type"::Transfer) or (ItemLedgEntry."Order No." = '')),
+                            ItemLedgEntry."Document Type" = ItemLedgEntry."Document Type"::"Direct Transfer":
+                                begin
+                                    Location.Get(ItemLedgEntry."Location Code");
+                                    if (Location."Country/Region Code" <> '') and (Location."Country/Region Code" <> CompanyInfo."Country/Region Code") then
+                                        exit(false);
+                                end;
+                            ItemLedgEntry."Document Type" = ItemLedgEntry."Document Type"::"Transfer Receipt":
+                                begin
+                                    ItemLedgEntry2.SetCurrentKey("Order Type", "Order No.");
+                                    ItemLedgEntry2.SetRange("Order Type", ItemLedgEntry."Order Type"::Transfer);
+                                    ItemLedgEntry2.SetRange("Order No.", ItemLedgEntry."Order No.");
+                                    ItemLedgEntry2.SetRange("Document Type", ItemLedgEntry2."Document Type"::"Transfer Shipment");
+                                    ItemLedgEntry2.SetFilter("Country/Region Code", '%1 | %2', '', CompanyInfo."Country/Region Code");
+                                    ItemLedgEntry2.SetRange(Positive, true);
+                                    if ItemLedgEntry2.IsEmpty() then
+                                        exit(false);
+                                end;
+                            ItemLedgEntry."Document Type" = ItemLedgEntry."Document Type"::"Transfer Shipment":
+                                begin
+                                    if not ItemLedgEntry.Positive then
+                                        exit;
+                                    ItemLedgEntry2.SetCurrentKey("Order Type", "Order No.");
+                                    ItemLedgEntry2.SetRange("Order Type", ItemLedgEntry."Order Type"::Transfer);
+                                    ItemLedgEntry2.SetRange("Order No.", ItemLedgEntry."Order No.");
+                                    ItemLedgEntry2.SetRange("Document Type", ItemLedgEntry2."Document Type"::"Transfer Receipt");
+                                    ItemLedgEntry2.SetFilter("Country/Region Code", '%1 | %2', '', CompanyInfo."Country/Region Code");
+                                    ItemLedgEntry2.SetRange(Positive, false);
+                                    if ItemLedgEntry2.IsEmpty() then
+                                        exit(false);
+                                end;
                         end;
                     end;
                 ItemLedgEntry."Location Code" <> '':

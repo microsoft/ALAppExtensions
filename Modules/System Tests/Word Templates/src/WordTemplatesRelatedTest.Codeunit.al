@@ -177,6 +177,7 @@ codeunit 130444 "Word Templates Related Test"
         Assert.IsTrue(MergeFields.Contains('Test Value'), 'Test Value should have been part of the Merge Fields.');
         Assert.IsTrue(MergeFields.Contains('Test Value_2'), 'Test Value_2 should have been part of the Merge Fields.');
         Assert.IsTrue(MergeFields.Contains('Value_2'), 'Value_2 should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('Word Templates Test Table 2 Field'), 'TEST_Word Templates Test Table 2 Field should have been part of the Merge Fields.');
 
         Assert.IsTrue(MergeFields.Contains('TEST_Id'), 'No should have been part of the Merge Fields.');
         Assert.IsTrue(MergeFields.Contains('TEST_Value'), 'TEST_Value should have been part of the Merge Fields.');

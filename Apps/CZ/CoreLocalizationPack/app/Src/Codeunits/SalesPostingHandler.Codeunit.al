@@ -312,7 +312,7 @@ codeunit 31038 "Sales Posting Handler CZL"
                                 Temp1InventoryBuffer.Insert();
                             end;
 
-                            LineAmount := SalesLine."Line Amount";
+                            LineAmount := SalesLine."Unit Price" * QtyToInvoice;
                             if SalesHeader."Currency Code" <> '' then
                                 LineAmount :=
                                   CurrencyExchangeRate.ExchangeAmtFCYToLCY(

@@ -123,7 +123,7 @@ codeunit 132618 "Page Summary Setup Test"
     end;
 
     [Test]
-    procedure OnlyCaptionIsPopulatedWhenShowSummaryIsEnabled()
+    procedure OnlyCaptionIsPopulatedWhenShowSummaryIsDisabled()
     var
         PageProviderSummaryTest: Record "Page Provider Summary Test";
         PageSummarySettings: Record "Page Summary Settings";
@@ -174,7 +174,7 @@ codeunit 132618 "Page Summary Setup Test"
     end;
 
     [Test]
-    procedure OnlyCaptionIsPopulatedBysystemIdWhenShowSummaryIsEnabled()
+    procedure OnlyCaptionIsPopulatedBySystemIdWhenShowSummaryIsDisabled()
     var
         PageProviderSummaryTest: Record "Page Provider Summary Test";
         PageSummarySettings: Record "Page Summary Settings";
@@ -213,6 +213,7 @@ codeunit 132618 "Page Summary Setup Test"
 
         // [Then] The summary is of type caption when there are no fields
         ValidateSummaryHeader(PageSummaryJsonObject, 'Page summary', 'Card', 'Caption');
+        LibraryAssert.IsTrue(UrlExist(PageSummaryJsonObject), 'Page summary json should have a url to the object.');
         LibraryAssert.IsFalse(FieldsExist(PageSummaryJsonObject), 'Fields should not exist.');
 
         // [Then] There are no error object

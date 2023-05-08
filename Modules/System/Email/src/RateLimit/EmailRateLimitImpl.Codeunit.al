@@ -52,9 +52,12 @@ codeunit 8999 "Email Rate Limit Impl."
         EmailImpl: Codeunit "Email Impl";
         RateLimit: Integer;
     begin
-        RateLimitDuration := EmailImpl.GetEmailOutboxSentEmailWithinRateLimit(SentEmail, EmailOutboxCurrent, AccountId);
         RateLimit := GetRateLimit(AccountId, Connector, EmailAddress);
-        exit(((EmailOutboxCurrent.Count() + SentEmail.Count()) >= RateLimit) and (RateLimit <> 0));
+        if RateLimit = 0 then
+            exit(false);
+
+        RateLimitDuration := EmailImpl.GetEmailOutboxSentEmailWithinRateLimit(SentEmail, EmailOutboxCurrent, AccountId);
+        exit((EmailOutboxCurrent.Count() + SentEmail.Count()) >= RateLimit);
     end;
 
     [InherentPermissions(PermissionObjectType::TableData, Database::"Email Rate Limit", 'ri')]

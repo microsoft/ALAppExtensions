@@ -1387,6 +1387,31 @@ codeunit 18996 "Voucher Interface Tests"
         Assert.IsSubstring(Location.Code, GenJournalLine."Location Code");
     end;
 
+    [Test]
+    procedure PostFromJournalVoucherWithMultiLines()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        DummyGenJnlBatch: Record "Gen. Journal Batch";
+        Location: Record Location;
+        GLAccount: Record "G/L Account";
+        VoucherType: Enum "Gen. Journal Template Type";
+    begin
+        // [SCENARIO] [468119] [[Performance] [Production] Performance delay in Journal Voucher]
+        // [FEATURE] [Voucher Interface] [Journal Voucher]
+        // [GIVEN] Create Location,Bank Account,GLAccount with Voucher Setup
+        LibInventory.CreateLocationWMS(Location, false, false, false, false, true);
+        CreateGLAccountWithVoucherAcc(GLAccount, VoucherType::"Journal Voucher", GenJournalLine."Account Type"::"G/L Account", Location.Code);
+        CreatePaymentVoucherTemplate(DummyGenJnlBatch, VoucherType::"Journal Voucher", Location.Code);
+
+        // [WHEN] Created and Posted MultiLne Journal Voucher with Voucher Narration
+        CreateMultiLinesJournalVoucher(GenJournalLine, DummyGenJnlBatch.Name, GLAccount."No.", GenJournalLine."Account Type"::"G/L Account");
+        LibraryVoucher.AssignVoucherNarration(GenJournalLine."Document No.");
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [THEN] G/L Entries Verified
+        LibraryVoucher.VerifyVoucherGLEntryCount(DummyGenJnlBatch.Name, 200);
+    end;
+
     local procedure CheckPostedNarration(DocumentNo: Code[20])
     var
         PostedNarration: Record "Posted Narration";
@@ -1467,13 +1492,13 @@ codeunit 18996 "Voucher Interface Tests"
                     VoucherDrAccount.Insert();
                 end;
             else begin
-                    VoucherDrAccount.Init();
-                    VoucherDrAccount.Validate("Location code", LocationCode);
-                    VoucherDrAccount.Validate(Type, SubType);
-                    VoucherDrAccount.Validate("Account Type", AccType);
-                    VoucherDrAccount.Validate("Account No.", AccountNo);
-                    VoucherDrAccount.Insert();
-                end;
+                VoucherDrAccount.Init();
+                VoucherDrAccount.Validate("Location code", LocationCode);
+                VoucherDrAccount.Validate(Type, SubType);
+                VoucherDrAccount.Validate("Account Type", AccType);
+                VoucherDrAccount.Validate("Account No.", AccountNo);
+                VoucherDrAccount.Insert();
+            end;
         end;
         CreateNoSeries();
         if StorageBoolean.ContainsKey('LocationSetup') then begin
@@ -1576,6 +1601,26 @@ codeunit 18996 "Voucher Interface Tests"
         CreateJournalVoucherLine(
             GenJournalLine, GenJnlBatchName, GenJournalLine."Account Type"::Vendor, LibPurchase.CreateVendorNo(),
             -LibRandom.RandDecInDecimalRange(10000, 6000, 2), CalcDate('<-CM>', WorkDate()));
+    end;
+
+    local procedure CreateMultiLinesJournalVoucher(VAR GenJournalLine: Record "Gen. Journal Line";
+       GenJnlBatchName: Code[10];
+       AccountNo: Code[20];
+       AccountType: Enum "Gen. Journal Account Type")
+    var
+        Counter: Integer;
+        NoOfLines: Integer;
+    begin
+        NoOfLines := 100;
+        for Counter := 1 to NoOfLines do begin
+            CreateJournalVoucherLine(
+                GenJournalLine, GenJnlBatchName, AccountType, AccountNo, LibRandom.RandDecInDecimalRange(10000, 6000, 2),
+                CalcDate('<-CM>', WorkDate()));
+            CreateJournalVoucherLine(
+                GenJournalLine, GenJnlBatchName, GenJournalLine."Account Type"::Vendor, LibPurchase.CreateVendorNo(),
+                -LibRandom.RandDecInDecimalRange(10000, 6000, 2), CalcDate('<-CM>', WorkDate()));
+        end;
+
     end;
 
     local procedure CreateMultiLinesinVoucherForCustomer(VAR GenJournalLine: Record "Gen. Journal Line";
