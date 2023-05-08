@@ -16,7 +16,6 @@ tableextension 31039 "Payment Order Line CZZ" extends "Payment Order Line CZB"
                 Vendor: Record Vendor;
                 VendorBankAccount: Record "Vendor Bank Account";
                 CurrencyExchangeRate: Record "Currency Exchange Rate";
-                LineDescriptionTxt: Label 'Purchase Advance %1', Comment = '%1 = Purchase Advance Letter No.';
             begin
                 if "Purch. Advance Letter No. CZZ" = '' then
                     exit;
@@ -46,8 +45,8 @@ tableextension 31039 "Payment Order Line CZZ" extends "Payment Order Line CZB"
                 Rec."Original Amount" := Amount;
                 Rec."Original Amount (LCY)" := "Amount (LCY)";
                 Rec."Orig. Amount(Pay.Order Curr.)" := "Amount (Paym. Order Currency)";
-
-                Rec.Validate(Description, CopyStr(StrSubstNo(LineDescriptionTxt, PurchAdvLetterHeaderCZZ."No."), 1, MaxStrLen(Rec.Description)));
+                Vendor.Get(PurchAdvLetterHeaderCZZ."Pay-to Vendor No.");
+                Description := CreateDescriptionCZZ(PurchAdvLetterHeaderCZZ, Vendor."No.", Vendor.Name);
                 Rec.Validate("Variable Symbol", PurchAdvLetterHeaderCZZ."Variable Symbol");
                 if PurchAdvLetterHeaderCZZ."Constant Symbol" <> '' then
                     Rec.Validate("Constant Symbol", PurchAdvLetterHeaderCZZ."Constant Symbol");
@@ -59,8 +58,7 @@ tableextension 31039 "Payment Order Line CZZ" extends "Payment Order Line CZB"
                     Rec."SWIFT Code" := PurchAdvLetterHeaderCZZ."SWIFT Code";
                     Rec."Transit No." := PurchAdvLetterHeaderCZZ."Transit No.";
                     Rec.IBAN := PurchAdvLetterHeaderCZZ."IBAN";
-                end else begin
-                    Vendor.Get(PurchAdvLetterHeaderCZZ."Pay-to Vendor No.");
+                end else
                     if Vendor."Preferred Bank Account Code" <> '' then begin
                         VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code");
                         Rec.Validate("Cust./Vendor Bank Account Code", VendorBankAccount.Code);
@@ -69,7 +67,6 @@ tableextension 31039 "Payment Order Line CZZ" extends "Payment Order Line CZB"
                         Rec."Transit No." := VendorBankAccount."Transit No.";
                         Rec.IBAN := VendorBankAccount."IBAN";
                     end;
-                end;
             end;
         }
     }
@@ -77,5 +74,24 @@ tableextension 31039 "Payment Order Line CZZ" extends "Payment Order Line CZB"
     var
         PaymentOrderManagementCZB: Codeunit "Payment Order Management CZB";
         ConfirmManagement: Codeunit "Confirm Management";
+        AdvanceTxt: Label 'Advance';
+        AdvanceNoTxt: Label 'Advance %1', Comment = '%1 = Advance No.';
         AdvanceLetterAlreadyAppliedQst: Label 'Advance Letter %1 is already applied on payment order. Do you want to continue?', Comment = '%1 = Advance Letter No.';
+
+    local procedure CreateDescriptionCZZ(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PartnerNo: Text[20]; PartnerName: Text[100]): Text[50]
+    var
+        BankAccount: Record "Bank Account";
+        PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
+        ExtNo: Text[35];
+    begin
+        PaymentOrderHeaderCZB.Get(Rec."Payment Order No.");
+        BankAccount.Get(PaymentOrderHeaderCZB."Bank Account No.");
+        if BankAccount."Payment Order Line Descr. CZB" = '' then
+            exit(CopyStr(StrSubstNo(AdvanceNoTxt, PurchAdvLetterHeaderCZZ."No."), 1, 50));
+
+        ExtNo := PurchAdvLetterHeaderCZZ."Variable Symbol";
+        if ExtNo = '' then
+            ExtNo := PurchAdvLetterHeaderCZZ."Vendor Adv. Letter No.";
+        exit(Rec.CreateDescription(AdvanceTxt, PurchAdvLetterHeaderCZZ."No.", PartnerNo, PartnerName, ExtNo));
+    end;
 }

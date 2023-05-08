@@ -385,35 +385,15 @@
             action(InsertSetupRecords)
             {
                 ApplicationArea = All;
-                Caption = 'Create Seutp records';
+                Caption = 'Create Setup records';
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                Visible = false;
 
                 trigger OnAction()
-                var
-                    IntelligentCloud: Record "Intelligent Cloud";
-                    IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-                    HybridReplicationDetail: Record "Hybrid Replication Detail";
                 begin
-                    if not IntelligentCloud.Get() then
-                        IntelligentCloud.Insert();
-                    IntelligentCloud.Enabled := true;
-                    IntelligentCloud.Modify();
-
-                    if not IntelligentCloudSetup.Get() then
-                        IntelligentCloudSetup.Insert();
-
-                    IntelligentCloudSetup."Replication Enabled" := true;
-                    IntelligentCloudSetup."Company Creation Task Status" := IntelligentCloudSetup."Company Creation Task Status"::Completed;
-                    IntelligentCloudSetup."Product ID" := 'DynamicsBCLast';
-                    IntelligentCloudSetup.Modify();
-
-                    HybridReplicationDetail."Run ID" := CreateGuid();
-                    HybridReplicationDetail."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(HybridReplicationDetail."Company Name"));
-                    HybridReplicationDetail.Status := HybridReplicationDetail.Status::Successful;
-                    HybridReplicationDetail."Table Name" := 'Customer';
-                    HybridReplicationDetail.Insert();
+                    Error('');
                 end;
             }
             action(EnableDisableNewUI)

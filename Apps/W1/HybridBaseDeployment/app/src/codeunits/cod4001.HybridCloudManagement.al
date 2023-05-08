@@ -768,6 +768,32 @@ codeunit 4001 "Hybrid Cloud Management"
         exit(ReplicationCompletedServiceTypeTxt = ServiceType);
     end;
 
+    internal procedure SendCloudMigrationTelemetry()
+    var
+        IntelligentCloud: Record "Intelligent Cloud";
+        HybridCompany: Record "Hybrid Company";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        if not IntelligentCloud.Get() then
+            exit;
+
+        Clear(HybridCompany);
+        FeatureTelemetry.LogUptake('0000JMQ', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+
+        TelemetryDimensions.Add('Category', HybridCloudManagement.GetTelemetryCategory());
+        TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
+        TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
+        TelemetryDimensions.Add('TotalOnPremSize', Format(HybridCompany.GetTotalOnPremSize(), 0, 9));
+        IntelligentCloudSetup."Product ID" := 'Unknown';
+        if IntelligentCloudSetup.Get() then;
+        TelemetryDimensions.Add('Product', IntelligentCloudSetup."Product ID");
+        TelemetryDimensions.Add('MigrationDateTime', Format(IntelligentCloud.SystemModifiedAt, 0, 9));
+        FeatureTelemetry.LogUsage('0000JMR', HybridCloudManagement.GetFeatureTelemetryName(), 'Tenant was cloud migrated', TelemetryDimensions);
+    end;
+
     procedure RestoreDefaultMigrationTableMappings(DeleteExisting: Boolean)
     var
         MigrationTableMapping: Record "Migration Table Mapping";
@@ -795,6 +821,7 @@ codeunit 4001 "Hybrid Cloud Management"
 
         FeatureTelemetry.LogUptake('0000JV4', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000JV5', HybridCloudManagement.GetFeatureTelemetryName(), 'Completed the cloud migration succesfully');
+        SendCloudMigrationTelemetry();
 
         if GuiAllowed then
             Message(CloudMigrationCompletedTxt);
@@ -1448,6 +1475,9 @@ codeunit 4001 "Hybrid Cloud Management"
         LastHybridReplicationDetail.SetRange("Company Name", CompanyName);
         LastHybridReplicationDetail.SetRange(Status, LastHybridReplicationDetail.Status::Failed);
         LastHybridReplicationDetail.SetCurrentKey("End Time");
+        if not LastHybridReplicationDetail.FindLast() then
+            exit;
+
         StatusText := UnblockedManuallyLbl;
         if LastHybridReplicationDetail."Error Message" <> '' then
             StatusText += ' - ' + LastHybridReplicationDetail."Error Message";

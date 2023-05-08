@@ -438,7 +438,7 @@ codeunit 30176 "Shpfy Product API"
         Data := ShopifyProduct.GetDescriptionHtml();
         if Data <> xShopifyProduct.GetDescriptionHtml() then begin
             GraphQuery.Append(', descriptionHtml: \"');
-            GraphQuery.Append(Data);
+            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
             GraphQuery.Append('\"');
         end;
         if ShopifyProduct."Product Type" <> xShopifyProduct."Product Type" then begin

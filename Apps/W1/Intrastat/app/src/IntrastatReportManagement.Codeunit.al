@@ -1,7 +1,8 @@
 codeunit 4810 IntrastatReportManagement
 {
     Permissions = TableData "Intrastat Report Header" = imd,
-                  TableData "Intrastat Report Line" = imd;
+                  TableData "Intrastat Report Line" = imd,
+                  TableData "NAV App Installed App" = r;
 
     var
         AdvChecklistErr: Label 'There are one or more errors. For details, see the report error FactBox.';
@@ -61,7 +62,10 @@ codeunit 4810 IntrastatReportManagement
                 if ReturnRcptHeader.Get(ItemLedgEntry."Document No.") then
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
-                            CountryCode := ReturnRcptHeader."Sell-to Country/Region Code";
+                            if ReturnRcptHeader."Rcvd-from Country/Region Code" <> '' then
+                                CountryCode := ReturnRcptHeader."Rcvd-from Country/Region Code"
+                            else
+                                CountryCode := ReturnRcptHeader."Sell-to Country/Region Code";
                         IntrastatReportSetup."Shipments Based On"::"Sell-to Country":
                             CountryCode := ReturnRcptHeader."Sell-to Country/Region Code";
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
@@ -81,7 +85,7 @@ codeunit 4810 IntrastatReportManagement
                 if ReturnShptHeader.Get(ItemLedgEntry."Document No.") then
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
-                            CountryCode := ReturnShptHeader."Ship-to Country/Region Code";
+                            CountryCode := ReturnShptHeader."Buy-from Country/Region Code";
                         IntrastatReportSetup."Shipments Based On"::"Sell-to Country":
                             CountryCode := ReturnShptHeader."Buy-from Country/Region Code";
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":

@@ -388,7 +388,7 @@ page 8886 "Email Account Wizard"
     begin
         DurationAsInt := CurrentDateTime() - StartTime;
         if Step = Step::Done then
-            Session.LogMessage('0000CTK', StrSubstNo(AccountCreationSuccessfullyCompletedDurationLbl, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl)
+            Session.LogMessage('0000K8Q', StrSubstNo(AccountCreationSuccessfullyCompletedDurationLbl, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl)
         else
             Session.LogMessage('0000CTL', StrSubstNo(AccountCreationFailureDurationLbl, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
     end;

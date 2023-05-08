@@ -87,6 +87,10 @@
                      {
                          "from":  3900,
                          "to":  3917
+                     },
+                     {
+                         "from":  3920,
+                         "to":  3920
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",

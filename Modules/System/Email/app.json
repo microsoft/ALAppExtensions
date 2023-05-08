@@ -106,6 +106,12 @@
                              "name":  "Record Reference",
                              "publisher":  "Microsoft",
                              "version":  "22.1.0.0"
+                         },
+                         {
+                             "id":  "008c9419-0c3b-4d08-b03e-84e3adca689f",
+                             "name":  "Data Compression",
+                             "publisher":  "Microsoft",
+                             "version":  "22.1.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

@@ -15,4 +15,13 @@ tableextension 31240 "Transfer Line CZA" extends "Transfer Line"
             DataClassification = CustomerContent;
         }
     }
+
+    internal procedure CheckGenBusPostGroupEqualityCZA()
+    var
+        TransferHeader: Record "Transfer Header";
+    begin
+        TransferHeader."Gen.Bus.Post.Group Receive CZA" := "Gen.Bus.Post.Group Receive CZA";
+        TransferHeader."Gen.Bus.Post.Group Ship CZA" := "Gen.Bus.Post.Group Ship CZA";
+        TransferHeader.CheckGenBusPostGroupEqualityCZA();
+    end;
 }

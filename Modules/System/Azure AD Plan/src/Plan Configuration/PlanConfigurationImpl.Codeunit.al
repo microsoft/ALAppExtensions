@@ -466,6 +466,20 @@ codeunit 9822 "Plan Configuration Impl."
         exit(true);
     end;
 
+    procedure LookupPermissionSet(AllowMultiselect: Boolean; var CustomPermissionSetInPlan: Record "Custom Permission Set In Plan"; var PermissionSetLookupRecord: Record "Aggregate Permission Set"): Boolean
+    var
+        PermissionSetRelation: Codeunit "Permission Set Relation";
+    begin
+        if PermissionSetRelation.LookupPermissionSet(AllowMultiselect, PermissionSetLookupRecord) then begin
+            CustomPermissionSetInPlan.Scope := PermissionSetLookupRecord.Scope;
+            CustomPermissionSetInPlan."App ID" := PermissionSetLookupRecord."App ID";
+            CustomPermissionSetInPlan."Role ID" := PermissionSetLookupRecord."Role ID";
+            CustomPermissionSetInPlan.CalcFields("App Name", "Role Name");
+            exit(true);
+        end;
+        exit(false);
+    end;
+
     internal procedure OpenBCAdminCenter()
     begin
         Hyperlink(BCAdminCenterUrl());

@@ -473,48 +473,24 @@ report 18049 "GSTR-1 File Format"
 
     local procedure FillExcelBufferForB2CS(GSTR1B2CSQuery: Query GSTR1B2CSQuery)
     var
-        State: Record State;
         GSTR1B2CSCessAmt: Query GSTR1B2CSCessAmt;
-        GSTR1B2CInterCess: query GSTR1B2CInterCess;
+        GSTR1B2CInterCess: Query GSTR1B2CInterCess;
         GSTR1B2CSIntraAmt: Query GSTR1B2CSIntra;
-        GSTR1B2CSPer: Query GSTR1B2CSPer;
         GSTR1B2CSInter: Query GSTR1B2CSInter;
         GSTR1B2CSIntraCess: Query GSTR1B2CIntraCess;
         GSTRB2CSIntraAmount: Decimal;
         GSTR1B2CSInterBaseAmt: Decimal;
         GSTR1IntraCess: Decimal;
         GSTR1InterCess: Decimal;
+        TotalBaseAmount: Decimal;
+        TotalCessAmount: Decimal;
     begin
-        TempExcelBuffer.NewRow();
-        if GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_ <> '' then
-            AddTextColumn(ELbl)
-        else
-            AddTextColumn(UpperCase(OtherECommTxt));
-
-        if State.Get(GSTR1B2CSQuery.Buyer_Seller_State_Code) then
-            AddTextColumn(State."State Code (GST Reg. No.)" + '-' + State.Description)
-        else
-            AddTextColumn('');
-
-        AddTextColumn('');
-
-        GSTR1B2CSPer.TopNumberOfRows(1);
-        GSTR1B2CSPer.SetRange(Location__Reg__No_, LocationGSTIN);
-        GSTR1B2CSPer.SetRange(Posting_Date, StartDate, EndDate);
-        GSTR1B2CSPer.SetFilter(GST_Customer_Type, '%1', "GST Customer Type"::Unregistered);
-        GSTR1B2CSPer.SetFilter(Document_Type, '%1|%2', "GST Document Type"::Invoice, "GST Document Type"::"Credit Memo");
-        GSTR1B2CSPer.Open();
-        while GSTR1B2CSPer.Read() do
-            if GSTR1B2CSPer.GST_Jurisdiction_Type = GSTR1B2CSPer.GST_Jurisdiction_Type::Intrastate then
-                AddNumberColumn(2 * GSTR1B2CSPer.GST__)
-            else
-                AddNumberColumn(GSTR1B2CSPer.GST__);
-
         GSTR1B2CSIntraAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1B2CSIntraAmt.SetRange(Posting_Date, StartDate, EndDate);
         GSTR1B2CSIntraAmt.SetFilter(GST_Customer_Type, '%1', "GST Customer Type"::Unregistered);
         GSTR1B2CSIntraAmt.SetRange(e_Comm__Operator_GST_Reg__No_, GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_);
-        GSTR1B2CSIntraAmt.SetRange(GSTR1B2CSIntraAmt.Buyer_Seller_State_Code, GSTR1B2CSQuery.Buyer_Seller_State_Code);
+        GSTR1B2CSIntraAmt.SetRange(Buyer_Seller_State_Code, GSTR1B2CSQuery.Buyer_Seller_State_Code);
+        GSTR1B2CSIntraAmt.SetRange(GST__, GSTR1B2CSQuery.GST__);
         GSTR1B2CSIntraAmt.SetFilter(Document_Type, '%1|%2', "GST Document Type"::Invoice, "GST Document Type"::"Credit Memo");
         GSTR1B2CSIntraAmt.Open();
         while GSTR1B2CSIntraAmt.Read() do
@@ -525,12 +501,13 @@ report 18049 "GSTR-1 File Format"
         GSTR1B2CSInter.SetFilter(GST_Customer_Type, '%1', "GST Customer Type"::Unregistered);
         GSTR1B2CSInter.SetRange(e_Comm__Operator_GST_Reg__No_, GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_);
         GSTR1B2CSInter.SetRange(GSTR1B2CSInter.Buyer_Seller_State_Code, GSTR1B2CSQuery.Buyer_Seller_State_Code);
+        GSTR1B2CSInter.SetRange(GST__, GSTR1B2CSQuery.GST__);
         GSTR1B2CSInter.SetFilter(Document_Type, '%1|%2', "GST Document Type"::Invoice, "GST Document Type"::"Credit Memo");
         GSTR1B2CSInter.Open();
         while GSTR1B2CSInter.Read() do
             GSTR1B2CSInterBaseAmt := GSTR1B2CSInter.GST_Base_Amount;
 
-        AddNumberColumn(Abs(GSTR1B2CSInterBaseAmt + GSTRB2CSIntraAmount));
+        TotalBaseAmount := Abs(GSTR1B2CSInterBaseAmt + GSTRB2CSIntraAmount);
 
         GSTR1B2CSCessAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1B2CSCessAmt.SetRange(Posting_Date, StartDate, EndDate);
@@ -559,12 +536,41 @@ report 18049 "GSTR-1 File Format"
                 GSTR1InterCess := GSTR1B2CInterCess.GST_Amount;
         end;
 
-        AddNumberColumn(Abs(GSTR1IntraCess + GSTR1InterCess));
+        TotalCessAmount := Abs(GSTR1IntraCess + GSTR1InterCess);
+        FillExcelForB2cs(GSTR1B2CSQuery, TotalBaseAmount, TotalCessAmount);
+    end;
 
-        if GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_ <> '' then
-            AddTextColumn(GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_)
-        else
+    local procedure FillExcelForB2cs(GSTR1B2CSQuery: Query GSTR1B2CSQuery; TotalBaseAmount: Decimal; TotalCessAmount: Decimal)
+    var
+        State: Record State;
+    begin
+        if TotalBaseAmount <> 0 then begin
+            TempExcelBuffer.NewRow();
+            if GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_ <> '' then
+                AddTextColumn(ELbl)
+            else
+                AddTextColumn(UpperCase(OtherECommTxt));
+
+            if State.Get(GSTR1B2CSQuery.Buyer_Seller_State_Code) then
+                AddTextColumn(State."State Code (GST Reg. No.)" + '-' + State.Description)
+            else
+                AddTextColumn('');
+
             AddTextColumn('');
+
+            if GSTR1B2CSQuery.GST_Jurisdiction_Type = GSTR1B2CSQuery.GST_Jurisdiction_Type::Intrastate then
+                AddNumberColumn(2 * GSTR1B2CSQuery.GST__)
+            else
+                AddNumberColumn(GSTR1B2CSQuery.GST__);
+
+            AddNumberColumn(TotalBaseAmount);
+            AddNumberColumn(TotalCessAmount);
+
+            if GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_ <> '' then
+                AddTextColumn(GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_)
+            else
+                AddTextColumn('');
+        end;
     end;
 
     local procedure MakeExcelHeaderAT()

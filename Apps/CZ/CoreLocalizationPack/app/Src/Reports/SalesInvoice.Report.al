@@ -122,15 +122,26 @@ report 31189 "Sales Invoice CZL"
             column(VATLbl; VATLbl)
             {
             }
+#if not CLEAN22
             column(PrepayedLbl; PrepayedLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
             column(TotalAfterPrepayedLbl; TotalAfterPrepayedLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
             column(PaymentsLbl; PaymentsLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
+#endif
             column(DisplayAdditionalFeeNote; DisplayAdditionalFeeNote)
             {
             }
@@ -324,7 +335,7 @@ report 31189 "Sales Invoice CZL"
                 {
                     DataItemLink = "Document No." = field("No.");
                     DataItemLinkReference = "Sales Invoice Header";
-                    DataItemTableView = sorting("Document No.", "Line No.") WHERE("Prepayment Line" = CONST(false));
+                    DataItemTableView = sorting("Document No.", "Line No.");
                     column(LineNo_SalesInvoiceLine; "Line No.")
                     {
                     }
@@ -695,9 +706,11 @@ report 31189 "Sales Invoice CZL"
         VATAmtLbl: Label 'VAT Amount';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
+#if not CLEAN22
         PrepayedLbl: Label 'Prepayed Advances';
         TotalAfterPrepayedLbl: Label 'Total after Prepayed Advances';
         PaymentsLbl: Label 'Payments List';
+#endif
         UnitPriceExclVATLbl: Label 'Unit Price Excl. VAT';
         GreetingLbl: Label 'Hello';
         ClosingLbl: Label 'Sincerely';

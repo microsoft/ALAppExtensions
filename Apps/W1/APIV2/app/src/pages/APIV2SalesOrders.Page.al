@@ -579,7 +579,7 @@ page 30028 "APIV2 - Sales Orders"
                     Caption = 'Document Attachments';
                     EntityName = 'documentAttachment';
                     EntitySetName = 'documentAttachments';
-                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const("Sales Order");
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Order");
                 }
             }
         }

@@ -11,6 +11,7 @@ codeunit 4016 "Hybrid GP Management"
         StartingHandleInitializationofGPSynchronizationTelemetryMsg: Label 'Starting HandleInitializationofGPSynchronization', Locked = true;
         StartingInstallGPSmartlistsTelemetryMsg: Label 'Starting Handle Initialization of GP Synchronization', Locked = true;
         UpgradeWasScheduledMsg: Label 'Upgrade was succesfully scheduled';
+        GPCloudMigrationDoesNotSupportNewUIErr: Label 'GP Cloud migration does not support the new UI';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnReplicationRunCompleted', '', false, false)]
     local procedure HandleGPOnReplicationRunCompleted(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
@@ -24,18 +25,6 @@ codeunit 4016 "Hybrid GP Management"
         UpdateStatusOnHybridReplicationCompleted(RunId, NotificationText);
         HandleInitializationofGPSynchronization(RunId, SubscriptionId, NotificationText);
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Hybrid Cloud Management", 'OnBeforeShowProductSpecificSettingsPageStep', '', true, true)]
-    local procedure OnBeforeShowProductSpecificSettingsPageStep(var HybridProductType: Record "Hybrid Product Type"; var ShowSettingsStep: Boolean)
-    var
-        HybridGPWizard: Codeunit "Hybrid GP Wizard";
-    begin
-        if not (HybridGPWizard.GetGPMigrationEnabled()) then
-            exit;
-
-        ShowSettingsStep := false;
-    end;
-
 
     [EventSubscriber(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard", 'OnHandleCloseWizard', '', false, false)]
     local procedure OnHandleCloseWizard(var Handled: Boolean; var CloseWizard: Boolean)
@@ -229,6 +218,15 @@ codeunit 4016 "Hybrid GP Management"
             UpgradeSupported := true;
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Migration Management", 'CheckNewUISupported', '', false, false)]
+    local procedure HandleCheckNewUISupported()
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
+    begin
+        if HybridGPWizard.GetGPMigrationEnabled() then
+            Error(GPCloudMigrationDoesNotSupportNewUIErr);
+    end;
+
     procedure InvokeCompanyUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50])
     var
         CreateSession: Boolean;
@@ -250,7 +248,7 @@ codeunit 4016 "Hybrid GP Management"
 
     local procedure GetDefaultJobTimeout(): Duration
     begin
-        exit(60 * 60 * 60 * 1000); // 60 hours
+        exit(48 * 60 * 60 * 1000); // 48 hours
     end;
 
     [InternalEvent(false)]

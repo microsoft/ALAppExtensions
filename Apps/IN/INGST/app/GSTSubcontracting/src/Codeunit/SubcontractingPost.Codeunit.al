@@ -2508,6 +2508,16 @@ codeunit 18466 "Subcontracting Post"
             AllowApplication := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostItemJnlLineCopyProdOrder', '', false, false)]
+    local procedure OnAfterPostItemJnlLineCopyProdOrder(var ItemJnlLine: Record "Item Journal Line"; PurchLine: Record "Purchase Line")
+    begin
+        if ItemJnlLine."Entry Type" <> ItemJnlLine."Entry Type"::Output then
+            exit;
+
+        if (PurchLine."Prod. Order No." <> '') and (PurchLine."Subcon. Receiving") then
+            ItemJnlLine."Posting Date" := PurchLine."Posting Date";
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterModifyApplyDeliveryChallan(var AppliedDeliveryChallan: Record "Applied Delivery Challan"; SubOrderCompVend: Record "Sub Order Comp. List Vend")
     begin

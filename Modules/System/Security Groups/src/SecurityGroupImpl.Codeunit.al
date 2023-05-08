@@ -189,6 +189,8 @@ codeunit 9871 "Security Group Impl."
         DummySecurityGroup: Record "Security Group";
         LocalSecurityGroupBuffer: Record "Security Group Buffer";
         AadGroupId: Text;
+        NavUserAccountHelper: DotNet NavUserAccountHelper;
+        LocalWindowsGroupName: Text;
     begin
         // Prevent non-admin users from seeing the list of all available groups
         if not DummySecurityGroup.WritePermission() then
@@ -199,17 +201,25 @@ codeunit 9871 "Security Group Impl."
         LocalSecurityGroupBuffer.DeleteAll();
 
         if IsWindowsAuthentication() then
-            exit; // the functionality for fetching Windows groups is not implemented yet
+            foreach LocalWindowsGroupName in NavUserAccountHelper.GetLocalWindowsGroups() do begin
+                SecurityGroupBuffer."Group ID" := CopyStr(SID(LocalWindowsGroupName), 1, MaxStrLen(SecurityGroupBuffer."Group ID"));
+                if not GetDisallowedWindowsGroupIds().Contains(SecurityGroupBuffer."Group ID") then begin
+                    SecurityGroupBuffer.Code := CopyStr(CreateGuid(), 1, MaxStrLen(SecurityGroupBuffer.Code));
+                    SecurityGroupBuffer."Group Name" := CopyStr(LocalWindowsGroupName, 1, MaxStrLen(SecurityGroupBuffer."Group Name"));
+                    SecurityGroupBuffer.Insert();
+                end;
+            end
+        else begin
+            InitializeAadGroups();
 
-        InitializeAadGroups();
-
-        foreach AadGroupId in AadGroups.Keys do begin
-            UserProperty.SetRange("Authentication Object ID", AadGroupId);
-            if UserProperty.IsEmpty() then begin
-                SecurityGroupBuffer.Code := CopyStr(CreateGuid(), 1, MaxStrLen(SecurityGroupBuffer.Code));
-                SecurityGroupBuffer."Group ID" := CopyStr(AadGroupId, 1, MaxStrLen(SecurityGroupBuffer."Group ID"));
-                SecurityGroupBuffer."Group Name" := CopyStr(AadGroups.Get(AadGroupId), 1, MaxStrLen(SecurityGroupBuffer."Group Name"));
-                SecurityGroupBuffer.Insert();
+            foreach AadGroupId in AadGroups.Keys do begin
+                UserProperty.SetRange("Authentication Object ID", AadGroupId);
+                if UserProperty.IsEmpty() then begin
+                    SecurityGroupBuffer.Code := CopyStr(CreateGuid(), 1, MaxStrLen(SecurityGroupBuffer.Code));
+                    SecurityGroupBuffer."Group ID" := CopyStr(AadGroupId, 1, MaxStrLen(SecurityGroupBuffer."Group ID"));
+                    SecurityGroupBuffer."Group Name" := CopyStr(AadGroups.Get(AadGroupId), 1, MaxStrLen(SecurityGroupBuffer."Group Name"));
+                    SecurityGroupBuffer.Insert();
+                end;
             end;
         end;
 
@@ -386,12 +396,22 @@ codeunit 9871 "Security Group Impl."
         if UserName = '' then
             Error(InvalidWindowsGroupErr, WindowsGroupId);
 
-        if (WindowsGroupId = 'S-1-1-0') or (WindowsGroupId = 'S-1-5-7') or (WindowsGroupId = 'S-1-5-32-544') then
+        if GetDisallowedWindowsGroupIds().Contains(WindowsGroupId) then
             Error(WindowsAccountNotAllowedErr, UserName);
 
         OtherUser.SetFilter("Windows Security ID", WindowsGroupId);
         if OtherUser.FindFirst() then
             Error(GroupAlreadyExistsErr, OtherUser."User Name");
+    end;
+
+    local procedure GetDisallowedWindowsGroupIds(): List of [Text]
+    var
+        DisallowedGroups: List of [Text];
+    begin
+        DisallowedGroups.Add('S-1-1-0'); // "World" - A group that includes all users.
+        DisallowedGroups.Add('S-1-5-7'); // "Anonymous Logon"
+        DisallowedGroups.Add('S-1-5-32-544'); // Administrators
+        exit(DisallowedGroups);
     end;
 
     local procedure ValidateAadGroup(AadGroupObjectId: Text)
@@ -494,6 +514,20 @@ codeunit 9871 "Security Group Impl."
             exit(CopyStr(GroupDomainAndNameList.Get(GroupDomainAndNameList.Count()), 1, 20));
         end else
             exit(CopyStr(GroupName, 1, 20));
+    end;
+
+    procedure LookupPermissionSet(AllowMultiselect: Boolean; var AccessControl: Record "Access Control"; var PermissionSetLookupRecord: Record "Aggregate Permission Set"): Boolean
+    var
+        PermissionSetRelation: Codeunit "Permission Set Relation";
+    begin
+        if PermissionSetRelation.LookupPermissionSet(AllowMultiselect, PermissionSetLookupRecord) then begin
+            AccessControl."Role ID" := PermissionSetLookupRecord."Role ID";
+            AccessControl.Scope := PermissionSetLookupRecord.Scope;
+            AccessControl."App ID" := PermissionSetLookupRecord."App ID";
+            AccessControl.CalcFields("Role Name");
+            exit(true);
+        end;
+        exit(false);
     end;
 
     [InternalEvent(false)]

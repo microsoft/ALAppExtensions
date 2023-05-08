@@ -117,5 +117,17 @@ pageextension 148123 "Intrastat Report Setup IT" extends "Intrastat Report Setup
         {
             Visible = false;
         }
+        modify("Report Receipts")
+        {
+            Visible = false;
+            Editable = false;
+            Enabled = false;
+        }
+        modify("Report Shipments")
+        {
+            Visible = false;
+            Editable = false;
+            Enabled = false;
+        }
     }
 }

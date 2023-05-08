@@ -272,6 +272,13 @@ page 9987 "Word Templates Related Part"
         WordTemplateImpl.AddTable(Rec, Rec.Code, UnrelatedTableID, RecordSystemId, RelatedCode, TempWordTemplateField);
     end;
 
+    internal procedure SetFieldsToBeIncluded(TableId: Integer; IncludeFields: List of [Text[30]])
+    var
+        WordTemplateFieldSelection: Codeunit "Word Template Field Selection";
+    begin
+        WordTemplateFieldSelection.SetIncludeFields('', TableId, IncludeFields, TempWordTemplateField);
+    end;
+
     internal procedure GetRelatedTables(var RelatedTableIds: List of [Integer]; var RelatedTableCodes: List of [Code[5]])
     begin
         Rec.Reset();

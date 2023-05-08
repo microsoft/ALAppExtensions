@@ -22,6 +22,7 @@ permissionset 9988 "Word Templates - Objects"
                   Page "Word Templates Related List" = X,
 #endif
                   Page "Word Templates Related Part" = X,
+                  Page "Word Templates Tables Part" = X,
                   Page "Word Templates Table Lookup" = X,
                   Page "Word Templates" = X,
                   Table "Word Template" = X;

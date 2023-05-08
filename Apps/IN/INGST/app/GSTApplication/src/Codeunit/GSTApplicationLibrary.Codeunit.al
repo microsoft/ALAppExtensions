@@ -283,6 +283,7 @@ codeunit 18433 "GST Application Library"
         GSTRoudingType: Enum "GST Inv Rounding Type";
         Sign: Integer;
         OriginalDocumentType: Enum "Gen. Journal Document Type";
+        IsHandled: Boolean;
     begin
         GSTGroupCode := '';
         AppliedAmount := 0;
@@ -312,16 +313,18 @@ codeunit 18433 "GST Application Library"
                     AmountToApply := (Abs(AmountToApply) - Abs(AppliedAmount)) * Sign;
                 end;
 
-                if Abs(TotalInvoiceAmount) > Abs(AmountToApply) then begin
-                    GSTApplicationBuffer."Applied Base Amount" := Round(GSTApplicationBuffer."GST Base Amount" * AmountToApply / (TotalInvoiceAmount + Abs(TDSTCS)), 0.01);
-                    GSTApplicationBuffer."Applied Amount" := GSTApplicationRound(
-                        GSTRoudingType,
-                        GSTRoundingPrecision,
-                        GSTApplicationBuffer."GST Amount" * AmountToApply / (TotalInvoiceAmount + Abs(TDSTCS)));
-                end else begin
-                    GSTApplicationBuffer."Applied Base Amount" := Round(GetInvoiceGSTComponentWise(GSTApplicationBuffer, OriginalDocumentType::Invoice, DocumentNo, true), 0.01);
-                    GSTApplicationBuffer."Applied Amount" := GSTApplicationBuffer."GST Amount";
-                end;
+                OnBeforeCalculateAppliedAmounts(TotalInvoiceAmount, AmountToApply, TDSTCS, GSTApplicationBuffer, IsHandled);
+                if not IsHandled then
+                    if Abs(TotalInvoiceAmount) > Abs(AmountToApply) then begin
+                        GSTApplicationBuffer."Applied Base Amount" := Round(GSTApplicationBuffer."GST Base Amount" * AmountToApply / (TotalInvoiceAmount + Abs(TDSTCS)), 0.01);
+                        GSTApplicationBuffer."Applied Amount" := GSTApplicationRound(
+                            GSTRoudingType,
+                            GSTRoundingPrecision,
+                            GSTApplicationBuffer."GST Amount" * AmountToApply / (TotalInvoiceAmount + Abs(TDSTCS)));
+                    end else begin
+                        GSTApplicationBuffer."Applied Base Amount" := Round(GetInvoiceGSTComponentWise(GSTApplicationBuffer, OriginalDocumentType::Invoice, DocumentNo, true), 0.01);
+                        GSTApplicationBuffer."Applied Amount" := GSTApplicationBuffer."GST Amount";
+                    end;
 
                 GSTApplicationBuffer.Modify(true);
                 GSTGroupCode := GSTApplicationBuffer."GST Group Code";
@@ -1765,5 +1768,15 @@ codeunit 18433 "GST Application Library"
         var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info")
     begin
         DetailedGSTLedgerEntryInfo.Get(DetailedGSTLedgerEntry."Entry No.");
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCalculateAppliedAmounts(
+        TotalInvoiceAmount: Decimal;
+        AmountToApply: Decimal;
+        TDSTCS: Decimal;
+        var GSTApplicationBuffer: Record "GST Application Buffer";
+        var IsHandled: Boolean)
+    begin
     end;
 }

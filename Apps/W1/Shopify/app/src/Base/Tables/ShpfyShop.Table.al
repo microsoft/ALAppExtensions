@@ -698,11 +698,11 @@ table 30102 "Shpfy Shop"
             Rec."Gen. Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Gen. Bus. Posting Group"));
             Rec."VAT Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("VAT Bus. Posting Group"));
             Rec."Tax Area Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Area Code"));
-            Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable")));
+            if Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable"))) then;
             Rec."VAT Country/Region Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Country/Region Code"));
             Rec."Customer Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Customer Posting Group"));
-            Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT")));
-            Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc.")));
+            if Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT"))) then;
+            if Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc."))) then;
             Rec.Modify();
         end;
     end;

@@ -178,17 +178,6 @@ table 31257 "Payment Order Line CZB"
                     BankOperationsFunctionsCZB.CheckBankAccountNoCharacters("Account No.");
                     BankOperationsFunctionsCZL.CheckCzBankAccountNo("Account No.", '');
                 end;
-
-                if "Account No." <> xRec."Account No." then begin
-                    Type := Type::" ";
-                    "No." := '';
-                    "Cust./Vendor Bank Account Code" := '';
-                    "Specific Symbol" := '';
-                    "Transit No." := '';
-                    IBAN := '';
-                    "SWIFT Code" := '';
-                    "Applies-to C/V/E Entry No." := 0;
-                end;
             end;
         }
         field(8; "Variable Symbol"; Code[10])
@@ -392,9 +381,9 @@ table 31257 "Payment Order Line CZB"
                                 CustLedgerEntry.Count > 1:
                                     Error(ExistEntryErr, CustLedgerEntry.FieldCaption("Document No."), CustLedgerEntry.TableCaption, "Applies-to Doc. No.");
                                 else begin
-                                        CustLedgerEntry.FindFirst();
-                                        Validate("Applies-to C/V/E Entry No.", CustLedgerEntry."Entry No.");
-                                    end;
+                                    CustLedgerEntry.FindFirst();
+                                    Validate("Applies-to C/V/E Entry No.", CustLedgerEntry."Entry No.");
+                                end;
                             end;
                         end;
                     Type::Vendor:
@@ -415,9 +404,9 @@ table 31257 "Payment Order Line CZB"
                                 VendorLedgerEntry.Count > 1:
                                     Error(ExistEntryErr, VendorLedgerEntry.FieldCaption("Document No."), VendorLedgerEntry.TableCaption, "Applies-to Doc. No.");
                                 else begin
-                                        VendorLedgerEntry.FindFirst();
-                                        Validate("Applies-to C/V/E Entry No.", VendorLedgerEntry."Entry No.");
-                                    end;
+                                    VendorLedgerEntry.FindFirst();
+                                    Validate("Applies-to C/V/E Entry No.", VendorLedgerEntry."Entry No.");
+                                end;
                             end;
                         end;
                 end;

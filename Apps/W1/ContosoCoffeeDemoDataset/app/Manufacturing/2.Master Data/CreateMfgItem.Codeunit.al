@@ -206,13 +206,13 @@ codeunit 4770 "Create Mfg Item"
         XOnOffLightTok: Label 'On/off light', MaxLength = 30;
         XControlPanelDisplayTok: Label 'Control panel display', MaxLength = 30;
         XButtonTok: Label 'Button', MaxLength = 30;
-        XScrewHexM3Tok: Label 'Screw Hex M3, Zink', MaxLength = 30;
+        XScrewHexM3Tok: Label 'Screw Hex M3, Zinc', MaxLength = 30;
         XCircuitBoardTok: Label 'Circuit board', MaxLength = 30;
         XPowerCordTok: Label 'Power cord', MaxLength = 30;
         XIoTSensorTok: Label 'IoT Sensor', MaxLength = 30;
         XFaciaPanelWithDisplayTok: Label 'Facia Panel with display', MaxLength = 30;
         XGlassCarafeTok: Label 'Glass Carafe', MaxLength = 30;
-        XStillCarafeTok: Label 'Stainless still thermal carafe', MaxLength = 30;
+        XStillCarafeTok: Label 'Stainless steel thermal carafe', MaxLength = 30;
         XReservoirTok: Label 'Reservoir', MaxLength = 30;
         XHeatingElementTok: Label 'Heating element', MaxLength = 30;
         XWaterTubingTok: Label 'Water tubing', MaxLength = 30;

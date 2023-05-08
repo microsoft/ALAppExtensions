@@ -1,5 +1,7 @@
 codeunit 11518 "Swiss QR-Bill Mgt."
 {
+    Permissions = tabledata "Tenant Media" = rd;
+
     var
         PaymentMethodsTxt: Label '%1 of %2 Payment Methods enabled with QR-Bill Layout', Comment = '%1, %2 - number of records';
         DocumentTypesTxt: Label '%1 of %2 Document Types enabled for QR-Bills', Comment = '%1, %2 - number of records';
@@ -120,7 +122,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         QRCodeText: Text;
     begin
         QRCodeText := SwissQRBillEncode.GenerateQRCodeText(SwissQRBillBuffer);
-        if SwissQRBillImageMgt.GenerateSwissQRCodeImage(EncodeUmlautChars(QRCodeText), TempBlob) then
+        if SwissQRBillImageMgt.GenerateSwissQRCodeImage(QRCodeText, TempBlob) then
             SwissQRBillBuffer.SetQRCodeImage(TempBlob);
     end;
 
@@ -241,112 +243,6 @@ codeunit 11518 "Swiss QR-Bill Mgt."
             CustomerLedgerEntries.GetRecord(CustLedgerEntry);
             exit(CustLedgerEntry."Entry No.");
         end;
-    end;
-
-    local procedure EncodeUmlautChars(InString: Text) OutString: Text
-    var
-        SwissQRBillSetup: Record "Swiss QR-Bill Setup";
-        UmlautChars: Text;
-        PrintableChars: Text;
-        DoubleUmlautChars: Text;
-        DoublePrintableChars: List of [Text];
-        Latin1ExclusionUmlautChars: Text;
-        Latin1ExclusionPrintableChars: List of [Text];
-        i: Integer;
-    begin
-        GetUmlautAndPrintableChars(
-            UmlautChars, PrintableChars,
-            DoubleUmlautChars, DoublePrintableChars,
-            Latin1ExclusionUmlautChars, Latin1ExclusionPrintableChars);
-
-        SwissQRBillSetup.Get();
-        case SwissQRBillSetup."Umlaut Chars Encode Mode" of
-            SwissQRBillSetup."Umlaut Chars Encode Mode"::Remove:
-                OutString := DelChr(InString, '=', UmlautChars);
-            SwissQRBillSetup."Umlaut Chars Encode Mode"::Single:
-                OutString := ConvertStr(InString, UmlautChars, PrintableChars);
-            SwissQRBillSetup."Umlaut Chars Encode Mode"::Double:
-                begin
-                    for i := 1 to StrLen(InString) do
-                        OutString += ConvertUmlautCharsToDoubleChars(InString[i], DoubleUmlautChars, DoublePrintableChars);
-                    OutString := ConvertStr(OutString, UmlautChars, PrintableChars);
-                end;
-            SwissQRBillSetup."Umlaut Chars Encode Mode"::"Western European ISO-8859-1":
-                for i := 1 to StrLen(InString) do
-                    OutString += ConvertUmlautCharsToDoubleChars(InString[i], Latin1ExclusionUmlautChars, Latin1ExclusionPrintableChars);
-        end;
-
-        OutString := ConvertSpecialChars(OutString);
-        OutString := RemoveNonPrintableChars(OutString);
-    end;
-
-    local procedure GetUmlautAndPrintableChars(var UmlautChars: Text; var PrintableChars: Text; var DoubleUmlautChars: Text; var DoublePrintableChars: List of [Text]; var Latin1ExclusionUmlautChars: Text; var Latin1ExclusionPrintableChars: List of [Text])
-    var
-        i: Integer;
-    begin
-        UmlautChars := PadStr('', 65, ' ');
-        for i := 192 to 255 do
-            UmlautChars[i - 191] := i;
-        UmlautChars[65] := 7838; // ẞ
-        PrintableChars := 'AAAAAAACEEEEIIII NOOOOO OUUUUY saaaaaaaceeeeiiii nooooo ouuuuy yS';
-
-        DoubleUmlautChars := PadStr('', 12, ' ');
-        DoubleUmlautChars[1] := 196; // Ä
-        DoubleUmlautChars[2] := 228; // ä
-        DoubleUmlautChars[3] := 214; // Ö
-        DoubleUmlautChars[4] := 246; // ö
-        DoubleUmlautChars[5] := 220; // Ü
-        DoubleUmlautChars[6] := 252; // ü
-        DoubleUmlautChars[7] := 7838; // ẞ
-        DoubleUmlautChars[8] := 223; // ß
-        DoubleUmlautChars[9] := 198; // Æ
-        DoubleUmlautChars[10] := 230; // æ
-        DoubleUmlautChars[11] := 338; // Œ
-        DoubleUmlautChars[12] := 339; // œ
-        DoublePrintableChars.AddRange('Ae', 'ae', 'Oe', 'oe', 'Ue', 'ue', 'Ss', 'ss', 'AE', 'ae', 'OE', 'oe');
-
-        Latin1ExclusionUmlautChars := PadStr('', 4, ' ');
-        Latin1ExclusionUmlautChars[1] := 7838; // ẞ
-        Latin1ExclusionUmlautChars[2] := 376; // Ÿ
-        Latin1ExclusionUmlautChars[3] := 338; // Œ
-        Latin1ExclusionUmlautChars[4] := 339; // œ
-        Latin1ExclusionPrintableChars.AddRange('SS', 'Y', 'OE', 'oe');
-    end;
-
-    local procedure ConvertUmlautCharsToDoubleChars(InChar: Char; DoubleUmlautChars: Text; DoublePrintableChars: List of [Text]): Text
-    var
-        i: Integer;
-    begin
-        for i := 1 to StrLen(DoubleUmlautChars) do
-            if InChar = DoubleUmlautChars[i] then
-                exit(DoublePrintableChars.Get(i));
-        exit(Format(InChar));
-    end;
-
-    local procedure ConvertSpecialChars(InText: Text) OutText: Text
-    var
-        i: Integer;
-    begin
-        for i := 1 to StrLen(InText) do
-            case InText[i] of
-                8211, 8212:
-                    OutText += '-';
-                8216, 8217:
-                    OutText += '''';
-                8220, 8221, 8222, 171, 187:
-                    OutText += '"';
-                else
-                    OutText += Format(InText[i]);
-            end;
-    end;
-
-    local procedure RemoveNonPrintableChars(InText: Text) OutText: Text
-    var
-        i: Integer;
-    begin
-        for i := 1 to StrLen(InText) do
-            if InText[i] <= 255 then
-                OutText += InText[i];
     end;
 
     internal procedure GetNextReferenceNo(ReferenceType: Enum "Swiss QR-Bill Payment Reference Type"; UpdateLastUsed: Boolean) Result: Code[50]
@@ -545,6 +441,14 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         Language: Codeunit Language;
     begin
         exit(Language.GetLanguageCode(GetLanguageIdENU()));
+    end;
+
+    internal procedure DeleteTenantMedia(MediaId: Guid)
+    var
+        TenantMedia: Record "Tenant Media";
+    begin
+        if TenantMedia.Get(MediaId) then
+            TenantMedia.Delete();       // Tenant Media Thumbnails are also removed
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"SEPA DD-Fill Export Buffer", 'OnBeforeInsertPaymentExportData', '', false, false)]

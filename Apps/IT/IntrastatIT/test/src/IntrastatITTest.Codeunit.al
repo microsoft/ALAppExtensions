@@ -123,7 +123,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('UndoDocumentConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    [HandlerFunctions('UndoDocumentConfirmHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatLineAfterUndoPurchase()
     var
@@ -187,7 +187,7 @@ codeunit 139511 "Intrastat IT Test"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     procedure NoIntrastatLineForSales()
     var
         SalesLine: Record "Sales Line";
@@ -233,7 +233,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('UndoDocumentConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    [HandlerFunctions('UndoDocumentConfirmHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatLineAfterUndoSales()
     var
@@ -254,7 +254,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithPurchaseOrder()
     var
@@ -297,7 +297,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithItemChargeAssignmentAfterPurchaseCreditMemo()
     var
@@ -558,7 +558,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure VerifyIntrastatReportLineSuggestedForNonCrossedBoardItemChargeInNextPeriod()
     var
@@ -821,7 +821,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure NotToShowItemCharges()
     var
@@ -1351,7 +1351,7 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportPage.ChecklistReport.Invoke();
 
         // [THEN] Check no error in error part
-        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Partner VAT ID"));
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldCaption("Partner VAT ID"));
         IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
 
         // [GIVEN] A Intrastat Report with empty "Total Weight" and "Supplementary Units" = false
@@ -1360,8 +1360,8 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportPage.ChecklistReport.Invoke();
 
         // [THEN] You got a error in error part
-        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Partner VAT ID"));
-        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName("Partner VAT ID"));
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldCaption("Partner VAT ID"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldCaption("Partner VAT ID"));
         IntrastatReportPage.Close();
     end;
 
@@ -2494,20 +2494,18 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportList.OK().Invoke();
     end;
 
-    [RequestPageHandler]
-    [Scope('OnPrem')]
-    procedure GetItemLedgerEntriesReportHandler(var GetItemLedgerEntries: TestRequestPage "Get Item Ledger Entries")
-    begin
-        GetItemLedgerEntries.ShowingItemCharges.SetValue(LibraryVariableStorage.DequeueBoolean());
-        GetItemLedgerEntries.OK().Invoke();
-    end;
-
     [ConfirmHandler]
     [Scope('OnPrem')]
     procedure UndoDocumentConfirmHandler(Message: Text[1024]; var Reply: Boolean)
     begin
         // Send Reply = TRUE for Confirmation Message.
         Reply := true;
+    end;
+
+    [MessageHandler]
+    [Scope('OnPrem')]
+    procedure NoLinesMsgHandler(Message: Text[1024])
+    begin
     end;
 
     [ModalPageHandler]

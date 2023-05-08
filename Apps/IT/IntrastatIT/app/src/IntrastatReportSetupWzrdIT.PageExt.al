@@ -2,6 +2,18 @@ pageextension 148124 "Intrastat Report Setup Wzrd IT" extends "Intrastat Report 
 {
     layout
     {
+        modify("Report Receipts")
+        {
+            Visible = false;
+            Editable = false;
+            Enabled = false;
+        }
+        modify("Report Shipments")
+        {
+            Visible = false;
+            Editable = false;
+            Enabled = false;
+        }
         addlast(Step4)
         {
             field("Data Exch. Def. Code NPM"; Rec."Data Exch. Def. Code NPM")

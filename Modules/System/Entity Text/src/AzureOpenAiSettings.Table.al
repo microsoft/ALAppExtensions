@@ -134,7 +134,6 @@ table 2010 "Azure OpenAi Settings"
     internal procedure CompletionsEndpoint(CallerModuleInfo: ModuleInfo; var BearerAuth: Boolean): Text
     var
         EnvironmentInformation: Codeunit "Environment Information";
-        AzureKeyVault: Codeunit "Azure Key Vault";
         UriBuilder: Codeunit "Uri Builder";
         Uri: Codeunit Uri;
         EntityTextModuleInfo: ModuleInfo;
@@ -145,12 +144,13 @@ table 2010 "Azure OpenAi Settings"
 
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
             NavApp.GetCurrentModuleInfo(EntityTextModuleInfo);
-            if (not IsNullGuid(CallerModuleInfo.Id())) and (CallerModuleInfo.Publisher() = EntityTextModuleInfo.Publisher()) then
-                if AzureKeyVault.GetAzureKeyVaultSecret(EndpointKeyTok, KvEndpoint) then
-                    if KvEndpoint <> '' then begin
-                        Session.LogMessage('0000JVU', TelemetryKvEndpointTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
-                        exit(StrSubstNo(KvEndpoint, ApiVersionKeyTok, ApiVersionTok));
-                    end;
+            if (not IsNullGuid(CallerModuleInfo.Id())) and (CallerModuleInfo.Publisher() = EntityTextModuleInfo.Publisher()) then begin
+                KvEndpoint := GetConfigurationValue(EndpointKeyTok);
+                if KvEndpoint <> '' then begin
+                    Session.LogMessage('0000JVU', TelemetryKvEndpointTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+                    exit(StrSubstNo(KvEndpoint, ApiVersionKeyTok, ApiVersionTok));
+                end;
+            end;
         end;
 
         if Rec.Endpoint = '' then
@@ -195,7 +195,7 @@ table 2010 "Azure OpenAi Settings"
     end;
 
     [NonDebuggable]
-    internal procedure GetSecret(CallerModuleInfo: ModuleInfo): Text;
+    internal procedure GetSecret(CallerModuleInfo: ModuleInfo): Text
     var
         EnvironmentInformation: Codeunit "Environment Information";
         AzureKeyVault: Codeunit "Azure Key Vault";
@@ -225,7 +225,6 @@ table 2010 "Azure OpenAi Settings"
     local procedure GetOauthSecret(Secret: Text): Text
     var
         OAuth2: Codeunit OAuth2;
-        AzureKeyVault: Codeunit "Azure Key Vault";
         Scopes: List of [Text];
         ClientId: Text;
         Authority: Text;
@@ -233,9 +232,9 @@ table 2010 "Azure OpenAi Settings"
         Token: Text;
         IdToken: Text;
     begin
-        AzureKeyVault.GetAzureKeyVaultSecret(ClientKeyTok, ClientId);
-        AzureKeyVault.GetAzureKeyVaultSecret(AuthorityKeyTok, Authority);
-        AzureKeyVault.GetAzureKeyVaultSecret(ResourceKeyTok, Resource);
+        ClientId := GetConfigurationValue(ClientKeyTok);
+        Authority := GetConfigurationValue(AuthorityKeyTok);
+        Resource := GetConfigurationValue(ResourceKeyTok);
 
         if Authority = '' then
             Error('');
@@ -249,14 +248,59 @@ table 2010 "Azure OpenAi Settings"
         exit(Token);
     end;
 
+
+    [NonDebuggable]
+    internal procedure IncludeSource(CallerModuleInfo: ModuleInfo): Boolean
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+        EntityTextModuleInfo: ModuleInfo;
+    begin
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
+            exit(false);
+
+        NavApp.GetCurrentModuleInfo(EntityTextModuleInfo);
+        if IsNullGuid(CallerModuleInfo.Id()) or (CallerModuleInfo.Publisher() <> EntityTextModuleInfo.Publisher()) then
+            exit(false);
+
+        exit(GetConfigurationValue(IncludeSourceKeyTok) = 'true');
+    end;
+
+    [NonDebuggable]
+    local procedure GetConfigurationValue(Name: Text): Text;
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        Configuration: JsonObject;
+        ConfigurationText: Text;
+        ConfigurationToken: JsonToken;
+    begin
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
+            exit('');
+
+        AzureKeyVault.GetAzureKeyVaultSecret(ConfigurationKeyTok, ConfigurationText);
+
+        if ConfigurationText = '' then
+            exit('');
+
+        if not Configuration.ReadFrom(ConfigurationText) then
+            exit('');
+
+        if not Configuration.Get(Name, ConfigurationToken) then
+            exit('');
+
+        exit(ConfigurationToken.AsValue().AsText());
+    end;
+
     var
         PrivateCompletionsEndpointTxt: Label '/openai/deployments/%1/completions', Locked = true;
         AoaiSuffixTxt: Label '.openai.azure.com/', Locked = true;
         SecretKeyTok: Label 'AOAI-Cert', Locked = true;
-        EndpointKeyTok: Label 'AOAI-Endpoint', Locked = true;
-        AuthorityKeyTok: Label 'AOAI-Authority', Locked = true;
-        ResourceKeyTok: Label 'AOAI-Resource', Locked = true;
-        ClientKeyTok: Label 'AOAI-Client', Locked = true;
+        ConfigurationKeyTok: Label 'AOAI-Configuration', Locked = true;
+        EndpointKeyTok: Label 'Endpoint', Locked = true;
+        ClientKeyTok: Label 'Client', Locked = true;
+        AuthorityKeyTok: Label 'Authority', Locked = true;
+        ResourceKeyTok: Label 'Resource', Locked = true;
+        IncludeSourceKeyTok: Label 'IncludeSource', Locked = true;
         ApiVersionKeyTok: Label 'api-version', Locked = true;
         ApiVersionTok: Label '2022-12-01', Locked = true;
         UriNotValidErr: Label 'The specified endpoint is not valid.';

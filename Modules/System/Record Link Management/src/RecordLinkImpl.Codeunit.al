@@ -24,6 +24,7 @@ codeunit 4470 "Record Link Impl."
         RecordRef: RecordRef;
     begin
         RecordRef.GetTable(RecVariant);
+        RecordLink.SetFilter(Company, '%1|%2', '', RecordRef.CurrentCompany()); // CurrentCompany is also set for records that are cross-company
         RecordLink.SetRange("Record ID", RecordRef.RecordId());
         RecordLink.SetRange(Notify, true);
         if not RecordLink.IsEmpty() then

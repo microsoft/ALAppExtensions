@@ -55,6 +55,11 @@ page 9873 "Copy Security Group"
                 NotBlank = true;
                 Visible = IsWindowsAuthentication;
 
+                trigger OnLookup(var Text: Text): Boolean
+                begin
+                    LookupAvailableGroups();
+                end;
+
                 trigger OnValidate()
                 begin
                     ValidateGroupName();

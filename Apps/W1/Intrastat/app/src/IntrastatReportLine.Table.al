@@ -264,7 +264,7 @@ table 4812 "Intrastat Report Line"
         }
         field(29; "Partner VAT ID"; Text[50])
         {
-            Caption = 'Partner VAT ID';
+            Caption = 'VAT Reg. No.';
         }
         field(30; "Location Code"; Code[10])
         {
@@ -682,7 +682,11 @@ table 4812 "Intrastat Report Line"
 
         case ItemLedgerEntry."Source Type" of
             ItemLedgerEntry."Source Type"::Customer:
-                if Customer."No." <> '' then begin
+                begin
+                    if Customer."No." = '' then
+                        if not Customer.Get(ItemLedgerEntry."Source No.") then
+                            exit('');
+
                     IsHandled := false;
                     OnBeforeGetCustomerPartnerIDFromItemEntry(Customer, EU3rdPartyTrade, PartnerID, IsHandled);
                     if IsHandled then
@@ -696,7 +700,11 @@ table 4812 "Intrastat Report Line"
                             IntrastatReportMgt.IsCustomerPrivatePerson(Customer), EU3rdPartyTrade));
                 end;
             ItemLedgerEntry."Source Type"::Vendor:
-                if Vendor."No." <> '' then begin
+                begin
+                    if Vendor."No." = '' then
+                        if not Vendor.Get(ItemLedgerEntry."Source No.") then
+                            exit('');
+
                     IsHandled := false;
                     OnBeforeGetVendorPartnerIDFromItemEntry(Vendor, PartnerID, IsHandled);
                     if IsHandled then

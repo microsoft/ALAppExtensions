@@ -6,7 +6,7 @@
 /// <summary>
 /// Provides a custom constructor for uniform resource identifiers (URIs) and modifies URIs for the Uri codeunit.
 /// </summary>
-/// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder for more information.</remarks>
+/// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder for more information.</remarks>
 codeunit 3061 "Uri Builder"
 {
     Access = Public;
@@ -16,7 +16,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Initializes a new instance of the UriBuilder class with the specified URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.-ctor#System_UriBuilder__ctor_System_String_ for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.-ctor#System_UriBuilder__ctor_System_String_ for more information.</remarks>
     /// <param name="Uri">A URI string.</param>
     procedure Init(Uri: Text)
     begin
@@ -26,7 +26,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Sets the scheme name of the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.scheme for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.scheme for more information.</remarks>
     /// <param name="Scheme">A string that represents the scheme name to set.</param>
     procedure SetScheme(Scheme: Text)
     begin
@@ -36,7 +36,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Gets the scheme name of the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.scheme for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.scheme for more information.</remarks>
     /// <returns>The scheme name of the URI.</returns>
     procedure GetScheme(): Text
     begin
@@ -46,7 +46,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Sets the host name of the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.host for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.host for more information.</remarks>
     /// <param name="Host">A string that represents the host name to set.</param>
     procedure SetHost(Host: Text)
     begin
@@ -56,7 +56,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Gets the host name of the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.host for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.host for more information.</remarks>
     /// <returns>The host name of the URI.</returns>
     procedure GetHost(): Text
     begin
@@ -66,7 +66,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Sets the port number of the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.port for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.port for more information.</remarks>
     /// <param name="Port">An integer that represents the port number to set.</param>
     procedure SetPort(Port: Integer)
     begin
@@ -76,7 +76,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Gets the port number of the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.port for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.port for more information.</remarks>
     /// <returns>The port number of the URI.</returns>
     procedure GetPort(): Integer
     begin
@@ -86,7 +86,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Sets the path to the resource referenced by the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.path for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.path for more information.</remarks>
     /// <param name="Path">A string that represents the path to set.</param>
     procedure SetPath(Path: Text)
     begin
@@ -96,7 +96,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Gets the path to the resource referenced by the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.path for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.path for more information.</remarks>
     /// <returns>The path to the resource referenced by the URI.</returns>
     procedure GetPath(): Text
     begin
@@ -106,7 +106,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Sets any query information included in the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.query for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.query for more information.</remarks>
     /// <param name="Query">A string that represents the query information to set.</param>
     procedure SetQuery(Query: Text)
     begin
@@ -116,7 +116,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Gets the query information included in the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.query for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.query for more information.</remarks>
     /// <returns>The query information included in the URI.</returns>
     procedure GetQuery(): Text
     begin
@@ -126,7 +126,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Sets the fragment portion of the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.fragment for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.fragment for more information.</remarks>
     /// <param name="Fragment">A string that represents the fragment portion to set.</param>
     procedure SetFragment(Fragment: Text)
     begin
@@ -136,7 +136,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Gets the fragment portion of the URI.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.fragment for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.fragment for more information.</remarks>
     /// <returns>The fragment portion of the URI.</returns>
     procedure GetFragment(): Text
     begin
@@ -146,7 +146,7 @@ codeunit 3061 "Uri Builder"
     /// <summary>
     /// Gets the Uri instance constructed by the specified "Uri Builder" instance.
     /// </summary>
-    /// <remarks>Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.uri for more information.</remarks>
+    /// <remarks>Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.uri for more information.</remarks>
     /// <param name="Uri">A Uri that contains the URI constructed by the Uri Builder.</param>
     procedure GetUri(var Uri: Codeunit Uri)
     begin

@@ -98,4 +98,18 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
                 end;
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeVendLedgEntryModify', '', false, false)]
+    local procedure InitAdvanceLetterOnBeforeVendLedgEntryModify(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+        if VendorLedgerEntry.Open and (VendorLedgerEntry."Advance Letter No. CZZ" = '') then
+            VendorLedgerEntry."Adv. Letter Template Code CZZ" := '';
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCustLedgEntryModify', '', false, false)]
+    local procedure InitAdvanceLetterOnBeforeCustLedgEntryModify(var CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        if CustLedgerEntry.Open and (CustLedgerEntry."Advance Letter No. CZZ" = '') then
+            CustLedgerEntry."Adv. Letter Template Code CZZ" := '';
+    end;
 }

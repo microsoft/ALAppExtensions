@@ -80,6 +80,11 @@ page 9872 "New Security Group"
                     NotBlank = true;
                     Visible = IsWindowsAuthentication;
 
+                    trigger OnLookup(var Text: Text): Boolean
+                    begin
+                        LookupAvailableGroups();
+                    end;
+
                     trigger OnValidate()
                     begin
                         ValidateGroupName();

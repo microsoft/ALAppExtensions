@@ -5,7 +5,6 @@ codeunit 148121 "Intrastat Report Management IT"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeInitSetup', '', true, true)]
     local procedure OnBeforeInitSetup(var IntrastatReportSetup: Record "Intrastat Report Setup"; var IsHandled: Boolean)
-
     var
         DataExchDef: Record "Data Exch. Def";
         TempBlob: Codeunit "Temp Blob";
@@ -126,6 +125,8 @@ codeunit 148121 "Intrastat Report Management IT"
         IntrastatReportSetup."Data Exch. Def. Code CSM" := 'INTRA-2022-IT-CSM';
         IntrastatReportSetup."Data Exch. Def. Code CPQ" := 'INTRA-2022-IT-CPQ';
         IntrastatReportSetup."Data Exch. Def. Code CSQ" := 'INTRA-2022-IT-CSQ';
+        IntrastatReportSetup."Report Receipts" := true;
+        IntrastatReportSetup."Report Shipments" := true;
         IntrastatReportSetup.Modify();
     end;
 

@@ -22,7 +22,9 @@ permissionset 11742 "CZ Advance Pack - Objects CZA"
                   codeunit "Item Journal Line Handler CZA" = X,
                   codeunit "Item Tracking Line Handler CZA" = X,
                   codeunit "Job Journal Line Handler CZA" = X,
+#if not CLEAN22
                   codeunit "Nonstock Item Handler CZA" = X,
+#endif
                   codeunit "Process Data Exch. Handler CZA" = X,
                   codeunit "Production Order Handler CZA" = X,
                   codeunit "Purchase Line Handler CZA" = X,

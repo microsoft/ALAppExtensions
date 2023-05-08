@@ -38,7 +38,7 @@ codeunit 1463 CertificateRequest
     end;
 
     /// <summary> 
-    /// Adds a X509BasicConstraint to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509basicconstraintsextension
+    /// Adds a X509BasicConstraint to the Certificate Request. See https://learn.microsoft.com/dotnet/api/system.security.cryptography.x509certificates.x509basicconstraintsextension
     /// </summary>
     /// <param name="CertificateAuthority">True if the certificate is from a certificate authority (CA). Otherwise, false.</param>
     /// <param name="HasPathLengthConstraint">True if the certificate has a restriction on the number of path levels it allows; otherwise, false.</param>
@@ -50,7 +50,7 @@ codeunit 1463 CertificateRequest
     end;
 
     /// <summary> 
-    /// Adds a X509EnhancedKeyUsage to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509enhancedkeyusageextension
+    /// Adds a X509EnhancedKeyUsage to the Certificate Request. See https://learn.microsoft.com/dotnet/api/system.security.cryptography.x509certificates.x509enhancedkeyusageextension
     /// </summary>
     /// <param name="OidValues">List of Oid values (for example '1.3.6.1.5.5.7.3.2') to add.</param>
     /// <param name="Critical">True if the extension is critical; otherwise, false.</param>
@@ -60,9 +60,9 @@ codeunit 1463 CertificateRequest
     end;
 
     /// <summary>
-    /// Adds a X509KeyUsage to the certificate request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageextension
+    /// Adds a X509KeyUsage to the certificate request. See https://learn.microsoft.com/dotnet/api/system.security.cryptography.x509certificates.x509keyusageextension
     /// </summary>
-    /// <param name="X509KeyUsageFlags">The sum of all flag values that are to be added. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageflags</param>
+    /// <param name="X509KeyUsageFlags">The sum of all flag values that are to be added. See https://learn.microsoft.com/dotnet/api/system.security.cryptography.x509certificates.x509keyusageflags</param>
     /// <param name="Critical">True if the extension is critical; otherwise, false.</param>
     procedure AddX509KeyUsageToCertificateRequest(X509KeyUsageFlags: Integer; Critical: Boolean)
     begin

@@ -11,6 +11,8 @@ page 40064 "Cloud Migration Sanitize Table"
         {
             group(GroupName)
             {
+                ShowCaption = false;
+
                 field(CompanyName; Company.Name)
                 {
                     ApplicationArea = All;

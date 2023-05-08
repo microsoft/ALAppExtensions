@@ -3657,6 +3657,67 @@ codeunit 18196 "GST Sales Tests"
         Assert.IsTrue(true, 'E-Invoice generated');
     end;
 
+    [Test]
+    [HandlerFunctions('TransferToInvoiceHandler,MessageHandler')]
+    procedure CreateSalesInvoiceFromJobPlanningLine()
+    var
+        Job: Record Job;
+        JobTask: Record "Job Task";
+        JobPlanningLine: Record "Job Planning Line";
+        SalesHeader: Record "Sales Header";
+        LibraryJob: Codeunit "Library - Job";
+        LineType: Enum "Job Planning Line Line Type";
+        Type: Enum "Job Planning Line Type";
+    begin
+        //[Scenario] Bug 468662: [IcM] Job Planning lines expects location code to be of customer location code
+        // [GIVEN] Create Job, Job Task and Job Planning Line
+        LibraryJob.CreateJob(Job);
+        LibraryJob.CreateJobTask(Job, JobTask);
+        LibraryJob.CreateJobPlanningLine(LineType::Billable, Type::Item, JobTask, JobPlanningLine);
+
+        // [WHEN] Create Sales Invoice From Job Planning Line
+        TransferJobPlanningLine(JobPlanningLine, 1, false);
+
+        // [THEN] Sales Invoice Document is Created
+        VerifySalesDocumentCreated(JobPlanningLine, SalesHeader."Document Type"::Invoice, SalesHeader);
+    end;
+
+    local procedure TransferJobPlanningLine(var JobPlanningLine: Record "Job Planning Line"; Fraction: Decimal; Credit: Boolean)
+    var
+        Location: Record Location;
+        LibraryWarehouse: Codeunit "Library - Warehouse";
+        JobCreateInvoice: Codeunit "Job Create-Invoice";
+        QtyToTransfer: Decimal;
+    begin
+        // Transfer Fraction of JobPlanningLine to a sales invoice
+        JobPlanningLine.Validate("Location Code", LibraryWarehouse.CreateLocationWithInventoryPostingSetup(Location));
+        QtyToTransfer := Fraction * JobPlanningLine.Quantity;
+        JobPlanningLine.Validate("Qty. to Transfer to Invoice", QtyToTransfer);
+        JobPlanningLine.Modify(true);
+        JobPlanningLine.SetRecFilter();
+
+        Commit();
+
+        JobCreateInvoice.CreateSalesInvoice(JobPlanningLine, Credit);
+    end;
+
+    local procedure VerifySalesDocumentCreated(JobPlanningLine: Record "Job Planning Line"; DocumentType: Enum "Sales Document Type"; var SalesHeader: Record "Sales Header")
+    var
+        JobPlanningLineInvoice: Record "Job Planning Line Invoice";
+    begin
+        JobPlanningLineInvoice.SetRange("Job No.", JobPlanningLine."Job No.");
+        JobPlanningLineInvoice.SetRange("Job Task No.", JobPlanningLine."Job Task No.");
+        JobPlanningLineInvoice.SetRange("Job Planning Line No.", JobPlanningLine."Line No.");
+        if DocumentType = SalesHeader."Document Type"::Invoice then
+            JobPlanningLineInvoice.SetRange("Document Type", JobPlanningLineInvoice."Document Type"::Invoice)
+        else
+            JobPlanningLineInvoice.SetRange("Document Type", JobPlanningLineInvoice."Document Type"::"Credit Memo");
+        JobPlanningLineInvoice.FindFirst();
+        Assert.RecordIsNotEmpty(JobPlanningLineInvoice);
+
+        SalesHeader.Get(DocumentType, JobPlanningLineInvoice."Document No.");
+        Assert.RecordIsNotEmpty(SalesHeader);
+    end;
 
     local procedure CreateAndPostSalesDocumentForEInvoice(
             var SalesHeader: Record "Sales Header";
@@ -4432,5 +4493,16 @@ codeunit 18196 "GST Sales Tests"
     begin
         if Message <> SuccessMsg then
             Error(NotPostedErr);
+    end;
+
+    [RequestPageHandler]
+    procedure TransferToInvoiceHandler(var RequestPage: TestRequestPage "Job Transfer to Sales Invoice")
+    begin
+        RequestPage.OK().Invoke()
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Msg: Text[1024])
+    begin
     end;
 }

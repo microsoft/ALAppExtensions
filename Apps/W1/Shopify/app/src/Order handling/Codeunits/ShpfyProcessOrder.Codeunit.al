@@ -275,5 +275,11 @@ codeunit 30166 "Shpfy Process Order"
         if SalesHeader.GetBySystemId(LastCreatedDocumentId) then
             SalesHeader.Delete(true);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnInsertShipmentHeaderOnAfterTransferfieldsToSalesShptHeader', '', false, false)]
+    local procedure TransferShopifyOrderNoToShipmentHeader(SalesHeader: Record "Sales Header"; var SalesShptHeader: Record "Sales Shipment Header")
+    begin
+        SalesShptHeader."Shpfy Order No." := SalesHeader."Shpfy Order No.";
+    end;
 }
 

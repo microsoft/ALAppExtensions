@@ -29,15 +29,9 @@ page 9868 "Security Group Permission Sets"
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary;
-                        LookupPermissionSetPage: Page "Lookup Permission Set";
+                        SecurityGroupImpl: Codeunit "Security Group Impl.";
                     begin
-                        LookupPermissionSetPage.LookupMode(true);
-                        if LookupPermissionSetPage.RunModal() = Action::LookupOK then begin
-                            LookupPermissionSetPage.GetRecord(TempAggregatePermissionSet);
-                            Rec."Role ID" := TempAggregatePermissionSet."Role ID";
-                            Rec.Scope := TempAggregatePermissionSet.Scope;
-                            Rec."App ID" := TempAggregatePermissionSet."App ID";
-                            Rec.CalcFields("Role Name");
+                        if SecurityGroupImpl.LookupPermissionSet(false, Rec, TempAggregatePermissionSet) then begin
                             Text := Rec."Role ID";
                             AppRoleName := TempAggregatePermissionSet.Name;
                         end;
@@ -88,17 +82,15 @@ page 9868 "Security Group Permission Sets"
                 var
                     TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary;
                     AccessControl: Record "Access Control";
+                    SecurityGroupImpl: Codeunit "Security Group Impl.";
                 begin
-                    if not LookupPermissionSet(true, TempAggregatePermissionSet) then
+                    if not SecurityGroupImpl.LookupPermissionSet(true, AccessControl, TempAggregatePermissionSet) then
                         exit;
 
                     if TempAggregatePermissionSet.FindSet() then
                         repeat
-                            if not AccessControl.Get(Rec."User Security ID", TempAggregatePermissionSet."Role ID", '', TempAggregatePermissionSet.Scope, TempAggregatePermissionSet."App ID") then begin
+                            if not AccessControl.Get(Rec."User Security ID", AccessControl."Role ID", '', AccessControl.Scope, AccessControl."App ID") then begin
                                 AccessControl."User Security ID" := Rec."User Security ID";
-                                AccessControl."Role ID" := TempAggregatePermissionSet."Role ID";
-                                AccessControl.Scope := TempAggregatePermissionSet.Scope;
-                                AccessControl."App ID" := TempAggregatePermissionSet."App ID";
                                 AccessControl.Insert();
                             end;
                         until TempAggregatePermissionSet.Next() = 0;
@@ -135,23 +127,6 @@ page 9868 "Security Group Permission Sets"
     internal procedure SetGroupCode(GroupCode: Code[20])
     begin
         PageCaption := GroupCode;
-    end;
-
-    local procedure LookupPermissionSet(AllowMultiselect: Boolean; var TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary): Boolean
-    var
-        LookupPermissionSetPage: Page "Lookup Permission Set";
-    begin
-        LookupPermissionSetPage.LookupMode(true);
-
-        if LookupPermissionSetPage.RunModal() = ACTION::LookupOK then begin
-            if AllowMultiselect then
-                LookupPermissionSetPage.GetSelectedRecords(TempAggregatePermissionSet)
-            else
-                LookupPermissionSetPage.GetSelectedRecord(TempAggregatePermissionSet);
-            exit(true);
-        end;
-
-        exit(false);
     end;
 
     var

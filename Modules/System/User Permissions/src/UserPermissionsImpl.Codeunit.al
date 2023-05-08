@@ -95,6 +95,11 @@ codeunit 153 "User Permissions Impl."
         if Rec.IsTemporary() then
             exit;
 
+        // First check if the record is potentially being disabled (we only want to prevent disabling the last SUPER user)
+        // This prevents slow database calls in many cases such as user login.
+        if (Rec.State <> Rec.State::Disabled) then
+            exit;
+
         if not IsSuper(Rec."User Security ID") then
             exit;
 

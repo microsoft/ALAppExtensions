@@ -35,37 +35,10 @@ page 9995 "Word Template Creation Wizard"
                     Caption = 'Choose the source of the data for the template.';
                 }
 
-                field(AddNewEntity; AddNewEntityLbl)
+                part(WordTemplateTables; "Word Templates Tables Part")
                 {
                     ApplicationArea = All;
-                    ShowCaption = false;
-                    ToolTip = ' ';
-                    Editable = false;
-                    Visible = TableFilterExpression = '';
-
-                    trigger OnDrillDown()
-                    var
-                        WordTemplateImpl: Codeunit "Word Template Impl.";
-                        TableId: Integer;
-                    begin
-                        TableId := WordTemplateImpl.AddTable();
-                        if TableId <> 0 then begin
-                            Rec.Get(TableId);
-                            CurrPage.Update(false);
-                        end;
-                    end;
-                }
-
-                repeater(Tables)
-                {
-                    Editable = false;
-                    field(Name; Rec."Table Caption")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Name';
-                        ToolTip = 'Specifies the name of the data source from which the template will get data.';
-                        Editable = false;
-                    }
+                    Caption = 'Source Tables';
                 }
             }
 
@@ -378,6 +351,7 @@ page 9995 "Word Template Creation Wizard"
                     case Step of
                         Step::Select:
                             begin
+                                CurrPage.WordTemplateTables.Page.GetRecord(Rec);
                                 if Rec."Table ID" = 0 then
                                     Error(MissingEntityErr);
 
@@ -539,6 +513,11 @@ page 9995 "Word Template Creation Wizard"
         CurrPage.RelatedTables.Page.SetUnrelatedTable(WordTemplate."Table ID", UnrelatedTableID, RecordSystemId, RelatedCode);
     end;
 
+    procedure SetFieldsToBeIncluded(TableId: Integer; IncludeFields: List of [Text[30]])
+    begin
+        CurrPage.RelatedTables.Page.SetFieldsToBeIncluded(TableId, IncludeFields);
+    end;
+
     local procedure SetDefaultWordTemplateLanguageCode()
     var
         Language: Codeunit Language;
@@ -562,7 +541,6 @@ page 9995 "Word Template Creation Wizard"
         UploadedFileName, TableFilterExpression : Text;
         TableSetExternally, TableSetSkipped : Boolean;
         TemplateUploaded: Boolean;
-        AddNewEntityLbl: Label 'Add new entity';
         DowloadTemplateLbl: Label 'Download a blank template.';
         UploadTemplateLbl: Label 'Upload the template';
         LearnMoreLbl: Label 'Learn more';

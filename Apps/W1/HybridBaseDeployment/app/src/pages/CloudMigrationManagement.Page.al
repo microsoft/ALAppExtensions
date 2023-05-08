@@ -598,6 +598,7 @@
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
     begin
+        CheckNewUISupported();
         FeatureTelemetry.LogUptake('0000JMI', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         IsSuper := UserPermissions.IsSuper(UserSecurityId());
         if not IsSuper then
@@ -804,6 +805,11 @@
 
     [IntegrationEvent(false, false)]
     local procedure CanMapCustomTables(var Enabled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure CheckNewUISupported()
     begin
     end;
 
