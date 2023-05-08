@@ -23,7 +23,7 @@ When running the **Create Online Dev. Environment** workflow without having the 
 Open Workflow details to get the device Code for authentication in the job summary for the initialize job.
 
 ### Issues
-- Issue #391 Create release action - CreateReleaseBranch error
+- Issue [#391](https://github.com/microsoft/AL-Go/issues/391) Create release action - CreateReleaseBranch error
 - Issue 434 Building local DevEnv, downloading dependencies: Authentication fails when using "gh auth status"
 
 ### Changes to Pull Request Process
