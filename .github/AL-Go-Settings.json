@@ -1,6 +1,6 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/mazhelez/AL-Go-PTE@fetch-artifacts-per-build-mode",
+  "templateUrl": "https://github.com/mazhelez/AL-Go-PTE@extract-build-project-action",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
   "cacheImageName": "",
