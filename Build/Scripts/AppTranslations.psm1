@@ -20,7 +20,7 @@ function Restore-TranslationsForApp {
 
     Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1 -DisableNameChecking
     $translationsOutputFolder = Join-Path (Get-BaseFolder) "out/translations/"
-    $translationPackagePath = Install-PackageFromConfig -PackageName "AppTranslations" -OutputPath $translationsOutputFolder
+    $translationPackagePath = Install-PackageFromConfig -PackageName "Microsoft.Dynamics.BusinessCentral.Translations" -OutputPath $translationsOutputFolder
     $tranlationsPath = Join-Path $translationPackagePath "Translations"
 
     $translationsFound = $false
