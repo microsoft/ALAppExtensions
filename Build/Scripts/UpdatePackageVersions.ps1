@@ -5,7 +5,10 @@ Param(
     [string]$Actor
 )
 
+# BC Container Helper is needed to fetch the latest version of one of the packages
+Install-Module -Name BcContainerHelper -Force
 Import-Module BcContainerHelper
+
 Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
 Import-Module $PSScriptRoot\AutomatedSubmission.psm1
