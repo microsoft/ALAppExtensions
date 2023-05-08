@@ -2,6 +2,11 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+### Issues
+Issue #446 Wrong NewLine character in Release Notes
+Issue #453 DeliverToStorage - override fails reading secrets
+Issue #434 Use gh auth token to get authentication token instead of gh auth status
+
 ### New Settings
 New Project Setting: `UseCompilerFolder`. Setting useCompilerFolder to true causes your pipelines to use containerless compiling. Unless you also set `doNotPublishApps` to true, setting useCompilerFolder to true won't give you any performance advantage, since AL-Go for GitHub will still need to create a container in order to publish and test the apps. In the future, publishing and testing will be split from building and there will be other options for getting an instance of Business Central for publishing and testing. 
 
@@ -23,7 +28,7 @@ When running the **Create Online Dev. Environment** workflow without having the 
 Open Workflow details to get the device Code for authentication in the job summary for the initialize job.
 
 ### Issues
-- Issue [#391](https://github.com/microsoft/AL-Go/issues/391) Create release action - CreateReleaseBranch error
+- Issue #391 Create release action - CreateReleaseBranch error
 - Issue 434 Building local DevEnv, downloading dependencies: Authentication fails when using "gh auth status"
 
 ### Changes to Pull Request Process

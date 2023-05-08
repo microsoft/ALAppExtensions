@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/mazhelez/AL-Go-PTE@fetch-artifacts-per-build-mode)
+        description: Template Repository URL (current is https://github.com/mazhelez/AL-Go-PTE@extract-build-project-action)
         required: false
         default: ''
       directCommit:
@@ -32,20 +32,20 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go-Actions/WorkflowInitialize@fetch-artifacts-per-build-mode
+        uses: mazhelez/AL-Go-Actions/WorkflowInitialize@extract-build-project-action
         with:
           shell: powershell
           eventId: "DO0098"
 
       - name: Read settings
-        uses: mazhelez/AL-Go-Actions/ReadSettings@fetch-artifacts-per-build-mode
+        uses: mazhelez/AL-Go-Actions/ReadSettings@extract-build-project-action
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           get: keyVaultName,ghTokenWorkflowSecretName,templateUrl
 
       - name: Read secrets
-        uses: mazhelez/AL-Go-Actions/ReadSecrets@fetch-artifacts-per-build-mode
+        uses: mazhelez/AL-Go-Actions/ReadSecrets@extract-build-project-action
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -82,7 +82,7 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "DirectCommit=$directCommit"
 
       - name: Update AL-Go system files
-        uses: mazhelez/AL-Go-Actions/CheckForUpdates@fetch-artifacts-per-build-mode
+        uses: mazhelez/AL-Go-Actions/CheckForUpdates@extract-build-project-action
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -93,7 +93,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: mazhelez/AL-Go-Actions/WorkflowPostProcess@fetch-artifacts-per-build-mode
+        uses: mazhelez/AL-Go-Actions/WorkflowPostProcess@extract-build-project-action
         with:
           shell: powershell
           eventId: "DO0098"
