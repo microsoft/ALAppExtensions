@@ -4,8 +4,7 @@
     },
     "microsoft-ALAppExtensions-Modules-preview":  {
         "Version": "22.1.967"
-    },
-        
+    }, 
     "AppBaselines-BCArtifacts":  {
         "Version":  "22.0.54157.56368"
     }
