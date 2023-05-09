@@ -14,6 +14,30 @@ function Get-BuildMode() {
 
 <#
 .Synopsis
+    Creates a new directory if it does not exist. If the directory exists, it will be emptied.
+.Parameter Path
+    The path of the directory to create
+.Parameter ForceEmpty
+    If specified, the directory will be emptied if it exists
+#>
+function New-Directory()
+{
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $Path,
+        [switch] $ForceEmpty
+    )
+    if ($ForceEmpty -and (Test-Path $Path)) {
+        Remove-Item -Path $Path -Recurse -Force | Out-Null
+    }
+
+    if (!(Test-Path $Path)) {
+        New-Item -ItemType Directory -Path $Path | Out-Null
+    }
+}
+
+<#
+.Synopsis
     Get the value of a key from a config file
 .Parameter ConfigType
     The type of config file to read from. Can be either "BuildConfig" or "AL-GO", or "Packages".
