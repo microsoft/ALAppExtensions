@@ -3,7 +3,7 @@ page 4763 "Create Contoso Svc Demo Data"
     PageType = Card;
     ApplicationArea = All;
     UsageCategory = Administration;
-    Caption = 'Contoso Coffee Svc Demo Data';
+    Caption = 'Contoso Coffee Service Demo Data';
     SourceTable = "Svc Demo Data Setup";
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -135,7 +135,7 @@ page 4763 "Create Contoso Svc Demo Data"
                 PromotedIsBig = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
-                ToolTip = 'Adds new demonstration data for the Warehousing capabilities in Business Central.';
+                ToolTip = 'Adds new demonstration data for the Service capabilities in Business Central.';
                 Enabled = not IsDemoDataPopulated;
                 Image = Apply;
 
