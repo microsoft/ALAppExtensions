@@ -44,7 +44,6 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
         if Evaluate(NoOfLinesToCreate, BCPTTestContext.GetParameter(NoOfLinesParamLbl)) then;
     end;
 
-    //[HandlerFunctions('ConfirmHandler,MessageHandler')]
     procedure CreateAndPostPurchaseInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -124,18 +123,6 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
         Item.Next(SessionId() MOD Item.Count());
         exit(Item."No.");
     end;
-
-    // [ConfirmHandler]
-    // [Scope('OnPrem')]
-    // procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
-    // begin
-    //     Reply := true;
-    // end;
-
-    // [MessageHandler]
-    // procedure MessageHandler(Message: Text[1024])
-    // begin
-    // end;
 
     procedure GetDefaultParameters(): Text[1000]
     begin
