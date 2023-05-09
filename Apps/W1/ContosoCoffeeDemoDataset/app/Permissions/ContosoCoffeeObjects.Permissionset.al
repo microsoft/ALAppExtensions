@@ -121,6 +121,8 @@ permissionset 4761 "Contoso Coffee - Objects"
         Table "Skill Code" = X,
         Table "Source Code Setup" = X,
         Table "Stop" = X,
+        Table "Svc Demo Data Setup" = X,
+        Table "Svc Demo Account" = X,
         Table "Tax Area" = X,
         Table "Unit of Measure" = X,
         Table "VAT Business Posting Group" = X,
