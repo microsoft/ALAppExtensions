@@ -14,21 +14,26 @@ Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
 Import-Module $PSScriptRoot\AutomatedSubmission.psm1
 
 $packageConfig = Get-Content -Path (Join-Path (Get-BaseFolder) "Build\Packages.json") -Raw | ConvertFrom-Json
-$packages = ($packageConfig | Get-Member -MemberType NoteProperty).Name
+$packageNames = ($packageConfig | Get-Member -MemberType NoteProperty).Name
 
 $updatesAvailable = $false
 
-foreach($package in $packages)
+foreach($packageName in $packageNames)
 {
-    $currentVersion = $(Get-ConfigValue -Key $package -ConfigType Packages).Version
-    $latestVersion = Get-PackageLatestVersion -PackageName $package
+    $currentPackage = Get-ConfigValue -Key $packageName -ConfigType Packages
+    $currentVersion = $currentPackage.Version
+    $latestVersion = Get-PackageLatestVersion -PackageName $packageName
 
     if ([System.Version] $latestVersion -gt [System.Version] $currentVersion) {
-        Write-Host "Updating $package version from $currentVersion to $latestVersion"
-        Set-ConfigValue -Key $package -Value $latestVersion -ConfigType Packages
+        Write-Host "Updating $packageName version from $currentVersion to $latestVersion"
+
+        $currentPackage.Version = $latestVersion
+
+        Set-ConfigValue -Key $packageName -Value $currentPackage -ConfigType Packages
+
         $updatesAvailable = $true
     } else {
-        Write-Host "$package is already up to date"
+        Write-Host "$packageName is already up to date. Version: $currentVersion"
     }
 }
 
