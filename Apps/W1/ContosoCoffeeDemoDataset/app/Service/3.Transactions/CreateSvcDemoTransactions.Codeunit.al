@@ -137,6 +137,7 @@ codeunit 5107 "Create Svc Demo Transactions"
         SalesHeader."Document Type" := SalesHeader."Document Type"::Order;
         SalesHeader.Insert(DoRunTriggers);
         SalesHeader.Validate("Sell-to Customer No.", CustomerNo);
+        SalesHeader.Validate("Posting Date", AdjustSvcDemoData.AdjustDate(19020601D));
         OnBeforeSalesHeaderFinalize(SalesHeader);
         SalesHeader."External Document No." := ExternalDocumentNo;
         SalesHeader.Modify(DoRunTriggers);
