@@ -17,20 +17,20 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
         BCPTTestContext: Codeunit "BCPT Test Context";
         IsInitialized: Boolean;
         NoOfLinesParamLbl: Label 'Lines';
-        ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"';
+        ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"', comment = '%1 = Parameter name';
         NoOfLinesToCreate: Integer;
 
     local procedure InitTest();
     var
-        PurchaseSetup: Record "Purchases & Payables Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         NoSeriesLine: Record "No. Series Line";
     begin
-        PurchaseSetup.Get();
-        PurchaseSetup.TestField("Invoice Nos.");
-        PurchaseSetup."Ext. Doc. No. Mandatory" := false;
-        PurchaseSetup.Modify();
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.TestField("Invoice Nos.");
+        PurchasesPayablesSetup."Ext. Doc. No. Mandatory" := false;
+        PurchasesPayablesSetup.Modify();
 
-        NoSeriesLine.SetRange("Series Code", PurchaseSetup."Invoice Nos.");
+        NoSeriesLine.SetRange("Series Code", PurchasesPayablesSetup."Invoice Nos.");
         NoSeriesLine.findset(true, true);
         repeat
             if NoSeriesLine."Ending No." <> '' then begin
@@ -47,9 +47,8 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
     //[HandlerFunctions('ConfirmHandler,MessageHandler')]
     procedure CreateAndPostPurchaseInvoice()
     var
-        PurchaseInvoice: Record "Purchase Header";
+        PurchaseHeader: Record "Purchase Header";
         VendorNo: Code[20];
-        BCPTTestContext: Codeunit "BCPT Test Context";
     begin
         if NoOfLinesToCreate < 0 then
             NoOfLinesToCreate := 0;
@@ -60,11 +59,11 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
         VendorNo := SelectRandomVendor();
 
         BCPTTestContext.StartScenario('Create Purchase Invoice');
-        CreatePurchaseInvoiceForVendorNo(PurchaseInvoice, VendorNo);
+        CreatePurchaseInvoiceForVendorNo(PurchaseHeader, VendorNo);
         BCPTTestContext.EndScenario('Create Purchase Invoice');
 
         BCPTTestContext.StartScenario('Post Purchase Invoice');
-        CODEUNIT.Run(CODEUNIT::"Purch.-Post (Yes/No)", PurchaseInvoice);
+        CODEUNIT.Run(CODEUNIT::"Purch.-Post (Yes/No)", PurchaseHeader);
         BCPTTestContext.EndScenario('Post Purchase Invoice');
     end;
 
@@ -73,7 +72,7 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
         Vendor: Record Vendor;
     begin
         Vendor.SetRange(Blocked, Vendor.Blocked::" ");
-        Vendor.Next(SessionId MOD Vendor.Count());
+        Vendor.Next(SessionId() MOD Vendor.Count());
         exit(Vendor."No.");
     end;
 
@@ -102,10 +101,8 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
     end;
 
     local procedure CreatePurchaseLine(var PurchaseLine: Record "Purchase Line"; PurchaseHeader: Record "Purchase Header"; LineNo: Integer)
-    var
-        BCPTTestContext: Codeunit "BCPT Test Context";
     begin
-        PurchaseLine.Init;
+        PurchaseLine.Init();
         PurchaseLine.Validate("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.Validate("Document No.", PurchaseHeader."No.");
         PurchaseLine.Validate("Line No.", LineNo);
@@ -113,7 +110,7 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
         Commit();
 
         PurchaseLine.Validate(Type, PurchaseLine.Type::Item);
-        PurchaseLine.Validate("No.", SelectRandomItem);
+        PurchaseLine.Validate("No.", SelectRandomItem());
         PurchaseLine.Validate(Quantity, 1);
         PurchaseLine.Modify(true);
         Commit();
@@ -124,7 +121,7 @@ codeunit 149122 "BCPT Post Purch. Inv." implements "BCPT Test Param. Provider"
         Item: Record Item;
     begin
         Item.SetRange(Blocked, false);
-        Item.Next(SessionId MOD Item.Count());
+        Item.Next(SessionId() MOD Item.Count());
         exit(Item."No.");
     end;
 

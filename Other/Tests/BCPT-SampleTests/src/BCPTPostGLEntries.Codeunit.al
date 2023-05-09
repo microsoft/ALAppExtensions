@@ -128,7 +128,7 @@ codeunit 149121 "BCPT Post G/L Entries"
         GLAccount.SetRange("Account Type", GLAccount."Account Type"::Posting);
         GLAccount.SetRange("Direct Posting", true);
         GLAccount.SetFilter("Gen. Bus. Posting Group", '<>%1', '');
-        GLAccount.Next(SessionId MOD GLAccount.Count());
+        GLAccount.Next(SessionId() MOD GLAccount.Count());
         exit(GLAccount."No.");
     end;
 }
