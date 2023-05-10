@@ -6,6 +6,8 @@
 codeunit 1443 "Satisfaction Survey Viewer"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Add-in" = ri;
 
     var

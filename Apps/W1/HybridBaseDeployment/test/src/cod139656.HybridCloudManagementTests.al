@@ -12,6 +12,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
 
     local procedure Initialize()
     var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridDeploymentSetup: Record "Hybrid Deployment Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
@@ -26,6 +27,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
 
         HybridReplicationDetail.DeleteAll();
         HybridReplicationSummary.DeleteAll();
+        IntelligentCloudSetup.DeleteAll();
         Initialized := true;
     end;
 
@@ -122,6 +124,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         ProductName: Text;
         Errors: Text;
         Status: Text;
+        DetailsText: Text;
     begin
         Initialize();
         Status := Format(HybridReplicationSummary.Status::Failed);
@@ -143,7 +146,8 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.AreEqual(HybridReplicationSummary.Status::Failed, HybridReplicationSummary.Status, 'Incorrect value parsed for "Status".');
         Assert.AreEqual(HybridReplicationSummary.ReplicationType::Diagnostic, HybridReplicationSummary.ReplicationType, 'Incorrect value parsed for "Replication Type".');
         Assert.AreEqual(ProductName, HybridReplicationSummary.Source, 'Incorrect value parsed for "Source".');
-        Assert.AreEqual('Failure 1\Failure 2', HybridReplicationSummary.GetDetails(), 'Incorrect value parsed for "Details".');
+        DetailsText := HybridReplicationSummary.GetDetails();
+        Assert.IsTrue(DetailsText.Contains('Failure 1\Failure 2'), 'Incorrect value parsed for "Details".');
     end;
 
     [Test]
@@ -351,6 +355,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
     procedure TestUpdateReplicationStatusUpdatesStatusForInProgressRecordsWhenSucceeded()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         RunId: Text;
         Status: Text;
@@ -359,6 +364,8 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         // [SCENARIO 291819] User can refresh the status of replication runs
         Initialize();
         RunId := CreateGuid();
+
+        IntelligentCloudSetup.Insert();
 
         // [GIVEN] An in-progress record exists in the system
         HybridReplicationSummary.CreateInProgressRecord(RunId, HybridReplicationSummary.ReplicationType::Normal);
@@ -374,12 +381,12 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         // [THEN] The summary record gets updated with the new status
         HybridReplicationSummary.Get(RunId);
         Assert.AreEqual(HybridReplicationSummary.Status::Completed, HybridReplicationSummary.Status, 'Status not updated.');
-        Assert.AreEqual('', HybridReplicationSummary.GetDetails(), 'Details should be empty.');
     end;
 
     [Test]
     procedure TestUpdateReplicationStatusUpdatesStatusForInProgressRecordsWhenFailed()
     var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         RunId: Text;
@@ -389,6 +396,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         // [SCENARIO 291819] User can refresh the status of replication runs
         Initialize();
         RunId := CreateGuid();
+        IntelligentCloudSetup.Insert();
 
         // [GIVEN] An in-progress record exists in the system
         HybridReplicationSummary.CreateInProgressRecord(RunId, HybridReplicationSummary.ReplicationType::Normal);

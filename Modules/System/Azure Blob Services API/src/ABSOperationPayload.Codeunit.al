@@ -6,6 +6,8 @@
 codeunit 9042 "ABS Operation Payload"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

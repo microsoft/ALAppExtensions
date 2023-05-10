@@ -9,6 +9,8 @@
 codeunit 600 "Data Archive"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DataArchiveImplementation: Codeunit "Data Archive Implementation";

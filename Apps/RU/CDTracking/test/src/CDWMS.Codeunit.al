@@ -615,6 +615,10 @@ codeunit 147108 "CD WMS"
     begin
         LibraryCDTracking.CreateWMSLocation(Location);
         LibraryItemTracking.CreateItemTrackingCode(ItemTrackingCode, UseLotSerial, UseLotSerial, not UseLotSerial);
+        ItemTrackingCode.Validate("SN Warehouse Tracking", false);
+        ItemTrackingCode.Validate("Lot Warehouse Tracking", false);
+        ItemTrackingCode.Validate("Package Warehouse Tracking", false);
+        ItemTrackingCode.Modify(true);
 
         LibraryCDTracking.CreateCDTracking(CDLocationSetup, ItemTrackingCode.Code, Location.Code);
         LibraryPurchase.CreateVendor(Vendor);

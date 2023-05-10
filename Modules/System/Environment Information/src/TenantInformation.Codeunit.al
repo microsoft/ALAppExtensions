@@ -10,6 +10,8 @@ codeunit 417 "Tenant Information"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TenantInformationImpl: Codeunit "Tenant Information Impl.";

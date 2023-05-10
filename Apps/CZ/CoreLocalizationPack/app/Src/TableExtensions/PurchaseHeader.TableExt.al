@@ -3,6 +3,35 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
 {
     fields
     {
+        modify("VAT Reporting Date")
+        {
+            trigger OnAfterValidate()
+            var
+                GeneralLedgerSetup: Record "General Ledger Setup";
+                VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+                NeedUpdateVATCurrencyFactor: Boolean;
+            begin
+#if not CLEAN22
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    exit;
+#endif
+                if not VATReportingDateMgt.IsVATDateEnabled() then
+                    TestField("VAT Reporting Date", "Posting Date");
+                CheckCurrencyExchangeRateCZL("VAT Reporting Date");
+                GeneralLedgerSetup.Get();
+                GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL(Rec."VAT Reporting Date", Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date", Rec."Original Doc. VAT Date CZL");
+                Rec.Validate("Original Doc. VAT Date CZL");
+
+                NeedUpdateVATCurrencyFactor := "Currency Code" <> '';
+                OnValidateVATDateOnBeforeCheckNeedUpdateVATCurrencyFactorCZL(Rec, IsConfirmedCZL, NeedUpdateVATCurrencyFactor, xRec);
+                if NeedUpdateVATCurrencyFactor then begin
+                    UpdateVATCurrencyFactorCZL();
+                    if ("VAT Currency Factor CZL" <> xRec."VAT Currency Factor CZL") and not GetCalledFromWhseDoc() then
+                        ConfirmVATCurrencyFactorUpdateCZL();
+                end;
+                OnValidateVATDateOnAfterCheckNeedUpdateVATCurrencyFactorCZL(Rec, xRec, NeedUpdateVATCurrencyFactor);
+            end;
+        }
         field(11717; "Specific Symbol CZL"; Code[10])
         {
             Caption = 'Specific Symbol';
@@ -177,20 +206,33 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         {
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
-
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Replaced by VAT Reporting Date.';
+#if not CLEAN22
             trigger OnValidate()
             var
-                GLSetup: Record "General Ledger Setup";
-                PurchaseSetup: Record "Purchases & Payables Setup";
+                GeneralLedgerSetup: Record "General Ledger Setup";
+                VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
                 NeedUpdateVATCurrencyFactor: Boolean;
             begin
-                GLSetup.Get();
-                if not GLSetup."Use VAT Date CZL" then
+#if not CLEAN22
+                if CurrFieldNo = FieldNo("VAT Date CZL") then
+                    ReplaceVATDateMgtCZL.TestIsNotEnabled();
+                if ReplaceVATDateMgtCZL.IsEnabled() then
+                    exit;
+#endif
+                if not VATReportingDateMgt.IsVATDateEnabled() then
                     TestField("VAT Date CZL", "Posting Date");
                 CheckCurrencyExchangeRateCZL("VAT Date CZL");
-                PurchaseSetup.Get();
-                if PurchaseSetup."Def. Orig. Doc. VAT Date CZL" = PurchaseSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date" then
-                    Validate("Original Doc. VAT Date CZL", "VAT Date CZL");
+                GeneralLedgerSetup.Get();
+                GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL(Rec."VAT Date CZL", Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date", Rec."Original Doc. VAT Date CZL");
+                Rec.Validate("Original Doc. VAT Date CZL");
 
                 NeedUpdateVATCurrencyFactor := "Currency Code" <> '';
                 OnValidateVATDateOnBeforeCheckNeedUpdateVATCurrencyFactorCZL(Rec, IsConfirmedCZL, NeedUpdateVATCurrencyFactor, xRec);
@@ -201,6 +243,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
                 end;
                 OnValidateVATDateOnAfterCheckNeedUpdateVATCurrencyFactorCZL(Rec, xRec, NeedUpdateVATCurrencyFactor);
             end;
+#endif
         }
         field(11781; "Registration No. CZL"; Text[20])
         {
@@ -262,6 +305,9 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     var
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         ConfirmManagement: Codeunit "Confirm Management";
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#endif
         GlobalDocumentType: Enum "Purchase Document Type";
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;
@@ -305,9 +351,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     begin
         if "Currency Code" = '' then
             exit;
-        CurrencyExchangeRate.SetRange("Currency Code", "Currency Code");
-        CurrencyExchangeRate.SetRange("Starting Date", 0D, CurrencyDate);
-        if CurrencyExchangeRate.IsEmpty() then
+        if not CurrencyExchangeRate.CurrencyExchangeRateExist("Currency Code", CurrencyDate) then
             Error(CurrExchRateNotExistsErr)
     end;
 
@@ -317,10 +361,18 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             "VAT Currency Factor CZL" := 0;
             exit;
         end;
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not IsReplaceVATDateEnabled() then begin
+            "VAT Reporting Date" := "VAT Date CZL";
+            xRec."VAT Reporting Date" := xRec."VAT Date CZL";
+        end;
+#pragma warning restore AL0432
+#endif
 
         if ("Currency Factor" <> xRec."Currency Factor") and
            ("Currency Factor" <> "VAT Currency Factor CZL") and
-           (("VAT Date CZL" = xRec."VAT Date CZL") or (xRec."VAT Date CZL" = 0D))
+           (("VAT Reporting Date" = xRec."VAT Reporting Date") or (xRec."VAT Reporting Date" = 0D))
         then begin
             "VAT Currency Factor CZL" := "Currency Factor";
             if (xRec."Currency Factor" = xRec."VAT Currency Factor CZL") or
@@ -341,10 +393,16 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         OnBeforeUpdateVATCurrencyFactorCZL(Rec, IsUpdated, CurrencyExchangeRate);
         if IsUpdated then
             exit;
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not IsReplaceVATDateEnabled() then
+            "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
 
         if "Currency Code" <> '' then begin
-            if "VAT Date CZL" <> 0D then
-                CurrencyDate := "VAT Date CZL"
+            if "VAT Reporting Date" <> 0D then
+                CurrencyDate := "VAT Reporting Date"
             else
                 CurrencyDate := WorkDate();
 
@@ -356,10 +414,16 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     end;
 
     procedure ConfirmVATCurrencyFactorUpdateCZL(): Boolean
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        ReplacePostingDate: Boolean;
+        ReplaceVATDate: Boolean;
     begin
         OnBeforeConfirmUpdateVATCurrencyFactorCZL(Rec, HideValidationDialog);
 
-        if GetHideValidationDialog() or not GuiAllowed then
+        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, "Batch Posting Parameter Type"::"Replace Posting Date", ReplacePostingDate);
+        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate);
+        if GetHideValidationDialog() or not GuiAllowed or ReplacePostingDate or ReplaceVATDate then
             IsConfirmedCZL := true
         else
             IsConfirmedCZL := ConfirmManagement.GetResponseOrDefault(UpdateExchRateQst, true);
@@ -458,6 +522,13 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             exit(BankAccountNo);
         exit(BankAccount.GetDefaultBankAccountNoCZL("Responsibility Center", "Currency Code"));
     end;
+#if not CLEAN22
+
+    internal procedure IsReplaceVATDateEnabled(): Boolean
+    begin
+        exit(ReplaceVATDateMgtCZL.IsEnabled());
+    end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsUnreliablePayerCheckPossibleCZL(var PurchaseHeader: Record "Purchase Header"; var CheckPossible: Boolean)

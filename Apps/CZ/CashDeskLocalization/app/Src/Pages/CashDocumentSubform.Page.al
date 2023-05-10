@@ -425,10 +425,12 @@ page 31161 "Cash Document Subform CZP"
     var
         TotalCashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentTotalsCZP: Codeunit "Cash Document Totals CZP";
-        ShortcutDimCode: array[8] of Code[20];
         AccountTypeIsFilled: Boolean;
         VATAmount: Decimal;
         RelatedAmountToApply: Decimal;
+
+    protected var
+        ShortcutDimCode: array[8] of Code[20];
         DimVisible1: Boolean;
         DimVisible2: Boolean;
         DimVisible3: Boolean;
@@ -468,21 +470,4 @@ page 31161 "Cash Document Subform CZP"
         DimensionManagement.UseShortcutDims(DimVisible1, DimVisible2, DimVisible3, DimVisible4, DimVisible5, DimVisible6, DimVisible7, DimVisible8);
         Clear(DimensionManagement);
     end;
-
-#if not CLEAN19
-    internal procedure LinkAdvLetters()
-    begin
-        Rec.LinkToAdvLetter();
-    end;
-
-    internal procedure LinkWholeAdvLetter()
-    begin
-        Rec.LinkWholeLetter();
-    end;
-
-    internal procedure UnLinkLinkedAdvLetters()
-    begin
-        Rec.UnLinkWholeLetter();
-    end;
-#endif
 }

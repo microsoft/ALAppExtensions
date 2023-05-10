@@ -42,7 +42,7 @@ page 9855 "Permission Set"
                     ApplicationArea = All;
                     Editable = false;
                     Caption = 'Name';
-                    ToolTip = 'Specifies the name of the record.';
+                    ToolTip = 'Specifies the name of the permission set.';
                 }
             }
 
@@ -195,7 +195,6 @@ page 9855 "Permission Set"
             AggregatePermissionSet.FindFirst();
             Rec."App ID" := AggregatePermissionSet."App ID";
             Rec."Role ID" := AggregatePermissionSet."Role ID";
-            Rec.Name := AggregatePermissionSet.Name;
             Rec.Scope := AggregatePermissionSet.Scope;
         end;
 

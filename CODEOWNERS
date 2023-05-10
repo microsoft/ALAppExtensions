@@ -1,10 +1,7 @@
-# Lines starting with '#' are comments.
-# Each line is a file pattern followed by one or more owners.
-
-# These owners will be the default owners for everything in the repo.
-*       @microsoft/dynamics-smb
-
-# AL-Go files are owned by Engineering Systems
-/Modules/.AL-Go @microsoft/dynamics-smb-engineering-systems
+# AL-Go files and build scripts are owned by Engineering Systems
+.AL-Go/ @microsoft/dynamics-smb-engineering-systems
+*.ps1 @microsoft/dynamics-smb-engineering-systems
+/.azuredevops @microsoft/dynamics-smb-engineering-systems
 /.github @microsoft/dynamics-smb-engineering-systems
+/Build @microsoft/dynamics-smb-engineering-systems
 /CODEOWNERS @microsoft/dynamics-smb-engineering-systems

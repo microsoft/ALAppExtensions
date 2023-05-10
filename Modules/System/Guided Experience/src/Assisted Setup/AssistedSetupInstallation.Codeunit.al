@@ -8,6 +8,8 @@ codeunit 1809 "Assisted Setup Installation"
 #pragma warning restore AA0235
 {
     Subtype = Install;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnInstallAppPerCompany()
     var

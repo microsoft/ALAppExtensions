@@ -31,12 +31,18 @@ codeunit 5013 "Get Service Declaration Lines"
         Vendor: Record Vendor;
         CurrencyCode: Code[10];
         CurrencyFactor: Decimal;
+        IsHandled: Boolean;
     begin
         ServiceDeclarationLine.SetRange("Service Declaration No.", ServiceDeclarationHeader."No.");
         ServiceDeclarationLine.DeleteAll(true);
 
         ServiceDeclarationLine.Init();
         ServiceDeclarationLine."Service Declaration No." := ServiceDeclarationHeader."No.";
+
+        IsHandled := false;
+        OnBeforeAddLines(ServiceDeclarationHeader, IsHandled);
+        if IsHandled then
+            exit;
 
         ValueEntry.SetCurrentKey("Item Ledger Entry Type", "Posting Date", "Applicable For Serv. Decl.");
         ValueEntry.SetFilter(
@@ -176,9 +182,9 @@ codeunit 5013 "Get Service Declaration Lines"
             ValueEntry."Item Ledger Entry Type"::Purchase:
                 begin
                     case ValueEntry."Document Type" of
-                        ValueEntry."Document Type"::"Sales Invoice":
+                        ValueEntry."Document Type"::"Purchase Invoice":
                             VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
-                        ValueEntry."Document Type"::"Sales Credit Memo":
+                        ValueEntry."Document Type"::"Purchase Credit Memo":
                             VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::"Credit Memo");
                     end;
                     VendorLedgerEntry.SetRange("Document No.", ValueEntry."Document No.");
@@ -339,5 +345,11 @@ codeunit 5013 "Get Service Declaration Lines"
                 end;
         end;
     end;
-}
 
+
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeAddLines(ServiceDeclarationHeader: Record "Service Declaration Header"; var IsHandled: Boolean);
+    begin
+    end;
+}

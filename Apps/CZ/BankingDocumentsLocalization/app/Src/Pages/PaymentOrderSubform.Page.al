@@ -255,38 +255,6 @@ page 31263 "Payment Order Subform CZB"
                     BlankZero = true;
                     ToolTip = 'Specifies if the amount must be checked.';
                 }
-#if not CLEAN19
-#pragma warning disable AL0432
-                field("Letter Type"; Rec."Letter Type")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies if the letter type is a sales (Sales) or a purchase (Purchase).';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-                    ObsoleteTag = '19.0';
-                }
-                field("Letter No."; Rec."Letter No.")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the number of letter.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-                    ObsoleteTag = '19.0';
-                }
-                field("Letter Line No."; Rec."Letter Line No.")
-                {
-                    ApplicationArea = Basic, Suite;
-                    BlankZero = true;
-                    ToolTip = 'Specifies letter line number.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-                    ObsoleteTag = '19.0';
-                }
-#pragma warning restore AL0432
-#endif
                 field("VAT Unreliable Payer"; Rec."VAT Unreliable Payer")
                 {
                     ApplicationArea = Basic, Suite;

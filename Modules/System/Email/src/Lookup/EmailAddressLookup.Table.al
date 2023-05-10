@@ -11,6 +11,8 @@ table 8944 "Email Address Lookup"
 {
     Access = Public;
     TableType = Temporary;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {

@@ -9,6 +9,8 @@
 codeunit 1460 SignedXml
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         SignedXmlImpl: Codeunit "SignedXml Impl.";
@@ -182,6 +184,14 @@ codeunit 1460 SignedXml
     procedure AddXmlDsigEnvelopedSignatureTransform()
     begin
         SignedXmlImpl.AddXmlDsigEnvelopedSignatureTransform();
+    end;
+
+    /// <summary>
+    /// Adds a Reference object to the Signed XML and clears Reference object.
+    /// </summary>
+    procedure AddReferenceToSignedXML()
+    begin
+        SignedXmlImpl.AddReferenceToSignedXML();
     end;
 
     /// <summary>

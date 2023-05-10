@@ -1102,6 +1102,9 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
 
                     trigger OnPreXmlItem()
                     begin
+                        if not DeclarationIsSupplementary() then
+                            currXMLport.Break();
+                        commentline.SetRange(Date, StartDate, EndDate);
                         ElementCounter := 0;
                     end;
                 }
@@ -1145,6 +1148,9 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
 
                         trigger OnPreXmlItem()
                         begin
+                            if not DeclarationIsSupplementary() then
+                                currXMLport.Break();
+                            attachment.SetRange(Date, StartDate, EndDate);
                             ElementCounter := 0;
                         end;
                     }
@@ -1210,7 +1216,6 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
         SWNameTxt: Label 'Microsoft Dynamics 365 Business Central', Locked = true;
         MonthOrQuarterErr: Label 'Month or Quarter must be filled in.';
         ReasonObserverReqErr: Label 'You must specify Reasons Observed On date in Supplementary or Supplementary/Corrective VAT Statement.';
-        FileFormatErr: Label '%1 file format requires %2 to be added to Supplementary or Supplementary/Corrective VAT Statement.', Comment = '%1 = XXL format, %2 = fieldcaption';
         ValueTooLongErr: Label '%1 length must not be greater than %2.', Comment = '%1 = fieldcaption; %2 = length';
         XMLVersionTok: Label '01.02', Locked = true;
 
@@ -1251,7 +1256,6 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
 
         VATStatementTemplate.Get(VATStatementTemplateName);
         VATStatementName.Get(VATStatementTemplateName, VATStatementNameCode);
-        VATStatementName.CalcFields("Comments CZL", "Attachments CZL");
 
         if EndDate = 0D then
             EndDate := DMY2Date(31, 12, 9999);
@@ -1335,17 +1339,9 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
         if (Month = 0) and (Quarter = 0) then
             Error(MonthOrQuarterErr);
 
-        if DeclarationIsSupplementary() then begin
+        if DeclarationIsSupplementary() then
             if ReasonsObservedOnDate = 0D then
                 Error(ReasonObserverReqErr);
-
-            if VATStatementTemplate."Allow Comments/Attachments CZL" then begin
-                if VATStatementName."Comments CZL" = 0 then
-                    Error(FileFormatErr, VATStatementTemplate."XML Format CZL", VATStatementName.FieldCaption("Comments CZL"));
-                if VATStatementName."Attachments CZL" = 0 then
-                    Error(FileFormatErr, VATStatementTemplate."XML Format CZL", VATStatementName.FieldCaption("Attachments CZL"));
-            end;
-        end;
     end;
 
     local procedure DeclarationIsSupplementary(): Boolean

@@ -6,6 +6,8 @@
 codeunit 9217 "IDA 2D Data Matrix Encoder" implements "Barcode Font Encoder 2D"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure EncodeFont(InputText: Text): Text
     var

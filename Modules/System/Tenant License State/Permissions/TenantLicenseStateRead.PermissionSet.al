@@ -7,8 +7,7 @@ permissionset 2300 "Tenant License State - Read"
 {
     Assignable = false;
 
-    IncludedPermissionSets = "Tenant License State - Objects",
-                             "Telemetry - Exec";
+    IncludedPermissionSets = "Telemetry - Exec";
 
     Permissions = tabledata "Tenant License State" = r;
 }

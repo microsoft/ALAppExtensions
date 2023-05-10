@@ -8,7 +8,7 @@
 /// </summary>
 enum 9045 "ABS Blob Expiry Option"
 {
-    Access = Internal;
+    Access = Public;
     Extensible = false;
 
     value(0; RelativeToCreation)

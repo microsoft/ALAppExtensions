@@ -69,7 +69,7 @@ page 1990 "Checklist Banner"
                 begin
                     if MarkChecklistAsCompleted then begin
                         SetChecklistStatusAndLabels(false, false, true);
-                        ChecklistBanner.UpdateUserChecklistStatus(UserId(), UserChecklistStatus::Completed);
+                        ChecklistBannerImpl.UpdateUserChecklistStatus(UserId(), UserChecklistStatus::Completed);
                     end;
                 end;
             }
@@ -100,7 +100,7 @@ page 1990 "Checklist Banner"
                     ApplicationArea = All;
                     ToolTip = 'Status';
                 }
-                field(TaskStatusText; ChecklistBanner.GetStatusText(Rec))
+                field(TaskStatusText; ChecklistBannerImpl.GetStatusText(Rec))
                 {
                     ApplicationArea = All;
                     Visible = Status <> Status::Started;
@@ -123,7 +123,7 @@ page 1990 "Checklist Banner"
                     trigger OnValidate()
                     begin
                         if MarkChecklistItemAsCompleted then
-                            ChecklistBanner.UpdateChecklistItemUserStatus(Rec, UserId(), Rec.Status::Completed);
+                            ChecklistBannerImpl.UpdateChecklistItemUserStatus(Rec, UserId(), Rec.Status::Completed);
 
                         ChecklistCompletionCount += 1;
 
@@ -193,7 +193,7 @@ page 1990 "Checklist Banner"
                 trigger OnAction()
                 begin
                     if Confirm(SkipSetupConfirmLbl) then begin
-                        ChecklistBanner.UpdateUserChecklistStatus(UserId(), ChecklistStatus::Skipped);
+                        ChecklistBannerImpl.UpdateUserChecklistStatus(UserId(), ChecklistStatus::Skipped);
                         ChecklistImplementation.SetChecklistVisibility(UserId(), false);
 
                         CurrPage.Close();
@@ -287,7 +287,7 @@ page 1990 "Checklist Banner"
 
                 trigger OnAction()
                 begin
-                    ChecklistBanner.UpdateChecklistItemUserStatus(Rec, UserId(), Rec.Status::Skipped);
+                    ChecklistBannerImpl.UpdateChecklistItemUserStatus(Rec, UserId(), Rec.Status::Skipped);
 
                     ChecklistSkipCount += 1;
 
@@ -301,7 +301,7 @@ page 1990 "Checklist Banner"
 
     var
         ChecklistItemBuffer: Record "Checklist Item Buffer";
-        ChecklistBanner: Codeunit "Checklist Banner";
+        ChecklistBannerImpl: Codeunit "Checklist Banner Impl.";
         ChecklistImplementation: Codeunit "Checklist Implementation";
         ChecklistStatus: Enum "Checklist Status";
         [RunOnClient]
@@ -314,6 +314,7 @@ page 1990 "Checklist Banner"
         IsChecklistItemStarted: Boolean;
         MarkChecklistItemAsCompleted: Boolean;
         MarkChecklistAsCompleted: Boolean;
+        SkipWelcomePage: Boolean;
         TitleTxt: Text;
         TitleCollapsedTxt: Text;
         HeaderTxt: Text;
@@ -325,15 +326,23 @@ page 1990 "Checklist Banner"
         ChecklistTotalCount: Integer;
 
     trigger OnOpenPage()
+    var
+        ChecklistBanner: Codeunit "Checklist Banner";
     begin
         SetIsEvaluationCompany();
 
+        SkipWelcomePage := false;
+        ChecklistBanner.OnOpenChecklistBannerPage(SkipWelcomePage, IsEvaluationCompany);
+
         InitializeTour();
 
-        ChecklistBanner.OnChecklistBannerOpen(Rec, IsChecklistInProgress, IsChecklistDisplayed);
+        ChecklistBannerImpl.OnChecklistBannerOpen(Rec, IsChecklistInProgress, IsChecklistDisplayed);
 
         SetCounts();
         AreAllItemsCompletedOrSkipped := AreAllChecklistItemsCompletedOrSkipped();
+
+        if SkipWelcomePage and (not IsChecklistInProgress) and (not AreAllItemsCompletedOrSkipped) then
+            OnChecklistStart();
 
         if Rec.Count > 0 then
             UpdateLabelTexts();
@@ -361,7 +370,7 @@ page 1990 "Checklist Banner"
 
     trigger OnClosePage()
     begin
-        if ChecklistBanner.IsUserChecklistStatusComplete(UserId) then
+        if ChecklistBannerImpl.IsUserChecklistStatusComplete(UserId) then
             ChecklistImplementation.SetChecklistVisibility(UserId(), false);
     end;
 
@@ -399,7 +408,7 @@ page 1990 "Checklist Banner"
 
     local procedure OnChecklistStart()
     begin
-        ChecklistBanner.UpdateUserChecklistStatus(UserId(), ChecklistStatus::"In progress");
+        ChecklistBannerImpl.UpdateUserChecklistStatus(UserId(), ChecklistStatus::"In progress");
 
         SetChecklistStatusAndLabels(true, true, AreAllChecklistItemsCompletedOrSkipped());
 
@@ -433,8 +442,15 @@ page 1990 "Checklist Banner"
     end;
 
     local procedure UpdateLabelTexts()
+    var
+        ChecklistBanner: Codeunit "Checklist Banner";
+        IsHandled: Boolean;
     begin
-        ChecklistBanner.UpdateBannerLabels(IsEvaluationCompany, Rec, TitleTxt, TitleCollapsedTxt, HeaderTxt, HeaderCollapsedTxt, DescriptionTxt, IsChecklistInProgress, AreAllItemsCompletedOrSkipped);
+        IsHandled := false;
+        ChecklistBanner.OnBeforeUpdateBannerLabels(IsHandled, IsEvaluationCompany, TitleTxt, TitleCollapsedTxt, HeaderTxt, HeaderCollapsedTxt, DescriptionTxt, IsChecklistInProgress, AreAllItemsCompletedOrSkipped);
+
+        if not IsHandled then
+            ChecklistBannerImpl.UpdateBannerLabels(IsEvaluationCompany, Rec, TitleTxt, TitleCollapsedTxt, HeaderTxt, HeaderCollapsedTxt, DescriptionTxt, IsChecklistInProgress, AreAllItemsCompletedOrSkipped);
     end;
 
     local procedure CheckForChecklistCompletion()
@@ -442,7 +458,7 @@ page 1990 "Checklist Banner"
         AreAllItemsCompletedOrSkipped := AreAllChecklistItemsCompletedOrSkipped();
 
         if AreAllItemsCompletedOrSkipped and not IsEvaluationCompany then begin
-            ChecklistBanner.UpdateUserChecklistStatus(UserId(), ChecklistStatus::Completed);
+            ChecklistBannerImpl.UpdateUserChecklistStatus(UserId(), ChecklistStatus::Completed);
             IsChecklistDisplayed := false;
         end;
     end;
@@ -484,7 +500,7 @@ page 1990 "Checklist Banner"
             if ChecklistItemBuffer.Code = Rec.Code then
                 IsLastChecklistItem := true;
 
-        if ChecklistBanner.ExecuteChecklistItem(Rec, Tour, IsLastChecklistItem) then
+        if ChecklistBannerImpl.ExecuteChecklistItem(Rec, Tour, IsLastChecklistItem) then
             ChecklistCompletionCount += 1;
 
         CheckForChecklistCompletion();
@@ -504,7 +520,7 @@ page 1990 "Checklist Banner"
             if Rec.FindFirst() then;
         end;
 
-        ChecklistBanner.UpdateChecklistItemUserStatus(Rec, UserId(), Rec.Status::Completed);
+        ChecklistBannerImpl.UpdateChecklistItemUserStatus(Rec, UserId(), Rec.Status::Completed);
 
         ChecklistCompletionCount += 1;
 

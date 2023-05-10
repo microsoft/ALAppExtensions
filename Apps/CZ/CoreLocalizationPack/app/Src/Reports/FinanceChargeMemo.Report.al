@@ -483,7 +483,7 @@ report 31183 "Finance Charge Memo CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(19) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(19) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

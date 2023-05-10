@@ -10,6 +10,8 @@
 codeunit 8933 "View If All Related Records" implements "Email View Policy"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email Related Record" = r,
                   tabledata "Sent Email" = r,
                   tabledata "Email Outbox" = r;

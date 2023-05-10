@@ -1,14 +1,21 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@main",
+  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "buildModes": [
-    "Default",
-    "Clean",
-    "Translated"
+  "artifact": "bcinsider//22.1/base/latest/{INSIDERSASTOKEN}",
+  "country": "base",
+  "useProjectDependencies": true,
+  "repoVersion": "22.1",
+  "cleanModePreprocessorSymbols": [
+    "CLEAN17",
+    "CLEAN18",
+    "CLEAN19",
+    "CLEAN20",
+    "CLEAN21",
+    "CLEAN22"
   ],
   "unusedALGoSystemFiles": [
     "AddExistingAppOrTestApp.yaml",
@@ -21,5 +28,14 @@
     "NextMajor.yaml",
     "NextMinor.yaml",
     "PublishToEnvironment.yaml"
-  ]
+  ],
+  "buildModes": [
+    "Default",
+    "Clean"
+  ],
+  "enableCodeCop": true,
+  "CICDPushBranches": [
+    "main"
+  ],
+  "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json"
 }

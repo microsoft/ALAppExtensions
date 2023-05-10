@@ -34,9 +34,26 @@ codeunit 10506 "Loc. Manufacturing Demodata-GB"
             UnitofMeasure.Description := XLitreLbl;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Whse Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyWhseDemoAccounts()
+    begin
+        WhseDemoAccount.ReturnAccountKey(true);
+
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '40400');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '40700');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '50100');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '10200');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '40700');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesVAT(), '56130');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '46330');
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
+        WhseDemoAccount: Record "Whse. Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
+        WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
         XLLbl: Label 'L';
         XLitreLbl: Label 'Litre';
 }

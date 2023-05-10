@@ -35,7 +35,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ConnectionMethodWebClientTxt: Label 'WEB_APP_VIA_SERVER', Locked = true;
         ProdNameTxt: Label 'Microsoft Dynamics 365 Business Central', Locked = true;
         ProdNameOnPremSuffixTxt: Label ' OnPrem', Locked = true;
-        DefaultProdVersionTxt: Label '21.0.0.0', Locked = true;
+        DefaultProdVersionTxt: Label '22.0.0.0', Locked = true;
         IPAddressErr: Label 'Public IP address lookup failed. Specify a service that will return the public IP address of the current user.';
         IPAddressOkTxt: Label 'Public IP address lookup was successful.';
         LicenseTxt: Label 'Microsoft_Dynamics_365_Business_Central,AadTenantId=%1,TenantId=%2,Start=%3,End=%4', Locked = true;

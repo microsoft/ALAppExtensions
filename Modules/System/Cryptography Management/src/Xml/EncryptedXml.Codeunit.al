@@ -9,6 +9,8 @@
 codeunit 1465 EncryptedXml
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         EncryptedXmlImpl: Codeunit "EncryptedXml Impl.";

@@ -6,6 +6,8 @@
 codeunit 8897 "Email Error Handler"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     TableNo = "Email Outbox";
     Permissions = tabledata "Email Outbox" = rimd;
 

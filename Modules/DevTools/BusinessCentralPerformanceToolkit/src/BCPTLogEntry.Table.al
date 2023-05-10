@@ -85,11 +85,13 @@ table 149002 "BCPT Log Entry"
             DataClassification = CustomerContent;
             Caption = 'Error Call Stack';
         }
+#pragma warning disable AS0080
         field(17; "Test Company Name"; Text[30])
         {
             DataClassification = CustomerContent;
             Caption = 'Test Company Name';
         }
+#pragma warning restore AS0080
         field(18; RunID; Guid)
         {
             DataClassification = SystemMetadata;

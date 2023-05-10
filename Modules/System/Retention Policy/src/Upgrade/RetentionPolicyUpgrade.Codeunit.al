@@ -7,6 +7,8 @@ codeunit 3914 "Retention Policy Upgrade"
 {
     Subtype = Upgrade;
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnUpgradePerCompany()
     var

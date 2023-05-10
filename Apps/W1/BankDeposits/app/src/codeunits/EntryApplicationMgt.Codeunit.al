@@ -5,8 +5,7 @@ codeunit 1696 "Entry Application Mgt"
     begin
     end;
 
-    [Scope('OnPrem')]
-    procedure GetAppliedCustEntries(var AppliedCustLedgerEntry: Record "Cust. Ledger Entry" temporary; CustLedgerEntry: Record "Cust. Ledger Entry"; UseLCY: Boolean)
+    internal procedure GetAppliedCustEntries(var AppliedCustLedgerEntry: Record "Cust. Ledger Entry" temporary; CustLedgerEntry: Record "Cust. Ledger Entry"; UseLCY: Boolean)
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         PmtDetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
@@ -57,8 +56,7 @@ codeunit 1696 "Entry Application Mgt"
             until DetailedCustLedgEntry.Next() = 0;
     end;
 
-    [Scope('OnPrem')]
-    procedure GetAppliedVendEntries(var AppliedVendorLedgerEntry: Record "Vendor Ledger Entry" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry"; UseLCY: Boolean)
+    internal procedure GetAppliedVendEntries(var AppliedVendorLedgerEntry: Record "Vendor Ledger Entry" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry"; UseLCY: Boolean)
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         PmtDetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";

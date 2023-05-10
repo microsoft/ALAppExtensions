@@ -77,6 +77,7 @@ codeunit 1690 "Bank Deposit-Post"
                 NextLineNo := NextLineNo + 1;
                 ProgressDialog.Update(2, NextLineNo);
 
+                AssignVATDateIfEmpty(GenJournalLine);
                 InsertPostedBankDepositLine(Rec, GenJournalLine, NextLineNo);
 
                 if not "Post as Lump Sum" then
@@ -228,6 +229,7 @@ codeunit 1690 "Bank Deposit-Post"
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
         SourceCodeSetup: Record "Source Code Setup";
         Currency: Record Currency;
+        GLSetup: Record "General Ledger Setup";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         ProgressDialog: Dialog;
         TotalAmountsMustMatchErr: Label 'The %1 must match the %2.', Comment = '%1 - total amount, %2 - total amount on the lines';
@@ -321,6 +323,7 @@ codeunit 1690 "Bank Deposit-Post"
             "Account Type" := "Account Type"::"Bank Account";
             "Account No." := BankDepositHeader."Bank Account No.";
             "Posting Date" := BankDepositHeader."Posting Date";
+            "VAT Reporting Date" := GLSetup.GetVATDate(BankDepositHeader."Posting Date", BankDepositHeader."Document Date");
             "Document No." := BankDepositHeader."No.";
             "Currency Code" := BankDepositHeader."Currency Code";
             "Currency Factor" := BankDepositHeader."Currency Factor";
@@ -345,6 +348,18 @@ codeunit 1690 "Bank Deposit-Post"
             OnBeforePostBalancingEntry(GenJournalLine, BankDepositHeader, GenJnlPostLine);
             GenJnlPostLine.RunWithCheck(GenJournalLine);
             OnAfterPostBalancingEntry(GenJournalLine);
+        end;
+    end;
+
+    local procedure AssignVATDateIfEmpty(var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        if GenJnlLine."VAT Reporting Date" = 0D then begin
+            GLSetup.Get();
+            if (GenJnlLine."Document Date" = 0D) and (GLSetup."VAT Reporting Date" = GLSetup."VAT Reporting Date"::"Document Date") then
+                GenJnlLine."VAT Reporting Date" := GenJnlLine."Posting Date"
+            else
+                GenJnlLine."VAT Reporting Date" := GLSetup.GetVATDate(GenJnlLine."Posting Date", GenJnlLine."Document Date");
+            GenJnlLine.Modify();
         end;
     end;
 

@@ -6,6 +6,8 @@
 table 8903 "Email Recipient"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {

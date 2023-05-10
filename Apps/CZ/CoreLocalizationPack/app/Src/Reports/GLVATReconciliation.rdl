@@ -514,7 +514,7 @@
                                   <Value>=Fields!GLEntry_Posting_Date_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>d</Format>
+                                    <Format>dd.MM.yy</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -524,6 +524,9 @@
                             </Paragraph>
                           </Paragraphs>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -544,7 +547,7 @@
                                   <Value>=Fields!GLEntry_VAT_Date_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>d</Format>
+                                    <Format>dd.MM.yy</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -554,6 +557,9 @@
                             </Paragraph>
                           </Paragraphs>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>

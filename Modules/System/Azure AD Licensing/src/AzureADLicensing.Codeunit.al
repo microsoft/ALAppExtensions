@@ -11,6 +11,8 @@
 codeunit 458 "Azure AD Licensing"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

@@ -7,6 +7,8 @@ codeunit 26 "Confirm Management Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure GetResponseOrDefault(ConfirmQuestion: Text; DefaultButton: Boolean): Boolean
     begin

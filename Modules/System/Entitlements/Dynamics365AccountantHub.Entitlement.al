@@ -7,6 +7,7 @@ entitlement "Dynamics 365 - Accountant Hub"
     ObjectEntitlements = "Application Objects - Exec",
                          "System Application - Basic",
                          "Azure AD Plan - Admin",
+                         "Security Groups - Admin",
                          "Exten. Mgt. - Admin",
                          "Feature Key - Admin";
 #pragma warning restore

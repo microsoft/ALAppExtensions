@@ -6,6 +6,8 @@
 codeunit 1282 "Password Handler Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         InsufficientPassLengthErr: Label 'The password must contain at least %1 characters.', Comment = '%1 = the number of characters';
@@ -18,7 +20,7 @@ codeunit 1282 "Password Handler Impl."
 
     procedure GeneratePassword(Length: Integer): Text;
     var
-        SecurityMembership: DotNet "Security.Membership";
+        PasswordGenerator: DotNet "PasswordGenerator";
         Password: Text;
         MinNumOfNonAlphanumericChars: Integer;
     begin
@@ -27,7 +29,7 @@ codeunit 1282 "Password Handler Impl."
 
         MinNumOfNonAlphanumericChars := 1;
         repeat
-            Password := SecurityMembership.GeneratePassword(Length, MinNumOfNonAlphanumericChars);
+            Password := PasswordGenerator.GeneratePassword(Length, MinNumOfNonAlphanumericChars);
         until IsPasswordStrong(Password);
         exit(Password);
     end;

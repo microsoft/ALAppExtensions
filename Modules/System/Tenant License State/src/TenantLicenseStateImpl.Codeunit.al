@@ -6,6 +6,8 @@
 codeunit 2301 "Tenant License State Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Tenant License State" = r;
 
     var
@@ -135,7 +137,7 @@ codeunit 2301 "Tenant License State Impl."
         exit(PreviousTenantLicenseState);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Telemetry Custom Dimensions", 'OnAddCommonCustomDimensions', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Telemetry Custom Dimensions", OnAddCommonCustomDimensions, '', true, true)]
     local procedure OnAddCommonCustomDimensions(var Sender: Codeunit "Telemetry Custom Dimensions")
     begin
         Sender.AddCommonCustomDimension('TenantLicenseState', Format(GetLicenseState()));

@@ -1,4 +1,6 @@
+#pragma warning disable AL0432
 tableextension 31026 "Intrastat Jnl. Line CZL" extends "Intrastat Jnl. Line"
+#pragma warning restore AL0432
 {
     fields
     {
@@ -6,81 +8,187 @@ tableextension 31026 "Intrastat Jnl. Line CZL" extends "Intrastat Jnl. Line"
         {
             Caption = 'Additional Costs';
             Editable = false;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31081; "Source Entry Date CZL"; Date)
         {
             Caption = 'Source Entry Date';
             Editable = false;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31082; "Statistic Indication CZL"; Code[10])
         {
             Caption = 'Statistic Indication';
             TableRelation = "Statistic Indication CZL".Code where("Tariff No." = field("Tariff No."));
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31083; "Statistics Period CZL"; Code[10])
         {
             Caption = 'Statistics Period';
             Editable = false;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31085; "Declaration No. CZL"; Code[10])
         {
             Caption = 'Declaration No.';
             Editable = false;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31086; "Statement Type CZL"; Enum "Intrastat Statement Type CZL")
         {
             Caption = 'Statement Type';
             Editable = false;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31087; "Prev. Declaration No. CZL"; Code[10])
         {
             Caption = 'Prev. Declaration No.';
-
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
             trigger OnLookup()
             begin
                 LookUpPrevDeclaration(true);
             end;
+#endif
         }
         field(31088; "Prev. Declaration Line No. CZL"; Integer)
         {
             Caption = 'Prev. Declaration Line No.';
-
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
             trigger OnLookup()
             begin
                 LookUpPrevDeclaration(false);
             end;
+#endif
         }
         field(31090; "Specific Movement CZL"; Code[10])
         {
             Caption = 'Specific Movement';
             TableRelation = "Specific Movement CZL".Code;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31091; "Supplem. UoM Code CZL"; Code[10])
         {
             Caption = 'Supplem. UoM Code';
             Editable = false;
             TableRelation = "Item Unit of Measure".Code where("Item No." = field("Item No."));
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31092; "Supplem. UoM Quantity CZL"; Decimal)
         {
             Caption = 'Supplem. UoM Quantity';
             DecimalPlaces = 0 : 3;
             Editable = false;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31093; "Supplem. UoM Net Weight CZL"; Decimal)
         {
             Caption = 'Supplem. UoM Net Weight';
             DecimalPlaces = 2 : 5;
             Editable = false;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31094; "Base Unit of Measure CZL"; Code[10])
         {
             Caption = 'Base Unit of Measure';
             Editable = false;
             TableRelation = "Item Unit of Measure".Code where("Item No." = field("Item No."));
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
     }
-
+#if not CLEAN22
     local procedure LookUpPrevDeclaration(Header: Boolean)
     var
         IntrastatJnlLine: Record "Intrastat Jnl. Line";
@@ -150,4 +258,5 @@ tableextension 31026 "Intrastat Jnl. Line CZL" extends "Intrastat Jnl. Line"
     local procedure OnBeforeExportIntrastatJournalCZL(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; var IntrastatExportObjectType: Option ,,,Report,,Codeunit,XMLPort; var IntrastatExportObjectNo: Integer; var IsHandled: Boolean)
     begin
     end;
+#endif
 }

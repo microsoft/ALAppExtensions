@@ -442,54 +442,6 @@ page 31160 "Cash Document CZP"
                         Rec.VATRounding();
                     end;
                 }
-#if not CLEAN19
-                action("Link Advance Letters")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Link Advance Letters';
-                    Enabled = LinkAdvLettersEnabled;
-                    Image = LinkWithExisting;
-                    ToolTip = 'Allow to link partial payment of advance letters.';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
-                    ObsoleteTag = '18.0';
-
-                    trigger OnAction()
-                    begin
-                        CurrPage.CashDocLines.Page.LinkAdvLetters();
-                    end;
-                }
-                action("Link Whole Advance Letter")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Link Whole Advance Letter';
-                    Image = LinkAccount;
-                    ToolTip = 'Allow to link whole advance letters.';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
-                    ObsoleteTag = '18.0';
-
-                    trigger OnAction()
-                    begin
-                        CurrPage.CashDocLines.Page.LinkWholeAdvLetter();
-                    end;
-                }
-                action("UnLink Linked Advance Letters")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'UnLink Linked Advance Letters';
-                    Image = UnLinkAccount;
-                    ToolTip = 'Unlinks linked advance letters';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
-                    ObsoleteTag = '18.0';
-
-                    trigger OnAction()
-                    begin
-                        CurrPage.CashDocLines.Page.UnLinkLinkedAdvLetters();
-                    end;
-                }
-#endif
                 action(CopyDocument)
                 {
                     ApplicationArea = Suite;
@@ -698,46 +650,36 @@ page 31160 "Cash Document CZP"
             {
                 Caption = 'Process';
 
-                group(Category_Category7)
+                actionref(CopyDocument_Promoted; CopyDocument)
                 {
-                    Caption = 'Posting';
-                    ShowAs = SplitButton;
-
-                    actionref(PostPromoted; Post)
-                    {
-                    }
-                    actionref(PostAndNewPromoted; PostAndNew)
-                    {
-                    }
-                    actionref(PostAndPrintPromoted; PostAndPrint)
-                    {
-                    }
-                    actionref(PreviewPromoted; Preview)
-                    {
-                    }
-                }
-                group(Category_Category8)
-                {
-                    Caption = 'Release';
-                    ShowAs = SplitButton;
-
-                    actionref(ReleasePromoted; Release)
-                    {
-                    }
-                    actionref(ReleaseAndNewPromoted; ReleaseAndNew)
-                    {
-                    }
-                    actionref(ReleaseAndPrintPromoted; ReleaseAndPrint)
-                    {
-                    }
-                    actionref(ReopenPromoted; Reopen)
-                    {
-                    }
                 }
             }
+            group(Category_Category8)
+            {
+                Caption = 'Release';
+                ShowAs = SplitButton;
+
+                actionref(ReleasePromoted; Release)
+                {
+                }
+                actionref(ReleaseAndNewPromoted; ReleaseAndNew)
+                {
+                }
+                actionref(ReleaseAndPrintPromoted; ReleaseAndPrint)
+                {
+                }
+                actionref(ReopenPromoted; Reopen)
+                {
+                }
+            }
+#if not CLEAN22
             group(Category_Category4)
             {
                 Caption = 'Approve';
+                ObsoleteTag = '22.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'This group has been removed.';
+                Visible = false;
 
                 actionref(ApprovePromoted; Approve)
                 {
@@ -752,6 +694,25 @@ page 31160 "Cash Document CZP"
                 {
                 }
             }
+#endif
+            group(Category_Category7)
+            {
+                Caption = 'Posting';
+                ShowAs = SplitButton;
+
+                actionref(PostPromoted; Post)
+                {
+                }
+                actionref(PostAndNewPromoted; PostAndNew)
+                {
+                }
+                actionref(PostAndPrintPromoted; PostAndPrint)
+                {
+                }
+                actionref(PreviewPromoted; Preview)
+                {
+                }
+            }
             group(Category_Category5)
             {
                 Caption = 'Request Approval';
@@ -763,6 +724,34 @@ page 31160 "Cash Document CZP"
                 {
                 }
             }
+#if not CLEAN22
+            group(Category_Report)
+            {
+                Caption = 'Report';
+                ObsoleteTag = '22.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'This group has been removed.';
+                Visible = false;
+
+                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
+                {
+                }
+                actionref(PrintPromoted; "&Print")
+                {
+                }
+            }
+#endif
+            group(Category_Category9)
+            {
+                Caption = 'Print';
+
+                actionref(Print_Promoted; "&Print")
+                {
+                }
+                actionref(PrinttoAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
             group(Category_Category6)
             {
                 Caption = 'Cash Document';
@@ -770,27 +759,34 @@ page 31160 "Cash Document CZP"
                 actionref(DimensionsPromoted; Dimensions)
                 {
                 }
+#if not CLEAN22
                 actionref(StatisticsPomoted; Statistics)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This actionref has been removed.';
+                    Visible = false;
                 }
                 actionref(DocAttachPromoted; DocAttach)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This actionref has been removed.';
+                    Visible = false;
                 }
+#endif
                 actionref(ApprovalsPromoted; "A&pprovals")
                 {
                 }
+#if not CLEAN22
                 actionref(CopyDocumentPomoted; CopyDocument)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This actionref has been removed.';
+                    Visible = false;
                 }
-
-            }
-            group(Category_Report)
-            {
-                Caption = 'Report';
-
-                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
-                {
-                }
+#endif
             }
         }
     }
@@ -804,13 +800,7 @@ page 31160 "Cash Document CZP"
     trigger OnAfterGetRecord()
     begin
         UpdateEditable();
-#if not CLEAN19
-        UpdateEnabled();
-#endif
         SetControlVisibility();
-#if not CLEAN19
-        LinkAdvLettersEnabled := not Rec.IsEETCashRegister();
-#endif
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
@@ -859,10 +849,6 @@ page 31160 "Cash Document CZP"
         OpenPostedCashDocQst: Label 'The cash document has been posted and moved to the Posted Cash Documents window.\\Do you want to open the posted cash document?';
         DocumentIsPosted: Boolean;
         DocumentIsReleased: Boolean;
-#if not CLEAN19
-        [InDataSet]
-        LinkAdvLettersEnabled: Boolean;
-#endif
 
     local procedure PostDocument(PostingCodeunitID: Integer; Navigate: Option)
     var
@@ -920,15 +906,9 @@ page 31160 "Cash Document CZP"
         DateEditable := Rec.Status = Rec.Status::Open;
         ReceiptEditable := Rec."Document Type" = Rec."Document Type"::Receipt;
         WithdrawalEditable := Rec."Document Type" = Rec."Document Type"::Withdrawal;
+        OnAfterUpdateEditable(Rec);
     end;
 
-#if not CLEAN19
-    local procedure UpdateEnabled()
-    begin
-        LinkAdvLettersEnabled := not Rec.IsEETCashRegister();
-    end;
-
-#endif
     local procedure SetShowMandatoryConditions()
     var
         CashDeskCZP: Record "Cash Desk CZP";
@@ -980,5 +960,10 @@ page 31160 "Cash Document CZP"
         CashDocumentHeaderCZP.Validate("Document Type", Rec."Document Type");
         CashDocumentHeaderCZP.Insert(true);
         Page.Run(Page::"Cash Document CZP", CashDocumentHeaderCZP);
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterUpdateEditable(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    begin
     end;
 }

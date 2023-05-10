@@ -20,8 +20,8 @@ codeunit 148000 "Digipoort XML"
         XbrliXbrlTok: Label 'xbrli:xbrl';
         AttrBdITok: Label 'xmlns:bd-i';
         AttrBdObTok: Label 'xmlns:bd-ob';
-        BDDataEndpointTxt: Label 'https://www.nltaxonomie.nl/nt17/bd/20221207/dictionary/bd-data', Locked = true;
-        VATDeclarationSchemaEndpointTxt: Label 'https://www.nltaxonomie.nl/nt17/bd/20221207/entrypoints/bd-rpt-ob-aangifte-2023.xsd', Locked = true;
+        BDDataEndpointTxt: Label 'http://www.nltaxonomie.nl/nt17/bd/20221207/dictionary/bd-data', Locked = true;
+        VATDeclarationSchemaEndpointTxt: Label 'http://www.nltaxonomie.nl/nt17/bd/20221207/entrypoints/bd-rpt-ob-aangifte-2023.xsd', Locked = true;
 
     [Test]
     [HandlerFunctions('VATStatementRequestPageHandler,MessageHandler')]

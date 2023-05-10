@@ -242,6 +242,9 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
     begin
         PermissionsMock.Set('Retention Pol. Admin');
+        RetentionPeriod.SetRange(Code, Format(RetentionPeriod."Retention Period"::"1 Week"));
+        RetentionPeriod.DeleteAll();
+
         // setup
         RetentionPeriod.Validate(Code, Format(RetentionPeriod."Retention Period"::"1 Week"));
         RetentionPeriod.Validate("Retention Period", RetentionPeriod."Retention Period"::"1 Week");
@@ -250,7 +253,7 @@ codeunit 138701 "Reten. Policy Setup Test"
 
         // exercise
         ClearLastError();
-        AssertError
+        asserterror
         begin
             RetentionPolicySetup.Validate("Retention Period", RetentionPeriod.Code);
             Error('');
@@ -290,6 +293,9 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
         PermissionsMock.Set('Retention Pol. Admin');
+        RetentionPeriod.SetRange(Code, Format(RetentionPeriod."Retention Period"::"1 Week"));
+        RetentionPeriod.DeleteAll();
+
         // setup
         RetentionPeriod.Validate(Code, Format(RetentionPeriod."Retention Period"::"1 Week"));
         RetentionPeriod.Validate("Retention Period", RetentionPeriod."Retention Period"::"1 Week");
@@ -352,6 +358,25 @@ codeunit 138701 "Reten. Policy Setup Test"
 
         // Verify
         Assert.ExpectedError(StrSubstNo(RetentionPolicySetupLineLockedErr, RetentionPolicySetupLine."Table ID", RetentionPolicySetupLine."Table Caption"));
+    end;
+
+    [Test]
+    procedure TestDeleteRetentionPolicySetupLineForRemovedTable()
+    var
+        RetentionPolicySetupLine: Record "Retention Policy Setup Line";
+    begin
+        PermissionsMock.Set('Retention Pol. Admin');
+        // Setup
+        RetentionPolicySetupLine."Table ID" := -1; // table that does not exist
+        RetentionPolicySetupLine.Insert();
+        RetentionPolicySetupLine.CalcFields("Table Caption");
+
+        // Exercise
+        RetentionPolicySetupLine.Delete();
+
+        // Verify
+        RetentionPolicySetupLine.SetRange("Table ID", -1);
+        Assert.RecordIsEmpty(RetentionPolicySetupLine);
     end;
 
     [Test]
@@ -521,7 +546,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
 #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
-        // #pragma warning enable AA0210
+#pragma warning restore AA0210
         RetentionPolicySetupLine.FindFirst();
 
         // exercise
@@ -555,7 +580,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
 #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
-        // #pragma warning enable AA0210
+#pragma warning restore AA0210
         RetentionPolicySetupLine.FindFirst();
 
         // exercise
@@ -582,7 +607,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
 #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
-        // #pragma warning enable AA0210
+#pragma warning restore AA0210
         RetentionPolicySetupLine.FindFirst();
 
         // exercise

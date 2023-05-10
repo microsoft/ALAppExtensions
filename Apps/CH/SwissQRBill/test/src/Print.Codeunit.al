@@ -805,6 +805,146 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 28591);
     end;
 
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure TenantMediaWhenPrintPostedSalesInvoice()
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TenantMedia: Record "Tenant Media";
+        TenantMediaThumbnails: Record "Tenant Media Thumbnails";
+        QRLayout: Code[20];
+    begin
+        // [FEATURE] [Print]
+        // [SCENARIO 449921] Tenant Media and Tenant Media Thumbnails records when print posted sales invoice.
+        Initialize();
+        TenantMedia.DeleteAll();
+        TenantMediaThumbnails.DeleteAll();
+
+        // [GIVEN] Report 11510 "Swiss QR-Bill Print" is set as a default report for printing posted sales invoices.
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        QRLayout :=
+            SwissQRBillTestLibrary.CreateQRLayout(
+                IBANType::"QR-IBAN", ReferenceType::"QR Reference", '', SwissQRBillTestLibrary.CreateFullBillingInfo());
+        SwissQRBillTestLibrary.UpdateDefaultLayout(QRLayout);
+
+        // [GIVEN] Posted sales invoice.
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(SalesInvoiceHeader, '', 100, SwissQRBillTestLibrary.CreatePaymentTerms(1, 2), '');
+
+        // [WHEN] Print posted sales invoice.
+        PrintPostedSalesInvoice(SalesInvoiceHeader);
+
+        // [THEN] Report layout was printed.
+        // [THEN] Tenant Media and Tenant Media Thumbnails records that were created during report run, are removed in the end.
+        VerifyReportDatasetCreditorInfo(GetReportCompanyInfo(IBANType::"QR-IBAN"));
+        Assert.IsTrue(TenantMedia.IsEmpty(), 'Tenant Media was not removed');
+        Assert.IsTrue(TenantMediaThumbnails.IsEmpty(), 'Tenant Media Thumbnails were not removed');
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure TenantMediaWhenPrintMultiplePostedSalesInvoices()
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TenantMedia: Record "Tenant Media";
+        TenantMediaThumbnails: Record "Tenant Media Thumbnails";
+        SalesInvoiceHeaderNo: array[2] of Code[20];
+        QRLayout: Code[20];
+    begin
+        // [FEATURE] [Print]
+        // [SCENARIO 449921] Tenant Media and Tenant Media Thumbnails records when print multiple posted sales invoices.
+        Initialize();
+        TenantMedia.DeleteAll();
+        TenantMediaThumbnails.DeleteAll();
+
+        // [GIVEN] Report 11510 "Swiss QR-Bill Print" is set as a default report for printing posted sales invoices.
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        QRLayout :=
+            SwissQRBillTestLibrary.CreateQRLayout(
+                IBANType::"QR-IBAN", ReferenceType::"QR Reference", '', SwissQRBillTestLibrary.CreateFullBillingInfo());
+        SwissQRBillTestLibrary.UpdateDefaultLayout(QRLayout);
+
+        // [GIVEN] Two posted sales invoices.
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(SalesInvoiceHeader, '', 100, SwissQRBillTestLibrary.CreatePaymentTerms(1, 2), '');
+        SalesInvoiceHeaderNo[1] := SalesInvoiceHeader."No.";
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(SalesInvoiceHeader, '', 100, SwissQRBillTestLibrary.CreatePaymentTerms(1, 2), '');
+        SalesInvoiceHeaderNo[2] := SalesInvoiceHeader."No.";
+
+        // [WHEN] Print both posted sales invoices.
+        SalesInvoiceHeader.SetFilter("No.", '%1|%2', SalesInvoiceHeaderNo[1], SalesInvoiceHeaderNo[2]);
+        SalesInvoiceHeader.PrintRecords(true);
+
+        // [THEN] Report layout was printed.
+        // [THEN] Tenant Media and Tenant Media Thumbnails records that were created during report run, are removed in the end.
+        LibraryReportDataset.LoadDataSetFile();
+        LibraryReportDataset.GetNextRow();
+        VerifyReportDatasetCreditorInfo(GetReportCompanyInfo(IBANType::"QR-IBAN"));
+        Assert.IsTrue(TenantMedia.IsEmpty(), 'Tenant Media was not removed');
+        Assert.IsTrue(TenantMediaThumbnails.IsEmpty(), 'Tenant Media Thumbnails were not removed');
+    end;
+
+    [Test]
+    procedure PrintUmlautsUsingUTF8CodepageECIModeOn()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        OutStream: OutStream;
+        UmlautChars: Text;
+        i: Integer;
+    begin
+        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with enabled ECI mode.
+        UmlautChars := PadStr('', 64, ' ');
+        for i := 192 to 255 do
+            UmlautChars[i - 191] := i;
+
+        TempBlob.CreateOutStream(OutStream);
+        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
+        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, false, true);
+    end;
+
+    [Test]
+    procedure PrintUmlautsUsingUTF8CodepageECIModeOff()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        OutStream: OutStream;
+        UmlautChars: Text;
+        i: Integer;
+    begin
+        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with disabled ECI mode.
+        UmlautChars := PadStr('', 64, ' ');
+        for i := 192 to 255 do
+            UmlautChars[i - 191] := i;
+
+        TempBlob.CreateOutStream(OutStream);
+        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
+        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, false, false);
+    end;
+
+    [Test]
+    procedure PrintUmlautsUsingUTF8CodepageBOMOnECIModeOn()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        OutStream: OutStream;
+        UmlautChars: Text;
+        i: Integer;
+    begin
+        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with enabled ECI mode and byte-order-mark set.
+        UmlautChars := PadStr('', 64, ' ');
+        for i := 192 to 255 do
+            UmlautChars[i - 191] := i;
+
+        TempBlob.CreateOutStream(OutStream);
+        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
+        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, true, true);
+    end;
+
     local procedure Initialize()
     var
         DummyReportSelections: Record "Report Selections";

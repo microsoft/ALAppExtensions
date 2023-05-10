@@ -73,6 +73,17 @@ codeunit 9010 "Azure AD User Management"
         exit(AzureADUserMgmtImpl.IsUserTenantAdmin());
     end;
 
+    /// <summary>
+    /// Checks whether custom permissions are assigned to the user.
+    /// </summary>
+    /// <param name="UserSecurityId">The security ID of the user to check for.</param>
+    /// <returns>True if the user with the given user security ID has custom permissions; false otherwise.</returns>
+    [NonDebuggable]
+    procedure ArePermissionsCustomized(UserSecurityId: Guid): Boolean
+    begin
+        exit(AzureADUserMgmtImpl.ArePermissionsCustomized(UserSecurityId));
+    end;
+
     /// <summary>    
     /// Checks if the user is a delegated user.
     /// </summary>

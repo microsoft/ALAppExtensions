@@ -6,6 +6,8 @@
 codeunit 8905 "Email Message Impl."
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Sent Email" = r,
                   tabledata "Email Outbox" = rim,
                   tabledata "Email Message" = rimd,
@@ -584,7 +586,7 @@ codeunit 8905 "Email Message Impl."
         until EmailRelatedAttachment2.Next() = 0;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sent Email", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sent Email", OnAfterDeleteEvent, '', false, false)]
     local procedure OnAfterDeleteSentEmail(var Rec: Record "Sent Email"; RunTrigger: Boolean)
     var
         EmailMessage: Record "Email Message";
@@ -606,7 +608,7 @@ codeunit 8905 "Email Message Impl."
             EmailMessage.Delete();
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Email Outbox", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Email Outbox", OnAfterDeleteEvent, '', false, false)]
     local procedure OnAfterDeleteEmailOutbox(var Rec: Record "Email Outbox"; RunTrigger: Boolean)
     var
         SentEmail: Record "Sent Email";
@@ -632,7 +634,7 @@ codeunit 8905 "Email Message Impl."
             EmailMessage.Delete();
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Email Message", 'OnBeforeDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Email Message", OnBeforeDeleteEvent, '', false, false)]
     local procedure OnBeforeDeleteEmailMessage(var Rec: Record "Email Message"; RunTrigger: Boolean)
     var
         EmailMessageAttachment: Record "Email Message Attachment";
@@ -652,7 +654,7 @@ codeunit 8905 "Email Message Impl."
         EmailRelatedRecord.DeleteAll();
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Email Message", 'OnBeforeModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Email Message", OnBeforeModifyEvent, '', false, false)]
     local procedure OnBeforeModifyEmailMessage(var Rec: Record "Email Message"; var xRec: Record "Email Message"; RunTrigger: Boolean)
     var
         EmailOutbox: Record "Email Outbox";
@@ -673,7 +675,7 @@ codeunit 8905 "Email Message Impl."
         Rec."No. of Modifies" += 1;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Email Message Attachment", 'OnBeforeDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Email Message Attachment", OnBeforeDeleteEvent, '', false, false)]
     local procedure OnBeforeDeleteAttachment(var Rec: Record "Email Message Attachment")
     var
         EmailOutbox: Record "Email Outbox";
@@ -692,7 +694,7 @@ codeunit 8905 "Email Message Impl."
             Error(EmailMessageSentCannotDeleteAttachmentErr);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Email Recipient", 'OnBeforeDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Email Recipient", OnBeforeDeleteEvent, '', false, false)]
     local procedure OnBeforeDeleteRecipient(var Rec: Record "Email Recipient")
     var
         EmailOutbox: Record "Email Outbox";
@@ -711,7 +713,7 @@ codeunit 8905 "Email Message Impl."
             Error(EmailMessageSentCannotDeleteRecipientErr);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Email Message Attachment", 'OnBeforeInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Email Message Attachment", OnBeforeInsertEvent, '', false, false)]
     local procedure OnBeforeInsertAttachment(var Rec: Record "Email Message Attachment")
     var
         EmailOutbox: Record "Email Outbox";
@@ -730,7 +732,7 @@ codeunit 8905 "Email Message Impl."
             Error(EmailMessageSentCannotInsertAttachmentErr);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Email Recipient", 'OnBeforeInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Email Recipient", OnBeforeInsertEvent, '', false, false)]
     local procedure OnBeforeInsertRecipient(var Rec: Record "Email Recipient")
     var
         EmailOutbox: Record "Email Outbox";
@@ -781,5 +783,5 @@ codeunit 8905 "Email Message Impl."
         NoAccountErr: Label 'You must specify a valid email account to send the message to.';
         RecordNotFoundMsg: Label 'Record not found in table: %1', Comment = '%1 - File size', Locked = true;
         RgbReplacementTok: Label 'rgb($1, $2, $3)', Locked = true;
-        RbgaPatternTok: Label 'rgba\((\d+), ?(\d+), ?(\d+), ?\d+\)', Locked = true;
+        RbgaPatternTok: Label 'rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*1(\.0{0,2})?\)', Locked = true;
 }

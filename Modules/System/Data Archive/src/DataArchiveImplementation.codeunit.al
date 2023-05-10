@@ -5,6 +5,8 @@
 codeunit 610 "Data Archive Implementation" implements "Data Archive Provider"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DataArchiveProvider: Interface "Data Archive Provider";

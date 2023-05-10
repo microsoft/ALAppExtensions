@@ -11,6 +11,7 @@ permissionset 9987 "Word Templates - Edit"
     IncludedPermissionSets = "Word Templates - Read";
 
     Permissions = tabledata "Word Template" = IMD,
+                  tabledata "Word Template Field" = imd,
                   tabledata "Word Templates Table" = imd,
                   tabledata "Word Templates Related Table" = imd;
 }

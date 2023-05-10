@@ -6,6 +6,8 @@
 codeunit 3801 "App Key Vault Secret Pr. Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

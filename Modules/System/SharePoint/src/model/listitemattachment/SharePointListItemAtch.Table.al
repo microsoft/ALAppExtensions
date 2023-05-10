@@ -9,6 +9,8 @@
 table 9104 "SharePoint List Item Atch"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     DataClassification = SystemMetadata; // Data classification is SystemMetadata as the table is temporary
     Caption = 'SharePoint List Item Attachment';
     TableType = Temporary;

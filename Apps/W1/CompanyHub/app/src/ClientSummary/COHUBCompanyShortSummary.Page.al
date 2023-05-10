@@ -522,9 +522,7 @@ page 1153 "COHUB Company Short Summary"
         // Give users access to records with their security id or the sample data
         Rec.SetFilter("Assigned To", '%1|%2', UserSecurityId(), '00000000-0000-0000-0000-000000000000');
 
-        if COHUBEnviroment1.IsEmpty() then
-            COHUBCore1.ShowSetupCompanyHubNotification()
-        else
+        if not COHUBEnviroment1.IsEmpty() then
             COHUBCore1.UpdateAllCompanies(true);
 
         Codeunit.Run(Codeunit::"COHUB Group Summary Sync");

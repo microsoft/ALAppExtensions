@@ -87,7 +87,9 @@ codeunit 31017 "Upgrade Application CZL"
                   tabledata "General Posting Setup" = m,
                   tabledata "User Setup" = m,
                   tabledata "Gen. Journal Template" = m,
-                  tabledata "VAT Entry" = m;
+                  tabledata "VAT Entry" = m,
+                  tabledata "Report Selections" = m,
+                  tabledata "G/L Entry" = m;
 
     var
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
@@ -208,6 +210,9 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeIssuedReminderHeader();
         UpgradeFinanceChargeMemoHeader();
         UpgradeIssuedFinanceChargeMemoHeader();
+        UpgradeReportSelections();
+        UpgradeReplaceVATDateCZL();
+        UpgradeReplaceAllowAlterPostingGroups();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -239,23 +244,9 @@ codeunit 31017 "Upgrade Application CZL"
     var
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
     begin
-#if not CLEAN20
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
-#else
-            if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
-               UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag())
-            then
-#endif
-
             if SalesReceivablesSetup.Get() then begin
-#if not CLEAN20
                 SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
-#else
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
-                    SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag()) then
-                    SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups CZL";
-#endif
                 SalesReceivablesSetup.Modify(false);
             end;
     end;
@@ -264,24 +255,11 @@ codeunit 31017 "Upgrade Application CZL"
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
-#if not CLEAN20
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
-#else
-            if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
-               UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag())
-            then
-#endif
             exit;
 
         if PurchasesPayablesSetup.Get() then begin
-#if not CLEAN20
             PurchasesPayablesSetup."Allow Alter Posting Groups CZL" := PurchasesPayablesSetup."Allow Alter Posting Groups";
-#else
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
-                    PurchasesPayablesSetup."Allow Alter Posting Groups CZL" := PurchasesPayablesSetup."Allow Alter Posting Groups";
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag()) then
-                    PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups CZL";
-#endif
             PurchasesPayablesSetup.Modify(false);
         end;
     end;
@@ -290,24 +268,11 @@ codeunit 31017 "Upgrade Application CZL"
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
     begin
-#if not CLEAN20
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
-#else
-            if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
-               UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag())
-            then
-#endif
             exit;
 
         if ServiceMgtSetup.Get() then begin
-#if not CLEAN20
             ServiceMgtSetup."Allow Alter Posting Groups CZL" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
-#else
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
-                    ServiceMgtSetup."Allow Alter Posting Groups CZL" := ServiceMgtSetup."Allow Alter Posting Groups";
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag()) then
-                    ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Posting Groups CZL";
-#endif
             ServiceMgtSetup.Modify(false);
         end;
     end;
@@ -346,121 +311,108 @@ codeunit 31017 "Upgrade Application CZL"
     local procedure UpgradeItemJournalLine();
     var
         ItemJournalLine: Record "Item Journal Line";
+        ItemJournalLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ItemJournalLine.SetLoadFields("Tariff No.", "Physical Transfer", "Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value", "Net Weight", "Country/Region of Origin Code",
-                                      "Statistic Indication", "Intrastat Transaction", "G/L Correction");
-        if ItemJournalLine.FindSet(true) then
-            repeat
-                ItemJournalLine."Tariff No. CZL" := ItemJournalLine."Tariff No.";
-                ItemJournalLine."Physical Transfer CZL" := ItemJournalLine."Physical Transfer";
-                ItemJournalLine."Incl. in Intrastat Amount CZL" := ItemJournalLine."Incl. in Intrastat Amount";
-                ItemJournalLine."Incl. in Intrastat S.Value CZL" := ItemJournalLine."Incl. in Intrastat Stat. Value";
-                ItemJournalLine."Net Weight CZL" := ItemJournalLine."Net Weight";
-                ItemJournalLine."Country/Reg. of Orig. Code CZL" := ItemJournalLine."Country/Region of Origin Code";
-                ItemJournalLine."Statistic Indication CZL" := ItemJournalLine."Statistic Indication";
-                ItemJournalLine."Intrastat Transaction CZL" := ItemJournalLine."Intrastat Transaction";
-                ItemJournalLine."G/L Correction CZL" := ItemJournalLine."G/L Correction";
-                ItemJournalLine.Modify(false);
-            until ItemJournalLine.Next() = 0;
+        ItemJournalLineDataTransfer.SetTables(Database::"Item Journal Line", Database::"Item Journal Line");
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Tariff No."), ItemJournalLine.FieldNo("Tariff No. CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Physical Transfer"), ItemJournalLine.FieldNo("Physical Transfer CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Incl. in Intrastat Amount"), ItemJournalLine.FieldNo("Incl. in Intrastat Amount CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Incl. in Intrastat Stat. Value"), ItemJournalLine.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Net Weight"), ItemJournalLine.FieldNo("Net Weight CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Country/Region of Origin Code"), ItemJournalLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Statistic Indication"), ItemJournalLine.FieldNo("Statistic Indication CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Intrastat Transaction"), ItemJournalLine.FieldNo("Intrastat Transaction CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("G/L Correction"), ItemJournalLine.FieldNo("G/L Correction CZL"));
+        ItemJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeJobJournalLine();
     var
         JobJournalLine: Record "Job Journal Line";
+        JobJournalLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        JobJournalLine.SetLoadFields(Correction, "Tariff No.", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
-        if JobJournalLine.FindSet(true) then
-            repeat
-                JobJournalLine."Correction CZL" := JobJournalLine.Correction;
-                JobJournalLine."Tariff No. CZL" := JobJournalLine."Tariff No.";
-                JobJournalLine."Net Weight CZL" := JobJournalLine."Net Weight";
-                JobJournalLine."Country/Reg. of Orig. Code CZL" := JobJournalLine."Country/Region of Origin Code";
-                JobJournalLine."Statistic Indication CZL" := JobJournalLine."Statistic Indication";
-                JobJournalLine."Intrastat Transaction CZL" := JobJournalLine."Intrastat Transaction";
-                JobJournalLine.Modify(false);
-            until JobJournalLine.Next() = 0;
+        JobJournalLineDataTransfer.SetTables(Database::"Job Journal Line", Database::"Job Journal Line");
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Correction"), JobJournalLine.FieldNo("Correction CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Tariff No."), JobJournalLine.FieldNo("Tariff No. CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Net Weight"), JobJournalLine.FieldNo("Net Weight CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Country/Region of Origin Code"), JobJournalLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Statistic Indication"), JobJournalLine.FieldNo("Statistic Indication CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Intrastat Transaction"), JobJournalLine.FieldNo("Intrastat Transaction CZL"));
+        JobJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesLine();
     var
         SalesLine: Record "Sales Line";
+        SalesLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        SalesLine.SetLoadFields(Negative, "Physical Transfer", "Country/Region of Origin Code");
-        if SalesLine.FindSet(true) then
-            repeat
-                SalesLine."Negative CZL" := SalesLine.Negative;
-                SalesLine."Physical Transfer CZL" := SalesLine."Physical Transfer";
-                SalesLine."Country/Reg. of Orig. Code CZL" := SalesLine."Country/Region of Origin Code";
-                SalesLine.Modify(false);
-            until SalesLine.Next() = 0;
+        SalesLineDataTransfer.SetTables(Database::"Sales Line", Database::"Sales Line");
+        SalesLineDataTransfer.AddFieldValue(SalesLine.FieldNo("Negative"), SalesLine.FieldNo("Negative CZL"));
+        SalesLineDataTransfer.AddFieldValue(SalesLine.FieldNo("Physical Transfer"), SalesLine.FieldNo("Physical Transfer CZL"));
+        SalesLineDataTransfer.AddFieldValue(SalesLine.FieldNo("Country/Region of Origin Code"), SalesLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        SalesLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchaseLine();
     var
         PurchaseLine: Record "Purchase Line";
+        PurchaseLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerCompanyUpgradeTag())
         then
             exit;
 
-        PurchaseLine.SetLoadFields(Negative, "Physical Transfer", "Country/Region of Origin Code", "Ext. Amount (LCY)", "Ext.Amount Including VAT (LCY)");
-        if PurchaseLine.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    PurchaseLine."Negative CZL" := PurchaseLine.Negative;
-                    PurchaseLine."Physical Transfer CZL" := PurchaseLine."Physical Transfer";
-                    PurchaseLine."Country/Reg. of Orig. Code CZL" := PurchaseLine."Country/Region of Origin Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerCompanyUpgradeTag()) then begin
-                    PurchaseLine."Ext. Amount CZL" := PurchaseLine."Ext. Amount (LCY)";
-                    PurchaseLine."Ext. Amount Incl. VAT CZL" := PurchaseLine."Ext.Amount Including VAT (LCY)";
-                end;
-                PurchaseLine.Modify(false);
-            until PurchaseLine.Next() = 0;
+        PurchaseLineDataTransfer.SetTables(Database::"Purchase Line", Database::"Purchase Line");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Negative"), PurchaseLine.FieldNo("Negative CZL"));
+            PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Physical Transfer"), PurchaseLine.FieldNo("Physical Transfer CZL"));
+            PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Country/Region of Origin Code"), PurchaseLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerCompanyUpgradeTag()) then begin
+            PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Ext. Amount (LCY)"), PurchaseLine.FieldNo("Ext. Amount CZL"));
+            PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Ext.Amount Including VAT (LCY)"), PurchaseLine.FieldNo("Ext. Amount Incl. VAT CZL"));
+        end;
+        PurchaseLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeServiceLine();
     var
         ServiceLine: Record "Service Line";
+        ServiceLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ServiceLine.SetLoadFields(Negative, "Physical Transfer", "Country/Region of Origin Code");
-        if ServiceLine.FindSet(true) then
-            repeat
-                ServiceLine."Negative CZL" := ServiceLine.Negative;
-                ServiceLine."Physical Transfer CZL" := ServiceLine."Physical Transfer";
-                ServiceLine."Country/Reg. of Orig. Code CZL" := ServiceLine."Country/Region of Origin Code";
-                ServiceLine.Modify(false);
-            until ServiceLine.Next() = 0;
+        ServiceLineDataTransfer.SetTables(Database::"Service Line", Database::"Service Line");
+        ServiceLineDataTransfer.AddFieldValue(ServiceLine.FieldNo("Negative"), ServiceLine.FieldNo("Negative CZL"));
+        ServiceLineDataTransfer.AddFieldValue(ServiceLine.FieldNo("Physical Transfer"), ServiceLine.FieldNo("Physical Transfer CZL"));
+        ServiceLineDataTransfer.AddFieldValue(ServiceLine.FieldNo("Country/Region of Origin Code"), ServiceLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ServiceLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeValueEntry();
     var
         ValueEntry: Record "Value Entry";
+        ValueEntryDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ValueEntry.SetLoadFields("G/L Correction", "Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
-        if ValueEntry.FindSet(true) then
-            repeat
-                ValueEntry."G/L Correction CZL" := ValueEntry."G/L Correction";
-                ValueEntry."Incl. in Intrastat Amount CZL" := ValueEntry."Incl. in Intrastat Amount";
-                ValueEntry."Incl. in Intrastat S.Value CZL" := ValueEntry."Incl. in Intrastat Stat. Value";
-                ValueEntry.Modify(false);
-            until ValueEntry.Next() = 0;
+        ValueEntryDataTransfer.SetTables(Database::"Value Entry", Database::"Value Entry");
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("G/L Correction"), ValueEntry.FieldNo("G/L Correction CZL"));
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("Incl. in Intrastat Amount"), ValueEntry.FieldNo("Incl. in Intrastat Amount CZL"));
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("Incl. in Intrastat Stat. Value"), ValueEntry.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ValueEntryDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeDetailedCustLedgEntry()
@@ -754,19 +706,17 @@ codeunit 31017 "Upgrade Application CZL"
     local procedure UpgradeShipmentMethod()
     var
         ShipmentMethod: Record "Shipment Method";
+        ShipmentMethodDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ShipmentMethod.SetLoadFields("Include Item Charges (Amount)", "Intrastat Delivery Group Code", "Incl. Item Charges (Stat.Val.)", "Adjustment %");
-        if ShipmentMethod.FindSet() then
-            repeat
-                ShipmentMethod."Incl. Item Charges (Amt.) CZL" := ShipmentMethod."Include Item Charges (Amount)";
-                ShipmentMethod."Intrastat Deliv. Grp. Code CZL" := ShipmentMethod."Intrastat Delivery Group Code";
-                ShipmentMethod."Incl. Item Charges (S.Val) CZL" := ShipmentMethod."Incl. Item Charges (Stat.Val.)";
-                ShipmentMethod."Adjustment % CZL" := ShipmentMethod."Adjustment %";
-                ShipmentMethod.Modify(false);
-            until ShipmentMethod.Next() = 0;
+        ShipmentMethodDataTransfer.SetTables(Database::"Shipment Method", Database::"Shipment Method");
+        ShipmentMethodDataTransfer.AddFieldValue(ShipmentMethod.FieldNo("Include Item Charges (Amount)"), ShipmentMethod.FieldNo("Incl. Item Charges (Amt.) CZL"));
+        ShipmentMethodDataTransfer.AddFieldValue(ShipmentMethod.FieldNo("Intrastat Delivery Group Code"), ShipmentMethod.FieldNo("Intrastat Deliv. Grp. Code CZL"));
+        ShipmentMethodDataTransfer.AddFieldValue(ShipmentMethod.FieldNo("Incl. Item Charges (Stat.Val.)"), ShipmentMethod.FieldNo("Incl. Item Charges (S.Val) CZL"));
+        ShipmentMethodDataTransfer.AddFieldValue(ShipmentMethod.FieldNo("Adjustment %"), ShipmentMethod.FieldNo("Adjustment % CZL"));
+        ShipmentMethodDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeTariffNumber()
@@ -880,50 +830,44 @@ codeunit 31017 "Upgrade Application CZL"
     local procedure UpgradeCustomer();
     var
         Customer: Record Customer;
+        CustomerDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        Customer.SetLoadFields("Transaction Type", "Transaction Specification", "Transport Method");
-        if Customer.FindSet(true) then
-            repeat
-                Customer."Transaction Type CZL" := Customer."Transaction Type";
-                Customer."Transaction Specification CZL" := Customer."Transaction Specification";
-                Customer."Transport Method CZL" := Customer."Transport Method";
-                Customer.Modify(false);
-            until Customer.Next() = 0;
+        CustomerDataTransfer.SetTables(Database::Customer, Database::Customer);
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Transaction Type"), Customer.FieldNo("Transaction Type CZL"));
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Transaction Specification"), Customer.FieldNo("Transaction Specification CZL"));
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Transport Method"), Customer.FieldNo("Transport Method CZL"));
+        CustomerDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeVendor();
     var
         Vendor: Record Vendor;
+        VendorDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        Vendor.SetLoadFields("Transaction Type", "Transaction Specification", "Transport Method");
-        if Vendor.FindSet(true) then
-            repeat
-                Vendor."Transaction Type CZL" := Vendor."Transaction Type";
-                Vendor."Transaction Specification CZL" := Vendor."Transaction Specification";
-                Vendor."Transport Method CZL" := Vendor."Transport Method";
-                Vendor.Modify(false);
-            until Vendor.Next() = 0;
+        VendorDataTransfer.SetTables(Database::Vendor, Database::Vendor);
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Transaction Type"), Vendor.FieldNo("Transaction Type CZL"));
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Transaction Specification"), Vendor.FieldNo("Transaction Specification CZL"));
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Transport Method"), Vendor.FieldNo("Transport Method CZL"));
+        VendorDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeItem();
     var
         Item: Record Item;
+        ItemDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        Item.SetLoadFields("Specific Movement");
-        if Item.FindSet(true) then
-            repeat
-                Item."Specific Movement CZL" := Item."Specific Movement";
-                Item.Modify(false);
-            until Item.Next() = 0;
+        ItemDataTransfer.SetTables(Database::Item, Database::Item);
+        ItemDataTransfer.AddFieldValue(Item.FieldNo("Specific Movement"), Item.FieldNo("Specific Movement CZL"));
+        ItemDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeUnitofMeasure();
@@ -944,758 +888,675 @@ codeunit 31017 "Upgrade Application CZL"
     local procedure UpgradeVATPostingSetup();
     var
         VATPostingSetup: Record "VAT Posting Setup";
+        VATPostingSetupDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        VATPostingSetup.SetLoadFields("Intrastat Service");
-        if VATPostingSetup.FindSet(true) then
-            repeat
-                VATPostingSetup."Intrastat Service CZL" := VATPostingSetup."Intrastat Service";
-                VATPostingSetup.Modify(false);
-            until VATPostingSetup.Next() = 0;
+        VATPostingSetupDataTransfer.SetTables(Database::"VAT Posting Setup", Database::"VAT Posting Setup");
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("Intrastat Service"), VATPostingSetup.FieldNo("Intrastat Service CZL"));
+        VATPostingSetupDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesHeader();
     var
         SalesHeader: Record "Sales Header";
+        SalesHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        SalesHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                  "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if SalesHeader.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    SalesHeader."Specific Symbol CZL" := SalesHeader."Specific Symbol";
-                    SalesHeader."Variable Symbol CZL" := SalesHeader."Variable Symbol";
-                    SalesHeader."Constant Symbol CZL" := SalesHeader."Constant Symbol";
-                    SalesHeader."Bank Account Code CZL" := SalesHeader."Bank Account Code";
-                    SalesHeader."Bank Account No. CZL" := SalesHeader."Bank Account No.";
-                    SalesHeader."Bank Branch No. CZL" := SalesHeader."Bank Branch No.";
-                    SalesHeader."Bank Name CZL" := SalesHeader."Bank Name";
-                    SalesHeader."Transit No. CZL" := SalesHeader."Transit No.";
-                    SalesHeader."IBAN CZL" := SalesHeader.IBAN;
-                    SalesHeader."SWIFT Code CZL" := SalesHeader."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    SalesHeader."Physical Transfer CZL" := SalesHeader."Physical Transfer";
-                    SalesHeader."Intrastat Exclude CZL" := SalesHeader."Intrastat Exclude";
-                end;
-                SalesHeader.Modify(false);
-            until SalesHeader.Next() = 0;
+        SalesHeaderDataTransfer.SetTables(Database::"Sales Header", Database::"Sales Header");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Specific Symbol"), SalesHeader.FieldNo("Specific Symbol CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Variable Symbol"), SalesHeader.FieldNo("Variable Symbol CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Constant Symbol"), SalesHeader.FieldNo("Constant Symbol CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Bank Account Code"), SalesHeader.FieldNo("Bank Account Code CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Bank Account No."), SalesHeader.FieldNo("Bank Account No. CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Bank Branch No."), SalesHeader.FieldNo("Bank Branch No. CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Bank Name"), SalesHeader.FieldNo("Bank Name CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Transit No."), SalesHeader.FieldNo("Transit No. CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo(IBAN), SalesHeader.FieldNo("IBAN CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("SWIFT Code"), SalesHeader.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Physical Transfer"), SalesHeader.FieldNo("Physical Transfer CZL"));
+            SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Intrastat Exclude"), SalesHeader.FieldNo("Intrastat Exclude CZL"));
+        end;
+        SalesHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesShipmentHeader();
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
+        SalesShipmentHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        SalesShipmentHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
-        if SalesShipmentHeader.FindSet(true) then
-            repeat
-                SalesShipmentHeader."Physical Transfer CZL" := SalesShipmentHeader."Physical Transfer";
-                SalesShipmentHeader."Intrastat Exclude CZL" := SalesShipmentHeader."Intrastat Exclude";
-                SalesShipmentHeader.Modify(false);
-            until SalesShipmentHeader.Next() = 0;
+        SalesShipmentHeaderDataTransfer.SetTables(Database::"Sales Shipment Header", Database::"Sales Shipment Header");
+        SalesShipmentHeaderDataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("Physical Transfer"), SalesShipmentHeader.FieldNo("Physical Transfer CZL"));
+        SalesShipmentHeaderDataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("Intrastat Exclude"), SalesShipmentHeader.FieldNo("Intrastat Exclude CZL"));
+        SalesShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesInvoiceHeader();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        SalesInvoiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                         "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if SalesInvoiceHeader.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    SalesInvoiceHeader."Specific Symbol CZL" := SalesInvoiceHeader."Specific Symbol";
-                    SalesInvoiceHeader."Variable Symbol CZL" := SalesInvoiceHeader."Variable Symbol";
-                    SalesInvoiceHeader."Constant Symbol CZL" := SalesInvoiceHeader."Constant Symbol";
-                    SalesInvoiceHeader."Bank Account Code CZL" := SalesInvoiceHeader."Bank Account Code";
-                    SalesInvoiceHeader."Bank Account No. CZL" := SalesInvoiceHeader."Bank Account No.";
-                    SalesInvoiceHeader."Bank Branch No. CZL" := SalesInvoiceHeader."Bank Branch No.";
-                    SalesInvoiceHeader."Bank Name CZL" := SalesInvoiceHeader."Bank Name";
-                    SalesInvoiceHeader."Transit No. CZL" := SalesInvoiceHeader."Transit No.";
-                    SalesInvoiceHeader."IBAN CZL" := SalesInvoiceHeader.IBAN;
-                    SalesInvoiceHeader."SWIFT Code CZL" := SalesInvoiceHeader."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    SalesInvoiceHeader."Physical Transfer CZL" := SalesInvoiceHeader."Physical Transfer";
-                    SalesInvoiceHeader."Intrastat Exclude CZL" := SalesInvoiceHeader."Intrastat Exclude";
-                end;
-                SalesInvoiceHeader.Modify(false);
-            until SalesInvoiceHeader.Next() = 0;
+        SalesInvoiceHeaderDataTransfer.SetTables(Database::"Sales Invoice Header", Database::"Sales Invoice Header");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Specific Symbol"), SalesInvoiceHeader.FieldNo("Specific Symbol CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Variable Symbol"), SalesInvoiceHeader.FieldNo("Variable Symbol CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Constant Symbol"), SalesInvoiceHeader.FieldNo("Constant Symbol CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Bank Account Code"), SalesInvoiceHeader.FieldNo("Bank Account Code CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Bank Account No."), SalesInvoiceHeader.FieldNo("Bank Account No. CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Bank Branch No."), SalesInvoiceHeader.FieldNo("Bank Branch No. CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Bank Name"), SalesInvoiceHeader.FieldNo("Bank Name CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Transit No."), SalesInvoiceHeader.FieldNo("Transit No. CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo(IBAN), SalesInvoiceHeader.FieldNo("IBAN CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("SWIFT Code"), SalesInvoiceHeader.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Physical Transfer"), SalesInvoiceHeader.FieldNo("Physical Transfer CZL"));
+            SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Intrastat Exclude"), SalesInvoiceHeader.FieldNo("Intrastat Exclude CZL"));
+        end;
+        SalesInvoiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesInvoiceLine();
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesInvoicelineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        SalesInvoiceLine.SetLoadFields("Country/Region of Origin Code");
-        if SalesInvoiceLine.FindSet(true) then
-            repeat
-                SalesInvoiceLine."Country/Reg. of Orig. Code CZL" := SalesInvoiceLine."Country/Region of Origin Code";
-                SalesInvoiceLine.Modify(false);
-            until SalesInvoiceLine.Next() = 0;
+        SalesInvoicelineDataTransfer.SetTables(Database::"Sales Invoice Line", Database::"Sales Invoice Line");
+        SalesInvoicelineDataTransfer.AddFieldValue(SalesInvoiceLine.FieldNo("Country/Region of Origin Code"), SalesInvoiceLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        SalesInvoicelineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesCrMemoHeader();
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesCrMemoHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        SalesCrMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                        "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if SalesCrMemoHeader.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    SalesCrMemoHeader."Specific Symbol CZL" := SalesCrMemoHeader."Specific Symbol";
-                    SalesCrMemoHeader."Variable Symbol CZL" := SalesCrMemoHeader."Variable Symbol";
-                    SalesCrMemoHeader."Constant Symbol CZL" := SalesCrMemoHeader."Constant Symbol";
-                    SalesCrMemoHeader."Bank Account Code CZL" := SalesCrMemoHeader."Bank Account Code";
-                    SalesCrMemoHeader."Bank Account No. CZL" := SalesCrMemoHeader."Bank Account No.";
-                    SalesCrMemoHeader."Bank Branch No. CZL" := SalesCrMemoHeader."Bank Branch No.";
-                    SalesCrMemoHeader."Bank Name CZL" := SalesCrMemoHeader."Bank Name";
-                    SalesCrMemoHeader."Transit No. CZL" := SalesCrMemoHeader."Transit No.";
-                    SalesCrMemoHeader."IBAN CZL" := SalesCrMemoHeader.IBAN;
-                    SalesCrMemoHeader."SWIFT Code CZL" := SalesCrMemoHeader."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    SalesCrMemoHeader."Physical Transfer CZL" := SalesCrMemoHeader."Physical Transfer";
-                    SalesCrMemoHeader."Intrastat Exclude CZL" := SalesCrMemoHeader."Intrastat Exclude";
-                end;
-                SalesCrMemoHeader.Modify(false);
-            until SalesCrMemoHeader.Next() = 0;
+        SalesCrMemoHeaderDataTransfer.SetTables(Database::"Sales Cr.Memo Header", Database::"Sales Cr.Memo Header");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Specific Symbol"), SalesCrMemoHeader.FieldNo("Specific Symbol CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Variable Symbol"), SalesCrMemoHeader.FieldNo("Variable Symbol CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Constant Symbol"), SalesCrMemoHeader.FieldNo("Constant Symbol CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Bank Account Code"), SalesCrMemoHeader.FieldNo("Bank Account Code CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Bank Account No."), SalesCrMemoHeader.FieldNo("Bank Account No. CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Bank Branch No."), SalesCrMemoHeader.FieldNo("Bank Branch No. CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Bank Name"), SalesCrMemoHeader.FieldNo("Bank Name CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Transit No."), SalesCrMemoHeader.FieldNo("Transit No. CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo(IBAN), SalesCrMemoHeader.FieldNo("IBAN CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("SWIFT Code"), SalesCrMemoHeader.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Physical Transfer"), SalesCrMemoHeader.FieldNo("Physical Transfer CZL"));
+            SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Intrastat Exclude"), SalesCrMemoHeader.FieldNo("Intrastat Exclude CZL"));
+        end;
+        SalesCrMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesCrMemoLine();
     var
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        SalesCrMemoLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        SalesCrMemoLine.SetLoadFields("Country/Region of Origin Code");
-        if SalesCrMemoLine.FindSet(true) then
-            repeat
-                SalesCrMemoLine."Country/Reg. of Orig. Code CZL" := SalesCrMemoLine."Country/Region of Origin Code";
-                SalesCrMemoLine.Modify(false);
-            until SalesCrMemoLine.Next() = 0;
+        SalesCrMemoLineDataTransfer.SetTables(Database::"Sales Cr.Memo Line", Database::"Sales Cr.Memo Line");
+        SalesCrMemoLineDataTransfer.AddFieldValue(SalesCrMemoLine.FieldNo("Country/Region of Origin Code"), SalesCrMemoLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        SalesCrMemoLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesHeaderArchive();
     var
         SalesHeaderArchive: Record "Sales Header Archive";
+        SalesHeaderArchiveDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        SalesHeaderArchive.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
-                                         "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if SalesHeaderArchive.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    SalesHeaderArchive."Specific Symbol CZL" := SalesHeaderArchive."Specific Symbol";
-                    SalesHeaderArchive."Variable Symbol CZL" := SalesHeaderArchive."Variable Symbol";
-                    SalesHeaderArchive."Constant Symbol CZL" := SalesHeaderArchive."Constant Symbol";
-                    SalesHeaderArchive."Bank Account Code CZL" := SalesHeaderArchive."Bank Account Code";
-                    SalesHeaderArchive."Bank Account No. CZL" := SalesHeaderArchive."Bank Account No.";
-                    SalesHeaderArchive."Transit No. CZL" := SalesHeaderArchive."Transit No.";
-                    SalesHeaderArchive."IBAN CZL" := SalesHeaderArchive.IBAN;
-                    SalesHeaderArchive."SWIFT Code CZL" := SalesHeaderArchive."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    SalesHeaderArchive."Physical Transfer CZL" := SalesHeaderArchive."Physical Transfer";
-                    SalesHeaderArchive."Intrastat Exclude CZL" := SalesHeaderArchive."Intrastat Exclude";
-                end;
-                SalesHeaderArchive.Modify(false);
-            until SalesHeaderArchive.Next() = 0;
+        SalesHeaderArchiveDataTransfer.SetTables(Database::"Sales Header Archive", Database::"Sales Header Archive");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Specific Symbol"), SalesHeaderArchive.FieldNo("Specific Symbol CZL"));
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Variable Symbol"), SalesHeaderArchive.FieldNo("Variable Symbol CZL"));
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Constant Symbol"), SalesHeaderArchive.FieldNo("Constant Symbol CZL"));
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Bank Account Code"), SalesHeaderArchive.FieldNo("Bank Account Code CZL"));
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Bank Account No."), SalesHeaderArchive.FieldNo("Bank Account No. CZL"));
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Transit No."), SalesHeaderArchive.FieldNo("Transit No. CZL"));
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo(IBAN), SalesHeaderArchive.FieldNo("IBAN CZL"));
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("SWIFT Code"), SalesHeaderArchive.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Physical Transfer"), SalesHeaderArchive.FieldNo("Physical Transfer CZL"));
+            SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Intrastat Exclude"), SalesHeaderArchive.FieldNo("Intrastat Exclude CZL"));
+        end;
+        SalesHeaderArchiveDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeSalesLineArchive();
     var
         SalesLineArchive: Record "Sales Line Archive";
+        SalesLineArchiveDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        SalesLineArchive.SetLoadFields("Physical Transfer");
-        if SalesLineArchive.FindSet(true) then
-            repeat
-                SalesLineArchive."Physical Transfer CZL" := SalesLineArchive."Physical Transfer";
-                SalesLineArchive.Modify(false);
-            until SalesLineArchive.Next() = 0;
+        SalesLineArchiveDataTransfer.SetTables(Database::"Sales Line Archive", Database::"Sales Line Archive");
+        SalesLineArchiveDataTransfer.AddFieldValue(SalesLineArchive.FieldNo("Physical Transfer"), SalesLineArchive.FieldNo("Physical Transfer CZL"));
+        SalesLineArchiveDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchaseHeader();
     var
         PurchaseHeader: Record "Purchase Header";
+        PurchaseHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        PurchaseHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                     "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if PurchaseHeader.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    PurchaseHeader."Specific Symbol CZL" := PurchaseHeader."Specific Symbol";
-                    PurchaseHeader."Variable Symbol CZL" := PurchaseHeader."Variable Symbol";
-                    PurchaseHeader."Constant Symbol CZL" := PurchaseHeader."Constant Symbol";
-                    PurchaseHeader."Bank Account Code CZL" := PurchaseHeader."Bank Account Code";
-                    PurchaseHeader."Bank Account No. CZL" := PurchaseHeader."Bank Account No.";
-                    PurchaseHeader."Bank Branch No. CZL" := PurchaseHeader."Bank Branch No.";
-                    PurchaseHeader."Bank Name CZL" := PurchaseHeader."Bank Name";
-                    PurchaseHeader."Transit No. CZL" := PurchaseHeader."Transit No.";
-                    PurchaseHeader."IBAN CZL" := PurchaseHeader.IBAN;
-                    PurchaseHeader."SWIFT Code CZL" := PurchaseHeader."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    PurchaseHeader."Physical Transfer CZL" := PurchaseHeader."Physical Transfer";
-                    PurchaseHeader."Intrastat Exclude CZL" := PurchaseHeader."Intrastat Exclude";
-                end;
-                PurchaseHeader.Modify(false);
-            until PurchaseHeader.Next() = 0;
+        PurchaseHeaderDataTransfer.SetTables(Database::"Purchase Header", Database::"Purchase Header");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Specific Symbol"), PurchaseHeader.FieldNo("Specific Symbol CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Variable Symbol"), PurchaseHeader.FieldNo("Variable Symbol CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Constant Symbol"), PurchaseHeader.FieldNo("Constant Symbol CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Bank Account Code"), PurchaseHeader.FieldNo("Bank Account Code CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Bank Account No."), PurchaseHeader.FieldNo("Bank Account No. CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Bank Branch No."), PurchaseHeader.FieldNo("Bank Branch No. CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Bank Name"), PurchaseHeader.FieldNo("Bank Name CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Transit No."), PurchaseHeader.FieldNo("Transit No. CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo(IBAN), PurchaseHeader.FieldNo("IBAN CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("SWIFT Code"), PurchaseHeader.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Physical Transfer"), PurchaseHeader.FieldNo("Physical Transfer CZL"));
+            PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Intrastat Exclude"), PurchaseHeader.FieldNo("Intrastat Exclude CZL"));
+        end;
+        PurchaseHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchRcptHeader();
     var
         PurchRcptHeader: Record "Purch. Rcpt. Header";
+        PurchRcptHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        PurchRcptHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
-        if PurchRcptHeader.FindSet(true) then
-            repeat
-                PurchRcptHeader."Physical Transfer CZL" := PurchRcptHeader."Physical Transfer";
-                PurchRcptHeader."Intrastat Exclude CZL" := PurchRcptHeader."Intrastat Exclude";
-                PurchRcptHeader.Modify(false);
-            until PurchRcptHeader.Next() = 0;
+        PurchRcptHeaderDataTransfer.SetTables(Database::"Purch. Rcpt. Header", Database::"Purch. Rcpt. Header");
+        PurchRcptHeaderDataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("Physical Transfer"), PurchRcptHeader.FieldNo("Physical Transfer CZL"));
+        PurchRcptHeaderDataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("Intrastat Exclude"), PurchRcptHeader.FieldNo("Intrastat Exclude CZL"));
+        PurchRcptHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchRcptLine();
     var
         PurchRcptLine: Record "Purch. Rcpt. Line";
+        PurchRcptLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        PurchRcptLine.SetLoadFields("Country/Region of Origin Code");
-        if PurchRcptLine.FindSet(true) then
-            repeat
-                PurchRcptLine."Country/Reg. of Orig. Code CZL" := PurchRcptLine."Country/Region of Origin Code";
-                PurchRcptLine.Modify(false);
-            until PurchRcptLine.Next() = 0;
+        PurchRcptLineDataTransfer.SetTables(Database::"Purch. Rcpt. Line", Database::"Purch. Rcpt. Line");
+        PurchRcptLineDataTransfer.AddFieldValue(PurchRcptLine.FieldNo("Country/Region of Origin Code"), PurchRcptLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        PurchRcptLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchInvHeader();
     var
         PurchInvHeader: Record "Purch. Inv. Header";
+        PurchInvHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        PurchInvHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
-                                     "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Physical Transfer", "Intrastat Exclude");
-        if PurchInvHeader.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    PurchInvHeader."Specific Symbol CZL" := PurchInvHeader."Specific Symbol";
-                    PurchInvHeader."Variable Symbol CZL" := PurchInvHeader."Variable Symbol";
-                    PurchInvHeader."Constant Symbol CZL" := PurchInvHeader."Constant Symbol";
-                    PurchInvHeader."Bank Account Code CZL" := PurchInvHeader."Bank Account Code";
-                    PurchInvHeader."Bank Account No. CZL" := PurchInvHeader."Bank Account No.";
-                    PurchInvHeader."Transit No. CZL" := PurchInvHeader."Transit No.";
-                    PurchInvHeader."IBAN CZL" := PurchInvHeader.IBAN;
-                    PurchInvHeader."SWIFT Code CZL" := PurchInvHeader."SWIFT Code";
-                    PurchInvHeader."VAT Date CZL" := PurchInvHeader."VAT Date";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    PurchInvHeader."Physical Transfer CZL" := PurchInvHeader."Physical Transfer";
-                    PurchInvHeader."Intrastat Exclude CZL" := PurchInvHeader."Intrastat Exclude";
-                end;
-                PurchInvHeader.Modify(false);
-            until PurchInvHeader.Next() = 0;
+        PurchInvHeaderDataTransfer.SetTables(Database::"Purch. Inv. Header", Database::"Purch. Inv. Header");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Specific Symbol"), PurchInvHeader.FieldNo("Specific Symbol CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Variable Symbol"), PurchInvHeader.FieldNo("Variable Symbol CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Constant Symbol"), PurchInvHeader.FieldNo("Constant Symbol CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Bank Account Code"), PurchInvHeader.FieldNo("Bank Account Code CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Bank Account No."), PurchInvHeader.FieldNo("Bank Account No. CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Transit No."), PurchInvHeader.FieldNo("Transit No. CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo(IBAN), PurchInvHeader.FieldNo("IBAN CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("SWIFT Code"), PurchInvHeader.FieldNo("SWIFT Code CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Date"), PurchInvHeader.FieldNo("VAT Date CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Physical Transfer"), PurchInvHeader.FieldNo("Physical Transfer CZL"));
+            PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Intrastat Exclude"), PurchInvHeader.FieldNo("Intrastat Exclude CZL"));
+        end;
+        PurchInvHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchInvLine();
     var
         PurchInvLine: Record "Purch. Inv. Line";
+        PurchInvLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        PurchInvLine.SetLoadFields("Country/Region of Origin Code");
-        if PurchInvLine.FindSet(true) then
-            repeat
-                PurchInvLine."Country/Reg. of Orig. Code CZL" := PurchInvLine."Country/Region of Origin Code";
-                PurchInvLine.Modify(false);
-            until PurchInvLine.Next() = 0;
+        PurchInvLineDataTransfer.SetTables(Database::"Purch. Inv. Line", Database::"Purch. Inv. Line");
+        PurchInvLineDataTransfer.AddFieldValue(PurchInvLine.FieldNo("Country/Region of Origin Code"), PurchInvLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        PurchInvLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchCrMemoHdr();
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchCrMemoHdrDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        PurchCrMemoHdr.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
-                                     "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if PurchCrMemoHdr.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    PurchCrMemoHdr."Specific Symbol CZL" := PurchCrMemoHdr."Specific Symbol";
-                    PurchCrMemoHdr."Variable Symbol CZL" := PurchCrMemoHdr."Variable Symbol";
-                    PurchCrMemoHdr."Constant Symbol CZL" := PurchCrMemoHdr."Constant Symbol";
-                    PurchCrMemoHdr."Bank Account Code CZL" := PurchCrMemoHdr."Bank Account Code";
-                    PurchCrMemoHdr."Bank Account No. CZL" := PurchCrMemoHdr."Bank Account No.";
-                    PurchCrMemoHdr."Transit No. CZL" := PurchCrMemoHdr."Transit No.";
-                    PurchCrMemoHdr."IBAN CZL" := PurchCrMemoHdr.IBAN;
-                    PurchCrMemoHdr."SWIFT Code CZL" := PurchCrMemoHdr."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    PurchCrMemoHdr."Physical Transfer CZL" := PurchCrMemoHdr."Physical Transfer";
-                    PurchCrMemoHdr."Intrastat Exclude CZL" := PurchCrMemoHdr."Intrastat Exclude";
-                end;
-                PurchCrMemoHdr.Modify(false);
-            until PurchCrMemoHdr.Next() = 0;
+        PurchCrMemoHdrDataTransfer.SetTables(Database::"Purch. Cr. Memo Hdr.", Database::"Purch. Cr. Memo Hdr.");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Specific Symbol"), PurchCrMemoHdr.FieldNo("Specific Symbol CZL"));
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Variable Symbol"), PurchCrMemoHdr.FieldNo("Variable Symbol CZL"));
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Constant Symbol"), PurchCrMemoHdr.FieldNo("Constant Symbol CZL"));
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Bank Account Code"), PurchCrMemoHdr.FieldNo("Bank Account Code CZL"));
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Bank Account No."), PurchCrMemoHdr.FieldNo("Bank Account No. CZL"));
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Transit No."), PurchCrMemoHdr.FieldNo("Transit No. CZL"));
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo(IBAN), PurchCrMemoHdr.FieldNo("IBAN CZL"));
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("SWIFT Code"), PurchCrMemoHdr.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Physical Transfer"), PurchCrMemoHdr.FieldNo("Physical Transfer CZL"));
+            PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Intrastat Exclude"), PurchCrMemoHdr.FieldNo("Intrastat Exclude CZL"));
+        end;
+        PurchCrMemoHdrDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchCrMemoLine();
     var
         PurchCrMemoLine: Record "Purch. Cr. Memo Line";
+        PurchCrMemoLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        PurchCrMemoLine.SetLoadFields("Country/Region of Origin Code");
-        if PurchCrMemoLine.FindSet(true) then
-            repeat
-                PurchCrMemoLine."Country/Reg. of Orig. Code CZL" := PurchCrMemoLine."Country/Region of Origin Code";
-                PurchCrMemoLine.Modify(false);
-            until PurchCrMemoLine.Next() = 0;
+        PurchCrMemoLineDataTransfer.SetTables(Database::"Purch. Cr. Memo Line", Database::"Purch. Cr. Memo Line");
+        PurchCrMemoLineDataTransfer.AddFieldValue(PurchCrMemoLine.FieldNo("Country/Region of Origin Code"), PurchCrMemoLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        PurchCrMemoLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchaseHeaderArchive();
     var
         PurchaseHeaderArchive: Record "Purchase Header Archive";
+        PurchaseHeaderArchiveDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        PurchaseHeaderArchive.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
-                                            "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if PurchaseHeaderArchive.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    PurchaseHeaderArchive."Specific Symbol CZL" := PurchaseHeaderArchive."Specific Symbol";
-                    PurchaseHeaderArchive."Variable Symbol CZL" := PurchaseHeaderArchive."Variable Symbol";
-                    PurchaseHeaderArchive."Constant Symbol CZL" := PurchaseHeaderArchive."Constant Symbol";
-                    PurchaseHeaderArchive."Bank Account Code CZL" := PurchaseHeaderArchive."Bank Account Code";
-                    PurchaseHeaderArchive."Bank Account No. CZL" := PurchaseHeaderArchive."Bank Account No.";
-                    PurchaseHeaderArchive."Transit No. CZL" := PurchaseHeaderArchive."Transit No.";
-                    PurchaseHeaderArchive."IBAN CZL" := PurchaseHeaderArchive.IBAN;
-                    PurchaseHeaderArchive."SWIFT Code CZL" := PurchaseHeaderArchive."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    PurchaseHeaderArchive."Physical Transfer CZL" := PurchaseHeaderArchive."Physical Transfer";
-                    PurchaseHeaderArchive."Intrastat Exclude CZL" := PurchaseHeaderArchive."Intrastat Exclude";
-                end;
-                PurchaseHeaderArchive.Modify(false);
-            until PurchaseHeaderArchive.Next() = 0;
+        PurchaseHeaderArchiveDataTransfer.SetTables(Database::"Purchase Header Archive", Database::"Purchase Header Archive");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Specific Symbol"), PurchaseHeaderArchive.FieldNo("Specific Symbol CZL"));
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Variable Symbol"), PurchaseHeaderArchive.FieldNo("Variable Symbol CZL"));
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Constant Symbol"), PurchaseHeaderArchive.FieldNo("Constant Symbol CZL"));
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Bank Account Code"), PurchaseHeaderArchive.FieldNo("Bank Account Code CZL"));
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Bank Account No."), PurchaseHeaderArchive.FieldNo("Bank Account No. CZL"));
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Transit No."), PurchaseHeaderArchive.FieldNo("Transit No. CZL"));
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo(IBAN), PurchaseHeaderArchive.FieldNo("IBAN CZL"));
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("SWIFT Code"), PurchaseHeaderArchive.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Physical Transfer"), PurchaseHeaderArchive.FieldNo("Physical Transfer CZL"));
+            PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Intrastat Exclude"), PurchaseHeaderArchive.FieldNo("Intrastat Exclude CZL"));
+        end;
+        PurchaseHeaderArchiveDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePurchaseLineArchive();
     var
         PurchaseLineArchive: Record "Purchase Line Archive";
+        PurchaseLineArchiveDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        PurchaseLineArchive.SetLoadFields("Physical Transfer");
-        if PurchaseLineArchive.FindSet(true) then
-            repeat
-                PurchaseLineArchive."Physical Transfer CZL" := PurchaseLineArchive."Physical Transfer";
-                PurchaseLineArchive.Modify(false);
-            until PurchaseLineArchive.Next() = 0;
+        PurchaseLineArchiveDataTransfer.SetTables(Database::"Purchase Line Archive", Database::"Purchase Line Archive");
+        PurchaseLineArchiveDataTransfer.AddFieldValue(PurchaseLineArchive.FieldNo("Physical Transfer"), PurchaseLineArchive.FieldNo("Physical Transfer CZL"));
+        PurchaseLineArchiveDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeServiceHeader();
     var
         ServiceHeader: Record "Service Header";
+        ServiceHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        ServiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                    "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if ServiceHeader.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    ServiceHeader."Specific Symbol CZL" := ServiceHeader."Specific Symbol";
-                    ServiceHeader."Variable Symbol CZL" := ServiceHeader."Variable Symbol";
-                    ServiceHeader."Constant Symbol CZL" := ServiceHeader."Constant Symbol";
-                    ServiceHeader."Bank Account Code CZL" := ServiceHeader."Bank Account Code";
-                    ServiceHeader."Bank Account No. CZL" := ServiceHeader."Bank Account No.";
-                    ServiceHeader."Bank Branch No. CZL" := ServiceHeader."Bank Branch No.";
-                    ServiceHeader."Bank Name CZL" := ServiceHeader."Bank Name";
-                    ServiceHeader."Transit No. CZL" := ServiceHeader."Transit No.";
-                    ServiceHeader."IBAN CZL" := ServiceHeader.IBAN;
-                    ServiceHeader."SWIFT Code CZL" := ServiceHeader."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    ServiceHeader."Physical Transfer CZL" := ServiceHeader."Physical Transfer";
-                    ServiceHeader."Intrastat Exclude CZL" := ServiceHeader."Intrastat Exclude";
-                end;
-                ServiceHeader.Modify(false);
-            until ServiceHeader.Next() = 0;
+        ServiceHeaderDataTransfer.SetTables(Database::"Service Header", Database::"Service Header");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Specific Symbol"), ServiceHeader.FieldNo("Specific Symbol CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Variable Symbol"), ServiceHeader.FieldNo("Variable Symbol CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Constant Symbol"), ServiceHeader.FieldNo("Constant Symbol CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Bank Account Code"), ServiceHeader.FieldNo("Bank Account Code CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Bank Account No."), ServiceHeader.FieldNo("Bank Account No. CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Bank Branch No."), ServiceHeader.FieldNo("Bank Branch No. CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Bank Name"), ServiceHeader.FieldNo("Bank Name CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Transit No."), ServiceHeader.FieldNo("Transit No. CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo(IBAN), ServiceHeader.FieldNo("IBAN CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("SWIFT Code"), ServiceHeader.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Physical Transfer"), ServiceHeader.FieldNo("Physical Transfer CZL"));
+            ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Intrastat Exclude"), ServiceHeader.FieldNo("Intrastat Exclude CZL"));
+        end;
+        ServiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeServiceShipmentHeader();
     var
         ServiceShipmentHeader: Record "Service Shipment Header";
+        ServiceShipmentHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ServiceShipmentHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
-        if ServiceShipmentHeader.FindSet(true) then
-            repeat
-                ServiceShipmentHeader."Physical Transfer CZL" := ServiceShipmentHeader."Physical Transfer";
-                ServiceShipmentHeader."Intrastat Exclude CZL" := ServiceShipmentHeader."Intrastat Exclude";
-                ServiceShipmentHeader.Modify(false);
-            until ServiceShipmentHeader.Next() = 0;
+        ServiceShipmentHeaderDataTransfer.SetTables(Database::"Service Shipment Header", Database::"Service Shipment Header");
+        ServiceShipmentHeaderDataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("Physical Transfer"), ServiceShipmentHeader.FieldNo("Physical Transfer CZL"));
+        ServiceShipmentHeaderDataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("Intrastat Exclude"), ServiceShipmentHeader.FieldNo("Intrastat Exclude CZL"));
+        ServiceShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeServiceInvoiceHeader();
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
+        ServiceInvoiceHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        ServiceInvoiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                           "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if ServiceInvoiceHeader.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    ServiceInvoiceHeader."Specific Symbol CZL" := ServiceInvoiceHeader."Specific Symbol";
-                    ServiceInvoiceHeader."Variable Symbol CZL" := ServiceInvoiceHeader."Variable Symbol";
-                    ServiceInvoiceHeader."Constant Symbol CZL" := ServiceInvoiceHeader."Constant Symbol";
-                    ServiceInvoiceHeader."Bank Account Code CZL" := ServiceInvoiceHeader."Bank Account Code";
-                    ServiceInvoiceHeader."Bank Account No. CZL" := ServiceInvoiceHeader."Bank Account No.";
-                    ServiceInvoiceHeader."Bank Branch No. CZL" := ServiceInvoiceHeader."Bank Branch No.";
-                    ServiceInvoiceHeader."Bank Name CZL" := ServiceInvoiceHeader."Bank Name";
-                    ServiceInvoiceHeader."Transit No. CZL" := ServiceInvoiceHeader."Transit No.";
-                    ServiceInvoiceHeader."IBAN CZL" := ServiceInvoiceHeader.IBAN;
-                    ServiceInvoiceHeader."SWIFT Code CZL" := ServiceInvoiceHeader."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    ServiceInvoiceHeader."Physical Transfer CZL" := ServiceInvoiceHeader."Physical Transfer";
-                    ServiceInvoiceHeader."Intrastat Exclude CZL" := ServiceInvoiceHeader."Intrastat Exclude";
-                end;
-                ServiceInvoiceHeader.Modify(false);
-            until ServiceInvoiceHeader.Next() = 0;
+        ServiceInvoiceHeaderDataTransfer.SetTables(Database::"Service Invoice Header", Database::"Service Invoice Header");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Specific Symbol"), ServiceInvoiceHeader.FieldNo("Specific Symbol CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Variable Symbol"), ServiceInvoiceHeader.FieldNo("Variable Symbol CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Constant Symbol"), ServiceInvoiceHeader.FieldNo("Constant Symbol CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Bank Account Code"), ServiceInvoiceHeader.FieldNo("Bank Account Code CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Bank Account No."), ServiceInvoiceHeader.FieldNo("Bank Account No. CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Bank Branch No."), ServiceInvoiceHeader.FieldNo("Bank Branch No. CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Bank Name"), ServiceInvoiceHeader.FieldNo("Bank Name CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Transit No."), ServiceInvoiceHeader.FieldNo("Transit No. CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo(IBAN), ServiceInvoiceHeader.FieldNo("IBAN CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("SWIFT Code"), ServiceInvoiceHeader.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Physical Transfer"), ServiceInvoiceHeader.FieldNo("Physical Transfer CZL"));
+            ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Intrastat Exclude"), ServiceInvoiceHeader.FieldNo("Intrastat Exclude CZL"));
+        end;
+        ServiceInvoiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeServiceInvoiceLine();
     var
         ServiceInvoiceLine: Record "Service Invoice Line";
+        ServiceInvoiceLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ServiceInvoiceLine.SetLoadFields("Country/Region of Origin Code");
-        if ServiceInvoiceLine.FindSet(true) then
-            repeat
-                ServiceInvoiceLine."Country/Reg. of Orig. Code CZL" := ServiceInvoiceLine."Country/Region of Origin Code";
-                ServiceInvoiceLine.Modify(false);
-            until ServiceInvoiceLine.Next() = 0;
+        ServiceInvoiceLineDataTransfer.SetTables(Database::"Service Invoice Line", Database::"Service Invoice Line");
+        ServiceInvoiceLineDataTransfer.AddFieldValue(ServiceInvoiceLine.FieldNo("Country/Region of Origin Code"), ServiceInvoiceLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ServiceInvoiceLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeServiceCrMemoHeader();
     var
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        ServiceCrMemoHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
            UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag())
         then
             exit;
 
-        ServiceCrMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                          "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
-        if ServiceCrMemoHeader.FindSet(true) then
-            repeat
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
-                    ServiceCrMemoHeader."Specific Symbol CZL" := ServiceCrMemoHeader."Specific Symbol";
-                    ServiceCrMemoHeader."Variable Symbol CZL" := ServiceCrMemoHeader."Variable Symbol";
-                    ServiceCrMemoHeader."Constant Symbol CZL" := ServiceCrMemoHeader."Constant Symbol";
-                    ServiceCrMemoHeader."Bank Account Code CZL" := ServiceCrMemoHeader."Bank Account Code";
-                    ServiceCrMemoHeader."Bank Account No. CZL" := ServiceCrMemoHeader."Bank Account No.";
-                    ServiceCrMemoHeader."Bank Branch No. CZL" := ServiceCrMemoHeader."Bank Branch No.";
-                    ServiceCrMemoHeader."Bank Name CZL" := ServiceCrMemoHeader."Bank Name";
-                    ServiceCrMemoHeader."Transit No. CZL" := ServiceCrMemoHeader."Transit No.";
-                    ServiceCrMemoHeader."IBAN CZL" := ServiceCrMemoHeader.IBAN;
-                    ServiceCrMemoHeader."SWIFT Code CZL" := ServiceCrMemoHeader."SWIFT Code";
-                end;
-                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
-                    ServiceCrMemoHeader."Physical Transfer CZL" := ServiceCrMemoHeader."Physical Transfer";
-                    ServiceCrMemoHeader."Intrastat Exclude CZL" := ServiceCrMemoHeader."Intrastat Exclude";
-                end;
-                ServiceCrMemoHeader.Modify(false);
-            until ServiceCrMemoHeader.Next() = 0;
+        ServiceCrMemoHeaderDataTransfer.SetTables(Database::"Service Cr.Memo Header", Database::"Service Cr.Memo Header");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Specific Symbol"), ServiceCrMemoHeader.FieldNo("Specific Symbol CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Variable Symbol"), ServiceCrMemoHeader.FieldNo("Variable Symbol CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Constant Symbol"), ServiceCrMemoHeader.FieldNo("Constant Symbol CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Bank Account Code"), ServiceCrMemoHeader.FieldNo("Bank Account Code CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Bank Account No."), ServiceCrMemoHeader.FieldNo("Bank Account No. CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Bank Branch No."), ServiceCrMemoHeader.FieldNo("Bank Branch No. CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Bank Name"), ServiceCrMemoHeader.FieldNo("Bank Name CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Transit No."), ServiceCrMemoHeader.FieldNo("Transit No. CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo(IBAN), ServiceCrMemoHeader.FieldNo("IBAN CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("SWIFT Code"), ServiceCrMemoHeader.FieldNo("SWIFT Code CZL"));
+        end;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Physical Transfer"), ServiceCrMemoHeader.FieldNo("Physical Transfer CZL"));
+            ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Intrastat Exclude"), ServiceCrMemoHeader.FieldNo("Intrastat Exclude CZL"));
+        end;
+        ServiceCrMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeServiceCrMemoLine();
     var
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
+        ServiceCrMemoLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ServiceCrMemoLine.SetLoadFields("Country/Region of Origin Code");
-        if ServiceCrMemoLine.FindSet(true) then
-            repeat
-                ServiceCrMemoLine."Country/Reg. of Orig. Code CZL" := ServiceCrMemoLine."Country/Region of Origin Code";
-                ServiceCrMemoLine.Modify(false);
-            until ServiceCrMemoLine.Next() = 0;
+        ServiceCrMemoLineDataTransfer.SetTables(Database::"Service Cr.Memo Line", Database::"Service Cr.Memo Line");
+        ServiceCrMemoLineDataTransfer.AddFieldValue(ServiceCrMemoLine.FieldNo("Country/Region of Origin Code"), ServiceCrMemoLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ServiceCrMemoLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeReturnShipmentHeader();
     var
         ReturnShipmentHeader: Record "Return Shipment Header";
+        ReturnShipmentHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ReturnShipmentHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
-        if ReturnShipmentHeader.FindSet(true) then
-            repeat
-                ReturnShipmentHeader."Physical Transfer CZL" := ReturnShipmentHeader."Physical Transfer";
-                ReturnShipmentHeader."Intrastat Exclude CZL" := ReturnShipmentHeader."Intrastat Exclude";
-                ReturnShipmentHeader.Modify(false);
-            until ReturnShipmentHeader.Next() = 0;
+        ReturnShipmentHeaderDataTransfer.SetTables(Database::"Return Shipment Header", Database::"Return Shipment Header");
+        ReturnShipmentHeaderDataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("Physical Transfer"), ReturnShipmentHeader.FieldNo("Physical Transfer CZL"));
+        ReturnShipmentHeaderDataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("Intrastat Exclude"), ReturnShipmentHeader.FieldNo("Intrastat Exclude CZL"));
+        ReturnShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeReturnReceiptHeader();
     var
         ReturnReceiptHeader: Record "Return Receipt Header";
+        ReturnReceiptHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ReturnReceiptHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
-        if ReturnReceiptHeader.FindSet(true) then
-            repeat
-                ReturnReceiptHeader."Physical Transfer CZL" := ReturnReceiptHeader."Physical Transfer";
-                ReturnReceiptHeader."Intrastat Exclude CZL" := ReturnReceiptHeader."Intrastat Exclude";
-                ReturnReceiptHeader.Modify(false);
-            until ReturnReceiptHeader.Next() = 0;
+        ReturnReceiptHeaderDataTransfer.SetTables(Database::"Return Receipt Header", Database::"Return Receipt Header");
+        ReturnReceiptHeaderDataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("Physical Transfer"), ReturnReceiptHeader.FieldNo("Physical Transfer CZL"));
+        ReturnReceiptHeaderDataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("Intrastat Exclude"), ReturnReceiptHeader.FieldNo("Intrastat Exclude CZL"));
+        ReturnReceiptHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeTransferHeader();
     var
         TransferHeader: Record "Transfer Header";
+        TransferHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        TransferHeader.SetLoadFields("Intrastat Exclude");
-        if TransferHeader.FindSet(true) then
-            repeat
-                TransferHeader."Intrastat Exclude CZL" := TransferHeader."Intrastat Exclude";
-                TransferHeader.Modify(false);
-            until TransferHeader.Next() = 0;
+        TransferHeaderDataTransfer.SetTables(Database::"Transfer Header", Database::"Transfer Header");
+        TransferHeaderDataTransfer.AddFieldValue(TransferHeader.FieldNo("Intrastat Exclude"), TransferHeader.FieldNo("Intrastat Exclude CZL"));
+        TransferHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeTransferLine();
     var
         TransferLine: Record "Transfer Line";
+        TransferLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        TransferLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if TransferLine.FindSet(true) then
-            repeat
-                TransferLine."Tariff No. CZL" := TransferLine."Tariff No.";
-                TransferLine."Statistic Indication CZL" := TransferLine."Statistic Indication";
-                TransferLine."Country/Reg. of Orig. Code CZL" := TransferLine."Country/Region of Origin Code";
-                TransferLine.Modify(false);
-            until TransferLine.Next() = 0;
+        TransferLineDataTransfer.SetTables(Database::"Transfer Line", Database::"Transfer Line");
+        TransferLineDataTransfer.AddFieldValue(TransferLine.FieldNo("Tariff No."), TransferLine.FieldNo("Tariff No. CZL"));
+        TransferLineDataTransfer.AddFieldValue(TransferLine.FieldNo("Statistic Indication"), TransferLine.FieldNo("Statistic Indication CZL"));
+        TransferLineDataTransfer.AddFieldValue(TransferLine.FieldNo("Country/Region of Origin Code"), TransferLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        TransferLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeTransferReceiptHeader();
     var
         TransferReceiptHeader: Record "Transfer Receipt Header";
+        TransferReceiptHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        TransferReceiptHeader.SetLoadFields("Intrastat Exclude");
-        if TransferReceiptHeader.FindSet(true) then
-            repeat
-                TransferReceiptHeader."Intrastat Exclude CZL" := TransferReceiptHeader."Intrastat Exclude";
-                TransferReceiptHeader.Modify(false);
-            until TransferReceiptHeader.Next() = 0;
+        TransferReceiptHeaderDataTransfer.SetTables(Database::"Transfer Receipt Header", Database::"Transfer Receipt Header");
+        TransferReceiptHeaderDataTransfer.AddFieldValue(TransferReceiptHeader.FieldNo("Intrastat Exclude"), TransferReceiptHeader.FieldNo("Intrastat Exclude CZL"));
+        TransferReceiptHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeTransferShipmentHeader();
     var
         TransferShipmentHeader: Record "Transfer Shipment Header";
+        TransferShipmentHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        TransferShipmentHeader.SetLoadFields("Intrastat Exclude");
-        if TransferShipmentHeader.FindSet(true) then
-            repeat
-                TransferShipmentHeader."Intrastat Exclude CZL" := TransferShipmentHeader."Intrastat Exclude";
-                TransferShipmentHeader.Modify(false);
-            until TransferShipmentHeader.Next() = 0;
+        TransferShipmentHeaderDataTransfer.SetTables(Database::"Transfer Shipment Header", Database::"Transfer Shipment Header");
+        TransferShipmentHeaderDataTransfer.AddFieldValue(TransferShipmentHeader.FieldNo("Intrastat Exclude"), TransferShipmentHeader.FieldNo("Intrastat Exclude CZL"));
+        TransferShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeItemLedgerEntry();
     var
         ItemLedgerEntry: Record "Item Ledger Entry";
+        ItemLedgerEntryDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ItemLedgerEntry.SetLoadFields("Tariff No.", "Physical Transfer", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
-        if ItemLedgerEntry.FindSet(true) then
-            repeat
-                ItemLedgerEntry."Tariff No. CZL" := ItemLedgerEntry."Tariff No.";
-                ItemLedgerEntry."Physical Transfer CZL" := ItemLedgerEntry."Physical Transfer";
-                ItemLedgerEntry."Net Weight CZL" := ItemLedgerEntry."Net Weight";
-                ItemLedgerEntry."Country/Reg. of Orig. Code CZL" := ItemLedgerEntry."Country/Region of Origin Code";
-                ItemLedgerEntry."Statistic Indication CZL" := ItemLedgerEntry."Statistic Indication";
-                ItemLedgerEntry."Intrastat Transaction CZL" := ItemLedgerEntry."Intrastat Transaction";
-                ItemLedgerEntry.Modify(false);
-            until ItemLedgerEntry.Next() = 0;
+        ItemLedgerEntryDataTransfer.SetTables(Database::"Item Ledger Entry", Database::"Item Ledger Entry");
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Tariff No."), ItemLedgerEntry.FieldNo("Tariff No. CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Physical Transfer"), ItemLedgerEntry.FieldNo("Physical Transfer CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Net Weight"), ItemLedgerEntry.FieldNo("Net Weight CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Country/Region of Origin Code"), ItemLedgerEntry.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Statistic Indication"), ItemLedgerEntry.FieldNo("Statistic Indication CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Intrastat Transaction"), ItemLedgerEntry.FieldNo("Intrastat Transaction CZL"));
+        ItemLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeJobLedgerEntry();
     var
         JobLedgerEntry: Record "Job Ledger Entry";
+        JobLedgerEntryDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        JobLedgerEntry.SetLoadFields("Tariff No.", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
-        if JobLedgerEntry.FindSet(true) then
-            repeat
-                JobLedgerEntry."Tariff No. CZL" := JobLedgerEntry."Tariff No.";
-                JobLedgerEntry."Net Weight CZL" := JobLedgerEntry."Net Weight";
-                JobLedgerEntry."Country/Reg. of Orig. Code CZL" := JobLedgerEntry."Country/Region of Origin Code";
-                JobLedgerEntry."Statistic Indication CZL" := JobLedgerEntry."Statistic Indication";
-                JobLedgerEntry."Intrastat Transaction CZL" := JobLedgerEntry."Intrastat Transaction";
-                JobLedgerEntry.Modify(false);
-            until JobLedgerEntry.Next() = 0;
+        JobLedgerEntryDataTransfer.SetTables(Database::"Job Ledger Entry", Database::"Job Ledger Entry");
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Tariff No."), JobLedgerEntry.FieldNo("Tariff No. CZL"));
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Net Weight"), JobLedgerEntry.FieldNo("Net Weight CZL"));
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Country/Region of Origin Code"), JobLedgerEntry.FieldNo("Country/Reg. of Orig. Code CZL"));
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Statistic Indication"), JobLedgerEntry.FieldNo("Statistic Indication CZL"));
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Intrastat Transaction"), JobLedgerEntry.FieldNo("Intrastat Transaction CZL"));
+        JobLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeItemCharge();
     var
         ItemCharge: Record "Item Charge";
+        ItemChargeDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ItemCharge.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
-        if ItemCharge.FindSet(true) then
-            repeat
-                ItemCharge."Incl. in Intrastat Amount CZL" := ItemCharge."Incl. in Intrastat Amount";
-                ItemCharge."Incl. in Intrastat S.Value CZL" := ItemCharge."Incl. in Intrastat Stat. Value";
-                ItemCharge.Modify(false);
-            until ItemCharge.Next() = 0;
+        ItemChargeDataTransfer.SetTables(Database::"Item Charge", Database::"Item Charge");
+        ItemChargeDataTransfer.AddFieldValue(ItemCharge.FieldNo("Incl. in Intrastat Amount"), ItemCharge.FieldNo("Incl. in Intrastat Amount CZL"));
+        ItemChargeDataTransfer.AddFieldValue(ItemCharge.FieldNo("Incl. in Intrastat Stat. Value"), ItemCharge.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ItemChargeDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeItemChargeAssignmentPurch();
     var
         ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
+        ItemChargeAssignmentPurchDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ItemChargeAssignmentPurch.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
-        if ItemChargeAssignmentPurch.FindSet(true) then
-            repeat
-                ItemChargeAssignmentPurch."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentPurch."Incl. in Intrastat Amount";
-                ItemChargeAssignmentPurch."Incl. in Intrastat S.Value CZL" := ItemChargeAssignmentPurch."Incl. in Intrastat Stat. Value";
-                ItemChargeAssignmentPurch.Modify(false);
-            until ItemChargeAssignmentPurch.Next() = 0;
+        ItemChargeAssignmentPurchDataTransfer.SetTables(Database::"Item Charge Assignment (Purch)", Database::"Item Charge Assignment (Purch)");
+        ItemChargeAssignmentPurchDataTransfer.AddFieldValue(ItemChargeAssignmentPurch.FieldNo("Incl. in Intrastat Amount"), ItemChargeAssignmentPurch.FieldNo("Incl. in Intrastat Amount CZL"));
+        ItemChargeAssignmentPurchDataTransfer.AddFieldValue(ItemChargeAssignmentPurch.FieldNo("Incl. in Intrastat Stat. Value"), ItemChargeAssignmentPurch.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ItemChargeAssignmentPurchDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeItemChargeAssignmentSales();
     var
         ItemChargeAssignmentSales: Record "Item Charge Assignment (Sales)";
+        ItemChargeAssignmentSalesDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        ItemChargeAssignmentSales.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
-        if ItemChargeAssignmentSales.FindSet(true) then
-            repeat
-                ItemChargeAssignmentSales."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentSales."Incl. in Intrastat Amount";
-                ItemChargeAssignmentSales."Incl. in Intrastat S.Value CZL" := ItemChargeAssignmentSales."Incl. in Intrastat Stat. Value";
-                ItemChargeAssignmentSales.Modify(false);
-            until ItemChargeAssignmentSales.Next() = 0;
+        ItemChargeAssignmentSalesDataTransfer.SetTables(Database::"Item Charge Assignment (Sales)", Database::"Item Charge Assignment (Sales)");
+        ItemChargeAssignmentSalesDataTransfer.AddFieldValue(ItemChargeAssignmentSales.FieldNo("Incl. in Intrastat Amount"), ItemChargeAssignmentSales.FieldNo("Incl. in Intrastat Amount CZL"));
+        ItemChargeAssignmentSalesDataTransfer.AddFieldValue(ItemChargeAssignmentSales.FieldNo("Incl. in Intrastat Stat. Value"), ItemChargeAssignmentSales.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ItemChargeAssignmentSalesDataTransfer.CopyFields();
     end;
 
     local procedure UpgradePostedGenJournalLine();
     var
         PostedGenJournalLine: Record "Posted Gen. Journal Line";
+        PostedGenJournalLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        PostedGenJournalLine.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
-        if PostedGenJournalLine.FindSet(true) then
-            repeat
-                PostedGenJournalLine."Specific Symbol CZL" := PostedGenJournalLine."Specific Symbol";
-                PostedGenJournalLine."Variable Symbol CZL" := PostedGenJournalLine."Variable Symbol";
-                PostedGenJournalLine."Constant Symbol CZL" := PostedGenJournalLine."Constant Symbol";
-                PostedGenJournalLine."Bank Account Code CZL" := PostedGenJournalLine."Bank Account Code";
-                PostedGenJournalLine."Bank Account No. CZL" := PostedGenJournalLine."Bank Account No.";
-                PostedGenJournalLine."Transit No. CZL" := PostedGenJournalLine."Transit No.";
-                PostedGenJournalLine."IBAN CZL" := PostedGenJournalLine.IBAN;
-                PostedGenJournalLine."SWIFT Code CZL" := PostedGenJournalLine."SWIFT Code";
-                PostedGenJournalLine.Modify(false);
-            until PostedGenJournalLine.Next() = 0;
+        PostedGenJournalLineDataTransfer.SetTables(Database::"Posted Gen. Journal Line", Database::"Posted Gen. Journal Line");
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Specific Symbol"), PostedGenJournalLine.FieldNo("Specific Symbol CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Variable Symbol"), PostedGenJournalLine.FieldNo("Variable Symbol CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Constant Symbol"), PostedGenJournalLine.FieldNo("Constant Symbol CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Bank Account Code"), PostedGenJournalLine.FieldNo("Bank Account Code CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Bank Account No."), PostedGenJournalLine.FieldNo("Bank Account No. CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Transit No."), PostedGenJournalLine.FieldNo("Transit No. CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo(IBAN), PostedGenJournalLine.FieldNo("IBAN CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("SWIFT Code"), PostedGenJournalLine.FieldNo("SWIFT Code CZL"));
+        PostedGenJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeIntrastatJournalBatch();
@@ -1746,64 +1607,56 @@ codeunit 31017 "Upgrade Application CZL"
     local procedure UpgradeInventoryPostingSetup();
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";
+        InventoryPostingSetupDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        InventoryPostingSetup.SetLoadFields("Change In Inv.Of Product Acc.", "Change In Inv.Of WIP Acc.", "Consumption Account");
-        if InventoryPostingSetup.FindSet() then
-            repeat
-                InventoryPostingSetup."Change In Inv.OfProd. Acc. CZL" := InventoryPostingSetup."Change In Inv.Of Product Acc.";
-                InventoryPostingSetup."Change In Inv.Of WIP Acc. CZL" := InventoryPostingSetup."Change In Inv.Of WIP Acc.";
-                InventoryPostingSetup."Consumption Account CZL" := InventoryPostingSetup."Consumption Account";
-                InventoryPostingSetup.Modify(false);
-            until InventoryPostingSetup.Next() = 0;
+        InventoryPostingSetupDataTransfer.SetTables(Database::"Inventory Posting Setup", Database::"Inventory Posting Setup");
+        InventoryPostingSetupDataTransfer.AddFieldValue(InventoryPostingSetup.FieldNo("Change In Inv.Of Product Acc."), InventoryPostingSetup.FieldNo("Change In Inv.OfProd. Acc. CZL"));
+        InventoryPostingSetupDataTransfer.AddFieldValue(InventoryPostingSetup.FieldNo("Change In Inv.Of WIP Acc."), InventoryPostingSetup.FieldNo("Change In Inv.Of WIP Acc. CZL"));
+        InventoryPostingSetupDataTransfer.AddFieldValue(InventoryPostingSetup.FieldNo("Consumption Account"), InventoryPostingSetup.FieldNo("Consumption Account CZL"));
+        InventoryPostingSetupDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeGeneralPostingSetup();
     var
         GeneralPostingSetup: Record "General Posting Setup";
+        GeneralPostingSetupDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        GeneralPostingSetup.SetLoadFields("Invt. Rounding Adj. Account");
-        if GeneralPostingSetup.FindSet() then
-            repeat
-                GeneralPostingSetup."Invt. Rounding Adj. Acc. CZL" := GeneralPostingSetup."Invt. Rounding Adj. Account";
-                GeneralPostingSetup.Modify(false);
-            until GeneralPostingSetup.Next() = 0;
+        GeneralPostingSetupDataTransfer.SetTables(Database::"General Posting Setup", Database::"General Posting Setup");
+        GeneralPostingSetupDataTransfer.AddFieldValue(GeneralPostingSetup.FieldNo("Invt. Rounding Adj. Account"), GeneralPostingSetup.FieldNo("Invt. Rounding Adj. Acc. CZL"));
+        GeneralPostingSetupDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeUserSetup();
     var
         UserSetup: Record "User Setup";
+        UserSetupDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        UserSetup.SetLoadFields("Check Document Date(work date)", "Check Document Date(sys. date)", "Check Posting Date (work date)", "Check Posting Date (sys. date)",
-                                "Check Bank Accounts", "Check Journal Templates", "Check Dimension Values", "Allow Posting to Closed Period", "Allow Complete Job", "Employee No.",
-                                "User Name", "Allow Item Unapply", "Check Location Code", "Check Release Location Code", "Check Whse. Net Change Temp.");
-        if UserSetup.FindSet() then
-            repeat
-                UserSetup."Check Doc. Date(work date) CZL" := UserSetup."Check Document Date(work date)";
-                UserSetup."Check Doc. Date(sys. date) CZL" := UserSetup."Check Document Date(sys. date)";
-                UserSetup."Check Post.Date(work date) CZL" := UserSetup."Check Posting Date (work date)";
-                UserSetup."Check Post.Date(sys. date) CZL" := UserSetup."Check Posting Date (sys. date)";
-                UserSetup."Check Bank Accounts CZL" := UserSetup."Check Bank Accounts";
-                UserSetup."Check Journal Templates CZL" := UserSetup."Check Journal Templates";
-                UserSetup."Check Dimension Values CZL" := UserSetup."Check Dimension Values";
-                UserSetup."Allow Post.toClosed Period CZL" := UserSetup."Allow Posting to Closed Period";
-                UserSetup."Allow Complete Job CZL" := UserSetup."Allow Complete Job";
-                UserSetup."Employee No. CZL" := UserSetup."Employee No.";
-                UserSetup."User Name CZL" := UserSetup."User Name";
-                UserSetup."Allow Item Unapply CZL" := UserSetup."Allow Item Unapply";
-                UserSetup."Check Location Code CZL" := UserSetup."Check Location Code";
-                UserSetup."Check Release LocationCode CZL" := UserSetup."Check Release Location Code";
-                UserSetup."Check Invt. Movement Temp. CZL" := UserSetup."Check Whse. Net Change Temp.";
-                UserSetup.Modify(false);
-            until UserSetup.Next() = 0;
+        UserSetupDataTransfer.SetTables(Database::"User Setup", Database::"User Setup");
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Document Date(work date)"), UserSetup.FieldNo("Check Doc. Date(work date) CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Document Date(sys. date)"), UserSetup.FieldNo("Check Doc. Date(sys. date) CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Posting Date (work date)"), UserSetup.FieldNo("Check Post.Date(work date) CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Posting Date (sys. date)"), UserSetup.FieldNo("Check Post.Date(sys. date) CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Bank Accounts"), UserSetup.FieldNo("Check Bank Accounts CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Journal Templates"), UserSetup.FieldNo("Check Journal Templates CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Dimension Values"), UserSetup.FieldNo("Check Dimension Values CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow Posting to Closed Period"), UserSetup.FieldNo("Allow Post.toClosed Period CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow Complete Job"), UserSetup.FieldNo("Allow Complete Job CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Employee No."), UserSetup.FieldNo("Employee No. CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("User Name"), UserSetup.FieldNo("User Name CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow Item Unapply"), UserSetup.FieldNo("Allow Item Unapply CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Location Code"), UserSetup.FieldNo("Check Location Code CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Release Location Code"), UserSetup.FieldNo("Check Release LocationCode CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Whse. Net Change Temp."), UserSetup.FieldNo("Check Invt. Movement Temp. CZL"));
+        UserSetupDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeUserSetupLine();
@@ -1847,17 +1700,9 @@ codeunit 31017 "Upgrade Application CZL"
 
     local procedure ConvertAccScheduleLineTotalingTypeEnumValues(var AccScheduleLine: Record "Acc. Schedule Line");
     begin
-#if CLEAN19
-            if AccScheduleLine."Totaling Type" = 14 then //14 = AccScheduleLine.Type::Custom
-#else
-        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Custom then
-#endif
+        if AccScheduleLine."Totaling Type" = 14 then //14 = AccScheduleLine.Type::Custom
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Custom CZL";
-#if CLEAN19
-            if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
-#else
-        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Constant then
-#endif
+        if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Constant CZL";
     end;
 
@@ -2066,183 +1911,425 @@ codeunit 31017 "Upgrade Application CZL"
     local procedure UpgradeVATEntry();
     var
         VATEntry: Record "VAT Entry";
+        VATEntryDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
-        VATEntry.SetLoadFields("VAT Identifier");
-        VATEntry.SetFilter("VAT Identifier", '<>%1', '');
-        if VATEntry.FindSet(true) then
-            repeat
-                VATEntry."VAT Identifier CZL" := VATEntry."VAT Identifier";
-                VATEntry.Modify(false);
-            until VATEntry.Next() = 0;
+        VATEntryDataTransfer.SetTables(Database::"VAT Entry", Database::"VAT Entry");
+        VATEntryDataTransfer.AddSourceFilter(VATEntry.FieldNo("VAT Identifier"), '<>%1', '');
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Identifier"), VATEntry.FieldNo("VAT Identifier CZL"));
+        VATEntryDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeCustLedgerEntry();
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
+        CustLedgerEntryDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
-        CustLedgerEntry.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
-        if CustLedgerEntry.FindSet(true) then
-            repeat
-                CustLedgerEntry."Specific Symbol CZL" := CustLedgerEntry."Specific Symbol";
-                CustLedgerEntry."Variable Symbol CZL" := CustLedgerEntry."Variable Symbol";
-                CustLedgerEntry."Constant Symbol CZL" := CustLedgerEntry."Constant Symbol";
-                CustLedgerEntry."Bank Account Code CZL" := CustLedgerEntry."Bank Account Code";
-                CustLedgerEntry."Bank Account No. CZL" := CustLedgerEntry."Bank Account No.";
-                CustLedgerEntry."Transit No. CZL" := CustLedgerEntry."Transit No.";
-                CustLedgerEntry."IBAN CZL" := CustLedgerEntry.IBAN;
-                CustLedgerEntry."SWIFT Code CZL" := CustLedgerEntry."SWIFT Code";
-                CustLedgerEntry.Modify(false);
-            until CustLedgerEntry.Next() = 0;
+        CustLedgerEntryDataTransfer.SetTables(Database::"Cust. Ledger Entry", Database::"Cust. Ledger Entry");
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Specific Symbol"), CustLedgerEntry.FieldNo("Specific Symbol CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Variable Symbol"), CustLedgerEntry.FieldNo("Variable Symbol CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Constant Symbol"), CustLedgerEntry.FieldNo("Constant Symbol CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Bank Account Code"), CustLedgerEntry.FieldNo("Bank Account Code CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Bank Account No."), CustLedgerEntry.FieldNo("Bank Account No. CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Transit No."), CustLedgerEntry.FieldNo("Transit No. CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo(IBAN), CustLedgerEntry.FieldNo("IBAN CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("SWIFT Code"), CustLedgerEntry.FieldNo("SWIFT Code CZL"));
+        CustLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeVendLedgerEntry();
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        VendorLedgerEntryDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
-        VendorLedgerEntry.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
-        if VendorLedgerEntry.FindSet(true) then
-            repeat
-                VendorLedgerEntry."Specific Symbol CZL" := VendorLedgerEntry."Specific Symbol";
-                VendorLedgerEntry."Variable Symbol CZL" := VendorLedgerEntry."Variable Symbol";
-                VendorLedgerEntry."Constant Symbol CZL" := VendorLedgerEntry."Constant Symbol";
-                VendorLedgerEntry."Bank Account Code CZL" := VendorLedgerEntry."Bank Account Code";
-                VendorLedgerEntry."Bank Account No. CZL" := VendorLedgerEntry."Bank Account No.";
-                VendorLedgerEntry."Transit No. CZL" := VendorLedgerEntry."Transit No.";
-                VendorLedgerEntry."IBAN CZL" := VendorLedgerEntry.IBAN;
-                VendorLedgerEntry."SWIFT Code CZL" := VendorLedgerEntry."SWIFT Code";
-                VendorLedgerEntry.Modify(false);
-            until VendorLedgerEntry.Next() = 0;
+        VendorLedgerEntryDataTransfer.SetTables(Database::"Vendor Ledger Entry", Database::"Vendor Ledger Entry");
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Specific Symbol"), VendorLedgerEntry.FieldNo("Specific Symbol CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Variable Symbol"), VendorLedgerEntry.FieldNo("Variable Symbol CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Constant Symbol"), VendorLedgerEntry.FieldNo("Constant Symbol CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Bank Account Code"), VendorLedgerEntry.FieldNo("Bank Account Code CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Bank Account No."), VendorLedgerEntry.FieldNo("Bank Account No. CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Transit No."), VendorLedgerEntry.FieldNo("Transit No. CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo(IBAN), VendorLedgerEntry.FieldNo("IBAN CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("SWIFT Code"), VendorLedgerEntry.FieldNo("SWIFT Code CZL"));
+        VendorLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeGenJournalLine();
     var
         GenJournalLine: Record "Gen. Journal Line";
+        GenJournalLineDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
-        GenJournalLine.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
-        if GenJournalLine.FindSet(true) then
-            repeat
-                GenJournalLine."Specific Symbol CZL" := GenJournalLine."Specific Symbol";
-                GenJournalLine."Variable Symbol CZL" := GenJournalLine."Variable Symbol";
-                GenJournalLine."Constant Symbol CZL" := GenJournalLine."Constant Symbol";
-                GenJournalLine."Bank Account Code CZL" := GenJournalLine."Bank Account Code";
-                GenJournalLine."Bank Account No. CZL" := GenJournalLine."Bank Account No.";
-                GenJournalLine."Transit No. CZL" := GenJournalLine."Transit No.";
-                GenJournalLine."IBAN CZL" := GenJournalLine.IBAN;
-                GenJournalLine."SWIFT Code CZL" := GenJournalLine."SWIFT Code";
-                GenJournalLine.Modify(false);
-            until GenJournalLine.Next() = 0;
+        GenJournalLineDataTransfer.SetTables(Database::"Gen. Journal Line", Database::"Gen. Journal Line");
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Specific Symbol"), GenJournalLine.FieldNo("Specific Symbol CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Variable Symbol"), GenJournalLine.FieldNo("Variable Symbol CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Constant Symbol"), GenJournalLine.FieldNo("Constant Symbol CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Bank Account Code"), GenJournalLine.FieldNo("Bank Account Code CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Bank Account No."), GenJournalLine.FieldNo("Bank Account No. CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Transit No."), GenJournalLine.FieldNo("Transit No. CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo(IBAN), GenJournalLine.FieldNo("IBAN CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("SWIFT Code"), GenJournalLine.FieldNo("SWIFT Code CZL"));
+        GenJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeReminderHeader();
     var
         ReminderHeader: Record "Reminder Header";
+        ReminderHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
-        ReminderHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
-                                     "Bank Name", "Transit No.", IBAN, "SWIFT Code");
-        if ReminderHeader.FindSet(true) then
-            repeat
-                ReminderHeader."Specific Symbol CZL" := ReminderHeader."Specific Symbol";
-                ReminderHeader."Variable Symbol CZL" := ReminderHeader."Variable Symbol";
-                ReminderHeader."Constant Symbol CZL" := ReminderHeader."Constant Symbol";
-                ReminderHeader."Bank Account Code CZL" := ReminderHeader."Bank No.";
-                ReminderHeader."Bank Account No. CZL" := ReminderHeader."Bank Account No.";
-                ReminderHeader."Bank Branch No. CZL" := ReminderHeader."Bank Branch No.";
-                ReminderHeader."Bank Name CZL" := ReminderHeader."Bank Name";
-                ReminderHeader."Transit No. CZL" := ReminderHeader."Transit No.";
-                ReminderHeader."IBAN CZL" := ReminderHeader.IBAN;
-                ReminderHeader."SWIFT Code CZL" := ReminderHeader."SWIFT Code";
-                ReminderHeader.Modify(false);
-            until ReminderHeader.Next() = 0;
+        ReminderHeaderDataTransfer.SetTables(Database::"Reminder Header", Database::"Reminder Header");
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Specific Symbol"), ReminderHeader.FieldNo("Specific Symbol CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Variable Symbol"), ReminderHeader.FieldNo("Variable Symbol CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Constant Symbol"), ReminderHeader.FieldNo("Constant Symbol CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Bank No."), ReminderHeader.FieldNo("Bank Account Code CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Bank Account No."), ReminderHeader.FieldNo("Bank Account No. CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Bank Branch No."), ReminderHeader.FieldNo("Bank Branch No. CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Bank Name"), ReminderHeader.FieldNo("Bank Name CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Transit No."), ReminderHeader.FieldNo("Transit No. CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo(IBAN), ReminderHeader.FieldNo("IBAN CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("SWIFT Code"), ReminderHeader.FieldNo("SWIFT Code CZL"));
+        ReminderHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeIssuedReminderHeader();
     var
         IssuedReminderHeader: Record "Issued Reminder Header";
+        IssuedReminderHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
-        IssuedReminderHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
-                                           "Bank Name", "Transit No.", IBAN, "SWIFT Code");
-        if IssuedReminderHeader.FindSet(true) then
-            repeat
-                IssuedReminderHeader."Specific Symbol CZL" := IssuedReminderHeader."Specific Symbol";
-                IssuedReminderHeader."Variable Symbol CZL" := IssuedReminderHeader."Variable Symbol";
-                IssuedReminderHeader."Constant Symbol CZL" := IssuedReminderHeader."Constant Symbol";
-                IssuedReminderHeader."Bank Account Code CZL" := IssuedReminderHeader."Bank No.";
-                IssuedReminderHeader."Bank Account No. CZL" := IssuedReminderHeader."Bank Account No.";
-                IssuedReminderHeader."Bank Branch No. CZL" := IssuedReminderHeader."Bank Branch No.";
-                IssuedReminderHeader."Bank Name CZL" := IssuedReminderHeader."Bank Name";
-                IssuedReminderHeader."Transit No. CZL" := IssuedReminderHeader."Transit No.";
-                IssuedReminderHeader."IBAN CZL" := IssuedReminderHeader.IBAN;
-                IssuedReminderHeader."SWIFT Code CZL" := IssuedReminderHeader."SWIFT Code";
-                IssuedReminderHeader.Modify(false);
-            until IssuedReminderHeader.Next() = 0;
+        IssuedReminderHeaderDataTransfer.SetTables(Database::"Issued Reminder Header", Database::"Issued Reminder Header");
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Specific Symbol"), IssuedReminderHeader.FieldNo("Specific Symbol CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Variable Symbol"), IssuedReminderHeader.FieldNo("Variable Symbol CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Constant Symbol"), IssuedReminderHeader.FieldNo("Constant Symbol CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank No."), IssuedReminderHeader.FieldNo("Bank Account Code CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Account No."), IssuedReminderHeader.FieldNo("Bank Account No. CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Branch No."), IssuedReminderHeader.FieldNo("Bank Branch No. CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Name"), IssuedReminderHeader.FieldNo("Bank Name CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Transit No."), IssuedReminderHeader.FieldNo("Transit No. CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo(IBAN), IssuedReminderHeader.FieldNo("IBAN CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("SWIFT Code"), IssuedReminderHeader.FieldNo("SWIFT Code CZL"));
+        IssuedReminderHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeFinanceChargeMemoHeader();
     var
         FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
+        FinanceChargeMemoHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
-        FinanceChargeMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
-                                              "Bank Name", "Transit No.", IBAN, "SWIFT Code");
-        if FinanceChargeMemoHeader.FindSet(true) then
-            repeat
-                FinanceChargeMemoHeader."Specific Symbol CZL" := FinanceChargeMemoHeader."Specific Symbol";
-                FinanceChargeMemoHeader."Variable Symbol CZL" := FinanceChargeMemoHeader."Variable Symbol";
-                FinanceChargeMemoHeader."Constant Symbol CZL" := FinanceChargeMemoHeader."Constant Symbol";
-                FinanceChargeMemoHeader."Bank Account Code CZL" := FinanceChargeMemoHeader."Bank No.";
-                FinanceChargeMemoHeader."Bank Account No. CZL" := FinanceChargeMemoHeader."Bank Account No.";
-                FinanceChargeMemoHeader."Bank Branch No. CZL" := FinanceChargeMemoHeader."Bank Branch No.";
-                FinanceChargeMemoHeader."Bank Name CZL" := FinanceChargeMemoHeader."Bank Name";
-                FinanceChargeMemoHeader."Transit No. CZL" := FinanceChargeMemoHeader."Transit No.";
-                FinanceChargeMemoHeader."IBAN CZL" := FinanceChargeMemoHeader.IBAN;
-                FinanceChargeMemoHeader."SWIFT Code CZL" := FinanceChargeMemoHeader."SWIFT Code";
-                FinanceChargeMemoHeader.Modify(false);
-            until FinanceChargeMemoHeader.Next() = 0;
+        FinanceChargeMemoHeaderDataTransfer.SetTables(Database::"Finance Charge Memo Header", Database::"Finance Charge Memo Header");
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Specific Symbol"), FinanceChargeMemoHeader.FieldNo("Specific Symbol CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Variable Symbol"), FinanceChargeMemoHeader.FieldNo("Variable Symbol CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Constant Symbol"), FinanceChargeMemoHeader.FieldNo("Constant Symbol CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Bank No."), FinanceChargeMemoHeader.FieldNo("Bank Account Code CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Bank Account No."), FinanceChargeMemoHeader.FieldNo("Bank Account No. CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Bank Branch No."), FinanceChargeMemoHeader.FieldNo("Bank Branch No. CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Bank Name"), FinanceChargeMemoHeader.FieldNo("Bank Name CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Transit No."), FinanceChargeMemoHeader.FieldNo("Transit No. CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo(IBAN), FinanceChargeMemoHeader.FieldNo("IBAN CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("SWIFT Code"), FinanceChargeMemoHeader.FieldNo("SWIFT Code CZL"));
+        FinanceChargeMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure UpgradeIssuedFinanceChargeMemoHeader();
     var
         IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header";
+        IssuedFinChargeMemoHeaderDataTransfer: DataTransfer;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
-        IssuedFinChargeMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
-                                                "Bank Name", "Transit No.", IBAN, "SWIFT Code");
-        if IssuedFinChargeMemoHeader.FindSet(true) then
-            repeat
-                IssuedFinChargeMemoHeader."Specific Symbol CZL" := IssuedFinChargeMemoHeader."Specific Symbol";
-                IssuedFinChargeMemoHeader."Variable Symbol CZL" := IssuedFinChargeMemoHeader."Variable Symbol";
-                IssuedFinChargeMemoHeader."Constant Symbol CZL" := IssuedFinChargeMemoHeader."Constant Symbol";
-                IssuedFinChargeMemoHeader."Bank Account Code CZL" := IssuedFinChargeMemoHeader."Bank No.";
-                IssuedFinChargeMemoHeader."Bank Account No. CZL" := IssuedFinChargeMemoHeader."Bank Account No.";
-                IssuedFinChargeMemoHeader."Bank Branch No. CZL" := IssuedFinChargeMemoHeader."Bank Branch No.";
-                IssuedFinChargeMemoHeader."Bank Name CZL" := IssuedFinChargeMemoHeader."Bank Name";
-                IssuedFinChargeMemoHeader."Transit No. CZL" := IssuedFinChargeMemoHeader."Transit No.";
-                IssuedFinChargeMemoHeader."IBAN CZL" := IssuedFinChargeMemoHeader.IBAN;
-                IssuedFinChargeMemoHeader."SWIFT Code CZL" := IssuedFinChargeMemoHeader."SWIFT Code";
-                IssuedFinChargeMemoHeader.Modify(false);
-            until IssuedFinChargeMemoHeader.Next() = 0;
+        IssuedFinChargeMemoHeaderDataTransfer.SetTables(Database::"Issued Fin. Charge Memo Header", Database::"Issued Fin. Charge Memo Header");
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Specific Symbol"), IssuedFinChargeMemoHeader.FieldNo("Specific Symbol CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Variable Symbol"), IssuedFinChargeMemoHeader.FieldNo("Variable Symbol CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Constant Symbol"), IssuedFinChargeMemoHeader.FieldNo("Constant Symbol CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Bank No."), IssuedFinChargeMemoHeader.FieldNo("Bank Account Code CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Bank Account No."), IssuedFinChargeMemoHeader.FieldNo("Bank Account No. CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Bank Branch No."), IssuedFinChargeMemoHeader.FieldNo("Bank Branch No. CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Bank Name"), IssuedFinChargeMemoHeader.FieldNo("Bank Name CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Transit No."), IssuedFinChargeMemoHeader.FieldNo("Transit No. CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo(IBAN), IssuedFinChargeMemoHeader.FieldNo("IBAN CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("SWIFT Code"), IssuedFinChargeMemoHeader.FieldNo("SWIFT Code CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.CopyFields();
+    end;
+
+    local procedure UpgradeReplaceVATDateCZL()
+    begin
+        UpgradeReplaceVATDateCZLVATEntries();
+        UpgradeReplaceVATDateCZLGLEntries();
+        UpgradeReplaceVATDateCZLSales();
+        UpgradeReplaceVATDateCZLPurchase();
+        UpgradeReplaceVATDateCZLService();
+        UpgradeReplaceVATDateCZLSetup();
+    end;
+
+    local procedure UpgradeReplaceVATDateCZLVATEntries()
+    var
+        VATEntry: Record "VAT Entry";
+        ReplaceVATDateCZLDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLVATEntriesUpgradeTag()) then
+            exit;
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"VAT Entry", Database::"VAT Entry");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(VATEntry.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Date CZL"), VATEntry.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLVATEntriesUpgradeTag());
+    end;
+
+    local procedure UpgradeReplaceVATDateCZLGLEntries()
+    var
+        GLEntry: Record "G/L Entry";
+        TotalRows: Integer;
+        FromNo, ToNo : Integer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLGLEntriesUpgradeTag()) then
+            exit;
+
+        GLEntry.Reset();
+        TotalRows := GLEntry.Count();
+        ToNo := 0;
+
+        while ToNo < TotalRows do begin
+            // Batch size 5 million
+            FromNo := ToNo + 1;
+            ToNo := FromNo + 5000000;
+
+            if ToNo > TotalRows then
+                ToNo := TotalRows;
+
+            DataTransferGLEntries(FromNo, ToNo);
+        end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLGLEntriesUpgradeTag());
+    end;
+
+    local procedure DataTransferGLEntries(FromEntryNo: Integer; ToEntryNo: Integer)
+    var
+        GLEntry: Record "G/L Entry";
+        ReplaceVATDateCZLDataTransfer: DataTransfer;
+    begin
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"G/L Entry", Database::"G/L Entry");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(GLEntry.FieldNo("Entry No."), '%1..%2', FromEntryNo, ToEntryNo);
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(GLEntry.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(GLEntry.FieldNo("VAT Date CZL"), GLEntry.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+    end;
+
+    local procedure UpgradeReplaceVATDateCZLSales()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        SalesHeader: Record "Sales Header";
+        SalesHeaderArchive: Record "Sales Header Archive";
+        SalesInvHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        ReplaceVATDateCZLDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLSalesUpgradeTag()) then
+            exit;
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Sales Header", Database::"Sales Header");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(SalesHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(SalesHeader.FieldNo("VAT Date CZL"), SalesHeader.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Sales Header Archive", Database::"Sales Header Archive");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(SalesHeaderArchive.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("VAT Date CZL"), SalesHeaderArchive.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Sales Invoice Header", Database::"Sales Invoice Header");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(SalesInvHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(SalesInvHeader.FieldNo("VAT Date CZL"), SalesInvHeader.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Sales Cr.Memo Header", Database::"Sales Cr.Memo Header");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(SalesCrMemoHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("VAT Date CZL"), SalesCrMemoHeader.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Gen. Journal Line", Database::"Gen. Journal Line");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(GenJournalLine.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(GenJournalLine.FieldNo("VAT Date CZL"), GenJournalLine.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLSalesUpgradeTag());
+    end;
+
+    local procedure UpgradeReplaceVATDateCZLPurchase()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseHeaderArchive: Record "Purchase Header Archive";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        ReplaceVATDateCZLDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLPurchaseUpgradeTag()) then
+            exit;
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Purchase Header", Database::"Purchase Header");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(PurchaseHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("VAT Date CZL"), PurchaseHeader.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Purchase Header Archive", Database::"Purchase Header Archive");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(PurchaseHeaderArchive.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("VAT Date CZL"), PurchaseHeaderArchive.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Purch. Inv. Header", Database::"Purch. Inv. Header");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(PurchInvHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Date CZL"), PurchInvHeader.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Purch. Cr. Memo Hdr.", Database::"Purch. Cr. Memo Hdr.");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(PurchCrMemoHdr.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("VAT Date CZL"), PurchCrMemoHdr.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLPurchaseUpgradeTag());
+    end;
+
+    local procedure UpgradeReplaceVATDateCZLService()
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        ReplaceVATDateCZLDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLServiceUpgradeTag()) then
+            exit;
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Service Header", Database::"Service Header");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(ServiceHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(ServiceHeader.FieldNo("VAT Date CZL"), ServiceHeader.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Service Invoice Header", Database::"Service Invoice Header");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(ServiceInvoiceHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("VAT Date CZL"), ServiceInvoiceHeader.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        ReplaceVATDateCZLDataTransfer.SetTables(Database::"Service Cr.Memo Header", Database::"Service Cr.Memo Header");
+        ReplaceVATDateCZLDataTransfer.AddSourceFilter(ServiceCrMemoHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
+        ReplaceVATDateCZLDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("VAT Date CZL"), ServiceCrMemoHeader.FieldNo("VAT Reporting Date"));
+        ReplaceVATDateCZLDataTransfer.CopyFields();
+        Clear(ReplaceVATDateCZLDataTransfer);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLServiceUpgradeTag());
+    end;
+
+    local procedure UpgradeReplaceVATDateCZLSetup()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLSetupUpgradeTag()) then
+            exit;
+
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Use VAT Date CZL" then
+            GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
+        else
+            GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
+
+        PurchasesPayablesSetup.Get();
+        case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::Blank:
+                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::Blank;
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
+                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date";
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
+                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date";
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
+                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date";
+        end;
+
+        GeneralLedgerSetup.Modify();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLSetupUpgradeTag());
+    end;
+
+    local procedure UpgradeReplaceAllowAlterPostingGroups()
+    var
+        Customer: Record Customer;
+        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+        DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        Vendor: Record Vendor;
+        CustomerDataTransfer: DataTransfer;
+        DetCustLedgEntryDataTransfer: DataTransfer;
+        DetVendLedgEntryDataTransfer: DataTransfer;
+        VendorDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsUpgradeTag()) then
+            exit;
+
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups CZL";
+        PurchasesPayablesSetup.Modify();
+
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups CZL";
+        SalesReceivablesSetup.Modify();
+
+        ServiceMgtSetup.Get();
+        ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Posting Groups CZL";
+        ServiceMgtSetup.Modify();
+
+        VendorDataTransfer.SetTables(Database::"Vendor", Database::"Vendor");
+        VendorDataTransfer.AddConstantValue(true, Vendor.FieldNo("Allow Multiple Posting Groups"));
+        VendorDataTransfer.CopyFields();
+
+        CustomerDataTransfer.SetTables(Database::"Customer", Database::"Customer");
+        CustomerDataTransfer.AddConstantValue(true, Customer.FieldNo("Allow Multiple Posting Groups"));
+        CustomerDataTransfer.CopyFields();
+
+        DetCustLedgEntryDataTransfer.SetTables(Database::"Detailed Cust. Ledg. Entry", Database::"Detailed Cust. Ledg. Entry");
+        DetCustLedgEntryDataTransfer.AddSourceFilter(DetailedCustLedgEntry.FieldNo("Customer Posting Group CZL"), '<>%1', '');
+        DetCustLedgEntryDataTransfer.AddFieldValue(DetailedCustLedgEntry.FieldNo("Customer Posting Group CZL"), DetailedCustLedgEntry.FieldNo("Posting Group"));
+        DetCustLedgEntryDataTransfer.CopyFields();
+
+        DetVendLedgEntryDataTransfer.SetTables(Database::"Detailed Vendor Ledg. Entry", Database::"Detailed Vendor Ledg. Entry");
+        DetVendLedgEntryDataTransfer.AddSourceFilter(DetailedVendorLedgEntry.FieldNo("Vendor Posting Group CZL"), '<>%1', '');
+        DetVendLedgEntryDataTransfer.AddFieldValue(DetailedVendorLedgEntry.FieldNo("Vendor Posting Group CZL"), DetailedVendorLedgEntry.FieldNo("Posting Group"));
+        DetVendLedgEntryDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsUpgradeTag());
     end;
 
     local procedure UpgradePermission()
@@ -2250,6 +2337,7 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradePermissionVersion174();
         UpgradePermissionVersion180();
         UpgradePermissionVersion190();
+        UpgradePermissionReplaceAllowAlterPostingGroups();
     end;
 
     local procedure UpgradePermissionVersion174()
@@ -2298,6 +2386,29 @@ codeunit 31017 "Upgrade Application CZL"
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Acc. Schedule Result History", Database::"Acc. Schedule Result Hist. CZL");
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerDatabaseUpgradeTag());
+    end;
+
+    local procedure UpgradePermissionReplaceAllowAlterPostingGroups()
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsPermissionUpgradeTag()) then
+            exit;
+
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Cust. Posting Group CZL", Database::"Alt. Customer Posting Group");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Vend. Posting Group CZL", Database::"Alt. Vendor Posting Group");
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsPermissionUpgradeTag());
+    end;
+
+    local procedure UpgradeReportSelections()
+    var
+        ReportSelections: Record "Report Selections";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReportBlanketPurchaseOrderCZUpgradeTag()) then
+            exit;
+        ReportSelections.SetRange("Report ID", Report::"Blanket Purchase Order");
+        ReportSelections.ModifyAll("Report ID", Report::"Blanket Purchase Order CZL");
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReportBlanketPurchaseOrderCZUpgradeTag());
     end;
 
     local procedure SetDatabaseUpgradeTags();

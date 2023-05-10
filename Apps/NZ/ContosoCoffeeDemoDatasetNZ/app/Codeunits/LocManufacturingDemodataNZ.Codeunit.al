@@ -35,9 +35,26 @@ codeunit 17105 "Loc. Manufacturing Demodata-NZ"
         Rec."Base VAT Code" := XVATLbl + ConvertStr(Format(GoodsVATRateLbl), ',', '.');
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Whse Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyWhseDemoAccounts()
+    begin
+        WhseDemoAccount.ReturnAccountKey(true);
+
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '2310');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '2110');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '2111');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '5410');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '6110');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '7110');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesVAT(), '5615');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '5625');
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
+        WhseDemoAccount: Record "Whse. Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
+        WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
         GoodsVATRateLbl: Label 'GST15';
         XVATLbl: Label 'VAT';
 }

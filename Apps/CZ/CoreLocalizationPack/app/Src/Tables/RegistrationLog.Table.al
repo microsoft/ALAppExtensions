@@ -108,41 +108,6 @@ table 11756 "Registration Log CZL"
         RegistrationLogCZL."Registration No." := RegNo;
     end;
 
-#if not CLEAN19
-#pragma warning disable AL0432
-    [Obsolete('The ARES Update report is discontinued, use the Registration Log Details page instead.', '19.0')]
-    procedure UpdateCard()
-    var
-        Customer: Record Customer;
-        Vendor: Record Vendor;
-        Contact: Record Contact;
-        RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
-        RecordRef: RecordRef;
-    begin
-        TestField(Status, Status::Valid);
-
-        case "Account Type" of
-            "Account Type"::Customer:
-                begin
-                    Customer.Get("Account No.");
-                    RegistrationLogMgtCZL.RunARESUpdate(RecordRef, Customer, Rec);
-                end;
-            "Account Type"::Vendor:
-                begin
-                    Vendor.Get("Account No.");
-                    RegistrationLogMgtCZL.RunARESUpdate(RecordRef, Vendor, Rec);
-                end;
-            "Account Type"::Contact:
-                begin
-                    Contact.Get("Account No.");
-                    RegistrationLogMgtCZL.RunARESUpdate(RecordRef, Contact, Rec);
-                end;
-        end;
-
-        RecordRef.Modify(true);
-    end;
-#pragma warning restore AL0432
-#endif
     procedure OpenModifyDetails()
     var
         Customer: Record Customer;

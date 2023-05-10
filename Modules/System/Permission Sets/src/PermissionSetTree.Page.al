@@ -33,7 +33,14 @@ page 9857 "Permission Set Tree"
                     StyleExpr = StyleExprRoleID;
                     Editable = false;
                     Caption = 'Permission Set';
-                    ToolTip = 'Specifies the permission set';
+                    ToolTip = 'Specifies the permission set.';
+                }
+                field("Related Name"; Rec."Related Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Name';
+                    ToolTip = 'Specifies the name of the permission set.';
+                    Editable = false;
                 }
                 field("Related Scope"; Rec."Related Scope")
                 {

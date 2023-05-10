@@ -13,6 +13,7 @@ codeunit 132508 "Record Link Mgt. Test"
         Assert: Codeunit "Library Assert";
         Any: Codeunit Any;
         PermissionsMock: Codeunit "Permissions Mock";
+        WrongLinkTestErr: Label 'Mismatch in the text read.';
 
     trigger OnRun()
     begin
@@ -66,7 +67,7 @@ codeunit 132508 "Record Link Mgt. Test"
         Text := RecordLinkManagement.ReadNote(RecordLink);
 
         // [THEN] The text matches what was put into the record link
-        Assert.AreEqual('My note for the link', Text, 'Mismatch in the text read.');
+        Assert.AreEqual('My note for the link', Text, WrongLinkTestErr);
     end;
 
     [Test]
@@ -98,9 +99,8 @@ codeunit 132508 "Record Link Mgt. Test"
         RecordLink.Validate(Created, CurrentDateTime());
         RecordLink.Validate("User ID", UserId());
         RecordLink.Validate(Company, CompanyName());
-        PermissionsMock.Stop();
+        PermissionsMock.ClearAssignments();
         RecordLink.Insert(true);
-        PermissionsMock.Start();
         PermissionsMock.Set('Record Link View');
 
         // [GIVEN] A different record 'Rec B' in the same table
@@ -118,10 +118,152 @@ codeunit 132508 "Record Link Mgt. Test"
         // [THEN] The record link on the other instance has the same text
         NewRecordLink.SetRange("Record ID", ToRecordLinkRecordTest.RecordId());
         NewRecordLink.FindFirst();
-        Assert.AreEqual('', RecordLinkManagement.ReadNote(NewRecordLink), 'Mismatch in the text read.');
+        Assert.AreEqual('', RecordLinkManagement.ReadNote(NewRecordLink), WrongLinkTestErr);
 
         // [THEN] The record link on the other instance has Notify set to False
         Assert.IsFalse(NewRecordLink.Notify, 'Notify should have been unset.');
+    end;
+
+    [Test]
+    procedure CopyMultipleLinks()
+    var
+        FromRecordLinkRecordTest: Record "Record Link Record Test";
+        ToRecordLinkRecordTest: Record "Record Link Record Test";
+        FromRecordLink: Record "Record Link";
+        ToRecordLink: Record "Record Link";
+        NoteText: Text;
+        I: Integer;
+    begin
+        // [SCENARIO] CopyLinks can copy multiple record links in one call
+
+        // [GIVEN] A record 'RecordA' to assign links to
+        CreateRecordLinkRecTest(FromRecordLinkRecordTest);
+
+        // [GIVEN] Record links assigned the RecordA
+        for I := 1 to Any.IntegerInRange(3, 6) do
+            CreateRecordLink(FromRecordLinkRecordTest.RecordId);
+
+        // [GIVEN] New record RecordB is created to receive the records
+        CreateRecordLinkRecTest(ToRecordLinkRecordTest);
+
+        // [WHEN] Copy links from RecordA to RecordB
+        RecordLinkManagement.CopyLinks(FromRecordLinkRecordTest, ToRecordLinkRecordTest);
+
+        // [THEN] Copies of all records from RecordA are created for RecordB
+        FromRecordLink.SetRange("Record ID", FromRecordLinkRecordTest.RecordId);
+        ToRecordLink.SetRange("Record ID", ToRecordLinkRecordTest.RecordId);
+        Assert.RecordCount(ToRecordLink, FromRecordLink.Count());
+
+        FromRecordLink.FindSet();
+        ToRecordLink.FindSet();
+        repeat
+            NoteText := RecordLinkManagement.ReadNote(FromRecordLink);
+            Assert.AreEqual(NoteText, RecordLinkManagement.ReadNote(ToRecordLink), WrongLinkTestErr);
+        until (FromRecordLink.Next() = 0) or (ToRecordLink.Next() = 0);
+    end;
+
+    [Test]
+    procedure CopyMultipleLinksInCrossCompanyRecord()
+    var
+        FromRecordLinkTestCrossCompany: Record "Record Link Test Cross Company";
+        ToRecordLinkTestCrossCompany: Record "Record Link Test Cross Company";
+        FromRecordLink: Record "Record Link";
+        ToRecordLink: Record "Record Link";
+        NoteText: Text;
+        I: Integer;
+    begin
+        // [SCENARIO] CopyLinks can copy multiple record links in one call for cross company records
+
+        // [GIVEN] A record 'RecordA' to assign links to
+        CreateRecordLinkRecTest(FromRecordLinkTestCrossCompany);
+
+        // [GIVEN] Record links assigned the RecordA
+        for I := 1 to 5 do
+            CreateRecordLink(FromRecordLinkTestCrossCompany.RecordId);
+        VerifyRecordHasNotifyLinks(FromRecordLinkTestCrossCompany.RecordId, CompanyName(), 5);
+
+        // [GIVEN] New record RecordB is created to receive the records
+        CreateRecordLinkRecTest(ToRecordLinkTestCrossCompany);
+
+        // [WHEN] Copy links from RecordA to RecordB
+        RecordLinkManagement.CopyLinks(FromRecordLinkTestCrossCompany, ToRecordLinkTestCrossCompany);
+
+        // [THEN] Copies of all records from RecordA are created for RecordB and set to not notify
+        FromRecordLink.SetRange("Record ID", FromRecordLinkTestCrossCompany.RecordId);
+        ToRecordLink.SetRange("Record ID", ToRecordLinkTestCrossCompany.RecordId);
+        Assert.RecordCount(ToRecordLink, 5);
+        ToRecordLink.SetRange(Notify, false);
+        Assert.RecordCount(ToRecordLink, 5);
+
+        FromRecordLink.FindSet();
+        ToRecordLink.FindSet();
+        repeat
+            NoteText := RecordLinkManagement.ReadNote(FromRecordLink);
+            Assert.AreEqual(NoteText, RecordLinkManagement.ReadNote(ToRecordLink), WrongLinkTestErr);
+        until (FromRecordLink.Next() = 0) or (ToRecordLink.Next() = 0);
+    end;
+
+    [Test]
+    procedure CopyMultipleLinksWithSimilarRecordIdInSeparateCompany()
+    var
+        FromRecordLinkRecordTest: Record "Record Link Record Test";
+        ToRecordLinkRecordTest: Record "Record Link Record Test";
+        RecordInOtherCompany: Record "Record Link Record Test";
+        FromRecordLink: Record "Record Link";
+        ToRecordLink: Record "Record Link";
+        Company: Record Company;
+        NoteText: Text;
+        I: Integer;
+    begin
+        // [SCENARIO] CopyLinks can copy multiple record links in one call and sets notify to false without modifying links in other companies
+
+        // [GIVEN] A record 'RecordA' to assign links to
+        CreateRecordLinkRecTest(FromRecordLinkRecordTest);
+
+        // [GIVEN] Record links assigned the RecordA
+        for I := 1 to Any.IntegerInRange(3, 6) do
+            CreateRecordLink(FromRecordLinkRecordTest.RecordId);
+
+        // [GIVEN] New record RecordB is created to receive the records
+        CreateRecordLinkRecTest(ToRecordLinkRecordTest);
+
+        // [GIVEN] Another company
+        Company.Name := 'Another Company';
+        Company.Insert();
+
+        // [GIVEN] A record similar to RecordB exist in the other company (same record id)
+        RecordInOtherCompany.ChangeCompany(Company.Name);
+        RecordInOtherCompany.TransferFields(ToRecordLinkRecordTest, true);
+        RecordInOtherCompany.Insert();
+
+        Assert.AreEqual(ToRecordLinkRecordTest.RecordId(), RecordInOtherCompany.RecordId(), 'Record ids are different');
+
+        // [GIVEN] Record links assigned the the record in the other company and set to notify
+        for I := 1 to 5 do
+            CreateRecordLink(RecordInOtherCompany.RecordId, Company.Name);
+        VerifyRecordHasNotifyLinks(RecordInOtherCompany.RecordId, Company.Name, 5);
+
+        // [WHEN] Copy links from RecordA to RecordB
+        RecordLinkManagement.CopyLinks(FromRecordLinkRecordTest, ToRecordLinkRecordTest);
+
+        // [THEN] The links in the other company still has notify
+        VerifyRecordHasNotifyLinks(RecordInOtherCompany.RecordId, Company.Name, 5);
+
+        // [THEN] Copies of all records from RecordA are created for RecordB
+        FromRecordLink.SetRange("Record ID", FromRecordLinkRecordTest.RecordId);
+        FromRecordLink.SetRange(Company, CompanyName());
+        ToRecordLink.SetRange("Record ID", ToRecordLinkRecordTest.RecordId);
+        ToRecordLink.SetRange(Company, CompanyName());
+        Assert.RecordCount(ToRecordLink, FromRecordLink.Count());
+        ToRecordLink.SetRange(Notify, false);
+        Assert.RecordCount(ToRecordLink, FromRecordLink.Count());
+
+        FromRecordLink.FindSet();
+        ToRecordLink.FindSet();
+        repeat
+            NoteText := RecordLinkManagement.ReadNote(FromRecordLink);
+            Assert.AreEqual(NoteText, RecordLinkManagement.ReadNote(ToRecordLink), WrongLinkTestErr);
+        until (FromRecordLink.Next() = 0) or (ToRecordLink.Next() = 0);
     end;
 
     [Test]
@@ -138,9 +280,8 @@ codeunit 132508 "Record Link Mgt. Test"
         RecordLinkManagement.WriteNote(RecordLink, 'My note for the link');
 
         // [GIVEN] Insert the record link
-        PermissionsMock.Stop();
+        PermissionsMock.ClearAssignments();
         RecordLink.Insert(true);
-        PermissionsMock.Start();
         PermissionsMock.Set('Record Link View');
 
         // [GIVEN] Ensure that Record link has no record id
@@ -200,11 +341,47 @@ codeunit 132508 "Record Link Mgt. Test"
         Assert.ExpectedError(NotARecordErr);
     end;
 
+    local procedure CreateRecordLink(RecId: RecordId)
+    begin
+        CreateRecordLink(RecId, CompanyName());
+    end;
+
+    local procedure CreateRecordLink(RecId: RecordId; CompanyName: Text)
+    var
+        RecordLink: Record "Record Link";
+    begin
+        RecordLink.Validate(Type, RecordLink.Type::Note);
+        RecordLink.Validate("Record ID", RecId);
+        RecordLinkManagement.WriteNote(RecordLink, Any.AlphanumericText(10));
+        RecordLink.Validate(Created, CurrentDateTime());
+        RecordLink.Validate("User ID", UserId());
+        RecordLink.Validate(Company, CompanyName);
+        RecordLink.Validate(Notify, true);
+        RecordLink.Insert(true);
+    end;
+
     local procedure CreateRecordLinkRecTest(var RecordLinkRecTest: Record "Record Link Record Test")
     begin
         Clear(RecordLinkRecTest);
         RecordLinkRecTest.Field := CopyStr(Any.AlphanumericText(10), 1, MaxStrLen(RecordLinkRecTest.Field));
         RecordLinkRecTest.Insert();
+    end;
+
+    local procedure CreateRecordLinkRecTest(var RecordLinkTestCrossCompany: Record "Record Link Test Cross Company")
+    begin
+        Clear(RecordLinkTestCrossCompany);
+        RecordLinkTestCrossCompany.Field := CopyStr(Any.AlphanumericText(10), 1, MaxStrLen(RecordLinkTestCrossCompany.Field));
+        RecordLinkTestCrossCompany.Insert();
+    end;
+
+    local procedure VerifyRecordHasNotifyLinks(RecordId: RecordID; CompanyName: Text; ExpectedCount: Integer)
+    var
+        RecordLink: Record "Record Link";
+    begin
+        RecordLink.SetRange("Record ID", RecordId);
+        RecordLink.SetRange(Company, CompanyName);
+        RecordLink.SetRange(Notify, true);
+        Assert.RecordCount(RecordLink, ExpectedCount);
     end;
 
     [ConfirmHandler]

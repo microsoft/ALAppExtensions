@@ -139,8 +139,10 @@ report 11776 "Acc. Schedule Export File CZL"
                         begin
                             AccSchedManagement.CheckName(AccSchedName);
                             AccScheduleName.Get(AccSchedName);
+#if not CLEAN21
                             if AccScheduleName."Default Column Layout" <> '' then
                                 ColumnLayoutName := AccScheduleName."Default Column Layout";
+#endif
                             if AccScheduleName."Analysis View Name" <> '' then
                                 AnalysisView.Get(AccScheduleName."Analysis View Name")
                             else begin

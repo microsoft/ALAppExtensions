@@ -142,31 +142,31 @@ codeunit 30164 "Shpfy Order Mgt."
     /// <summary> 
     /// Show Shopify Order.
     /// </summary>
-    /// <param name="RecOrRecRef">Parameter of type Variant.</param>
-    internal procedure ShowShopifyOrder(var RecOrRecRef: Variant)
+    /// <param name="RecAsVariant">Parameter of type Variant.</param>
+    internal procedure ShowShopifyOrder(var RecAsVariant: Variant)
     var
-        ShopifyOrder: Record "Shpfy Order Header";
-        RecRef: RecordRef;
+        OrderHeader: Record "Shpfy Order Header";
+        RecordRef: RecordRef;
         FieldRef: FieldRef;
         FieldNumber: Integer;
-        ORderNo: Text;
+        OrderNo: Text;
     begin
-        if RecOrRecRef.IsRecord() then
-            RecRef.GetTable(RecOrRecRef)
+        if RecAsVariant.IsRecord() then
+            RecordRef.GetTable(RecAsVariant)
         else
-            if RecOrRecRef.IsRecordRef() then
-                RecRef := RecOrRecRef
+            if RecAsVariant.IsRecordRef() then
+                RecordRef := RecAsVariant
             else
                 exit;
 
-        FieldNumber := FieldNo(RecRef, 'Shopify Order No.');
+        FieldNumber := FieldNo(RecordRef, 'Shopify Order No.');
         if FieldNumber <> 0 then begin
-            FieldRef := RecRef.Field(FieldNumber);
+            FieldRef := RecordRef.Field(FieldNumber);
             OrderNo := FieldRef.Value();
             if OrderNo <> '' then begin
-                ShopifyOrder.SetRange("Shopify Order No.", OrderNo);
-                if ShopifyOrder.FindFirst() then
-                    Page.Run(Page::"Shpfy Order", ShopifyOrder);
+                OrderHeader.SetRange("Shopify Order No.", OrderNo);
+                if OrderHeader.FindFirst() then
+                    Page.Run(Page::"Shpfy Order", OrderHeader);
             end;
         end;
     end;
@@ -174,14 +174,14 @@ codeunit 30164 "Shpfy Order Mgt."
     /// <summary> 
     /// Field No.
     /// </summary>
-    /// <param name="RecRef">Parameter of type RecordRef.</param>
+    /// <param name="RecordRef">Parameter of type RecordRef.</param>
     /// <param name="FieldName">Parameter of type Text.</param>
     /// <returns>Return value of type Integer.</returns>
-    local procedure FieldNo(var RecRef: RecordRef; FieldName: Text): Integer
+    local procedure FieldNo(var RecordRef: RecordRef; FieldName: Text): Integer
     var
         Field: Record Field;
     begin
-        Field.SetRange(TableNo, RecRef.Number());
+        Field.SetRange(TableNo, RecordRef.Number());
         Field.SetRange(FieldName, FieldName);
         if Field.FindFirst() then
             exit(Field."No.");

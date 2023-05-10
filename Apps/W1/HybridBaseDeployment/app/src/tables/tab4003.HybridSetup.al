@@ -130,6 +130,19 @@ table 4003 "Intelligent Cloud Setup"
             Description = 'The ID of the session that was intiated to create companies from the setup wizard.';
             DataClassification = SystemMetadata;
         }
+
+        field(24; DisabledReason; Option)
+        {
+            Description = 'Specifies the reason why the cloud migration was disabled.';
+            OptionMembers = ,Completed,Paused,Abandoned;
+            OptionCaption = ' ,Completed,Paused,Abandoned';
+        }
+        field(25; "Use New UI"; Option)
+        {
+            Description = 'Specifies if the new UI should be used.';
+            OptionMembers = Default,Yes,No;
+            OptionCaption = 'Default,Yes,No';
+        }
     }
 
     keys
@@ -299,4 +312,24 @@ table 4003 "Intelligent Cloud Setup"
             Modify();
         end;
     end;
+
+    internal procedure ChangeUI(): Boolean
+    var
+        Selection: Integer;
+    begin
+        if not Rec.Get() then
+            exit(false);
+
+        Selection := StrMenu(NewUIOptionsTxt, 1, ChangeNewUIQst);
+        if Selection = 0 then
+            exit(false);
+
+        Rec."Use New UI" := Selection - 1;
+        Rec.Modify();
+        exit(true);
+    end;
+
+    var
+        NewUIOptionsTxt: Label 'Default, Yes, No';
+        ChangeNewUIQst: Label 'Would you like to enable the new cloud migration UI?';
 }

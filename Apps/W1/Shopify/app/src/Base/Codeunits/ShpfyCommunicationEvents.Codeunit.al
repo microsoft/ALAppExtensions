@@ -6,17 +6,18 @@ codeunit 30200 "Shpfy Communication Events"
     Access = Internal;
 
     [InternalEvent(false)]
-    internal procedure OnClientSend(HttpRequestMsg: HttpRequestMessage; var HttpResponseMsg: HttpResponseMessage)
+    internal procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     begin
     end;
 
     [InternalEvent(false)]
+    [NonDebuggable]
     internal procedure OnGetAccessToken(var AccessToken: Text)
     begin
     end;
 
     [InternalEvent(false)]
-    internal procedure OnGetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
+    internal procedure OnGetContent(HttpResponseMessage: HttpResponseMessage; var Response: Text)
     begin
     end;
 }

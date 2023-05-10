@@ -1023,7 +1023,7 @@ report 18014 "Return Order Confirmation GST"
 
     procedure InitLogInteraction()
     begin
-        LogIntaction := SegManagement.FindInteractTmplCode(18) <> '';
+        LogIntaction := SegManagement.FindInteractionTemplateCode(18) <> '';
     end;
 
     procedure InitializeRequest(ShowInternalInfoFrom: Boolean; LogInteractionFrom: Boolean)

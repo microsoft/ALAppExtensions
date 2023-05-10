@@ -56,6 +56,9 @@ codeunit 18151 "GST Ship To Address"
         ShiptoAddress: Record "Ship-to Address";
     begin
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        if SalesHeader."Bill-to Customer No." = '' then
+            exit;
+
         Customer.Get(SalesHeader."Bill-to Customer No.");
         case SalesLine."GST Place of Supply" of
             SalesLine."GST Place of Supply"::"Bill-to Address":

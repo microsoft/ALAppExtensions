@@ -21,7 +21,7 @@ page 1680 "Email Logging Setup"
                     Caption = 'Shared Mailbox Email';
                     ToolTip = 'Specifies the email address of the shared mailbox in Exchange Online that was created for email logging. The shared mailbox must be in the same tenant as Business Central.';
                     ShowMandatory = true;
-                    Enabled = IsFeatureEnabled and (not IsEmailLoggingEnabled);
+                    Enabled = not IsEmailLoggingEnabled;
                     NotBlank = true;
                     ExtendedDatatype = EMail;
 
@@ -40,7 +40,7 @@ page 1680 "Email Logging Setup"
                     Caption = 'Email Batch Size';
                     ToolTip = 'Specifies the number of email messages that the job queue entry for email logging will get from Exchange Online in one run. By balancing this number with how often the job queue entry runs you can fine tune the process. If a message is not logged in the current run it will be in the next one.';
                     ShowMandatory = true;
-                    Enabled = IsFeatureEnabled and (not IsEmailLoggingEnabled);
+                    Enabled = not IsEmailLoggingEnabled;
                     NotBlank = true;
                 }
                 field(Enabled; Rec.Enabled)
@@ -48,7 +48,6 @@ page 1680 "Email Logging Setup"
                     ApplicationArea = RelationshipMgmt;
                     Caption = 'Enabled', Comment = 'Name of the toggle that shows whether email logging is enabled.';
                     ToolTip = 'Specifies whether email logging is enabled.';
-                    Enabled = IsFeatureEnabled;
 
                     trigger OnValidate()
                     begin
@@ -58,6 +57,9 @@ page 1680 "Email Logging Setup"
                             Session.LogMessage('0000G0Q', EmailLoggingDisabledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                             exit;
                         end;
+
+                        if not Confirm(DataHandlingConsentQst, false) then
+                            Error('');
 
                         if OAuthClient.GetApplicationType() <> Enum::"Email Logging App Type"::"First Party" then begin
                             SignInAndGiveAppConsent();
@@ -82,7 +84,7 @@ page 1680 "Email Logging Setup"
                 {
                     ApplicationArea = RelationshipMgmt;
                     Caption = 'Client ID';
-                    Enabled = IsFeatureEnabled and (not IsEmailLoggingEnabled);
+                    Enabled = not IsEmailLoggingEnabled;
                     ToolTip = 'Specifies the ID of the Azure Active Directory application that will be used to connect to Exchange Online.', Comment = 'Exchange Online and Azure Active Directory are names of a Microsoft service and a Microsoft Azure resource and should not be translated.';
                 }
                 field("Client Secret Key"; ClientSecretTemp)
@@ -90,7 +92,7 @@ page 1680 "Email Logging Setup"
                     ApplicationArea = RelationshipMgmt;
                     Caption = 'Client Secret';
                     ExtendedDatatype = Masked;
-                    Enabled = IsFeatureEnabled and (not IsEmailLoggingEnabled);
+                    Enabled = not IsEmailLoggingEnabled;
                     ToolTip = 'Specifies the Azure Active Directory application secret that will be used to connect to Exchange Online.', Comment = 'Exchange Online and Azure Active Directory are names of a Microsoft service and a Microsoft Azure resource and should not be translated.';
 
                     trigger OnValidate()
@@ -103,7 +105,7 @@ page 1680 "Email Logging Setup"
                     ApplicationArea = RelationshipMgmt;
                     Caption = 'Redirect URL';
                     ExtendedDatatype = URL;
-                    Enabled = IsFeatureEnabled and (not IsEmailLoggingEnabled);
+                    Enabled = not IsEmailLoggingEnabled;
                     ToolTip = 'Specifies the redirect URL of the Azure Active Directory application that will be used to connect to Exchange Online.', Comment = 'Exchange Online and Azure Active Directory are names of a Microsoft service and a Microsoft Azure resource and should not be translated.';
                 }
             }
@@ -120,7 +122,7 @@ page 1680 "Email Logging Setup"
                 Image = CheckJournal;
                 Caption = 'Assisted Setup';
                 ToolTip = 'Assisted Setup';
-                Enabled = IsFeatureEnabled and (not IsEmailLoggingEnabled);
+                Enabled = not IsEmailLoggingEnabled;
 
                 trigger OnAction()
                 begin
@@ -137,7 +139,7 @@ page 1680 "Email Logging Setup"
                 Caption = 'Renew Token';
                 ToolTip = 'Renew the token for connecting to the shared mailbox. You must sign in with an Exchange Online account that the scheduled job will use to connect to the shared mailbox and process emails. Use this to change the user, or if the token has expired.';
                 Image = AuthorizeCreditCard;
-                Visible = IsFeatureEnabled and IsEmailLoggingEnabled and UseThirdPartyApp;
+                Visible = IsEmailLoggingEnabled and UseThirdPartyApp;
 
                 trigger OnAction()
                 begin
@@ -151,7 +153,7 @@ page 1680 "Email Logging Setup"
                 Image = CheckJournal;
                 Caption = 'Validate Setup';
                 ToolTip = 'Validate the settings for email logging.';
-                Enabled = IsFeatureEnabled and IsEmailLoggingEnabled;
+                Enabled = IsEmailLoggingEnabled;
 
                 trigger OnAction()
                 begin
@@ -165,7 +167,7 @@ page 1680 "Email Logging Setup"
                 Caption = 'Recreate Job';
                 ToolTip = 'Recreate the job queue entry that processes email messages and creates interaction log entries.';
                 Image = ResetStatus;
-                Visible = IsFeatureEnabled and IsEmailLoggingEnabled;
+                Visible = IsEmailLoggingEnabled;
 
                 trigger OnAction()
                 begin
@@ -178,7 +180,7 @@ page 1680 "Email Logging Setup"
                 Caption = 'Clear Setup';
                 Image = ClearLog;
                 ToolTip = 'Clear all settings for email logging.';
-                Enabled = IsFeatureEnabled and (not IsEmailLoggingEnabled);
+                Enabled = not IsEmailLoggingEnabled;
 
                 trigger OnAction()
                 begin
@@ -198,7 +200,7 @@ page 1680 "Email Logging Setup"
                 RunObject = Page "Data Encryption Management";
                 RunPageMode = View;
                 ToolTip = 'Turn data encryption on or off. Data encryption helps make sure that unauthorized users cannot read business data.';
-                Visible = IsFeatureEnabled and (not SoftwareAsAService);
+                Visible = not SoftwareAsAService;
             }
             action("Job Queue Entry")
             {
@@ -206,7 +208,6 @@ page 1680 "Email Logging Setup"
                 Caption = 'Job Queue Entry';
                 Image = JobListSetup;
                 ToolTip = 'View the job queue entry that processes email messages and creates interaction log entries.';
-                Visible = IsFeatureEnabled;
 
                 trigger OnAction()
                 var
@@ -226,7 +227,6 @@ page 1680 "Email Logging Setup"
                 Caption = 'Activity Log';
                 Image = Log;
                 ToolTip = 'View the status and any errors that occurred while processing email messages and creating interaction log entries.';
-                Visible = IsFeatureEnabled;
 
                 trigger OnAction()
                 var
@@ -246,9 +246,6 @@ page 1680 "Email Logging Setup"
         ApplicationType: Enum "Email Logging App Type";
     begin
         Session.LogMessage('0000HAG', StrSubstNo(ContextCompanyTxt, CompanyName()), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-        IsFeatureEnabled := EmailLoggingManagement.IsEmailLoggingUsingGraphApiFeatureEnabled();
-        if not IsFeatureEnabled then
-            Error(FeautureNotEnabledErr);
         SoftwareAsAService := EnvironmentInformation.IsSaaSInfrastructure();
         EmailLoggingManagement.InitializeOAuthClient(OAuthClient);
         ApplicationType := OAuthClient.GetApplicationType();
@@ -285,13 +282,11 @@ page 1680 "Email Logging Setup"
     var
         EmailLoggingManagement: Codeunit "Email Logging Management";
         OAuthClient: Interface "Email Logging OAuth Client";
-        IsFeatureEnabled: Boolean;
         SoftwareAsAService: Boolean;
         UseThirdPartyApp: Boolean;
         IsEmailLoggingEnabled: Boolean;
         [NonDebuggable]
         ClientSecretTemp: Text;
-        FeautureNotEnabledErr: Label 'This setup page can only be used when the Email Logging Using the Microsoft Graph API feature is enabled. You can enable the feature on the Feature Management page.';
         CannotAccessMailboxErr: Label 'Could not access the shared mailbox.';
         ClearSetupTxt: Label 'This clears the settings in your email logging setup. Do you want to continue?';
         GiveConsentTxt: Label 'You must sign in with an administrator account for Exchange Online and give consent to the application that will be used to connect to the shared mailbox. Do you want to continue?';
@@ -303,6 +298,7 @@ page 1680 "Email Logging Setup"
         CreateEmailLoggingJobTxt: Label 'Create email logging job', Locked = true;
         ContextCompanyTxt: Label 'Open Email Logging setup. Company: %1', Locked = true;
         CategoryTok: Label 'Email Logging', Locked = true;
+        DataHandlingConsentQst: Label 'This feature requires that you are using Microsoft Exchange Online. By enabling this feature, you consent to sharing some of your organization''s data in Office 365 with Business Central. Business Central will access details about email messages in the shared mailbox that your administrator created for email logging. The details include the message’s IDs, whether it is a draft, the dates and times it was sent and received, the text from the Subject line, a link to the message in Exchange Online, and the email addresses of the sender and the recipients on the To and Cc lines.\\Business Central will store only the IDs, dates, subject, and weblink. We do not store the content of the messages, but there is a link that will open the email message in Outlook Online.\\Do you want to continue?';
 
     [TryFunction]
     [NonDebuggable]

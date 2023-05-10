@@ -6,6 +6,8 @@
 codeunit 1753 "Data Classification Mgt. Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Data Sensitivity" = rimd,
                   tabledata Field = r,
                   tabledata "Table Relations Metadata" = r;

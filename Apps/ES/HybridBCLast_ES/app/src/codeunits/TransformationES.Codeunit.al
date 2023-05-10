@@ -18,6 +18,7 @@ codeunit 11724 "Transformation ES"
         StgSIISetup: Record "Stg SII Setup";
         SourceTableMapping: Record "Source Table Mapping";
         HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
+        W1Management: Codeunit "W1 Management";
         ExtensionInfo: ModuleInfo;
         W1AppId: Guid;
     begin
@@ -25,6 +26,9 @@ codeunit 11724 "Transformation ES"
             exit;
 
         if TargetVersion <> 16.0 then
+            exit;
+
+        if not W1Management.GetLegacyUpgradeSupported() then
             exit;
 
         NavApp.GetCurrentModuleInfo(ExtensionInfo);

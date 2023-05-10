@@ -17,10 +17,11 @@ page 1439 "Headline Details"
         {
             repeater(GroupName)
             {
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     Editable = false;
                     ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the name.';
 
                     trigger OnDrillDown()
                     var
@@ -30,43 +31,46 @@ page 1439 "Headline Details"
                         SalesLine: Record "Sales Line";
                     begin
                         if IsHeadlineCustomerRelatedWithAmount then begin
-                            if Customer.Get("No.") then
+                            if Customer.Get(Rec."No.") then
                                 Page.Run(Page::"Customer Card", Customer);
                             exit;
                         end;
 
                         case ProductType of
-                            SalesLine.Type::Item:
-                                if Item.Get("No.") then
+                            SalesLine.Type::Item.AsInteger():
+                                if Item.Get(Rec."No.") then
                                     Page.Run(Page::"Item Card", Item);
 
-                            SalesLine.Type::Resource:
-                                if Resource.Get("No.") then
+                            SalesLine.Type::Resource.AsInteger():
+                                if Resource.Get(Rec."No.") then
                                     Page.Run(Page::"Resource Card", Resource);
                         end;
                     end;
                 }
 
-                field(Quantity; Quantity)
+                field(Quantity; Rec.Quantity)
                 {
                     Editable = false;
                     Visible = (not IsHeadlineCustomerRelatedWithAmount);
                     ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the quantity.';
                 }
 
-                field("Unit of Measure"; "Unit of Measure")
+                field("Unit of Measure"; Rec."Unit of Measure")
                 {
                     Editable = false;
                     Visible = (not IsHeadlineCustomerRelatedWithAmount);
                     ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the unit of measure.';
                 }
 
-                field("Amount (LCY)"; "Amount (LCY)")
+                field("Amount (LCY)"; Rec."Amount (LCY)")
                 {
                     Editable = false;
                     Visible = IsHeadlineCustomerRelatedWithAmount;
                     ApplicationArea = Basic, Suite;
                     CaptionClass = AmountCaptionToUse;
+                    ToolTip = 'Specifies the amount in local currency.';
                 }
             }
         }
@@ -76,7 +80,7 @@ page 1439 "Headline Details"
     begin
         if IsHeadlineCustomerRelatedWithAmount then begin
             PopulatePageDataCustomer();
-            AmountCaptionToUse := StrSubstNo('%1%2', AmountCaptionLbl, GetLocalCurrencyCode());
+            AmountCaptionToUse := StrSubstNo(AmountCaptionTxt, AmountCaptionLbl, GetLocalCurrencyCode());
         end else
             PopulatePageDataProduct();
     end;
@@ -86,25 +90,25 @@ page 1439 "Headline Details"
         SalesLine: Record "Sales Line";
     begin
         case ProductType of
-            SalesLine.Type::Item:
-                SetRange(Type, Type::Item);
+            SalesLine.Type::Item.AsInteger():
+                Rec.SetRange(Type, Rec.Type::Item);
 
-            SalesLine.Type::Resource:
-                SetRange(Type, Type::Resource);
+            SalesLine.Type::Resource.AsInteger():
+                Rec.SetRange(Type, Rec.Type::Resource);
         end;
-        SetRange("User Id", UserSecurityId());
-        SetCurrentKey(Quantity);
-        Ascending(false);
-        if FindFirst() then;
+        Rec.SetRange("User Id", UserSecurityId());
+        Rec.SetCurrentKey(Quantity);
+        Rec.Ascending(false);
+        if Rec.FindFirst() then;
     end;
 
     local procedure PopulatePageDataCustomer()
     begin
-        SetRange(Type, Type::Customer);
-        SetRange("User Id", UserSecurityId());
-        SetCurrentKey("Amount (LCY)");
-        Ascending(false);
-        if FindFirst() then;
+        Rec.SetRange(Type, Rec.Type::Customer);
+        Rec.SetRange("User Id", UserSecurityId());
+        Rec.SetCurrentKey("Amount (LCY)");
+        Rec.Ascending(false);
+        if Rec.FindFirst() then;
     end;
 
     procedure InitProduct(ProductTypeToSet: Option)
@@ -140,4 +144,5 @@ page 1439 "Headline Details"
         AmountCaptionToUse: Text;
         LCYParenthesisTxt: Label ' (%1)', Comment = '%1 is the local currency symbol or code if found', Locked = true;
         AmountCaptionLbl: Label 'Amount';
+        AmountCaptionTxt: Label '%1%2', Comment = '%1 = Amount caption label, %2 = Local currency code', Locked = true;
 }

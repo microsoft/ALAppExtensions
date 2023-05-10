@@ -198,6 +198,68 @@ codeunit 139036 "Data Compression Tests"
 
     [Test]
     [Scope('OnPrem')]
+    procedure TestRemoveEntry()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataCompressionLocal: Codeunit "Data Compression";
+        EntryList: List of [Text];
+        InStream: InStream;
+        OutStream: OutStream;
+        FilePath: List of [Text];
+        Index: Integer;
+        FileText: Text;
+        EntryKey: Text;
+    begin
+        // [GIVEN] create streams with text content
+        FilePath.Add('some/directory/test.txt');
+        FilePath.Add('some/other/directory/test.txt');
+        FileText := 'VerifyGetEntryList10';
+        DataCompression.CreateZipArchive();
+
+        // [WHEN] add the streams to zip stream
+        for Index := 1 to FilePath.Count() do begin
+            TempBlob.CreateOutStream(OutStream);
+            OutStream.WriteText(FileText);
+            TempBlob.CreateInStream(InStream);
+            DataCompression.AddEntry(InStream, FilePath.Get(Index));
+        end;
+
+        Clear(TempBlob);
+        TempBlob.CreateOutStream(OutStream);
+        DataCompression.SaveZipArchive(OutStream);
+        DataCompression.CloseZipArchive();
+        TempBlob.CreateInStream(InStream);
+
+        // [THEN] verify that GetEntryList returns the list of entries
+        DataCompressionLocal.OpenZipArchive(InStream, true);
+        DataCompressionLocal.GetEntryList(EntryList);
+        Assert.AreEqual(FilePath.Count(), EntryList.Count(), 'Wrong number of entries');
+        Index := 1;
+        foreach EntryKey in EntryList do begin
+            Assert.AreEqual(FilePath.Get(Index), EntryKey, '');
+            Index += 1;
+        end;
+
+        // [WHEN] We remove an entry
+        DataCompressionLocal.RemoveEntry(FilePath.Get(1));
+        FilePath.RemoveAt(1);
+
+        // [THEN] verify that GetEntryList returns the list of entries
+        Clear(EntryList);
+        DataCompressionLocal.GetEntryList(EntryList);
+        Assert.AreEqual(FilePath.Count(), EntryList.Count(), 'Wrong number of entries');
+        Index := 1;
+        foreach EntryKey in EntryList do begin
+            Assert.AreEqual(FilePath.Get(Index), EntryKey, '');
+            Index += 1;
+        end;
+
+        // Clean up
+        Clear(DataCompression);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure TestExtractEntry()
     var
         TempBlob: Codeunit "Temp Blob";

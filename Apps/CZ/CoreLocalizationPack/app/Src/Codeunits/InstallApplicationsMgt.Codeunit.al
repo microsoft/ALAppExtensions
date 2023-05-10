@@ -22,11 +22,11 @@ codeunit 31393 "Install Applications Mgt. CZL"
 
         repeat
             if not TenantPermissionSet.Get(AppID, Permission."Role ID") then begin
-                PermissionSet.Get(Permission."Role ID");
                 TenantPermissionSet.Init();
                 TenantPermissionSet."App ID" := AppId;
                 TenantPermissionSet."Role ID" := Permission."Role ID";
-                TenantPermissionSet.Name := PermissionSet.Name;
+                if PermissionSet.Get(Permission."Role ID") then
+                    TenantPermissionSet.Name := PermissionSet.Name;
                 TenantPermissionSet.Insert();
             end;
             if not TenantPermission.Get(AppID, Permission."Role ID", Permission."Object Type", NewTableID) then begin

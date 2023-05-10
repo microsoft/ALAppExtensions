@@ -1,10 +1,14 @@
 
+#if not CLEAN22
 page 31195 "Intrastat Journal Lines CZL"
 {
     Caption = 'Intrastat Journal Lines';
     Editable = false;
     PageType = List;
     SourceTable = "Intrastat Jnl. Line";
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
     layout
     {
@@ -143,3 +147,4 @@ page 31195 "Intrastat Journal Lines CZL"
     }
 }
 
+#endif

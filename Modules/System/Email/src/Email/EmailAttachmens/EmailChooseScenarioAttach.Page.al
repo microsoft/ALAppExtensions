@@ -63,16 +63,29 @@ page 8896 "Email Choose Scenario Attach"
             {
                 ApplicationArea = All;
                 Image = Download;
-                Caption = 'Download Attachment';
-                ToolTip = 'Download the selected attachment file.';
+                Caption = 'Download Attachments';
+                ToolTip = 'Download the selected attachment files.';
                 Scope = Repeater;
                 Enabled = DownloadActionEnabled;
 
                 trigger OnAction()
                 var
+                    SelectedAttachments: Record "Email Scenario Attachments";
                     EmailEditor: Codeunit "Email Editor";
+                    Attachments: Dictionary of [Guid, Text];
                 begin
-                    EmailEditor.DownloadAttachment(Rec."Email Attachment".MediaId, Rec."Attachment Name");
+                    CurrPage.SetSelectionFilter(SelectedAttachments);
+                    if not SelectedAttachments.FindSet() then
+                        exit;
+
+                    if SelectedAttachments.Count = 1 then
+                        EmailEditor.DownloadAttachment(SelectedAttachments."Email Attachment".MediaId, SelectedAttachments."Attachment Name")
+                    else begin
+                        repeat
+                            Attachments.Add(SelectedAttachments."Email Attachment".MediaId, SelectedAttachments."Attachment Name");
+                        until SelectedAttachments.Next() = 0;
+                        EmailEditor.DownloadAttachments(Attachments, EmailAttachmentsZipFileNameTxt);
+                    end;
                 end;
             }
         }
@@ -111,5 +124,6 @@ page 8896 "Email Choose Scenario Attach"
     var
         EmailScenarioAttachmentsImpl: Codeunit "Email Scenario Attach Impl.";
         EmailScenario: Enum "Email Scenario";
+        EmailAttachmentsZipFileNameTxt: Label 'EmailAttachments.zip', Comment = 'Name of the zip file containing email attachments.';
         DownloadActionEnabled: Boolean;
 }

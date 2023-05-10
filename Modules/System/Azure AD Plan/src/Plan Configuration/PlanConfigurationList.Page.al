@@ -13,11 +13,13 @@ page 9061 "Plan Configuration List"
     PageType = List;
     SourceTable = "Plan Configuration";
     UsageCategory = Administration;
-    Extensible = false;
+    Extensible = true;
     Permissions = tabledata "Plan Configuration" = rimd;
     ContextSensitiveHelpPage = 'ui-how-users-permissions#licensespermissions';
     InsertAllowed = false;
     ModifyAllowed = false;
+    AboutTitle = 'About license configuration';
+    AboutText = 'License configuration allows you to set up the default permissions that new users will get when accessing the system.';
 
     layout
     {
@@ -37,6 +39,7 @@ page 9061 "Plan Configuration List"
                         Page.Run(Page::"Plan Configuration Card", Rec);
                     end;
                 }
+
                 field(Customized; Rec.Customized)
                 {
                     ApplicationArea = All;
@@ -58,6 +61,17 @@ page 9061 "Plan Configuration List"
 
             actionref(Configure_Promoted; Configure)
             {
+            }
+
+            group(Navigate)
+            {
+                actionref(BCAdminCenter_Promoted; BCAdminCenter)
+                {
+                }
+
+                actionref(M365AdminCenter_Promoted; M365AdminCenter)
+                {
+                }
             }
         }
 
@@ -92,6 +106,40 @@ page 9061 "Plan Configuration List"
                 ToolTip = 'Customize license permissions.';
             }
         }
+
+        area(Navigation)
+        {
+            action(BCAdminCenter)
+            {
+                ApplicationArea = All;
+                Caption = 'Business Central admin center', Locked = true;
+                Image = Setup;
+                ToolTip = 'Manage security groups and license-related features for each environment.';
+                Visible = IsSaaS;
+
+                trigger OnAction()
+                var
+                    PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+                begin
+                    PlanConfigurationImpl.OpenBCAdminCenter();
+                end;
+            }
+
+            action(M365AdminCenter)
+            {
+                ApplicationArea = All;
+                Caption = 'Microsoft 365 admin center', Locked = true;
+                Image = Setup;
+                ToolTip = 'Assign licenses to existing users or create new users.';
+
+                trigger OnAction()
+                var
+                    PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+                begin
+                    PlanConfigurationImpl.OpenM365AdminCenter();
+                end;
+            }
+        }
     }
 
     trigger OnOpenPage()
@@ -104,4 +152,14 @@ page 9061 "Plan Configuration List"
         if not PlanConfiguration.IsEmpty() then
             PlanConfigurationImpl.ShowDefaultConfigurationNotification();
     end;
+
+    trigger OnInit()
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        IsSaaS := EnvironmentInformation.IsSaaS();
+    end;
+
+    var
+        IsSaaS: Boolean;
 }

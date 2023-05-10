@@ -2,7 +2,6 @@ page 31272 "Compensation Card CZC"
 {
     Caption = 'Compensation Card';
     PageType = Document;
-    PromotedActionCategories = 'New,Process,Report,Approve,Request Approval';
     RefreshOnActivate = true;
     SourceTable = "Compensation Header CZC";
     UsageCategory = None;
@@ -236,10 +235,6 @@ page 31272 "Compensation Card CZC"
                     ApplicationArea = All;
                     Caption = 'Approve';
                     Image = Approve;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
                     ToolTip = 'Approve compensation.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -253,9 +248,6 @@ page 31272 "Compensation Card CZC"
                     ApplicationArea = All;
                     Caption = 'Reject';
                     Image = Reject;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedIsBig = true;
                     ToolTip = 'Rejects compensation.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -269,8 +261,6 @@ page 31272 "Compensation Card CZC"
                     ApplicationArea = All;
                     Caption = 'Delegate';
                     Image = Delegate;
-                    Promoted = true;
-                    PromotedCategory = Category4;
                     ToolTip = 'Delegates compensation approvement.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -284,8 +274,6 @@ page 31272 "Compensation Card CZC"
                     ApplicationArea = All;
                     Caption = 'Comments';
                     Image = ViewComments;
-                    Promoted = true;
-                    PromotedCategory = Category4;
                     ToolTip = 'Specifies the compensation comments.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -303,8 +291,6 @@ page 31272 "Compensation Card CZC"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Re&lease';
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'Ctrl+F9';
                     ToolTip = 'Release compensation document.';
 
@@ -335,8 +321,6 @@ page 31272 "Compensation Card CZC"
                     Caption = 'Propose Compensation Lines';
                     Ellipsis = true;
                     Image = SuggestLines;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ToolTip = 'The function allows propose compensation lines.';
 
                     trigger OnAction()
@@ -433,9 +417,6 @@ page 31272 "Compensation Card CZC"
                     Caption = 'P&ost';
                     Ellipsis = true;
                     Image = Post;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedIsBig = true;
                     ShortCutKey = 'F9';
                     ToolTip = 'Finalize the compensation. The values are posted to the related accounts.';
 
@@ -495,9 +476,6 @@ page 31272 "Compensation Card CZC"
                     Caption = 'Send A&pproval Request';
                     Enabled = not OpenApprovalEntriesExist;
                     Image = SendApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -512,8 +490,6 @@ page 31272 "Compensation Card CZC"
                     Caption = 'Cancel Approval Re&quest';
                     Enabled = OpenApprovalEntriesExist;
                     Image = CancelApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -531,9 +507,6 @@ page 31272 "Compensation Card CZC"
                 Caption = '&Print';
                 Ellipsis = true;
                 Image = Print;
-                Promoted = true;
-                PromotedCategory = Report;
-                PromotedOnly = true;
                 ToolTip = 'Prepare to print the document. A report request window for the document opens where you can specify what to include on the print-out.';
 
                 trigger OnAction()
@@ -550,15 +523,104 @@ page 31272 "Compensation Card CZC"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = Report;
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
                 begin
                     Rec.PrintToDocumentAttachment();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                group(Category_Category5)
+                {
+                    Caption = 'Posting';
+                    ShowAs = SplitButton;
+
+                    actionref("P&ost_Promoted"; "P&ost")
+                    {
+                    }
+                    actionref(PostAndNew_Promoted; PostAndNew)
+                    {
+                    }
+                    actionref(PostAndPrint_Promoted; PostAndPrint)
+                    {
+                    }
+                    actionref(PreviePosting_Promoted; PreviewPosting)
+                    {
+                    }
+                }
+                group(Category_Category4)
+                {
+                    Caption = 'Release';
+                    ShowAs = SplitButton;
+
+                    actionref(Release_Promoted; Release)
+                    {
+                    }
+                    actionref(Reopen_Promoted; Reopen)
+                    {
+                    }
+                }
+                actionref(ProposeCompensationLines_Promoted; ProposeCompensationLines)
+                {
+                }
+                actionref(ApplyDocumentBalance_Promoted; ApplyDocumentBalance)
+                {
+                }
+            }
+            group(Category_Category8)
+            {
+                Caption = 'Request Approval';
+
+                actionref(SendApprovalRequest_Promoted; SendApprovalRequest)
+                {
+                }
+                actionref(CancelApprovalRequest_Promoted; CancelApprovalRequest)
+                {
+                }
+            }
+            group(Category_Category9)
+            {
+                Caption = 'Approval';
+                Visible = false;
+
+                actionref(Approve_Promoted; Approve)
+                {
+                }
+                actionref(Reject_Promoted; Reject)
+                {
+                }
+                actionref(Delegate_Promoted; Delegate)
+                {
+                }
+                actionref(Comment_Promoted; Comment)
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Print';
+
+                actionref(Print_Promoted; Print)
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Compensation';
+
+                actionref(Approvals_Promoted; "A&pprovals")
+                {
+                }
             }
         }
     }

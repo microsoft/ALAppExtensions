@@ -1,20 +1,20 @@
 This module provides functionality to work with URIs.
 
-It exposes .Net classes [Uri](https://docs.microsoft.com/en-us/dotnet/api/system.uri?view=netcore-3.1) and [UriBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder?view=netcore-3.1) for AL development. 
+It exposes .Net classes [Uri](https://learn.microsoft.com/dotnet/api/system.uri?view=netcore-3.1) and [UriBuilder](https://learn.microsoft.com/dotnet/api/system.uribuilder?view=netcore-3.1) for AL development. 
 # Public Objects
 ## Uri (Codeunit 3060)
 
  Provides an object representation of a uniform resource identifier (URI) and easy access to the parts of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri for more information.
 
 ### Init (Method) <a name="Init"></a> 
 
  Initializes a new instance of the Uri class with the specified URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.-ctor#System_Uri__ctor_System_String_ for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.-ctor#System_Uri__ctor_System_String_ for more information.
 
 #### Syntax
 ```
@@ -43,7 +43,7 @@ A string containing the entire URI.
  Gets the scheme name for the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.scheme for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.scheme for more information.
 
 #### Syntax
 ```
@@ -58,7 +58,7 @@ A text that contains the scheme for this URI, converted to lowercase.
  Gets the host name of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.host for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.host for more information.
 
 #### Syntax
 ```
@@ -73,7 +73,7 @@ A text that contains the host name for this URI.
  Gets the port number of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.port for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.port for more information.
 
 #### Syntax
 ```
@@ -88,7 +88,7 @@ An integer that contains the port number for this URI.
  Gets the absolute path of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.absolutepath for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.absolutepath for more information.
 
 #### Syntax
 ```
@@ -103,7 +103,7 @@ A text that contains the absolute path for this URI.
  Gets any query information included in the specified URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.query for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.query for more information.
 
 #### Syntax
 ```
@@ -118,7 +118,7 @@ A text that contains the query information for this URI.
  Gets the escaped URI fragment.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.fragment for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.fragment for more information.
 
 #### Syntax
 ```
@@ -133,7 +133,7 @@ A text that contains the fragment portion for this URI.
  Gets a list containing the path segments that make up the specified URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.segments for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.segments for more information.
 
 #### Syntax
 ```
@@ -149,7 +149,7 @@ An out variable that contains the path segments that make up the specified URI.
  Converts a string to its escaped representation.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.escapedatastring for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.escapedatastring for more information.
 
 #### Syntax
 ```
@@ -169,7 +169,7 @@ A string that contains the escaped representation of .
  Converts a string to its unescaped representation.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.unescapedatastring for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uri.unescapedatastring for more information.
 
 #### Syntax
 ```
@@ -235,14 +235,14 @@ A .Net object of class Uri to set to the underlying .Net Uri variable.
  Provides a custom constructor for uniform resource identifiers (URIs) and modifies URIs for the Uri codeunit.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder for more information.
 
 ### Init (Method) <a name="Init"></a> 
 
  Initializes a new instance of the UriBuilder class with the specified URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.-ctor#System_UriBuilder__ctor_System_String_ for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.-ctor#System_UriBuilder__ctor_System_String_ for more information.
 
 #### Syntax
 ```
@@ -258,7 +258,7 @@ A URI string.
  Sets the scheme name of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.scheme for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.scheme for more information.
 
 #### Syntax
 ```
@@ -274,7 +274,7 @@ A string that represents the scheme name to set.
  Gets the scheme name of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.scheme for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.scheme for more information.
 
 #### Syntax
 ```
@@ -289,7 +289,7 @@ The scheme name of the URI.
  Sets the host name of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.host for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.host for more information.
 
 #### Syntax
 ```
@@ -305,7 +305,7 @@ A string that represents the host name to set.
  Gets the host name of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.host for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.host for more information.
 
 #### Syntax
 ```
@@ -320,7 +320,7 @@ The host name of the URI.
  Sets the port number of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.port for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.port for more information.
 
 #### Syntax
 ```
@@ -336,7 +336,7 @@ An integer that represents the port number to set.
  Gets the port number of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.port for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.port for more information.
 
 #### Syntax
 ```
@@ -351,7 +351,7 @@ The port number of the URI.
  Sets the path to the resource referenced by the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.path for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.path for more information.
 
 #### Syntax
 ```
@@ -367,7 +367,7 @@ A string that represents the path to set.
  Gets the path to the resource referenced by the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.path for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.path for more information.
 
 #### Syntax
 ```
@@ -382,7 +382,7 @@ The path to the resource referenced by the URI.
  Sets any query information included in the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.query for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.query for more information.
 
 #### Syntax
 ```
@@ -398,7 +398,7 @@ A string that represents the query information to set.
  Gets the query information included in the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.query for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.query for more information.
 
 #### Syntax
 ```
@@ -413,7 +413,7 @@ The query information included in the URI.
  Sets the fragment portion of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.fragment for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.fragment for more information.
 
 #### Syntax
 ```
@@ -429,7 +429,7 @@ A string that represents the fragment portion to set.
  Gets the fragment portion of the URI.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.fragment for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.fragment for more information.
 
 #### Syntax
 ```
@@ -444,7 +444,7 @@ The fragment portion of the URI.
  Gets the Uri instance constructed by the specified "Uri Builder" instance.
  
 
-Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.uri for more information.
+Visit https://learn.microsoft.com/dotnet/api/system.uribuilder.uri for more information.
 
 #### Syntax
 ```

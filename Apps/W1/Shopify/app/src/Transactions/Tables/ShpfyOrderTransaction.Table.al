@@ -174,6 +174,9 @@ table 30133 "Shpfy Order Transaction"
         {
             SumIndexFields = Amount;
         }
+        key(Idx002; "Created At")
+        {
+        }
     }
 
     fieldgroups

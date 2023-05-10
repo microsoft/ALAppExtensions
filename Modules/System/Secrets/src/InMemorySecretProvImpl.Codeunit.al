@@ -9,6 +9,8 @@
 codeunit 3803 "In Memory Secret Prov Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

@@ -3,6 +3,7 @@ codeunit 31448 "Gen. Journal Batch Handler CZL"
     Access = Internal;
 
 #if not CLEAN21
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnBeforeCheckCorrection', '', false, false)]
     local procedure AllowHybridDocumentOnBeforeCheckCorrection(var GenJnlBatch: Record "Gen. Journal Batch"; var CheckCorrection: Boolean)
     begin
@@ -11,6 +12,7 @@ codeunit 31448 "Gen. Journal Batch Handler CZL"
 
         CheckCorrection := false;
     end;
+#pragma warning restore AL0432
 #else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnBeforeCheckCorrection', '', false, false)]
     local procedure AllowHybridDocumentOnBeforeCheckCorrection(GenJournalLine: Record "Gen. Journal Line"; var LastDate: Date; var LastDocType: Enum "Gen. Journal Document Type"; var LastDocNo: Code[20]; var IsHandled: Boolean)

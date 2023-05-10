@@ -33,8 +33,10 @@ codeunit 11748 "Install Application CZL"
                   tabledata "EET Entry CZL" = im,
                   tabledata "EET Entry Status Log CZL" = im,
                   tabledata "Constant Symbol CZL" = im,
+#if not CLEAN22
                   tabledata "Subst. Cust. Posting Group CZL" = i,
                   tabledata "Subst. Vend. Posting Group CZL" = i,
+#endif
                   tabledata "Specific Movement CZL" = im,
                   tabledata "Intrastat Delivery Group CZL" = im,
                   tabledata "User Setup Line CZL" = im,
@@ -200,8 +202,12 @@ codeunit 11748 "Install Application CZL"
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"EET Entry", Database::"EET Entry CZL");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"EET Entry Status", Database::"EET Entry Status Log CZL");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"EET Service Setup", Database::"EET Service Setup CZL");
+#if not CLEAN22
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Customer Posting Group", Database::"Subst. Cust. Posting Group CZL");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Vendor Posting Group", Database::"Subst. Vend. Posting Group CZL");
+#endif
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Customer Posting Group", Database::"Alt. Customer Posting Group");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Vendor Posting Group", Database::"Alt. Vendor Posting Group");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Specific Movement", Database::"Specific Movement CZL");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Intrastat Delivery Group", Database::"Intrastat Delivery Group CZL");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Acc. Schedule Extension", Database::"Acc. Schedule Extension CZL");
@@ -408,6 +414,7 @@ codeunit 11748 "Install Application CZL"
                 Customer."Transaction Type CZL" := Customer."Transaction Type";
                 Customer."Transaction Specification CZL" := Customer."Transaction Specification";
                 Customer."Transport Method CZL" := Customer."Transport Method";
+                Customer."Allow Multiple Posting Groups" := true;
                 Customer.Modify(false);
             until Customer.Next() = 0;
     end;
@@ -425,6 +432,7 @@ codeunit 11748 "Install Application CZL"
                 Vendor."Transaction Type CZL" := Vendor."Transaction Type";
                 Vendor."Transaction Specification CZL" := Vendor."Transaction Specification";
                 Vendor."Transport Method CZL" := Vendor."Transport Method";
+                Vendor."Allow Multiple Posting Groups" := true;
                 Vendor.Modify(false);
             until Vendor.Next() = 0;
     end;
@@ -604,7 +612,13 @@ codeunit 11748 "Install Application CZL"
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
     begin
         if GeneralLedgerSetup.Get() then begin
+#if not CLEAN22
             GeneralLedgerSetup."Use VAT Date CZL" := GeneralLedgerSetup."Use VAT Date";
+#endif
+            if GeneralLedgerSetup."Use VAT Date" then
+                GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
+            else
+                GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
             GeneralLedgerSetup."Allow VAT Posting From CZL" := GeneralLedgerSetup."Allow VAT Posting From";
             GeneralLedgerSetup."Allow VAT Posting To CZL" := GeneralLedgerSetup."Allow VAT Posting To";
             GeneralLedgerSetup."Do Not Check Dimensions CZL" := GeneralLedgerSetup."Dont Check Dimension";
@@ -634,15 +648,15 @@ codeunit 11748 "Install Application CZL"
             SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date";
 #if not CLEAN20
             SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
-#else
-                SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups";
 #endif
+            SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups";
             SalesReceivablesSetup.Modify(false);
         end;
     end;
 
     local procedure CopyPurchaseSetup();
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
         PurchasesPayablesSetup.SetLoadFields("Default VAT Date", "Allow Alter Posting Groups", "Default Orig. Doc. VAT Date");
@@ -650,10 +664,24 @@ codeunit 11748 "Install Application CZL"
             PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date";
 #if not CLEAN20
             PurchasesPayablesSetup."Allow Alter Posting Groups CZL" := PurchasesPayablesSetup."Allow Alter Posting Groups";
-#else
-                PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups";
 #endif
+            PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups";
+#if not CLEAN22
             PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" := PurchasesPayablesSetup."Default Orig. Doc. VAT Date";
+#endif
+            GeneralLedgerSetup.Get();
+            case PurchasesPayablesSetup."Default Orig. Doc. VAT Date" of
+                PurchasesPayablesSetup."Default Orig. Doc. VAT Date"::Blank:
+                    GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::Blank;
+                PurchasesPayablesSetup."Default Orig. Doc. VAT Date"::"Posting Date":
+                    GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date";
+                PurchasesPayablesSetup."Default Orig. Doc. VAT Date"::"VAT Date":
+                    GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date";
+                PurchasesPayablesSetup."Default Orig. Doc. VAT Date"::"Document Date":
+                    GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date";
+            end;
+
+            GeneralLedgerSetup.Modify(false);
             PurchasesPayablesSetup.Modify(false);
         end;
     end;
@@ -667,9 +695,8 @@ codeunit 11748 "Install Application CZL"
             ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date";
 #if not CLEAN20
             ServiceMgtSetup."Allow Alter Posting Groups CZL" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
-#else
-                ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
 #endif
+            ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
             ServiceMgtSetup.Modify(false);
         end;
     end;
@@ -732,7 +759,10 @@ codeunit 11748 "Install Application CZL"
         GLEntry.SetFilter(GLEntry."VAT Date", '<>0D');
         if GLEntry.FindSet(true) then
             repeat
+#if not CLEAN22
                 GLEntry."VAT Date CZL" := GLEntry."VAT Date";
+#endif
+                GLEntry."VAT Reporting Date" := GLEntry."VAT Date";
                 GLEntry.Modify(false);
             until GLEntry.Next() = 0;
 
@@ -763,20 +793,31 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyDetailedCustLedgEntry();
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+#if not CLEAN22
         ApplTransactionDictionary: Dictionary of [Integer, Boolean];
+#endif
     begin
         DetailedCustLedgEntry.SetLoadFields("Entry No.", "Customer Posting Group", "Entry Type", "Transaction No.");
         if DetailedCustLedgEntry.FindSet(true) then
             repeat
+#if not CLEAN22
                 DetailedCustLedgEntry."Customer Posting Group CZL" := DetailedCustLedgEntry."Customer Posting Group";
+                DetailedCustLedgEntry."Posting Group" := DetailedCustLedgEntry."Customer Posting Group";
                 if DetailedCustLedgEntry."Entry Type" = DetailedCustLedgEntry."Entry Type"::Application then
                     DetailedCustLedgEntry."Appl. Across Post. Groups CZL" :=
                         IsCustomerApplAcrossPostGrpTransaction(DetailedCustLedgEntry."Transaction No.", ApplTransactionDictionary);
+#else
+                DetailedCustLedgEntry."Posting Group" := DetailedCustLedgEntry."Customer Posting Group";
+#endif
                 DetailedCustLedgEntry.Modify(false);
             until DetailedCustLedgEntry.Next() = 0;
     end;
-
+#if not CLEAN22
+    [Obsolete('The "Alter Posting Groups" feature is replaced by standard "Multiple Posting Groups" feature.', '22.0')]
     procedure IsCustomerApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
+#else
+    internal procedure IsCustomerApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
+#endif
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         FirstCustomerPostingGroup: Code[20];
@@ -821,20 +862,31 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyDetailedVendorLedgEntry();
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+#if not CLEAN22
         ApplTransactionDictionary: Dictionary of [Integer, Boolean];
+#endif
     begin
         DetailedVendorLedgEntry.SetLoadFields("Entry No.", "Vendor Posting Group", "Entry Type", "Transaction No.");
         if DetailedVendorLedgEntry.FindSet(true) then
             repeat
+#if not CLEAN22
                 DetailedVendorLedgEntry."Vendor Posting Group CZL" := DetailedVendorLedgEntry."Vendor Posting Group";
+                DetailedVendorLedgEntry."Posting Group" := DetailedVendorLedgEntry."Vendor Posting Group";
                 if DetailedVendorLedgEntry."Entry Type" = DetailedVendorLedgEntry."Entry Type"::Application then
                     DetailedVendorLedgEntry."Appl. Across Post. Groups CZL" :=
                         IsVendorApplAcrossPostGrpTransaction(DetailedVendorLedgEntry."Transaction No.", ApplTransactionDictionary);
+#else
+                DetailedVendorLedgEntry."Posting Group" := DetailedVendorLedgEntry."Vendor Posting Group";
+#endif
                 DetailedVendorLedgEntry.Modify(false);
             until DetailedVendorLedgEntry.Next() = 0;
     end;
-
+#if not CLEAN22
+    [Obsolete('The "Alter Posting Groups" feature is replaced by standard "Multiple Posting Groups" feature.', '22.0')]
     procedure IsVendorApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
+#else
+    internal procedure IsVendorApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
+#endif
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         FirstVendorPostingGroup: Code[20];
@@ -862,7 +914,10 @@ codeunit 11748 "Install Application CZL"
         VATEntry.SetLoadFields("VAT Date", "Registration No.", "VAT Settlement No.", "Original Document VAT Date", "EU 3-Party Intermediate Role", "VAT Delay", "VAT Identifier");
         if VATEntry.FindSet(true) then
             repeat
+#if not CLEAN22
                 VATEntry."VAT Date CZL" := VATEntry."VAT Date";
+#endif
+                VATEntry."VAT Reporting Date" := VATEntry."VAT Date";
                 VATEntry."Registration No. CZL" := VATEntry."Registration No.";
                 VATEntry."VAT Settlement No. CZL" := VATEntry."VAT Settlement No.";
                 VATEntry."Original Doc. VAT Date CZL" := VATEntry."Original Document VAT Date";
@@ -890,7 +945,10 @@ codeunit 11748 "Install Application CZL"
                 GenJournalLine."Transit No. CZL" := GenJournalLine."Transit No.";
                 GenJournalLine."IBAN CZL" := GenJournalLine.IBAN;
                 GenJournalLine."SWIFT Code CZL" := GenJournalLine."SWIFT Code";
+#if not CLEAN22
                 GenJournalLine."VAT Date CZL" := GenJournalLine."VAT Date";
+#endif
+                GenJournalLine."VAT Reporting Date" := GenJournalLine."VAT Date";
                 GenJournalLine."Registration No. CZL" := GenJournalLine."Registration No.";
                 GenJournalLine."Tax Registration No. CZL" := GenJournalLine."Tax Registration No.";
                 GenJournalLine."EU 3-Party Intermed. Role CZL" := GenJournalLine."EU 3-Party Intermediate Role";
@@ -923,7 +981,10 @@ codeunit 11748 "Install Application CZL"
                 SalesHeader."Transit No. CZL" := SalesHeader."Transit No.";
                 SalesHeader."IBAN CZL" := SalesHeader.IBAN;
                 SalesHeader."SWIFT Code CZL" := SalesHeader."SWIFT Code";
+#if not CLEAN22
                 SalesHeader."VAT Date CZL" := SalesHeader."VAT Date";
+#endif
+                SalesHeader."VAT Reporting Date" := SalesHeader."VAT Date";
                 SalesHeader."Registration No. CZL" := SalesHeader."Registration No.";
                 SalesHeader."Tax Registration No. CZL" := SalesHeader."Tax Registration No.";
                 SalesHeader."Credit Memo Type CZL" := SalesHeader."Credit Memo Type";
@@ -972,7 +1033,10 @@ codeunit 11748 "Install Application CZL"
                 SalesInvoiceHeader."Transit No. CZL" := SalesInvoiceHeader."Transit No.";
                 SalesInvoiceHeader."IBAN CZL" := SalesInvoiceHeader.IBAN;
                 SalesInvoiceHeader."SWIFT Code CZL" := SalesInvoiceHeader."SWIFT Code";
+#if not CLEAN22
                 SalesInvoiceHeader."VAT Date CZL" := SalesInvoiceHeader."VAT Date";
+#endif
+                SalesInvoiceHeader."VAT Reporting Date" := SalesInvoiceHeader."VAT Date";
                 SalesInvoiceHeader."Registration No. CZL" := SalesInvoiceHeader."Registration No.";
                 SalesInvoiceHeader."Tax Registration No. CZL" := SalesInvoiceHeader."Tax Registration No.";
                 SalesInvoiceHeader."Physical Transfer CZL" := SalesInvoiceHeader."Physical Transfer";
@@ -1003,7 +1067,10 @@ codeunit 11748 "Install Application CZL"
                 SalesCrMemoHeader."Transit No. CZL" := SalesCrMemoHeader."Transit No.";
                 SalesCrMemoHeader."IBAN CZL" := SalesCrMemoHeader.IBAN;
                 SalesCrMemoHeader."SWIFT Code CZL" := SalesCrMemoHeader."SWIFT Code";
+#if not CLEAN22
                 SalesCrMemoHeader."VAT Date CZL" := SalesCrMemoHeader."VAT Date";
+#endif
+                SalesCrMemoHeader."VAT Reporting Date" := SalesCrMemoHeader."VAT Date";
                 SalesCrMemoHeader."Registration No. CZL" := SalesCrMemoHeader."Registration No.";
                 SalesCrMemoHeader."Tax Registration No. CZL" := SalesCrMemoHeader."Tax Registration No.";
                 SalesCrMemoHeader."Physical Transfer CZL" := SalesCrMemoHeader."Physical Transfer";
@@ -1048,7 +1115,10 @@ codeunit 11748 "Install Application CZL"
                 SalesHeaderArchive."Transit No. CZL" := SalesHeaderArchive."Transit No.";
                 SalesHeaderArchive."IBAN CZL" := SalesHeaderArchive.IBAN;
                 SalesHeaderArchive."SWIFT Code CZL" := SalesHeaderArchive."SWIFT Code";
+#if not CLEAN22
                 SalesHeaderArchive."VAT Date CZL" := SalesHeaderArchive."VAT Date";
+#endif
+                SalesHeaderArchive."VAT Reporting Date" := SalesHeaderArchive."VAT Date";
                 SalesHeaderArchive."Registration No. CZL" := SalesHeaderArchive."Registration No.";
                 SalesHeaderArchive."Tax Registration No. CZL" := SalesHeaderArchive."Tax Registration No.";
                 SalesHeaderArchive."Intrastat Exclude CZL" := SalesHeaderArchive."Intrastat Exclude";
@@ -1079,7 +1149,10 @@ codeunit 11748 "Install Application CZL"
                 PurchaseHeader."Transit No. CZL" := PurchaseHeader."Transit No.";
                 PurchaseHeader."IBAN CZL" := PurchaseHeader.IBAN;
                 PurchaseHeader."SWIFT Code CZL" := PurchaseHeader."SWIFT Code";
+#if not CLEAN22
                 PurchaseHeader."VAT Date CZL" := PurchaseHeader."VAT Date";
+#endif
+                PurchaseHeader."VAT Reporting Date" := PurchaseHeader."VAT Date";
                 PurchaseHeader."Registration No. CZL" := PurchaseHeader."Registration No.";
                 PurchaseHeader."Tax Registration No. CZL" := PurchaseHeader."Tax Registration No.";
                 PurchaseHeader."Physical Transfer CZL" := PurchaseHeader."Physical Transfer";
@@ -1127,7 +1200,10 @@ codeunit 11748 "Install Application CZL"
                 PurchInvHeader."Transit No. CZL" := PurchInvHeader."Transit No.";
                 PurchInvHeader."IBAN CZL" := PurchInvHeader.IBAN;
                 PurchInvHeader."SWIFT Code CZL" := PurchInvHeader."SWIFT Code";
+#if not CLEAN22
                 PurchInvHeader."VAT Date CZL" := PurchInvHeader."VAT Date";
+#endif
+                PurchInvHeader."VAT Reporting Date" := PurchInvHeader."VAT Date";
                 PurchInvHeader."Registration No. CZL" := PurchInvHeader."Registration No.";
                 PurchInvHeader."Tax Registration No. CZL" := PurchInvHeader."Tax Registration No.";
                 PurchInvHeader."Physical Transfer CZL" := PurchInvHeader."Physical Transfer";
@@ -1158,7 +1234,10 @@ codeunit 11748 "Install Application CZL"
                 PurchCrMemoHdr."Transit No. CZL" := PurchCrMemoHdr."Transit No.";
                 PurchCrMemoHdr."IBAN CZL" := PurchCrMemoHdr.IBAN;
                 PurchCrMemoHdr."SWIFT Code CZL" := PurchCrMemoHdr."SWIFT Code";
+#if not CLEAN22
                 PurchCrMemoHdr."VAT Date CZL" := PurchCrMemoHdr."VAT Date";
+#endif
+                PurchCrMemoHdr."VAT Reporting Date" := PurchCrMemoHdr."VAT Date";
                 PurchCrMemoHdr."Registration No. CZL" := PurchCrMemoHdr."Registration No.";
                 PurchCrMemoHdr."Tax Registration No. CZL" := PurchCrMemoHdr."Tax Registration No.";
                 PurchCrMemoHdr."Physical Transfer CZL" := PurchCrMemoHdr."Physical Transfer";
@@ -1205,7 +1284,10 @@ codeunit 11748 "Install Application CZL"
                 PurchaseHeaderArchive."Transit No. CZL" := PurchaseHeaderArchive."Transit No.";
                 PurchaseHeaderArchive."IBAN CZL" := PurchaseHeaderArchive.IBAN;
                 PurchaseHeaderArchive."SWIFT Code CZL" := PurchaseHeaderArchive."SWIFT Code";
+#if not CLEAN22
                 PurchaseHeaderArchive."VAT Date CZL" := PurchaseHeaderArchive."VAT Date";
+#endif
+                PurchaseHeaderArchive."VAT Reporting Date" := PurchaseHeaderArchive."VAT Date";
                 PurchaseHeaderArchive."Registration No. CZL" := PurchaseHeaderArchive."Registration No.";
                 PurchaseHeaderArchive."Tax Registration No. CZL" := PurchaseHeaderArchive."Tax Registration No.";
                 PurchaseHeaderArchive."EU 3-Party Intermed. Role CZL" := PurchaseHeaderArchive."EU 3-Party Intermediate Role";
@@ -1235,7 +1317,10 @@ codeunit 11748 "Install Application CZL"
                 ServiceHeader."Transit No. CZL" := ServiceHeader."Transit No.";
                 ServiceHeader."IBAN CZL" := ServiceHeader.IBAN;
                 ServiceHeader."SWIFT Code CZL" := ServiceHeader."SWIFT Code";
+#if not CLEAN22
                 ServiceHeader."VAT Date CZL" := ServiceHeader."VAT Date";
+#endif
+                ServiceHeader."VAT Reporting Date" := ServiceHeader."VAT Date";
                 ServiceHeader."Registration No. CZL" := ServiceHeader."Registration No.";
                 ServiceHeader."Tax Registration No. CZL" := ServiceHeader."Tax Registration No.";
                 ServiceHeader."Physical Transfer CZL" := ServiceHeader."Physical Transfer";
@@ -1283,7 +1368,10 @@ codeunit 11748 "Install Application CZL"
                 ServiceInvoiceHeader."Transit No. CZL" := ServiceInvoiceHeader."Transit No.";
                 ServiceInvoiceHeader."IBAN CZL" := ServiceInvoiceHeader.IBAN;
                 ServiceInvoiceHeader."SWIFT Code CZL" := ServiceInvoiceHeader."SWIFT Code";
+#if not CLEAN22
                 ServiceInvoiceHeader."VAT Date CZL" := ServiceInvoiceHeader."VAT Date";
+#endif
+                ServiceInvoiceHeader."VAT Reporting Date" := ServiceInvoiceHeader."VAT Date";
                 ServiceInvoiceHeader."Registration No. CZL" := ServiceInvoiceHeader."Registration No.";
                 ServiceInvoiceHeader."Tax Registration No. CZL" := ServiceInvoiceHeader."Tax Registration No.";
                 ServiceInvoiceHeader."Physical Transfer CZL" := ServiceInvoiceHeader."Physical Transfer";
@@ -1314,7 +1402,10 @@ codeunit 11748 "Install Application CZL"
                 ServiceCrMemoHeader."Transit No. CZL" := ServiceCrMemoHeader."Transit No.";
                 ServiceCrMemoHeader."IBAN CZL" := ServiceCrMemoHeader.IBAN;
                 ServiceCrMemoHeader."SWIFT Code CZL" := ServiceCrMemoHeader."SWIFT Code";
+#if not CLEAN22
                 ServiceCrMemoHeader."VAT Date CZL" := ServiceCrMemoHeader."VAT Date";
+#endif
+                ServiceCrMemoHeader."VAT Reporting Date" := ServiceCrMemoHeader."VAT Date";
                 ServiceCrMemoHeader."Registration No. CZL" := ServiceCrMemoHeader."Registration No.";
                 ServiceCrMemoHeader."Tax Registration No. CZL" := ServiceCrMemoHeader."Tax Registration No.";
                 ServiceCrMemoHeader."Physical Transfer CZL" := ServiceCrMemoHeader."Physical Transfer";
@@ -1921,17 +2012,9 @@ codeunit 11748 "Install Application CZL"
 
     local procedure ConvertAccScheduleLineTotalingTypeEnumValues(var AccScheduleLine: Record "Acc. Schedule Line");
     begin
-#if CLEAN19
-            if AccScheduleLine."Totaling Type" = 14 then //14 = AccScheduleLine.Type::Custom
-#else
-        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Custom then
-#endif
+        if AccScheduleLine."Totaling Type" = 14 then //14 = AccScheduleLine.Type::Custom
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Custom CZL";
-#if CLEAN19
-            if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
-#else
-        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Constant then
-#endif
+        if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Constant CZL";
     end;
 
@@ -2610,11 +2693,15 @@ codeunit 11748 "Install Application CZL"
 
     local procedure CopySubstCustomerPostingGroup();
     var
+        AltCustomerPostingGroup: Record "Alt. Customer Posting Group";
         SubstCustomerPostingGroup: Record "Subst. Customer Posting Group";
+#if not CLEAN22
         SubstCustPostingGroupCZL: Record "Subst. Cust. Posting Group CZL";
+#endif
     begin
         if SubstCustomerPostingGroup.FindSet() then
             repeat
+#if not CLEAN22
                 if not SubstCustPostingGroupCZL.Get(SubstCustomerPostingGroup."Parent Cust. Posting Group", SubstCustomerPostingGroup."Customer Posting Group") then begin
                     SubstCustPostingGroupCZL.Init();
                     SubstCustPostingGroupCZL."Parent Customer Posting Group" := SubstCustomerPostingGroup."Parent Cust. Posting Group";
@@ -2622,22 +2709,42 @@ codeunit 11748 "Install Application CZL"
                     SubstCustPostingGroupCZL.SystemId := SubstCustomerPostingGroup.SystemId;
                     SubstCustPostingGroupCZL.Insert(false, true);
                 end;
+#endif
+                if not AltCustomerPostingGroup.Get(SubstCustomerPostingGroup."Parent Cust. Posting Group", SubstCustomerPostingGroup."Customer Posting Group") then begin
+                    AltCustomerPostingGroup.Init();
+                    AltCustomerPostingGroup."Customer Posting Group" := SubstCustomerPostingGroup."Parent Cust. Posting Group";
+                    AltCustomerPostingGroup."Alt. Customer Posting Group" := SubstCustomerPostingGroup."Customer Posting Group";
+                    AltCustomerPostingGroup.SystemId := SubstCustomerPostingGroup.SystemId;
+                    AltCustomerPostingGroup.Insert(false, true);
+                end;
             until SubstCustomerPostingGroup.Next() = 0;
     end;
 
     local procedure CopySubstVendorPostingGroup();
     var
+        AltVendorPostingGroup: Record "Alt. Vendor Posting Group";
         SubstVendorPostingGroup: Record "Subst. Vendor Posting Group";
+#if not CLEAN22
         SubstVendPostingGroupCZL: Record "Subst. Vend. Posting Group CZL";
+#endif
     begin
         if SubstVendorPostingGroup.FindSet() then
             repeat
+#if not CLEAN22
                 if not SubstVendPostingGroupCZL.Get(SubstVendorPostingGroup."Parent Vend. Posting Group", SubstVendorPostingGroup."Vendor Posting Group") then begin
                     SubstVendPostingGroupCZL.Init();
                     SubstVendPostingGroupCZL."Parent Vendor Posting Group" := SubstVendorPostingGroup."Parent Vend. Posting Group";
                     SubstVendPostingGroupCZL."Vendor Posting Group" := SubstVendorPostingGroup."Vendor Posting Group";
                     SubstVendPostingGroupCZL.SystemId := SubstVendorPostingGroup.SystemId;
                     SubstVendPostingGroupCZL.Insert(false, true);
+                end;
+#endif
+                if not AltVendorPostingGroup.Get(SubstVendorPostingGroup."Parent Vend. Posting Group", SubstVendorPostingGroup."Vendor Posting Group") then begin
+                    AltVendorPostingGroup.Init();
+                    AltVendorPostingGroup."Vendor Posting Group" := SubstVendorPostingGroup."Parent Vend. Posting Group";
+                    AltVendorPostingGroup."Alt. Vendor Posting Group" := SubstVendorPostingGroup."Vendor Posting Group";
+                    AltVendorPostingGroup.SystemId := SubstVendorPostingGroup.SystemId;
+                    AltVendorPostingGroup.Insert(false, true);
                 end;
             until SubstVendorPostingGroup.Next() = 0;
     end;
@@ -3215,6 +3322,8 @@ codeunit 11748 "Install Application CZL"
                     31087,
                     Report::"Finance Charge Memo":
                         ReportSelections."Report ID" := Report::"Finance Charge Memo CZL";
+                    Report::"Blanket Purchase Order":
+                        ReportSelections."Report ID" := Report::"Blanket Purchase Order CZL";
                 end;
                 if ReportSelections."Report ID" <> PrevReportSelections."Report ID" then
                     ReportSelections.Modify();

@@ -690,7 +690,6 @@
                                                               </Style>
                                                             </Textbox>
                                                             <ColSpan>5</ColSpan>
-                                                            <rd:Selected>true</rd:Selected>
                                                           </CellContents>
                                                         </TablixCell>
                                                         <TablixCell />
@@ -3141,7 +3140,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!FixedAsset_InactiveCaption.Value</Value>
+                                                    <Value>=Parameters!InactiveLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -3574,6 +3573,15 @@
       </DefaultValue>
       <Prompt>ExternalCompanyNameLbl</Prompt>
     </ReportParameter>
+    <ReportParameter Name="InactiveLbl">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>InactiveLbl</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>InactiveLbl</Prompt>
+    </ReportParameter>
     <ReportParameter Name="FixedAsset_NoCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -3591,15 +3599,6 @@
         </Values>
       </DefaultValue>
       <Prompt>FixedAsset_DescriptionCaption</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="FixedAsset_InactiveCaption">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>FixedAsset_InactiveCaption</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>FixedAsset_InactiveCaption</Prompt>
     </ReportParameter>
     <ReportParameter Name="FixedAsset_SerialNoCaption">
       <DataType>String</DataType>
@@ -3884,17 +3883,17 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>8</RowIndex>
-          <ParameterName>FixedAsset_NoCaption</ParameterName>
+          <ParameterName>InactiveLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>9</RowIndex>
-          <ParameterName>FixedAsset_DescriptionCaption</ParameterName>
+          <ParameterName>FixedAsset_NoCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>10</RowIndex>
-          <ParameterName>FixedAsset_InactiveCaption</ParameterName>
+          <ParameterName>FixedAsset_DescriptionCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>

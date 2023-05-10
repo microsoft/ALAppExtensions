@@ -8,6 +8,7 @@ entitlement "Dynamics 365 Admin - Partner"
     ObjectEntitlements = "Application Objects - Exec",
                          "System Application - Basic",
                          "Azure AD Plan - Admin",
+                         "Security Groups - Admin",
                          "Exten. Mgt. - Admin",
                          "Email - Admin",
                          "Feature Key - Admin";

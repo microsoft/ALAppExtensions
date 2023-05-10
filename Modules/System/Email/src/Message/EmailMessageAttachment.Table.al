@@ -7,6 +7,8 @@
 table 8904 "Email Message Attachment"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {

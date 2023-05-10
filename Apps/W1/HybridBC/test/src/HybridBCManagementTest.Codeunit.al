@@ -62,29 +62,10 @@ codeunit 139654 "HybridBC Management Test"
     end;
 
     [Test]
-    procedure CreateDiagnosticRunActionIsAvailable()
-    var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
-    begin
-        // [SCENARIO] The option to create a diagnostic run from the management page is available
-
-        // [GIVEN] Intelligent cloud is set up for Business Central
-        Initialize();
-
-        // [WHEN] The Intelligent Cloud Management page is launched
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
-
-        // [THEN] The action to create a diagnostic run is available
-        Assert.IsTrue(IntelligentCloudManagement.RunDiagnostic.Visible(), 'Diagnostic run action is not visible');
-        Assert.IsTrue(IntelligentcloudManagement.RunDiagnostic.Enabled(), 'Diagnostic run action is not enabled');
-    end;
-
-    [Test]
     procedure MapUsersActionIsAvailable()
     var
         HybridCompany: Record "Hybrid Company";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] The option to map users from the management page is available
 
@@ -95,25 +76,24 @@ codeunit 139654 "HybridBC Management Test"
         if HybridCompany.Get(CompanyName()) then
             HybridCompany.Delete();
 
-        HybridCompany.Init();
         HybridCompany.Name := CopyStr(CompanyName(), 1, 50);
         HybridCompany.Replicate := true;
         HybridCompany.Insert();
 
         // [WHEN] The Intelligent Cloud Management page is launched
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] The action to map users is available
-        Assert.IsTrue(IntelligentCloudManagement.MapUsers.Visible(), 'Map users action is not visible');
-        Assert.IsTrue(IntelligentcloudManagement.MapUsers.Enabled(), 'Map users action is not enabled');
+        Assert.IsTrue(CloudMigrationManagement.MapUsers.Visible(), 'Map users action is not visible');
+        Assert.IsTrue(CloudMigrationManagement.MapUsers.Enabled(), 'Map users action is not enabled');
     end;
 
     [Test]
     procedure SetupChecklistActionIsAvailable()
     var
         HybridCompany: Record "Hybrid Company";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] The option to run the setup checklist from the management page is available
 
@@ -130,18 +110,18 @@ codeunit 139654 "HybridBC Management Test"
         HybridCompany.Insert();
 
         // [WHEN] The Intelligent Cloud Management page is launched
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] The action to run the setup checklist is available
-        Assert.IsTrue(IntelligentCloudManagement.SetupChecklist.Visible(), 'Setup checklist action is not visible');
-        Assert.IsTrue(IntelligentcloudManagement.SetupChecklist.Enabled(), 'Setup checklist action is not enabled');
+        Assert.IsTrue(CloudMigrationManagement.SetupChecklist.Visible(), 'Setup checklist action is not visible');
+        Assert.IsTrue(CloudMigrationManagement.SetupChecklist.Enabled(), 'Setup checklist action is not enabled');
     end;
 
     [Test]
     procedure TableMappingActionIsAvailable()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] The "Manage Custom Tables" action is visible and enabled for BC migrations.
 
@@ -149,12 +129,12 @@ codeunit 139654 "HybridBC Management Test"
         Initialize();
 
         // [WHEN] The Intelligent Cloud Management page is launched
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] The action to manage mapped tables is enabled and visible
-        Assert.IsTrue(IntelligentCloudManagement.ManageCustomTables.Visible(), 'Map tables action is not visible');
-        Assert.IsTrue(IntelligentcloudManagement.ManageCustomTables.Enabled(), 'Map tables action is not enabled');
+        Assert.IsTrue(CloudMigrationManagement.ManageCustomTables.Visible(), 'Map tables action is not visible');
+        Assert.IsTrue(CloudMigrationManagement.ManageCustomTables.Enabled(), 'Map tables action is not enabled');
     end;
 
     [Test]

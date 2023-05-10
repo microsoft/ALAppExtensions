@@ -13,7 +13,7 @@ codeunit 30118 "Shpfy Customer Mapping"
         JsonHelper: Codeunit "Shpfy Json Helper";
         CustomerEvents: Codeunit "Shpfy Customer Events";
 
-    internal procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]; TemplateCode: Code[10]; AllowCreate: Boolean): Code[20]
+    internal procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]; TemplateCode: Code[20]; AllowCreate: Boolean): Code[20]
     var
         LocalShop: Record "Shpfy Shop";
         IMapping: Interface "Shpfy ICustomer Mapping";
@@ -57,11 +57,9 @@ codeunit 30118 "Shpfy Customer Mapping"
         if IsNullGuid(ShopifyCustomer."Customer SystemId") then
             if DoFindMapping(Direction, ShopifyCustomer, Customer) then begin
                 CustomerEvents.OnAfterFindMapping(Direction, ShopifyCustomer, Customer);
-                if Customer.Get() then begin
-                    ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                    ShopifyCustomer.Modify();
-                    exit(true);
-                end;
+                ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+                ShopifyCustomer.Modify();
+                exit(true);
             end;
     end;
 
@@ -123,6 +121,7 @@ codeunit 30118 "Shpfy Customer Mapping"
             Direction::BCToShopify:
                 begin
                     FindShopifyCustomer.SetRange("Customer SystemId", Customer.SystemId);
+                    FindShopifyCustomer.SetRange("Shop Id", Shop."Shop Id");
                     if FindShopifyCustomer.FindFirst() then begin
                         ShopifyCustomer := FindShopifyCustomer;
                         exit(true);
@@ -137,6 +136,7 @@ codeunit 30118 "Shpfy Customer Mapping"
                     else begin
                         Clear(ShopifyCustomer);
                         ShopifyCustomer.Id := ShopifyCustomerId;
+                        ShopifyCustomer."Shop Id" := Shop."Shop Id";
                         ShopifyCustomer.Insert(false);
                         if CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer) then begin
                             ShopifyCustomer."Customer SystemId" := Customer.SystemId;

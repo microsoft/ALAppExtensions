@@ -6,9 +6,11 @@
 codeunit 1887 "Environment Cleanup Impl"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata Company = r;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Triggers", 'OnAfterCopyEnvironmentPerDatabase', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Triggers", OnAfterCopyEnvironmentPerDatabase, '', false, false)]
     local procedure OnAfterCopyEnvironmentPerDatabase(SourceEnvironmentType: Option Production,Sandbox; SourceEnvironmentName: Text; DestinationEnvironmentType: Option Production,Sandbox; DestinationEnvironmentName: Text)
     var
         EnvironmentCleanup: Codeunit "Environment Cleanup";
@@ -19,7 +21,7 @@ codeunit 1887 "Environment Cleanup Impl"
         EnvironmentCleanup.OnClearDatabaseConfig(SourceType, DestinationType);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Triggers", 'OnAfterCopyEnvironmentPerCompany', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Triggers", OnAfterCopyEnvironmentPerCompany, '', false, false)]
     local procedure OnAfterCopyEnvironmentPerCompany(SourceEnvironmentType: Option Production,Sandbox; SourceEnvironmentName: Text; DestinationEnvironmentType: Option Production,Sandbox; DestinationEnvironmentName: Text)
     var
         EnvironmentCleanup: Codeunit "Environment Cleanup";

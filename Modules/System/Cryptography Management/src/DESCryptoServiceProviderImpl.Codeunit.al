@@ -6,6 +6,8 @@
 codeunit 1382 "DESCryptoServiceProvider Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure EncryptText(VarInput: Text; Password: Text; Salt: Text) VarOutput: Text
@@ -18,9 +20,9 @@ codeunit 1382 "DESCryptoServiceProvider Impl."
             exit;
 
         ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Salt);
-        ByteArray := Encoding.Default.GetBytes(VarInput);
+        ByteArray := Encoding.GetEncoding(0).GetBytes(VarInput);
         TransformToArray(SymmetricAlgorithm.CreateEncryptor(), ByteArray);
-        VarOutput := Encoding.Default.GetString(ByteArray, 0, ByteArray.Length);
+        VarOutput := Encoding.GetEncoding(0).GetString(ByteArray, 0, ByteArray.Length);
     end;
 
     [NonDebuggable]
@@ -34,9 +36,9 @@ codeunit 1382 "DESCryptoServiceProvider Impl."
             exit;
 
         ConstructDESCryptoServiceProvider(SymmetricAlgorithm, Password, Salt);
-        ByteArray := Encoding.Default.GetBytes(VarInput);
+        ByteArray := Encoding.GetEncoding(0).GetBytes(VarInput);
         TransformToArray(SymmetricAlgorithm.CreateDecryptor(), ByteArray);
-        VarOutput := Encoding.Default.GetString(ByteArray, 0, ByteArray.Length);
+        VarOutput := Encoding.GetEncoding(0).GetString(ByteArray, 0, ByteArray.Length);
     end;
 
     [NonDebuggable]

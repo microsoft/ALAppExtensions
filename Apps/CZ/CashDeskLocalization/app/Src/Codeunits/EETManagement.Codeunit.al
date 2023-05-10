@@ -72,11 +72,6 @@ codeunit 31083 "EET Management CZP"
             exit;
 
         CashDocumentLineCZP.TestField("Account Type", CashDocumentLineCZP."Account Type"::Customer);
-#if not CLEAN19
-#pragma warning disable AL0432
-        if CashDocumentLineCZP."Advance Letter Link Code" = '' then
-#pragma warning restore
-#endif
         CashDocumentLineCZP.TestField("Applies-To Doc. No.");
         if CashDocumentLineCZP."Amount Including VAT" > AppliedDocumentAmount then
             CashDocumentLineCZP.TestField("Amount Including VAT", AppliedDocumentAmount);
@@ -84,11 +79,6 @@ codeunit 31083 "EET Management CZP"
 
     local procedure GetAppliedDocumentAmount(CashDocumentLineCZP: Record "Cash Document Line CZP") AppliedDocumentAmount: Decimal
     var
-#if not CLEAN19
-#pragma warning disable AL0432
-        SalesAdvanceLetterLine: Record "Sales Advance Letter Line";
-#pragma warning restore AL0432
-#endif
         CustLedgerEntry: Record "Cust. Ledger Entry";
         IsHandled: Boolean;
     begin
@@ -96,13 +86,6 @@ codeunit 31083 "EET Management CZP"
         if IsHandled then
             exit(AppliedDocumentAmount);
 
-#if not CLEAN19
-        if CashDocumentLineCZP.IsAdvancePayment() then begin
-            SetFilterSalesAdvanceLetterLine(CashDocumentLineCZP, SalesAdvanceLetterLine);
-            SalesAdvanceLetterLine.CalcSums("Amount Including VAT");
-            exit(SalesAdvanceLetterLine."Amount Including VAT");
-        end;
-#endif
         if FindCustLedgerEntryForAppliedDocument(CashDocumentLineCZP, CustLedgerEntry) then
             AppliedDocumentAmount := CalculateOriginalAmount(CustLedgerEntry, false);
 
@@ -150,11 +133,7 @@ codeunit 31083 "EET Management CZP"
         CashDocumentLineCZP.FindFirst();
 
         EETEntryCZL."Applied Document Type" := GetAppliedDocumentType(CashDocumentLineCZP);
-#if not CLEAN19
-        EETEntryCZL."Applied Document No." := GetAppliedDocumentNo(CashDocumentLineCZP, PostedCashDocumentHdrCZP);
-#else
         EETEntryCZL."Applied Document No." := GetAppliedDocumentNo(CashDocumentLineCZP);
-#endif
 
         CollectVATEntries(EETEntryCZL, CashDocumentHeaderCZP, CashDocumentLineCZP, PostedCashDocumentHdrCZP, TempVATEntry);
 
@@ -178,12 +157,6 @@ codeunit 31083 "EET Management CZP"
 
     local procedure CollectVATEntries(EETEntryCZL: Record "EET Entry CZL"; CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocumentLineCZP: Record "Cash Document Line CZP"; PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP"; var TempVATEntry: Record "VAT Entry" temporary)
     var
-#if not CLEAN19
-#pragma warning disable AL0432
-        AdvanceLink: Record "Advance Link";
-#pragma warning restore AL0432
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-#endif
         RoundingCashDocumentLineCZP: Record "Cash Document Line CZP";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VATEntry: Record "VAT Entry";
@@ -207,37 +180,6 @@ codeunit 31083 "EET Management CZP"
                     AppliedDocumentAmount := CalculateOriginalAmount(CustLedgerEntry, true);
                     SetFilterVATEntry(CustLedgerEntry."Document No.", CustLedgerEntry."Posting Date", VATEntry);
                 end;
-#if not CLEAN19
-#pragma warning disable AL0432
-            CashDocumentLineCZP.IsAdvancePayment():
-                begin
-                    CustLedgerEntry.SetCurrentKey("Document No.", "Posting Date");
-                    CustLedgerEntry.SetRange("Customer No.", CashDocumentLineCZP."Account No.");
-                    CustLedgerEntry.SetRange("Document No.", PostedCashDocumentHdrCZP."No.");
-                    CustLedgerEntry.SetRange("Posting Date", PostedCashDocumentHdrCZP."Posting Date");
-                    CustLedgerEntry.FindFirst();
-                    AdvanceLink.SetCurrentKey("CV Ledger Entry No.");
-                    AdvanceLink.SetRange("CV Ledger Entry No.", CustLedgerEntry."Entry No.");
-                    AdvanceLink.SetRange("Entry Type", AdvanceLink."Entry Type"::"Link To Letter");
-                    AdvanceLink.FindFirst();
-                    if AdvanceLink."Invoice No." <> '' then
-                        SetFilterVATEntry(AdvanceLink."Invoice No.", PostedCashDocumentHdrCZP."Posting Date", VATEntry);
-                end;
-            CashDocumentLineCZP.IsAdvanceRefund():
-                begin
-                    FindCustLedgerEntryForAppliedDocument(CashDocumentLineCZP, CustLedgerEntry);
-                    AppliedDocumentAmount := CalculateOriginalAmount(CustLedgerEntry, true);
-                    SalesCrMemoHeader.Get(CashDocumentLineCZP."Applies-To Doc. No.");
-                    VATEntry.SetCurrentKey(Type, "Advance Letter No.", "Advance Letter Line No.");
-                    VATEntry.SetRange(Type, VATEntry.Type::Sale);
-                    VATEntry.SetRange("Advance Letter No.", SalesCrMemoHeader."Letter No.");
-                    VATEntry.SetRange("Document Type", VATEntry."Document Type"::"Credit Memo");
-                    VATEntry.SetRange("Document No.", SalesCrMemoHeader."No.");
-                    if VATEntry.FindLast() then
-                        VATEntry.SetRange("Transaction No.", VATEntry."Transaction No.");
-                end;
-#pragma warning restore AL0432
-#endif
         end;
 
         // Collect VAT entries of applied documents
@@ -254,12 +196,6 @@ codeunit 31083 "EET Management CZP"
                     TempVATEntry := VATEntry;
                     TempVATEntry.Base := TempVATEntry.GetVATBaseCZL() * PartialPaymentFactor;
                     TempVATEntry.Amount := TempVATEntry.GetVATAmountCZL() * PartialPaymentFactor;
-#if not CLEAN19
-#pragma warning disable AL0432
-                    if TempVATEntry."Prepayment Type" = TempVATEntry."Prepayment Type"::Advance then
-                        TempVATEntry.Base := TempVATEntry."Advance Base";
-#pragma warning restore AL0432
-#endif
                     TempVATEntry.Insert();
                 until VATEntry.Next() = 0;
         end;
@@ -286,54 +222,15 @@ codeunit 31083 "EET Management CZP"
                 EETAppliedDocumentTypeCZL := EETAppliedDocumentTypeCZL::Invoice;
             CashDocumentLineCZP.IsCreditMemoRefund():
                 EETAppliedDocumentTypeCZL := EETAppliedDocumentTypeCZL::"Credit Memo";
-#if not CLEAN19
-            CashDocumentLineCZP.IsAdvancePayment(),
-            CashDocumentLineCZP.IsAdvanceRefund():
-                EETAppliedDocumentTypeCZL := EETAppliedDocumentTypeCZL::Prepayment;
-#endif
             else
                 OnGetAppliedDocumentType(CashDocumentLineCZP, EETAppliedDocumentTypeCZL);
         end;
     end;
 
-#if not CLEAN19
-    local procedure GetAppliedDocumentNo(CashDocumentLineCZP: Record "Cash Document Line CZP"; PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP") AppliedDocumentNo: Code[20]
-    var
-#pragma warning disable AL0432
-        AdvanceLink: Record "Advance Link";
-#pragma warning restore AL0432
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        CustLedgerEntry: Record "Cust. Ledger Entry";
-#else
     local procedure GetAppliedDocumentNo(CashDocumentLineCZP: Record "Cash Document Line CZP") AppliedDocumentNo: Code[20]
-#endif 
     begin
         AppliedDocumentNo := CashDocumentLineCZP."Applies-To Doc. No.";
 
-#if not CLEAN19
-#pragma warning disable AL0432
-        case true of
-            CashDocumentLineCZP.IsAdvancePayment():
-                begin
-                    CustLedgerEntry.SetCurrentKey("Document No.", "Posting Date");
-                    CustLedgerEntry.SetRange("Customer No.", CashDocumentLineCZP."Account No.");
-                    CustLedgerEntry.SetRange("Document No.", PostedCashDocumentHdrCZP."No.");
-                    CustLedgerEntry.SetRange("Posting Date", PostedCashDocumentHdrCZP."Posting Date");
-                    CustLedgerEntry.FindFirst();
-                    AdvanceLink.SetCurrentKey("CV Ledger Entry No.");
-                    AdvanceLink.SetRange("CV Ledger Entry No.", CustLedgerEntry."Entry No.");
-                    AdvanceLink.SetRange("Entry Type", AdvanceLink."Entry Type"::"Link To Letter");
-                    AdvanceLink.FindFirst();
-                    AppliedDocumentNo := AdvanceLink."Document No.";
-                end;
-            CashDocumentLineCZP.IsAdvanceRefund():
-                begin
-                    SalesCrMemoHeader.Get(CashDocumentLineCZP."Applies-To Doc. No.");
-                    AppliedDocumentNo := SalesCrMemoHeader."Letter No.";
-                end;
-        end;
-#pragma warning restore AL0432
-#endif
         OnGetAppliedDocumentNo(CashDocumentLineCZP, AppliedDocumentNo);
     end;
 
@@ -353,16 +250,6 @@ codeunit 31083 "EET Management CZP"
         CashDocumentLineCZP.SetRange("System-Created Entry", false);
         CashDocumentLineCZP.SetFilter(Amount, '<>0');
     end;
-
-#if not CLEAN19
-#pragma warning disable AL0432
-    local procedure SetFilterSalesAdvanceLetterLine(CashDocumentLineCZP: Record "Cash Document Line CZP"; var SalesAdvanceLetterLine: Record "Sales Advance Letter Line")
-    begin
-        SalesAdvanceLetterLine.SetRange("Link Code", CashDocumentLineCZP."Advance Letter Link Code");
-        SalesAdvanceLetterLine.SetRange("Currency Code", CashDocumentLineCZP."Currency Code");
-    end;
-#pragma warning restore
-#endif
 
     local procedure SetFilterCustLedgerEntryForAppliedDocument(CashDocumentLineCZP: Record "Cash Document Line CZP"; var CustLedgerEntry: Record "Cust. Ledger Entry")
     begin

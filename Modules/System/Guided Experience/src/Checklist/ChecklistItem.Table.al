@@ -6,6 +6,8 @@
 table 1991 "Checklist Item"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     ReplicateData = false;
 
     fields

@@ -2,14 +2,6 @@ pageextension 31105 "Order Processor RC CZZ" extends "Order Processor Role Cente
 {
     actions
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Sales Advance Letters")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter(SalesOrders)
         {
             action(SalesAdvLettersAfterOrdersCZZ)

@@ -18,8 +18,8 @@ report 31114 "Batch Post Sales Cr. Memos CZL"
                 if ReplaceVATDateReq and (VATDateReq = 0D) then
                     Error(EnterVATDateErr);
 
-                SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDateReq);
-                SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"VAT Date CZL", VATDateReq);
+                SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDateReq);
+                SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"VAT Date", VATDateReq);
 
                 SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::Print, PrintDocReq);
                 SalesBatchPostMgt.RunBatch("Sales Header", ReplacePostingDateReq, PostingDateReq, ReplaceDocumentDateReq, CalcInvDiscReq, false, false);
@@ -123,6 +123,7 @@ report 31114 "Batch Post Sales Cr. Memos CZL"
         var
             GeneralLedgerSetup: Record "General Ledger Setup";
             SalesReceivablesSetup: Record "Sales & Receivables Setup";
+            VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         begin
             GeneralLedgerSetup.Get();
             SalesReceivablesSetup.Get();
@@ -132,7 +133,7 @@ report 31114 "Batch Post Sales Cr. Memos CZL"
             ReplaceVATDateReq := false;
             PrintDocReq := false;
             PrintDocVisible := SalesReceivablesSetup."Post & Print with Job Queue";
-            VATDateVisible := GeneralLedgerSetup."Use VAT Date CZL";
+            VATDateVisible := VATReportingDateMgt.IsVATDateEnabled();
         end;
     }
 

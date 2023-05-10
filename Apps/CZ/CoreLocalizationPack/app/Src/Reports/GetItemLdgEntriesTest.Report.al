@@ -1,8 +1,12 @@
+#if not CLEAN22
 report 31007 "Get Item Ldg. Entries Test CZL"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/GetItemLdgEntriesTest.rdl';
     Caption = 'Get Item Ledger Entries - Test';
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
     dataset
     {
@@ -142,3 +146,4 @@ report 31007 "Get Item Ldg. Entries Test CZL"
         TempItem.Insert();
     end;
 }
+#endif

@@ -6,6 +6,8 @@
 codeunit 3709 "Video Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure InsertIntoBuffer(var ProductVideoBufferRec: Record "Product Video Buffer"; AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; TableNum: Integer; SystemId: Guid; Category: Enum "Video Category")
     var

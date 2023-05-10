@@ -1,8 +1,14 @@
+#if not CLEAN22
 codeunit 31034 "Posting Group Management CZL"
 {
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Replaced by Posting Group Change codeunit.';
+
     var
         CannotChangePostingGroupErr: Label 'You cannot change the value %1 to %2 because %3 has not been filled in.', Comment = '%1 = old posting group; %2 = new posting group; %3 = tablecaption of Subst. Vendor/Customer Posting Group';
 
+    [Obsolete('Replaced by ChangePostingGroup function in Posting Group Change codeunit.', '22.0')]
     procedure CheckPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20]; Variant: Variant)
     var
         SourceRecordRef: RecordRef;
@@ -27,18 +33,18 @@ codeunit 31034 "Posting Group Management CZL"
             Database::"Bank Acc. Reconciliation Line":
                 CheckPostingGroupChangeInBankAccReconLine(NewPostingGroup, OldPostingGroup, Variant);
             else begin
-                    OnCheckPostingGroupChange(NewPostingGroup, OldPostingGroup, SourceRecordRef, CheckedPostingGroup, CustomerVendorNo);
-                    case CheckedPostingGroup of
-                        CheckedPostingGroup::Customer:
-                            CheckCustomerPostingGroupChangeAndCustomer(NewPostingGroup, OldPostingGroup, CustomerVendorNo);
-                        CheckedPostingGroup::CustomerInService:
-                            CheckCustomerPostingGroupChangeAndCustomerInService(NewPostingGroup, OldPostingGroup, CustomerVendorNo);
-                        CheckedPostingGroup::Vendor:
-                            CheckVendorPostingGroupChangeAndVendor(NewPostingGroup, OldPostingGroup, CustomerVendorNo);
-                        else
-                            exit;
-                    end;
+                OnCheckPostingGroupChange(NewPostingGroup, OldPostingGroup, SourceRecordRef, CheckedPostingGroup, CustomerVendorNo);
+                case CheckedPostingGroup of
+                    CheckedPostingGroup::Customer:
+                        CheckCustomerPostingGroupChangeAndCustomer(NewPostingGroup, OldPostingGroup, CustomerVendorNo);
+                    CheckedPostingGroup::CustomerInService:
+                        CheckCustomerPostingGroupChangeAndCustomerInService(NewPostingGroup, OldPostingGroup, CustomerVendorNo);
+                    CheckedPostingGroup::Vendor:
+                        CheckVendorPostingGroupChangeAndVendor(NewPostingGroup, OldPostingGroup, CustomerVendorNo);
+                    else
+                        exit;
                 end;
+            end;
         end;
     end;
 
@@ -192,6 +198,15 @@ codeunit 31034 "Posting Group Management CZL"
             exit(NewPostingGroup = Vendor."Vendor Posting Group");
         exit(false);
     end;
+#if not CLEAN20
+    internal procedure IsAllowMultipleCustVendPostingGroupsEnabled(): Boolean
+    var
+        FeatureManagementFacade: Codeunit "Feature Management Facade";
+        AllowMultipleCustVendPostingGroupsLbl: Label 'AllowMultipleCustVendPostingGroups', Locked = true;
+    begin
+        exit(FeatureManagementFacade.IsEnabled(AllowMultipleCustVendPostingGroupsLbl));
+    end;
+#endif  
 
     [IntegrationEvent(false, false)]
     local procedure OnCheckPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20]; SourceRecordRef: RecordRef; var CheckedPostingGroup: Option "None",Customer,CustomerInService,Vendor; var CustomerVendorNo: Code[20])
@@ -199,3 +214,4 @@ codeunit 31034 "Posting Group Management CZL"
     end;
 }
 
+#endif

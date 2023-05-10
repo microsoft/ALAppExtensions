@@ -10,6 +10,8 @@ page 8999 "Blank Role Center"
 {
     Extensible = true;
     PageType = RoleCenter;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {

@@ -131,7 +131,7 @@ pageextension 31287 "Bank Account Card CZB" extends "Bank Account Card"
                 field("Payment Order Line Descr. CZB"; Rec."Payment Order Line Descr. CZB")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the description which will be transfered into payment order line';
+                    ToolTip = 'Specifies the description which will be transfered into payment order line. Placeholders: %1 = document type, %2 = document no., %3 = partner no., %4 = partner name, %5 = external document no.';
                 }
                 field("Payment Partial Suggestion CZB"; Rec."Payment Partial Suggestion CZB")
                 {

@@ -6,8 +6,10 @@
 table 1994 "User Checklist Status"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     ReplicateData = false;
-    
+
     fields
     {
         field(1; "User ID"; Code[50])

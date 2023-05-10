@@ -6,6 +6,8 @@
 codeunit 9014 "Azure AD Graph Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         EnvironmentInformation: Codeunit "Environment Information";
@@ -98,7 +100,7 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
-    procedure GetEnvironmentDirectoryGroup(): Text
+    procedure GetEnvironmentSecurityGroupId(): Text
     begin
         if CanQueryGraph() then
             exit(GraphQuery.GetEnvironmentDirectoryGroup());
@@ -112,10 +114,10 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
-    procedure GetLicensedUsersPage(AssingedPlans: DotNet StringArray; NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
+    procedure GetLicensedUsersPage(AssignedPlans: DotNet StringArray; NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
     begin
         if CanQueryGraph() then
-            UserInfoPage := GraphQuery.GetLicensedUsersPage(AssingedPlans, NumberOfUsers);
+            UserInfoPage := GraphQuery.GetLicensedUsersPage(AssignedPlans, NumberOfUsers);
     end;
 
     [NonDebuggable]
@@ -170,20 +172,37 @@ codeunit 9014 "Azure AD Graph Impl."
 
     [NonDebuggable]
     procedure IsMemberOfGroupWithId(GroupId: Text; GraphUserInfo: DotNet UserInfo): Boolean
-    var
-        GroupInfo: DotNet GroupInfo;
     begin
         if IsNull(GraphUserInfo) then
             exit(false);
 
-        if IsNull(GraphUserInfo.Groups()) then
-            exit(false);
+        if CanQueryGraph() then
+            exit(GraphQuery.IsGroupMember(GraphUserInfo.ObjectId, GroupId));
+    end;
 
-        foreach GroupInfo in GraphUserInfo.Groups() do
-            if not IsNull(GroupInfo.ObjectId()) then
-                if GroupInfo.ObjectId().ToUpper() = UpperCase(GroupId) then
-                    exit(true);
-        exit(false);
+    [NonDebuggable]
+    procedure GetGroups(): Dictionary of [Text, Text];
+    var
+        GroupInfoPage: DotNet GroupInfoPage;
+        GroupInfo: DotNet GroupInfo;
+        Groups: Dictionary of [Text, Text];
+        NumberOfGroupsPerPage: Integer;
+    begin
+        if not CanQueryGraph() then
+            exit;
+
+        NumberOfGroupsPerPage := 50;
+        GroupInfoPage := GraphQuery.GetGroupPage(NumberOfGroupsPerPage);
+
+        if IsNull(GroupInfoPage) then
+            exit;
+
+        repeat
+            foreach GroupInfo in GroupInfoPage.CurrentPage() do
+                Groups.Add(GroupInfo.ObjectId, GroupInfo.DisplayName);
+        until (not GroupInfoPage.GetNextPage());
+
+        exit(Groups);
     end;
 
     [NonDebuggable]

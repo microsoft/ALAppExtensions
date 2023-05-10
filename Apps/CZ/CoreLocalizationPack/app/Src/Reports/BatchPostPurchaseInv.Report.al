@@ -18,8 +18,8 @@ report 31116 "Batch Post Purchase Inv. CZL"
                 if ReplaceVATDateReq and (VATDateReq = 0D) then
                     Error(EnterVATDateErr);
 
-                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDateReq);
-                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"VAT Date CZL", VATDateReq);
+                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDateReq);
+                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"VAT Date", VATDateReq);
 
                 PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::Print, PrintDocReq);
                 PurchaseBatchPostMgt.RunBatch("Purchase Header", ReplacePostingDateReq, PostingDateReq, ReplaceDocumentDateReq, CalcInvDiscReq, false, true);
@@ -121,15 +121,14 @@ report 31116 "Batch Post Purchase Inv. CZL"
 
         trigger OnOpenPage()
         var
-            GeneralLedgerSetup: Record "General Ledger Setup";
             PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+            VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         begin
-            GeneralLedgerSetup.Get();
             PurchasesPayablesSetup.Get();
             CalcInvDiscReq := PurchasesPayablesSetup."Calc. Inv. Discount";
             PrintDocReq := false;
             PrintDocVisible := PurchasesPayablesSetup."Post & Print with Job Queue";
-            VATDateVisible := GeneralLedgerSetup."Use VAT Date CZL";
+            VATDateVisible := VATReportingDateMgt.IsVATDateEnabled();
         end;
     }
 

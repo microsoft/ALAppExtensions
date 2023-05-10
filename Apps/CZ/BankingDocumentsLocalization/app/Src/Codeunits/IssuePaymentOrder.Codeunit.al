@@ -17,9 +17,6 @@ codeunit 31353 "Issue Payment Order CZB"
         PaymentOrderManagementCZB: Codeunit "Payment Order Management CZB";
         ConfirmManagement: Codeunit "Confirm Management";
         NothingtoIssueErr: Label 'There is nothing to issue.';
-#if not CLEAN19
-        DuplicityFoundErr: Label '%1 %2 was found. Resolve this before issue banking document.', Comment = '%1 = TableCaption, %2 = No.';
-#endif
 
     local procedure Code()
     var
@@ -189,27 +186,6 @@ codeunit 31353 "Issue Payment Order CZB"
         if not ConfirmManagement.GetResponseOrDefault(ConfirmQuestion, false) then
             Error('');
     end;
-#if not CLEAN19
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Issue Payment Order CZB", 'OnBeforeIssuePaymentOrder', '', false, false)]
-    local procedure CheckObsoleteOnBeforeIssuePaymentOrderCZB(var PaymentOrderHeaderCZB: Record "Payment Order Header CZB")
-    var
-        DuplicitPaymentOrderHeader: Record "Payment Order Header";
-    begin
-        if DuplicitPaymentOrderHeader.Get(PaymentOrderHeaderCZB."No.") then
-            Error(DuplicityFoundErr, DuplicitPaymentOrderHeader.TableCaption(), DuplicitPaymentOrderHeader."No.");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Issue Payment Order", 'OnBeforeIssuePaymentOrder', '', false, false)]
-    local procedure CheckObsoleteOnBeforeIssuePaymentOrder(var PaymentOrderHeader: Record "Payment Order Header")
-    var
-        DuplicitPaymentOrderHeaderCZB: Record "Payment Order Header CZB";
-    begin
-        if DuplicitPaymentOrderHeaderCZB.Get(PaymentOrderHeader."No.") then
-            Error(DuplicityFoundErr, DuplicitPaymentOrderHeaderCZB.TableCaption(), DuplicitPaymentOrderHeaderCZB."No.");
-    end;
-#pragma warning restore
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterIssuedPaymentOrderHeaderInsert(var IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB"; var PaymentOrderHeaderCZB: Record "Payment Order Header CZB")

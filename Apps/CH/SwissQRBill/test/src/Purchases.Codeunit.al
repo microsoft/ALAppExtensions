@@ -1301,6 +1301,175 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         SwissQRBillTestLibrary.ClearVendor(VendorNo);
     end;
 
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure DocumentDateInPurchInvoiceWhenBillInfoWithDocDate()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        QRCodeText: Text;
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        BillInfo: Text;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 467388] Scan QR-Bill from Purchase Invoice card when Document Date is specified in Billing Information.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information with Document Date = 15.10.2023.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123/11/231015';
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+
+        // [GIVEN] Purchase Invoice.
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, VendorNo, false, '');
+
+        // [WHEN] Run scan QR-Bill from Purhchase Invoice card on the given QR-Bill text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] Posting Date was set to WorkDate, Document Date was set to 15.10.2023 in Purchase Invoice.
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        PurchaseHeader.TestField("Posting Date", WorkDate());
+        PurchaseHeader.TestField("Document Date", 20231015D);
+
+        // tear down
+        VoidInvoice(PurchaseHeader);
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure DocumentDateInPurchInvoiceWhenBillInfoWithoutDocDate()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        QRCodeText: Text;
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        BillInfo: Text;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 467388] Scan QR-Bill from Purchase Invoice card when Document Date is not specified in Billing Information.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information without Document Date.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123';
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+
+        // [GIVEN] Purchase Invoice.
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, VendorNo, false, '');
+
+        // [WHEN] Run scan QR-Bill from Purhchase Invoice card on the given QR-Bill text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] Document Date was set to be equal to Posting Date (WorkDate) in Purchase Invoice.
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        PurchaseHeader.TestField("Posting Date", WorkDate());
+        PurchaseHeader.TestField("Document Date", WorkDate());
+
+        // tear down
+        VoidInvoice(PurchaseHeader);
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,ConfirmHandler')]
+    procedure DocumentDateInGenJnlLineWhenBillInfoWithDocDate()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        QRCodeText: Text;
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        BillInfo: Text;
+        GenJournalLineCreated: Boolean;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 467388] Scan QR-Bill from Purchase Journal page when Document Date is specified in Billing Information.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information with Document Date = 15.10.2023.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123/11/231015';
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+
+        // [WHEN] Run scan QR-Bill from Purchase Journal page on the given QR-Bill text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        LibraryVariableStorage.Enqueue(false);  // do not scan next
+        GenJournalLineCreated := ScanToJournal(GenJournalLine);
+
+        // [THEN] Posting Date was set to WorkDate, Document Date was set to 15.10.2023 in Gen. Journal Line.
+        Assert.IsTrue(GenJournalLineCreated, 'There is no Gen. Journal Line');
+        Assert.ExpectedMessage(ImportSuccessMsg + '\\' + ScanAnotherQst, LibraryVariableStorage.DequeueText());
+        GenJournalLine.TestField("Document Date", 20231015D);
+
+        // tear down
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,ConfirmHandler')]
+    procedure DocumentDateInGenJnlLineWhenBillInfoWithoutDocDate()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        QRCodeText: Text;
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        BillInfo: Text;
+        GenJournalLineCreated: Boolean;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 467388] Scan QR-Bill from Purchase Journal page when Document Date is not specified in Billing Information.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information without Document Date.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123';
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+
+        // [WHEN] Run scan QR-Bill from Purchase Journal page on the given QR-Bill text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        LibraryVariableStorage.Enqueue(false);  // do not scan next
+        GenJournalLineCreated := ScanToJournal(GenJournalLine);
+
+        // [THEN] Posting Date was set to WorkDate, Document Date was not set in Gen. Journal Line.
+        Assert.IsTrue(GenJournalLineCreated, 'There is no Gen. Journal Line');
+        Assert.ExpectedMessage(ImportSuccessMsg + '\\' + ScanAnotherQst, LibraryVariableStorage.DequeueText());
+        GenJournalLine.TestField("Posting Date", WorkDate());
+        GenJournalLine.TestField("Document Date", 0D);
+
+        // tear down
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();

@@ -14,7 +14,7 @@ codeunit 4011 "Hybrid Message Management"
         WebhookFailureErr: Label 'Communication with Business Central was unsuccessful. Verify that the cloud migration user (%1) has the correct permissions.', Comment = '%1 - user name';
         ADLConnectionErr: Label 'A connection could not be made to the specified Azure Data Lake Storage account. Please verify the connection information and try again.';
         ADLContainerExistsErr: Label 'The storage container used by the Azure Data Lake migration already exists. To run the migration, you must first delete or rename the existing container.';
-        TableDoesnotExistErrorCodeTxt: Label '50004';
+        TableDoesnotExistErrorCodeTxt: Label '50004', Locked = true;
         ColumnMappingErr: Label '%1 column could not be mapped: %2', Comment = '%1 - the column name; %2 - the error';
         ColumnMappingPrimaryKeyErr: Label 'Missing in local instance and is a primary key in cloud.';
         ColumnMappingTypeErr: Label 'Incompatible type.';

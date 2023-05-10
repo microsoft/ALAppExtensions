@@ -1,5 +1,10 @@
+#if not CLEAN22
 codeunit 1680 "Feature Email Log. Using Graph" implements "Feature Data Update"
 {
+    ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+
     procedure IsDataUpdateRequired(): Boolean;
     begin
         CountRecords();
@@ -92,3 +97,4 @@ codeunit 1680 "Feature Email Log. Using Graph" implements "Feature Data Update"
         TempDocumentEntry.Insert();
     end;
 }
+#endif

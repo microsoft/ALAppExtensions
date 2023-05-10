@@ -504,7 +504,7 @@ report 31035 "Reminder MIR CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(8) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(8) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

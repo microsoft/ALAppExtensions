@@ -8,6 +8,8 @@
 codeunit 153 "User Permissions Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = TableData "Access Control" = rimd,
                   TableData User = r;
 
@@ -44,7 +46,7 @@ codeunit 153 "User Permissions Impl."
         exit(true);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Access Control", 'OnBeforeRenameEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Access Control", OnBeforeRenameEvent, '', false, false)]
     local procedure CheckSuperPermissionsBeforeRenameAccessControl(var Rec: Record "Access Control"; var xRec: Record "Access Control"; RunTrigger: Boolean)
     var
         EnvironmentInfo: Codeunit "Environment Information";
@@ -64,7 +66,7 @@ codeunit 153 "User Permissions Impl."
         Error(SUPERPermissionErr);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Access Control", 'OnBeforeDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Access Control", OnBeforeDeleteEvent, '', false, false)]
     local procedure CheckSuperPermissionsBeforeDeleteAccessControl(var Rec: Record "Access Control"; RunTrigger: Boolean)
     var
         EnvironmentInfo: Codeunit "Environment Information";
@@ -87,10 +89,15 @@ codeunit 153 "User Permissions Impl."
         Error(SUPERPermissionErr);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::User, 'OnBeforeModifyEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::User, OnBeforeModifyEvent, '', true, true)]
     local procedure CheckSuperPermissionsBeforeModifyUser(var Rec: Record User; var xRec: Record User; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary() then
+            exit;
+
+        // First check if the record is potentially being disabled (we only want to prevent disabling the last SUPER user)
+        // This prevents slow database calls in many cases such as user login.
+        if (Rec.State <> Rec.State::Disabled) then
             exit;
 
         if not IsSuper(Rec."User Security ID") then
@@ -109,7 +116,7 @@ codeunit 153 "User Permissions Impl."
         Error(SUPERPermissionErr);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::User, 'OnBeforeDeleteEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::User, OnBeforeDeleteEvent, '', true, true)]
     local procedure CheckSuperPermissionsBeforeDeleteUser(var Rec: Record User; RunTrigger: Boolean)
     var
         EnvironmentInfo: Codeunit "Environment Information";
@@ -195,6 +202,7 @@ codeunit 153 "User Permissions Impl."
         exit(not AccessControl.IsEmpty());
     end;
 
+#if not CLEAN22
     procedure HasUserCustomPermissions(UserSecId: Guid): Boolean
     var
         AccessControl: Record "Access Control";
@@ -207,6 +215,7 @@ codeunit 153 "User Permissions Impl."
         if not AccessControl.IsEmpty() then
             exit(true);
     end;
+#endif
 
     procedure HasUserPermissionSetAssigned(UserSecurityId: Guid; Company: Text; RoleId: Code[20]; ItemScope: Option; AppId: Guid): Boolean
     var

@@ -6,6 +6,8 @@
 codeunit 1909 "Media Upload Page Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         FileHelper: Codeunit "File Helper";

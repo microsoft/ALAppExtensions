@@ -17,11 +17,11 @@ codeunit 132575 "Rijndael Cryptography Test"
         EncryptedText: Text;
     begin
         // [GIVEN] With Encryption Key 
-        RijndaelCryptography.InitRijndaelProvider(GetECP256BitEncryptionKey(), 256, 'ECB', 'None');
+        RijndaelCryptography.InitRijndaelProvider(GetECP128BitEncryptionKey(), 128, 'ECB', 'None');
         // [WHEN] Encrypt Text 
-        EncryptedText := RijndaelCryptography.Encrypt(GetECP256BitPlainText());
+        EncryptedText := RijndaelCryptography.Encrypt(GetECP128BitPlainText());
         // [THEN] Verify Result 
-        LibraryAssert.AreEqual(GetECP256BitCryptedText(), EncryptedText, 'Failed to encrypt text with ECB');
+        LibraryAssert.AreEqual(GetECP128BitCryptedText(), EncryptedText, 'Failed to encrypt text with ECB');
     end;
 
     [Test]
@@ -31,11 +31,11 @@ codeunit 132575 "Rijndael Cryptography Test"
         PlainText: Text;
     begin
         // [GIVEN] With Encryption Key 
-        RijndaelCryptography.InitRijndaelProvider(GetECP256BitEncryptionKey(), 256, 'ECB', 'None');
+        RijndaelCryptography.InitRijndaelProvider(GetECP128BitEncryptionKey(), 128, 'ECB', 'None');
         // [WHEN] Plain Text
-        PlainText := RijndaelCryptography.Decrypt(GetECP256BitCryptedText());
+        PlainText := RijndaelCryptography.Decrypt(GetECP128BitCryptedText());
         // [THEN] Verify Result 
-        LibraryAssert.AreEqual(GetECP256BitPlainText(), PlainText, 'Failed to decrypt text with ECB');
+        LibraryAssert.AreEqual(GetECP128BitPlainText(), PlainText, 'Failed to decrypt text with ECB');
     end;
 
     [Test]
@@ -108,17 +108,17 @@ codeunit 132575 "Rijndael Cryptography Test"
         LibraryAssert.AreEqual(PlainText, RijndaelCryptography2.Decrypt(CryptedText), 'Set Encryption Datay and Decrypt failed');
     end;
 
-    local procedure GetECP256BitCryptedText(): Text
+    local procedure GetECP128BitCryptedText(): Text
     begin
-        exit('ABEilKub5kv1gBSG06y5Xf002feelEUmP3GPGnxTlZY=');
+        exit('7ah/ajzDcgtEQ/KM54R3udodzz0wHAJrZrK/mFJ+XBA=');
     end;
 
-    local procedure GetECP256BitPlainText(): Text
+    local procedure GetECP128BitPlainText(): Text
     begin
         exit('afa1beac1c9f236cf678c392963c4716');
     end;
 
-    local procedure GetECP256BitEncryptionKey(): Text
+    local procedure GetECP128BitEncryptionKey(): Text
     begin
         exit('hYRCHMB9TPHu7lIcRsiQ6WmqtaaFGlnF');
     end;

@@ -7,6 +7,7 @@ codeunit 139657 "ADL Migration Tests"
     var
         Assert: Codeunit Assert;
         LibraryHybridManagement: Codeunit "Library - Hybrid Management";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
 
     local procedure Initialize()
     var
@@ -31,7 +32,8 @@ codeunit 139657 "ADL Migration Tests"
     end;
 
 
-    // [Test]
+    [Test]
+    [HandlerFunctions('IntelligentCloudReadyPageHandler')]
     procedure AdlMigrationActionNotVisibleIfNotSupported()
     begin
         // [SCENARIO 345772] ADL Migration action is not available for unsupported products
@@ -39,6 +41,7 @@ codeunit 139657 "ADL Migration Tests"
     end;
 
     [Test]
+    [HandlerFunctions('IntelligentCloudReadyPageHandler')]
     procedure AdlMigrationActionVisibleIfSupported()
     begin
         // [SCENARIO 345772] ADL Migration action is available if product supports it
@@ -49,7 +52,7 @@ codeunit 139657 "ADL Migration Tests"
     [HandlerFunctions('HandleAdlSetup')]
     procedure AdlActionOpensSetupPage()
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO 345772] ADL action opens the ADL setup page
         Initialize();
@@ -58,11 +61,11 @@ codeunit 139657 "ADL Migration Tests"
         LibraryHybridManagement.SetAdlMigrationEnabled(true);
 
         // [WHEN] User launches the cloud migration management page
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [WHEN] And chooses the ADL action
-        IntelligentCloudManagement.AdlSetup.Invoke();
+        CloudMigrationManagement.AdlSetup.Invoke();
 
         // [THEN] The ADL Setup page opens
         // Verified by HandleAdlSetup
@@ -332,25 +335,37 @@ codeunit 139657 "ADL Migration Tests"
 
     local procedure VerifyAdlMigrationActionVisibility(ExpectedVisibility: Boolean)
     var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
-        IntelligentCloudReady: TestPage "Intelligent Cloud Ready";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
+        RunId: Guid;
     begin
         Initialize();
 
         // [GIVEN] ADL Migration is enabled or disabled for the source product
         LibraryHybridManagement.SetAdlMigrationEnabled(ExpectedVisibility);
 
+        // [GIVEN] Cloud Migration was succesfull
+        RunId := CreateGuid();
+        HybridReplicationSummary.CreateInProgressRecord(RunId, HybridReplicationSummary.ReplicationType::Normal);
+        HybridReplicationSummary.FindLast();
+        HybridReplicationSummary.Status := HybridReplicationSummary.Status::Completed;
+        HybridReplicationSummary."Data Repair Status" := HybridReplicationSummary."Data Repair Status"::Completed;
+        HybridReplicationSummary.Modify();
+
         // [WHEN] User opens the cloud migration management page
-        IntelligentCloudManagement.OpenEdit();
+        CloudMigrationManagement.OpenEdit();
 
         // [THEN] The Azure Data Lake action is properly visible
-        Assert.AreEqual(ExpectedVisibility, IntelligentCloudManagement.AdlSetup.Visible(), 'Management page');
+        Assert.AreEqual(ExpectedVisibility, CloudMigrationManagement.AdlSetup.Visible(), 'Management page');
 
         // [WHEN] User opens the disable migration flow
-        IntelligentCloudReady.Trap();
-        IntelligentCloudManagement.DisableIntelligentCloud.Invoke();
+        LibraryVariableStorage.Enqueue(ExpectedVisibility);
+        CloudMigrationManagement.CompleteCloudMigration.Invoke();
+    end;
 
-        // [THEN] The Azure Data Lake action is properly enabled
-        Assert.AreEqual(ExpectedVisibility, IntelligentCloudReady.AdlSetup.Enabled(), 'Cloud Ready page');
+    [ModalPageHandler]
+    procedure IntelligentCloudReadyPageHandler(var IntelligentCloudReady: TestPage "Intelligent Cloud Ready")
+    begin
+        Assert.AreEqual(LibraryVariableStorage.DequeueBoolean(), IntelligentCloudReady.AdlSetup.Enabled(), 'Intelligent Cloud Ready page should be enabled.');
     end;
 }

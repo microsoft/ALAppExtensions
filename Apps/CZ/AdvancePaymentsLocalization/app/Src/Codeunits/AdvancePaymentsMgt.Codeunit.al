@@ -33,13 +33,4 @@ codeunit 31086 "Advance Payments Mgt. CZZ"
     end;
 
 #endif
-
-#if not CLEAN19
-    procedure DontUseObsoleteAdvancePayments()
-    var
-        AdvancePaymentsInstalledErr: Label 'Advance Payments Localization for Czech is installed.\Please use this instead of obsoleted version.';
-    begin
-        Error(AdvancePaymentsInstalledErr);
-    end;
-#endif
 }

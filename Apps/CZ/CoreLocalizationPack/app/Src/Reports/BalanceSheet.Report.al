@@ -248,6 +248,8 @@ report 11794 "Balance Sheet CZL"
 
                             RoundingHeader := '';
 
+                            OnAfterGetRecordColumnLayoutLoopOnBeforeSetRoundingHeader("Acc. Schedule Line", TempColumnLayout);
+
                             if TempColumnLayout."Rounding Factor" in [TempColumnLayout."Rounding Factor"::"1000", TempColumnLayout."Rounding Factor"::"1000000"] then
                                 case TempColumnLayout."Rounding Factor" of
                                     TempColumnLayout."Rounding Factor"::"1000":
@@ -410,6 +412,7 @@ report 11794 "Balance Sheet CZL"
                     group("Layout")
                     {
                         Caption = 'Layout';
+                        Visible = AccSchedNameEditable;
                         field(AccSchedNameCZL; AccSchedName)
                         {
                             ApplicationArea = Basic, Suite;
@@ -654,10 +657,14 @@ report 11794 "Balance Sheet CZL"
         end;
 
         trigger OnOpenPage()
+        var
+            FinancialReportMgt: Codeunit "Financial Report Mgt.";
         begin
+            FinancialReportMgt.Initialize();
             GeneralLedgerSetup.Get();
+            AccSchedName := '';
+            ColumnLayoutName := '';
             TransferValues();
-            UpdateFilters();
             if AccSchedName <> '' then
                 if ColumnLayoutName = '' then
                     ValidateAccSchedName();
@@ -687,6 +694,8 @@ report 11794 "Balance Sheet CZL"
     }
 
     trigger OnPreReport()
+    var
+        FinancialReportMgt: Codeunit "Financial Report Mgt.";
     begin
         if AccSchedName = '' then begin
             if AccScheduleName.GetRangeMin(Name) <> AccScheduleName.GetRangeMax(Name) then
@@ -694,6 +703,9 @@ report 11794 "Balance Sheet CZL"
             AccSchedName := AccScheduleName.GetRangeMin(Name);
         end;
 
+        FinancialReportMgt.Initialize();
+        TransferValues();
+        UpdateFilters();
         InitAccSched();
         CompanyInformation.Get();
     end;
@@ -710,6 +722,7 @@ report 11794 "Balance Sheet CZL"
         AccSchedNameHidden: Code[10];
         ColumnLayoutName: Code[10];
         ColumnLayoutNameHidden: Code[10];
+        FinancialReportName: Code[10];
         EndDate: Date;
         ShowError: Option "None","Division by Zero","Period Error",Both;
         DateFilter: Text;
@@ -755,6 +768,8 @@ report 11794 "Balance Sheet CZL"
         Dim3FilterEnable: Boolean;
         [InDataSet]
         Dim4FilterEnable: Boolean;
+        [InDataSet]
+        AccSchedNameEditable: Boolean;
         LineShadowed: Boolean;
         LineSkipped: Boolean;
         SkipEmptyLines: Boolean;
@@ -794,6 +809,23 @@ report 11794 "Balance Sheet CZL"
         PeriodText := "Acc. Schedule Line".GetFilter("Date Filter");
 
         AccSchedManagement.CopyColumnsToTemp(ColumnLayoutName, TempColumnLayout);
+    end;
+
+    procedure SetFinancialReportNameNonEditable(NewAccSchedName: Code[10])
+    begin
+        SetFinancialReportName(NewAccSchedName);
+        AccSchedNameEditable := false;
+    end;
+
+    procedure SetFinancialReportName(NewFinancialReportName: Code[10])
+    var
+        FinancialReportLocal: Record "Financial Report";
+    begin
+        FinancialReportName := NewFinancialReportName;
+        if FinancialReportLocal.Get(FinancialReportName) then begin
+            AccSchedNameHidden := FinancialReportLocal."Financial Report Row Group";
+            AccSchedNameEditable := false;
+        end;
     end;
 
     procedure SetAccSchedName(NewAccSchedName: Code[10])
@@ -891,18 +923,21 @@ report 11794 "Balance Sheet CZL"
             Dim3Filter := Dim3FilterHidden;
             Dim4Filter := Dim4FilterHidden;
         end;
-
+#if not CLEAN21
         if ColumnLayoutName = '' then
             if AccScheduleName.Get(AccSchedName) then
                 ColumnLayoutName := AccScheduleName."Default Column Layout";
+#endif
     end;
 
     procedure ValidateAccSchedName()
     begin
         AccSchedManagement.CheckName(AccSchedName);
         AccScheduleName.Get(AccSchedName);
+#if not CLEAN21
         if AccScheduleName."Default Column Layout" <> '' then
             ColumnLayoutName := AccScheduleName."Default Column Layout";
+#endif
         if AccScheduleName."Analysis View Name" <> '' then
             AnalysisView.Get(AccScheduleName."Analysis View Name")
         else begin
@@ -914,5 +949,10 @@ report 11794 "Balance Sheet CZL"
         Dim2FilterEnable := AnalysisView."Dimension 2 Code" <> '';
         Dim3FilterEnable := AnalysisView."Dimension 3 Code" <> '';
         Dim4FilterEnable := AnalysisView."Dimension 4 Code" <> '';
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterGetRecordColumnLayoutLoopOnBeforeSetRoundingHeader(AccScheduleLine: Record "Acc. Schedule Line"; var TempColumnLayout: Record "Column Layout" temporary)
+    begin
     end;
 }

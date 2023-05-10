@@ -1,6 +1,8 @@
 table 31275 "Posted Compensation Line CZC"
 {
     Caption = 'Posted Compensation Line';
+    DrillDownPageID = "Posted Compensation Lines CZC";
+    LookupPageID = "Posted Compensation Lines CZC";
 
     fields
     {

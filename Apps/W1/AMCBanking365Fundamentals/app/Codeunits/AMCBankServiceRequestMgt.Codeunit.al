@@ -709,7 +709,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
     end;
 
 #if not CLEAN20
-#pragma warning disable
+#pragma warning disable AA0131
     [Obsolete('This method is obsolete and it will be removed. Use GetFinstaXPath instead', '20.0')]
     procedure GetFinstaXPath(ResponseNode: Text): Text
     begin

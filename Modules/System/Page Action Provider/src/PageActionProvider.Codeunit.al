@@ -25,22 +25,22 @@ codeunit 2915 "Page Action Provider"
     ///       "views": [
     ///         {
     ///           "caption": "balance",
-    ///           "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&page=22&view=aa49406f-6f68-4565-b857-496faa0e77aa_balance48453&page=22&filter=Customer.%27Balance%20(LCY)%27%20IS%20%27>200%27"
+    ///           "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&amp;page=22&amp;view=aa49406f-6f68-4565-b857-496faa0e77aa_balance48453&amp;page=22&amp;filter=Customer.%27Balance%20(LCY)%27%20IS%20%27>200%27"
     ///         }
     ///       ],
-    ///       "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&page=22"
+    ///       "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&amp;page=22"
     ///     },
     ///     {
     ///       "caption": "Vendors",
-    ///       "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&page=27"
+    ///       "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&amp;page=27"
     ///     },
     ///     {
     ///       "caption": "Items",
-    ///       "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&page=31"
+    ///       "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&amp;page=31"
     ///     },
     ///     {
     ///       "caption": "Account Schedules",
-    ///       "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&page=103"
+    ///       "url": "https://businesscentral.dynamics.com/?company=CRONUS%20International%20Ltd.&amp;page=103"
     ///     }
     ///  ]
     /// 

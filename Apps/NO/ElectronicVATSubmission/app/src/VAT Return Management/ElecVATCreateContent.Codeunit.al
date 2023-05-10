@@ -88,10 +88,10 @@ codeunit 10684 "Elec. VAT Create Content"
             end;
             ElecVATXMLHelper.AppendXMLNode('mvaKodeRegnskapsystem', TempVATStatementReportLine.Description);
             if VATCode."Report VAT Rate" then begin
-                ElecVATXMLHelper.AppendXMLNode('grunnlag', GetAmountTextRounded(TempVATStatementReportLine.Base));
+                ElecVATXMLHelper.AppendXMLNode('grunnlag', GetAmountTextRounded(TempVATStatementReportLine.Base + TempVATStatementReportLine."Non-Deductible Base"));
                 ElecVATXMLHelper.AppendXMLNode('sats', Format(VATCode."VAT Rate For Reporting", 0, '<Integer><Decimals><Comma,,>'));
             end;
-            ElecVATXMLHelper.AppendXMLNode('merverdiavgift', GetAmountTextRounded(TempVATStatementReportLine.Amount));
+            ElecVATXMLHelper.AppendXMLNode('merverdiavgift', GetAmountTextRounded(TempVATStatementReportLine.Amount + TempVATStatementReportLine."Non-Deductible Amount"));
             if (VATCode."VAT Note Code" <> '') or (TempVATStatementReportLine.Note <> '') then begin
                 ElecVATXMLHelper.AddNewXMLNode('merknad', '');
                 if VATCode."VAT Note Code" = '' then
@@ -111,10 +111,7 @@ codeunit 10684 "Elec. VAT Create Content"
                     ElecVATXMLHelper.AppendXMLNode('spesifikasjon', VATSpecification."VAT Report Value");
                 end;
                 ElecVATXMLHelper.AppendXMLNode('mvaKodeRegnskapsystem', TempVATStatementReportLine.Description);
-                ElecVATXMLHelper.AppendXMLNode(
-                    'merverdiavgift',
-                    GetAmountTextRounded(
-                        -TempVATStatementReportLine.Amount + TempVATStatementReportLine."Non-Deductible Amount"));
+                ElecVATXMLHelper.AppendXMLNode('merverdiavgift', GetAmountTextRounded(-TempVATStatementReportLine.Amount));
                 if VATCode."VAT Note Code" <> '' then begin
                     VATNote.Get(VATCode."VAT Note Code");
                     ElecVATXMLHelper.AddNewXMLNode('merknad', '');

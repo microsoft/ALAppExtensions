@@ -1,3 +1,4 @@
+
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -126,7 +127,6 @@ page 1568 "Power Automate Privacy Notice"
 
                 trigger OnAction()
                 begin
-                    IsDisagreed := true;
                     CurrPage.Close();
                 end;
             }
@@ -173,7 +173,6 @@ page 1568 "Power Automate Privacy Notice"
                 var
                     PrivacyNotice: Codeunit "Privacy Notice";
                 begin
-                    IsAgreed := true;
                     if PrivacyNoticeRecord.ID <> '' then
                         PrivacyNotice.SetApprovalState(PrivacyNoticeRecord.ID, "Privacy Notice Approval State"::Agreed);
                     CurrPage.Close();
@@ -219,6 +218,4 @@ page 1568 "Power Automate Privacy Notice"
         BackActionEnabled: Boolean;
         NextActionEnabled: Boolean;
         UserCanApproveForOrganization: Boolean;
-        IsAgreed: Boolean;
-        IsDisagreed: Boolean;
 }

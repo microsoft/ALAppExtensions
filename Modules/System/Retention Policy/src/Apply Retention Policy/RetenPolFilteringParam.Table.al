@@ -11,6 +11,8 @@ table 3906 "Reten. Pol. Filtering Param"
     Access = Public;
     Extensible = true;
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     DataClassification = SystemMetadata;
 
     fields

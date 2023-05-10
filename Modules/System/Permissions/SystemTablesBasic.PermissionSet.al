@@ -19,20 +19,24 @@ permissionset 66 "System Tables - Basic"
                              "Satisfaction Survey - View",
                              "Session - Read",
                              "System Execute - Basic",
-                             "User Login Times - View",
                              "User Personalization - Edit",
                              "User Selection - Read",
                              "Webhook - Edit";
 
     Permissions = tabledata "Add-in" = R,
                   tabledata "Aggregate Permission Set" = Rimd,
+#if not CLEAN22
+#pragma warning disable AL0432
                   tabledata Chart = R,
+#pragma warning restore AL0432
+#endif
                   tabledata "Code Coverage" = Rimd,
                   tabledata "Configuration Package File" = RIMD,
                   tabledata "Document Service" = R,
                   tabledata "Document Service Scenario" = R,
                   tabledata Drive = Rimd,
                   tabledata "Event Subscription" = Rimd,
+                  tabledata "External Event Log Entry" = I,
                   tabledata Field = Rimd,
                   tabledata File = Rimd,
                   tabledata "Object Options" = Rimd,

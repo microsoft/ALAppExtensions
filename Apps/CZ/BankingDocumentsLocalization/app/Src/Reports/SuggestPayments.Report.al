@@ -216,137 +216,6 @@ report 31280 "Suggest Payments CZB"
                     end;
                 end;
             }
-#if not CLEAN19
-            dataitem("Purch. Advance Letter Header"; "Purch. Advance Letter Header")
-            {
-                DataItemTableView = sorting("No.") where(Status = filter("Pending Payment" .. "Pending Payment"), "On Hold" = const(''));
-
-                trigger OnPreDataItem()
-                var
-                    PurchAdvLettersTxt: Label 'Processing Purchase Advance Letters...';
-                begin
-                    if VendorType = VendorType::Nothing then
-                        CurrReport.Break();
-                    if StopPayments then
-                        CurrReport.Break();
-                    WindowDialog.Open(PurchAdvLettersTxt);
-                    DialogOpen := true;
-
-                    SetRange("Advance Due Date", 0D, LastDueDateToPayReq);
-                    SetRange("Due Date from Line", false);
-
-                    case CurrencyType of
-                        CurrencyType::"Payment Order":
-                            SetRange("Currency Code", PaymentOrderHeaderCZB."Payment Order Currency Code");
-                        CurrencyType::"Bank Account":
-                            SetRange("Currency Code", PaymentOrderHeaderCZB."Currency Code");
-                    end;
-                    if VendorNoFilter <> '' then
-                        SetFilter("Pay-to Vendor No.", VendorNoFilter);
-                end;
-
-                trigger OnAfterGetRecord()
-                var
-                    RemAmount: Decimal;
-                begin
-                    if VendorType = VendorType::OnlyBalance then
-                        if VendorBalanceTest("Pay-to Vendor No.") then
-                            CurrReport.Skip();
-                    if SkipBlocked and VendorBlockedTest("Pay-to Vendor No.") then begin
-                        IsSkippedBlocked := true;
-                        CurrReport.Skip();
-                    end;
-                    if IsPurchaseLetterHeaderApplied("Purch. Advance Letter Header") then
-                        CurrReport.Skip();
-
-                    RemAmount := "Purch. Advance Letter Header".GetRemAmount();
-                    if RemAmount <> 0 then
-                        AddPurchaseLetter("Purch. Advance Letter Header");
-
-                    if StopPayments then
-                        CurrReport.Break();
-                end;
-
-                trigger OnPostDataItem()
-                begin
-                    if DialogOpen then begin
-                        Clear(DialogOpen);
-                        WindowDialog.Close();
-                    end;
-                end;
-            }
-            dataitem(PurchAdvLetterHdrPerLine; "Purch. Advance Letter Header")
-            {
-                DataItemTableView = sorting("No.") where(Status = filter("Pending Payment" .. "Pending Payment"), "On Hold" = const(''));
-
-                dataitem(PurchAdvLetterLinePerLine; "Purch. Advance Letter Line")
-                {
-                    DataItemLink = "Letter No." = field("No.");
-                    DataItemTableView = sorting("Letter No.", "Line No.");
-
-                    trigger OnPreDataItem()
-                    begin
-                        SetRange("Advance Due Date", 0D, LastDueDateToPayReq);
-                    end;
-
-                    trigger OnAfterGetRecord()
-                    begin
-                        if IsPurchaseLetterLineApplied(PurchAdvLetterLinePerLine) then
-                            CurrReport.Skip();
-
-                        if "Amount To Link" > 0 then
-                            AddPurchaseLetterLine(PurchAdvLetterLinePerLine);
-
-                        if StopPayments then
-                            CurrReport.Break();
-                    end;
-                }
-
-                trigger OnPreDataItem()
-                var
-                    PurchAdvLetterLinesTxt: Label 'Processing Purchase Advance Letter Lines...';
-                begin
-                    if VendorType = VendorType::Nothing then
-                        CurrReport.Break();
-                    if StopPayments then
-                        CurrReport.Break();
-                    WindowDialog.Open(PurchAdvLetterLinesTxt);
-                    DialogOpen := true;
-
-                    CopyFilters("Purch. Advance Letter Header");
-                    SetRange("Advance Due Date");
-                    SetRange("Due Date from Line", true);
-
-                    case CurrencyType of
-                        CurrencyType::"Payment Order":
-                            SetRange("Currency Code", PaymentOrderHeaderCZB."Payment Order Currency Code");
-                        CurrencyType::"Bank Account":
-                            SetRange("Currency Code", PaymentOrderHeaderCZB."Currency Code");
-                    end;
-                    if VendorNoFilter <> '' then
-                        SetFilter("Pay-to Vendor No.", VendorNoFilter);
-                end;
-
-                trigger OnAfterGetRecord()
-                begin
-                    if VendorType = VendorType::OnlyBalance then
-                        if VendorBalanceTest("Pay-to Vendor No.") then
-                            CurrReport.Skip();
-                    if SkipBlocked and VendorBlockedTest("Pay-to Vendor No.") then begin
-                        IsSkippedBlocked := true;
-                        CurrReport.Skip();
-                    end;
-                end;
-
-                trigger OnPostDataItem()
-                begin
-                    if DialogOpen then begin
-                        WindowDialog.Close();
-                        DialogOpen := false;
-                    end;
-                end;
-            }
-#endif
         }
     }
 
@@ -589,7 +458,9 @@ report 31280 "Suggest Payments CZB"
                     PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
         end;
         PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Applies-to C/V/E Entry No.", CustLedgerEntry."Entry No.");
-        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" then begin
+        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" and
+           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry."Pmt. Discount Date")
+        then begin
             PaymentOrderLineCZB."Pmt. Discount Possible" := false;
             PaymentOrderLineCZB."Pmt. Discount Date" := 0D;
             PaymentOrderLineCZB."Amount (Paym. Order Currency)" += PaymentOrderLineCZB."Remaining Pmt. Disc. Possible";
@@ -621,7 +492,9 @@ report 31280 "Suggest Payments CZB"
                     PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
         end;
         PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Applies-to C/V/E Entry No.", VendorLedgerEntry."Entry No.");
-        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" then begin
+        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" and
+           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry."Pmt. Discount Date")
+        then begin
             PaymentOrderLineCZB."Pmt. Discount Possible" := false;
             PaymentOrderLineCZB."Pmt. Discount Date" := 0D;
             PaymentOrderLineCZB."Amount (Paym. Order Currency)" -= PaymentOrderLineCZB."Remaining Pmt. Disc. Possible";
@@ -736,73 +609,4 @@ report 31280 "Suggest Payments CZB"
         if Employee."No." <> EmployeeNo then
             Employee.Get(EmployeeNo);
     end;
-#if not CLEAN19
-    local procedure AddPurchaseLetter(PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header")
-    begin
-        PaymentOrderLineCZB.Init();
-        PaymentOrderLineCZB.Validate("Payment Order No.", PaymentOrderHeaderCZB."No.");
-        PaymentOrderLineCZB."Line No." := LineNo;
-        LineNo += 10000;
-        PaymentOrderLineCZB.Type := PaymentOrderLineCZB.Type::Vendor;
-        case CurrencyType of
-            CurrencyType::" ":
-                if PaymentOrderLineCZB."Payment Order Currency Code" <> PurchAdvanceLetterHeader."Currency Code" then
-                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PurchAdvanceLetterHeader."Currency Code");
-            CurrencyType::"Payment Order":
-                if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Payment Order Currency Code" then
-                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Payment Order Currency Code");
-            CurrencyType::"Bank Account":
-                if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Currency Code" then
-                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
-        end;
-        PaymentOrderLineCZB."Letter Type" := PaymentOrderLineCZB."Letter Type"::Purchase;
-        PaymentOrderLineCZB.Validate("Letter No.", PurchAdvanceLetterHeader."No.");
-        AddPaymentLine();
-    end;
-
-    procedure AddPurchaseLetterLine(PurchAdvanceLetterLine: Record "Purch. Advance Letter Line")
-    begin
-        PaymentOrderLineCZB.Init();
-        PaymentOrderLineCZB.Validate("Payment Order No.", PaymentOrderHeaderCZB."No.");
-        PaymentOrderLineCZB."Line No." := LineNo;
-        LineNo += 10000;
-        PaymentOrderLineCZB.Type := PaymentOrderLineCZB.Type::Vendor;
-        case CurrencyType of
-            CurrencyType::" ":
-                if PaymentOrderLineCZB."Payment Order Currency Code" <> PurchAdvanceLetterLine."Currency Code" then
-                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PurchAdvanceLetterLine."Currency Code");
-            CurrencyType::"Payment Order":
-                if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Payment Order Currency Code" then
-                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Payment Order Currency Code");
-            CurrencyType::"Bank Account":
-                if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Currency Code" then
-                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
-        end;
-        PaymentOrderLineCZB."Letter Type" := PaymentOrderLineCZB."Letter Type"::Purchase;
-        PaymentOrderLineCZB."Letter No." := PurchAdvanceLetterLine."Letter No.";
-        PaymentOrderLineCZB.Validate("Letter Line No.", PurchAdvanceLetterLine."Line No.");
-        AddPaymentLine();
-    end;
-
-    local procedure IsPurchaseLetterHeaderApplied(PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header"): Boolean
-    var
-        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
-    begin
-        IssPaymentOrderLineCZB.SetRange("Letter Type", IssPaymentOrderLineCZB."Letter Type"::Purchase);
-        IssPaymentOrderLineCZB.SetRange("Letter No.", PurchAdvanceLetterHeader."No.");
-        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
-        exit(not IssPaymentOrderLineCZB.IsEmpty());
-    end;
-
-    local procedure IsPurchaseLetterLineApplied(PurchAdvanceLetterLine: Record "Purch. Advance Letter Line"): Boolean
-    var
-        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
-    begin
-        IssPaymentOrderLineCZB.SetRange("Letter Type", IssPaymentOrderLineCZB."Letter Type"::Purchase);
-        IssPaymentOrderLineCZB.SetRange("Letter No.", PurchAdvanceLetterLine."No.");
-        IssPaymentOrderLineCZB.SetRange("Letter Line No.", PurchAdvanceLetterLine."Line No.");
-        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
-        exit(not IssPaymentOrderLineCZB.IsEmpty());
-    end;
-#endif
 }

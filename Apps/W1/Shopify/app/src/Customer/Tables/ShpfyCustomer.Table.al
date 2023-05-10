@@ -3,7 +3,6 @@
 /// </summary>
 table 30105 "Shpfy Customer"
 {
-    Access = Internal;
     Caption = 'Shopify Customer';
     DataClassification = CustomerContent;
     DrillDownPageId = "Shpfy Customers";
@@ -111,6 +110,12 @@ table 30105 "Shpfy Customer"
             Caption = 'Customer No.';
             FieldClass = FlowField;
         }
+        field(103; "Shop Id"; Integer)
+        {
+            Caption = 'Shop ID';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
 
     keys
@@ -121,17 +126,18 @@ table 30105 "Shpfy Customer"
         }
 
         key(Idx1; "Customer SystemId") { }
+        key(Idx2; "Shop Id") { }
     }
 
     trigger OnDelete()
     var
-        Address: Record "Shpfy Customer Address";
+        CustomerAddress: Record "Shpfy Customer Address";
         Metafield: Record "Shpfy Metafield";
         Tag: Record "Shpfy Tag";
     begin
-        Address.SetRange("Customer Id", Id);
-        if not Address.IsEmpty() then
-            Address.DeleteAll(false);
+        CustomerAddress.SetRange("Customer Id", Id);
+        if not CustomerAddress.IsEmpty() then
+            CustomerAddress.DeleteAll(false);
 
         Tag.SetRange("Parent Id", Id);
         if not Tag.IsEmpty() then
@@ -146,11 +152,11 @@ table 30105 "Shpfy Customer"
     /// Get Comma Seperated Tags.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    internal procedure GetCommaSeperatedTags(): Text
+    internal procedure GetCommaSeparatedTags(): Text
     var
         ShopifyTag: Record "Shpfy Tag";
     begin
-        ShopifyTag.GetCommaSeperatedTags(Id);
+        ShopifyTag.GetCommaSeparatedTags(Id);
     end;
 
     /// <summary> 

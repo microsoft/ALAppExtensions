@@ -1,5 +1,11 @@
+#if not CLEAN22
 pageextension 4819 "Obs. Int. Journal Templates" extends "Intrastat Journal Templates"
 {
+
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moving to Intrastat extension.';
+
     trigger OnOpenPage()
     var
         IntrastatReportMgt: Codeunit IntrastatReportManagement;
@@ -13,3 +19,4 @@ pageextension 4819 "Obs. Int. Journal Templates" extends "Intrastat Journal Temp
             IntrastatReportMgt.NotifyUserAboutIntrastatFeature();
     end;
 }
+#endif

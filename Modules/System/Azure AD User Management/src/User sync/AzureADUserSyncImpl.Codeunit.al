@@ -7,6 +7,8 @@ codeunit 9029 "Azure AD User Sync Impl."
 {
     Access = Internal;
 
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = TableData User = rm,
                   tabledata "User Personalization" = r;
 
@@ -41,7 +43,7 @@ codeunit 9029 "Azure AD User Sync Impl."
         AzureADUserUpdate.DeleteAll();
         Clear(ProcessedUsers);
 
-        if AzureADGraph.GetEnvironmentDirectoryGroup() <> '' then
+        if AzureADGraph.IsEnvironmentSecurityGroupDefined() then
             FetchUpdatesFromEnvironmentDirectoryGroup(AzureADUserUpdate, OfficeUsersInBC)
         else begin
             FetchUpdatesForLicensedUsers(AzureADUserUpdate, OfficeUsersInBC);
@@ -103,7 +105,7 @@ codeunit 9029 "Azure AD User Sync Impl."
         CurrUserPlanIDs: List of [Guid];
     begin
         // Get all the group members of the environment group and fetch updates for those that have a BC plan
-        AzureADGraph.GetMembersForGroupId(AzureADGraph.GetEnvironmentDirectoryGroup(), GroupMembers);
+        AzureADGraph.GetMembersForGroupId(AzureADGraph.GetEnvironmentSecurityGroupId(), GroupMembers);
 
         if IsNull(GroupMembers) then
             exit;
@@ -138,7 +140,7 @@ codeunit 9029 "Azure AD User Sync Impl."
                     if not IsNull(GraphUserInfo) then begin
                         AzureADPlan.GetPlanIDs(GraphUserInfo, UserPlanIds);
                         if UserPlanIds.Contains(PlanIds.GetInternalAdminPlanId()) or // internal admins are not affected by the environment security group
-                           ((AzureADGraph.GetEnvironmentDirectoryGroup() = '') and UserPlanIds.Contains(PlanIds.GetMicrosoft365PlanId()))
+                           ((not AzureADGraph.IsEnvironmentSecurityGroupDefined()) and UserPlanIds.Contains(PlanIds.GetMicrosoft365PlanId()))
                         then
                             GetUpdatesFromGraphUserInfo(GraphUserInfo, AzureADUserUpdate, OfficeUsersInBC);
                     end;
@@ -149,12 +151,13 @@ codeunit 9029 "Azure AD User Sync Impl."
     local procedure HandleRemovedUsers(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; OfficeUsersInBC: List of [Guid])
     var
         User: Record User;
+        UserSelection: Codeunit "User Selection";
         AzureADUserMgmtImpl: Codeunit "Azure AD User Mgmt. Impl.";
     begin
         // If the environment is not defined, only the users that were unassigned the BC "plans" in office or were deleted are handled here
         // If the environment is defined, then additionally the existing BC users that are not members of the environment group will be handled
 
-        User.SetFilter("License Type", '<>%1', User."License Type"::"External User"); // do not sync the deamon user
+        UserSelection.FilterSystemUserAndAADGroupUsers(User); // do not sync the daemon user and AAD groups
         if not User.FindSet() then
             exit;
 
@@ -204,7 +207,7 @@ codeunit 9029 "Azure AD User Sync Impl."
         PlanIDs: Codeunit "Plan Ids";
         PlanID: Guid;
     begin
-        if AzureADGraph.GetEnvironmentDirectoryGroup() <> '' then
+        if AzureADGraph.IsEnvironmentSecurityGroupDefined() then
             exit(false);
 
         foreach PlanID in UserPlanIDs do
@@ -465,7 +468,7 @@ codeunit 9029 "Azure AD User Sync Impl."
     end;
 
     [NonDebuggable]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD User Sync Impl.", 'OnApplyUpdateFromAzureGraph', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD User Sync Impl.", OnApplyUpdateFromAzureGraph, '', false, false)]
     local procedure ApplyUpdateFromAzureGraph(AzureADUserUpdate: Record "Azure AD User Update Buffer"; var User: Record User; var UpdatedSuccessfully: Boolean)
     var
         Language: Codeunit Language;

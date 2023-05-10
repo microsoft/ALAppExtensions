@@ -1,9 +1,11 @@
 page 31260 "Iss. Bank Statement Lines CZB"
 {
+    ApplicationArea = Basic, Suite;
     Caption = 'Issued Bank Statement Lines';
     Editable = false;
     PageType = List;
     SourceTable = "Iss. Bank Statement Line CZB";
+    UsageCategory = History;
 
     layout
     {
@@ -82,6 +84,51 @@ page 31260 "Iss. Bank Statement Lines CZB"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the number of bank statement.';
                     Visible = false;
+                }
+                field("Line No."; Rec."Line No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Line No. field.';
+                    Visible = false;
+                }
+            }
+        }
+    }
+    actions
+    {
+        area(navigation)
+        {
+            group("&Line")
+            {
+                Caption = '&Line';
+                Image = Line;
+                action("Show Document")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Show Document';
+                    Image = View;
+                    ShortCutKey = 'Shift+F7';
+                    ToolTip = 'Open the document that the selected line exists on.';
+
+                    trigger OnAction()
+                    var
+                        IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB";
+                        PageManagement: Codeunit "Page Management";
+                    begin
+                        IssBankStatementHeaderCZB.Get(Rec."Bank Statement No.");
+                        PageManagement.PageRun(IssBankStatementHeaderCZB);
+                    end;
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("Show Document_Promoted"; "Show Document")
+                {
                 }
             }
         }

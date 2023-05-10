@@ -10,15 +10,17 @@ codeunit 41 "Filter Tokens"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         FilterTokensImpl: Codeunit "Filter Tokens Impl.";
 
-        /// <summary>
-        /// Turns text that represents date formats into a valid date filter expression with respect to filter tokens and date formulas.
-        /// Call this function from onValidate trigger of page field that should behave similar to system filters.
-        /// <param name="DateFilterText">The text from which the date filter should be extracted passed as VAR. For example: "YESTERDAY", or " 01-01-2012 ".</param>
-        /// </summary>
+    /// <summary>
+    /// Turns text that represents date formats into a valid date filter expression with respect to filter tokens and date formulas.
+    /// Call this function from onValidate trigger of page field that should behave similar to system filters.
+    /// <param name="DateFilterText">The text from which the date filter should be extracted passed as VAR. For example: "YESTERDAY", or " 01-01-2012 ".</param>
+    /// </summary>
     procedure MakeDateFilter(var DateFilterText: Text)
     begin
         FilterTokensImpl.MakeDateFilter(DateFilterText);

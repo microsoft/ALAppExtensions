@@ -98,8 +98,11 @@ codeunit 18466 "Subcontracting Post"
         TrackingQtyHandled: Decimal;
         TrackingQtyToHandle: Decimal;
         QuantitySent: Decimal;
+        IsHandled: Boolean;
     begin
+#if not CLEAN23
         OnBeforeSubcontractComponentSendPost(ItemJnlLine, DeliveryChallanHeader, SubOrderCompList);
+#endif
 
         ItemJnlLine.Init();
         ItemJnlLine."Posting Date" := DeliveryChallanHeader."Challan Date";
@@ -171,6 +174,10 @@ codeunit 18466 "Subcontracting Post"
 
         if Item."Item Tracking Code" <> '' then
             TransferTrackingToItemJnlLine(SubOrderCompList, ItemJnlLine, SubOrderCompList."Quantity To Send", 0);
+
+        OnBeforeSubcontCompSendPost(ItemJnlLine, DeliveryChallanHeader, SubOrderCompList, IsHandled);
+        if IsHandled then
+            exit;
 
         ItemJnlPostLine.Run(ItemJnlLine);
 
@@ -2370,6 +2377,8 @@ codeunit 18466 "Subcontracting Post"
         end
     end;
 
+#if not CLEAN23
+    [Obsolete('Replaced by new integration event OnBeforeSubcontCompSendPost', '23.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSubcontractComponentSendPost(
         var ItemJrnlLine: Record "Item Journal Line";
@@ -2377,6 +2386,7 @@ codeunit 18466 "Subcontracting Post"
         SubOrderCompList: Record "Sub Order Component List")
     begin
     end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterSubcontractComponentSendPost(
@@ -2498,6 +2508,16 @@ codeunit 18466 "Subcontracting Post"
             AllowApplication := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostItemJnlLineCopyProdOrder', '', false, false)]
+    local procedure OnAfterPostItemJnlLineCopyProdOrder(var ItemJnlLine: Record "Item Journal Line"; PurchLine: Record "Purchase Line")
+    begin
+        if ItemJnlLine."Entry Type" <> ItemJnlLine."Entry Type"::Output then
+            exit;
+
+        if (PurchLine."Prod. Order No." <> '') and (PurchLine."Subcon. Receiving") then
+            ItemJnlLine."Posting Date" := PurchLine."Posting Date";
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterModifyApplyDeliveryChallan(var AppliedDeliveryChallan: Record "Applied Delivery Challan"; SubOrderCompVend: Record "Sub Order Comp. List Vend")
     begin
@@ -2546,6 +2566,14 @@ codeunit 18466 "Subcontracting Post"
         TotalQtyToPost: Decimal;
         AppDelChallan: Record "Applied Delivery Challan";
         var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeSubcontCompSendPost(
+            var ItemJrnlLine: Record "Item Journal Line";
+            DeliveryChallanHeader: Record "Delivery Challan Header";
+            SubOrderCompList: Record "Sub Order Component List"; var IsHandled: Boolean)
     begin
     end;
 }

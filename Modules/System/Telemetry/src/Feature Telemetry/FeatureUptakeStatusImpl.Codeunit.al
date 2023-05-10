@@ -6,6 +6,8 @@
 codeunit 8705 "Feature Uptake Status Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     TableNo = "Feature Uptake";
     Permissions = tabledata "Feature Uptake" = rimd;
 

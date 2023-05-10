@@ -44,6 +44,26 @@ table 30122 "Shpfy Order Tax Line"
             Caption = 'Currency Code';
             DataClassification = SystemMetadata;
             Editable = false;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'This information is available in Shopify Order Header table.';
+        }
+        field(7; "Presentment Amount"; Decimal)
+        {
+            Caption = 'Presentment Amount';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(8; "Rate %"; Decimal)
+        {
+            Caption = 'Rate %';
+            DataClassification = SystemMetadata;
+            Editable = false;
         }
     }
     keys
@@ -56,12 +76,12 @@ table 30122 "Shpfy Order Tax Line"
 
     trigger OnInsert()
     var
-        TaxLine: Record "Shpfy Order Tax Line";
+        OrderTaxLine: Record "Shpfy Order Tax Line";
     begin
         if "Line No." = 0 then begin
-            TaxLine.SetRange("Parent Id", "Parent Id");
-            if TaxLine.FindLast() then
-                "Line No." := TaxLine."Line No." + 1
+            OrderTaxLine.SetRange("Parent Id", "Parent Id");
+            if OrderTaxLine.FindLast() then
+                "Line No." := OrderTaxLine."Line No." + 1
             else
                 "Line No." := 1;
         end;

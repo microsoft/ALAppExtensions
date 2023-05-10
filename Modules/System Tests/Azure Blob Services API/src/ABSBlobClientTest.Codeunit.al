@@ -88,6 +88,59 @@ codeunit 132920 "ABS Blob Client Test"
     end;
 
     [Test]
+    procedure ListBlobsTestNextMarker()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
+        ContainerName, FirstBlobName, SecondBlobName, BlobContent : Text;
+        BlobList: Dictionary of [Text, XmlNode];
+        Blobs: List of [Text];
+    begin
+        // [Scenarion] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
+
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        ContainerName := ABSTestLibrary.GetContainerName();
+        FirstBlobName := ABSTestLibrary.GetBlobName();
+        SecondBlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSContainerClient.CreateContainer(ContainerName);
+
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        // Add a BLOB block
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(FirstBlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Adding the first BLOB failed');
+
+        // Add another BLOB block
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(SecondBlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Adding the second BLOB failed');
+
+        // Fetch 1 Blob
+        ABSOptionalParameters.MaxResults(1);
+        ABSOperationResponse := ABSBlobClient.ListBlobs(BlobList, ABSOptionalParameters);
+        Assert.AreEqual(1, BlobList.Count(), 'Should only fetch One BLOB from container');
+        Assert.AreNotEqual('', ABSOperationResponse.GetNextMarker(), 'There should be a Next Marker');
+        Blobs.AddRange(BlobList.Keys());
+
+        // Fetch Next Blob
+        ABSOptionalParameters.NextMarker(ABSOperationResponse.GetNextMarker());
+        ABSOperationResponse := ABSBlobClient.ListBlobs(BlobList, ABSOptionalParameters);
+        Assert.AreEqual(1, BlobList.Count(), 'Should only fetch One BLOB from container');
+        Assert.AreEqual('', ABSOperationResponse.GetNextMarker(), 'There should not be a Next Marker');
+        Blobs.AddRange(BlobList.Keys());
+        Assert.AreEqual(2, Blobs.Count(), 'There should be two BLOBs in the container');
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
     procedure ListBlobHierarchyTest()
     var
         ABSContainerContent: Record "ABS Container Content";

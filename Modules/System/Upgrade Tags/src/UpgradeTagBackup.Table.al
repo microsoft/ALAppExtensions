@@ -5,6 +5,8 @@
 table 9996 "Upgrade Tag Backup"
 {
     Access = Internal;
+    InherentEntitlements = rimdX;
+    InherentPermissions = rimdX;
     Caption = 'Upgrade Tag Backup';
     DataClassification = SystemMetadata;
     DataPerCompany = false;

@@ -10,6 +10,15 @@ table 9048 "Custom User Group In Plan"
     DataPerCompany = false;
     ReplicateData = false;
     DataClassification = SystemMetadata;
+#if not CLEAN22
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '25.0';
+#endif 
+    ObsoleteReason = 'Use custom permission sets in plan instead.';
+
 
     fields
     {
@@ -56,6 +65,7 @@ table 9048 "Custom User Group In Plan"
         }
     }
 
+#if not CLEAN22
     trigger OnInsert()
     begin
         CustomUserGroupInPlan.VerifyUserHasRequiredUserGroup(Rec."User Group Code", Rec."Company Name");
@@ -88,4 +98,5 @@ table 9048 "Custom User Group In Plan"
 
     var
         CustomUserGroupInPlan: Codeunit "Custom User Group In Plan";
+#endif
 }

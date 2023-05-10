@@ -243,13 +243,28 @@ codeunit 132927 "MockGraphQuery Test Library"
     end;
 
     procedure AddGraphUserToGroup(GraphUser: DotNet UserInfo; GroupName: Text)
+    begin
+        AddGraphUserToGroup(GraphUser, GroupName, GroupName + ' Object ID');
+    end;
+
+    procedure AddGraphUserToGroup(GraphUser: DotNet UserInfo; GroupName: Text; GroupId: Text)
     var
         GroupInfo: DotNet GroupInfo;
     begin
         GroupInfo := GroupInfo.GroupInfo();
         GroupInfo.DisplayName := GroupName;
-        GroupInfo.ObjectId := GroupName + ' Object ID';
+        GroupInfo.ObjectId := GroupId;
         MockGraphQuery.AddUserGroup(GraphUser, GroupInfo);
+    end;
+
+    procedure AddGroup(GroupName: Text; GroupId: Text)
+    var
+        GroupInfo: DotNet GroupInfo;
+    begin
+        GroupInfo := GroupInfo.GroupInfo();
+        GroupInfo.DisplayName := GroupName;
+        GroupInfo.ObjectId := GroupId;
+        MockGraphQuery.AddGroup(GroupInfo);
     end;
 
     local procedure CreateDirectoryRole(var DirectoryRole: DotNet RoleInfo; RoleTemplateId: Text; RoleDescription: Text; RoleDisplayName: Text; RoleIsSystem: Boolean)

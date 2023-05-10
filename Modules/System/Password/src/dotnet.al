@@ -5,9 +5,9 @@
 
 dotnet
 {
-    assembly("System.Web")
+    assembly("Microsoft.Dynamics.Nav.PasswordGenerator")
     {
-        type("System.Web.Security.Membership"; "Security.Membership")
+        type("Microsoft.Dynamics.Nav.PasswordGenerator.PasswordGenerator"; "PasswordGenerator")
         {
         }
     }

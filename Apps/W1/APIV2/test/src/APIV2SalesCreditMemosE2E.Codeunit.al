@@ -344,7 +344,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         ResponseText: Text;
         TargetURL: Text;
         DiscountPct: Decimal;
-        DiscountAmt: Decimal;
+        DiscountAmt, InvDiscAmount : Decimal;
     begin
         // [SCENARIO] When an credit memo is created, the GET Method should update the credit memo and assign a total
         // [GIVEN] 2 credit memos, one posted and one unposted with discount amount that should be redistributed
@@ -354,6 +354,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         DiscountAmt := LibraryRandom.RandDecInRange(1, ROUND(SalesHeader.Amount / 2, 1), 1);
         SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(DiscountAmt, SalesHeader);
         GetFirstSalesCreditMemoLine(SalesHeader, SalesLine);
+        InvDiscAmount := SalesLine."Inv. Discount Amount";
         SalesLine.Validate(Quantity, SalesLine.Quantity + 1);
         SalesLine.Modify(true);
         SalesHeader.CALCFIELDS("Recalculate Invoice Disc.");
@@ -368,7 +369,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         VerifyGettingAgainKeepsETag(ResponseText, TargetURL);
         LibraryGraphMgt.VerifyIDInJson(ResponseText);
         LibraryGraphDocumentTools.VerifySalesTotals(
-          SalesHeader, ResponseText, DiscountAmt, SalesHeader."Invoice Discount Calculation"::Amount);
+          SalesHeader, ResponseText, DiscountAmt - InvDiscAmount, SalesHeader."Invoice Discount Calculation"::Amount);
     end;
 
     [Test]
@@ -907,7 +908,6 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         // Ignore these fields when comparing Page and API CreditMemos
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FieldNo("No."), Database::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FieldNo("Posting Description"), Database::"Sales Header");
-        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FieldNo(Id), Database::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, SalesHeader1.FieldNo("Order Date"), Database::"Sales Header");  // it is always set as Today() in API
         // Special ignore case for ES
         RecordField.SetRange(TableNo, Database::"Sales Header");

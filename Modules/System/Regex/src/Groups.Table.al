@@ -13,6 +13,8 @@ table 3964 Groups
 {
     TableType = Temporary;
     Extensible = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

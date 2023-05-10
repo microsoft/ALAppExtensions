@@ -20,7 +20,7 @@ codeunit 139666 "Test Transformation W1"
         // [THEN] The Source Table Mapping table is populated with staged tables
         SourceTableMapping.SetRange("Country Code", CountryCodeTxt);
         SourceTableMapping.SetRange(Staged, true);
-        Assert.AreEqual(1, SourceTableMapping.Count(), 'Unexpected number of mapped, staged tables.');
+        Assert.AreEqual(0, SourceTableMapping.Count(), 'Unexpected number of mapped, staged tables.');
     end;
 
     [Test]
@@ -35,6 +35,6 @@ codeunit 139666 "Test Transformation W1"
         // [THEN] The Source Table Mapping table is populated with the unstages tables
         SourceTableMapping.SetRange("Country Code", CountryCodeTxt);
         SourceTableMapping.SetRange(Staged, false);
-        Assert.AreEqual(1, SourceTableMapping.Count(), 'Unexpected number of mapped, unstaged tables.');
+        Assert.AreEqual(0, SourceTableMapping.Count(), 'Unexpected number of mapped, unstaged tables.');
     end;
 }

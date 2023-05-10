@@ -20,7 +20,7 @@ codeunit 139796 "Test Upgrade CZ"
         // [THEN] The Source Table Mapping table is populated with staged tables
         SourceTableMapping.SetRange("Country Code", CountryCodeTxt);
         SourceTableMapping.SetRange(Staged, true);
-        Assert.AreEqual(2, SourceTableMapping.Count(), 'Unexpected number of mapped, staged tables.');
+        Assert.AreEqual(0, SourceTableMapping.Count(), 'Unexpected number of mapped, staged tables.');
     end;
 
     [Test]
@@ -35,9 +35,9 @@ codeunit 139796 "Test Upgrade CZ"
         // [THEN] The Source Table Mapping table is populated with the moved tables
         SourceTableMapping.SetRange("Country Code", CountryCodeTxt);
         SourceTableMapping.SetRange(Staged, false);
-        Assert.AreEqual(2, SourceTableMapping.Count(), 'Unexpected number of mapped, unstaged tables.');
+        Assert.AreEqual(0, SourceTableMapping.Count(), 'Unexpected number of mapped, unstaged tables.');
     end;
-
+#if not CLEAN21
     [Test]
     procedure VATPostingSetupTransformsCorrectFields()
     var
@@ -67,4 +67,5 @@ codeunit 139796 "Test Upgrade CZ"
             Assert.AreEqual("Corrections for Bad Receivable", "Corrections for Bad Receivable"::"Insolvency Proceedings (p.44)", 'Field not updated');
         end;
     end;
+#endif
 }

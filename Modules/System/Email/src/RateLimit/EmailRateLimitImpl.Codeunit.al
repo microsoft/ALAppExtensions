@@ -6,6 +6,8 @@
 codeunit 8999 "Email Rate Limit Impl."
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email Rate Limit" = rimd,
                     tabledata "Email Account" = r,
                     tabledata "Email Outbox" = r,
@@ -39,7 +41,7 @@ codeunit 8999 "Email Rate Limit Impl."
     begin
         EmailRateLimit.Get(RegisteredAccount."Account Id", RegisteredAccount.Connector);
         EmailRateLimitWizard.SetRecord(EmailRateLimit);
-        EmailRateLimitWizard.SetEmailAccount(RegisteredAccount);
+        EmailRateLimitWizard.SetEmailAccountName(RegisteredAccount.Name);
         EmailRateLimitWizard.RunModal();
     end;
 
@@ -50,9 +52,12 @@ codeunit 8999 "Email Rate Limit Impl."
         EmailImpl: Codeunit "Email Impl";
         RateLimit: Integer;
     begin
-        RateLimitDuration := EmailImpl.GetEmailOutboxSentEmailWithinRateLimit(SentEmail, EmailOutboxCurrent, AccountId);
         RateLimit := GetRateLimit(AccountId, Connector, EmailAddress);
-        exit(((EmailOutboxCurrent.Count() + SentEmail.Count()) >= RateLimit) and (RateLimit <> 0));
+        if RateLimit = 0 then
+            exit(false);
+
+        RateLimitDuration := EmailImpl.GetEmailOutboxSentEmailWithinRateLimit(SentEmail, EmailOutboxCurrent, AccountId);
+        exit((EmailOutboxCurrent.Count() + SentEmail.Count()) >= RateLimit);
     end;
 
     [InherentPermissions(PermissionObjectType::TableData, Database::"Email Rate Limit", 'ri')]

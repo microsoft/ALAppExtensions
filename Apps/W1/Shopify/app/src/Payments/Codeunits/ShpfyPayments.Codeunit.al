@@ -18,7 +18,7 @@ codeunit 30169 "Shpfy Payments"
     var
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        JHelper: Codeunit "Shpfy Json Helper";
+        JsonHelper: Codeunit "Shpfy Json Helper";
 
     /// <summary> 
     /// Description for ImportPaymentTransactions.
@@ -38,7 +38,7 @@ codeunit 30169 "Shpfy Payments"
         Clear(SinceId);
         repeat
             JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
-            if JHelper.GetJsonArray(JResponse, JTransactions, 'transactions') then
+            if JsonHelper.GetJsonArray(JResponse, JTransactions, 'transactions') then
                 foreach JItem in JTransactions do
                     ImportPaymentTransaction(JItem, SinceId);
         until Url = '';
@@ -56,7 +56,7 @@ codeunit 30169 "Shpfy Payments"
         DataCapture: Record "Shpfy Data Capture";
         Payout: Record "Shpfy Payout";
         Math: Codeunit "Shpfy Math";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         Id: BigInteger;
         JPayouts: JsonArray;
         JItem: JsonToken;
@@ -71,32 +71,32 @@ codeunit 30169 "Shpfy Payments"
         Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(UrlTxt, SinceId));
         repeat
             JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
-            if JHelper.GetJsonArray(JResponse, JPayouts, 'payouts') then
+            if JsonHelper.GetJsonArray(JResponse, JPayouts, 'payouts') then
                 foreach JItem in JPayouts do begin
-                    Id := JHelper.GetValueAsBigInteger(JItem, 'id');
+                    Id := JsonHelper.GetValueAsBigInteger(JItem, 'id');
                     if Payout.Get(Id) then begin
-                        Payout.Status := ConvertToPayoutStatus(JHelper.GetValueAsText(JItem, 'status'));
+                        Payout.Status := ConvertToPayoutStatus(JsonHelper.GetValueAsText(JItem, 'status'));
                         Payout.Modify();
                     end else begin
-                        RecRef.Open(Database::"Shpfy Payout");
-                        RecRef.Init();
-                        JHelper.GetValueIntoField(JItem, 'date', RecRef, Payout.FieldNo(Date));
-                        JHelper.GetValueIntoField(JItem, 'currency', RecRef, Payout.FieldNo(Currency));
-                        JHelper.GetValueIntoField(JItem, 'amount', RecRef, Payout.FieldNo(Amount));
-                        JHelper.GetValueIntoField(JItem, 'summary.adjustments_fee_amount', RecRef, Payout.FieldNo("Adjustments Fee Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.adjustments_gross_amount', RecRef, Payout.FieldNo("Adjustments Gross Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.charges_fee_amount', RecRef, Payout.FieldNo("Charges Fee Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.charges_gross_amount', RecRef, Payout.FieldNo("Charges Gross Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.refunds_fee_amount', RecRef, Payout.FieldNo("Refunds Fee Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.refunds_gross_amount', RecRef, Payout.FieldNo("Refunds gross Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.reserved_funds_fee_amount', RecRef, Payout.FieldNo("Reserved Funds Fee Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.reserved_funds_gross_amount', RecRef, Payout.FieldNo("Reserved Funds Gross Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.retried_payouts_fee_amount', RecRef, Payout.FieldNo("Retried Payouts Fee Amount"));
-                        JHelper.GetValueIntoField(JItem, 'summary.retried_payouts_gross_amount', RecRef, Payout.FieldNo("Retried Payouts Gross Amount"));
-                        RecRef.SetTable(Payout);
-                        RecRef.Close();
+                        RecordRef.Open(Database::"Shpfy Payout");
+                        RecordRef.Init();
+                        JsonHelper.GetValueIntoField(JItem, 'date', RecordRef, Payout.FieldNo(Date));
+                        JsonHelper.GetValueIntoField(JItem, 'currency', RecordRef, Payout.FieldNo(Currency));
+                        JsonHelper.GetValueIntoField(JItem, 'amount', RecordRef, Payout.FieldNo(Amount));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.adjustments_fee_amount', RecordRef, Payout.FieldNo("Adjustments Fee Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.adjustments_gross_amount', RecordRef, Payout.FieldNo("Adjustments Gross Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.charges_fee_amount', RecordRef, Payout.FieldNo("Charges Fee Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.charges_gross_amount', RecordRef, Payout.FieldNo("Charges Gross Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.refunds_fee_amount', RecordRef, Payout.FieldNo("Refunds Fee Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.refunds_gross_amount', RecordRef, Payout.FieldNo("Refunds gross Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.reserved_funds_fee_amount', RecordRef, Payout.FieldNo("Reserved Funds Fee Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.reserved_funds_gross_amount', RecordRef, Payout.FieldNo("Reserved Funds Gross Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.retried_payouts_fee_amount', RecordRef, Payout.FieldNo("Retried Payouts Fee Amount"));
+                        JsonHelper.GetValueIntoField(JItem, 'summary.retried_payouts_gross_amount', RecordRef, Payout.FieldNo("Retried Payouts Gross Amount"));
+                        RecordRef.SetTable(Payout);
+                        RecordRef.Close();
                         Payout.Id := Id;
-                        Payout.Status := ConvertToPayoutStatus(JHelper.GetValueAsText(JItem, 'status'));
+                        Payout.Status := ConvertToPayoutStatus(JsonHelper.GetValueAsText(JItem, 'status'));
                         Payout.Insert();
                     end;
                     DataCapture.Add(Database::"Shpfy Payout", Payout.SystemId, JItem);
@@ -145,50 +145,50 @@ codeunit 30169 "Shpfy Payments"
 
     local procedure GetLastTransactionPayoutId(ShopCode: Code[20]): BigInteger
     var
-        Transaction: Record "Shpfy Payment Transaction";
+        PaymentTransaction: Record "Shpfy Payment Transaction";
     begin
-        Transaction.SetRange("Shop Code", ShopCode);
-        if Transaction.FindLast() then
-            exit(Transaction."Payout Id");
+        PaymentTransaction.SetRange("Shop Code", ShopCode);
+        if PaymentTransaction.FindLast() then
+            exit(PaymentTransaction."Payout Id");
     end;
 
     internal procedure ImportPaymentTransaction(JTransaction: JsonToken; var SinceId: BigInteger)
     var
         DataCapture: Record "Shpfy Data Capture";
-        Transaction: Record "Shpfy Payment Transaction";
+        PaymentTransaction: Record "Shpfy Payment Transaction";
         Math: Codeunit "Shpfy Math";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         Id: BigInteger;
     begin
-        Id := JHelper.GetValueAsBigInteger(JTransaction, 'id');
-        Clear(Transaction);
-        Transaction.SetRange(Id, Id);
-        if Transaction.IsEmpty then begin
-            RecRef.Open(Database::"Shpfy Payment Transaction");
-            RecRef.Init();
-            JHelper.GetValueIntoField(JTransaction, 'test', RecRef, Transaction.FieldNo(Test));
-            JHelper.GetValueIntoField(JTransaction, 'payout_id', RecRef, Transaction.FieldNo("Payout Id"));
-            JHelper.GetValueIntoField(JTransaction, 'currency', RecRef, Transaction.FieldNo(Currency));
-            JHelper.GetValueIntoField(JTransaction, 'amount', RecRef, Transaction.FieldNo(Amount));
-            JHelper.GetValueIntoField(JTransaction, 'fee', RecRef, Transaction.FieldNo(Fee));
-            JHelper.GetValueIntoField(JTransaction, 'net', RecRef, Transaction.FieldNo("Net Amount"));
-            JHelper.GetValueIntoField(JTransaction, 'source_id', RecRef, Transaction.FieldNo("Source Id"));
-            JHelper.GetValueIntoField(JTransaction, 'source_order_id', RecRef, Transaction.FieldNo("Source Order Id"));
-            JHelper.GetValueIntoField(JTransaction, 'source_order_transaction_id', RecRef, Transaction.FieldNo("Source Order Transaction Id"));
-            JHelper.GetValueIntoField(JTransaction, 'processed_at', RecRef, Transaction.FieldNo("Processed At"));
-            RecRef.SetTable(Transaction);
-            RecRef.Close();
-            Transaction.Id := Id;
-            Transaction."Shop Code" := Shop.Code;
-            Transaction.Type := ConvertToPaymentTranscationType(JHelper.GetValueAsText(JTransaction, 'type'));
-            Transaction."Source Type" := ConvertToPaymentTranscationType(JHelper.GetValueAsText(JTransaction, 'type'));
-            Transaction.Insert();
-            DataCapture.Add(Database::"Shpfy Payment Transaction", Transaction.SystemId, JTransaction);
+        Id := JsonHelper.GetValueAsBigInteger(JTransaction, 'id');
+        Clear(PaymentTransaction);
+        PaymentTransaction.SetRange(Id, Id);
+        if PaymentTransaction.IsEmpty then begin
+            RecordRef.Open(Database::"Shpfy Payment Transaction");
+            RecordRef.Init();
+            JsonHelper.GetValueIntoField(JTransaction, 'test', RecordRef, PaymentTransaction.FieldNo(Test));
+            JsonHelper.GetValueIntoField(JTransaction, 'payout_id', RecordRef, PaymentTransaction.FieldNo("Payout Id"));
+            JsonHelper.GetValueIntoField(JTransaction, 'currency', RecordRef, PaymentTransaction.FieldNo(Currency));
+            JsonHelper.GetValueIntoField(JTransaction, 'amount', RecordRef, PaymentTransaction.FieldNo(Amount));
+            JsonHelper.GetValueIntoField(JTransaction, 'fee', RecordRef, PaymentTransaction.FieldNo(Fee));
+            JsonHelper.GetValueIntoField(JTransaction, 'net', RecordRef, PaymentTransaction.FieldNo("Net Amount"));
+            JsonHelper.GetValueIntoField(JTransaction, 'source_id', RecordRef, PaymentTransaction.FieldNo("Source Id"));
+            JsonHelper.GetValueIntoField(JTransaction, 'source_order_id', RecordRef, PaymentTransaction.FieldNo("Source Order Id"));
+            JsonHelper.GetValueIntoField(JTransaction, 'source_order_transaction_id', RecordRef, PaymentTransaction.FieldNo("Source Order Transaction Id"));
+            JsonHelper.GetValueIntoField(JTransaction, 'processed_at', RecordRef, PaymentTransaction.FieldNo("Processed At"));
+            RecordRef.SetTable(PaymentTransaction);
+            RecordRef.Close();
+            PaymentTransaction.Id := Id;
+            PaymentTransaction."Shop Code" := Shop.Code;
+            PaymentTransaction.Type := ConvertToPaymentTranscationType(JsonHelper.GetValueAsText(JTransaction, 'type'));
+            PaymentTransaction."Source Type" := ConvertToPaymentTranscationType(JsonHelper.GetValueAsText(JTransaction, 'type'));
+            PaymentTransaction.Insert();
+            DataCapture.Add(Database::"Shpfy Payment Transaction", PaymentTransaction.SystemId, JTransaction);
             if SinceId = 0 then
-                SinceId := Transaction."Payout Id"
+                SinceId := PaymentTransaction."Payout Id"
             else
-                if Transaction."Payout Id" > 0 then
-                    SinceId := Math.Min(SinceId, Transaction."Payout Id");
+                if PaymentTransaction."Payout Id" > 0 then
+                    SinceId := Math.Min(SinceId, PaymentTransaction."Payout Id");
         end;
     end;
 }

@@ -65,7 +65,6 @@ page 2610 "Feature Management"
 
                     trigger OnValidate()
                     var
-                        RequiredFeatureKey: Record "Feature Key";
                         Confirmed: Boolean;
                     begin
                         case Rec.Enabled of
@@ -76,27 +75,18 @@ page 2610 "Feature Management"
                                     FeatureManagementFacade.OnAfterFeatureDisableConfirmed(Rec);
                                 end;
                             else begin
-                                    case Rec.ID of
-                                        GetAllowMultipleCustVendPostingGroupsID():
-                                            begin
-                                                RequiredFeatureKey.Get(GetExtensibleExchangeRateAdjustmentID());
-                                                if RequiredFeatureKey.Enabled <> RequiredFeatureKey.Enabled::"All Users" then
-                                                    error(FeatureShouldBeEnabledErr, RequiredFeatureKey.Description);
-                                            end;
-                                    end;
+                                if Rec."Is One Way" then
+                                    Confirmed := Confirm(OneWayWarningMsg)
+                                else
+                                    Confirmed := true;
+                                if not Confirmed then
+                                    Error('');
 
-                                    if Rec."Is One Way" then
-                                        Confirmed := Confirm(OneWayWarningMsg)
-                                    else
-                                        Confirmed := true;
-                                    if not Confirmed then
-                                        Error('');
+                                FeatureManagementFacade.OnAfterFeatureEnableConfirmed(Rec);
 
-                                    FeatureManagementFacade.OnAfterFeatureEnableConfirmed(Rec);
-
-                                    if not FeatureManagementFacade.Update(FeatureDataUpdateStatus) then
-                                        Error('');
-                                end;
+                                if not FeatureManagementFacade.Update(FeatureDataUpdateStatus) then
+                                    Error('');
+                            end;
                         end;
                         FeatureManagementFacade.AfterValidateEnabled(Rec);
                         UpdateStyle();
@@ -262,9 +252,6 @@ page 2610 "Feature Management"
         TryItOutStartedMsg: Label 'A new browser tab was opened for you to try out the feature. For now, the feature has been temporarily enabled for you only. It will remain enabled whenever you open Business Central in the browser, until you completely sign out or close the browser.';
         OneWayWarningMsg: Label 'After you enable this feature for all users, you cannot turn it off again. This is because the feature may include changes to your data and may initiate an upgrade of some database tables as soon as you enable it.\\We strongly recommend that you first enable and test this feature on a sandbox environment that has a copy of production data before doing this on a production environment.\\For detailed information about the impact of enabling this feature, you should choose No and use the Learn more link.\\Are you sure you want to enable this feature?';
         OneWayAlreadyEnabledErr: Label 'This feature has already been enabled and cannot be disabled.';
-        FeatureShouldBeEnabledErr: Label 'You need to enable this feature first: %1', Comment = '%1 - feature name';
-        AllowMultipleCustVendPostingGroupsTxt: Label 'AllowMultipleCustVendPostingGroups', Locked = true;
-        ExtensibleExchangeRateAdjustmentTxt: Label 'ExtensibleExchangeRateAdjustment', Locked = true;
         TryItOut: Text;
         CanSchedule: Boolean;
         CanCancelScheduling: Boolean;
@@ -295,29 +282,28 @@ page 2610 "Feature Management"
     begin
         InitActionVisibility();
         if FeatureDataUpdateStatus."Data Update Required" and IsFeatureEnabled() then
-            UpdateActionsVisibility(
-                FeatureDataUpdateStatus."Feature Status", CanSchedule, CanCancelScheduling, CanShowLog);
+            UpdateActionsVisibility();
     end;
 
-    local procedure UpdateActionsVisibility(DataUpdateStatus: enum "Feature Status"; var CanSchedule: Boolean; var CanCancelScheduling: Boolean; var CanShowLog: Boolean);
+    local procedure UpdateActionsVisibility();
     begin
         CanSchedule := false;
         CanCancelScheduling := false;
         CanShowLog := false;
 
-        case DataUpdateStatus of
-            DataUpdateStatus::Pending:
+        case FeatureDataUpdateStatus."Feature Status" of
+            FeatureDataUpdateStatus."Feature Status"::Pending:
                 CanSchedule := true;
-            DataUpdateStatus::Scheduled:
+            FeatureDataUpdateStatus."Feature Status"::Scheduled:
                 CanCancelScheduling := true;
-            DataUpdateStatus::Updating:
+            FeatureDataUpdateStatus."Feature Status"::Updating:
                 CanShowLog := true;
-            DataUpdateStatus::Incomplete:
+            FeatureDataUpdateStatus."Feature Status"::Incomplete:
                 begin
                     CanSchedule := true;
                     CanShowLog := true;
                 end;
-            DataUpdateStatus::Complete:
+            FeatureDataUpdateStatus."Feature Status"::Complete:
                 CanShowLog := true;
         end;
     end;
@@ -357,16 +343,6 @@ page 2610 "Feature Management"
                     DataUpdateStype := 'Subordinate';
                 end;
         end;
-    end;
-
-    local procedure GetAllowMultipleCustVendPostingGroupsID(): Text[50]
-    begin
-        exit(AllowMultipleCustVendPostingGroupsTxt);
-    end;
-
-    local procedure GetExtensibleExchangeRateAdjustmentID(): Text[50]
-    begin
-        exit(ExtensibleExchangeRateAdjustmentTxt);
     end;
 
     [IntegrationEvent(false, false)]

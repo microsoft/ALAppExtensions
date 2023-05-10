@@ -10,22 +10,42 @@ codeunit 5014 "Export Service Declaration"
         DataExchDef: Record "Data Exch. Def";
         DataExchMapping: Record "Data Exch. Mapping";
         OutStr: OutStream;
+        IsHandled: Boolean;
+        PeriodAlreadyReportedQst: Label 'You''ve already submitted the report for this period.\Do you want to continue?';
     begin
-        ServiceDeclarationSetup.Get();
-        ServiceDeclarationSetup.TestField("Data Exch. Def. Code");
-        DataExchDef.Get(ServiceDeclarationSetup."Data Exch. Def. Code");
-        DataExchMapping.SetRange("Data Exch. Def Code", DataExchDef.Code);
-        DataExchMapping.SetRange("Table ID", Database::"Service Declaration Line");
-        DataExchMapping.FindFirst();
+        if Rec.Reported then
+            if not Confirm(PeriodAlreadyReportedQst) then
+                exit;
 
-        DataExch.Init();
-        DataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
-        DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
-        DataExch."Table Filters".CreateOutStream(OutStr);
-        ServiceDeclarationLine.SetRange("Service Declaration No.", Rec."No.");
-        OutStr.WriteText(ServiceDeclarationLine.GetView());
-        DataExch.Insert(true);
-        DataExch.ExportFromDataExch(DataExchMapping);
+        IsHandled := false;
+        OnBeforeExportServiceDeclaration(Rec, IsHandled);
+
+        if not IsHandled then begin
+            ServiceDeclarationSetup.Get();
+            ServiceDeclarationSetup.TestField("Data Exch. Def. Code");
+            DataExchDef.Get(ServiceDeclarationSetup."Data Exch. Def. Code");
+            DataExchMapping.SetRange("Data Exch. Def Code", DataExchDef.Code);
+            DataExchMapping.SetRange("Table ID", Database::"Service Declaration Line");
+            DataExchMapping.FindFirst();
+
+            DataExch.Init();
+            DataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
+            DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
+            DataExch."Table Filters".CreateOutStream(OutStr);
+            ServiceDeclarationLine.SetRange("Service Declaration No.", Rec."No.");
+            OutStr.WriteText(ServiceDeclarationLine.GetView());
+            DataExch.Insert(true);
+            DataExch.ExportFromDataExch(DataExchMapping);
+        end;
+
+        Rec.Reported := true;
+        Rec."Export Date" := Today;
+        Rec."Export Time" := Time;
+        Rec.Modify();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeExportServiceDeclaration(var ServiceDeclarationHeader: Record "Service Declaration Header"; var IsHandled: Boolean)
+    begin
     end;
 }
-

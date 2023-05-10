@@ -563,6 +563,8 @@ table 40103 "GP POPPOLine"
     var
         PostingGroupTxt: Label 'GP', Locked = true;
 
+#if not CLEAN22
+    [Obsolete('Logic moved to GP PO Migrator codeunit', '22.0')]
     procedure MoveStagingData(PO_Number: Text[18])
     var
         PurchaseLine: Record "Purchase Line";
@@ -627,6 +629,7 @@ table 40103 "GP POPPOLine"
                 LineNo := LineNo + 10000;
             until Next() = 0;
     end;
+#endif
 
     local procedure CreateNonInventoryItem(ItemNo: Code[20]; ItemDescription: Text[100]; ItemUnitCost: Decimal; UnitOfMeasure: Text[10])
     var

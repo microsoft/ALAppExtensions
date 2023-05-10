@@ -524,7 +524,7 @@ report 31186 "Sales Quote CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(1) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(1) <> '';
     end;
 
     local procedure FormatDocumentFields(SalesHeader: Record "Sales Header")

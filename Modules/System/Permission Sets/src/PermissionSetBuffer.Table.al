@@ -11,6 +11,8 @@ table 9862 "PermissionSet Buffer"
     Access = Internal;
     Caption = 'Permission Set Buffer';
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {
@@ -34,7 +36,8 @@ table 9862 "PermissionSet Buffer"
         field(4; Name; Text[30])
         {
             Caption = 'Name';
-            DataClassification = SystemMetadata;
+            CalcFormula = Lookup("Aggregate Permission Set".Name Where("Role ID" = Field("Role ID")));
+            FieldClass = FlowField;
         }
         field(5; "App Name"; Text[250])
         {

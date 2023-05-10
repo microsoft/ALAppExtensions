@@ -68,7 +68,7 @@ page 8897 "Email Scenario Attach Setup"
                 PromotedCategory = New;
                 PromotedOnly = true;
                 Image = Add;
-                Caption = 'Add File';
+                Caption = 'Add file';
                 ToolTip = 'Add files, such as documents or images, to the email.';
                 Scope = Page;
                 Visible = IsVisible;
@@ -91,7 +91,7 @@ page 8897 "Email Scenario Attach Setup"
                 PromotedCategory = New;
                 PromotedOnly = true;
                 Image = Add;
-                Caption = 'Add File to Scenario';
+                Caption = 'Add file to scenario';
                 ToolTip = 'Choose an email scenario and add files, such as documents or images, to the email.';
                 Scope = Page;
                 Visible = not (IsVisible);
@@ -121,7 +121,7 @@ page 8897 "Email Scenario Attach Setup"
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 Image = Download;
-                Caption = 'Download Attachment';
+                Caption = 'Download attachment';
                 ToolTip = 'Download the selected attachment file.';
                 Scope = Repeater;
                 Enabled = DownloadActionEnabled;

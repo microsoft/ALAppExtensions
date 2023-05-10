@@ -13,6 +13,8 @@ codeunit 148095 "Swiss QR-Bill Test IncomingDoc"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryERM: Codeunit "Library - ERM";
         SwissQRBillTestLibrary: Codeunit "Swiss QR-Bill Test Library";
         ReferenceType: Enum "Swiss QR-Bill Payment Reference Type";
         BlankedImportErr: Label 'There is no data to import.';
@@ -450,10 +452,147 @@ codeunit 148095 "Swiss QR-Bill Test IncomingDoc"
         SwissQRBillTestLibrary.ClearVendor(VendorNo);
     end;
 
+    [Test]
+    procedure CreateIncomingDocWhenXmlHasQRReference()
+    var
+        IncomingDocument: Record "Incoming Document";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+        ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
+        SwissQRBillXml: Codeunit "Swiss QR-Bill Xml";
+        TempBlob: Codeunit "Temp Blob";
+        Params: Dictionary of [Text, Text];
+    begin
+        // [SCENARIO 458178] Create Incoming Document from xml file which contains parameter qrreference with value of QR Reference type.
+        Initialize();
+
+        // [GIVEN] Xml document from OCR service with qrreference = "000000000000000000000000026".
+        Params.Add('qrreference', '000000000000000000000000026');
+        SwissQRBillXml.InitAttachmentXmlDocText(Params);
+        SwissQRBillXml.GetAttachmentXmlDocContent(TempBlob);
+
+        // [WHEN] Create Incoming Document from xml document.
+        ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, GetXmlFileName(), TempBlob);
+
+        // [THEN] Incoming Document was created, Swiss QR-Bill Reference Type = "QR Reference", Swiss QR-Bill Reference No. = "000000000000000000000000026".
+        IncomingDocument.Get(IncomingDocumentAttachment."Incoming Document Entry No.");
+        IncomingDocument.TestField("Swiss QR-Bill Reference Type", "Swiss QR-Bill Payment Reference Type"::"QR Reference");
+        IncomingDocument.TestField("Swiss QR-Bill Reference No.", '000000000000000000000000026');
+    end;
+
+    [Test]
+    procedure CreateIncomingDocWhenXmlHasNonQRReference()
+    var
+        IncomingDocument: Record "Incoming Document";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+        ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
+        SwissQRBillXml: Codeunit "Swiss QR-Bill Xml";
+        TempBlob: Codeunit "Temp Blob";
+        Params: Dictionary of [Text, Text];
+    begin
+        // [SCENARIO 458178] Create Incoming Document from xml file which contains parameter qrreference with value which is not of QR Reference type.
+        Initialize();
+
+        // [GIVEN] Xml document from OCR service with qrreference = "12345".
+        Params.Add('qrreference', '12345');
+        SwissQRBillXml.InitAttachmentXmlDocText(Params);
+        SwissQRBillXml.GetAttachmentXmlDocContent(TempBlob);
+
+        // [WHEN] Create Incoming Document from xml document.
+        ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, GetXmlFileName(), TempBlob);
+
+        // [THEN] Incoming Document was created, Swiss QR-Bill Reference Type = "Without Reference", Swiss QR-Bill Reference No. = "12345".
+        IncomingDocument.Get(IncomingDocumentAttachment."Incoming Document Entry No.");
+        IncomingDocument.TestField("Swiss QR-Bill Reference Type", "Swiss QR-Bill Payment Reference Type"::"Without Reference");
+        IncomingDocument.TestField("Swiss QR-Bill Reference No.", '12345');
+    end;
+
+    [Test]
+    procedure CreateIncomingDocWhenXmlHasBlankReference()
+    var
+        IncomingDocument: Record "Incoming Document";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+        ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
+        SwissQRBillXml: Codeunit "Swiss QR-Bill Xml";
+        TempBlob: Codeunit "Temp Blob";
+        Params: Dictionary of [Text, Text];
+    begin
+        // [SCENARIO 458178] Create Incoming Document from xml file which contains parameter qrreference with blank value.
+        Initialize();
+
+        // [GIVEN] Xml document from OCR service with qrreference = "".
+        Params.Add('qrreference', '');
+        SwissQRBillXml.InitAttachmentXmlDocText(Params);
+        SwissQRBillXml.GetAttachmentXmlDocContent(TempBlob);
+
+        // [WHEN] Create Incoming Document from xml document.
+        ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, GetXmlFileName(), TempBlob);
+
+        // [THEN] Incoming Document was created, Swiss QR-Bill Reference Type = "Without Reference", Swiss QR-Bill Reference No. = "".
+        IncomingDocument.Get(IncomingDocumentAttachment."Incoming Document Entry No.");
+        IncomingDocument.TestField("Swiss QR-Bill Reference Type", "Swiss QR-Bill Payment Reference Type"::"Without Reference");
+        IncomingDocument.TestField("Swiss QR-Bill Reference No.", '');
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure CreatePurchInvFromIncomingDocWhenXmlHasQRReference()
+    var
+        Vendor: Record Vendor;
+        PurchaseHeader: Record "Purchase Header";
+        VATPostingSetup: Record "VAT Posting Setup";
+        IncomingDocument: Record "Incoming Document";
+        TextToAccountMapping: Record "Text-to-Account Mapping";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+        ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
+        SwissQRBillXml: Codeunit "Swiss QR-Bill Xml";
+        TempBlob: Codeunit "Temp Blob";
+        Params: Dictionary of [Text, Text];
+        ReferenceNo: Text;
+        InvoiceNo: Code[20];
+    begin
+        // [SCENARIO 458178] Create Purchase Invoice from Incoming Document based on xml file which contains parameter qrreference of QR Reference type.
+        Initialize();
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, "Tax Calculation Type"::"Normal VAT", 0);
+
+        // [GIVEN] Vendor with Name "V".
+        LibraryPurchase.CreateVendor(Vendor);
+        UpdateVATBusGroupOnVendor(Vendor, VATPostingSetup."VAT Bus. Posting Group");
+
+        // [GIVEN] Text-to-Account Mapping with Mapping Text "V".
+        LibraryERM.CreateAccountMappingGLAccount(
+            TextToAccountMapping, Vendor.Name, '', LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, "General Posting Type"::Purchase));
+
+        // [GIVEN] Incoming Document with Vendor Name "V" and Swiss QR-Bill Reference No. = "000000000000000000000000026".
+        ReferenceNo := '000000000000000000000000026';
+        Params.Add('supplier', Vendor.Name);
+        Params.Add('qrreference', ReferenceNo);
+        SwissQRBillXml.InitAttachmentXmlDocText(Params);
+        SwissQRBillXml.GetAttachmentXmlDocContent(TempBlob);
+        ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, GetXmlFileName(), TempBlob);
+
+        // [WHEN] Create Purchase Invoice from Incoming Document.
+        IncomingDocument.Get(IncomingDocumentAttachment."Incoming Document Entry No.");
+        UpdateErrorTypeToWarningOnIncomingDoc(IncomingDocument);
+        IncomingDocument.CreateDocumentWithDataExchange();
+
+        // [THEN] Purchase Invoice was created, Payment Reference = "000000000000000000000000026".
+        InvoiceNo := IncomingDocument."Document No.";
+        Assert.ExpectedMessage(StrSubstNo('Purchase Invoice %1 has been created', InvoiceNo), LibraryVariableStorage.DequeueText());
+        PurchaseHeader.Get("Purchase Document Type"::Invoice, InvoiceNo);
+        PurchaseHeader.TestField("Payment Reference", ReferenceNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
         SwissQRBillTestLibrary.ClearJournalRecords();
+    end;
+
+    local procedure GetXmlFileName(): Text[250]
+    begin
+        exit(StrSubstNo('%1.xml', LibraryUtility.GenerateGUID()));
     end;
 
     local procedure PerformScanFromPageList(QRCodeText: Text; ExpectedIBANMatch: Boolean)
@@ -525,6 +664,18 @@ codeunit 148095 "Swiss QR-Bill Test IncomingDoc"
             "Swiss QR-Bill" := QRBill;
             Insert();
         end;
+    end;
+
+    local procedure UpdateVATBusGroupOnVendor(var Vendor: Record Vendor; VATBusPostingGroup: Code[20])
+    begin
+        Vendor.Validate("VAT Bus. Posting Group", VATBusPostingGroup);
+        Vendor.Modify(true);
+    end;
+
+    local procedure UpdateErrorTypeToWarningOnIncomingDoc(var IncomingDocument: Record "Incoming Document")
+    begin
+        IncomingDocument."Created Doc. Error Msg. Type" := IncomingDocument."Created Doc. Error Msg. Type"::Warning;
+        IncomingDocument.Modify();
     end;
 
     [ModalPageHandler]

@@ -17,8 +17,7 @@ Availability date: starting with version 22.0
 
 Exposes the following integration events:
 
-- OnAfterModifyShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header"; var OldShopifyOrderHeader: Record "Shpfy Order Header")
-- OnAfterNewShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header")
+- OnAfterImportShopifyOrderHeader(var ShopifyOrderHeader: Record "Shpfy Order Header"; IsNew: Boolean)
 - OnAfterMapCustomer(var ShopifyOrderHeader: Record "Shpfy Order Header")
 - OnBeforeMapShipmentMethod(var ShopifyOrderHeader: Record "Shpfy Order Header"; var Handled: Boolean)
 - OnAfterMapShipmentMethod(var ShopifyOrderHeader: Record "Shpfy Order Header")
@@ -27,6 +26,13 @@ Exposes the following integration events:
 - OnAfterCreateItemSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; ShopifyOrderLine: Record "Shpfy Order Line"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line")
 - OnAfterCreateSalesHeader(ShopifyHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
 - OnAfterCreateShippingCostSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; ShopifyShippingCost: Record "Shpfy Order Shipping Charges"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line")
+- OnBeforeProcessSalesDocument(var ShopifyOrderHeader: Record "Shpfy Order Header")
+- OnBeforeCreateSalesHeader(ShopifyOrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header"; var Handled: Boolean)
+- OnBeforeCreateShippingCostSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; ShopifyShippingCost: Record "Shpfy Order Shipping Charges"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var Handled: Boolean)
+- OnAfterProcessSalesDocument(var SalesHeader: Record "Sales Header"; ShopifyHeader: Record "Shpfy Order Header")
+- OnBeforeCreateItemSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; ShopifyOrderLine: Record "Shpfy Order Line"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var Handled: Boolean)
+
+[Example: Order processing](extensibility_examples.md#order-processing)
 
 ### codeunit 30177 "Shpfy Product Events"
 Availability date: starting with version 22.0
@@ -53,10 +59,16 @@ Exposes the following integration events:
 - OnAfterUpdateItemVariant(Shop: Record "Shpfy Shop"; ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; var ItemVariant: Record "Item Variant");
 - OnBeforeUpdateItem(Shop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; var Handled: Boolean);
 - OnBeforeUpdateItemVariant(Shop: Record "Shpfy Shop"; ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; var ItemVariant: Record "Item Variant"; var Handled: Boolean);
-- OnBeforeSendCreateShopifyProduct(ShopifyShop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant")
+- OnBeforeSendCreateShopifyProduct(ShopifyShop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShpfyTag: Record "Shpfy Tag")
 - OnBeforeSendUpdateShopifyProduct(ShopifyShop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; xShopifyProduct: Record "Shpfy Product")
 - OnBeforeSendAddShopifyProductVariant(ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant")
 - OnBeforeSendUpdateShopifyProductVariant(ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant")
+- OnAfterCreateTempShopifyProduct(Item: Record Item; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyTag: Record "Shpfy Tag")
+
+[Example: Price](extensibility_examples.md#Price)
+
+
+[Example: Product properties](extensibility_examples.md#product-properties)
 
 ### codeunit 30115 "Shpfy Customer Events"
 Availability date: starting with version 22.0
@@ -194,7 +206,7 @@ Availability date: starting with version 22.0
 
 Extensible = false;
 
-### Enum 30135 "Shpfy Stock Calculation"
+### Enum "Shpfy Stock Calculation"
 Availability date: starting with version 21.3
 
 Extensible = true;

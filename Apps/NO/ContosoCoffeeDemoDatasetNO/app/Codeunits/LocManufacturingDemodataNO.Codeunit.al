@@ -39,8 +39,24 @@ codeunit 10660 "Loc. Manufacturing Demodata-NO"
         Vendor.validate("Vendor Posting Group", 'INNENLANDS');
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Whse Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyWhseDemoAccounts()
+    begin
+        WhseDemoAccount.ReturnAccountKey(true);
+
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '2310');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '2110');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '2111');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '5410');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '6110');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '7140');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesVAT(), '5611');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '5631');
+    end;
 
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
+        WhseDemoAccount: Record "Whse. Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
+        WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
 }

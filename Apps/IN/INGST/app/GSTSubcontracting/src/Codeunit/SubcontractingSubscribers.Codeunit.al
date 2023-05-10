@@ -268,10 +268,20 @@ codeunit 18469 "Subcontracting Subscribers"
     local procedure ValidateDeliveryChallanCreatedForOrder(PurchHeader: Record "Purchase Header")
     var
         DeliveryChallanLine: Record "Delivery Challan Line";
+        PurchaseLine: Record "Purchase Line";
     begin
         if not PurchHeader.Subcontracting then
             exit;
 
+        PurchaseLine.LoadFields("Document Type", "Document No.");
+        PurchaseLine.SetRange("Document Type", PurchHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchHeader."No.");
+        if PurchaseLine.FindSet() then
+            repeat
+                PurchaseLine.TestField("Quantity Received", 0);
+            until PurchaseLine.Next() = 0;
+
+        DeliveryChallanLine.LoadFields("Document No.", "Remaining Quantity");
         DeliveryChallanLine.SetRange("Document No.", PurchHeader."No.");
         DeliveryChallanLine.SetFilter("Remaining Quantity", '<>0');
         if not DeliveryChallanLine.IsEmpty() then

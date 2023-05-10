@@ -3,26 +3,32 @@ codeunit 13602 "Upgrade Local Permission Set"
     Subtype = Upgrade;
 
     trigger OnUpgradePerDatabase()
+    begin
+        RunUpgrade();
+    end;
+
+    internal procedure RunUpgrade()
     var
         UpgradeTag: Codeunit "Upgrade Tag";
-        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        DKCoreUpgradeTags: Codeunit "DKCore Upgrade Tags";
         ServerSettings: Codeunit "Server Setting";
     begin
         if not ServerSettings.GetUsePermissionSetsFromExtensions() then
             exit;
 
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetRemoveLocalPermissionSetUpgradeTag()) then
+        if UpgradeTag.HasUpgradeTag(DKCoreUpgradeTags.GetRemoveLocalPermissionSetUpgradeTag()) then
             exit;
 
         RemoveLocalPermissionSet();
 
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetRemoveLocalPermissionSetUpgradeTag());
+        UpgradeTag.SetUpgradeTag(DKCoreUpgradeTags.GetRemoveLocalPermissionSetUpgradeTag());
     end;
 
 
     local procedure RemoveLocalPermissionSet()
     var
         UserGroupPermissionSet: Record "User Group Permission Set";
+        UserGroupAccessControl: Record "User Group Access Control";
         AccessControl: Record "Access Control";
         NullGuid: Guid;
     begin
@@ -31,6 +37,12 @@ codeunit 13602 "Upgrade Local Permission Set"
         UserGroupPermissionSet.SetRange("App ID", NullGuid);
 
         UserGroupPermissionSet.DeleteAll();
+
+        UserGroupAccessControl.SetRange(Scope, UserGroupAccessControl.Scope::System);
+        UserGroupAccessControl.SetRange("Role ID", 'LOCAL');
+        UserGroupAccessControl.SetRange("App ID", NullGuid);
+
+        UserGroupAccessControl.DeleteAll();
 
         AccessControl.SetRange(Scope, AccessControl.Scope::System);
         AccessControl.SetRange("Role ID", 'LOCAL');

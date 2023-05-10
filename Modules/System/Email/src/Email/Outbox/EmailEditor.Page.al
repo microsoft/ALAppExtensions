@@ -28,7 +28,7 @@ page 13 "Email Editor"
         {
             group("Email Details")
             {
-                Caption = 'Email Details';
+                Caption = 'Email details';
 
                 grid("Email Details Grid")
                 {
@@ -206,7 +206,7 @@ page 13 "Email Editor"
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
-                Caption = 'Send Email';
+                Caption = 'Send email';
                 ToolTip = 'Send the email.';
                 ApplicationArea = All;
                 Enabled = not EmailScheduled;
@@ -232,7 +232,7 @@ page 13 "Email Editor"
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
-                Caption = 'Discard Draft';
+                Caption = 'Discard draft';
                 ToolTip = 'Discard the draft email and close the page.';
                 ApplicationArea = All;
                 Enabled = not EmailScheduled;
@@ -259,7 +259,7 @@ page 13 "Email Editor"
                 PromotedOnly = true;
                 Image = Attach;
                 Enabled = not EmailScheduled;
-                Caption = 'Attach File';
+                Caption = 'Attach file';
                 ToolTip = 'Attach files, such as documents or images, to the email.';
                 Visible = false;
 
@@ -279,7 +279,7 @@ page 13 "Email Editor"
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 Image = Word;
-                Caption = 'Use Word Template';
+                Caption = 'Use Word template';
                 ToolTip = 'Use a Word template with data from the entity to fill the email body.';
                 Enabled = HasSourceRecord;
 
@@ -293,7 +293,7 @@ page 13 "Email Editor"
             {
                 ApplicationArea = All;
                 Image = GetSourceDoc;
-                Caption = 'Show Source';
+                Caption = 'Show source document';
                 ToolTip = 'Open the page from where the email was sent.';
                 Promoted = true;
                 PromotedCategory = Process;
@@ -316,7 +316,7 @@ page 13 "Email Editor"
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 Image = Attach;
-                Caption = 'Get Source Attachments';
+                Caption = 'Get Source attachments';
                 ToolTip = 'Attach a file that was originally attached to the source document.';
                 Scope = Page;
                 Visible = false;
@@ -457,7 +457,6 @@ page 13 "Email Editor"
         EmailAction: Enum "Email Action";
         FromDisplayName: Text;
         EmailScheduled: Boolean;
-        IsNewOutbox: Boolean;
         HasSourceRecord: Boolean;
         EmailBody, EmailSubject : Text;
         EmailScenario: Enum "Email Scenario";
@@ -469,6 +468,7 @@ page 13 "Email Editor"
         PageCaptionTxt: Label 'Compose an Email';
 
     protected var
+        IsNewOutbox: Boolean;
         ToRecipient, CcRecipient, BccRecipient : Text;
         DefaultExitOption: Integer;
 }

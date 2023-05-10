@@ -111,7 +111,7 @@ codeunit 18470 "Subcontracting Validations"
     var
         DeliveryChallanHeader: Record "Delivery Challan Header";
         DeliveryChallanLine: Record "Delivery Challan Line";
-        DelivChallanListMult: Page "Multiple Delivery Challan List";
+        DelivChallanListMult: Page "Multi. Delivery Challan List";
     begin
         DeliveryChallanHeader.Reset();
         DeliveryChallanHeader.SetRange("Vendor No.", PurchaseLine."Buy-from Vendor No.");

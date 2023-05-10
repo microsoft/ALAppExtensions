@@ -144,7 +144,7 @@ codeunit 132613 RSACryptoServiceProviderTests
         asserterror RSACryptoServiceProvider.Decrypt(PrivateKeyXmlString, EncryptedInStream, true, DecryptedOutStream);
 
         // [THEN] Error occures
-        LibraryAssert.ExpectedError('A call to System.Security.Cryptography.RSACryptoServiceProvider.Decrypt failed with this message: Error occurred while decoding OAEP padding.');
+        LibraryAssert.ExpectedError('A call to System.Security.Cryptography.RSACryptoServiceProvider.Decrypt failed with this message: Cryptography_OAEPDecoding');
     end;
 
     [Test]
@@ -175,7 +175,7 @@ codeunit 132613 RSACryptoServiceProviderTests
         asserterror RSACryptoServiceProvider.Decrypt(PrivateKeyXmlString, EncryptedInStream, false, DecryptedOutStream);
 
         // [THEN] Error occures
-        LibraryAssert.ExpectedError('A call to System.Security.Cryptography.RSACryptoServiceProvider.Decrypt failed with this message: The parameter is incorrect.\');
+        LibraryAssert.ExpectedError('A call to System.Security.Cryptography.RSACryptoServiceProvider.Decrypt failed with this message: The parameter is incorrect.');
     end;
 
     local procedure SaveRandomTextToOutStream(OutStream: OutStream) PlainText: Text
