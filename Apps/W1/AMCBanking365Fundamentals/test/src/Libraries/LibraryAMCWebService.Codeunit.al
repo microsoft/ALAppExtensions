@@ -292,7 +292,6 @@ codeunit 130103 "Library - Amc Web Service"
         end;
     end;
 
-    [Scope('OnPrem')]
     internal procedure SetHttpClientRequestAllowed()
     var
         NavAppSetting: Record "NAV App Setting";
