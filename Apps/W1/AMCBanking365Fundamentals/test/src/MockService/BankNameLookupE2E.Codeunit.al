@@ -19,7 +19,7 @@ codeunit 135084 "Bank Name Lookup E2E"
         if IsInitialized then
             exit;
 
-        LibraryAMCWebService.SetHttpClientRequestallowed();
+        LibraryAMCWebService.SetHttpClientRequestAllowed();
         LibraryAMCWebService.SetupDefaultService();
         LibraryAMCWebService.SetServiceUrlToTest();
         LibraryAMCWebService.SetServiceCredentialsToTest();

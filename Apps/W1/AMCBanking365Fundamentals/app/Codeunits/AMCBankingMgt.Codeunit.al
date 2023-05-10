@@ -40,6 +40,7 @@ codeunit 20105 "AMC Banking Mgt."
         AMCBankingPmtTypeDesc8Txt: Label 'Domestic account to account transfer (inter company)';
         AMCBankingPmtTypeCode9Tok: Label 'EurAcc2AccSepa', Locked = true;
         AMCBankingPmtTypeDesc9Txt: Label 'SEPA credit transfer';
+        AMCTenantIdTxt : label 'fb79e895-7de3-4468-8184-cd181eb8b131', Locked = true;
         NoDetailsMsg: Label 'The log does not contain any more details.';
         LicenserverNameTxt: Label 'https://license.amcbanking.com', Locked = true;
         TestLicenserverNameTxt: Label 'https://licensetest.amcbanking.com', Locked = true;
@@ -94,7 +95,7 @@ codeunit 20105 "AMC Banking Mgt."
 
     procedure GetLicenseServerName(): Text
     begin
-        if (GetLicenseNumber() = CopyStr('BC' + AMCTenantId(), 1, 40)) then
+        if (GetLicenseNumber() = CopyStr('BC' + AMCTenantIdTxt, 1, 40)) then
             exit(TestLicenserverNameTxt)
         else
             exit(LicenserverNameTxt);
@@ -107,7 +108,7 @@ codeunit 20105 "AMC Banking Mgt."
 
     internal procedure IsLicenseEqualAMC(): Boolean
     begin
-        if (GetLicenseNumber() = CopyStr('BC' + AMCTenantId(), 1, 40)) then
+        if (GetLicenseNumber() = CopyStr('BC' + AMCTenantIdTxt, 1, 40)) then
             exit(true)
         else
             exit(false);
@@ -440,7 +441,7 @@ codeunit 20105 "AMC Banking Mgt."
         if (EnvironmentInformation.IsSaaS()) then begin
             LicenseNumber := CopyStr(AzureADTenant.GetAadTenantId(), 1, 40);
             if (LicenseNumber = '') then
-                LicenseNumber := AMCTenantId();
+                LicenseNumber := AMCTenantIdTxt;
         end
         else begin
             LicenseNumber := CopyStr(DELCHR(SerialNumber(), '<', ' '), 1, 40);
@@ -659,13 +660,6 @@ codeunit 20105 "AMC Banking Mgt."
         end
         else
             exit(BankAccount."AMC Bank Name" + FileExtTxt);
-    end;
-
-    [NonDebuggable]
-    internal procedure AMCTenantId(): Text
-    var
-    begin
-        Exit(CopyStr('fb79e895-7de3-4468-8184-cd181eb8b131', 1, 40));
     end;
 }
 

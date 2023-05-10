@@ -479,7 +479,7 @@ codeunit 132558 "AMC Banking Credential UT"
     var
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        LibraryAmcWebService.SetHttpClientRequestallowed();
+        LibraryAmcWebService.SetHttpClientRequestAllowed();
 
         AMCBankingSetup.DeleteAll();
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);

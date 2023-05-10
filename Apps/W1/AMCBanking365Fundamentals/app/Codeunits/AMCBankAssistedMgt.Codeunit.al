@@ -81,7 +81,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         end;
 
         if ((AMCBankingSetup."User Name" <> AMCBankingSetup.GetDemoUserName()) and
-            (not AMCBankingMgt.IsLicenseEqualAMC) and
+            (not AMCBankingMgt.IsLicenseEqualAMC()) and
            (AMCBankingSetup."User Name" <> AMCBankingMgt.GetLicenseNumber())) then begin
             Error_Text := StrSubstNo(NotCorrectUserLbl, AMCBankingSetup."User Name", AMCBankingMgt.GetLicenseNumber(), AMCBankingSetup.GetDemoUserName()) + '\\' +
                           YouHave2OptionsLbl + '\\' +
