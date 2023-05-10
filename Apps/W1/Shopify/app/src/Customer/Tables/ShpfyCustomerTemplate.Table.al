@@ -3,7 +3,6 @@
 /// </summary>
 table 30107 "Shpfy Customer Template"
 {
-    Access = Internal;
     DataClassification = CustomerContent;
     Caption = 'Shopify Customer Template';
 

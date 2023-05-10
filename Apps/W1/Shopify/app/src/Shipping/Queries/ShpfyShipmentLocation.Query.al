@@ -1,6 +1,5 @@
 query 30100 "Shpfy Shipment Location"
 {
-    Access = Internal;
     Caption = 'Shopify Shipment Location';
     QueryType = Normal;
 

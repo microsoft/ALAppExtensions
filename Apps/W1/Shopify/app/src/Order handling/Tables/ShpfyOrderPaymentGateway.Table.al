@@ -3,7 +3,6 @@
 /// </summary>
 table 30120 "Shpfy Order Payment Gateway"
 {
-    Access = Internal;
     Caption = 'Shopify Order Payment Gateway';
     DataClassification = SystemMetadata;
     fields

@@ -3,7 +3,6 @@
 /// </summary>
 table 30110 "Shpfy Gift Card"
 {
-    Access = Internal;
     Caption = 'Shopify Gift Card';
     DataClassification = SystemMetadata;
 

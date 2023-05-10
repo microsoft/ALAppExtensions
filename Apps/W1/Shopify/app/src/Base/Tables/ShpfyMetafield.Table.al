@@ -3,7 +3,6 @@
 /// </summary>
 table 30101 "Shpfy Metafield"
 {
-    Access = Internal;
     Caption = 'Shopify Metafield';
     DataClassification = CustomerContent;
 

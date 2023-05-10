@@ -11,7 +11,6 @@ table 30136 "Shpfy Registered Store"
     ObsoleteReason = 'Use table 30138 "Shpfy Registered Store New" instead';
     ObsoleteTag = '21.0';
 
-    Access = Internal;
     Caption = 'Shopify Registered Store';
     DataClassification = SystemMetadata;
 

@@ -1,6 +1,5 @@
 table 30114 "Shpfy Data Capture"
 {
-    Access = Internal;
     Caption = 'Shopify Data Capture';
     DataClassification = SystemMetadata;
 

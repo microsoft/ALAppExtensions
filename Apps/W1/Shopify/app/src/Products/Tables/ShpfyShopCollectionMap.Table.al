@@ -3,7 +3,6 @@
 /// </summary>
 table 30128 "Shpfy Shop Collection Map"
 {
-    Access = Internal;
     Caption = 'Shopify Shop Collection';
     DataClassification = CustomerContent;
     fields

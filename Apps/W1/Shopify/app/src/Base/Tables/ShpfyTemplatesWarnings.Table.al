@@ -1,6 +1,5 @@
 table 30140 "Shpfy Templates Warnings"
 {
-    Access = Internal;
     TableType = Temporary;
     ObsoleteReason = 'Feature "Shopify new customer an item templates" will be enabled by default in version 25. This table is used to show warnings in Feature Management.';
 #if not CLEAN22

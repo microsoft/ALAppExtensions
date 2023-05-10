@@ -3,7 +3,6 @@
 /// </summary>
 table 30126 "Shpfy Inventory Item"
 {
-    Access = Internal;
     Caption = 'Shopify Inventory Item';
     DataClassification = CustomerContent;
 

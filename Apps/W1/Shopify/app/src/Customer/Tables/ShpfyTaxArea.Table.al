@@ -3,7 +3,6 @@
 /// </summary>
 table 30109 "Shpfy Tax Area"
 {
-    Access = Internal;
     Caption = 'Shopify Tax Area';
     DataClassification = CustomerContent;
     fields

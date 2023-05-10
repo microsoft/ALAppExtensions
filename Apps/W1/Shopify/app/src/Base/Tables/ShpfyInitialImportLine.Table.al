@@ -1,6 +1,5 @@
 table 30137 "Shpfy Initial Import Line"
 {
-    Access = Internal;
     Caption = 'Shopfiy Initial Import Line';
     DataClassification = SystemMetadata;
 

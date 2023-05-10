@@ -3,7 +3,6 @@
 /// </summary>
 table 30134 "Shpfy Payment Method Mapping"
 {
-    Access = Internal;
     Caption = 'Shopify Payment Method';
     DataClassification = CustomerContent;
 

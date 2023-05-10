@@ -3,7 +3,6 @@
 /// </summary>
 table 30100 "Shpfy Cue"
 {
-    Access = Internal;
     Caption = 'Shopify Cue';
     DataClassification = SystemMetadata;
 

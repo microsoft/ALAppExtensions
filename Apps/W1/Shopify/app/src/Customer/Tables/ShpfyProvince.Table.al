@@ -3,7 +3,6 @@
 /// </summary>
 table 30108 "Shpfy Province"
 {
-    Access = Internal;
     Caption = 'Shopify Province';
     DataClassification = SystemMetadata;
     ObsoleteReason = 'Replaced by Shpfy Tax Area';

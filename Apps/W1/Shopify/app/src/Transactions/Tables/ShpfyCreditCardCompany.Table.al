@@ -3,7 +3,6 @@
 /// </summary>
 table 30132 "Shpfy Credit Card Company"
 {
-    Access = Internal;
     Caption = 'Shopify Credit Card Company';
     DataClassification = SystemMetadata;
     DrillDownPageId = "Shpfy Credit Card Companies";

@@ -3,7 +3,6 @@
 /// </summary>
 codeunit 30200 "Shpfy Communication Events"
 {
-    Access = Internal;
 
     [InternalEvent(false)]
     internal procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)

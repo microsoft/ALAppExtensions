@@ -1,6 +1,5 @@
 table 30121 "Shpfy Orders to Import"
 {
-    Access = Internal;
     Caption = 'Shopify Orders to Import';
     DataClassification = CustomerContent;
 

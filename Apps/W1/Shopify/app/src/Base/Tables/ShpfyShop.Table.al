@@ -19,7 +19,6 @@ table 30102 "Shpfy Shop"
         field(2; "Shopify URL"; Text[250])
         {
             Caption = 'Shopify URL';
-            Access = Internal;
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
 
@@ -435,7 +434,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Collection Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
-            Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
 #if not CLEAN21
             ObsoleteTag = '21.0';
@@ -450,7 +448,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Collection Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
-            Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
 #if not CLEAN21
             ObsoleteTag = '21.0';
@@ -465,7 +462,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Product Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
-            Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
 #if not CLEAN21
             ObsoleteTag = '21.0';
@@ -480,7 +476,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Product Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
-            Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
 #if not CLEAN21
             ObsoleteTag = '21.0';

@@ -87,7 +87,6 @@ table 30106 "Shpfy Customer Address"
         }
         field(101; "Ship-To Address SystemId"; Guid)
         {
-            Access = Internal;
             Caption = 'Ship-To Address SystemId';
             DataClassification = SystemMetadata;
             ObsoleteReason = 'Not used.';

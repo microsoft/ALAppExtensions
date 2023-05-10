@@ -3,7 +3,6 @@
 /// </summary>
 table 30115 "Shpfy Log Entry"
 {
-    Access = Internal;
     Caption = 'Shopify Log Entry';
     DataClassification = SystemMetadata;
     DrillDownPageID = "Shpfy Log Entries";
