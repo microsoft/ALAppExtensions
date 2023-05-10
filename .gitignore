@@ -314,3 +314,5 @@ TestResults.xml
 #Translation files
 *.xlf
 *.lcg
+#Build files
+*.al.bak
