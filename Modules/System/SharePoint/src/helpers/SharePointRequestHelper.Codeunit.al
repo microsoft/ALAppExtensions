@@ -37,6 +37,11 @@ codeunit 9109 "SharePoint Request Helper"
         OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::POST, SharePointUriBuilder, SharePointHttpContent));
     end;
 
+    procedure Delete(SharePointUriBuilder: Codeunit "SharePoint Uri Builder") OperationResponse: Codeunit "SharePoint Operation Response"
+    begin
+        OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::DELETE, SharePointUriBuilder));
+    end;
+
     [NonDebuggable]
     local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; SharePointUriBuilder: Codeunit "SharePoint Uri Builder") RequestMessage: HttpRequestMessage
     var
