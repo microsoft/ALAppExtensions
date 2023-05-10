@@ -3,7 +3,6 @@
 /// </summary>
 codeunit 30154 "Shpfy GraphQL Queries"
 {
-    Access = Internal;
     SingleInstance = true;
 
     /// <summary> 
