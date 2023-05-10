@@ -12,6 +12,45 @@ We're opening for extensibility for specific scenarios, based on feedback from o
 
 Find overview of objects expected to become public in future releases:
 
+### Access Property
+
+In order to promote extensibility of the Shopify connector, changed Access Property for the Following objects:
+
+- ShpfyCommunicationEvents.Codeunit.al
+- ShpfyGraphQLQueries.Codeunit.al
+- ShpfyCue.Table.al
+- ShpfyInitialImportLine.Table.al
+- ShpfyMetafield.Table.al
+- ShpfyShop.Table.al
+- ShpfySynchronizationInfo.Table.al
+- ShpfyTemplatesWarnings.Table.al
+- ShpfyCustomerAddress.Table.al
+- ShpfyCustomerTemplate.Table.al
+- ShpfyProvince.Table.al
+- ShpfyTaxArea.Table.al
+- ShpfyGiftCard.Table.al
+- ShpfyRegisteredStore.Table.al
+- ShpfyShopInventory.Table.al
+- ShpfyShopLocation.Table.al
+- ShpfyDataCapture.Table.al
+- ShpfyLogEntry.Table.al
+- ShpfyOrderFulfillment.Table.al
+- ShpfyOrderRisk.Table.al
+- ShpfyOrderDiscAppl.Table.al
+- ShpfyOrderPaymentGateway.Table.al
+- ShpfyOrderTaxLine.Table.al
+- ShpfyOrdersToImport.Table.al
+- ShpfyPaymentTransaction.Table.al
+- ShpfyPayout.Table.al
+- ShpfyInventoryItem.Table.al
+- ShpfyShopCollectionMap.Table.al
+- ShpfyShipmentLocation.Query.al
+- ShpfyShipmentMethodMapping.Table.al
+- ShpfyCreditCardCompany.Table.al
+- ShpfyOrderTransaction.Table.al
+- ShpfyPaymentMethodMapping.Table.al
+- ShpfyTransactionGateway.Table.al
+
 ### codeunit 30162 "Shpfy Order Events"
 Availability date: starting with version 22.0
 
