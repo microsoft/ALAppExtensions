@@ -84,6 +84,8 @@ codeunit 9050 "ABS Operation Response"
         Values: array[100] of Text;
     begin
         Headers := HttpResponseMessage.Headers;
+        if not Headers.Contains(HeaderName) then
+            exit('');
         if not Headers.GetValues(HeaderName, Values) then
             exit('');
         exit(Values[1]);
