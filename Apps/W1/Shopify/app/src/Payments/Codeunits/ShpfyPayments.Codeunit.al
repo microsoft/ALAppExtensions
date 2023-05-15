@@ -159,6 +159,7 @@ codeunit 30169 "Shpfy Payments"
         Math: Codeunit "Shpfy Math";
         RecRef: RecordRef;
         Id: BigInteger;
+        PayoutId: BigInteger;
     begin
         Id := JHelper.GetValueAsBigInteger(JTransaction, 'id');
         Clear(Transaction);
