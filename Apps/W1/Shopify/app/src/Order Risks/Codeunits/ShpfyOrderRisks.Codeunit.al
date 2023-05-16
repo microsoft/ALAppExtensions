@@ -7,7 +7,7 @@ codeunit 30170 "Shpfy Order Risks"
 
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        JHelper: Codeunit "Shpfy Json Helper";
+        JsonHelper: Codeunit "Shpfy Json Helper";
 
     /// <summary> 
     /// Description for UpdateOrderRisks.
@@ -37,7 +37,7 @@ codeunit 30170 "Shpfy Order Risks"
         CommunicationMgt.SetShop(OrderHeader."Shop Code");
         Parameters.Add('OrderId', Format(OrderHeader."Shopify Order Id"));
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::OrderRisks, Parameters);
-        if JHelper.GetJsonArray(JResponse, JRisks, 'data.order.risks') then
+        if JsonHelper.GetJsonArray(JResponse, JRisks, 'data.order.risks') then
             UpdateOrderRisks(OrderHeader, JRisks);
     end;
 
@@ -48,24 +48,24 @@ codeunit 30170 "Shpfy Order Risks"
     /// <param name="JRisks">Parameter of type JsonArray.</param>
     internal procedure UpdateOrderRisks(OrderHeader: Record "Shpfy Order Header"; JRisks: JsonArray)
     var
-        Risk: Record "Shpfy Order Risk";
-        RecRef: RecordRef;
+        OrderRisk: Record "Shpfy Order Risk";
+        RecordRef: RecordRef;
         LineNo: Integer;
         JToken: JsonToken;
     begin
-        Risk.SetRange("Order Id", OrderHeader."Shopify Order Id");
-        Risk.DeleteAll(false);
+        OrderRisk.SetRange("Order Id", OrderHeader."Shopify Order Id");
+        OrderRisk.DeleteAll(false);
         foreach JToken in JRisks do begin
             LineNo += 1;
-            Clear(Risk);
-            Risk."Order Id" := OrderHeader."Shopify Order Id";
-            Risk."Line No." := LineNo;
-            Risk.Level := ConvertToRiskLevel(JHelper.GetValueAsText(JToken, 'level'));
-            RecRef.GetTable(Risk);
-            JHelper.GetValueIntoField(JToken, 'display', RecRef, Risk.FieldNo(Display));
-            JHelper.GetValueIntoField(JToken, 'message', RecRef, Risk.FieldNo(Message));
-            RecRef.Insert();
-            RecRef.Close();
+            Clear(OrderRisk);
+            OrderRisk."Order Id" := OrderHeader."Shopify Order Id";
+            OrderRisk."Line No." := LineNo;
+            OrderRisk.Level := ConvertToRiskLevel(JsonHelper.GetValueAsText(JToken, 'level'));
+            RecordRef.GetTable(OrderRisk);
+            JsonHelper.GetValueIntoField(JToken, 'display', RecordRef, OrderRisk.FieldNo(Display));
+            JsonHelper.GetValueIntoField(JToken, 'message', RecordRef, OrderRisk.FieldNo(Message));
+            RecordRef.Insert();
+            RecordRef.Close();
         end;
     end;
 

@@ -6,12 +6,14 @@
 codeunit 3913 "Retention Policy Logs Delete"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Retention Policy Log Entry" = rd;
 
     var
         NoFiltersErr: Label 'No filters were set on table %1, %2. Please contact your Microsoft Partner for assistance.', Comment = '%1 = a id of a table (integer), %2 = the caption of the table.';
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Apply Retention Policy", 'OnApplyRetentionPolicyIndirectPermissionRequired', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Apply Retention Policy", OnApplyRetentionPolicyIndirectPermissionRequired, '', true, true)]
     local procedure DeleteRecordsWithIndirectPermissionsOnApplyRetentionPolicyIndirectPermissionRequired(var RecRef: RecordRef; var Handled: Boolean)
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";

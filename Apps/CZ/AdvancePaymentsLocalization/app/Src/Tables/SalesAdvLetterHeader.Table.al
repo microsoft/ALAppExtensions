@@ -336,8 +336,19 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 Validate("Document Date", "Posting Date");
 
                 GetSetup();
-                if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date" then
-                    Validate("VAT Date", "Posting Date");
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
+                    if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date" then
+                        Validate("VAT Date", "Posting Date");
+                end else begin
+#pragma warning restore AL0432
+#endif
+                    GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
+                    Validate("VAT Date");
+#if not CLEAN22
+                end;
+#endif
 
                 if "Currency Code" <> '' then begin
                     UpdateCurrencyFactor();
@@ -361,8 +372,19 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 Validate("Payment Terms Code");
 
                 GetSetup();
-                if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Document Date" then
-                    Validate("VAT Date", "Document Date");
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
+                    if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Document Date" then
+                        Validate("VAT Date", "Document Date");
+                end else begin
+#pragma warning restore AL0432
+#endif
+                    GeneralLedgerSetup.UpdateVATDate("Document Date", Enum::"VAT Reporting Date"::"Document Date", "VAT Date");
+                    Validate("VAT Date");
+#if not CLEAN22
+                end;
+#endif
             end;
         }
         field(36; "VAT Date"; Date)
@@ -372,8 +394,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
             trigger OnValidate()
             begin
-                GeneralLedgerSetup.GetRecordOnce();
-                if not GeneralLedgerSetup."Use VAT Date CZL" then
+                if not VATReportingDateMgt.IsVATDateEnabled() then
                     TestField("VAT Date", "Posting Date");
                 CheckCurrencyExchangeRate("VAT Date");
             end;
@@ -802,6 +823,12 @@ table 31004 "Sales Adv. Letter Header CZZ"
         NoSeriesManagement: Codeunit NoSeriesManagement;
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
+#if not CLEAN22
+#pragma warning disable AL0432
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
+#endif
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         HideValidationDialog: Boolean;
         SkipBillToContact: Boolean;
         HasSalesSetup: Boolean;
@@ -850,14 +877,21 @@ table 31004 "Sales Adv. Letter Header CZZ"
             "Posting Date" := 0D;
 
         "Document Date" := WorkDate();
-        case SalesReceivablesSetup."Default VAT Date CZL" of
-            SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
-                "VAT Date" := "Posting Date";
-            SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
-                "VAT Date" := "Document Date";
-            SalesReceivablesSetup."Default VAT Date CZL"::Blank:
-                "VAT Date" := 0D;
-        end;
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not ReplaceVATDateMgtCZL.IsEnabled() then
+            case SalesReceivablesSetup."Default VAT Date CZL" of
+                SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
+                    "VAT Date" := "Posting Date";
+                SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
+                    "VAT Date" := "Document Date";
+                SalesReceivablesSetup."Default VAT Date CZL"::Blank:
+                    "VAT Date" := 0D;
+            end
+        else
+#pragma warning restore AL0432
+#endif
+        "VAT Date" := GeneralLedgerSetup.GetVATDate("Posting Date", "Document Date");
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";
         "Responsibility Center" := UserSetupManagement.GetRespCenter(0, "Responsibility Center");
@@ -981,6 +1015,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
     begin
         if not HasSalesSetup then begin
             SalesReceivablesSetup.Get();
+            GeneralLedgerSetup.Get();
             HasSalesSetup := true;
         end;
 
@@ -1556,6 +1591,30 @@ table 31004 "Sales Adv. Letter Header CZZ"
         BankAccount: Record "Bank Account";
     begin
         Validate("Bank Account Code", BankAccount.GetDefaultBankAccountNoForCurrency("Currency Code"));
+    end;
+
+    internal procedure PerformManualRelease(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        NoOfSelected: Integer;
+        NoOfSkipped: Integer;
+    begin
+        NoOfSelected := SalesAdvLetterHeaderCZZ.Count();
+        SalesAdvLetterHeaderCZZ.SetRange(Status, SalesAdvLetterHeaderCZZ.Status::New);
+        NoOfSkipped := NoOfSelected - SalesAdvLetterHeaderCZZ.Count();
+        BatchProcessingMgt.BatchProcess(SalesAdvLetterHeaderCZZ, Codeunit::"S.Adv.Let.Doc.Man.Release CZZ", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
+    end;
+
+    internal procedure PerformManualReopen(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        NoOfSelected: Integer;
+        NoOfSkipped: Integer;
+    begin
+        NoOfSelected := SalesAdvLetterHeaderCZZ.Count();
+        SalesAdvLetterHeaderCZZ.SetRange(Status, SalesAdvLetterHeaderCZZ.Status::"To Pay");
+        NoOfSkipped := NoOfSelected - SalesAdvLetterHeaderCZZ.Count();
+        BatchProcessingMgt.BatchProcess(SalesAdvLetterHeaderCZZ, Codeunit::"S.Adv.Let.Doc.Man.Reopen CZZ", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
     end;
 
     [IntegrationEvent(false, false)]

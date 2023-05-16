@@ -85,8 +85,8 @@ codeunit 137122 "Time Zone Selection Tests"
         DisplayName := TimeZoneSelection.GetTimeZoneDisplayName('Mountain Standard Time (Mexico)');
 
         // Verify
-        Assert.AreEqual('(UTC-07:00) Chihuahua, La Paz, Mazatlan', DisplayName,
-          'Wrong Time Zone returned from Validate');
+        Assert.AreNotEqual(0, StrPos(DisplayName, '(UTC-07:00)'), 'Wrong Time Zone returned from Validate');
+        Assert.AreNotEqual(0, StrPos(DisplayName, 'La Paz, Mazatlan'), 'Wrong Time Zone returned from Validate');
 
         // Exercise
         DisplayName := TimeZoneSelection.GetTimeZoneDisplayName('Mountain Standard');

@@ -14,6 +14,7 @@ permissionset 9986 "Word Templates - Read"
                              "Telemetry - Exec";
 
     Permissions = tabledata "Word Template" = R,
+                  tabledata "Word Template Field" = r,
                   tabledata "Word Templates Table" = r,
                   tabledata "Word Templates Related Table" = r,
                   tabledata AllObjWithCaption = r,

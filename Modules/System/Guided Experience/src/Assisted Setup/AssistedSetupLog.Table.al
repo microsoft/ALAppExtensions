@@ -6,6 +6,8 @@
 table 1807 "Assisted Setup Log"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Caption = 'Assisted Setup Log';
     ReplicateData = false;
 #if CLEAN18

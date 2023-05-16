@@ -1,5 +1,5 @@
 /// <summary>
-/// Codeunit Shpfy GQL ProductImages (ID 70007683) implements Interface Shpfy IGarphQL.
+/// Codeunit Shpfy GQL ProductImages (ID 30148) implements Interface Shpfy IGarphQL.
 /// </summary>
 codeunit 30148 "Shpfy GQL ProductImages" implements "Shpfy IGraphQL"
 {

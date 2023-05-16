@@ -93,6 +93,18 @@ codeunit 9560 "Document Sharing"
     end;
 
     /// <summary>
+    /// Checks if Document can be edited online.
+    /// </summary>
+    /// <param name="FileName">File name of document. Ex 'Document.docx'</param>
+    /// <returns>True if Document can be edited online.</returns>
+    procedure EditEnabledForFile(FileName: Text): Boolean
+    var
+        DocumentSharingImpl: Codeunit "Document Sharing Impl.";
+    begin
+        exit(DocumentSharingImpl.EditEnabledForFile(FileName));
+    end;
+
+    /// <summary>
     /// Raised when the document needs to be uploaded.
     /// </summary>
     /// <param name="DocumentSharing">The record containing the document to be shared.</param>
@@ -117,6 +129,16 @@ codeunit 9560 "Document Sharing"
     /// <param name="CanUpload">Specifies whether there is a subscriber that can handle the upload.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnCanUploadSystemDocument(var CanUpload: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnGetFileContents(var DocumentSharing: Record "Document Sharing" temporary; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnDeleteDocument(var DocumentSharing: Record "Document Sharing" temporary; var Handled: Boolean)
     begin
     end;
 }

@@ -1,5 +1,11 @@
 codeunit 11753 "Vendor Handler CZL"
 {
+    [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterInsertEvent', '', false, false)]
+    local procedure InitValueOnAfterInsertEvent(var Rec: Record Vendor)
+    begin
+        Rec."Allow Multiple Posting Groups" := true;
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterDeleteEvent', '', false, false)]
     local procedure DeleteRegistrationLogCZLOnAfterDelete(var Rec: Record Vendor)
     var
@@ -24,6 +30,19 @@ codeunit 11753 "Vendor Handler CZL"
             (Vendor."Registration No. CZL" <> xVendor."Registration No. CZL") or
             (Vendor."Tax Registration No. CZL" <> xVendor."Tax Registration No. CZL");
     end;
+#if not CLEAN20
+    [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnBeforeCheckAllowMultiplePostingGroups', '', false, false)]
+    local procedure SuppressCheckAllowMultiplePostingGroupsOnBeforeCheckAllowMultiplePostingGroups(var IsHandled: Boolean)
+    var
+#pragma warning disable AL0432
+        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
+#pragma warning restore AL0432
+    begin
+        if IsHandled then
+            exit;
+        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
+    end;
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterCopyVendLedgerEntryFromGenJnlLine', '', false, false)]
     local procedure UpdateEntryOnAfterCopyVendorLedgerEntryFromGenJnlLine(var VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
@@ -36,7 +55,13 @@ codeunit 11753 "Vendor Handler CZL"
         VendorLedgerEntry."Transit No. CZL" := GenJournalLine."Transit No. CZL";
         VendorLedgerEntry."IBAN CZL" := GenJournalLine."IBAN CZL";
         VendorLedgerEntry."SWIFT Code CZL" := GenJournalLine."SWIFT Code CZL";
-        VendorLedgerEntry."VAT Date CZL" := GenJournalLine."VAT Date CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not GenJournalLine.IsReplaceVATDateEnabled() then
+            GenJournalLine."VAT Reporting Date" := GenJournalLine."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
+        VendorLedgerEntry."VAT Date CZL" := GenJournalLine."VAT Reporting Date";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vend. Entry-Edit", 'OnBeforeVendLedgEntryModify', '', false, false)]

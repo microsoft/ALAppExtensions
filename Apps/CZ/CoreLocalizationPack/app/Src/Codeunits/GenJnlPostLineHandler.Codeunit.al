@@ -214,4 +214,31 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
             exit;
         IsHandled := not GenJournalLine.IsCheckDimensionsEnabledCZL();
     end;
+#if not CLEAN20
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCheckVendMultiplePostingGroups', '', false, false)]
+    local procedure SuppressCheckVendMultiplePostingGroupsOnBeforeCheckVendMultiplePostingGroups(var IsHandled: Boolean; var IsMultiplePostingGroups: Boolean)
+    var
+#pragma warning disable AL0432
+        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
+#pragma warning restore AL0432
+    begin
+        if IsHandled then
+            exit;
+        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
+        IsMultiplePostingGroups := false;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCheckCustMultiplePostingGroups', '', false, false)]
+    local procedure SuppressCheckCustMultiplePostingGroupsOnBeforeCheckCustMultiplePostingGroups(var IsHandled: Boolean; var IsMultiplePostingGroups: Boolean)
+    var
+#pragma warning disable AL0432
+        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
+#pragma warning restore AL0432
+    begin
+        if IsHandled then
+            exit;
+        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
+        IsMultiplePostingGroups := false;
+    end;
+#endif
 }

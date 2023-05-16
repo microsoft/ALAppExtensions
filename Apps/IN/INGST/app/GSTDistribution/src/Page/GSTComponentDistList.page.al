@@ -58,13 +58,9 @@ page 18202 "GST Component Dist. List"
                 begin
                     EditinExcel.EditPageInExcel(
                         'GST Component Distribution',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(GstComponentCodeMsg, Rec."GST Component code"));
+                        Page::"GST Component Dist. List");
                 end;
             }
         }
     }
-
-    var
-        GstComponentCodeMsg: Label 'GST Component Code %1', Comment = '%1 =GST Component Code';
 }

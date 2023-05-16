@@ -6,6 +6,8 @@
 codeunit 1487 "Encoding Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure Convert(SourceCodepage: Integer; DestinationCodepage: Integer; Text: Text) ConvertedText: Text
     var

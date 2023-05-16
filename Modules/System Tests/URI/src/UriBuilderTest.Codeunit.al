@@ -55,7 +55,7 @@ codeunit 135071 "Uri Builder Test"
         asserterror UriBuilder.SetScheme('invalid scheme');
 
         // [Then] The URI is as expected
-        Assert.ExpectedError('A call to System.UriBuilder.Scheme failed with this message: value'); // 'The scheme cannot be set to an invalid scheme name.'
+        Assert.ExpectedError('A call to System.UriBuilder.Scheme failed with this message: Invalid URI: The URI scheme is not valid. (Parameter ''value'')'); // 'The scheme cannot be set to an invalid scheme name.'
     end;
 
     [Test]
@@ -102,7 +102,7 @@ codeunit 135071 "Uri Builder Test"
     [Scope('OnPrem')]
     procedure SetIncorrectPortTest()
     var
-        ExpectedErr: Label 'A call to System.UriBuilder.Port failed with this message: Specified argument was out of the range of valid values.\Parameter name: value', Locked = true;
+        ExpectedErr: Label 'A call to System.UriBuilder.Port failed with this message: Specified argument was out of the range of valid values. (Parameter ''value'')', Locked = true;
     begin
         // [Given] A Url
         UriBuilder.Init('http://microsoft.com');

@@ -37,16 +37,16 @@ codeunit 30167 "Shpfy Process Orders"
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     internal procedure ProcessShopifyOrder(ShopifyOrderHeader: Record "Shpfy Order Header")
     var
-        ProcessShopifyOrderCU: Codeunit "Shpfy Process Order";
+        ProcessOrder: Codeunit "Shpfy Process Order";
     begin
         if not ShopifyOrderHeader.Processed then begin
-            if not ProcessShopifyOrderCU.Run(ShopifyOrderHeader) then begin
+            if not ProcessOrder.Run(ShopifyOrderHeader) then begin
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
                 ShopifyOrderHeader."Has Error" := true;
                 ShopifyOrderHeader."Error Message" := CopyStr(Format(Time) + ' ' + GetLastErrorText(), 1, MaxStrLen(ShopifyOrderHeader."Error Message"));
                 ShopifyOrderHeader."Sales Order No." := '';
                 ShopifyOrderHeader."Sales Invoice No." := '';
-                ProcessShopifyOrderCU.CleanUpLastCreatedDocument();
+                ProcessOrder.CleanUpLastCreatedDocument();
             end else begin
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
                 ShopifyOrderHeader."Has Error" := false;

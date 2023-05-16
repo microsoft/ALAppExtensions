@@ -7,6 +7,8 @@ codeunit 4111 "Base64 Convert Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure ToBase64(String: Text): Text
     begin

@@ -208,7 +208,7 @@ The RSA signature padding to apply if self-signing or being signed with an X509C
 
 ### AddX509BasicConstraintToCertificateRequest (Method) <a name="AddX509BasicConstraintToCertificateRequest"></a> 
 
- Adds a X509BasicConstraint to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509basicconstraintsextension
+ Adds a X509BasicConstraint to the Certificate Request. See https://learn.microsoft.com/dotnet/api/system.security.cryptography.x509certificates.x509basicconstraintsextension
  
 
 #### Syntax
@@ -234,7 +234,7 @@ True if the extension is critical. Otherwise, false.
 
 ### AddX509EnhancedKeyUsageToCertificateRequest (Method) <a name="AddX509EnhancedKeyUsageToCertificateRequest"></a> 
 
- Adds a X509EnhancedKeyUsage to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509enhancedkeyusageextension
+ Adds a X509EnhancedKeyUsage to the Certificate Request. See https://learn.microsoft.com/dotnet/api/system.security.cryptography.x509certificates.x509enhancedkeyusageextension
  
 
 #### Syntax
@@ -252,7 +252,7 @@ True if the extension is critical; otherwise, false.
 
 ### AddX509KeyUsageToCertificateRequest (Method) <a name="AddX509KeyUsageToCertificateRequest"></a> 
 
- Adds a X509KeyUsage to the certificate request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageextension
+ Adds a X509KeyUsage to the certificate request. See https://learn.microsoft.com/dotnet/api/system.security.cryptography.x509certificates.x509keyusageextension
  
 
 #### Syntax
@@ -262,7 +262,7 @@ procedure AddX509KeyUsageToCertificateRequest(X509KeyUsageFlags: Integer; Critic
 #### Parameters
 *X509KeyUsageFlags ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
 
-The sum of all flag values that are to be added. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageflags
+The sum of all flag values that are to be added. See https://learn.microsoft.com/dotnet/api/system.security.cryptography.x509certificates.x509keyusageflags
 
 *Critical ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 

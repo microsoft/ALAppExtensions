@@ -7,6 +7,8 @@ codeunit 3701 "Tenant Information Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         NavTenantSettingsHelper: DotNet NavTenantSettingsHelper;

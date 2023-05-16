@@ -6,6 +6,8 @@
 codeunit 8944 "Email Address Lookup Impl"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     procedure GetSelectedSuggestionsAsText(var EmailAddressLookup: Record "Email Address Lookup"): Text
     var

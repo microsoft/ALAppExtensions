@@ -6,6 +6,8 @@
 codeunit 1999 "Guided Experience Upgrade"
 {
     Subtype = Upgrade;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Guided Experience Item" = rimd,
                     tabledata "Checklist Item" = rimd,
                     tabledata "Checklist Item Role" = rimd,

@@ -8,8 +8,8 @@ codeunit 30189 "Shpfy Variant API"
     var
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        JHelper: Codeunit "Shpfy Json Helper";
-        Events: Codeunit "Shpfy Product Events";
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        ProductEvents: Codeunit "Shpfy Product Events";
 
     /// <summary> 
     /// Find Shopify Product Variant.
@@ -21,7 +21,7 @@ codeunit 30189 "Shpfy Variant API"
     var
         Product: Record "Shpfy Product";
         Variant: Record "Shpfy Variant";
-        ImportProduct: Codeunit "Shpfy Product Import";
+        ProductImport: Codeunit "Shpfy Product Import";
 
     begin
         Found := FindShopifyVariantBySKU(ShopifyVariant);
@@ -30,10 +30,10 @@ codeunit 30189 "Shpfy Variant API"
         if Found then begin
             ShopifyProduct.Id := ShopifyVariant."Product Id";
             if not Product.Get(ShopifyProduct.Id) then begin
-                ImportProduct.SetShop(ShopifyProduct."Shop Code");
-                ImportProduct.SetProduct(ShopifyProduct.Id);
+                ProductImport.SetShop(ShopifyProduct."Shop Code");
+                ProductImport.SetProduct(ShopifyProduct.Id);
                 Commit();
-                if ImportProduct.Run() then;
+                if ProductImport.Run() then;
                 if Product.Get(ShopifyProduct.Id) and IsNullGuid(Product."Item SystemId") then begin
                     Product."Item SystemId" := ShopifyProduct."Item SystemId";
                     Product.Modify();
@@ -64,7 +64,7 @@ codeunit 30189 "Shpfy Variant API"
         JResponse: JsonToken;
         GraphQuery: TextBuilder;
     begin
-        Events.OnBeforeSendAddShopifyProductVariant(Shop, ShopifyVariant);
+        ProductEvents.OnBeforeSendAddShopifyProductVariant(Shop, ShopifyVariant);
         GraphQuery.Append('{"query":"mutation { productVariantCreate(input: {productId: \"gid://shopify/Product/');
         GraphQuery.Append(Format(ShopifyVariant."Product Id"));
         GraphQuery.Append('\"');
@@ -141,7 +141,7 @@ codeunit 30189 "Shpfy Variant API"
 
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
         NewShopifyVariant := ShopifyVariant;
-        NewShopifyVariant.Id := JHelper.GetValueAsBigInteger(JResponse, 'data.productVariantCreate.productVariant.legacyResourceId');
+        NewShopifyVariant.Id := JsonHelper.GetValueAsBigInteger(JResponse, 'data.productVariantCreate.productVariant.legacyResourceId');
         if NewShopifyVariant.Id > 0 then
             NewShopifyVariant.Insert();
     end;
@@ -164,11 +164,11 @@ codeunit 30189 "Shpfy Variant API"
 
         Parameters.Add('Barcode', ShopifyVariant.Barcode);
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::FindVariantByBarcode, Parameters);
-        if JHelper.GetJsonArray(JResponse, JArray, 'data.productVariants.edges') then
+        if JsonHelper.GetJsonArray(JResponse, JArray, 'data.productVariants.edges') then
             if JArray.Count = 1 then
                 if JArray.Get(0, JItem) then begin
-                    ShopifyVariant.Id := JHelper.GetValueAsBigInteger(JItem, 'node.legacyResourceId');
-                    ShopifyVariant."Product Id" := JHelper.GetValueAsBigInteger(JItem, 'node.product.legacyResourceId');
+                    ShopifyVariant.Id := JsonHelper.GetValueAsBigInteger(JItem, 'node.legacyResourceId');
+                    ShopifyVariant."Product Id" := JsonHelper.GetValueAsBigInteger(JItem, 'node.product.legacyResourceId');
                     exit(true);
                 end;
     end;
@@ -191,11 +191,11 @@ codeunit 30189 "Shpfy Variant API"
 
         Parameters.Add('SKU', ShopifyVariant.SKU);
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::FindVariantBySKU, Parameters);
-        if JHelper.GetJsonArray(JResponse, JArray, 'data.productVariants.edges') then
+        if JsonHelper.GetJsonArray(JResponse, JArray, 'data.productVariants.edges') then
             if JArray.Count = 1 then
                 if JArray.Get(0, JItem) then begin
-                    ShopifyVariant.Id := JHelper.GetValueAsBigInteger(JItem, 'node.legacyResourceId');
-                    ShopifyVariant."Product Id" := JHelper.GetValueAsBigInteger(JItem, 'node.product.legacyResourceId');
+                    ShopifyVariant.Id := JsonHelper.GetValueAsBigInteger(JItem, 'node.legacyResourceId');
+                    ShopifyVariant."Product Id" := JsonHelper.GetValueAsBigInteger(JItem, 'node.product.legacyResourceId');
                     exit(true);
                 end;
     end;
@@ -209,7 +209,7 @@ codeunit 30189 "Shpfy Variant API"
     var
         Data: Dictionary of [BigInteger, Text];
     begin
-        Data.Add(CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JImageNode, 'id')), JHelper.GetValueAsText(JImageNode, 'transformedSrc'));
+        Data.Add(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JImageNode, 'id')), JsonHelper.GetValueAsText(JImageNode, 'transformedSrc'));
         ImageData := Data;
     end;
 
@@ -234,12 +234,12 @@ codeunit 30189 "Shpfy Variant API"
         GraphQLType := GraphQLType::GetProductVariantImages;
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-            if JHelper.GetJsonArray(JResponse, JProductVariants, 'data.productVariants.edges') then begin
+            if JsonHelper.GetJsonArray(JResponse, JProductVariants, 'data.productVariants.edges') then begin
                 foreach JItem in JProductVariants do begin
-                    Cursor := JHelper.GetValueAsText(JItem.AsObject(), 'cursor');
-                    if JHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
-                        Id := JHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
-                        if JHelper.GetJsonObject(JNode, JImage, 'image') then begin
+                    Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
+                    if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
+                        Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
+                        if JsonHelper.GetJsonObject(JNode, JImage, 'image') then begin
                             GetImageData(JImage, ImageData);
                             ProductVariantImages.Add(Id, ImageData);
                         end;
@@ -251,7 +251,7 @@ codeunit 30189 "Shpfy Variant API"
                     Parameters.Add('After', Cursor);
             end;
             GraphQLType := GraphQLType::GetNextProductVariantImages;
-        until not JHelper.GetValueAsBoolean(JResponse, 'data.productVariants.pageInfo.hasNextPage');
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.productVariants.pageInfo.hasNextPage');
     end;
 
     /// <summary> 
@@ -276,12 +276,12 @@ codeunit 30189 "Shpfy Variant API"
         Parameters.Add('ProductId', Format(ShopifyProduct.Id));
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-            if JHelper.GetJsonArray(JResponse, JVariants, 'data.product.variants.edges') then begin
+            if JsonHelper.GetJsonArray(JResponse, JVariants, 'data.product.variants.edges') then begin
                 foreach JItem in JVariants do begin
-                    Cursor := JHelper.GetValueAsText(JItem.AsObject(), 'cursor');
-                    if JHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
-                        Id := JHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
-                        UpdatedAt := JHelper.GetValueAsDateTime(JNode, 'updatedAt');
+                    Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
+                    if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
+                        Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
+                        UpdatedAt := JsonHelper.GetValueAsDateTime(JNode, 'updatedAt');
                         ProductVariantIds.Add(Id, UpdatedAt);
                     end;
                 end;
@@ -291,7 +291,7 @@ codeunit 30189 "Shpfy Variant API"
                 else
                     Parameters.Add('After', Cursor);
             end;
-        until not JHelper.GetValueAsBoolean(JResponse, 'data.product.variants.pageInfo.hasNextPage');
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.product.variants.pageInfo.hasNextPage');
     end;
 
     /// <summary> 
@@ -310,7 +310,7 @@ codeunit 30189 "Shpfy Variant API"
     begin
         Parameters.Add('VariantId', Format(ShopifyVariant.Id));
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetVariantById, Parameters);
-        if JHelper.GetJsonObject(JResponse.AsObject(), JData, 'data.productVariant') then
+        if JsonHelper.GetJsonObject(JResponse.AsObject(), JData, 'data.productVariant') then
             exit(UpdateShopifyVariantFields(ShopifyProduct, ShopifyVariant, ShopifyInventoryItem, JData));
     end;
 
@@ -346,7 +346,7 @@ codeunit 30189 "Shpfy Variant API"
         JResponse: JsonToken;
         GraphQuery: TextBuilder;
     begin
-        Events.OnBeforeSendUpdateShopifyProductVariant(Shop, ShopifyVariant, xShopifyVariant);
+        ProductEvents.OnBeforeSendUpdateShopifyProductVariant(Shop, ShopifyVariant, xShopifyVariant);
         GraphQuery.Append('{"query":"mutation { productVariantUpdate(input: {id: \"gid://shopify/ProductVariant/');
         GraphQuery.Append(Format(ShopifyVariant.Id));
         GraphQuery.Append('\"');
@@ -410,7 +410,7 @@ codeunit 30189 "Shpfy Variant API"
 
         if HasChange then begin
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
-            ShopifyVariant."Updated At" := JHelper.GetValueAsDateTime(JResponse, 'data.productVariantUpdate.productVariant.updatedAt');
+            ShopifyVariant."Updated At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productVariantUpdate.productVariant.updatedAt');
             if ShopifyVariant."Updated At" > 0DT then
                 ShopifyVariant.Modify();
         end;
@@ -426,63 +426,63 @@ codeunit 30189 "Shpfy Variant API"
     /// <returns>Return variable "Result" of type Boolean.</returns>
     internal procedure UpdateShopifyVariantFields(ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyInventoryItem: Record "Shpfy Inventory Item"; JVariant: JsonObject) Result: Boolean
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         UpdatedAt: DateTime;
         JMetafields: JsonArray;
         JOptions: JsonArray;
         JNode: JsonObject;
         JItem: JsonToken;
     begin
-        UpdatedAt := JHelper.GetValueAsDateTime(JVariant, 'updatedAt');
+        UpdatedAt := JsonHelper.GetValueAsDateTime(JVariant, 'updatedAt');
         if UpdatedAt < ShopifyVariant."Updated At" then
             exit(false);
 
         Result := true;
         ShopifyVariant."Updated At" := UpdatedAt;
-        ShopifyVariant."Created At" := JHelper.GetValueAsDateTime(JVariant, 'createdAt');
+        ShopifyVariant."Created At" := JsonHelper.GetValueAsDateTime(JVariant, 'createdAt');
         if IsNullGuid(ShopifyVariant."Item SystemId") then
             ShopifyVariant."Item SystemId" := ShopifyProduct."Item SystemId";
-        ShopifyVariant."Available For Sales" := JHelper.GetValueAsBoolean(JVariant, 'availableForSale');
+        ShopifyVariant."Available For Sales" := JsonHelper.GetValueAsBoolean(JVariant, 'availableForSale');
 #pragma warning disable AA0139
-        ShopifyVariant.Barcode := JHelper.GetValueAsText(JVariant, 'barcode', MaxStrLen(ShopifyVariant.Barcode));
-        ShopifyVariant."Display Name" := JHelper.GetValueAsText(JVariant, 'displayName', MaxStrLen(ShopifyVariant."Display Name"));
-        ShopifyVariant."Tax Code" := JHelper.GetValueAsText(JVariant, 'taxCode', MaxStrLen(ShopifyVariant."Tax Code"));
-        ShopifyVariant.SKU := JHelper.GetValueAsText(JVariant, 'sku', MaxStrLen(ShopifyVariant.SKU));
-        ShopifyVariant.Title := JHelper.GetValueAsText(JVariant, 'title', MaxStrLen(ShopifyVariant.Title));
+        ShopifyVariant.Barcode := JsonHelper.GetValueAsText(JVariant, 'barcode', MaxStrLen(ShopifyVariant.Barcode));
+        ShopifyVariant."Display Name" := JsonHelper.GetValueAsText(JVariant, 'displayName', MaxStrLen(ShopifyVariant."Display Name"));
+        ShopifyVariant."Tax Code" := JsonHelper.GetValueAsText(JVariant, 'taxCode', MaxStrLen(ShopifyVariant."Tax Code"));
+        ShopifyVariant.SKU := JsonHelper.GetValueAsText(JVariant, 'sku', MaxStrLen(ShopifyVariant.SKU));
+        ShopifyVariant.Title := JsonHelper.GetValueAsText(JVariant, 'title', MaxStrLen(ShopifyVariant.Title));
 #pragma warning restore AA0139
-        ShopifyVariant."Compare at Price" := JHelper.GetValueAsDecimal(JVariant, 'compareAtPrice');
-        if Evaluate(ShopifyVariant."Inventory Policy", JHelper.GetValueAsText(JVariant, 'inventoryPolicy')) then;
-        ShopifyVariant.Position := JHelper.GetValueAsInteger(JVariant, 'position');
-        ShopifyVariant.Price := JHelper.GetValueAsDecimal(JVariant, 'price');
-        ShopifyVariant.Taxable := JHelper.GetValueAsBoolean(JVariant, 'taxable');
-        ShopifyVariant.Weight := JHelper.GetValueAsDecimal(JVariant, 'weight');
-        ShopifyVariant."Unit Cost" := JHelper.GetValueAsDecimal(JVariant, 'inventoryItem.unitCost.amount');
+        ShopifyVariant."Compare at Price" := JsonHelper.GetValueAsDecimal(JVariant, 'compareAtPrice');
+        if Evaluate(ShopifyVariant."Inventory Policy", JsonHelper.GetValueAsText(JVariant, 'inventoryPolicy')) then;
+        ShopifyVariant.Position := JsonHelper.GetValueAsInteger(JVariant, 'position');
+        ShopifyVariant.Price := JsonHelper.GetValueAsDecimal(JVariant, 'price');
+        ShopifyVariant.Taxable := JsonHelper.GetValueAsBoolean(JVariant, 'taxable');
+        ShopifyVariant.Weight := JsonHelper.GetValueAsDecimal(JVariant, 'weight');
+        ShopifyVariant."Unit Cost" := JsonHelper.GetValueAsDecimal(JVariant, 'inventoryItem.unitCost.amount');
 
-        RecRef.GetTable(ShopifyVariant);
+        RecordRef.GetTable(ShopifyVariant);
         Clear(ShopifyVariant."Option 1 Name");
         Clear(ShopifyVariant."Option 1 Value");
         Clear(ShopifyVariant."Option 2 Name");
         Clear(ShopifyVariant."Option 2 Value");
         Clear(ShopifyVariant."Option 3 Name");
         Clear(ShopifyVariant."Option 3 Value");
-        if JHelper.GetJsonArray(JVariant, JOptions, 'selectedOptions') then begin
+        if JsonHelper.GetJsonArray(JVariant, JOptions, 'selectedOptions') then begin
             Clear(JItem);
             foreach JItem in JOptions do
                 case Joptions.IndexOf(JItem) of
                     0:
                         begin
-                            JHelper.GetValueIntoField(JItem, 'name', RecRef, ShopifyVariant.FieldNo("Option 1 Name"));
-                            JHelper.GetValueIntoField(JItem, 'value', RecRef, ShopifyVariant.FieldNo("Option 1 Value"));
+                            JsonHelper.GetValueIntoField(JItem, 'name', RecordRef, ShopifyVariant.FieldNo("Option 1 Name"));
+                            JsonHelper.GetValueIntoField(JItem, 'value', RecordRef, ShopifyVariant.FieldNo("Option 1 Value"));
                         end;
                     1:
                         begin
-                            JHelper.GetValueIntoField(JItem, 'name', RecRef, ShopifyVariant.FieldNo("Option 2 Name"));
-                            JHelper.GetValueIntoField(JItem, 'value', RecRef, ShopifyVariant.FieldNo("Option 2 Value"));
+                            JsonHelper.GetValueIntoField(JItem, 'name', RecordRef, ShopifyVariant.FieldNo("Option 2 Name"));
+                            JsonHelper.GetValueIntoField(JItem, 'value', RecordRef, ShopifyVariant.FieldNo("Option 2 Value"));
                         end;
                     2:
                         begin
-                            JHelper.GetValueIntoField(JItem, 'name', RecRef, ShopifyVariant.FieldNo("Option 3 Name"));
-                            JHelper.GetValueIntoField(JItem, 'value', RecRef, ShopifyVariant.FieldNo("Option 3 Value"));
+                            JsonHelper.GetValueIntoField(JItem, 'name', RecordRef, ShopifyVariant.FieldNo("Option 3 Name"));
+                            JsonHelper.GetValueIntoField(JItem, 'value', RecordRef, ShopifyVariant.FieldNo("Option 3 Value"));
                         end;
                 end;
         end;
@@ -496,33 +496,33 @@ codeunit 30189 "Shpfy Variant API"
                 ShopifyVariant."Option 3 Name":
                     ShopifyVariant."UoM Option Id" := 3;
             end;
-        RecRef.SetTable(ShopifyVariant);
+        RecordRef.SetTable(ShopifyVariant);
         ShopifyVariant.Modify(false);
 
-        if JHelper.GetJsonObject(JVariant, JNode, 'inventoryItem') then begin
-            UpdatedAt := JHelper.GetValueAsDateTime(JNode, 'updatedAt');
+        if JsonHelper.GetJsonObject(JVariant, JNode, 'inventoryItem') then begin
+            UpdatedAt := JsonHelper.GetValueAsDateTime(JNode, 'updatedAt');
             if UpdatedAt > ShopifyInventoryItem."Updated At" then begin
-                Clear(RecRef);
-                RecRef.GetTable(ShopifyInventoryItem);
+                Clear(RecordRef);
+                RecordRef.GetTable(ShopifyInventoryItem);
                 if ShopifyInventoryItem.Id = 0 then
-                    JHelper.GetValueIntoField(JNode, 'legacyResourceId', RecRef, ShopifyInventoryItem.FieldNo(Id));
-                JHelper.GetValueIntoField(JNode, 'countryCodeOfOrigin', RecRef, ShopifyInventoryItem.FieldNo("Country/Region of Origin"));
-                JHelper.GetValueIntoField(JNode, 'createdAt', RecRef, ShopifyInventoryItem.FieldNo("Create At"));
-                JHelper.GetValueIntoField(JNode, 'inventoryHistoryUrl', RecRef, ShopifyInventoryItem.FieldNo("History URL"));
-                JHelper.GetValueIntoField(JNode, 'provinceCodeOfOrigin', RecRef, ShopifyInventoryItem.FieldNo("Province of Origin"));
-                JHelper.GetValueIntoField(JNode, 'requiresShipping', RecRef, ShopifyInventoryItem.FieldNo("Requires Shipping"));
-                JHelper.GetValueIntoField(JNode, 'tracked', RecRef, ShopifyInventoryItem.FieldNo(Tracked));
-                JHelper.GetValueIntoField(JNode, 'trackedEditable.locked', RecRef, ShopifyInventoryItem.FieldNo("Tracked Editable"));
-                JHelper.GetValueIntoField(JNode, 'trackedEditable.reason', RecRef, ShopifyInventoryItem.FieldNo("Tracked Reason"));
-                JHelper.GetValueIntoField(JNode, 'unitCost.amount', RecRef, ShopifyInventoryItem.FieldNo("Unit Cost"));
-                JHelper.GetValueIntoField(JNode, 'updatedAt', RecRef, ShopifyInventoryItem.FieldNo("Updated At"));
-                RecRef.SetTable(ShopifyInventoryItem);
+                    JsonHelper.GetValueIntoField(JNode, 'legacyResourceId', RecordRef, ShopifyInventoryItem.FieldNo(Id));
+                JsonHelper.GetValueIntoField(JNode, 'countryCodeOfOrigin', RecordRef, ShopifyInventoryItem.FieldNo("Country/Region of Origin"));
+                JsonHelper.GetValueIntoField(JNode, 'createdAt', RecordRef, ShopifyInventoryItem.FieldNo("Create At"));
+                JsonHelper.GetValueIntoField(JNode, 'inventoryHistoryUrl', RecordRef, ShopifyInventoryItem.FieldNo("History URL"));
+                JsonHelper.GetValueIntoField(JNode, 'provinceCodeOfOrigin', RecordRef, ShopifyInventoryItem.FieldNo("Province of Origin"));
+                JsonHelper.GetValueIntoField(JNode, 'requiresShipping', RecordRef, ShopifyInventoryItem.FieldNo("Requires Shipping"));
+                JsonHelper.GetValueIntoField(JNode, 'tracked', RecordRef, ShopifyInventoryItem.FieldNo(Tracked));
+                JsonHelper.GetValueIntoField(JNode, 'trackedEditable.locked', RecordRef, ShopifyInventoryItem.FieldNo("Tracked Editable"));
+                JsonHelper.GetValueIntoField(JNode, 'trackedEditable.reason', RecordRef, ShopifyInventoryItem.FieldNo("Tracked Reason"));
+                JsonHelper.GetValueIntoField(JNode, 'unitCost.amount', RecordRef, ShopifyInventoryItem.FieldNo("Unit Cost"));
+                JsonHelper.GetValueIntoField(JNode, 'updatedAt', RecordRef, ShopifyInventoryItem.FieldNo("Updated At"));
+                RecordRef.SetTable(ShopifyInventoryItem);
                 if not ShopifyInventoryItem.Modify() then
                     ShopifyInventoryItem.Insert();
             end;
         end;
-        if JHelper.GetJsonObject(JVariant, JNode, 'metafields') then
-            if JHelper.GetJsonArray(JNode, JMetafields, 'edges') then
+        if JsonHelper.GetJsonObject(JVariant, JNode, 'metafields') then
+            if JsonHelper.GetJsonArray(JNode, JMetafields, 'edges') then
                 foreach JItem in JMetafields do;
     end;
 }

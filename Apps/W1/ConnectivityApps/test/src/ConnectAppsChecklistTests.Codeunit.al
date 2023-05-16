@@ -62,8 +62,7 @@ codeunit 139533 "Connect. Apps Checklist Tests"
         CompanyTriggers.OnCompanyOpenCompleted();
 
         // [THEN] The checklist item table should contain the correct number of entries
-        Assert.AreEqual(16, ChecklistTestLibrary.GetCount(),
-            'The Checklist Item table contains the wrong number of entries.');
+        Assert.AreEqual(17, ChecklistTestLibrary.GetCount(), 'The Checklist Item table contains the wrong number of entries.');
 
         // [THEN] Verify that the checklist items were created for the right objects
         VerifyBusinessManagerEvalChecklistItems();

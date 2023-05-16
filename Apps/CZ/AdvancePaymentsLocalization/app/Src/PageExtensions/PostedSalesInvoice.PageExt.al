@@ -2,7 +2,7 @@ pageextension 31028 "Posted Sales Invoice CZZ" extends "Posted Sales Invoice"
 {
     actions
     {
-#if not CLEAN19
+#if not CLEAN20
 #pragma warning disable AL0432
         modify("Unpost Link Advance")
         {

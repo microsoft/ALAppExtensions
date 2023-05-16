@@ -6,6 +6,8 @@
 codeunit 478 "Business Chart Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetBusinessChartData: DotNet BusinessChartData;

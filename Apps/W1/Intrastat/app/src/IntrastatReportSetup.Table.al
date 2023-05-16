@@ -44,15 +44,15 @@ table 4810 "Intrastat Report Setup"
         }
         field(9; "Cust. VAT No. on File"; Enum "Intrastat Report VAT File Fmt")
         {
-            Caption = 'Customer VAT No. on File';
+            Caption = 'Customer VAT Reg. No. on File';
         }
         field(10; "Vend. VAT No. on File"; Enum "Intrastat Report VAT File Fmt")
         {
-            Caption = 'Vendor VAT No. on File';
+            Caption = 'Vendor VAT Reg. No. on File';
         }
         field(11; "Company VAT No. on File"; Enum "Intrastat Report VAT File Fmt")
         {
-            Caption = 'Company VAT No. on File';
+            Caption = 'Company VAT Reg. No. on File';
         }
         field(12; "Default Trans. Spec. Code"; Code[10])
         {
@@ -119,19 +119,19 @@ table 4810 "Intrastat Report Setup"
         }
         field(24; "VAT No. Based On"; Enum "Intrastat Report VAT No. Base")
         {
-            Caption = 'VAT No. Based On';
+            Caption = 'VAT Reg. No. Based On';
         }
         field(25; "Def. Private Person VAT No."; Text[50])
         {
-            Caption = 'Default Private Person VAT No.';
+            Caption = 'Default Private Person VAT Reg. No.';
         }
         field(26; "Def. 3-Party Trade VAT No."; Text[50])
         {
-            Caption = 'Default 3-Party Trade VAT No.';
+            Caption = 'Default 3-Party Trade VAT Reg. No.';
         }
         field(27; "Def. VAT for Unknown State"; Text[50])
         {
-            Caption = 'Def. VAT for Unknown State';
+            Caption = 'Def. VAT Reg. No. for Unknown State';
         }
         field(28; "Def. Country/Region Code"; Code[10])
         {
@@ -146,7 +146,7 @@ table 4810 "Intrastat Report Setup"
         }
         field(30; "Get Partner VAT For"; Enum "Intrastat Report Line Type Sel")
         {
-            Caption = 'Get Partner VAT For';
+            Caption = 'Get VAT Reg. No. For';
         }
     }
     keys

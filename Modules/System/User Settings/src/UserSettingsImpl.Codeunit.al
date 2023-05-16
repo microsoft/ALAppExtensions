@@ -6,6 +6,8 @@
 codeunit 9175 "User Settings Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "All Profile" = r,
                   tabledata Company = r,
 #if not CLEAN20
@@ -418,7 +420,7 @@ codeunit 9175 "User Settings Impl."
         ApplicationUserSettings.Modify();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetAutoStartTours', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", GetAutoStartTours, '', false, false)]
     local procedure CheckIfUserCalloutsAreEnabled(var IsEnabled: Boolean)
     var
         ApplicationUserSettings: Record "Application User Settings";
@@ -427,7 +429,7 @@ codeunit 9175 "User Settings Impl."
         IsEnabled := ApplicationUserSettings."Teaching Tips";
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OpenSettings', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", OpenSettings, '', false, false)]
     local procedure OpenSettings()
     begin
         OpenUserSettings(UserSecurityId());
@@ -457,7 +459,7 @@ codeunit 9175 "User Settings Impl."
 
         UserPersonalization.FilterGroup(2);
         UserPersonalization.CalcFields("License Type");
-        UserPersonalization.SetFilter("License Type", '<>%1&<>%2', UserPersonalization."License Type"::"External User", UserPersonalization."License Type"::Application);
+        UserPersonalization.SetFilter("License Type", '<>%1&<>%2&<>%3', UserPersonalization."License Type"::"External User", UserPersonalization."License Type"::Application, UserPersonalization."License Type"::"AAD Group");
         UserPersonalization.FilterGroup(0);
     end;
 

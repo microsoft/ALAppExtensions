@@ -67,9 +67,6 @@ codeunit 11729 "Cash Document-Post CZP"
 
         PostHeader();
         PostLines();
-#if not CLEAN19
-        PostAdvances();
-#endif
 
         FinalizePosting(CashDocumentHeaderCZP);
         OnAfterPostCashDoc(CashDocumentHeaderCZP, GenJnlPostLine, PostedCashDocumentHdrCZP."No.");
@@ -109,7 +106,12 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine.Description := CashDocumentHeaderCZP."Payment Purpose";
         TempGenJournalLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
         TempGenJournalLine."Document Date" := CashDocumentHeaderCZP."Document Date";
+#if not CLEAN22
+#pragma warning disable AL0432
         TempGenJournalLine."VAT Date CZL" := CashDocumentHeaderCZP."VAT Date";
+#pragma warning restore AL0432
+#endif
+        TempGenJournalLine."VAT Reporting Date" := CashDocumentHeaderCZP."VAT Date";
         TempGenJournalLine."Original Doc. VAT Date CZL" := CashDocumentHeaderCZP."VAT Date";
         TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::"Bank Account";
         TempGenJournalLine."Account No." := CashDocumentHeaderCZP."Cash Desk No.";
@@ -203,6 +205,11 @@ codeunit 11729 "Cash Document-Post CZP"
 
     procedure InitGenJnlLine(InitCashDocumentHeaderCZP: Record "Cash Document Header CZP"; InitCashDocumentLineCZP: Record "Cash Document Line CZP")
     var
+#if not CLEAN22
+#pragma warning disable AL0432
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
+#endif
         Sign: Integer;
     begin
         TempGenJournalLine.Init();
@@ -215,7 +222,14 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine."Document No." := InitCashDocumentHeaderCZP."No.";
         TempGenJournalLine."External Document No." := InitCashDocumentLineCZP."External Document No.";
         TempGenJournalLine."Posting Date" := InitCashDocumentHeaderCZP."Posting Date";
-        TempGenJournalLine.Validate("VAT Date CZL", InitCashDocumentHeaderCZP."VAT Date");
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not ReplaceVATDateMgtCZL.IsEnabled() then
+            TempGenJournalLine.Validate("VAT Date CZL", InitCashDocumentHeaderCZP."VAT Date")
+        else
+#pragma warning restore AL0432
+#endif
+        TempGenJournalLine.Validate("VAT Reporting Date", InitCashDocumentHeaderCZP."VAT Date");
         TempGenJournalLine.Validate("Original Doc. VAT Date CZL", InitCashDocumentHeaderCZP."VAT Date");
         TempGenJournalLine."Posting Group" := InitCashDocumentLineCZP."Posting Group";
         TempGenJournalLine.Description := InitCashDocumentLineCZP.Description;
@@ -279,10 +293,6 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine."Dimension Set ID" := InitCashDocumentLineCZP."Dimension Set ID";
         TempGenJournalLine."Source Code" := SourceCodeSetup."Cash Desk CZP";
         TempGenJournalLine."Reason Code" := InitCashDocumentLineCZP."Reason Code";
-#if not CLEAN19
-        TempGenJournalLine.Validate(Prepayment, InitCashDocumentLineCZP."Advance Letter Link Code" <> '');
-        TempGenJournalLine."Advance Letter Link Code" := InitCashDocumentLineCZP."Advance Letter Link Code";
-#endif
         TempGenJournalLine."VAT Registration No." := InitCashDocumentHeaderCZP."VAT Registration No.";
         OnAfterInitGenJnlLine(TempGenJournalLine, InitCashDocumentHeaderCZP, InitCashDocumentLineCZP);
     end;
@@ -360,31 +370,6 @@ codeunit 11729 "Cash Document-Post CZP"
         GenJnlPostLine := NewGenJnlPostLine;
     end;
 
-#if not CLEAN19
-    [Obsolete('Remove after Advance Payment Localization for Czech will be implemented.', '18.0')]
-    internal procedure PostAdvances();
-    var
-        TempPurchAdvanceLetterHeader: Record "Purch. Advance Letter Header" temporary;
-        TempSalesAdvanceLetterHeader: Record "Sales Advance Letter Header" temporary;
-        PurchasePostAdvances: Codeunit "Purchase-Post Advances";
-        SalesPostAdvances: Codeunit "Sales-Post Advances";
-    begin
-        GenJnlPostLine.SetPostAdvInvAfterBatch(true);
-        GenJnlPostLine.xGetSalesLetterHeader(TempSalesAdvanceLetterHeader);
-        if not TempSalesAdvanceLetterHeader.IsEmpty() then begin
-            SalesPostAdvances.SetLetterHeader(TempSalesAdvanceLetterHeader);
-            SalesPostAdvances.SetGenJnlPostLine(GenJnlPostLine);
-            SalesPostAdvances.AutoPostAdvanceInvoices();
-        end;
-
-        GenJnlPostLine.xGetPurchLetterHeader(TempPurchAdvanceLetterHeader);
-        if not TempPurchAdvanceLetterHeader.IsEmpty() then begin
-            PurchasePostAdvances.SetLetterHeader(TempPurchAdvanceLetterHeader);
-            PurchasePostAdvances.SetGenJnlPostLine(GenJnlPostLine);
-            PurchasePostAdvances.AutoPostAdvanceInvoices();
-        end;
-    end;
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnAfterCheckGenJnlLine', '', false, false)]
     local procedure CheckCashDeskOnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var

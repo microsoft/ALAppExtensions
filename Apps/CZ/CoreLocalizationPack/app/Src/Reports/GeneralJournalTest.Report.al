@@ -1928,7 +1928,6 @@ report 11722 "General Journal - Test CZL"
     local procedure CheckICDocument()
     var
         ICGenJournalLine: Record "Gen. Journal Line";
-        ICGLAccount: Record "IC G/L Account";
     begin
         if GenJournalTemplate.Type = GenJournalTemplate.Type::Intercompany then begin
             if ("Gen. Journal Line"."Posting Date" <> LastDate) or ("Gen. Journal Line"."Document Type" <> LastDocType) or ("Gen. Journal Line"."Document No." <> LastDocNo) then begin
@@ -1943,50 +1942,8 @@ report 11722 "General Journal - Test CZL"
                 else
                     CurrentICPartner := '';
             end;
-            if (CurrentICPartner <> '') and ("Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Outgoing) then begin
-                if ("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-                   ("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-                   ("Gen. Journal Line"."Account No." <> '') and
-                   ("Gen. Journal Line"."Bal. Account No." <> '')
-                then
-                    AddError(
-                      StrSubstNo(
-                        CannotEnterGLBankAccErr, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."Account No."), "Gen. Journal Line".FieldCaption("Gen. Journal Line"."Bal. Account No.")))
-                else
-                    if (("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and ("Gen. Journal Line"."Account No." <> '')) xor
-                       (("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-                        ("Gen. Journal Line"."Bal. Account No." <> ''))
-                    then begin
-                        if "Gen. Journal Line"."IC Partner G/L Acc. No." = '' then
-                            AddError(
-                              StrSubstNo(
-                                FieldMustBeSpecifiedErr, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No.")))
-                        else
-                            if ICGLAccount.Get("Gen. Journal Line"."IC Partner G/L Acc. No.") then
-                                if ICGLAccount.Blocked then
-                                    AddError(
-                                      StrSubstNo(
-                                        MustBeForErr,
-                                        ICGLAccount.FieldCaption(Blocked), false, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No."),
-                                        "Gen. Journal Line"."IC Partner G/L Acc. No."
-                                        ));
-                    end else
-                        if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then
-                            AddError(
-                              StrSubstNo(
-                                CannotBeSpecifiedErr, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No.")));
-            end else
-                if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then begin
-                    if "Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Incoming then
-                        AddError(
-                          StrSubstNo(
-                            MustNotBeSpecifiedWhenIsErr, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No."), "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Direction"), Format("Gen. Journal Line"."IC Direction")));
-                    if CurrentICPartner = '' then
-                        AddError(
-                          StrSubstNo(
-                            MustNotBeSpecifiedWhenInterDocErr, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No.")));
-                end;
-        end;
+                CheckICAccountNo();
+            end;
     end;
 
     local procedure TestJobFields(var GenJournalLine: Record "Gen. Journal Line")
@@ -2171,6 +2128,91 @@ report 11722 "General Journal - Test CZL"
                             GenJournalLine."Document Type", GenJournalLine."External Document No."));
                 end;
         end;
+    end;
+
+    local procedure CheckICAccountNo()
+    var
+        ICGLAccount: Record "IC G/L Account";
+        ICBankAccount: Record "IC Bank Account";
+    begin
+#if not CLEAN22
+        with "Gen. Journal Line" do
+            if (CurrentICPartner <> '') and ("IC Direction" = "IC Direction"::Outgoing) then begin
+                if ("Account Type" in ["Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
+                   ("Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
+                   ("Account No." <> '') and
+                   ("Bal. Account No." <> '')
+                then
+                    AddError(StrSubstNo(CannotEnterGLBankAccErr, FieldCaption("Account No."), FieldCaption("Bal. Account No.")))
+                else
+                    if (("Account Type" in ["Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and ("Account No." <> '')) xor
+                       (("Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
+                        ("Bal. Account No." <> ''))
+                    then
+                        if "IC Partner G/L Acc. No." = '' then
+                            AddError(StrSubstNo(FieldMustBeSpecifiedErr, FieldCaption("IC Partner G/L Acc. No.")))
+                        else begin
+                            if ICGLAccount.Get("IC Partner G/L Acc. No.") then
+                                if ICGLAccount.Blocked then
+                                    AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
+                                        FieldCaption("IC Partner G/L Acc. No."), "IC Partner G/L Acc. No."));
+
+                            if "IC Account Type" = "IC Journal Account Type"::"Bank Account" then
+                                if ICBankAccount.Get("IC Account No.", CurrentICPartner) then
+                                    if ICBankAccount.Blocked then
+                                        AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
+                                            FieldCaption("IC Account No."), "IC Account No."));
+                        end
+                    else
+                        if "IC Partner G/L Acc. No." <> '' then
+                            AddError(StrSubstNo(CannotBeSpecifiedErr, FieldCaption("IC Partner G/L Acc. No.")));
+            end else
+                if "IC Partner G/L Acc. No." <> '' then begin
+                    if "IC Direction" = "IC Direction"::Incoming then
+                        AddError(StrSubstNo(MustNotBeSpecifiedWhenIsErr, FieldCaption("IC Partner G/L Acc. No."), FieldCaption("IC Direction"), Format("IC Direction")));
+                    if CurrentICPartner = '' then
+                        AddError(StrSubstNo(MustNotBeSpecifiedWhenInterDocErr, FieldCaption("IC Partner G/L Acc. No.")));
+                end;
+#else
+        with "Gen. Journal Line" do
+            if (CurrentICPartner <> '') and ("IC Direction" = "IC Direction"::Outgoing) then begin
+                if ("Account Type" in ["Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
+                   ("Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
+                   ("Account No." <> '') and
+                   ("Bal. Account No." <> '')
+                then
+                    AddError(StrSubstNo(CannotEnterGLBankAccErr, FieldCaption("Account No."), FieldCaption("Bal. Account No.")))
+                else
+                    if (("Account Type" in ["Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and ("Account No." <> '')) xor
+                       (("Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
+                        ("Bal. Account No." <> ''))
+                    then
+                        if "IC Account No." = '' then
+                            AddError(StrSubstNo(FieldMustBeSpecifiedErr, FieldCaption("IC Account No.")))
+                        else begin
+                            if "IC Account Type" = "IC Journal Account Type"::"G/L Account" then
+                                if ICGLAccount.Get("IC Account No.") then
+                                    if ICGLAccount.Blocked then
+                                        AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
+                                            FieldCaption("IC Account No."), "IC Account No."));
+
+                            if "IC Account Type" = "IC Journal Account Type"::"Bank Account" then
+                                if ICBankAccount.Get("IC Account No.", CurrentICPartner) then
+                                    if ICBankAccount.Blocked then
+                                        AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
+                                            FieldCaption("IC Account No."), "IC Account No."));
+                        end
+                    else
+                        if "IC Account No." <> '' then
+                            AddError(StrSubstNo(CannotBeSpecifiedErr, FieldCaption("IC Account No.")));
+            end else
+                if "IC Account No." <> '' then begin
+                    if "IC Direction" = "IC Direction"::Incoming then
+                        AddError(StrSubstNo(MustNotBeSpecifiedWhenIsErr, FieldCaption("IC Account No."), FieldCaption("IC Direction"), Format("IC Direction")));
+                    if CurrentICPartner = '' then
+                        AddError(StrSubstNo(MustNotBeSpecifiedWhenInterDocErr, FieldCaption("IC Account No.")));
+                end;
+#endif
     end;
 
     [IntegrationEvent(false, false)]

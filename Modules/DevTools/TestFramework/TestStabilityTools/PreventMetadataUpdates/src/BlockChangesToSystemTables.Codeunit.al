@@ -53,19 +53,6 @@ codeunit 132553 "Block Changes to System Tables"
         VerifyAndAllowChangesToSystemTable(Database::"Tenant Profile Extension");
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Profile Page Metadata", 'OnBeforeModifyEvent', '', false, false)]
-    local procedure OnBeforeModifyProfilePageMetadata(RunTrigger: Boolean; var Rec: Record "Profile Page Metadata"; var xRec: Record "Profile Page Metadata")
-    begin
-        if Rec.IsTemporary() then
-            exit;
-
-        VerifyAndAllowChangesToSystemTable(Database::"Profile Page Metadata");
-    end;
-#pragma warning restore AL0432
-#endif
-
     [EventSubscriber(ObjectType::Table, Database::"Tenant Profile Page Metadata", 'OnBeforeModifyEvent', '', false, false)]
     local procedure OnBeforeModifyTenantProfilePageMetadata(RunTrigger: Boolean; var Rec: Record "Tenant Profile Page Metadata"; var xRec: Record "Tenant Profile Page Metadata")
     begin
@@ -101,18 +88,6 @@ codeunit 132553 "Block Changes to System Tables"
 
         VerifyAndAllowChangesToSystemTable(Database::"Tenant Profile Extension");
     end;
-#if not CLEAN21
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Profile Page Metadata", 'OnBeforeRenameEvent', '', false, false)]
-    local procedure OnBeforeRenameProfilePageMetadata(RunTrigger: Boolean; var Rec: Record "Profile Page Metadata"; var xRec: Record "Profile Page Metadata")
-    begin
-        if Rec.IsTemporary() then
-            exit;
-
-        VerifyAndAllowChangesToSystemTable(Database::"Profile Page Metadata");
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Tenant Profile Page Metadata", 'OnBeforeRenameEvent', '', false, false)]
     local procedure OnBeforeRenameTenantProfilePageMetadata(RunTrigger: Boolean; var Rec: Record "Tenant Profile Page Metadata"; var xRec: Record "Tenant Profile Page Metadata")
@@ -149,18 +124,7 @@ codeunit 132553 "Block Changes to System Tables"
 
         VerifyAndAllowChangesToSystemTable(Database::"Tenant Profile Extension");
     end;
-#if not CLEAN21
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Profile Page Metadata", 'OnBeforeInsertEvent', '', false, false)]
-    local procedure OnBeforeInsertProfilePageMetadata(RunTrigger: Boolean; var Rec: Record "Profile Page Metadata")
-    begin
-        if Rec.IsTemporary() then
-            exit;
 
-        VerifyAndAllowChangesToSystemTable(Database::"Profile Page Metadata");
-    end;
-#pragma warning restore AL0432
-#endif
     [EventSubscriber(ObjectType::Table, Database::"Tenant Profile Page Metadata", 'OnBeforeInsertEvent', '', false, false)]
     local procedure OnBeforeInsertTenantProfilePageMetadata(RunTrigger: Boolean; var Rec: Record "Tenant Profile Page Metadata")
     begin
@@ -196,19 +160,6 @@ codeunit 132553 "Block Changes to System Tables"
 
         VerifyAndAllowChangesToSystemTable(Database::"Tenant Profile Extension");
     end;
-
-#if not CLEAN21
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Profile Page Metadata", 'OnBeforeDeleteEvent', '', false, false)]
-    local procedure OnBeforeDeleteProfilePageMetadata(RunTrigger: Boolean; var Rec: Record "Profile Page Metadata")
-    begin
-        if Rec.IsTemporary() then
-            exit;
-
-        VerifyAndAllowChangesToSystemTable(Database::"Profile Page Metadata");
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Tenant Profile Page Metadata", 'OnBeforeDeleteEvent', '', false, false)]
     local procedure OnBeforeDeleteTenantProfilePageMetadata(RunTrigger: Boolean; var Rec: Record "Tenant Profile Page Metadata")

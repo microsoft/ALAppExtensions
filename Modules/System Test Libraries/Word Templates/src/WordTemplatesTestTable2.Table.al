@@ -37,6 +37,10 @@ table 130444 "Word Templates Test Table 2"
         {
             Caption = 'Value';
         }
+        field(8; "Word Templates Test Table 2 Field"; Text[100]) // Field name and caption exceeeds 30 characters for test purpose
+        {
+            Caption = 'Word Templates Test Table 2 Field';
+        }
     }
 
     keys

@@ -6,6 +6,8 @@
 codeunit 8712 "Telemetry Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     Permissions = tabledata "User Personalization" = r,
                   tabledata Company = r;

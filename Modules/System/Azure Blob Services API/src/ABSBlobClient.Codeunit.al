@@ -9,6 +9,8 @@
 codeunit 9053 "ABS Blob Client"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Initializes the Azure Blob storage client.
@@ -71,6 +73,33 @@ codeunit 9053 "ABS Blob Client"
     procedure ListBlobs(var ABSContainerContent: Record "ABS Container Content"; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
         exit(ABSClientImpl.ListBlobs(ABSContainerContent, ABSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// Lists the blobs in a specific container.
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210588
+    /// </summary>    
+    /// <param name="BlobList">Collection of the result (BlobList of [Text, XmlNode]).
+    /// The key in the dictionary is the full blob path and the value is the complete blob xmlnode from the response</param>
+    /// <returns>An operation reponse object</returns>
+    procedure ListBlobs(var BlobList: Dictionary of [Text, XmlNode]): Codeunit "ABS Operation Response"
+    var
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(ABSClientImpl.ListBlobs(BlobList, ABSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// Lists the blobs in a specific container.
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210588
+    /// </summary>    
+    /// <param name="BlobList">Collection of the result (BlobList of [Text, XmlNode]).
+    /// The key in the dictionary is the full blob path and the value is the complete blob xmlnode from the response</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure ListBlobs(var BlobList: Dictionary of [Text, XmlNode]; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(ABSClientImpl.ListBlobs(BlobList, ABSOptionalParameters));
     end;
 
     /// <summary>

@@ -10,6 +10,8 @@ codeunit 2200 "Azure Key Vault"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

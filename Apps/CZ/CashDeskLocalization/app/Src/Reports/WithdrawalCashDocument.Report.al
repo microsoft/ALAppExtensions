@@ -122,122 +122,139 @@ report 11735 "Withdrawal Cash Document CZP"
             column(FromAmountToDescription_CashDocumentHeader; CashDeskManagementCZP.FromAmountToDescription("Amount Including VAT"))
             {
             }
-            dataitem(CashDocumentLineCZP; "Cash Document Line CZP")
-            {
-                DataItemLink = "Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.");
-                DataItemTableView = sorting("Cash Desk No.", "Cash Document No.", "Line No.");
-                column(LineNo_CashDocumentLine; "Line No.")
-                {
-                }
-                column(Description_CashDocumentLine; Description)
-                {
-                    IncludeCaption = true;
-                }
-                column(AmountIncludingVAT_CashDocumentLine; "Amount Including VAT")
-                {
-                    IncludeCaption = true;
-                }
-                column(VAT_CashDocumentLine; "VAT %")
-                {
-                    IncludeCaption = true;
-                }
-                column(VATAmount_CashDocumentLine; "VAT Amount")
-                {
-                    IncludeCaption = true;
-                }
-                column(VATBaseAmount_CashDocumentLine; "VAT Base Amount")
-                {
-                    IncludeCaption = true;
-                }
-
-                trigger OnPreDataItem()
-                begin
-                    TempVATAmountLine.DeleteAll();
-                end;
-
-                trigger OnAfterGetRecord()
-                begin
-                    TempVATAmountLine.Init();
-                    TempVATAmountLine."VAT Identifier" := "VAT Identifier";
-                    TempVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
-                    TempVATAmountLine."VAT %" := "VAT %";
-                    TempVATAmountLine."VAT Base" := "VAT Base Amount";
-                    TempVATAmountLine."VAT Amount" := "VAT Amount";
-                    TempVATAmountLine."Amount Including VAT" := "Amount Including VAT";
-                    TempVATAmountLine."VAT Base (LCY) CZL" := "VAT Base Amount (LCY)";
-                    TempVATAmountLine."VAT Amount (LCY) CZL" := "VAT Amount (LCY)";
-                    TempVATAmountLine.InsertLine();
-                end;
-            }
-            dataitem(VATCounter; Integer)
+            dataitem(CopyLoop; Integer)
             {
                 DataItemTableView = sorting(Number);
-                column(VATAmtLineVATIdentifier; TempVATAmountLine."VAT Identifier")
+                column(CopyNo; Number)
                 {
                 }
-                column(VATAmtLineVATPer; TempVATAmountLine."VAT %")
+                dataitem(CashDocumentLineCZP; "Cash Document Line CZP")
                 {
-                    DecimalPlaces = 0 : 5;
-                    IncludeCaption = true;
-                }
-                column(VATAmtLineVATBase; TempVATAmountLine."VAT Base")
-                {
-                    AutoFormatExpression = CashDocumentHeaderCZP."Currency Code";
-                    AutoFormatType = 1;
-                }
-                column(VATAmtLineVATAmt; TempVATAmountLine."VAT Amount")
-                {
-                    AutoFormatExpression = CashDocumentHeaderCZP."Currency Code";
-                    AutoFormatType = 1;
-                }
-                column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY) CZL")
-                {
-                    AutoFormatExpression = CashDocumentHeaderCZP."Currency Code";
-                    AutoFormatType = 1;
-                }
-                column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY) CZL")
-                {
-                    AutoFormatExpression = CashDocumentHeaderCZP."Currency Code";
-                    AutoFormatType = 1;
-                }
-                dataitem("User Setup"; "User Setup")
-                {
+                    DataItemLink = "Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.");
                     DataItemLinkReference = CashDocumentHeaderCZP;
-                    DataItemTableView = sorting("User ID");
-                    dataitem(Employee; Employee)
+                    DataItemTableView = sorting("Cash Desk No.", "Cash Document No.", "Line No.");
+                    column(LineNo_CashDocumentLine; "Line No.")
                     {
-                        DataItemLink = "No." = field("Employee No. CZL");
-                        DataItemTableView = sorting("No.");
-                        column(FullName_Employee; FullName())
-                        {
-                        }
-                        column(PhoneNo_Employee; "Phone No.")
-                        {
-                        }
-                        column(CompanyEMail_Employee; "Company E-Mail")
-                        {
-                        }
+                    }
+                    column(Description_CashDocumentLine; Description)
+                    {
+                        IncludeCaption = true;
+                    }
+                    column(AmountIncludingVAT_CashDocumentLine; "Amount Including VAT")
+                    {
+                        IncludeCaption = true;
+                    }
+                    column(VAT_CashDocumentLine; "VAT %")
+                    {
+                        IncludeCaption = true;
+                    }
+                    column(VATAmount_CashDocumentLine; "VAT Amount")
+                    {
+                        IncludeCaption = true;
+                    }
+                    column(VATBaseAmount_CashDocumentLine; "VAT Base Amount")
+                    {
+                        IncludeCaption = true;
                     }
 
                     trigger OnPreDataItem()
                     begin
-                        case CashDocumentHeaderCZP.Status of
-                            CashDocumentHeaderCZP.Status::Open:
-                                SetRange("User ID", CashDocumentHeaderCZP."Created ID");
-                            CashDocumentHeaderCZP.Status::Released:
-                                SetRange("User ID", CashDocumentHeaderCZP."Released ID");
+                        TempVATAmountLine.DeleteAll();
+                    end;
+
+                    trigger OnAfterGetRecord()
+                    begin
+                        TempVATAmountLine.Init();
+                        TempVATAmountLine."VAT Identifier" := "VAT Identifier";
+                        TempVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
+                        TempVATAmountLine."VAT %" := "VAT %";
+                        TempVATAmountLine."VAT Base" := "VAT Base Amount";
+                        TempVATAmountLine."VAT Amount" := "VAT Amount";
+                        TempVATAmountLine."Amount Including VAT" := "Amount Including VAT";
+                        TempVATAmountLine."VAT Base (LCY) CZL" := "VAT Base Amount (LCY)";
+                        TempVATAmountLine."VAT Amount (LCY) CZL" := "VAT Amount (LCY)";
+                        TempVATAmountLine.InsertLine();
+                    end;
+                }
+                dataitem(VATCounter; Integer)
+                {
+                    DataItemTableView = sorting(Number);
+                    column(VATAmtLineVATIdentifier; TempVATAmountLine."VAT Identifier")
+                    {
+                    }
+                    column(VATAmtLineVATPer; TempVATAmountLine."VAT %")
+                    {
+                        DecimalPlaces = 0 : 5;
+                        IncludeCaption = true;
+                    }
+                    column(VATAmtLineVATBase; TempVATAmountLine."VAT Base")
+                    {
+                        AutoFormatExpression = CashDocumentHeaderCZP."Currency Code";
+                        AutoFormatType = 1;
+                    }
+                    column(VATAmtLineVATAmt; TempVATAmountLine."VAT Amount")
+                    {
+                        AutoFormatExpression = CashDocumentHeaderCZP."Currency Code";
+                        AutoFormatType = 1;
+                    }
+                    column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY) CZL")
+                    {
+                        AutoFormatExpression = CashDocumentHeaderCZP."Currency Code";
+                        AutoFormatType = 1;
+                    }
+                    column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY) CZL")
+                    {
+                        AutoFormatExpression = CashDocumentHeaderCZP."Currency Code";
+                        AutoFormatType = 1;
+                    }
+                    dataitem("User Setup"; "User Setup")
+                    {
+                        DataItemLinkReference = CashDocumentHeaderCZP;
+                        DataItemTableView = sorting("User ID");
+                        dataitem(Employee; Employee)
+                        {
+                            DataItemLink = "No." = field("Employee No. CZL");
+                            DataItemTableView = sorting("No.");
+                            column(FullName_Employee; FullName())
+                            {
+                            }
+                            column(PhoneNo_Employee; "Phone No.")
+                            {
+                            }
+                            column(CompanyEMail_Employee; "Company E-Mail")
+                            {
+                            }
+                        }
+
+                        trigger OnPreDataItem()
+                        begin
+                            case CashDocumentHeaderCZP.Status of
+                                CashDocumentHeaderCZP.Status::Open:
+                                    SetRange("User ID", CashDocumentHeaderCZP."Created ID");
+                                CashDocumentHeaderCZP.Status::Released:
+                                    SetRange("User ID", CashDocumentHeaderCZP."Released ID");
+                            end;
                         end;
+                    }
+
+                    trigger OnPreDataItem()
+                    begin
+                        SetRange(Number, 1, TempVATAmountLine.Count);
+                    end;
+
+                    trigger OnAfterGetRecord()
+                    begin
+                        TempVATAmountLine.GetLine(Number);
                     end;
                 }
 
                 trigger OnPreDataItem()
                 begin
-                    SetRange(Number, 1, TempVATAmountLine.Count);
-                end;
+                    NoOfLoops := Abs(NoOfCopies) + 1;
+                    if NoOfLoops <= 0 then
+                        NoOfLoops := 1;
 
-                trigger OnAfterGetRecord()
-                begin
-                    TempVATAmountLine.GetLine(Number);
+                    SetRange(Number, 1, NoOfLoops);
                 end;
             }
 
@@ -262,6 +279,27 @@ report 11735 "Withdrawal Cash Document CZP"
         }
     }
 
+    requestpage
+    {
+        SaveValues = true;
+        layout
+        {
+            area(content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+                    field(NoOfCopiesCZP; NoOfCopies)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'No. of Copies';
+                        ToolTip = 'Specifies the number of copies to print.';
+                    }
+                }
+            }
+        }
+    }
+
     labels
     {
         DocumentLbl = 'Withdrawal Cash Document';
@@ -277,6 +315,7 @@ report 11735 "Withdrawal Cash Document CZP"
         VATLbl = 'VAT';
         CreatedLbl = 'Created by';
         ReleasedLbl = 'Released by';
+        CopyLbl = 'Copy';
     }
 
     var
@@ -288,4 +327,11 @@ report 11735 "Withdrawal Cash Document CZP"
         CompanyAddr: array[8] of Text[100];
         CalculatedExchRate: Decimal;
         ExchangeRateTxt: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate Amount; %2 = LCY Code; %3 = Exchange Rate Amount; %4 = Currency Code';
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+
+    procedure InitializeRequest(NewNoOfCopies: Integer)
+    begin
+        NoOfCopies := NewNoOfCopies;
+    end;
 }

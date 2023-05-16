@@ -175,6 +175,25 @@ codeunit 18807 "TCS Management"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Subscribers", 'OnAfterGetAmountFromDocumentNoForEInv', '', false, false)]
+    local procedure OnAfterGetAmountFromDocumentNoForEInv(DocumentNo: Code[20]; var Amount: Decimal)
+    begin
+        GetAmountFromDocumentNoForEInv(DocumentNo, Amount);
+    end;
+
+    local procedure GetAmountFromDocumentNoForEInv(DocumentNo: Code[20]; var Amount: Decimal)
+    var
+        TCSEntry: Record "TCS Entry";
+    begin
+        OnBeforeFilterGetAmtFromDocumentNoForEInv(TCSEntry, DocumentNo);
+
+        TCSEntry.SetRange("Document No.", DocumentNo);
+        if TCSEntry.FindFirst() then
+            Amount := (TCSEntry."TCS Amount" + TCSEntry."eCESS Amount" + TCSEntry."SHE Cess Amount" + TCSEntry."Surcharge Amount");
+
+        OnAfterGetAmtFromDocumentNoForEInv(TCSEntry, Amount, DocumentNo);
+    end;
+
     local procedure CheckPANValidatins(GenJournalLine: Record "Gen. Journal Line")
     var
         Customer: Record Customer;
@@ -281,5 +300,15 @@ codeunit 18807 "TCS Management"
                 Rec."TCS Nature of Collection" := TCSEntry."TCS Nature of Collection";
             Rec.Modify();
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFilterGetAmtFromDocumentNoForEInv(var TCSEntry: Record "TCS Entry"; DocumentNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAmtFromDocumentNoForEInv(TCSEntry: Record "TCS Entry"; var Amount: Decimal; DocumentNo: code[20])
+    begin
     end;
 }

@@ -3862,90 +3862,6 @@ Cstr(Fields!PageLbl.Value)</Value>
                                 </Border>
                               </Style>
                             </Tablix>
-                            <Tablix Name="Creator">
-                              <TablixBody>
-                                <TablixColumns>
-                                  <TablixColumn>
-                                    <Width>6.00001cm</Width>
-                                  </TablixColumn>
-                                </TablixColumns>
-                                <TablixRows>
-                                  <TablixRow>
-                                    <Height>0.45001cm</Height>
-                                    <TablixCells>
-                                      <TablixCell>
-                                        <CellContents>
-                                          <Textbox Name="FullName_User">
-                                            <CanGrow>true</CanGrow>
-                                            <KeepTogether>true</KeepTogether>
-                                            <Paragraphs>
-                                              <Paragraph>
-                                                <TextRuns>
-                                                  <TextRun>
-                                                    <Value>=Fields!CreatorLbl.Value &amp; ": " &amp; Fields!FullName_Employee.Value &amp; IIf(Fields!PhoneNo_Employee.Value is Nothing, "", ", ") &amp; Fields!PhoneNo_Employee.Value &amp; IIf(Fields!CompanyEMail_Employee.Value is Nothing, "", ", ") &amp; Fields!CompanyEMail_Employee.Value</Value>
-                                                    <Style>
-                                                      <FontSize>9pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                </TextRuns>
-                                                <Style />
-                                              </Paragraph>
-                                            </Paragraphs>
-                                            <rd:DefaultName>FullName_User</rd:DefaultName>
-                                            <ZIndex>4</ZIndex>
-                                            <Visibility>
-                                              <Hidden>true</Hidden>
-                                            </Visibility>
-                                            <Style>
-                                              <Border>
-                                                <Style>None</Style>
-                                              </Border>
-                                              <BackgroundColor>Pink</BackgroundColor>
-                                              <PaddingLeft>2pt</PaddingLeft>
-                                              <PaddingRight>2pt</PaddingRight>
-                                              <PaddingTop>2pt</PaddingTop>
-                                              <PaddingBottom>2pt</PaddingBottom>
-                                            </Style>
-                                          </Textbox>
-                                        </CellContents>
-                                      </TablixCell>
-                                    </TablixCells>
-                                  </TablixRow>
-                                </TablixRows>
-                              </TablixBody>
-                              <TablixColumnHierarchy>
-                                <TablixMembers>
-                                  <TablixMember />
-                                </TablixMembers>
-                              </TablixColumnHierarchy>
-                              <TablixRowHierarchy>
-                                <TablixMembers>
-                                  <TablixMember>
-                                    <Group Name="Details3" />
-                                  </TablixMember>
-                                </TablixMembers>
-                              </TablixRowHierarchy>
-                              <DataSetName>DataSet_Result</DataSetName>
-                              <Filters>
-                                <Filter>
-                                  <FilterExpression>=Fields!FullName_Employee.Value</FilterExpression>
-                                  <Operator>GreaterThan</Operator>
-                                  <FilterValues>
-                                    <FilterValue>""</FilterValue>
-                                  </FilterValues>
-                                </Filter>
-                              </Filters>
-                              <Top>13.69814cm</Top>
-                              <Left>11.99995cm</Left>
-                              <Height>0.45001cm</Height>
-                              <Width>6.00001cm</Width>
-                              <ZIndex>2</ZIndex>
-                              <Style>
-                                <Border>
-                                  <Style>None</Style>
-                                </Border>
-                              </Style>
-                            </Tablix>
                           </ReportItems>
                           <KeepTogether>true</KeepTogether>
                           <Style>
@@ -4178,7 +4094,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=ReportItems("FullName_User").Value</Value>
+                      <Value>=First(Fields!CreatedByLbl.Value, "DataSet_Result") &amp; ": " &amp; First(Fields!FullName_EmployeeCreator.Value, "DataSet_Result") &amp; IIf(First(Fields!PhoneNo_EmployeeCreator.Value, "DataSet_Result") is Nothing, "", ", ") &amp; First(Fields!PhoneNo_EmployeeCreator.Value, "DataSet_Result") &amp; IIf(First(Fields!CompanyEMail_EmployeeCreator.Value, "DataSet_Result") is Nothing, "", ", ") &amp; First(Fields!CompanyEMail_EmployeeCreator.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>9pt</FontSize>
                       </Style>
@@ -4414,6 +4330,18 @@ End Function</Code>
         </Field>
         <Field Name="LCYCode_GeneralLedgerSetup">
           <DataField>LCYCode_GeneralLedgerSetup</DataField>
+        </Field>
+        <Field Name="CreatedByLbl">
+          <DataField>CreatedByLbl</DataField>
+        </Field>
+        <Field Name="FullName_EmployeeCreator">
+          <DataField>FullName_EmployeeCreator</DataField>
+        </Field>
+        <Field Name="PhoneNo_EmployeeCreator">
+          <DataField>PhoneNo_EmployeeCreator</DataField>
+        </Field>
+        <Field Name="CompanyEMail_EmployeeCreator">
+          <DataField>CompanyEMail_EmployeeCreator</DataField>
         </Field>
         <Field Name="DocumentLbl">
           <DataField>DocumentLbl</DataField>

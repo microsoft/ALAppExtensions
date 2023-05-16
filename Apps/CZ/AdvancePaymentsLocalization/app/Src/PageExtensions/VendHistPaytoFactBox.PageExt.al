@@ -2,26 +2,6 @@ pageextension 31218 "Vend.Hist.Pay-to FactBox CZZ" extends "Vendor Hist. Pay-to 
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Pay-to No. of Out. Adv. L.")
-        {
-            Visible = false;
-        }
-        modify("Pay-to No. of Closed Adv. L.")
-        {
-            Visible = false;
-        }
-        modify(PayToNoOfOutAdvLettersTile)
-        {
-            Visible = false;
-        }
-        modify(PayToNoOfClosedAdvLettersTile)
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast(Control23)
         {
             field(AdvancesCZZ; AdvancesCZZ)

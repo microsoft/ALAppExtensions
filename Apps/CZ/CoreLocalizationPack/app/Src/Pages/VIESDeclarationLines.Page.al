@@ -1,9 +1,11 @@
 page 31141 "VIES Declaration Lines CZL"
 {
+    ApplicationArea = Basic, Suite;
     Caption = 'VIES Declaration Lines';
     Editable = false;
     PageType = List;
     SourceTable = "VIES Declaration Line CZL";
+    UsageCategory = Lists;
 
     layout
     {
@@ -47,13 +49,59 @@ page 31141 "VIES Declaration Lines CZL"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies for declaration line type of trade.';
                 }
+                field("VIES Declaration No."; Rec."VIES Declaration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies VIES Declaration No.';
+                }
+            }
+        }
+    }
+    actions
+    {
+        area(navigation)
+        {
+            group("&Line")
+            {
+                Caption = '&Line';
+                Image = Line;
+                action("Show Document")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Show Document';
+                    Image = View;
+                    ShortCutKey = 'Shift+F7';
+                    ToolTip = 'Open the document that the selected line exists on.';
+
+                    trigger OnAction()
+                    var
+                        VIESDeclartionHeaderCZL: Record "VIES Declaration Header CZL";
+                        PageManagement: Codeunit "Page Management";
+                    begin
+                        VIESDeclartionHeaderCZL.Get(Rec."VIES Declaration No.");
+                        PageManagement.PageRun(VIESDeclartionHeaderCZL);
+                    end;
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("Show Document_Promoted"; "Show Document")
+                {
+                }
             }
         }
     }
     trigger OnOpenPage()
     begin
-        Rec.SetRange("VIES Declaration No.", VIESDeclarationHeaderCZL."Corrected Declaration No.");
-        Rec.SetRange("Line Type", Rec."Line Type"::New);
+        if VIESDeclarationHeaderCZL."Corrected Declaration No." <> '' then begin
+            Rec.SetRange("VIES Declaration No.", VIESDeclarationHeaderCZL."Corrected Declaration No.");
+            Rec.SetRange("Line Type", Rec."Line Type"::New);
+        end;
     end;
 
     var
@@ -76,7 +124,7 @@ page 31141 "VIES Declaration Lines CZL"
         CurrPage.SetSelectionFilter(VIESDeclarationLineCZL);
         if VIESDeclarationLineCZL.FindSet() then
             repeat
-                    CreateLine(VIESDeclarationLineCZL."Line Type"::Cancellation);
+                CreateLine(VIESDeclarationLineCZL."Line Type"::Cancellation);
                 CreateLine(VIESDeclarationLineCZL."Line Type"::Correction);
             until VIESDeclarationLineCZL.Next() = 0;
     end;

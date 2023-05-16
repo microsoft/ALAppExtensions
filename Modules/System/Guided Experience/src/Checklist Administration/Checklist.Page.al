@@ -119,9 +119,9 @@ page 1993 Checklist
 
     local procedure GetPageContent()
     var
-        ChecklistBanner: Codeunit "Checklist Banner";
+        ChecklistBannerImpl: Codeunit "Checklist Banner Impl.";
     begin
-        ChecklistBanner.GetAllChecklistItems(Rec);
+        ChecklistBannerImpl.GetAllChecklistItems(Rec);
         Rec.SetCurrentKey("Order ID");
     end;
 }

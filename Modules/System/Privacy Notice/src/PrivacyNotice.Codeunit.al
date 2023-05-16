@@ -74,6 +74,31 @@ codeunit 1563 "Privacy Notice"
     end;
 
     /// <summary>
+    /// After this the step-through depends on whether the user is admin or normal user (admin means they have the Priv. Notice - Admin permission set):
+    /// Admin:
+    ///     If admin has agreed that will be returned
+    ///     Privacy Notice will be shown and the response (Agree/Disagree) will be stored and takes precedence for all users.
+    ///     If the Privacy Notice was simply closed, we return false and nothing is stored.
+    /// User:
+    ///     If admin has agreed or disagreed, that will be returned
+    ///     If user has agreed, that will be returned
+    ///     Privacy Notice will be shown and any agreement will be stored.
+    ///     If the Privacy Notice was simply closed, we return false and nothing is stored.
+    /// 
+    /// <remark>This function will open a modal dialog to confirm approval and must hence be run outside a write transaction.</remark>
+    /// <remark>The privacy notice referenced must exist.</remark>
+    /// </summary>
+    /// <param name="Id">Identification of an existing privacy notice.</param>
+    /// <param name="SkipCheckInEval">If the check should return true if it has not been explicitly disagreed.</param>
+    /// <returns>Whether the privacy notice was agreed to.</returns>
+    procedure ConfirmPrivacyNoticeApproval(Id: Code[50]; SkipCheckInEval: Boolean): Boolean
+    var
+        PrivacyNoticeImpl: Codeunit "Privacy Notice Impl.";
+    begin
+        exit(PrivacyNoticeImpl.ConfirmPrivacyNoticeApproval(Id, SkipCheckInEval));
+    end;
+
+    /// <summary>
     /// Returns the state of the privacy notice for the current user without showing any privacy notice to the user.
     /// 
     /// An error is thrown if the privacy notice does not exist.
@@ -85,6 +110,21 @@ codeunit 1563 "Privacy Notice"
         PrivacyNoticeImpl: Codeunit "Privacy Notice Impl.";
     begin
         exit(PrivacyNoticeImpl.CheckPrivacyNoticeApprovalState(Id));
+    end;
+
+    /// <summary>
+    /// Returns the state of the privacy notice for the current user without showing any privacy notice to the user.
+    /// 
+    /// An error is thrown if the privacy notice does not exist.
+    /// </summary>
+    /// <param name="Id">Identification of an existing privacy notice.</param>
+    /// <param name="SkipCheckInEval">If the check should return true if it has not been explicitly disagreed.</param>
+    /// <returns>The state of the privacy notice for the current user.</returns>
+    procedure GetPrivacyNoticeApprovalState(Id: Code[50]; SkipCheckInEval: Boolean): Enum "Privacy Notice Approval State"
+    var
+        PrivacyNoticeImpl: Codeunit "Privacy Notice Impl.";
+    begin
+        exit(PrivacyNoticeImpl.CheckPrivacyNoticeApprovalState(Id, SkipCheckInEval));
     end;
 
     /// <summary>

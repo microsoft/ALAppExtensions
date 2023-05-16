@@ -117,10 +117,10 @@ if (-not $licenseFileUrl) {
         -default $default `
         -doNotConvertToLower `
         -trimCharacters @('"',"'",' ')
+}
 
-    if ($licenseFileUrl -eq "none") {
-        $licenseFileUrl = ""
-    }
+if ($licenseFileUrl -eq "none") {
+    $licenseFileUrl = ""
 }
 
 CreateDevEnv `

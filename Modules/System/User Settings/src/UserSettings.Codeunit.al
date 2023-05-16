@@ -54,6 +54,17 @@ codeunit 9176 "User Settings"
     end;
 
     /// <summary>
+    /// Get the companies the current user has access to.
+    /// </summary>
+    /// <param name="TempCompany">Companies the current user has access to.</param>
+    procedure GetAllowedCompaniesForCurrentUser(var TempCompany: Record Company temporary)
+    var
+        UserSettingsImpl: Codeunit "User Settings Impl.";
+    begin
+        UserSettingsImpl.GetAllowedCompaniesForCurrentUser(TempCompany);
+    end;
+
+    /// <summary>
     /// Integration event to get the default profile.
     /// </summary>
     /// <param name="AllProfile">The return record that holds the default profile.</param>

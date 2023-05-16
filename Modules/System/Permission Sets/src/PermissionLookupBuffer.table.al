@@ -11,6 +11,8 @@ table 9865 "Permission Lookup Buffer"
     Access = Internal;
     Caption = 'Permission Lookup Buffer';
     TableType = Temporary;
+    InherentEntitlements = RIMDX;
+    InherentPermissions = RIMDX;
 
     fields
     {

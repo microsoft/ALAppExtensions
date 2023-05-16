@@ -288,6 +288,7 @@ codeunit 133100 "Extension Management Test"
     begin
         // Initialize
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Sample Setup For Test");
 
         PermissionsMock.Set('Exten. Mgt. - Admin');
 
@@ -298,6 +299,38 @@ codeunit 133100 "Extension Management Test"
         NavApp.GetCurrentModuleInfo(ModuleInformation);
 
         GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Page, Page::"Extension Settings", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '');
+
+        // [WHEN] RunExtensionSetup is invoked
+        ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
+
+        // [THEN] Modal handler handles the opened setup page
+    end;
+
+    [Test]
+    [HandlerFunctions('ExtensionSettingsModalHandler')]
+    [Scope('OnPrem')]
+    procedure SetupIsRunOnInvokingSetupWhenObjectIsNonPageType()
+    var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
+        GuidedExperience: Codeunit "Guided Experience";
+        ModuleInformation: ModuleInfo;
+        Title: Text[2048];
+        ShortTitle: Text[50];
+        Description: Text[1024];
+    begin
+        // Initialize
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Sample Setup For Test");
+
+        PermissionsMock.Set('Exten. Mgt. - Admin');
+
+        // [GIVEN] A Assisted Setup for the current extension
+        Title := CopyStr(MainAppId, 1, MaxStrLen(Title));
+        ShortTitle := CopyStr(MainAppId, 1, MaxStrLen(ShortTitle));
+        Description := CopyStr(DependingAppId, 1, MaxStrLen(Description));
+        NavApp.GetCurrentModuleInfo(ModuleInformation);
+
+        GuidedExperience.InsertAssistedSetup(Title, ShortTitle, Description, 0, ObjectType::Codeunit, Codeunit::"Sample Setup For Test", "Assisted Setup Group"::Uncategorized, '', "Video Category"::Uncategorized, '');
 
         // [WHEN] RunExtensionSetup is invoked
         ExtensionInstallationImpl.RunExtensionSetup(ModuleInformation.Id);
@@ -319,6 +352,7 @@ codeunit 133100 "Extension Management Test"
     begin
         // Initialize
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Sample Setup For Test");
 
         PermissionsMock.Set('Exten. Mgt. - Admin');
 
@@ -352,6 +386,7 @@ codeunit 133100 "Extension Management Test"
         // Initialize
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Sample Setup For Test");
 
         PermissionsMock.Set('Exten. Mgt. - Admin');
 
@@ -387,6 +422,7 @@ codeunit 133100 "Extension Management Test"
         // Initialize
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Sample Setup For Test");
 
         PermissionsMock.Set('Exten. Mgt. - Admin');
 
@@ -422,6 +458,7 @@ codeunit 133100 "Extension Management Test"
         // Initialize
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Sample Setup For Test");
 
         PermissionsMock.Set('Exten. Mgt. - Admin');
 
@@ -441,6 +478,7 @@ codeunit 133100 "Extension Management Test"
     end;
 
     [Test]
+    [HandlerFunctions('ExtensionSettingsModalHandler')]
     [Scope('OnPrem')]
     procedure ExistingSetupCanBeMarkedAsPrimary()
     var
@@ -455,7 +493,7 @@ codeunit 133100 "Extension Management Test"
         // Initialize
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
-
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Sample Setup For Test");
         PermissionsMock.Set('Exten. Mgt. - Admin');
 
         // [GIVEN] A Assisted Setup for the current extension
@@ -489,6 +527,7 @@ codeunit 133100 "Extension Management Test"
         // Initialize
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Settings");
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Extension Details");
+        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Sample Setup For Test");
         PermissionsMock.Set('Exten. Mgt. - Admin');
 
         // [GIVEN] A Assisted Setup for the current extension

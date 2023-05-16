@@ -6,6 +6,8 @@
 codeunit 1807 "Assisted Setup Upgrade"
 {
     Subtype = Upgrade;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Guided Experience Item" = r;
 
     trigger OnUpgradePerCompany()

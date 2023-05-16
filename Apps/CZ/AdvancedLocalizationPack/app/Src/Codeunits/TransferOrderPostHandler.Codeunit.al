@@ -39,4 +39,17 @@ codeunit 31229 "TransferOrder-Post Handler CZA"
     begin
         ItemJournalLine.Validate("Gen. Bus. Posting Group", TransferReceiptLine."Gen.Bus.Post.Group Receive CZA");
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Transfer", 'OnInsertDirectTransHeaderOnBeforeDirectTransHeaderInsert', '', false, false)]
+    local procedure CopyFieldsOnInsertDirectTransHeaderOnBeforeDirectTransHeaderInsert(TransferHeader: Record "Transfer Header"; var DirectTransHeader: Record "Direct Trans. Header")
+    begin
+        TransferHeader.CheckGenBusPostGroupEqualityCZA();
+        DirectTransHeader."Gen. Bus. Posting Group CZA" := TransferHeader."Gen.Bus.Post.Group Ship CZA";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Transfer", 'OnAfterCreateItemJnlLine', '', false, false)]
+    local procedure CopyFieldsOnAfterCreateItemJnlLine(var ItemJnlLine: Record "Item Journal Line"; DirectTransLine: Record "Direct Trans. Line")
+    begin
+        ItemJnlLine."Gen. Bus. Posting Group" := DirectTransLine."Gen. Bus. Posting Group CZA";
+    end;
 }

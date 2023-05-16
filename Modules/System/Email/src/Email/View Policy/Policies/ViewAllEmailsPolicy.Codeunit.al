@@ -9,6 +9,8 @@
 codeunit 8932 "View All Emails Policy" implements "Email View Policy"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email Related Record" = r;
 
     procedure GetSentEmails(var SentEmails: Record "Sent Email" temporary)

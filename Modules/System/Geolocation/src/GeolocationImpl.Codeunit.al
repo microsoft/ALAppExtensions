@@ -6,6 +6,8 @@
 codeunit 7569 "Geolocation Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         GeolocationPage: Page Geolocation;

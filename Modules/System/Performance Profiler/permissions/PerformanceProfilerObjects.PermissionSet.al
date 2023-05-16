@@ -8,11 +8,8 @@ permissionset 1921 "Performance Profiler - Objects"
     Access = Internal;
     Assignable = false;
 
-    Permissions = Table "Profiling Node" = X,
-                  Codeunit "Profiling Chart Helper" = X,
-                  Codeunit "Profiling Data Processor" = X,
+    Permissions = Codeunit "Profiling Data Processor" = X,
                   Codeunit "Sampling Performance Profiler" = X,
-                  Codeunit "Sampling Perf. Profiler Impl." = X,
                   Page "Performance Profiler" = X,
                   Page "Profiling Call Tree" = X,
                   Page "Profiling Self Time Chart" = X,

@@ -302,14 +302,7 @@ codeunit 31054 "Install Application CZP"
     var
         CashDocumentLine: Record "Cash Document Line";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
-#if not CLEAN19
-        GeneralLedgerSetup: Record "General Ledger Setup";
-#endif
     begin
-#if not CLEAN19
-        if not GeneralLedgerSetup.Get() then
-            GeneralLedgerSetup.Init();
-#endif
         if CashDocumentLine.FindSet() then
             repeat
                 if not CashDocumentLineCZP.Get(CashDocumentLine."Cash Desk No.", CashDocumentLine."Cash Document No.", CashDocumentLine."Line No.") then begin
@@ -363,11 +356,6 @@ codeunit 31054 "Install Application CZP"
                 CashDocumentLineCZP."Responsibility Center" := CashDocumentLine."Responsibility Center";
                 CashDocumentLineCZP."EET Transaction" := CashDocumentLine."EET Transaction";
                 CashDocumentLineCZP."Dimension Set ID" := CashDocumentLine."Dimension Set ID";
-#if not CLEAN19
-                if GeneralLedgerSetup."Prepayment Type" = GeneralLedgerSetup."Prepayment Type"::Advances then
-                    if CashDocumentLine.Prepayment then
-                        CashDocumentLineCZP."Advance Letter Link Code" := CashDocumentLine."Advance Letter Link Code";
-#endif
                 CashDocumentLineCZP.Modify(false);
             until CashDocumentLine.Next() = 0;
     end;

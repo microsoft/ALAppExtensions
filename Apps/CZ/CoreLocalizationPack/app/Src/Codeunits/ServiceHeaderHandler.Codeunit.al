@@ -1,29 +1,39 @@
 codeunit 11745 "Service Header Handler CZL"
 {
+#if not CLEAN22
+
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
-
+#endif
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterInitRecord', '', false, false)]
     local procedure UpdateVatDateOnAfterInitRecord(var ServiceHeader: Record "Service Header")
     begin
-        ServiceMgtSetup.Get();
-        case ServiceMgtSetup."Default VAT Date CZL" of
-            ServiceMgtSetup."Default VAT Date CZL"::"Posting Date":
-                ServiceHeader."VAT Date CZL" := ServiceHeader."Posting Date";
-            ServiceMgtSetup."Default VAT Date CZL"::"Document Date":
-                ServiceHeader."VAT Date CZL" := ServiceHeader."Document Date";
-            ServiceMgtSetup."Default VAT Date CZL"::Blank:
-                ServiceHeader."VAT Date CZL" := 0D;
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not ServiceHeader.IsReplaceVATDateEnabled() then begin
+            ServiceMgtSetup.Get();
+            case ServiceMgtSetup."Default VAT Date CZL" of
+                ServiceMgtSetup."Default VAT Date CZL"::"Posting Date":
+                    ServiceHeader."VAT Date CZL" := ServiceHeader."Posting Date";
+                ServiceMgtSetup."Default VAT Date CZL"::"Document Date":
+                    ServiceHeader."VAT Date CZL" := ServiceHeader."Document Date";
+                ServiceMgtSetup."Default VAT Date CZL"::Blank:
+                    ServiceHeader."VAT Date CZL" := 0D;
+            end;
         end;
-
+#pragma warning restore AL0432
+#endif
         if ServiceHeader."Document Type" = ServiceHeader."Document Type"::"Credit Memo" then
             ServiceHeader."Credit Memo Type CZL" := ServiceHeader."Credit Memo Type CZL"::"Corrective Tax Document";
         ServiceHeader.Validate("Credit Memo Type CZL");
     end;
-
+#if not CLEAN22
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Posting Date', false, false)]
     local procedure UpdateVatDateOnBeforePostingDateValidate(var Rec: Record "Service Header")
     begin
+        if Rec.IsReplaceVATDateEnabled() then
+            exit;
         ServiceMgtSetup.Get();
         if ServiceMgtSetup."Default VAT Date CZL" = ServiceMgtSetup."Default VAT Date CZL"::"Posting Date" then
             Rec.Validate("VAT Date CZL", Rec."Posting Date");
@@ -32,10 +42,14 @@ codeunit 11745 "Service Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Document Date', false, false)]
     local procedure UpdateVatDateOnBeforeDocumentDateValidate(var Rec: Record "Service Header")
     begin
+        if Rec.IsReplaceVATDateEnabled() then
+            exit;
         ServiceMgtSetup.Get();
         if ServiceMgtSetup."Default VAT Date CZL" = ServiceMgtSetup."Default VAT Date CZL"::"Document Date" then
             Rec.Validate("VAT Date CZL", Rec."Document Date");
     end;
+#pragma warning restore AL0432
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyCustomerFields', '', false, false)]
     local procedure UpdateRegNoOnAfterCopyCustomerFields(var ServiceHeader: Record "Service Header"; Customer: Record Customer)
@@ -88,15 +102,30 @@ codeunit 11745 "Service Header Handler CZL"
     begin
         Rec.UpdateVATCurrencyFactorCZL();
     end;
-
+#if not CLEAN20
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Customer Posting Group', false, false)]
     local procedure CheckPostingGroupChangeOnBeforeCustomerPostingGroupValidate(var Rec: Record "Service Header"; var xRec: Record "Service Header"; CurrFieldNo: Integer)
     var
         PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
     begin
+        if PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled() then
+            exit;
         if CurrFieldNo = Rec.FieldNo("Customer Posting Group") then
             PostingGroupManagementCZL.CheckPostingGroupChange(Rec."Customer Posting Group", xRec."Customer Posting Group", Rec);
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeCheckCustomerPostingGroupChange', '', false, false)]
+    local procedure SuppressPostingGroupChangeOnBeforeCheckCustomerPostingGroupChange(var IsHandled: Boolean)
+    var
+        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
+    begin
+        if IsHandled then
+            exit;
+        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
+    end;
+#pragma warning restore AL0432
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnUpdateServLineByChangedFieldName', '', false, false)]
     local procedure UpdateServLineByChangedFieldName(ServiceHeader: Record "Service Header"; var ServiceLine: Record "Service Line"; ChangedFieldName: Text[100])

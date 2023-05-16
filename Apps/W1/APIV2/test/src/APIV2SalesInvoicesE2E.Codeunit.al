@@ -27,6 +27,7 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         CurrencyIdFieldTxt: Label 'currencyId';
         PaymentTermsIdFieldTxt: Label 'paymentTermsId';
         ShipmentMethodIdFieldTxt: Label 'shipmentMethodId';
+        PostedInvoiceIdServiceNameTxt: Label 'postedSalesInvoices';
         BlankGUID: Guid;
         DiscountAmountFieldTxt: Label 'discountAmount';
         ActionPostTxt: Label 'Microsoft.NAV.post', Locked = true;
@@ -589,7 +590,6 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("No."), Database::"Sales Header");
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Posting Description"), Database::"Sales Header");
-        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo(Id), Database::"Sales Header");
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Order Date"), Database::"Sales Header");    // it is always set as Today() in API
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FieldNo("Shipment Date"), Database::"Sales Header"); // it is always set as Today() in API
         // Special ignore case for ES
@@ -649,7 +649,7 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         ResponseText: Text;
         TargetURL: Text;
         DiscountPct: Decimal;
-        DiscountAmt: Decimal;
+        DiscountAmt, InvDiscAmount : Decimal;
     begin
         // [SCENARIO 184721] When an invoice is created, the GET Method should update the invoice and assign a total
         // [GIVEN] 2 invoices, one posted and one unposted with discount amount that should be redistributed
@@ -659,6 +659,7 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         DiscountAmt := LibraryRandom.RandDecInRange(1, ROUND(SalesHeader.Amount / 2, 1), 1);
         SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(DiscountAmt, SalesHeader);
         GetFirstSalesInvoiceLine(SalesHeader, SalesLine);
+        InvDiscAmount := SalesLine."Inv. Discount Amount";
         SalesLine.Validate(Quantity, SalesLine.Quantity + 1);
         SalesLine.Modify(true);
         SalesHeader.CALCFIELDS("Recalculate Invoice Disc.");
@@ -672,7 +673,7 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         // [THEN] the invoice should exist in the response and Invoice Discount Should be Applied
         LibraryGraphMgt.VerifyIDInJson(ResponseText);
         LibraryGraphDocumentTools.VerifySalesTotals(
-          SalesHeader, ResponseText, DiscountAmt, SalesHeader."Invoice Discount Calculation"::Amount);
+          SalesHeader, ResponseText, DiscountAmt - InvDiscAmount, SalesHeader."Invoice Discount Calculation"::Amount);
         VerifyGettingAgainKeepsETag(ResponseText, TargetURL);
     end;
 
@@ -1111,6 +1112,42 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         GetEmailParameters(DraftCreditMemoRecordRef, InvoiceEmailAddress, InvoiceEmailSubject);
         Assert.AreEqual('', CreditMemoEmailAddress, StrSubstNo(NotEmptyParameterErr, 'Address'));
         Assert.AreEqual('', CreditMemoEmailSubject, StrSubstNo(NotEmptyParameterErr, 'Subject'));
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetSalesInvoiceFromDraftId()
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempSalesInvoiceEntityAggregate: Record "Sales Invoice Entity Aggregate" temporary;
+        DocumentId: Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can map systemId with Draft Invoice SystemId
+
+        // [GIVEN] Posted sales invoice exists
+        CreatePostedSalesInvoice(SalesInvoiceHeader);
+        DocumentId := SalesInvoiceHeader."Draft Invoice SystemId";
+        Commit();
+        VerifyPostedSalesInvoice(DocumentId, TempSalesInvoiceEntityAggregate.Status::Open.AsInteger());
+
+        // [WHEN] A GET request is made to the API
+        TargetURL := LibraryGraphMgt.CreateTargetURL(SalesInvoiceHeader.SystemId, Page::"Posted Sales Invoice API", PostedInvoiceIdServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] A GET request can be made to sales invoice API
+        TargetURL := LibraryGraphMgt.CreateTargetURL(GetAPIId(ResponseText), Page::"APIV2 - Sales Invoices", InvoiceServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+        Assert.AreNotEqual('', ResponseText, 'Response JSON should not be blank');
+    end;
+
+    local procedure GetAPIId(ResponseText: Text): Text
+    var
+        APIId: Text;
+    begin
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText, 'apiId', APIId);
+        exit(APIId);
     end;
 
     local procedure CreateEmailParameters(var RecordRef: RecordRef)

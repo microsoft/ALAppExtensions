@@ -860,7 +860,7 @@ report 18011 "Purchase - Invoice GST"
 
         trigger OnOpenPage()
         begin
-            LogInteraction := SegManagement.FindInteractTmplCode(14) <> '';
+            LogInteraction := SegManagement.FindInteractionTemplateCode(14) <> '';
             LogInteractionEnable := LogInteraction;
         end;
     }

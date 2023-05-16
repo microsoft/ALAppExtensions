@@ -1,5 +1,7 @@
 table 5023 "Service Declaration Header"
 {
+    LookupPageId = "Service Declarations";
+    DrillDownPageId = "Service Declarations";
 
     fields
     {
@@ -40,6 +42,26 @@ table 5023 "Service Declaration Header"
             Caption = 'Created Date-Time';
             Editable = false;
         }
+        field(102; Reported; Boolean)
+        {
+            Caption = 'Reported';
+            Editable = false;
+        }
+        field(103; Status; Enum "Serv. Decl. Status")
+        {
+            Caption = 'Status';
+            Editable = false;
+        }
+        field(104; "Export Date"; Date)
+        {
+            Caption = 'Export Date';
+            Editable = false;
+        }
+        field(105; "Export Time"; Time)
+        {
+            Caption = 'Export Time';
+            Editable = false;
+        }
     }
 
     keys
@@ -65,6 +87,16 @@ table 5023 "Service Declaration Header"
             TestNoSeries();
             NoSeriesMgt.InitSeries(ServiceDeclarationSetup."Declaration No. Series", xRec."No. Series", 0D, "No.", "No. Series");
         end;
+    end;
+
+    trigger OnModify()
+    begin
+        CheckStatusOpen();
+    end;
+
+    trigger OnRename()
+    begin
+        CheckStatusOpen();
     end;
 
     procedure SuggestLines()
@@ -115,5 +147,21 @@ table 5023 "Service Declaration Header"
         TestField("Config. Code");
         VATReportsConfiguration.Get(VATReportsConfiguration."VAT Report Type"::"Service Declaration", "Config. Code");
     end;
-}
 
+    procedure CheckStatusOpen()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCheckStatusOpen(xRec, Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        TestField(Status, Status::Open);
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeCheckStatusOpen(xServiceDeclHeader: Record "Service Declaration Header"; ServiceDeclHeader: Record "Service Declaration Header"; var IsHandled: Boolean)
+    begin
+    end;
+}

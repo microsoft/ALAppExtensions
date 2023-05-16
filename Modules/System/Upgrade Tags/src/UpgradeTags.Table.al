@@ -6,6 +6,8 @@
 table 9999 "Upgrade Tags"
 {
     Access = Internal;
+    InherentEntitlements = rimdX;
+    InherentPermissions = rimdX;
     Caption = 'Upgrade Tags';
     DataClassification = SystemMetadata;
     DataPerCompany = false;

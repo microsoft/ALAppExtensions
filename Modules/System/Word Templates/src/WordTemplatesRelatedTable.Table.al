@@ -10,6 +10,8 @@ table 9990 "Word Templates Related Table"
 {
     Access = Internal;
     Extensible = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {
@@ -45,6 +47,10 @@ table 9990 "Word Templates Related Table"
             DataClassification = CustomerContent;
             NotBlank = true;
         }
+        field(8; "Source Record ID"; Guid)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys
@@ -57,4 +63,6 @@ table 9990 "Word Templates Related Table"
         {
         }
     }
+
+
 }

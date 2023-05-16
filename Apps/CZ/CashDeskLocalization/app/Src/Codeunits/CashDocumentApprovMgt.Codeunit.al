@@ -70,48 +70,6 @@ codeunit 11713 "Cash Document Approv. Mgt. CZP"
         end;
     end;
 
-#if not CLEAN19
-    [Obsolete('The function is replaced by the SetCashDocumentStatusToApproved subscriber.', '19.0')]
-    procedure SetStatusToApproved(var Variant: Variant)
-    var
-        ApprovalEntry: Record "Approval Entry";
-        ApprovedCashDocumentHeaderCZP: Record "Cash Document Header CZP";
-        TargetRecordRef: RecordRef;
-        SourceRecordRef: RecordRef;
-    begin
-        SourceRecordRef.GetTable(Variant);
-
-        case SourceRecordRef.Number of
-            Database::"Approval Entry":
-                begin
-                    ApprovalEntry := Variant;
-                    TargetRecordRef.Get(ApprovalEntry."Record ID to Approve");
-                    Variant := TargetRecordRef;
-#pragma warning disable AL0432
-                    SetStatusToApproved(Variant);
-#pragma warning restore AL0432
-                end;
-            Database::"Cash Document Header CZP":
-                begin
-                    SourceRecordRef.SetTable(ApprovedCashDocumentHeaderCZP);
-                    ApprovedCashDocumentHeaderCZP.Validate(Status, ApprovedCashDocumentHeaderCZP.Status::Approved);
-                    ApprovedCashDocumentHeaderCZP.Modify();
-                    Variant := ApprovedCashDocumentHeaderCZP;
-                end;
-        end;
-    end;
-
-    [Obsolete('The function is discontinued, use the DeleteApprovalEntries function from "Approvals Mgmt." instead.', '19.0')]
-    procedure DeleteApprovalEntryForRecord(Variant: Variant)
-    var
-        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
-        RecordRef: RecordRef;
-    begin
-        RecordRef.GetTable(Variant);
-        ApprovalsMgmt.DeleteApprovalEntries(RecordRef.RecordId);
-        ApprovalsMgmt.DeleteApprovalCommentLines(RecordRef.RecordId);
-    end;
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Approvals Mgmt.", 'OnPopulateApprovalEntryArgument', '', false, false)]
     local procedure ApprovalsMgmtOnPopulateApprovalEntryArgument(var RecRef: RecordRef; var ApprovalEntryArgument: Record "Approval Entry")
     begin

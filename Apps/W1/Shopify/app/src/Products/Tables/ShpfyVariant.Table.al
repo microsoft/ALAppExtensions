@@ -3,7 +3,6 @@
 /// </summary>
 table 30129 "Shpfy Variant"
 {
-    Access = Internal;
     Caption = 'Shopify Variant';
     DataClassification = CustomerContent;
 
@@ -188,10 +187,10 @@ table 30129 "Shpfy Variant"
 
     trigger OnDelete()
     var
-        ShopifyInventory: Record "Shpfy Inventory Item";
+        InventoryItem: Record "Shpfy Inventory Item";
     begin
-        ShopifyInventory.SetRange("Variant Id", Id);
-        if not ShopifyInventory.IsEmpty then
-            ShopifyInventory.DeleteAll();
+        InventoryItem.SetRange("Variant Id", Id);
+        if not InventoryItem.IsEmpty then
+            InventoryItem.DeleteAll();
     end;
 }

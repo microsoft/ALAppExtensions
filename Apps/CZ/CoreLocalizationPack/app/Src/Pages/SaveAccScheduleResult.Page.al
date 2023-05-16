@@ -17,7 +17,9 @@ page 31202 "Save Acc. Schedule Result CZL"
                     Lookup = true;
                     TableRelation = "Acc. Schedule Name";
                     ToolTip = 'Specifies the name of account schedule.';
-
+#if CLEAN22
+                    Editable = false;
+#else
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         EnteredSchedName: Text[10];
@@ -33,6 +35,7 @@ page 31202 "Save Acc. Schedule Result CZL"
                     begin
                         UpdateColumnLayoutName();
                     end;
+#endif
                 }
                 field(ColumnLayoutName; ColumnLayoutName)
                 {
@@ -41,6 +44,9 @@ page 31202 "Save Acc. Schedule Result CZL"
                     Lookup = true;
                     TableRelation = "Column Layout Name".Name;
                     ToolTip = 'Specifies the name of the column layout that you want to use in the window.';
+#if CLEAN22
+                    Editable = false;
+#else
 
                     trigger OnLookup(var Text: Text): Boolean
                     var
@@ -57,6 +63,7 @@ page 31202 "Save Acc. Schedule Result CZL"
                     begin
                         AccSchedManagement.CheckColumnName(ColumnLayoutName);
                     end;
+#endif
                 }
                 field(DateFilter; DateFilter)
                 {
@@ -91,30 +98,40 @@ page 31202 "Save Acc. Schedule Result CZL"
     }
 
     var
+#if not CLEAN21
         AccScheduleName: Record "Acc. Schedule Name";
+#endif
         AccScheduleLine: Record "Acc. Schedule Line";
+#if not CLEAN22
         AccSchedManagement: Codeunit AccSchedManagement;
+#endif
         AccSchedName: Code[10];
         ColumnLayoutName: Code[10];
         DateFilter: Text;
         Description: Text[50];
         UseAmtsInAddCurr: Boolean;
-
+#if not CLEAN22
+    [Obsolete('The function will be removed.', '22.0')]
     procedure UpdateColumnLayoutName()
     begin
         AccSchedManagement.CheckName(AccSchedName);
+#if not CLEAN21
         AccScheduleName.Get(AccSchedName);
         if AccScheduleName."Default Column Layout" <> '' then
             ColumnLayoutName := AccScheduleName."Default Column Layout";
+#endif
     end;
+#endif
 
     procedure SetParameters(NewAccSchedName: Code[10]; NewColumnLayoutName: Code[10]; NewDateFilter: Text; NewUseAmtsInAddCurr: Boolean)
     begin
         AccSchedName := NewAccSchedName;
+#if not CLEAN21
         if NewColumnLayoutName = '' then
             UpdateColumnLayoutName()
         else
-            ColumnLayoutName := NewColumnLayoutName;
+#endif
+        ColumnLayoutName := NewColumnLayoutName;
         DateFilter := NewDateFilter;
         UseAmtsInAddCurr := NewUseAmtsInAddCurr;
     end;

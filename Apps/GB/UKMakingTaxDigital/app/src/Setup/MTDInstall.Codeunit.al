@@ -82,9 +82,6 @@ codeunit 10539 "MTD Install"
                 "Auto Receive Period CU ID" := Codeunit::"MTD Auto Receive Period";
                 "Receive Submitted Return CU ID" := Codeunit::"MTD Receive Submitted";
                 InitProductionMode(VATReportSetup);
-#if not CLEAN19
-                "MTD Disable FraudPrev. Headers" := false;
-#endif
                 Modify();
             end;
         end;
@@ -131,15 +128,6 @@ codeunit 10539 "MTD Install"
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Gov Test Scenario"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Enabled"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP Public IP Service URL"));
-#if not CLEAN19
-        DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Disable FraudPrev. Headers"));
-        DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP WinClient Due DateTime"));
-        DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP WebClient Due DateTime"));
-        DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP Batch Due DateTime"));
-        DataClassificationMgt.SetFieldToPersonal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP WinClient Json"));
-        DataClassificationMgt.SetFieldToPersonal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP WebClient Json"));
-        DataClassificationMgt.SetFieldToPersonal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP Batch Json"));
-#endif
     end;
 
     local procedure MoveTableMTDLiability();

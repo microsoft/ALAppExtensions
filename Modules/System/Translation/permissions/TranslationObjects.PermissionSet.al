@@ -8,8 +8,6 @@ permissionset 3713 "Translation - Objects"
     Access = Internal;
     Assignable = false;
 
-    Permissions = Codeunit "Translation Implementation" = X,
-                  Codeunit Translation = X,
-                  Page Translation = X,
-                  Table Translation = X;
+    Permissions = Codeunit Translation = X,
+                  Page Translation = X;
 }

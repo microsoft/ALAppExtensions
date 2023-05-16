@@ -7,7 +7,5 @@ permissionset 1887 "Environment Cleanup - Read"
 {
     Assignable = false;
 
-    IncludedPermissionSets = "Environment Cleanup - Objects";
-
     Permissions = tabledata Company = r;
 }

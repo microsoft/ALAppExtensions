@@ -11,6 +11,8 @@ table 9861 "Permission Set Relation Buffer"
     Access = Internal;
     Caption = 'Permission Set Relation Buffer';
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {
@@ -79,6 +81,18 @@ table 9861 "Permission Set Relation Buffer"
         field(12; "Inclusion Status"; Text[50])
         {
             Caption = 'Included';
+        }
+        field(13; Name; Text[30])
+        {
+            CalcFormula = Lookup("Aggregate Permission Set".Name Where("Role ID" = Field("Role ID")));
+            Caption = 'Name';
+            FieldClass = FlowField;
+        }
+        field(14; "Related Name"; Text[30])
+        {
+            CalcFormula = Lookup("Aggregate Permission Set".Name Where("Role ID" = Field("Related Role ID")));
+            Caption = 'Related Name';
+            FieldClass = FlowField;
         }
     }
 

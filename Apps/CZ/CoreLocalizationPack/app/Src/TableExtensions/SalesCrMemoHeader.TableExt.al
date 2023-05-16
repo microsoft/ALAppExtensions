@@ -87,7 +87,15 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
         {
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
-
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Replaced by VAT Reporting Date.';
+#if not CLEAN22
             trigger OnValidate()
             var
                 VATEntry: Record "VAT Entry";
@@ -101,9 +109,9 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
                     "VAT Date CZL" := xRec."VAT Date CZL";
                     exit;
                 end;
-
+#pragma warning disable AL0432
                 CheckVATDateCZL();
-
+#pragma warning restore AL0432
                 VATEntry.LockTable();
                 VATEntry.SetCurrentKey("Document No.", "Posting Date");
                 VATEntry.SetRange("Document Type", VATEntry."Document Type"::"Credit Memo");
@@ -133,6 +141,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
                         Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
                     until GLEntry.Next() = 0;
             end;
+#endif
         }
         field(11781; "Registration No. CZL"; Text[20])
         {
@@ -166,12 +175,18 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
             DataClassification = CustomerContent;
         }
     }
+#if not CLEAN22
+
+    [Obsolete('The VAT Date CZL will be replaced by VAT Reporting Date.', '22.0')]
     procedure CheckVATDateCZL()
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
         VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
         VATDateRangeErr: Label 'VAT Date %1 is not within your range of allowed VAT dates.\Correct the date or change VAT posting period.', Comment = '%1 = VAT Date';
     begin
+        if ReplaceVATDateMgtCZL.IsEnabled() then
+            exit;
         GeneralLedgerSetup.Get();
         if GeneralLedgerSetup."Use VAT Date CZL" then begin
             TestField("VAT Date CZL");
@@ -180,4 +195,5 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
             VATDateHandlerCZL.VATPeriodCZLCheck("VAT Date CZL");
         end;
     end;
+#endif
 }

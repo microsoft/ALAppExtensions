@@ -91,9 +91,6 @@ page 31175 "Advance Letter Appl. Edit CZZ"
                 ToolTip = 'Show advance letter.';
                 ApplicationArea = Basic, Suite;
                 Image = "Invoicing-Document";
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
 
                 trigger OnAction()
                 var
@@ -115,6 +112,17 @@ page 31175 "Advance Letter Appl. Edit CZZ"
                             end;
                     end;
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(AdvanceCard_Promoted; AdvanceCard)
+                {
+                }
             }
         }
     }

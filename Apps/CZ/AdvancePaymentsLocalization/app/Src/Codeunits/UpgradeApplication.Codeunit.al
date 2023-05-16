@@ -33,6 +33,7 @@ codeunit 31088 "Upgrade Application CZZ"
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion210PerCompanyUpgradeTag()) then
             if AdvanceLetterTemplateCZZ.IsEmpty() then // feature AdvancePaymentsLocalizationForCzech was disabled
                 InstallApplicationCZZ.CopyData();
+        UpgradeCustomerNoInSalesAdvLetterEntries();
     end;
 
     local procedure UpgradeAdvancePaymentsReportReportSelections();
@@ -66,6 +67,24 @@ codeunit 31088 "Upgrade Application CZZ"
             ReportSelectionHandlerCZZ.InsertRepSelection(Enum::"Report Selection Usage"::"Sales Advance VAT Document CZZ", '1', AdvanceLetterTemplateCZZ."Invoice/Cr. Memo Report ID")
         else
             ReportSelectionHandlerCZZ.InsertRepSelection(Enum::"Report Selection Usage"::"Sales Advance VAT Document CZZ", '1', Report::"Sales - Advance VAT Doc. CZZ");
+    end;
+
+    local procedure UpgradeCustomerNoInSalesAdvLetterEntries()
+    var
+        SalesAdvLetterEntry: Record "Sales Adv. Letter Entry CZZ";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetSalesAdvLetterEntryCustomerNoUpgradeTag()) then
+            exit;
+
+        SalesAdvLetterEntry.SetLoadFields("Sales Adv. Letter No.");
+        SalesAdvLetterEntry.SetRange("Customer No.", '');
+        if SalesAdvLetterEntry.FindSet() then
+            repeat
+                SalesAdvLetterEntry."Customer No." := SalesAdvLetterEntry.GetCustomerNo();
+                SalesAdvLetterEntry.Modify();
+            until SalesAdvLetterEntry.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetSalesAdvLetterEntryCustomerNoUpgradeTag());
     end;
 
     local procedure SetDatabaseUpgradeTags();

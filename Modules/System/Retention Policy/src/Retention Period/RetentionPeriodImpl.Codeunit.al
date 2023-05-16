@@ -6,6 +6,8 @@
 codeunit 3900 "Retention Period Impl." implements "Retention Period"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         MaxDateDateFormulaTxt: Label '<+CY+%1Y>', Locked = true;

@@ -6,6 +6,8 @@
 codeunit 8892 "Email Scenario Impl."
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = TableData "Email Scenario" = rimd;
 
     procedure GetEmailAccount(Scenario: Enum "Email Scenario"; var EmailAccount: Record "Email Account"): Boolean

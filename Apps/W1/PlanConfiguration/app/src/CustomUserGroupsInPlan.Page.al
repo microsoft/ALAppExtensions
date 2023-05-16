@@ -1,3 +1,4 @@
+#if not CLEAN22
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -15,6 +16,9 @@ page 9059 "Custom User Groups In Plan"
     Editable = true;
     Permissions = tabledata "Custom User Group In Plan" = rimd;
     Extensible = false;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Use Custom Permission Sets in Plan page instead.';
+    ObsoleteTag = '22.0';
 
     layout
     {
@@ -74,3 +78,4 @@ page 9059 "Custom User Groups In Plan"
     var
         LocalPlanId: Guid;
 }
+#endif

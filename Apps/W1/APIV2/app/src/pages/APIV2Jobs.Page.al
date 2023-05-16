@@ -31,6 +31,13 @@ page 30050 "APIV2 - Jobs"
                     Caption = 'Display Name';
                 }
             }
+            part(documentAttachments; "APIV2 - Document Attachments")
+            {
+                Caption = 'Document Attachments';
+                EntityName = 'documentAttachment';
+                EntitySetName = 'documentAttachments';
+                SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Job);
+            }
         }
     }
 }

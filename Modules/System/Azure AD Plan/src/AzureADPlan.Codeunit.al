@@ -73,7 +73,9 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Updates license plans for a user.
     /// </summary>
+#if not CLEAN22
     /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+#endif
     /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user for whom to update license information.</param>
     /// <param name="GraphUserInfo">The graph user corresponding to the user to update, and containing the information about the plans assigned to the user.</param>
@@ -87,7 +89,9 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Updates license plans for a user.
     /// </summary>
+#if not CLEAN22
     /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+#endif
     /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user for whom to update license information.</param>
     /// <param name="GraphUserInfo">The graph user corresponding to the user to update, and containing the information about the plans assigned to the user.</param>
@@ -103,7 +107,9 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Updates license plans for a user.
     /// </summary>
+#if not CLEAN22
     /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+#endif
     /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user for whom to update license information.</param>
     [Scope('OnPrem')]
@@ -134,7 +140,9 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Updates license plans for a user.
     /// </summary>
+#if not CLEAN22
     /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+#endif
     /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user for whom to update license information.</param>
     /// <param name="AppendPermissionsOnNewPlan">Add permissions from the new license plan to the user. Existing permissions will not be affected.</param>
@@ -149,7 +157,9 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Updates plans for all users.
     /// </summary>
+#if not CLEAN22
     /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+#endif
     /// <raises>OnUpdateUserAccessForSaaS</raises>
     [Scope('OnPrem')]
     [NonDebuggable]
@@ -161,7 +171,9 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Refreshes the user plans assigned to the given user.
     /// </summary>
+#if not CLEAN22
     /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
+#endif
     /// <raises>OnUpdateUserAccessForSaaS</raises>
     /// <param name="UserSecurityId">The user to update.</param>
     [Scope('OnPrem')]
@@ -255,7 +267,6 @@ codeunit 9016 "Azure AD Plan"
     /// <summary>
     /// Checks whether the plan configuration mixes different plans.
     /// </summary>
-    /// <raises>The OnCanCurrentUserManagePlansAndGroups event to ensure this API is called with the proper authorization.</raises>
     [Scope('OnPrem')]
     [NonDebuggable]
     procedure CheckMixedPlans()
@@ -356,18 +367,21 @@ codeunit 9016 "Azure AD Plan"
         exit(AzureAdPlanImpl.IsUserExternal());
     end;
 
+#if not CLEAN22
     /// <summary>
     /// Integration event, raised from <see cref="UpdateUserPlans"/>.
     /// Subscribe to this event to remove related user groups from the user.
     /// </summary>
     /// <param name="PlanID">The plan to remove.</param>
     /// <param name="UserSecurityID">The user to remove.</param>
+    [Obsolete('User groups are deprecated.', '22.0')]
     [IntegrationEvent(false, false)]
     [Scope('OnPrem')]
     [NonDebuggable]
     internal procedure OnRemoveUserGroupsForUserAndPlan(PlanID: Guid; UserSecurityID: Guid)
     begin
     end;
+#endif
 
     /// <summary>
     /// Integration event, raised from <see cref="UpdateUserPlans"/>.
@@ -382,15 +396,18 @@ codeunit 9016 "Azure AD Plan"
     begin
     end;
 
+#if not CLEAN22
     /// <summary>
     /// Integration event, raised from <see cref="CheckMixedPlans"/>.
     /// Subscribe to this event to check whether the user can manage plans and groups
     /// </summary>
     /// <param name="CanManage">Whether the user can manage plans and groups</param>
+    [Obsolete('Checking for user access is done within the Azure AD Module.', '22.0')]
     [IntegrationEvent(false, false)]
     [Scope('OnPrem')]
     [NonDebuggable]
     internal procedure OnCanCurrentUserManagePlansAndGroups(var CanManage: Boolean);
     begin
     end;
+#endif
 }

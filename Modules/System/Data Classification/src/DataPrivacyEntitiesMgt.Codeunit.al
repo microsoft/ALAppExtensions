@@ -6,6 +6,8 @@
 codeunit 1758 "Data Privacy Entities Mgt."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Data Privacy Entities" = r;
 
     var

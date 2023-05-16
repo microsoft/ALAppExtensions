@@ -139,14 +139,12 @@ table 1692 "Posted Bank Deposit Line"
     var
         DimensionManagement: Codeunit DimensionManagement;
 
-    [Scope('OnPrem')]
-    procedure ShowDimensions()
+    internal procedure ShowDimensions()
     begin
         DimensionManagement.ShowDimensionSet("Dimension Set ID", TableCaption() + ' ' + "Document No." + ' ' + Format("Line No."));
     end;
 
-    [Scope('OnPrem')]
-    procedure ShowAccountCard()
+    internal procedure ShowAccountCard()
     var
         GLAccount: Record "G/L Account";
         Customer: Record Customer;
@@ -177,8 +175,7 @@ table 1692 "Posted Bank Deposit Line"
         end;
     end;
 
-    [Scope('OnPrem')]
-    procedure ShowAccountLedgerEntries()
+    internal procedure ShowAccountLedgerEntries()
     var
         GLEntry: Record "G/L Entry";
         CustLedgerEntry: Record "Cust. Ledger Entry";

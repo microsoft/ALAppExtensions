@@ -53,6 +53,10 @@ codeunit 31362 "Match Bank Payment CZB"
                     GenJournalLine.SetFilter("Constant Symbol CZL", SearchRuleLineCZB."Constant Symbol Filter");
                 if SearchRuleLineCZB."Specific Symbol Filter" <> '' then
                     GenJournalLine.SetFilter("Specific Symbol CZL", SearchRuleLineCZB."Specific Symbol Filter");
+                if SearchRuleLineCZB."Bank Account Filter" <> '' then
+                    GenJournalLine.SetFilter("Bank Account No. CZL", SearchRuleLineCZB."Bank Account Filter");
+                if SearchRuleLineCZB."IBAN Filter" <> '' then
+                    GenJournalLine.SetFilter("IBAN CZL", SearchRuleLineCZB."IBAN Filter");
                 case SearchRuleLineCZB."Banking Transaction Type" of
                     SearchRuleLineCZB."Banking Transaction Type"::Credit:
                         GenJournalLine.SetFilter("Amount (LCY)", '>0');
@@ -84,6 +88,9 @@ codeunit 31362 "Match Bank Payment CZB"
                 GenJournalLine.SetRange("Variable Symbol CZL");
                 GenJournalLine.SetRange("Constant Symbol CZL");
                 GenJournalLine.SetRange("Specific Symbol CZL");
+                GenJournalLine.SetRange("Bank Account No. CZL");
+                GenJournalLine.SetRange("IBAN CZL");
+                GenJournalLine.SetRange("Amount (LCY)");
             end else begin
                 // search rule
                 TempMatchBankPaymentBufferCZB.Reset();
@@ -95,29 +102,11 @@ codeunit 31362 "Match Bank Payment CZB"
                             FillMatchBankPaymentBufferCustomer();
                             FillMatchBankPaymentBufferVendor();
                             FillMatchBankPaymentBufferEmployee();
-#if not CLEAN19
-                            FillMatchBankPaymentBufferSalesAdvance();
-                            FillMatchBankPaymentBufferPurchAdvance();
-#endif
                         end;
                     SearchRuleLineCZB."Search Scope"::Customer:
-#if not CLEAN19
-                        begin
-                            FillMatchBankPaymentBufferCustomer();
-                            FillMatchBankPaymentBufferSalesAdvance();
-                        end;
-#else
                         FillMatchBankPaymentBufferCustomer();
-#endif
                     SearchRuleLineCZB."Search Scope"::Vendor:
-#if not CLEAN19
-                        begin
-                            FillMatchBankPaymentBufferVendor();
-                            FillMatchBankPaymentBufferPurchAdvance();
-                        end;
-#else
                         FillMatchBankPaymentBufferVendor();
-#endif
                     SearchRuleLineCZB."Search Scope"::Employee:
                         FillMatchBankPaymentBufferEmployee();
                 end;
@@ -172,30 +161,22 @@ codeunit 31362 "Match Bank Payment CZB"
                                 GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Employee);
                         end;
                         GenJournalLine.Validate("Account No.", TempMatchBankPaymentBufferCZB."Account No.");
-#if not CLEAN19
-#pragma warning disable AL0432
-                        if TempMatchBankPaymentBufferCZB."Letter No." = '' then begin
-#pragma warning restore AL0432
-#endif
-                            if not SearchRuleLineCZB."Match Related Party Only" then begin
-                                GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
-                                if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
-                                    if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
-                                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
-                                    if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
-                                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
-                                end;
-                                GenJournalLine.SetSuppressCommit(true);
-                                GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
+                        if not SearchRuleLineCZB."Match Related Party Only" then begin
+                            GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
+                            if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
+                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
+                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
+                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
+                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
                             end;
-                            if BankAccount."Dimension from Apply Entry CZB" then
-                                GenJournalLine.Validate("Dimension Set ID", TempMatchBankPaymentBufferCZB."Dimension Set ID");
-#if not CLEAN19
-#pragma warning disable AL0432
-                        end else
-                            ApplyAdvanceLetter(GenJournalLine, TempMatchBankPaymentBufferCZB."Letter No.");
-#pragma warning restore AL0432
-#endif
+                            if GenJournalLine."Account Type" = GenJournalLine."Account Type"::Employee then
+                                if GenJournalLine.Amount > 0 then
+                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
+                            GenJournalLine.SetSuppressCommit(true);
+                            GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
+                        end;
+                        if BankAccount."Dimension from Apply Entry CZB" then
+                            GenJournalLine.Validate("Dimension Set ID", TempMatchBankPaymentBufferCZB."Dimension Set ID");
                         if GenJournalLine."Currency Code" <> OriginalGenJournalLine."Currency Code" then
                             GenJournalLine.Validate("Currency Code", OriginalGenJournalLine."Currency Code");
                         if GenJournalLine."Currency Factor" <> OriginalGenJournalLine."Currency Factor" then
@@ -399,240 +380,6 @@ codeunit 31362 "Match Bank Payment CZB"
                 TempMatchBankPaymentBufferCZB.InsertFromEmployeeLedgerEntry(EmployeeLedgerEntry);
             until EmployeeLedgerEntry.Next() = 0;
     end;
-#if not CLEAN19
-#pragma warning disable AL0432
-    local procedure FillMatchBankPaymentBufferSalesAdvance()
-    var
-        CustomerBankAccount: Record "Customer Bank Account";
-        SalesAdvanceLetterHeader: Record "Sales Advance Letter Header";
-        InsertToBuffer: Boolean;
-        IsHandled: Boolean;
-    begin
-        OnBeforeFillMatchBankPaymentBufferSalesAdvance(GenJournalLine, SearchRuleLineCZB, TempMatchBankPaymentBufferCZB, IsHandled);
-        if IsHandled then
-            exit;
-
-        SalesAdvanceLetterHeader.SetRange(Closed, false);
-        SalesAdvanceLetterHeader.SetRange(Status, SalesAdvanceLetterHeader.Status::"Pending Payment");
-        if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) and
-           (GenJournalLine."Account No." <> '')
-        then
-            SalesAdvanceLetterHeader.SetRange("Bill-to Customer No.", GenJournalLine."Account No.");
-        if SearchRuleLineCZB."Bank Account No." then begin
-            if (GenJournalLine."Bank Account No. CZL" = '') and
-               (GenJournalLine."Bank Account Code CZL" = '') and
-               (GenJournalLine."IBAN CZL" = '')
-            then
-                exit;
-            if SalesAdvanceLetterHeader.GetFilter("Bill-to Customer No.") <> '' then
-                SalesAdvanceLetterHeader.CopyFilter("Bill-to Customer No.", CustomerBankAccount."Customer No.");
-            if GenJournalLine."Bank Account Code CZL" <> '' then
-                CustomerBankAccount.SetRange(Code, GenJournalLine."Bank Account Code CZL");
-            if GenJournalLine."Bank Account No. CZL" <> '' then
-                CustomerBankAccount.SetRange("Bank Account No.", GenJournalLine."Bank Account No. CZL");
-            if GenJournalLine."IBAN CZL" <> '' then
-                CustomerBankAccount.SetRange(IBAN, GenJournalLine."IBAN CZL");
-            if CustomerBankAccount.Count() <> 1 then
-                exit;
-            CustomerBankAccount.FindFirst();
-            SalesAdvanceLetterHeader.SetRange("Bill-to Customer No.", CustomerBankAccount."Customer No.");
-        end;
-        if SearchRuleLineCZB."Variable Symbol" then begin
-            if GenJournalLine."Variable Symbol CZL" = '' then
-                exit;
-            SalesAdvanceLetterHeader.SetRange("Variable Symbol", GenJournalLine."Variable Symbol CZL");
-        end;
-        if SearchRuleLineCZB."Specific Symbol" then begin
-            if GenJournalLine."Specific Symbol CZL" = '' then
-                exit;
-            SalesAdvanceLetterHeader.SetRange("Specific Symbol", GenJournalLine."Specific Symbol CZL");
-        end;
-        if SearchRuleLineCZB."Constant Symbol" then begin
-            if GenJournalLine."Constant Symbol CZL" = '' then
-                exit;
-            SalesAdvanceLetterHeader.SetRange("Constant Symbol", GenJournalLine."Constant Symbol CZL");
-        end;
-        if SalesAdvanceLetterHeader.FindSet() then
-            repeat
-                InsertToBuffer := true;
-                if SearchRuleLineCZB.Amount then
-                    InsertToBuffer := IsRemAmountInRange(SalesAdvanceLetterHeader, GenJournalLine.IsLocalCurrencyCZB());
-                if InsertToBuffer then
-                    TempMatchBankPaymentBufferCZB.InsertFromSalesAdvance(SalesAdvanceLetterHeader, GenJournalLine.IsLocalCurrencyCZB())
-            until SalesAdvanceLetterHeader.Next() = 0;
-    end;
-
-    local procedure FillMatchBankPaymentBufferPurchAdvance()
-    var
-        VendorBankAccount: Record "Vendor Bank Account";
-        PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header";
-        InsertToBuffer: Boolean;
-        IsHandled: Boolean;
-    begin
-        OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(GenJournalLine, SearchRuleLineCZB, TempMatchBankPaymentBufferCZB, IsHandled);
-        if IsHandled then
-            exit;
-
-        PurchAdvanceLetterHeader.SetRange(Closed, false);
-        PurchAdvanceLetterHeader.SetRange(Status, PurchAdvanceLetterHeader.Status::"Pending Payment");
-        if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) and
-           (GenJournalLine."Account No." <> '')
-        then
-            PurchAdvanceLetterHeader.SetRange("Pay-to Vendor No.", GenJournalLine."Account No.");
-        if SearchRuleLineCZB."Bank Account No." then begin
-            if (GenJournalLine."Bank Account No. CZL" = '') and
-               (GenJournalLine."Bank Account Code CZL" = '') and
-               (GenJournalLine."IBAN CZL" = '')
-            then
-                exit;
-            if PurchAdvanceLetterHeader.GetFilter("Pay-to Vendor No.") <> '' then
-                PurchAdvanceLetterHeader.CopyFilter("Pay-to Vendor No.", VendorBankAccount."Vendor No.");
-            if GenJournalLine."Bank Account Code CZL" <> '' then
-                VendorBankAccount.SetRange(Code, GenJournalLine."Bank Account Code CZL");
-            if GenJournalLine."Bank Account No. CZL" <> '' then
-                VendorBankAccount.SetRange("Bank Account No.", GenJournalLine."Bank Account No. CZL");
-            if GenJournalLine."IBAN CZL" <> '' then
-                VendorBankAccount.SetRange(IBAN, GenJournalLine."IBAN CZL");
-            if VendorBankAccount.Count() <> 1 then
-                exit;
-            VendorBankAccount.FindFirst();
-            PurchAdvanceLetterHeader.SetRange("Pay-to Vendor No.", VendorBankAccount."Vendor No.");
-        end;
-        if SearchRuleLineCZB."Variable Symbol" then begin
-            if GenJournalLine."Variable Symbol CZL" = '' then
-                exit;
-            PurchAdvanceLetterHeader.SetRange("Variable Symbol", GenJournalLine."Variable Symbol CZL");
-        end;
-        if SearchRuleLineCZB."Specific Symbol" then begin
-            if GenJournalLine."Specific Symbol CZL" = '' then
-                exit;
-            PurchAdvanceLetterHeader.SetRange("Specific Symbol", GenJournalLine."Specific Symbol CZL");
-        end;
-        if SearchRuleLineCZB."Constant Symbol" then begin
-            if GenJournalLine."Constant Symbol CZL" = '' then
-                exit;
-            PurchAdvanceLetterHeader.SetRange("Constant Symbol", GenJournalLine."Constant Symbol CZL");
-        end;
-        if PurchAdvanceLetterHeader.FindSet() then
-            repeat
-                InsertToBuffer := true;
-                if SearchRuleLineCZB.Amount then
-                    InsertToBuffer := IsRemAmountInRange(PurchAdvanceLetterHeader, GenJournalLine.IsLocalCurrencyCZB());
-                if InsertToBuffer then
-                    TempMatchBankPaymentBufferCZB.InsertFromPurchAdvance(PurchAdvanceLetterHeader, GenJournalLine.IsLocalCurrencyCZB())
-            until PurchAdvanceLetterHeader.Next() = 0;
-    end;
-
-    local procedure IsRemAmountInRange(SalesAdvanceLetterHeader: Record "Sales Advance Letter Header"; UseLCYAmounts: Boolean): Boolean
-    var
-        RemAmount: Decimal;
-    begin
-        if UseLCYAmounts then
-            RemAmount := SalesAdvanceLetterHeader.GetRemAmountLCY()
-        else
-            RemAmount := SalesAdvanceLetterHeader.GetRemAmount();
-        exit((RemAmount >= MinAmount) and (RemAmount <= MaxAmount));
-    end;
-
-    local procedure IsRemAmountInRange(PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header"; UseLCYAmounts: Boolean): Boolean
-    var
-        RemAmount: Decimal;
-    begin
-        if UseLCYAmounts then
-            RemAmount := -PurchAdvanceLetterHeader.GetRemAmountLCY()
-        else
-            RemAmount := -PurchAdvanceLetterHeader.GetRemAmount();
-        exit((RemAmount >= MinAmount) and (RemAmount <= MaxAmount));
-    end;
-
-    local procedure ApplyAdvanceLetter(var GenJournalLine: Record "Gen. Journal Line"; LetterNo: Code[20])
-    var
-        LinkCode: Code[30];
-        AppliedAmount: Decimal;
-        PostingGroupCode: Code[20];
-    begin
-        if SearchRuleLineCZB."Match Related Party Only" then
-            exit;
-        LinkCode := GenJournalLine."Document No." + ' ' + Format(GenJournalLine."Line No.");
-        if GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer then
-            AppliedAmount := ApplySalesAdvanceLetter(LetterNo, LinkCode, GenJournalLine.Amount, PostingGroupCode)
-        else
-            AppliedAmount := ApplyPurchaseAdvanceLetter(LetterNo, LinkCode, GenJournalLine.Amount, PostingGroupCode);
-        if AppliedAmount <> 0 then begin
-            GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
-            GenJournalLine.Validate(Prepayment, true);
-            GenJournalLine.Validate("Prepayment Type", GenJournalLine."Prepayment Type"::Advance);
-            GenJournalLine.Validate("Advance Letter Link Code", LinkCode);
-            GenJournalLine.Validate("Posting Group", PostingGroupCode);
-        end;
-    end;
-
-    local procedure ApplySalesAdvanceLetter(LetterNo: Code[20]; LinkCode: Code[30]; AmountToApply: Decimal; var PostingGroupCode: Code[20]) AppliedAmount: Decimal
-    var
-        SalesAdvanceLetterHeader: Record "Sales Advance Letter Header";
-        SalesAdvanceLetterLine: Record "Sales Advance Letter Line";
-        AmountToLink: Decimal;
-    begin
-        if LinkCode = '' then
-            exit;
-        AppliedAmount := 0;
-        AmountToApply := -AmountToApply;
-        SalesAdvanceLetterHeader.Get(LetterNo);
-        PostingGroupCode := SalesAdvanceLetterHeader."Customer Posting Group";
-        SalesAdvanceLetterLine.SetRange("Letter No.", SalesAdvanceLetterHeader."No.");
-        SalesAdvanceLetterLine.SetRange("Amount To Link", AmountToApply);
-        if SalesAdvanceLetterLine.IsEmpty() then
-            SalesAdvanceLetterLine.SetFilter("Amount To Link", '<>%1', 0);
-        if SalesAdvanceLetterLine.FindSet() then
-            repeat
-                SalesAdvanceLetterLine."Link Code" := LinkCode;
-                AmountToLink := SalesAdvanceLetterLine."Amount To Link";
-                if AmountToLink >= AmountToApply then begin
-                    SalesAdvanceLetterLine."Amount Linked To Journal Line" := AmountToApply;
-                    AppliedAmount += AmountToApply;
-                    AmountToApply := 0;
-                end else begin
-                    SalesAdvanceLetterLine."Amount Linked To Journal Line" := AmountToLink;
-                    AppliedAmount += AmountToLink;
-                    AmountToApply -= AmountToLink;
-                end;
-                SalesAdvanceLetterLine.Modify();
-            until (SalesAdvanceLetterLine.Next() = 0) or (AmountToApply <= 0);
-    end;
-
-    local procedure ApplyPurchaseAdvanceLetter(LetterNo: Code[20]; LinkCode: Code[30]; AmountToApply: Decimal; var PostingGroupCode: Code[20]) AppliedAmount: Decimal
-    var
-        PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header";
-        PurchAdvanceLetterLine: Record "Purch. Advance Letter Line";
-        AmountToLink: Decimal;
-    begin
-        if LinkCode = '' then
-            exit;
-        AppliedAmount := 0;
-        PurchAdvanceLetterHeader.Get(LetterNo);
-        PostingGroupCode := PurchAdvanceLetterHeader."Vendor Posting Group";
-        PurchAdvanceLetterLine.SetRange("Letter No.", PurchAdvanceLetterHeader."No.");
-        PurchAdvanceLetterLine.SetRange("Amount To Link", AmountToApply);
-        if PurchAdvanceLetterLine.IsEmpty() then
-            PurchAdvanceLetterLine.SetFilter("Amount To Link", '<>%1', 0);
-        if PurchAdvanceLetterLine.FindSet() then
-            repeat
-                PurchAdvanceLetterLine."Link Code" := LinkCode;
-                AmountToLink := PurchAdvanceLetterLine."Amount To Link";
-                if AmountToLink >= AmountToApply then begin
-                    PurchAdvanceLetterLine."Amount Linked To Journal Line" := -AmountToApply;
-                    AppliedAmount += AmountToApply;
-                    AmountToApply := 0;
-                end else begin
-                    PurchAdvanceLetterLine."Amount Linked To Journal Line" := -AmountToLink;
-                    AppliedAmount += AmountToLink;
-                    AmountToApply -= AmountToLink;
-                end;
-                PurchAdvanceLetterLine.Modify();
-            until (PurchAdvanceLetterLine.Next() = 0) or (AmountToApply <= 0);
-    end;
-#pragma warning restore AL0432
-#endif
 
     procedure GetAmountRangeForTolerance(BankAccount: Record "Bank Account"; StatementAmount: Decimal; var MinAmount: Decimal; var MaxAmount: Decimal)
     var
@@ -673,14 +420,16 @@ codeunit 31362 "Match Bank Payment CZB"
     local procedure OnAfterValidateGenJournalLine(var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB")
     begin
     end;
-#if not CLEAN19
+#if not CLEAN23
 
     [IntegrationEvent(false, false)]
+    [Obsolete('The event is no longer triggered.', '23.0')]
     local procedure OnBeforeFillMatchBankPaymentBufferSalesAdvance(GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var IsHandled: Boolean);
     begin
     end;
 
     [IntegrationEvent(false, false)]
+    [Obsolete('The event is no longer triggered.', '23.0')]
     local procedure OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var IsHandled: Boolean);
     begin
     end;

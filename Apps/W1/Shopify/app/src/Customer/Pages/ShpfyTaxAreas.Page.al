@@ -14,6 +14,11 @@ page 30109 "Shpfy Tax Areas"
         {
             repeater(General)
             {
+                field("County Code"; Rec."County Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the code of sub-regions for a county, such as provinces or states.';
+                }
                 field(County; Rec.County)
                 {
                     ApplicationArea = All;

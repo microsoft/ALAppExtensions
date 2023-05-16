@@ -31,6 +31,7 @@ codeunit 139833 "APIV2 - Attachments E2E"
         CannotModifyKeyFieldErr: Label 'You cannot change the value of the key field %1.', Locked = true;
         JournalServiceNameTxt: Label 'journals';
         JournalLineServiceNameTxt: Label 'journalLines';
+        PurchaseCreditMemoServiceNameTxt: Label 'purchaseCreditMemos';
 
     [Test]
     procedure TestGetJournalLineAttachments()
@@ -956,6 +957,152 @@ codeunit 139833 "APIV2 - Attachments E2E"
         Assert.ExpectedError(StrSubstNo(CannotModifyKeyFieldErr, 'parentId'));
     end;
 
+    [Test]
+    procedure TestGetPostedPurchaseCreditMemoAttachments()
+    var
+        DocumentRecordRef: RecordRef;
+        AttachmentId: array[2] of Guid;
+        DocumentId: Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can retrieve all records from the Attachments API.
+        // [GIVEN] 2 Attachments in the Incoming Document Attachment table
+        CreatePostedPurchaseCreditMemo(DocumentRecordRef, DocumentId);
+        CreateAttachments(DocumentRecordRef, AttachmentId);
+        Commit();
+
+        // [WHEN] A GET request is made to the Attachment API.
+        TargetURL := CreateAttachmentsURLWithFilter(DocumentId, Format(AttachmentEntityBufferDocumentType::"Purchase Credit Memo"));
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] The 2 Attachments should exist in the response
+        GetAndVerifyIDFromJSON(ResponseText, AttachmentId);
+    end;
+
+    [Test]
+    procedure TestGetDraftPurchaseCreditMemoAttachments()
+    var
+        DocumentRecordRef: RecordRef;
+        AttachmentId: array[2] of Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can retrieve all records from the Attachments API.
+        // [GIVEN] 2 Attachments in the Incoming Document Attachment table
+        CreateDraftPurchaseCreditMemo(DocumentRecordRef);
+        CreateAttachments(DocumentRecordRef, AttachmentId);
+        Commit();
+
+        // [WHEN] A GET request is made to the Attachment API.
+        TargetURL := CreateAttachmentsURLWithFilter(GetDocumentId(DocumentRecordRef), Format(AttachmentEntityBufferDocumentType::"Purchase Credit Memo"));
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] The 2 Attachments should exist in the response
+        GetAndVerifyIDFromJSON(ResponseText, AttachmentId);
+    end;
+
+    [Test]
+    procedure TestCreatePostedPurchaseCreditMemoAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+        DocumentId: Guid;
+    begin
+        CreatePostedPurchaseCreditMemo(DocumentRecordRef, DocumentId);
+        TestCreateAttachment(DocumentRecordRef);
+    end;
+
+    [Test]
+    procedure TestCreateDraftPurchaseCreditMemoAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+    begin
+        CreateDraftPurchaseCreditMemo(DocumentRecordRef);
+        TestCreateAttachment(DocumentRecordRef);
+    end;
+
+    [Test]
+    procedure TestDeletePostedPurchaseCreditMemoAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+        DocumentId: Guid;
+    begin
+        CreatePostedPurchaseCreditMemo(DocumentRecordRef, DocumentId);
+        TestDeleteAttachment2(DocumentRecordRef);
+    end;
+
+    [Test]
+    procedure TestDeleteDraftPurchaseCreditMemoAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+    begin
+        CreateDraftPurchaseCreditMemo(DocumentRecordRef);
+        TestDeleteAttachment(DocumentRecordRef);
+    end;
+
+    [Test]
+    procedure TestTransferAttachmentFromDraftToPostedPurchaseCreditMemo()
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        IncomingDocument: Record "Incoming Document";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
+        DocumentRecordRef: RecordRef;
+        DocumentId: Guid;
+        AttachmentId: Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] The Attachment is transferred from a Draft Credit Memo the to Posted Credit Memo after posting.
+        // [GIVEN] A draft purchase credit memo exists.
+        LibraryERMCountryData.UpdatePurchasesPayablesSetup();
+        CreateDraftPurchaseCreditMemo(DocumentRecordRef);
+        DocumentId := GetDocumentId(DocumentRecordRef);
+
+        // [GIVEN] An attacment is linked to the draft credit memo.
+        AttachmentId := CreateAttachment(DocumentRecordRef);
+        Commit();
+
+        // [WHEN] The credit memo is posted through the Credit Memos API.
+        TargetURL := LibraryGraphMgt.CreateTargetURLWithSubpage(
+            DocumentId, Page::"APIV2 - Purchase Credit Memos", PurchaseCreditMemoServiceNameTxt, ActionPostTxt);
+        LibraryGraphMgt.PostToWebServiceAndCheckResponseCode(TargetURL, '', ResponseText, 204);
+
+        // [THEN] The Attachment exists and is correctly linked to the posted credit memo.
+        IncomingDocumentAttachment.GetBySystemId(AttachmentId);
+        PurchCrMemoHdr.SetRange("Draft Cr. Memo SystemId", DocumentId);
+        PurchCrMemoHdr.FindFirst();
+        DocumentRecordRef.GetTable(PurchCrMemoHdr);
+        FindIncomingDocument(DocumentRecordRef, IncomingDocument);
+        Assert.AreEqual(PurchCrMemoHdr."No.", IncomingDocument."Document No.", 'Wrong Document No.');
+        Assert.AreEqual(IncomingDocument."Document Type", IncomingDocument."Document Type"::"Purchase Credit Memo", 'Wrong Document Type.');
+        Assert.AreEqual(PurchCrMemoHdr.RecordId(), IncomingDocument."Related Record ID", 'Wrong Related Record ID.');
+        Assert.AreEqual(IncomingDocument."Entry No.", IncomingDocumentAttachment."Incoming Document Entry No.", 'Wrong Entry No.');
+    end;
+
+    local procedure CreateDraftPurchaseCreditMemo(var DocumentRecordRef: RecordRef)
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+        DocumentRecordRef.GetTable(PurchaseHeader);
+    end;
+
+    local procedure CreatePostedPurchaseCreditMemo(var DocumentRecordRef: RecordRef; var DocumentId: Guid)
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchaseHeader: Record "Purchase Header";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
+        InvoiceCode: Code[20];
+    begin
+        LibraryERMCountryData.UpdatePurchasesPayablesSetup();
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+        InvoiceCode := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
+        PurchCrMemoHdr.Get(InvoiceCode);
+        DocumentId := PurchCrMemoHdr."Draft Cr. Memo SystemId";
+        DocumentRecordRef.GetTable(PurchCrMemoHdr);
+    end;
+
     local procedure CreateDraftSalesInvoice(var DocumentRecordRef: RecordRef)
     var
         SalesHeader: Record "Sales Header";
@@ -1104,14 +1251,17 @@ codeunit 139833 "APIV2 - Attachments E2E"
             Database::"Purchase Header":
                 begin
                     DocumentRecordRef.SetTable(PurchaseHeader);
-
                     if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
                         exit(Format(AttachmentEntityBufferDocumentType::"Purchase Invoice"));
                     if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
                         exit(Format(AttachmentEntityBufferDocumentType::"Purchase Order"));
+                    if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::"Credit Memo" then
+                        exit(Format(AttachmentEntityBufferDocumentType::"Purchase Credit Memo"));
                 end;
             Database::"Gen. Journal Line", Database::"G/L Entry":
                 exit(Format(AttachmentEntityBufferDocumentType::"Journal"));
+            Database::"Purch. Cr. Memo Hdr.":
+                exit(Format(AttachmentEntityBufferDocumentType::"Purchase Credit Memo"));
         end;
     end;
 
@@ -1129,7 +1279,7 @@ codeunit 139833 "APIV2 - Attachments E2E"
     local procedure IsPostedDocument(var DocumentRecordRef: RecordRef): Boolean
     begin
         exit(
-          (DocumentRecordRef.Number() = Database::"Sales Invoice Header") or (DocumentRecordRef.Number() = Database::"Purch. Inv. Header"));
+          (DocumentRecordRef.Number() = Database::"Sales Invoice Header") or (DocumentRecordRef.Number() = Database::"Purch. Inv. Header") or (DocumentRecordRef.Number() = Database::"Purch. Cr. Memo Hdr."));
     end;
 
     local procedure IsGeneralJournalLine(var DocumentRecordRef: RecordRef): Boolean
@@ -1137,12 +1287,25 @@ codeunit 139833 "APIV2 - Attachments E2E"
         exit(DocumentRecordRef.Number() = Database::"Gen. Journal Line");
     end;
 
+    local procedure IsPurchaseCreditMemo(var DocumentRecordRef: RecordRef): Boolean
+    begin
+        if DocumentRecordRef.Number() = Database::"Purch. Cr. Memo Hdr." then
+            exit(true);
+        exit(false);
+    end;
+
     local procedure IsPurchaseInvoice(var DocumentRecordRef: RecordRef): Boolean
+    var
+        PurchaseHeader: Record "Purchase Header";
     begin
         if DocumentRecordRef.Number() = Database::"Purch. Inv. Header" then
             exit(true);
-        if DocumentRecordRef.Number() = Database::"Purchase Header" then
+        if DocumentRecordRef.Number() = Database::"Purchase Header" then begin
+            DocumentRecordRef.SetTable(PurchaseHeader);
+            if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::"Credit Memo" then
+                exit(false);
             exit(true);
+        end;
         exit(false);
     end;
 
@@ -1166,6 +1329,7 @@ codeunit 139833 "APIV2 - Attachments E2E"
         GLEntry: Record "G/L Entry";
         PurchaseHeader: Record "Purchase Header";
         PurchInvHeader: Record "Purch. Inv. Header";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
     begin
         if FindIncomingDocument(DocumentRecordRef, IncomingDocument) then
             exit(true);
@@ -1237,13 +1401,29 @@ codeunit 139833 "APIV2 - Attachments E2E"
         if DocumentRecordRef.Number() = Database::"Purchase Header" then begin
             DocumentRecordRef.SetTable(PurchaseHeader);
             IncomingDocument.Description := CopyStr(PurchaseHeader."Buy-from Vendor Name", 1, MaxStrLen(IncomingDocument.Description));
-            IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Invoice";
+            if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::"Credit Memo" then
+                IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Credit Memo"
+            else
+                IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Invoice";
             IncomingDocument."Document No." := PurchaseHeader."No.";
             IncomingDocument.Insert(true);
             PurchaseHeader.Find();
             PurchaseHeader."Incoming Document Entry No." := IncomingDocument."Entry No.";
             PurchaseHeader.Modify();
             DocumentRecordRef.GetTable(PurchaseHeader);
+            exit(true);
+        end;
+
+        if IsPurchaseCreditMemo(DocumentRecordRef) and IsPostedDocument(DocumentRecordRef) then begin
+            DocumentRecordRef.SetTable(PurchCrMemoHdr);
+            IncomingDocument.Description := CopyStr(PurchCrMemoHdr."Buy-from Vendor Name", 1, MaxStrLen(IncomingDocument.Description));
+            IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Credit Memo";
+            IncomingDocument."Posting Date" := PurchCrMemoHdr."Posting Date";
+            IncomingDocument."Document No." := PurchCrMemoHdr."No.";
+            IncomingDocument."Posted Date-Time" := CurrentDateTime;
+            IncomingDocument.Status := IncomingDocument.Status::Posted;
+            IncomingDocument.Posted := true;
+            IncomingDocument.Insert(true);
             exit(true);
         end;
     end;

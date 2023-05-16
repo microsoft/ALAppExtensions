@@ -35,23 +35,23 @@ codeunit 30202 "Shpfy Initial Import"
 
     local procedure InsertLine(ShopCode: Code[20]; EntityName: Code[20]; DependencyFilter: Text; PageNumber: Integer; DemoImport: Boolean)
     var
-        ShpfyInitialImportLine: Record "Shpfy Initial Import Line";
+        InitialImportLine: Record "Shpfy Initial Import Line";
     begin
-        ShpfyInitialImportLine.Init();
-        ShpfyInitialImportLine.Name := EntityName;
-        if not ShpfyInitialImportLine.Find('=') then begin
-            ShpfyInitialImportLine.Validate("Dependency Filter", DependencyFilter);
-            ShpfyInitialImportLine.Validate("Shop Code", ShopCode);
-            ShpfyInitialImportLine.Validate("Page ID", PageNumber);
-            ShpfyInitialImportLine.Validate("Demo Import", DemoImport);
-            ShpfyInitialImportLine.Insert(true);
+        InitialImportLine.Init();
+        InitialImportLine.Name := EntityName;
+        if not InitialImportLine.Find('=') then begin
+            InitialImportLine.Validate("Dependency Filter", DependencyFilter);
+            InitialImportLine.Validate("Shop Code", ShopCode);
+            InitialImportLine.Validate("Page ID", PageNumber);
+            InitialImportLine.Validate("Demo Import", DemoImport);
+            InitialImportLine.Insert(true);
         end else
-            if ShpfyInitialImportLine."Job Queue Entry Status" = ShpfyInitialImportLine."Job Queue Entry Status"::" " then begin
-                ShpfyInitialImportLine.Validate("Dependency Filter", DependencyFilter);
-                ShpfyInitialImportLine.Validate("Shop Code", ShopCode);
-                ShpfyInitialImportLine.Validate("Page ID", PageNumber);
-                ShpfyInitialImportLine.Validate("Demo Import", DemoImport);
-                ShpfyInitialImportLine.Modify(true);
+            if InitialImportLine."Job Queue Entry Status" = InitialImportLine."Job Queue Entry Status"::" " then begin
+                InitialImportLine.Validate("Dependency Filter", DependencyFilter);
+                InitialImportLine.Validate("Shop Code", ShopCode);
+                InitialImportLine.Validate("Page ID", PageNumber);
+                InitialImportLine.Validate("Demo Import", DemoImport);
+                InitialImportLine.Modify(true);
             end;
     end;
 
@@ -105,81 +105,81 @@ codeunit 30202 "Shpfy Initial Import"
 
     procedure Start()
     var
-        ShpfyInitialImportLine: Record "Shpfy Initial Import Line";
-        TempShpfyInitialImportLine: Record "Shpfy Initial Import Line" temporary;
+        InitialImportLine: Record "Shpfy Initial Import Line";
+        TempInitialImportLine: Record "Shpfy Initial Import Line" temporary;
         JobQueueEntryID: Guid;
     begin
-        if FindLinesThatCanBeStarted(TempShpfyInitialImportLine) then
+        if FindLinesThatCanBeStarted(TempInitialImportLine) then
             repeat
-                    JobQueueEntryID := EnqueueSyncJob(TempShpfyInitialImportLine.Name, TempShpfyInitialImportLine."Shop Code", TempShpfyInitialImportLine."Demo Import");
-                ShpfyInitialImportLine.Get(TempShpfyInitialImportLine.Name);
-                ShpfyInitialImportLine.Validate("Job Queue Entry ID", JobQueueEntryID);
-                ShpfyInitialImportLine.Modify(true);
+                JobQueueEntryID := EnqueueSyncJob(TempInitialImportLine.Name, TempInitialImportLine."Shop Code", TempInitialImportLine."Demo Import");
+                InitialImportLine.Get(TempInitialImportLine.Name);
+                InitialImportLine.Validate("Job Queue Entry ID", JobQueueEntryID);
+                InitialImportLine.Modify(true);
                 Commit();
-            until TempShpfyInitialImportLine.Next() = 0;
+            until TempInitialImportLine.Next() = 0;
     end;
 
     local procedure EnqueueSyncJob(Name: Code[20]; ShopCode: Code[20]; DemoImport: Boolean): Guid
     var
-        ShpfyBackgroundSyncs: Codeunit "Shpfy Background Syncs";
+        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
     begin
         case Name of
             'ITEM':
                 if DemoImport then
-                    exit(ShpfyBackgroundSyncs.ProductsBackgroundSync(ShopCode, GetDemoCompanyInitialImportNumber()))
+                    exit(BackgroundSyncs.ProductsBackgroundSync(ShopCode, GetDemoCompanyInitialImportNumber()))
                 else
-                    exit(ShpfyBackgroundSyncs.ProductsBackgroundSync(ShopCode, -1));
+                    exit(BackgroundSyncs.ProductsBackgroundSync(ShopCode, -1));
             'CUSTOMER':
-                exit(ShpfyBackgroundSyncs.CustomerBackgroundSync(ShopCode));
+                exit(BackgroundSyncs.CustomerBackgroundSync(ShopCode));
             'ITEM IMAGE':
-                exit(ShpfyBackgroundSyncs.ProductImagesBackgroundSync(ShopCode));
+                exit(BackgroundSyncs.ProductImagesBackgroundSync(ShopCode));
         end;
     end;
 
-    local procedure FindLinesThatCanBeStarted(var TempShpfyInitialImportLine: Record "Shpfy Initial Import Line" temporary): Boolean
+    local procedure FindLinesThatCanBeStarted(var TempInitialImportLine: Record "Shpfy Initial Import Line" temporary): Boolean
     var
         ShpfyInitialImportLine: Record "Shpfy Initial Import Line";
     begin
-        TempShpfyInitialImportLine.Reset();
-        TempShpfyInitialImportLine.DeleteAll();
+        TempInitialImportLine.Reset();
+        TempInitialImportLine.DeleteAll();
 
         ShpfyInitialImportLine.SetRange("Job Queue Entry Status", ShpfyInitialImportLine."Job Queue Entry Status"::" ");
         if ShpfyInitialImportLine.FindSet() then
             repeat
                 if AreAllParentalJobsFinished(ShpfyInitialImportLine."Dependency Filter") then begin
-                    TempShpfyInitialImportLine := ShpfyInitialImportLine;
-                    TempShpfyInitialImportLine.Insert();
+                    TempInitialImportLine := ShpfyInitialImportLine;
+                    TempInitialImportLine.Insert();
                 end;
             until ShpfyInitialImportLine.Next() = 0;
-        exit(TempShpfyInitialImportLine.FindSet());
+        exit(TempInitialImportLine.FindSet());
     end;
 
     local procedure AreAllParentalJobsFinished(DependencyFilter: Text[250]): Boolean
     var
-        ShpfyInitialImportLine: Record "Shpfy Initial Import Line";
+        InitialImportLine: Record "Shpfy Initial Import Line";
     begin
         if DependencyFilter <> '' then begin
-            ShpfyInitialImportLine.SetFilter(Name, DependencyFilter);
-            ShpfyInitialImportLine.SetFilter(
-              "Job Queue Entry Status", '<>%1', ShpfyInitialImportLine."Job Queue Entry Status"::Finished);
-            exit(ShpfyInitialImportLine.IsEmpty());
+            InitialImportLine.SetFilter(Name, DependencyFilter);
+            InitialImportLine.SetFilter(
+              "Job Queue Entry Status", '<>%1', InitialImportLine."Job Queue Entry Status"::Finished);
+            exit(InitialImportLine.IsEmpty());
         end;
         exit(true);
     end;
 
     procedure OnBeforeModifyJobQueueEntry(JobQueueEntry: Record "Job Queue Entry")
     var
-        ShpfyInitialImportLine: Record "Shpfy Initial Import Line";
+        InitialImportLine: Record "Shpfy Initial Import Line";
         EntityName: Code[20];
     begin
         EntityName := GetEntityNameFromJobQueueEntry(JobQueueEntry);
         if EntityName = '' then
             exit;
 
-        if ShpfyInitialImportLine.Get(EntityName) then
-            if ShpfyInitialImportLine."Job Queue Entry ID" = JobQueueEntry.ID then begin
-                ShpfyInitialImportLine.SetJobQueueEntryStatus(JobQueueEntry.Status);
-                ShpfyInitialImportLine.Modify();
+        if InitialImportLine.Get(EntityName) then
+            if InitialImportLine."Job Queue Entry ID" = JobQueueEntry.ID then begin
+                InitialImportLine.SetJobQueueEntryStatus(JobQueueEntry.Status);
+                InitialImportLine.Modify();
 
                 if IsJobQueueEntryProcessed(JobQueueEntry) then
                     Start();
@@ -205,16 +205,16 @@ codeunit 30202 "Shpfy Initial Import"
         xJobQueueEntry: Record "Job Queue Entry";
     begin
         xJobQueueEntry := JobQueueEntry;
-        xJobQueueEntry.Find();
-        exit((xJobQueueEntry.Status = xJobQueueEntry.Status::"In Process") and (xJobQueueEntry.Status <> JobQueueEntry.Status));
+        if xJobQueueEntry.Find() then
+            exit((xJobQueueEntry.Status = xJobQueueEntry.Status::"In Process") and (xJobQueueEntry.Status <> JobQueueEntry.Status));
     end;
 
     procedure InitialImportCompleted(): Boolean
     var
-        ShpfyInitialImportLine: Record "Shpfy Initial Import Line";
+        InitialImportLine: Record "Shpfy Initial Import Line";
     begin
-        ShpfyInitialImportLine.SetFilter("Job Status", '%1|%2', ShpfyInitialImportLine."Job Status"::" ", ShpfyInitialImportLine."Job Status"::"In Process");
-        exit(ShpfyInitialImportLine.IsEmpty());
+        InitialImportLine.SetFilter("Job Status", '%1|%2', InitialImportLine."Job Status"::" ", InitialImportLine."Job Status"::"In Process");
+        exit(InitialImportLine.IsEmpty());
     end;
 
     local procedure GetDemoCompanyInitialImportNumber(): Integer

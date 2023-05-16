@@ -165,7 +165,8 @@ page 31116 "VAT Ctrl. Report Lines CZL"
             {
                 ApplicationArea = VAT;
                 Caption = 'Show Document';
-                Image = Document;
+                Image = View;
+                ShortCutKey = 'Shift+F7';
                 ToolTip = 'Shows related VAT Control Report.';
 
                 trigger OnAction()
@@ -176,6 +177,17 @@ page 31116 "VAT Ctrl. Report Lines CZL"
                     VATCtrlReportHeaderCZL.SetRecFilter();
                     Page.RunModal(Page::"VAT Ctrl. Report Card CZL", VATCtrlReportHeaderCZL);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("Show Document_Promoted"; "Show Document")
+                {
+                }
             }
         }
     }

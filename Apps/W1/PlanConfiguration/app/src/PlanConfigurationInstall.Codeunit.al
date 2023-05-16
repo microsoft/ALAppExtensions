@@ -1,3 +1,4 @@
+#if not CLEAN22
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,6 +10,9 @@
 codeunit 9039 "Plan Configuration Install"
 {
     Subtype = Install;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The tables involved in the OnInstall code will be removed.';
+    ObsoleteTag = '22.0';
 
     trigger OnInstallAppPerCompany()
     begin
@@ -32,3 +36,4 @@ codeunit 9039 "Plan Configuration Install"
         DataClassificationMgt.SetFieldToNormal(Database::"Custom User Group In Plan", CustomUserGroupInPlan.FieldNo("Plan Id"));
     end;
 }
+#endif

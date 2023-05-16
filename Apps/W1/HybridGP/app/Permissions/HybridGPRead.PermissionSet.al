@@ -114,5 +114,6 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GP Hist. Source Progress" = R,
                     tabledata "GP Hist. Source Error" = R,
                     tabledata "GP POP10100" = R,
-                    tabledata "GP POP10110" = R;
+                    tabledata "GP POP10110" = R,
+                    tabledata "GP PM00204" = R;
 }

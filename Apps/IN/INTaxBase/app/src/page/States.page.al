@@ -48,12 +48,14 @@ page 18547 "States"
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    StateCodeLbl: Label 'Code eq %1', Comment = '%1= State Code';
+                    EditinExcelFilters: Codeunit "Edit in Excel Filters";
                 begin
+                    EditinExcelFilters.AddField('Code', Enum::"Edit in Excel Filter Type"::Equal, Rec.Code, Enum::"Edit in Excel Edm Type"::"Edm.String");
+
                     EditinExcel.EditPageInExcel(
                         'States',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(StateCodeLbl, Rec.Code));
+                        Page::States,
+                        EditinExcelFilters);
                 end;
             }
         }

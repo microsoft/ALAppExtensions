@@ -12,6 +12,7 @@ PermissionSet 22 "System Application - Edit"
                              "Cues and KPIs - Edit",
                              "Data Classification - Edit",
                              "Email - Edit",
+                             "Entity Text - Edit",
                              "Guided Experience - Edit",
                              "Language - Edit",
 #if not CLEAN19

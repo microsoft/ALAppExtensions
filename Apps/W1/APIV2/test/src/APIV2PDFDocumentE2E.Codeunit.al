@@ -18,6 +18,7 @@ codeunit 139841 "APIV2 - PDF Document E2E"
         SalesCreditMemoServiceNameTxt: Label 'salesCreditMemos';
         PurchaseInvoiceServiceNameTxt: Label 'purchaseInvoices';
         QuoteServiceNameTxt: Label 'salesQuotes';
+        PurchaseCreditMemoServiceNameTxt: Label 'purchaseCreditMemos';
 
     local procedure Initialize()
     var
@@ -226,6 +227,59 @@ codeunit 139841 "APIV2 - PDF Document E2E"
         Assert.AreEqual(1, PurchInvHeader."No. Printed", '');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetPDFPurchaseCreditMemo()
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchaseHeader: Record "Purchase Header";
+        TempBlob: Codeunit "Temp Blob";
+        PCMID1: Text;
+        PCMID2: Text;
+        ID1: Text;
+        ID2: Text;
+        TargetURL: Text;
+        SubPageWithContentTxt: Text;
+    begin
+        // [FEATURE] [Purchase] [Credit Memo]
+        // [SCENARIO 184721] Create posted and unposted Purchase credit memos and use pdfDocument navigation property to get the corresponding PDF
+        // [GIVEN] 2 credit memos, one posted and one unposted
+        Initialize();
+        CreatePurchaseCreditMemos(PCMID1, PCMID2);
+        PurchCrMemoHdr.Get(PCMID1);
+        ID1 := PurchCrMemoHdr."Draft Cr. Memo SystemId";
+        Assert.AreNotEqual('', ID1, 'ID must not be empty');
+
+        PurchaseHeader.Get(PurchaseHeader."Document Type"::"Credit Memo", PCMID2);
+        ID2 := PurchaseHeader.SystemId;
+        Assert.AreNotEqual('', ID2, 'ID must not be empty');
+
+        // [WHEN] we GET the pdfDocument subpage content on the draft credit memo
+        TargetURL :=
+          LibraryGraphMgt.CreateTargetURLWithSubpage(
+            ID2, Page::"APIV2 - Purchase Credit Memos", PurchaseCreditMemoServiceNameTxt, PDFDocumentServiceNameTxt);
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + '/pdfDocumentContent';
+        TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
+        Commit();
+
+        // [THEN] we get an error message, because we don't support printing an unposted purchase credit memo
+        asserterror LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(
+            TempBlob, TargetURL, 'application/octet-stream', 200);
+
+        // [WHEN] we GET the pdfDocument subpage content on the posted credit memo
+        TargetURL :=
+          LibraryGraphMgt.CreateTargetURLWithSubpage(
+            ID1, Page::"APIV2 - Purchase Credit Memos", PurchaseCreditMemoServiceNameTxt, PDFDocumentServiceNameTxt);
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + '/pdfDocumentContent';
+        TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
+        Commit();
+
+        // [THEN] we receive the binary file with the printed credit memo, and the credit memo is marked as printed
+        LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlob, TargetURL, 'application/octet-stream', 200);
+        PurchCrMemoHdr.Get(PCMID1);
+        Assert.AreEqual(1, PurchCrMemoHdr."No. Printed", '');
+    end;
+
     local procedure CreateSalesInvoices(var InvoiceID1: Text; var InvoiceID2: Text)
     var
         SalesHeader: Record "Sales Header";
@@ -273,6 +327,21 @@ codeunit 139841 "APIV2 - PDF Document E2E"
         CustomerNo := LibrarySales.CreateCustomerNo();
         LibrarySales.CreateSalesQuoteForCustomerNo(SalesHeader, CustomerNo);
         QuoteID1 := SalesHeader."No.";
+        Commit();
+    end;
+
+    local procedure CreatePurchaseCreditMemos(var PCMID1: Text; var PCMID2: Text)
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseHeaderUnposted: Record "Purchase Header";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
+    begin
+        LibraryERMCountryData.UpdatePurchasesPayablesSetup();
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+        PCMID1 := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
+
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeaderUnposted);
+        PCMID2 := PurchaseHeaderUnposted."No.";
         Commit();
     end;
 }

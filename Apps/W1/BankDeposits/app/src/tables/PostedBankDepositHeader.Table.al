@@ -160,9 +160,8 @@ table 1691 "Posted Bank Deposit Header"
         UnableToFindGLRegisterTelemetryErr: Label 'Cannot find a G/L Register for the selected posted bank deposit %1.', Locked = true;
 
 #if not CLEAN21
-    [Scope('OnPrem')]
     [Obsolete('Finding related entries is done through the `Navigate` page.', '21.0')]
-    procedure FindEntries()
+    internal procedure FindEntries()
     var
         TempBankAccountLedgerEntry: Record "Bank Account Ledger Entry" temporary;
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
@@ -224,8 +223,7 @@ table 1691 "Posted Bank Deposit Header"
         exit(true);
     end;
 
-    [Scope('OnPrem')]
-    procedure ShowDocDim()
+    internal procedure ShowDocDim()
     begin
         DimensionManagement.ShowDimensionSet("Dimension Set ID", TableCaption() + ' ' + "No.");
     end;

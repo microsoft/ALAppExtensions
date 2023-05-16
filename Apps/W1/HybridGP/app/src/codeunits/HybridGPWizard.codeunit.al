@@ -109,7 +109,7 @@ codeunit 4015 "Hybrid GP Wizard"
         end;
 
         GPPopulateCombinedTables.PopulateGPCompanySettings();
-        ShowSettingsStep := true;
+        ShowSettingsStep := false;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowUpdateReplicationCompanies', '', false, false)]

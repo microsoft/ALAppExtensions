@@ -215,6 +215,22 @@ jobs:
           settingsJson: ${{ env.Settings }}
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,storageContext,gitHubPackagesContext'
 
+      - name: Determine ArtifactUrl
+        uses: microsoft/AL-Go-Actions/DetermineArtifactUrl@preview
+        id: determineArtifactUrl
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secretsJson: ${{ env.RepoSecrets }}
+
+      - name: Cache Business Central Artifacts
+        if: env.useCompilerFolder == 'True' && steps.determineArtifactUrl.outputs.ArtifactUrl && !contains(env.artifact,'INSIDERSASTOKEN')
+        uses: actions/cache@v3
+        with:
+          path: .artifactcache
+          key: ${{ steps.determineArtifactUrl.outputs.ArtifactUrl }}
+
       - name: Run pipeline
         id: RunPipeline
         uses: microsoft/AL-Go-Actions/RunPipeline@preview
@@ -377,6 +393,22 @@ jobs:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
           secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,storageContext,gitHubPackagesContext'
+
+      - name: Determine ArtifactUrl
+        uses: microsoft/AL-Go-Actions/DetermineArtifactUrl@preview
+        id: determineArtifactUrl
+        with:
+          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secretsJson: ${{ env.RepoSecrets }}
+
+      - name: Cache Business Central Artifacts
+        if: env.useCompilerFolder == 'True' && steps.determineArtifactUrl.outputs.ArtifactUrl && !contains(env.artifact,'INSIDERSASTOKEN')
+        uses: actions/cache@v3
+        with:
+          path: .artifactcache
+          key: ${{ steps.determineArtifactUrl.outputs.ArtifactUrl }}
 
       - name: Run pipeline
         id: RunPipeline

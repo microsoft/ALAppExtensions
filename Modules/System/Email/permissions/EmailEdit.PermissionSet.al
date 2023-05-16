@@ -9,18 +9,17 @@ PermissionSet 8901 "Email - Edit"
     Assignable = false;
     Caption = 'Email - Edit';
 
-    IncludedPermissionSets = "Email - Read",
-                             "Record Reference - Exec";
+    IncludedPermissionSets = "Email - Read";
 
-    Permissions = tabledata "Email Connector Logo" = imd,
+    Permissions = tabledata "Email Attachments" = imd,
+                  tabledata "Email Connector Logo" = imd,
                   tabledata "Email Error" = imd,
-                  tabledata "Email Outbox" = imd,
-                  tabledata "Email Rate Limit" = imd,
-                  tabledata "Sent Email" = imd,
-                  tabledata "Email Attachments" = imd,
                   tabledata "Email Message" = imd,
                   tabledata "Email Message Attachment" = imd,
+                  tabledata "Email Outbox" = imd,
+                  tabledata "Email Rate Limit" = imd,
                   tabledata "Email Recipient" = imd,
                   tabledata "Email Related Record" = id,
+                  tabledata "Sent Email" = imd,
                   tabledata "Tenant Media" = imd;
 }

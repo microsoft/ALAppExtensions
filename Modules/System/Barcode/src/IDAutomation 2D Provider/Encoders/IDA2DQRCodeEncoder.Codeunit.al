@@ -6,6 +6,8 @@
 codeunit 9220 "IDA 2D QR-Code Encoder" implements "Barcode Font Encoder 2D"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure EncodeFont(InputText: Text): Text
     var

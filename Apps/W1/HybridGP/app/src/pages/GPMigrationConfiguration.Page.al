@@ -547,7 +547,7 @@ page 4050 "GP Migration Configuration"
     trigger OnOpenPage()
     begin
         if not Rec.Get() then
-            Rec.Insert();
+            Rec.Insert(true);
 
         CurrPage.SetRecord(Rec);
         EnsureSettingsForAllCompanies();
@@ -593,7 +593,7 @@ page 4050 "GP Migration Configuration"
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Hist. Inv. Trx.", Rec."Migrate Hist. Inv. Trx.");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Hist. Purch. Trx.", Rec."Migrate Hist. Purch. Trx.");
 
-                    GPCompanyAdditionalSettingsEachCompany.Insert();
+                    GPCompanyAdditionalSettingsEachCompany.Insert(true);
                 end;
             until HybridCompany.Next() = 0;
 
@@ -613,7 +613,7 @@ page 4050 "GP Migration Configuration"
         GPCompanyAdditionalSettingsInit.DeleteAll();
 
         Rec.Init();
-        Rec.Insert();
+        Rec.Insert(true);
 
         CurrPage.SetRecord(Rec);
     end;
@@ -648,6 +648,12 @@ page 4050 "GP Migration Configuration"
         Rec.Validate("Migrate Hist. AP Trx.", GPCompanyAdditionalSettingsInit."Migrate Hist. AP Trx.");
         Rec.Validate("Migrate Hist. Inv. Trx.", GPCompanyAdditionalSettingsInit."Migrate Hist. Inv. Trx.");
         Rec.Validate("Migrate Hist. Purch. Trx.", GPCompanyAdditionalSettingsInit."Migrate Hist. Purch. Trx.");
+
+        EnableDisableAllHistTrx := Rec."Migrate Hist. GL Trx." and
+                                                        Rec."Migrate Hist. AR Trx." and
+                                                        Rec."Migrate Hist. AP Trx." and
+                                                        Rec."Migrate Hist. Inv. Trx." and
+                                                        Rec."Migrate Hist. Purch. Trx.";
 
         CurrPage.Update(true);
 

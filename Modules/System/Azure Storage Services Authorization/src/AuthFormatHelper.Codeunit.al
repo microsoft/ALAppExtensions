@@ -6,6 +6,8 @@
 codeunit 9060 "Auth. Format Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure NewLine(): Text
     var

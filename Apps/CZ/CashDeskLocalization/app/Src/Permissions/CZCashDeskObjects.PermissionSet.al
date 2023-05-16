@@ -56,6 +56,7 @@ permissionset 11782 "CZ Cash Desk - Objects CZP"
                   Page "Posted Cash Document List CZP" = X,
                   Page "Posted Cash Document Stat. CZP" = X,
                   Page "Posted Cash Document Subf. CZP" = X,
+                  Page "Posted Cash Document Lines CZP" = X,
                   Page "Report Selection Cash Desk CZP" = X,
                   Report "Cash Desk Account Book CZP" = X,
                   Report "Cash Desk Book CZP" = X,

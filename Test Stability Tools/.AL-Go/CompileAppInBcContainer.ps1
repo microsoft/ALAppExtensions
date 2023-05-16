@@ -1,5 +1,7 @@
 Param(
     [Hashtable] $parameters
 )
+$scriptPath = Join-Path $PSScriptRoot "../../Build/Scripts/CompileAppInBcContainer.ps1" -Resolve
+$projectFolder = Join-Path $PSScriptRoot "../../Test Stability Tools" -Resolve
 
-. "$env:GITHUB_WORKSPACE/Build/Scripts/CompileAppInBcContainer.ps1" -parameters $parameters -currentProjectFolder (Join-Path $env:GITHUB_WORKSPACE "Test Stability Tools")
+. $scriptPath -parameters $parameters -currentProjectFolder $projectFolder

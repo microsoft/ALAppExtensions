@@ -15,6 +15,7 @@ codeunit 11726 "Transformation US"
         StgDataExchDef: Record "Stg Data Exch Def US";
         SourceTableMapping: Record "Source Table Mapping";
         HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
+        W1Management: Codeunit "W1 Management";
         ExtensionInfo: ModuleInfo;
         W1AppId: Guid;
     begin
@@ -22,6 +23,9 @@ codeunit 11726 "Transformation US"
             exit;
 
         if TargetVersion <> 16.0 then
+            exit;
+
+        if not W1Management.GetLegacyUpgradeSupported() then
             exit;
 
         NavApp.GetCurrentModuleInfo(ExtensionInfo);

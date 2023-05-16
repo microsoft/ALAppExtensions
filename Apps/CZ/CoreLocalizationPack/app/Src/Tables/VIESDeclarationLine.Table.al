@@ -335,7 +335,14 @@ table 31076 "VIES Declaration Line CZL"
             "Trade Role Type"::"Property Movement":
                 exit;
         end;
-        VATEntry.SetRange("VAT Date CZL", VIESDeclarationHeaderCZL."Start Date", VIESDeclarationHeaderCZL."End Date");
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not VATEntry.IsReplaceVATDateEnabled() then
+            VATEntry.SetRange("VAT Date CZL", VIESDeclarationHeaderCZL."Start Date", VIESDeclarationHeaderCZL."End Date")
+        else
+#pragma warning restore AL0432
+#endif
+        VATEntry.SetRange("VAT Reporting Date", VIESDeclarationHeaderCZL."Start Date", VIESDeclarationHeaderCZL."End Date");
         VATEntry.SetRange("EU Service", "EU Service");
         OnDrillDownAmountLCYOnBeforeVATEntryFind(Rec, VIESDeclarationHeaderCZL, VATEntry);
         if VATEntry.FindSet() then

@@ -26,31 +26,31 @@ codeunit 30113 "Shpfy Cust. By Email/Phone" implements "Shpfy ICustomer Mapping"
     /// <param name="TemplateCode">Code[10].</param>
     /// <param name="AllowCreate">Boolean.</param>
     /// <returns>Return value of type Code[20].</returns>
-    internal procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]; TemplateCode: Code[10]; AllowCreate: Boolean): Code[20];
+    internal procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]; TemplateCode: Code[20]; AllowCreate: Boolean): Code[20];
     var
-        ShpfyCustomer: Record "Shpfy Customer";
-        ShpfyCustomerImport: Codeunit "Shpfy Customer Import";
+        Customer: Record "Shpfy Customer";
+        CustomerImport: Codeunit "Shpfy Customer Import";
     begin
-        ShpfyCustomer.SetAutoCalcFields("Customer No.");
-        if ShpfyCustomer.Get(CustomerId) then begin
-            if not IsNullGuid(ShpfyCustomer."Customer SystemId") then begin
-                ShpfyCustomer.CalcFields("Customer No.");
-                if ShpfyCustomer."Customer No." = '' then begin
-                    Clear(ShpfyCustomer."Customer SystemId");
-                    ShpfyCustomer.Modify();
+        Customer.SetAutoCalcFields("Customer No.");
+        if Customer.Get(CustomerId) then begin
+            if not IsNullGuid(Customer."Customer SystemId") then begin
+                Customer.CalcFields("Customer No.");
+                if Customer."Customer No." = '' then begin
+                    Clear(Customer."Customer SystemId");
+                    Customer.Modify();
                 end else
-                    exit(ShpfyCustomer."Customer No.");
+                    exit(Customer."Customer No.");
             end;
         end else begin
-            ShpfyCustomerImport.SetShop(ShopCode);
-            ShpfyCustomerImport.SetTemplateCode(TemplateCode);
-            ShpfyCustomerImport.SetCustomer(CustomerId);
-            ShpfyCustomerImport.SetAllowCreate(AllowCreate);
-            ShpfyCustomerImport.Run();
-            ShpfyCustomerImport.GetCustomer(ShpfyCustomer);
-            if ShpfyCustomer.Find() then
-                ShpfyCustomer.CalcFields("Customer No.");
-            exit(ShpfyCustomer."Customer No.");
+            CustomerImport.SetShop(ShopCode);
+            CustomerImport.SetTemplateCode(TemplateCode);
+            CustomerImport.SetCustomer(CustomerId);
+            CustomerImport.SetAllowCreate(AllowCreate);
+            CustomerImport.Run();
+            CustomerImport.GetCustomer(Customer);
+            if Customer.Find() then
+                Customer.CalcFields("Customer No.");
+            exit(Customer."Customer No.");
         end;
         exit('');
     end;

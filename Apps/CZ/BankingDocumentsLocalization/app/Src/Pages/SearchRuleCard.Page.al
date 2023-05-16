@@ -57,9 +57,6 @@ page 31241 "Search Rule Card CZB"
                 Caption = 'Create Default Lines';
                 Ellipsis = true;
                 Image = ExpandDepositLine;
-                Promoted = true;
-                PromotedCategory = New;
-                PromotedOnly = true;
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Inserts default search rule lines.';
 
@@ -67,6 +64,17 @@ page 31241 "Search Rule Card CZB"
                 begin
                     Rec.CreateDefaultLinesWithConfirm();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_New)
+            {
+                Caption = 'New';
+
+                actionref(CreateDefaultLines_Promoted; CreateDefaultLines)
+                {
+                }
             }
         }
     }

@@ -10,6 +10,8 @@ codeunit 42 "Caption Class"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Integration event for resolving CaptionClass expression, split into CaptionArea and CaptionExpr.

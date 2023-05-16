@@ -851,7 +851,7 @@ report 18013 "Return Order GST"
 
         trigger OnOpenPage()
         begin
-            LogIntaction := SegManagement.FindInteractTmplCode(22) <> '';
+            LogIntaction := SegManagement.FindInteractionTemplateCode(22) <> '';
             LogInteractionEnable := LogIntaction;
         end;
     }

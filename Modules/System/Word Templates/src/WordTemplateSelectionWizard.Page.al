@@ -64,8 +64,8 @@ page 9996 "Word Template Selection Wizard"
 
                 group(FinalInput)
                 {
-                    Caption = 'Few more things left!';
-                    InstructionalText = 'Select settings of the output.';
+                    Caption = 'Select setting for the output';
+                    InstructionalText = ' ';
                 }
 
                 field(Output; SaveFormat)
@@ -83,10 +83,65 @@ page 9996 "Word Template Selection Wizard"
                     ToolTip = 'Specifies whether one document per record should be created or one document for all Records.';
                 }
 
+                group(Edit)
+                {
+                    ShowCaption = false;
+                    Visible = ShowEditDocument;
+
+                    field(EditHelp; EditLbl)
+                    {
+                        ApplicationArea = All;
+                        ShowCaption = false;
+                        ToolTip = 'Tooltip for editing..';
+                        MultiLine = true;
+                    }
+
+                    field(EditDocument; EditDocumentTxt)
+                    {
+                        ApplicationArea = All;
+                        ShowCaption = false;
+                        Caption = ' ';
+                        Editable = false;
+                        ToolTip = 'Open Word for editing merged document.';
+
+                        trigger OnDrillDown()
+                        var
+                            WordTemplates: Codeunit "Word Template";
+                            InStream: InStream;
+                            KeepChanges: Boolean;
+                        begin
+                            if DocumentDataTempBlob.HasValue() then
+                                KeepChanges := Dialog.Confirm(EditEditedDocumentTxt, true);
+
+                            if KeepChanges then begin
+                                DocumentDataTempBlob.CreateInStream(InStream);
+                                WordTemplates.Load(InStream);
+                            end else
+                                WordTemplates.Load(Rec.Code);
+                            WordTemplates.Merge(DataVariant, SplitDocuments, Enum::"Word Templates Save Format"::Docx, true);
+
+                            DocumentDataTempBlob.CreateOutStream(DocumentOutStream);
+                            WordTemplates.GetDocument(InStream);
+                            CopyStream(DocumentOutStream, InStream);
+
+                            if DocumentDataTempBlob.HasValue() then
+                                EditDocumentTxt := EditedDocumentLbl;
+                        end;
+                    }
+                }
+
                 group(Filters)
                 {
                     ShowCaption = false;
                     Visible = not FiltersSet;
+
+                    field(FilterHelp; FilterHelpLbl)
+                    {
+                        ApplicationArea = All;
+                        ShowCaption = false;
+                        ToolTip = 'Tooltip for filter..';
+                        MultiLine = true;
+                    }
 
                     field(SetFilters; SetFiltersLbl)
                     {
@@ -221,15 +276,10 @@ page 9996 "Word Template Selection Wizard"
                 trigger OnAction()
                 var
                     WordTemplates: Codeunit "Word Template";
-                    InStream: InStream;
                 begin
-                    WordTemplates.Load(Rec.Code);
-                    WordTemplates.Merge(DataVariant, SplitDocuments, SaveFormat);
-                    if AsDocumentStream then begin
-                        DocumentDataTempBlob.CreateOutStream(DocumentOutStream);
-                        WordTemplates.GetDocument(InStream);
-                        CopyStream(DocumentOutStream, InStream);
-                    end else
+                    MergeTemplate(WordTemplates);
+
+                    if not AsDocumentStream then
                         WordTemplates.DownloadDocument();
 
                     FinishedWizard := true;
@@ -341,12 +391,47 @@ page 9996 "Word Template Selection Wizard"
     end;
 
     trigger OnOpenPage()
+    var
+        DocumentSharing: Codeunit "Document Sharing";
     begin
         SaveFormat := SaveFormat::Docx;
         WordTemplatesExist := not Rec.IsEmpty();
         FinishedWizard := false;
         SkipOverview := false;
         FromUnknownSource := false;
+        EditDocumentTxt := EditDocumentLbl;
+        ShowEditDocument := DocumentSharing.ShareEnabled(Enum::"Document Sharing Source"::System);
+    end;
+
+    procedure IsDocSaveFormat(): Boolean
+    begin
+        exit((SaveFormat::Doc = SaveFormat) or (SaveFormat::Docx = SaveFormat));
+    end;
+
+    local procedure MergeTemplate(var WordTemplates: Codeunit "Word Template")
+    var
+        TempBlob: Codeunit "Temp Blob";
+        Data: Dictionary of [Text, Text];
+        InStream: InStream;
+        OutStream: OutStream;
+    begin
+        if DocumentDataTempBlob.Length() <> 0 then begin
+            DocumentDataTempBlob.CreateInStream(InStream);
+            TempBlob.CreateOutStream(OutStream);
+            CopyStream(OutStream, InStream);
+            TempBlob.CreateInStream(InStream);
+            WordTemplates.Load(InStream);
+            WordTemplates.Merge(Data, SaveFormat);
+            DocumentDataTempBlob.CreateOutStream(OutStream);
+            WordTemplates.GetDocument(InStream);
+            CopyStream(OutStream, InStream);
+        end else begin
+            WordTemplates.Load(Rec.Code);
+            WordTemplates.Merge(DataVariant, SplitDocuments, SaveFormat, false);
+            DocumentDataTempBlob.CreateOutStream(OutStream);
+            WordTemplates.GetDocument(InStream);
+            CopyStream(OutStream, InStream);
+        end;
     end;
 
     /// <summary>
@@ -479,6 +564,13 @@ page 9996 "Word Template Selection Wizard"
         SkipOverview: Boolean;
         [InDataSet]
         FromUnknownSource: Boolean;
+        ShowEditDocument: Boolean;
+        EditDocumentTxt: Text;
+        EditDocumentLbl: Label 'Edit document';
+        EditedDocumentLbl: Label 'Edit document (already edited)';
+        EditEditedDocumentTxt: Label 'Do you want to keep the changes made earlier?';
         NoSourceRecordErr: Label 'This template is not associated with an entity and hence it can only be applied programmatically.';
         SetFiltersLbl: Label 'Set filters';
+        EditLbl: Label 'You can edit the document created from the Word template to provide a custom message. After editing the document, you must save and close it before returning here to continue.';
+        FilterHelpLbl: Label 'You can define a filter to choose which rows get a template associated.';
 }

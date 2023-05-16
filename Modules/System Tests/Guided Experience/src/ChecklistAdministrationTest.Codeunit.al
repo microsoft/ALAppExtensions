@@ -67,7 +67,7 @@ codeunit 132602 "Checklist Administration Test"
         ChecklistAPI.Insert(GuidedExperienceType::"Assisted Setup", ObjectType1, ObjectID1, OrderID1, TempAllProfile, true);
 
         ObjectType2 := ObjectType::Codeunit;
-        ObjectID2 := Codeunit::"Checklist Banner";
+        ObjectID2 := Codeunit::"Checklist Banner Impl.";
         InsertManualSetup(Title2, ExpectedDuration2, ObjectType2, ObjectID2, OrderID2);
         ChecklistAPI.Insert(GuidedExperienceType::"Manual Setup", ObjectType2, ObjectID2, OrderID2, TempAllProfile, true);
 

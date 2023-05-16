@@ -3,7 +3,6 @@
 /// </summary>
 table 30104 "Shpfy Tag"
 {
-    Access = Internal;
     Caption = 'Shopify Tag';
     DataClassification = CustomerContent;
 
@@ -40,11 +39,11 @@ table 30104 "Shpfy Tag"
 
     trigger OnInsert()
     var
-        ShpfyTag: Record "Shpfy Tag";
+        Tag: Record "Shpfy Tag";
         MaxTagsErr: Label 'You can only specify 250 tags.';
     begin
-        ShpfyTag.SetRange("Parent Id", "Parent Id");
-        if ShpfyTag.Count() >= 250 then
+        Tag.SetRange("Parent Id", "Parent Id");
+        if Tag.Count() >= 250 then
             Error(MaxTagsErr);
     end;
 
@@ -53,17 +52,16 @@ table 30104 "Shpfy Tag"
     /// </summary>
     /// <param name="ParentId">Parameter of type BigInteger.</param>
     /// <returns>Return value of type Text.</returns>
-    internal procedure GetCommaSeperatedTags(ParentId: BigInteger): Text
+    internal procedure GetCommaSeparatedTags(ParentId: BigInteger): Text
     var
-        ShpfyTag: Record "Shpfy Tag";
         Tags: TextBuilder;
     begin
-        ShpfyTag.SetRange("Parent Id", ParentId);
-        if ShpfyTag.FindSet(false, false) then begin
+        Rec.SetRange("Parent Id", ParentId);
+        if Rec.FindSet(false, false) then begin
             repeat
                 Tags.Append(',');
-                Tags.Append(ShpfyTag.Tag);
-            until ShpfyTag.Next() = 0;
+                Tags.Append(Rec.Tag);
+            until Rec.Next() = 0;
             Tags.Remove(1, 1);
         end;
         exit(Tags.ToText());
@@ -77,22 +75,22 @@ table 30104 "Shpfy Tag"
     /// <param name="CommaSeperatedTags">Parameter of type Text.</param>
     internal procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; CommaSeperatedTags: Text)
     var
-        ShpfyTag: Record "Shpfy Tag";
+        Tag: Record "Shpfy Tag";
         Tags: List of [Text];
         TagTxt: Text;
     begin
-        ShpfyTag.SetRange("Parent Id", ParentId);
-        if not ShpfyTag.IsEmpty() then
-            ShpfyTag.DeleteAll();
+        Tag.SetRange("Parent Id", ParentId);
+        if not Tag.IsEmpty() then
+            Tag.DeleteAll();
         Tags := CommaSeperatedTags.Split(',');
         foreach TagTxt in Tags do begin
             TagTxt := TagTxt.Trim();
             if TagTxt <> '' then begin
-                Clear(ShpfyTag);
-                ShpfyTag."Parent Table No." := ParentTableNo;
-                ShpfyTag."Parent Id" := ParentId;
-                ShpfyTag.Tag := CopyStr(TagTxt, 1, MaxStrLen(ShpfyTag.Tag));
-                ShpfyTag.Insert();
+                Clear(Tag);
+                Tag."Parent Table No." := ParentTableNo;
+                Tag."Parent Id" := ParentId;
+                Tag.Tag := CopyStr(TagTxt, 1, MaxStrLen(Tag.Tag));
+                Tag.Insert();
             end;
         end;
     end;
@@ -105,22 +103,22 @@ table 30104 "Shpfy Tag"
     /// <param name="JTags">Parameter of type JsonArray.</param>
     internal procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; JTags: JsonArray)
     var
-        ShopifyTag: Record "Shpfy Tag";
+        Tag: Record "Shpfy Tag";
         JTag: JsonToken;
         Index: Integer;
     begin
-        ShopifyTag.SetRange("Parent Id", ParentId);
-        if not ShopifyTag.IsEmpty() then
-            ShopifyTag.DeleteAll();
+        Tag.SetRange("Parent Id", ParentId);
+        if not Tag.IsEmpty() then
+            Tag.DeleteAll();
 
         for Index := 1 to JTags.Count do
             if JTags.Get(Index, JTag) then
                 if JTag.IsValue and not (JTag.AsValue().IsNull or JTag.AsValue().IsUndefined) then begin
-                    Clear(ShopifyTag);
-                    ShopifyTag."Parent Table No." := ParentTableNo;
-                    ShopifyTag."Parent Id" := ParentId;
-                    ShopifyTag.Tag := CopyStr(JTag.AsValue().AsText().Trim(), 1, MaxStrLen(ShopifyTag.Tag));
-                    ShopifyTag.Insert();
+                    Clear(Tag);
+                    Tag."Parent Table No." := ParentTableNo;
+                    Tag."Parent Id" := ParentId;
+                    Tag.Tag := CopyStr(JTag.AsValue().AsText().Trim(), 1, MaxStrLen(Tag.Tag));
+                    Tag.Insert();
                 end;
     end;
 }

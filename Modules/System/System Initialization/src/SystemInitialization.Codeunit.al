@@ -9,6 +9,8 @@
 codeunit 150 "System Initialization"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Checks whether the system initialization is currently in progress.

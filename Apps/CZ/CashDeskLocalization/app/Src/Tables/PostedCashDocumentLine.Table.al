@@ -1,6 +1,8 @@
 table 11738 "Posted Cash Document Line CZP"
 {
     Caption = 'Posted Cash Document Line';
+    DrillDownPageID = "Posted Cash Document Lines CZP";
+    LookupPageID = "Posted Cash Document Lines CZP";
 
     fields
     {

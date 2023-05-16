@@ -67,21 +67,9 @@ codeunit 31404 "Cash Flow Handler CZZ"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cash Flow Management", 'OnBeforeInsertOnCreateCashFlowSetup', '', false, false)]
     local procedure CreateCashFlowSetupForAdvanceLetters(var CashFlowSetup: Record "Cash Flow Setup")
-#if not CLEAN19
-    var
-        CashFlowAccount: Record "Cash Flow Account";
-#endif
     begin
         CashFlowSetup.Validate("S. Adv. Letter CF Acc. No. CZZ", GetNoFromSourceType(Enum::"Cash Flow Source Type"::"Sales Advance Letters CZZ"));
         CashFlowSetup.Validate("P. Adv. Letter CF Acc. No. CZZ", GetNoFromSourceType(Enum::"Cash Flow Source Type"::"Purchase Advance Letters CZZ"));
-#if not CLEAN19
-#pragma warning disable AL0432
-        CashFlowAccount.SetRange("Source Type", Enum::"Cash Flow Source Type"::"Sales Advance Letters");
-        CashFlowAccount.DeleteAll();
-        CashFlowAccount.SetRange("Source Type", Enum::"Cash Flow Source Type"::"Purchase Advance Letters");
-        CashFlowAccount.DeleteAll();
-#pragma warning restore AL0432
-#endif
     end;
 
     local procedure GetNoFromSourceType(CashFlowSourceType: Enum "Cash Flow Source Type"): Text
@@ -97,14 +85,4 @@ codeunit 31404 "Cash Flow Handler CZZ"
     begin
         SuggestWorksheetLines.InitializeRequestCZZ(true, true);
     end;
-#if not CLEAN19
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Report, Report::"Suggest Worksheet Lines", 'OnAfterInitializeRequest', '', false, false)]
-    local procedure DisableRunObsoleteAdvancePaymentsOnAfterInitializeRequest(var ConsiderSource: array[16] of Boolean)
-    begin
-        ConsiderSource[Enum::"Cash Flow Source Type"::"Sales Advance Letters".AsInteger()] := false;
-        ConsiderSource[Enum::"Cash Flow Source Type"::"Purchase Advance Letters".AsInteger()] := false;
-    end;
-#pragma warning restore AL0432
-#endif
 }

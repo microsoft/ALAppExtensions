@@ -6,6 +6,8 @@
 codeunit 1473 "Signature Key Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TempBlob: Codeunit "Temp Blob";

@@ -21,39 +21,32 @@ report 11754 "Close Balance Sheet CZL"
                 var
                     TempDimBuf: Record "Dimension Buffer" temporary;
                     TempDimBuf2: Record "Dimension Buffer" temporary;
-                    EntryNo: Integer;
+                    DimensionBufferID: Integer;
+                    RowOffset: Integer;
                 begin
-                    if FieldActive("Business Unit Code") and
-                       (ClosePerBusUnit or ClosePerGlobalDim1 or ClosePerGlobalDim2 or not ClosePerGlobalDimOnly)
-                    then begin
-                        SetRange("Business Unit Code", "Business Unit Code");
-                        GenJournalLine."Business Unit Code" := "Business Unit Code";
+                    EntryCount := EntryCount + 1;
+                    if CurrentDateTime - LastWindowUpdateDateTime > 1000 then begin
+                        LastWindowUpdateDateTime := CurrentDateTime;
+                        WindowDialog.Update(3, Round(EntryCount / MaxEntry * 10000, 1));
                     end;
-                    if FieldActive("Global Dimension 1 Code") and
-                       (ClosePerGlobalDim1 or ClosePerGlobalDim2 or not ClosePerGlobalDimOnly)
-                    then
-                        SetRange("Global Dimension 1 Code", "Global Dimension 1 Code");
-                    if FieldActive("Global Dimension 2 Code") and
-                       (ClosePerGlobalDim2 or not ClosePerGlobalDimOnly)
-                    then
-                        SetRange("Global Dimension 2 Code", "Global Dimension 2 Code");
-                    if not ClosePerGlobalDimOnly then
-                        SetRange("Close Income Statement Dim. ID", "Close Income Statement Dim. ID");
 
-                    CalcSumsInFilter();
+                    if GroupSum() then begin
+                        CalcSumsInFilter("G/L Entry", RowOffset);
+                        GetGLEntryDimensions("Entry No.", TempDimBuf, "Dimension Set ID");
+                    end;
+
                     if (Amount <> 0) or ("Additional-Currency Amount" <> 0) then begin
-                        if ClosePerGlobalDimOnly then begin
-                            EntryNo := "Entry No.";
-                            GetGLEntryDimensions(EntryNo, TempDimBuf);
-                        end else begin
-                            EntryNo := "Close Income Statement Dim. ID";
-                            DimensionBufferManagement.GetDimensions(EntryNo, TempDimBuf);
+                        if not GroupSum() then begin
+                            TotalAmount += Amount;
+                            if GeneralLedgerSetup."Additional Reporting Currency" <> '' then
+                                TotalAmountAddCurr += "Additional-Currency Amount";
+
+                            GetGLEntryDimensions("Entry No.", TempDimBuf, "Dimension Set ID");
                         end;
-                        if not TempDimBuf2.IsEmpty() then
-                            TempDimBuf2.DeleteAll();
+
                         if TempSelectedDimension.FindSet() then
                             repeat
-                                if TempDimBuf.Get(Database::"G/L Entry", EntryNo, TempSelectedDimension."Dimension Code")
+                                if TempDimBuf.Get(Database::"G/L Entry", "Entry No.", TempSelectedDimension."Dimension Code")
                                 then begin
                                     TempDimBuf2."Table ID" := TempDimBuf."Table ID";
                                     TempDimBuf2."Dimension Code" := TempDimBuf."Dimension Code";
@@ -62,16 +55,14 @@ report 11754 "Close Balance Sheet CZL"
                                 end;
                             until TempSelectedDimension.Next() = 0;
 
-                        EntryNo := SecondDimensionBufferManagement.FindDimensions(TempDimBuf2);
-                        if EntryNo = 0 then
-                            EntryNo := SecondDimensionBufferManagement.InsertDimensions(TempDimBuf2);
+                        DimensionBufferID := DimensionBufferManagement.GetDimensionId(TempDimBuf2);
 
                         TempEntryNoAmountBuffer.Reset();
                         if ClosePerBusUnit and FieldActive("Business Unit Code") then
                             TempEntryNoAmountBuffer."Business Unit Code" := "Business Unit Code"
                         else
                             TempEntryNoAmountBuffer."Business Unit Code" := '';
-                        TempEntryNoAmountBuffer."Entry No." := EntryNo;
+                        TempEntryNoAmountBuffer."Entry No." := DimensionBufferID;
                         if TempEntryNoAmountBuffer.Find() then begin
                             TempEntryNoAmountBuffer.Amount := TempEntryNoAmountBuffer.Amount + Amount;
                             TempEntryNoAmountBuffer.Amount2 := TempEntryNoAmountBuffer.Amount2 + "Additional-Currency Amount";
@@ -82,14 +73,9 @@ report 11754 "Close Balance Sheet CZL"
                             TempEntryNoAmountBuffer.Insert();
                         end;
                     end;
-                    FindLast();
-                    if FieldActive("Business Unit Code") then
-                        SetRange("Business Unit Code");
-                    if FieldActive("Global Dimension 1 Code") then
-                        SetRange("Global Dimension 1 Code");
-                    if FieldActive("Global Dimension 2 Code") then
-                        SetRange("Global Dimension 2 Code");
-                    SetRange("Close Income Statement Dim. ID");
+
+                    if GroupSum() then
+                        Next(RowOffset);
                 end;
 
                 trigger OnPostDataItem()
@@ -100,20 +86,30 @@ report 11754 "Close Balance Sheet CZL"
                     NewDimensionID: Integer;
                 begin
                     TempEntryNoAmountBuffer.Reset();
+                    MaxEntry := TempEntryNoAmountBuffer.Count();
+                    EntryCount := 0;
+                    WindowDialog.Update(2, CreatingGenJnlLinesTxt);
+                    WindowDialog.Update(3, 0);
+
                     if TempEntryNoAmountBuffer.FindSet() then
                         repeat
+                            EntryCount := EntryCount + 1;
+                            if CurrentDateTime - LastWindowUpdateDateTime > 1000 then begin
+                                LastWindowUpdateDateTime := CurrentDateTime;
+                                WindowDialog.Update(3, Round(EntryCount / MaxEntry * 10000, 1));
+                            end;
+
                             if (TempEntryNoAmountBuffer.Amount <> 0) or (TempEntryNoAmountBuffer.Amount2 <> 0) then begin
                                 GenJournalLine."Line No." := GenJournalLine."Line No." + 10000;
                                 GenJournalLine."Account No." := "G/L Account No.";
                                 GenJournalLine."Source Code" := SourceCodeSetup."Close Balance Sheet CZL";
                                 GenJournalLine."Reason Code" := GenJournalBatch."Reason Code";
-                                GenJournalLine.Correction := false;
                                 GenJournalLine.Validate(Amount, -TempEntryNoAmountBuffer.Amount);
                                 GenJournalLine."Source Currency Amount" := -TempEntryNoAmountBuffer.Amount2;
                                 GenJournalLine."Business Unit Code" := TempEntryNoAmountBuffer."Business Unit Code";
 
                                 TempDimBuf2.DeleteAll();
-                                SecondDimensionBufferManagement.GetDimensions(TempEntryNoAmountBuffer."Entry No.", TempDimBuf2);
+                                DimensionBufferManagement.RetrieveDimensions(TempEntryNoAmountBuffer."Entry No.", TempDimBuf2);
                                 NewDimensionID := DimensionManagement.CreateDimSetIDFromDimBuf(TempDimBuf2);
                                 GenJournalLine."Dimension Set ID" := NewDimensionID;
                                 DimensionManagement.UpdateGlobalDimFromDimSetID(NewDimensionID, GlobalDimVal1, GlobalDimVal2);
@@ -134,32 +130,45 @@ report 11754 "Close Balance Sheet CZL"
                             end;
                         until TempEntryNoAmountBuffer.Next() = 0;
 
-                    if not TempEntryNoAmountBuffer.IsEmpty() then
-                        TempEntryNoAmountBuffer.DeleteAll();
+                    TempEntryNoAmountBuffer.DeleteAll();
                 end;
 
                 trigger OnPreDataItem()
                 begin
-                    if ClosePerBusUnit or ClosePerGlobalDim1 or ClosePerGlobalDim2 or not ClosePerGlobalDimOnly then
-                        SetCurrentKey(
-                          "G/L Account No.", "Business Unit Code",
-                          "Global Dimension 1 Code", "Global Dimension 2 Code", "Close Income Statement Dim. ID",
-                          "Posting Date")
-                    else
-                        SetCurrentKey("G/L Account No.", "Posting Date");
+                    WindowDialog.Update(2, CalcAmountsTxt);
+                    WindowDialog.Update(3, 0);
+
+                    if ClosePerGlobalDimOnly or ClosePerBusUnit then
+                        case true of
+                            ClosePerBusUnit and (ClosePerGlobalDim1 or ClosePerGlobalDim2):
+                                SetCurrentKey(
+                                  "G/L Account No.", "Business Unit Code",
+                                  "Global Dimension 1 Code", "Global Dimension 2 Code", "Posting Date");
+                            ClosePerBusUnit and not (ClosePerGlobalDim1 or ClosePerGlobalDim2):
+                                SetCurrentKey(
+                                  "G/L Account No.", "Business Unit Code", "Posting Date");
+                            not ClosePerBusUnit and (ClosePerGlobalDim1 or ClosePerGlobalDim2):
+                                SetCurrentKey(
+                                  "G/L Account No.", "Global Dimension 1 Code", "Global Dimension 2 Code", "Posting Date");
+                        end;
                     SetRange("Posting Date", 0D, FiscYearClosingDate);
 
-                    if not TempEntryNoAmountBuffer.IsEmpty() then
-                        TempEntryNoAmountBuffer.DeleteAll();
+                    MaxEntry := Count();
 
-                    Clear(SecondDimensionBufferManagement);
+                    TempEntryNoAmountBuffer.DeleteAll();
+                    EntryCount := 0;
+
+                    LastWindowUpdateDateTime := CurrentDateTime;
                 end;
             }
 
             trigger OnAfterGetRecord()
             begin
+                ThisAccountNo := ThisAccountNo + 1;
                 WindowDialog.Update(1, "No.");
-                UpdateCloseIncomeStmtDimID("No.");
+                WindowDialog.Update(4, Round(ThisAccountNo / NoOfAccounts * 10000, 1));
+                WindowDialog.Update(2, '');
+                WindowDialog.Update(3, 0);
             end;
 
             trigger OnPostDataItem()
@@ -177,7 +186,6 @@ report 11754 "Close Balance Sheet CZL"
                     GenJournalLine."Currency Code" := '';
                     GenJournalLine."Additional-Currency Posting" :=
                       GenJournalLine."Additional-Currency Posting"::None;
-                    GenJournalLine.Correction := false;
                     GenJournalLine.Validate(Amount, TotalAmount);
                     GenJournalLine."Source Currency Amount" := TotalAmountAddCurr;
                     HandleGenJnlLine();
@@ -187,7 +195,8 @@ report 11754 "Close Balance Sheet CZL"
 
             trigger OnPreDataItem()
             begin
-                SetRange("G/L Account Group CZL", GLAccountGroup)
+                NoOfAccounts := Count();
+                SetRange("G/L Account Group CZL", GLAccountGroup);
             end;
         }
     }
@@ -238,12 +247,14 @@ report 11754 "Close Balance Sheet CZL"
                         begin
                             GenJournalLine.TestField("Journal Template Name");
                             GenJournalTemplate.Get(GenJournalLine."Journal Template Name");
+                            GenJournalBatch.FilterGroup(2);
                             GenJournalBatch.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
+                            GenJournalBatch.FilterGroup(0);
                             GenJournalBatch."Journal Template Name" := GenJournalLine."Journal Template Name";
                             GenJournalBatch.Name := GenJournalLine."Journal Batch Name";
                             if PAGE.RunModal(0, GenJournalBatch) = ACTION::LookupOK then begin
-                                GenJournalLine."Journal Batch Name" := GenJournalBatch.Name;
-                                ValidateJnl();
+                                Text := GenJournalBatch.Name;
+                                exit(true);
                             end;
                         end;
 
@@ -313,8 +324,15 @@ report 11754 "Close Balance Sheet CZL"
                             ToolTip = 'Specifies the relevant dimension code. Dimension codes are used to group entries with similar characteristics.';
 
                             trigger OnAssistEdit()
+                            var
+                                TempSelectedDim2: Record "Selected Dimension" temporary;
+                                s: Text;
                             begin
                                 DimensionSelectionBuffer.SetDimSelectionMultiple(3, Report::"Close Balance Sheet CZL", ColumnDim);
+                                SelectedDimension.GetSelectedDim(CopyStr(UserId(), 1, 50), 3, Report::"Close Balance Sheet CZL", '', TempSelectedDim2);
+                                s := CheckDimPostingRules(TempSelectedDim2);
+                                if s <> '' then
+                                    Message(s);
                             end;
                         }
                     }
@@ -340,16 +358,17 @@ report 11754 "Close Balance Sheet CZL"
         end;
     }
 
-    trigger OnInitReport()
-    begin
-        Clear(PostingDescription);
-    end;
-
     trigger OnPostReport()
     var
         UpdateAnalysisView: Codeunit "Update Analysis View";
     begin
-        UpdateAnalysisView.UpdateAll(0, true);
+        WindowDialog.Close();
+        Commit();
+        if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
+            Message(ClosingEntriesPostedMsg);
+            UpdateAnalysisView.UpdateAll(0, true);
+        end else
+            Message(JournalLinesCreatedMsg);
     end;
 
     trigger OnPreReport()
@@ -379,6 +398,8 @@ report 11754 "Close Balance Sheet CZL"
                 CurrReport.Quit();
         end;
 
+        WindowDialog.Open(CreatingJnlDialogTxt + AccountNoDialogTxt + Progress4Tok + PerformingActionDialogTxt + Progress3Tok);
+
         ClosePerGlobalDim1 := false;
         ClosePerGlobalDim2 := false;
         ClosePerGlobalDimOnly := true;
@@ -395,8 +416,6 @@ report 11754 "Close Balance Sheet CZL"
                     ClosePerGlobalDimOnly := false;
             until TempSelectedDimension.Next() = 0;
 
-        CollectCloseIncomeStmtDimID();
-
         GenJournalLine.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
         GenJournalLine.SetRange("Journal Batch Name", GenJournalLine."Journal Batch Name");
         if not GenJournalLine.FindLast() then;
@@ -405,7 +424,7 @@ report 11754 "Close Balance Sheet CZL"
         GenJournalLine."Document No." := DocNo;
         GenJournalLine.Description := PostingDescription;
         GenJournalLine."Posting No. Series" := GenJournalBatch."Posting No. Series";
-        WindowDialog.Open(CreatingJnlDialogTxt);
+        Clear(GenJnlPostLine);
     end;
 
     var
@@ -417,21 +436,20 @@ report 11754 "Close Balance Sheet CZL"
         ClosingBalanceSheetGLAccount: Record "G/L Account";
         GeneralLedgerSetup: Record "General Ledger Setup";
         DimensionSelectionBuffer: Record "Dimension Selection Buffer";
+        ObjectTranslation: Record "Object Translation";
         SelectedDimension: Record "Selected Dimension";
         TempSelectedDimension: Record "Selected Dimension" temporary;
         TempEntryNoAmountBuffer: Record "Entry No. Amount Buffer" temporary;
-        ObjectTranslation: Record "Object Translation";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         DimensionManagement: Codeunit DimensionManagement;
         DimensionBufferManagement: Codeunit "Dimension Buffer Management";
-        SecondDimensionBufferManagement: Codeunit "Dimension Buffer Management";
         WindowDialog: Dialog;
         FiscalYearStartDate: Date;
         FiscYearClosingDate: Date;
         EndDateReq: Date;
         DocNo: Code[20];
-        PostingDescription: Text[50];
+        PostingDescription: Text[100];
         ClosePerBusUnit: Boolean;
         ClosePerGlobalDim1: Boolean;
         ClosePerGlobalDim2: Boolean;
@@ -439,18 +457,30 @@ report 11754 "Close Balance Sheet CZL"
         TotalAmount: Decimal;
         TotalAmountAddCurr: Decimal;
         ColumnDim: Text[250];
+        NoOfAccounts: Integer;
+        ThisAccountNo: Integer;
         GLAccountGroup: Enum "G/L Account Group CZL";
         EnterEndingDateErr: Label 'Please enter the ending date for the fiscal year.';
         EnterDocumentNoErr: Label 'Please enter a Document No.';
         EnterBalanceSheetAccountErr: Label 'Please enter Closing Balance Sheet Account No.';
         AdditionalRepCurrPostingQst: Label 'With the use of an additional reporting currency, this batch job will post closing entries directly to the general ledger. These closing entries will not be transferred to a general journal before the program posts them to the general ledger.\\Do you wish to continue?';
-        CreatingJnlDialogTxt: Label 'Creating general journal lines...\\Account No. #1##########', Comment = '%1 = G/L Account No.';
+        CreatingJnlDialogTxt: Label 'Creating general journal lines...\\';
+        AccountNoDialogTxt: Label 'Account No.         #1##################\', Comment = '%1 = G/L Account No.';
+        PerformingActionDialogTxt: Label 'Now performing      #2##################\', Comment = '%1 = Operation Text';
+        Progress3Tok: Label '                    @3@@@@@@@@@@@@@@@@@@\', Comment = '@3 = Progress Ratio';
+        Progress4Tok: Label '                    @4@@@@@@@@@@@@@@@@@@\', Comment = '@4 = Progress Ratio';
+        CreatingGenJnlLinesTxt: Label 'Creating Gen. Journal lines';
+        CalcAmountsTxt: Label 'Calculating Amounts';
         FiscalYearMustBeClosedErr: Label 'The fiscal year must be closed before the balance sheet can be closed.';
         FiscalYearNotExistErr: Label 'The fiscal year does not exist.';
+        JournalLinesCreatedMsg: Label 'The journal lines have successfully been created.';
+        ClosingEntriesPostedMsg: Label 'The closing entries have successfully been posted.';
         MandatoryDimTxt: Label 'The following G/L Accounts have mandatory dimension codes:';
         SelectPostingDimTxt: Label '\\In order to post to this journal you may also select these dimensions:';
         CreateJournalQst: Label '\\Continue and create journal?';
-        NextDimID: Integer;
+        MaxEntry: Integer;
+        EntryCount: Integer;
+        LastWindowUpdateDateTime: DateTime;
         PostToClosingBalanceSheetAcc: Option Balance,Details;
 
     local procedure ValidateEndDate(RealMode: Boolean): Boolean
@@ -496,108 +526,53 @@ report 11754 "Close Balance Sheet CZL"
           GenJournalLine."Additional-Currency Posting"::None;
         if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
             GenJournalLine."Source Currency Code" := GeneralLedgerSetup."Additional Reporting Currency";
-            if (GenJournalLine.Amount = 0) and
-               (GenJournalLine."Source Currency Amount" <> 0)
-            then begin
+            if ZeroGenJnlAmount() then begin
                 GenJournalLine."Additional-Currency Posting" :=
                   GenJournalLine."Additional-Currency Posting"::"Additional-Currency Amount Only";
                 GenJournalLine.Validate(Amount, GenJournalLine."Source Currency Amount");
                 GenJournalLine."Source Currency Amount" := 0;
             end;
-            if GenJournalLine.Amount <> 0 then
-                GenJnlPostLine.RunWithCheck(GenJournalLine);
+            if GenJournalLine.Amount <> 0 then begin
+                GenJnlPostLine.Run(GenJournalLine);
+                if DocNo = NoSeriesManagement.GetNextNo(GenJournalBatch."No. Series", EndDateReq, false) then
+                    NoSeriesManagement.SaveNoSeries();
+            end;
         end else
-            GenJournalLine.Insert();
+            if not ZeroGenJnlAmount() then
+                GenJournalLine.Insert();
     end;
 
-    local procedure CollectCloseIncomeStmtDimID()
+    local procedure CalcSumsInFilter(var SourceGLEntry: Record "G/L Entry"; var Offset: Integer)
     var
         GLEntry: Record "G/L Entry";
-        DimensionSetEntry: Record "Dimension Set Entry";
-        TempDimensionBuffer: Record "Dimension Buffer" temporary;
     begin
-        if ClosePerGlobalDimOnly then
-            exit;
-
-        GLEntry.SetCurrentKey("Close Income Statement Dim. ID");
-        GLEntry.SetFilter("Close Income Statement Dim. ID", '>1');
-        if GLEntry.FindSet() then begin
-            repeat
-                DimensionSetEntry.SetRange("Dimension Set ID", GLEntry."Dimension Set ID");
-                if DimensionSetEntry.FindSet() then begin
-                    if not TempDimensionBuffer.IsEmpty() then
-                        TempDimensionBuffer.DeleteAll();
-
-                    repeat
-                        TempDimensionBuffer."Table ID" := Database::"G/L Entry";
-                        TempDimensionBuffer."Entry No." := GLEntry."Entry No.";
-                        TempDimensionBuffer."Dimension Code" := DimensionSetEntry."Dimension Code";
-                        TempDimensionBuffer."Dimension Value Code" := DimensionSetEntry."Dimension Value Code";
-                        TempDimensionBuffer.Insert();
-                    until DimensionSetEntry.Next() = 0;
-
-                    DimensionBufferManagement.InsertDimensionsUsingEntryNo(
-                      TempDimensionBuffer, GLEntry."Close Income Statement Dim. ID");
-                end;
-                GLEntry.SetFilter(
-                  "Close Income Statement Dim. ID", '>%1', GLEntry."Close Income Statement Dim. ID");
-            until GLEntry.Next() = 0;
-            NextDimID := GLEntry."Close Income Statement Dim. ID" + 1;
-        end else
-            NextDimID := 2; // 1 is used when there are no dimensions on the entry
-    end;
-
-    local procedure UpdateCloseIncomeStmtDimID(AccNo: Code[20])
-    var
-        GLEntry: Record "G/L Entry";
-        TempDimensionBuffer: Record "Dimension Buffer" temporary;
-        DimID: Integer;
-    begin
-        if ClosePerGlobalDimOnly then
-            exit;
-
-        GLEntry.SetCurrentKey(
-          "G/L Account No.", "Business Unit Code",
-          "Global Dimension 1 Code", "Global Dimension 2 Code", "Close Income Statement Dim. ID",
-          "Posting Date");
-        GLEntry.SetRange("G/L Account No.", AccNo);
-        GLEntry.SetRange("Close Income Statement Dim. ID", 0);
-        GLEntry.SetRange("Posting Date", FiscalYearStartDate, FiscYearClosingDate);
-
-        while GLEntry.FindFirst() do begin
-            GetGLEntryDimensions(GLEntry."Entry No.", TempDimensionBuffer);
-            if TempDimensionBuffer.FindFirst() then begin
-                DimID := DimensionBufferManagement.FindDimensions(TempDimensionBuffer);
-                if DimID = 0 then begin
-                    DimensionBufferManagement.InsertDimensionsUsingEntryNo(TempDimensionBuffer, NextDimID);
-                    DimID := NextDimID;
-                    NextDimID := NextDimID + 1;
-                end;
-            end else
-                DimID := 1;
-            GLEntry."Close Income Statement Dim. ID" := DimID;
-            GLEntry.Modify();
+        GLEntry.CopyFilters(SourceGLEntry);
+        if ClosePerBusUnit then begin
+            GLEntry.SetRange("Business Unit Code", SourceGLEntry."Business Unit Code");
+            GenJournalLine."Business Unit Code" := SourceGLEntry."Business Unit Code";
         end;
-    end;
+        if ClosePerGlobalDim1 then begin
+            GLEntry.SetRange("Global Dimension 1 Code", SourceGLEntry."Global Dimension 1 Code");
+            if ClosePerGlobalDim2 then
+                GLEntry.SetRange("Global Dimension 2 Code", SourceGLEntry."Global Dimension 2 Code");
+        end;
 
-    local procedure CalcSumsInFilter()
-    begin
-        "G/L Entry".CalcSums(Amount);
-        TotalAmount := TotalAmount + "G/L Entry".Amount;
+        GLEntry.CalcSums(Amount);
+        SourceGLEntry.Amount := GLEntry.Amount;
+        TotalAmount += SourceGLEntry.Amount;
         if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
-            "G/L Entry".CalcSums("Additional-Currency Amount");
-            TotalAmountAddCurr := TotalAmountAddCurr + "G/L Entry"."Additional-Currency Amount";
+            GLEntry.CalcSums("Additional-Currency Amount");
+            SourceGLEntry."Additional-Currency Amount" := GLEntry."Additional-Currency Amount";
+            TotalAmountAddCurr += SourceGLEntry."Additional-Currency Amount";
         end;
+        Offset := GLEntry.Count - 1;
     end;
 
-    local procedure GetGLEntryDimensions(EntryNo: Integer; var DimensionBuffer: Record "Dimension Buffer")
+    local procedure GetGLEntryDimensions(EntryNo: Integer; var DimensionBuffer: Record "Dimension Buffer"; DimensionSetID: Integer)
     var
-        GLEntry: Record "G/L Entry";
         DimensionSetEntry: Record "Dimension Set Entry";
     begin
-        DimensionBuffer.DeleteAll();
-        GLEntry.Get(EntryNo);
-        DimensionSetEntry.SetRange("Dimension Set ID", GLEntry."Dimension Set ID");
+        DimensionSetEntry.SetRange("Dimension Set ID", DimensionSetID);
         if DimensionSetEntry.FindSet() then
             repeat
                 DimensionBuffer."Table ID" := Database::"G/L Entry";
@@ -617,7 +592,9 @@ report 11754 "Close Balance Sheet CZL"
         DimText: Text;
     begin
         DefaultDimension.SetRange("Table ID", Database::"G/L Account");
-        DefaultDimension.SetFilter("Value Posting", '%1|%2', DefaultDimension."Value Posting"::"Same Code", DefaultDimension."Value Posting"::"Code Mandatory");
+        DefaultDimension.SetFilter(
+          "Value Posting", '%1|%2',
+          DefaultDimension."Value Posting"::"Same Code", DefaultDimension."Value Posting"::"Code Mandatory");
         Clear(PrevAcc);
         if DefaultDimension.FindSet() then
             repeat
@@ -638,9 +615,18 @@ report 11754 "Close Balance Sheet CZL"
                 end;
                 SelectedDimension.SetRange("Dimension Code");
             until (DefaultDimension.Next() = 0) or (StrLen(ErrorText) > MaxStrLen(ErrorText) - MaxStrLen(DefaultDimension."No.") - StrLen(SelectPostingDimTxt) - 1);
-
         if ErrorText <> '' then
             ErrorText := CopyStr(ErrorText + SelectPostingDimTxt + DimText, 1, MaxStrLen(ErrorText));
         exit(ErrorText);
+    end;
+
+    local procedure ZeroGenJnlAmount(): Boolean
+    begin
+        exit((GenJournalLine.Amount = 0) and (GenJournalLine."Source Currency Amount" <> 0))
+    end;
+
+    local procedure GroupSum(): Boolean
+    begin
+        exit(ClosePerGlobalDimOnly and (ClosePerBusUnit or ClosePerGlobalDim1));
     end;
 }

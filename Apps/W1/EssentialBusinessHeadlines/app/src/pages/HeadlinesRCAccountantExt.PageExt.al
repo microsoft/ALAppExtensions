@@ -20,6 +20,7 @@ pageextension 1442 "Headlines RC Accountant Ext." extends "Headline RC Accountan
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDown = true;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -40,6 +41,7 @@ pageextension 1442 "Headlines RC Accountant Ext." extends "Headline RC Accountan
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDown = true;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -59,6 +61,7 @@ pageextension 1442 "Headlines RC Accountant Ext." extends "Headline RC Accountan
                 field(SalesIncreaseText; SalesIncreaseText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var

@@ -1,16 +1,16 @@
-codeunit 139562 "Shpfy Const to return" implements "Shpfy Stock Calculation"
+codeunit 139562 "Shpfy Const to Return" implements "Shpfy Stock Calculation"
 {
     var
-        ConstToRetrun: decimal;
+        ConsttoReturn: Decimal;
 
-    procedure GetStock(var Item: Record Item): decimal;
+    procedure GetStock(var Item: Record Item): Decimal;
     begin
-        Exit(ConstToRetrun);
+        exit(ConsttoReturn);
     end;
 
     internal procedure SetConstToReturn(NewConst: Decimal)
     begin
-        ConstToRetrun := NewConst;
+        ConsttoReturn := NewConst;
     end;
 
 }

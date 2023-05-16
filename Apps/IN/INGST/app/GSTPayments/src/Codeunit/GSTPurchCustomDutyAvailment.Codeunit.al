@@ -9,34 +9,40 @@ codeunit 18253 "GST Purch CustomDuty Availment"
         GSTNonAvailmentSessionMgt.SetQtyToBeInvoiced(QtyToBeInvoiced);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnAfterPrepareItemJnlLine', '', false, false)]
-    local procedure LoadGSTUnitCost(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; var ItemJournalLine: Record "Item Journal Line")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnBeforeItemJnlPostLineRunWithCheck', '', false, false)]
+    local procedure LoadGSTUnitCost(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; var ItemJnlLine: Record "Item Journal Line"; QtyToBeInvoiced: Decimal)
     var
-        QtytoBeInvoiced: Decimal;
         QtyFactor: Decimal;
-        CustomDutyLoaded: Decimal;
+        CustomDutyAmount: Decimal;
     begin
         if PurchaseLine."GST Credit" <> PurchaseLine."GST Credit"::Availment then
             exit;
 
-        CustomDutyLoaded := GSTNonAvailmentSessionMgt.GetCustomDutyAmount();
-        QtytoBeInvoiced := GSTNonAvailmentSessionMgt.GetQtyToBeInvoiced();
-        if CustomDutyLoaded = 0 then
+        if PurchaseLine."Custom Duty Amount" = 0 then
             exit;
 
         if PurchaseLine."Qty. to Invoice" <> 0 then
-            QtyFactor := QtytoBeInvoiced / PurchaseLine."Qty. to Invoice";
+            QtyFactor := QtyToBeInvoiced / PurchaseLine."Qty. to Invoice";
+
+        if PurchaseHeader."Currency Code" <> '' then
+            CustomDutyAmount := ConvertCustomDutyAmountToLCY(
+                            PurchaseHeader."Currency Code",
+                            PurchaseLine."Custom Duty Amount",
+                            PurchaseHeader."Currency Factor",
+                            PurchaseHeader."Posting Date")
+        else
+            CustomDutyAmount := PurchaseLine."Custom Duty Amount";
 
         if (PurchaseHeader."GST Vendor Type" in
             [PurchaseHeader."GST Vendor Type"::SEZ, PurchaseHeader."GST Vendor Type"::Import]) and
-            (CustomDutyLoaded <> 0) and (PurchaseLine."Qty. to Invoice" <> 0) then
-            ItemJournalLine.Amount := ItemJournalLine.Amount + CustomDutyLoaded / PurchaseLine."Qty. to Invoice" * ItemJournalLine."Invoiced Quantity";
+            (CustomDutyAmount <> 0) and (PurchaseLine."Qty. to Invoice" <> 0) then
+            ItemJnlLine.Amount := ItemJnlLine.Amount + CustomDutyAmount / PurchaseLine."Qty. to Invoice" * ItemJnlLine."Invoiced Quantity";
 
         if QtyToBeInvoiced <> 0 then
-            ItemJournalLine."Unit Cost" := ItemJournalLine."Unit Cost" + ((CustomDutyLoaded) * QtyFactor / QtyToBeInvoiced)
+            ItemJnlLine."Unit Cost" := ItemJnlLine."Unit Cost" + ((CustomDutyAmount) * QtyFactor / QtyToBeInvoiced)
         else
             if (PurchaseLine."Qty. to Receive" > PurchaseLine."Qty. to Invoice") and (PurchaseLine."Qty. to Invoice" <> 0) and PurchaseHeader.Invoice then
-                ItemJournalLine."Unit Cost" := ItemJournalLine."Unit Cost" + ((CustomDutyLoaded) * QtyFactor / PurchaseLine."Qty. to Invoice");
+                ItemJnlLine."Unit Cost" := ItemJnlLine."Unit Cost" + ((CustomDutyAmount) * QtyFactor / PurchaseLine."Qty. to Invoice");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostPurchLineOnAfterSetEverythingInvoiced', '', false, false)]

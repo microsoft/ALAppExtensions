@@ -6,6 +6,8 @@
 codeunit 9213 "IDA 1D UPCE Encoder" implements "Barcode Font Encoder"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure EncodeFont(InputText: Text; var BarcodeEncodeSettings: Record "Barcode Encode Settings"): Text
     var

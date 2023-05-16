@@ -7,9 +7,16 @@ codeunit 139506 "MS - WorldPay Std Mock Events"
     var
         LibraryUtility: Codeunit "Library - Utility";
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
     procedure RegisterDummyPaymentServiceProvider(var PaymentServiceSetup: Record 1060);
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
+    local procedure RegisterDummyPaymentServiceProvider(var PaymentServiceSetup: Record 1060);
+#endif
     begin
         CLEAR(PaymentServiceSetup);
 
@@ -18,6 +25,5 @@ codeunit 139506 "MS - WorldPay Std Mock Events"
         PaymentServiceSetup.AssignPrimaryKey(PaymentServiceSetup);
         PaymentServiceSetup.INSERT(TRUE);
     end;
-#pragma warning restore
 }
 

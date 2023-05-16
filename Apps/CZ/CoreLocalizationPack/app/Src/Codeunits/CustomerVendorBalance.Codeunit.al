@@ -36,6 +36,7 @@ codeunit 31058 "Customer Vendor Balance CZL"
                     TempCVLedgerEntryBuffer.Amount := CustLedgerEntry.Amount;
                     TempCVLedgerEntryBuffer."Remaining Amount" := CustLedgerEntry."Remaining Amount";
                     TempCVLedgerEntryBuffer."Remaining Amt. (LCY)" := CustLedgerEntry."Remaining Amt. (LCY)";
+                    OnFillCustomerVendorBufferOnBeforeInsertCustLedgerEntry(TempCVLedgerEntryBuffer, CustLedgerEntry);
                     TempCVLedgerEntryBuffer.Insert();
                     if AmountsInCurrency then
                         if not TempCurrency.Get(CustLedgerEntry."Currency Code") then begin
@@ -65,6 +66,7 @@ codeunit 31058 "Customer Vendor Balance CZL"
                     TempCVLedgerEntryBuffer.Amount := VendorLedgerEntry.Amount;
                     TempCVLedgerEntryBuffer."Remaining Amount" := VendorLedgerEntry."Remaining Amount";
                     TempCVLedgerEntryBuffer."Remaining Amt. (LCY)" := VendorLedgerEntry."Remaining Amt. (LCY)";
+                    OnFillCustomerVendorBufferOnBeforeInsertVendorLedgerEntry(TempCVLedgerEntryBuffer, VendorLedgerEntry);
                     TempCVLedgerEntryBuffer.Insert();
                     if AmountsInCurrency then
                         if not TempCurrency.Get(VendorLedgerEntry."Currency Code") then begin
@@ -104,5 +106,15 @@ codeunit 31058 "Customer Vendor Balance CZL"
             BalanceAmount := Customer."Net Change (LCY)" - Vendor."Net Change (LCY)"
         else
             BalanceAmount := Customer."Net Change" - Vendor."Net Change";
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFillCustomerVendorBufferOnBeforeInsertCustLedgerEntry(var TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary; CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFillCustomerVendorBufferOnBeforeInsertVendorLedgerEntry(var TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
     end;
 }

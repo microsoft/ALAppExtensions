@@ -21,21 +21,21 @@ pageextension 2027 "Contact Pic Analyzer Ext" extends "Contact Card"
                 Caption = 'Analyze Picture';
                 ToolTip = 'Analyze the picture attached to the contact to identify gender and age, and assign them to the contact.';
                 Image = Refresh;
+
                 trigger OnAction()
                 var
                     ImageAnalysisSetup: Record "Image Analysis Setup";
                     ContactPictureAnalyze: Codeunit "Contact Picture Analyze";
-                    ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
-                    OnRecord: Option " ",Item,Contact;
+                    ImageAnalyzerWizard: Page "Image Analyzer Wizard";
                 begin
-                    if not ImageAnalysisSetup.Get() then begin
-                        ImageAnalyzerExtMgt.SendEnableNotification("No.", OnRecord::Contact);
-                        exit;
+                    if not ImageAnalysisSetup.Get() or not ImageAnalysisSetup."Image-Based Attribute Recognition Enabled" then begin
+                        ImageAnalyzerWizard.SetContact(Rec);
+                        ImageAnalyzerWizard.RunModal();
                     end;
-                    if not ImageAnalysisSetup."Image-Based Attribute Recognition Enabled" then begin
-                        ImageAnalyzerExtMgt.SendEnableNotification("No.", OnRecord::Contact);
+
+                    if not ImageAnalysisSetup.Get() and not ImageAnalysisSetup."Image-Based Attribute Recognition Enabled" then
                         exit;
-                    end;
+
                     if Type <> Type::Person then
                         Message(ImageAnalysisForPersonsOnlyMsg);
 

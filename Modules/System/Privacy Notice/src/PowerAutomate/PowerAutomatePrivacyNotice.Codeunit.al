@@ -6,6 +6,8 @@
 codeunit 1568 "Power Automate Privacy Notice"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         SignInAgainMsg: Label 'You must sign out and then sign in again to make the changes take effect.', Comment = '"sign out" and "sign in" are the same terms as shown in the Business Central client.';
@@ -23,7 +25,7 @@ codeunit 1568 "Power Automate Privacy Notice"
         SignInAgainNotification.Send();
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Privacy Notice Approval", 'OnAfterModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Privacy Notice Approval", OnAfterModifyEvent, '', false, false)]
     local procedure DisplayNotificiationAfterModifyPowerAutomate(var Rec: Record "Privacy Notice Approval"; var xRec: Record "Privacy Notice Approval")
     var
         SystemPrivacyNoticeRegCodeunit: Codeunit "System Privacy Notice Reg.";
@@ -37,7 +39,7 @@ codeunit 1568 "Power Automate Privacy Notice"
         SendSignInAgainNotification();
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Privacy Notice Approval", 'OnAfterInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Privacy Notice Approval", OnAfterInsertEvent, '', false, false)]
     local procedure DisplayNotificiationAfterInsertPowerAutomate(var Rec: Record "Privacy Notice Approval")
     var
         SystemPrivacyNoticeRegCodeunit: Codeunit "System Privacy Notice Reg.";
@@ -51,7 +53,7 @@ codeunit 1568 "Power Automate Privacy Notice"
         SendSignInAgainNotification();
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Privacy Notice Approval", 'OnBeforeDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Privacy Notice Approval", OnBeforeDeleteEvent, '', false, false)]
     local procedure DisplayNotificiationBeforeDeletePowerAutomate(var Rec: Record "Privacy Notice Approval")
     var
         SystemPrivacyNoticeRegCodeunit: Codeunit "System Privacy Notice Reg.";
@@ -65,7 +67,7 @@ codeunit 1568 "Power Automate Privacy Notice"
         SendSignInAgainNotification();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Privacy Notice", 'OnBeforeShowPrivacyNotice', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Privacy Notice", OnBeforeShowPrivacyNotice, '', false, false)]
     local procedure ShowPrivacyNoticePowerAutomate(PrivacyNotice: Record "Privacy Notice"; var Handled: Boolean)
     var
         SystemPrivacyNoticeReg: Codeunit "System Privacy Notice Reg.";

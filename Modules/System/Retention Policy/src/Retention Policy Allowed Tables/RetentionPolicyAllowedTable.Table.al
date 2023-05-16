@@ -6,6 +6,8 @@
 table 3903 "Retention Policy Allowed Table"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     DataClassification = SystemMetadata;
 
     fields

@@ -6,6 +6,8 @@
 codeunit 9105 "SharePoint Folder"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure Parse(Payload: Text; var SharePointFolder: Record "SharePoint Folder" temporary)

@@ -6,6 +6,8 @@
 codeunit 1991 "Guided Experience Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata AllObj = r,
                   tabledata "Guided Experience Item" = rimd,
                   tabledata "Primary Guided Experience Item" = rimd,
@@ -176,7 +178,6 @@ codeunit 1991 "Guided Experience Impl."
 
         TempGuidedExperienceItem.SetRange("Extension ID", AppId);
         TempGuidedExperienceItem.SetFilter("Guided Experience Type", '%1|%2', TempGuidedExperienceItem."Guided Experience Type"::"Assisted Setup", TempGuidedExperienceItem."Guided Experience Type"::"Manual Setup");
-        TempGuidedExperienceItem.SetRange("Object Type to Run", TempGuidedExperienceItem."Object Type to Run"::Page);
         GuidedExperienceImpl.GetContentForAllSetups(TempGuidedExperienceItem);
 
         if TempGuidedExperienceItem.IsEmpty then begin
@@ -532,6 +533,7 @@ codeunit 1991 "Guided Experience Impl."
         InsertItem: Boolean;
     begin
         repeat
+            InsertItem := false;
             if (GuidedExperienceItem."Object Type to Run" <> PrevGuidedExperienceItem."Object Type to Run")
                 or (GuidedExperienceItem."Object ID to Run" <> PrevGuidedExperienceItem."Object ID to Run")
                 or (GuidedExperienceItem.Link <> PrevGuidedExperienceItem.Link)
@@ -550,8 +552,10 @@ codeunit 1991 "Guided Experience Impl."
             then
                     InsertItem := true;
 
-            if InsertItem then
+            if InsertItem then begin
                 InsertGuidedExperienceItemIfValid(GuidedExperienceItemTemp, GuidedExperienceItem);
+                InsertItem := false;
+            end;
 
             PrevGuidedExperienceItem := GuidedExperienceItem;
         until GuidedExperienceItem.Next() = 0;
@@ -967,6 +971,8 @@ codeunit 1991 "Guided Experience Impl."
             exit;
 
         GuidedExperienceItemToRefresh := GuidedExperienceItem;
+        CopyTranslationsToGuidedExperienceItem(GuidedExperienceItemToRefresh, GuidedExperienceItem);
+
         GuidedExperienceItemToRefresh.Modify();
     end;
 
@@ -995,8 +1001,6 @@ codeunit 1991 "Guided Experience Impl."
     end;
 
     local procedure InsertGuidedExperienceItemIfValid(var GuidedExperienceItemTemp: Record "Guided Experience Item" temporary; GuidedExperienceItem: Record "Guided Experience Item")
-    var
-        Translation: Text;
     begin
         if not (GuidedExperienceItem."Guided Experience Type" in
             ["Guided Experience Type"::Learn, "Guided Experience Type"::Video])
@@ -1010,6 +1014,15 @@ codeunit 1991 "Guided Experience Impl."
         GuidedExperienceItemTemp.TransferFields(GuidedExperienceItem);
         GuidedExperienceItemTemp.SystemId := GuidedExperienceItem.SystemId;
 
+        CopyTranslationsToGuidedExperienceItem(GuidedExperienceItemTemp, GuidedExperienceItem);
+
+        GuidedExperienceItemTemp.Insert();
+    end;
+
+    local procedure CopyTranslationsToGuidedExperienceItem(var GuidedExperienceItemTemp: Record "Guided Experience Item"; GuidedExperienceItem: Record "Guided Experience Item")
+    var
+        Translation: Text;
+    begin
         Translation := GetTranslationForField(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
         if Translation <> '' then
             GuidedExperienceItemTemp.Title := CopyStr(Translation, 1, MaxStrLen(GuidedExperienceItemTemp.Title));
@@ -1022,10 +1035,12 @@ codeunit 1991 "Guided Experience Impl."
         if Translation <> '' then
             GuidedExperienceItemTemp.Description := CopyStr(Translation, 1, MaxStrLen(GuidedExperienceItemTemp.Description));
 
-        GuidedExperienceItemTemp.Insert();
+        Translation := GetTranslationForField(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Keywords));
+        if Translation <> '' then
+            GuidedExperienceItemTemp.Keywords := CopyStr(Translation, 1, MaxStrLen(GuidedExperienceItemTemp.Keywords));
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, 'OnRegisterVideo', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, OnRegisterVideo, '', false, false)]
     local procedure OnRegisterVideo(Sender: Codeunit Video)
     var
         GuidedExperienceItem: Record "Guided Experience Item";
@@ -1051,7 +1066,7 @@ codeunit 1991 "Guided Experience Impl."
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Navigation Bar Subscribers", 'OnBeforeDefaultOpenRoleBasedSetupExperience', '', false, false)] // Assisted setup module
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Navigation Bar Subscribers", OnBeforeDefaultOpenRoleBasedSetupExperience, '', false, false)] // Assisted setup module
     local procedure OpenRoleBasedSetupExperience(var Handled: Boolean)
     var
         GuidedExperience: Codeunit "Guided Experience";
@@ -1202,7 +1217,7 @@ codeunit 1991 "Guided Experience Impl."
             TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", 'OnAfterDeleteEvent', '', true, true)]
+    [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", OnAfterDeleteEvent, '', true, true)]
     local procedure OnAfterGuidedExperienceItemDelete(var Rec: Record "Guided Experience Item")
     begin
         if Rec.IsTemporary() then

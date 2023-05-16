@@ -9,6 +9,8 @@
 codeunit 3960 Regex
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         RegexImpl: Codeunit "Regex Impl.";

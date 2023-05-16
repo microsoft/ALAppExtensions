@@ -1,3 +1,4 @@
+#if not CLEAN22
 page 20003 "APIV1 - Aut. User Groups"
 {
     APIGroup = 'automation';
@@ -12,6 +13,9 @@ page 20003 "APIV1 - Aut. User Groups"
     PageType = API;
     SourceTable = "User Group";
     Extensible = false;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The User Group table is deprecated.';
+    ObsoleteTag = '22.0';
 
     layout
     {
@@ -53,3 +57,4 @@ page 20003 "APIV1 - Aut. User Groups"
         AutomationAPIManagement: Codeunit "Automation - API Management";
 }
 
+#endif

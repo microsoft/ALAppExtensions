@@ -6,14 +6,6 @@ pageextension 31053 "Vendor Card CZZ" extends "Vendor Card"
         {
             Visible = false;
         }
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Advances (LCY)")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
     }
 
     actions
@@ -22,22 +14,6 @@ pageextension 31053 "Vendor Card CZZ" extends "Vendor Card"
         {
             Visible = false;
         }
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Advance Letters")
-        {
-            Visible = false;
-        }
-        modify("Ad&vance Invoices")
-        {
-            Visible = false;
-        }
-        modify("Advance Credit &Memos")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast(creation)
         {
             action(NewPurchAdvanceLetterCZZ)
@@ -46,8 +22,6 @@ pageextension 31053 "Vendor Card CZZ" extends "Vendor Card"
                 ToolTip = 'Create purchase advance letter.';
                 ApplicationArea = Basic, Suite;
                 Image = NewDocument;
-                Promoted = true;
-                PromotedCategory = Category6;
 
                 trigger OnAction()
                 var
@@ -68,6 +42,12 @@ pageextension 31053 "Vendor Card CZZ" extends "Vendor Card"
 
                     Page.Run(Page::"Purch. Advance Letter CZZ", PurchAdvLetterHeaderCZZ);
                 end;
+            }
+        }
+        addlast(Category_Category6)
+        {
+            actionref(NewPurchAdvanceLetterCZZ_Promoted; NewPurchAdvanceLetterCZZ)
+            {
             }
         }
     }

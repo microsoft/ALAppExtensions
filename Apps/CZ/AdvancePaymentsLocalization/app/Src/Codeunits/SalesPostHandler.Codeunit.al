@@ -53,14 +53,12 @@ codeunit 31008 "Sales-Post Handler CZZ"
     begin
         IsHandled := true;
     end;
-#if CLEAN19
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeTestStatusRelease', '', false, false)]
     local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
     begin
         IsHandled := true;
     end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnRunOnBeforeMakeInventoryAdjustment', '', false, false)]
     local procedure SuppressInventoryAdjustmentOnRunOnBeforeMakeInventoryAdjustment(SalesInvHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header"; var SkipInventoryAdjustment: Boolean)

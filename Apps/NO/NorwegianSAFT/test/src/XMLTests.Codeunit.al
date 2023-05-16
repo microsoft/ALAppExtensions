@@ -61,7 +61,7 @@ codeunit 148103 "SAF-T XML Tests"
         // TFS 372962: Customer and vendor with zero balance should be presented
         // TFS 425270: Xml nodes values are encoded. The value '<&' must be exported as '&amp;lt;&amp;amp;'
         // TFS 427679: Export all bank account data
-        // TFS 453255: Export bank account data depends on IBAN
+        // TFS 453255: Export bank account data depends on IBAN       
         VerifyMasterDataStructureWithStdAccMapping(TempXMLBuffer, SAFTExportHeader."Mapping Range Code", NumberOfMasterDataRecords);
         LibraryVariableStorage.AssertEmpty();
     end;

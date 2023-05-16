@@ -7,6 +7,8 @@ table 2508 "Extension Deployment Status"
 {
     Caption = 'Extension Deployment Status';
     TableType = Temporary;
+    InherentEntitlements = RX;
+    InherentPermissions = RX;
     Extensible = false;
 
     fields

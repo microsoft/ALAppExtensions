@@ -230,7 +230,7 @@ codeunit 13646 "OIOUBL-Management"
     var
         SegManagement: Codeunit SegManagement;
     begin
-        if SegManagement.FindInteractTmplCode(4) = '' then
+        if SegManagement.FindInteractionTemplateCode(4) = '' then
             exit;
 
         with SalesInvoiceHeader do
@@ -248,7 +248,7 @@ codeunit 13646 "OIOUBL-Management"
     var
         SegManagement: Codeunit SegManagement;
     begin
-        if SegManagement.FindInteractTmplCode(6) = '' then
+        if SegManagement.FindInteractionTemplateCode(6) = '' then
             exit;
 
         with SalesCrMemoHeader do

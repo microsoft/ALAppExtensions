@@ -139,21 +139,16 @@ page 30043 "APIV2 - Sales Invoice Lines"
                     Caption = 'Unit Of Measure Id';
 
                     trigger OnValidate()
-                    var
-                        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
                     begin
-                        SalesInvoiceAggregator.VerifyCanUpdateUOM(Rec);
                         RegisterFieldSet(FieldNo("Unit of Measure Code"));
                     end;
                 }
                 field(unitOfMeasureCode; "Unit of Measure Code")
                 {
                     Caption = 'Unit Of Measure Code';
+
                     trigger OnValidate()
-                    var
-                        SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
                     begin
-                        SalesInvoiceAggregator.VerifyCanUpdateUOM(Rec);
                         RegisterFieldSet(FieldNo("Unit of Measure Code"));
                     end;
                 }

@@ -10,6 +10,8 @@ codeunit 433 "Azure AD Tenant"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         AzureADTenantImpl: Codeunit "Azure AD Tenant Impl.";

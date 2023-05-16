@@ -3,11 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 9016 "Default Permission Set In Plan"
+table 9019 "Default Permission Set In Plan"
 {
-    Caption = 'Default Permission Set in License';
+    Caption = 'Default Permissions in License';
     Access = Internal;
-    TableType = Temporary;
+    InherentEntitlements = rX;
+    InherentPermissions = rX;
+    DataPerCompany = false;
+    ReplicateData = false;
 
     fields
     {

@@ -1367,6 +1367,7 @@ page 18556 "Contra Voucher"
                         end;
                     }
                 }
+#if not CLEAN22
                 action(CreateFlow)
                 {
                     ApplicationArea = Basic, Suite;
@@ -1374,6 +1375,9 @@ page 18556 "Contra Voucher"
                     Image = Flow;
                     ToolTip = 'Create a new Flow from a list of relevant Flow templates.';
                     Visible = IsSaaS;
+                    ObsoleteReason = 'This action can be handled by a custom action of type FlowTemplateGallery instead.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
 
                     trigger OnAction()
                     var
@@ -1392,7 +1396,12 @@ page 18556 "Contra Voucher"
                     Image = Flow;
                     RunObject = Page "Flow Selector";
                     ToolTip = 'View and configure Flows that you created.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This funcionality has been moved to Power Automate menu';
+                    ObsoleteTag = '22.0';
                 }
+#endif
             }
             group(Approval)
             {

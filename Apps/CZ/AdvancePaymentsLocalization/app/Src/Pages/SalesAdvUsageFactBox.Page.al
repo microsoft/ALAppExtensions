@@ -96,7 +96,12 @@ page 31187 "Sales Adv. Usage FactBox CZZ"
         TempVATAmountLine: Record "VAT Amount Line" temporary;
         SalesPost: Codeunit "Sales-Post";
         CurrFactor: Decimal;
+        IsHandled: Boolean;
     begin
+        OnBeforeOnAfterGetCurrRecord(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         if (not (Rec."Document Type" in [Rec."Document Type"::Order, Rec."Document Type"::Invoice])) or (Rec."Document No." = '') then begin
             AdvanceCount := 0;
             AdvanceVATLineCount := 0;
@@ -144,5 +149,10 @@ page 31187 "Sales Adv. Usage FactBox CZZ"
         TempSalesAdvLetterEntryCZZ.DeleteAll();
         TempSalesAdvLetterEntryCZZ.Reset();
         AdvanceVATLineCount := TempSalesAdvLetterEntryCZZ.Count();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnAfterGetCurrRecord(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
+    begin
     end;
 }

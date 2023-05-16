@@ -6,6 +6,8 @@
 codeunit 1910 "File Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         FilePath: Text;

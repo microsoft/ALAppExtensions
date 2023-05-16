@@ -6,6 +6,8 @@
 codeunit 1564 "Privacy Notice Approval"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Privacy Notice Approval" = im;
 
     procedure SetApprovalState(PrivacyNoticeId: Code[50]; UserSID: Guid; PrivacyNoticeApprovalState: Enum "Privacy Notice Approval State")

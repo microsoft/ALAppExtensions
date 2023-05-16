@@ -8,6 +8,5 @@ permissionset 2915 "Page Action Provider - Obj."
     Access = Internal;
     Assignable = false;
 
-    Permissions = Codeunit "Page Action Provider Impl." = X,
-                  Codeunit "Page Action Provider" = X;
+    Permissions = Codeunit "Page Action Provider" = X;
 }

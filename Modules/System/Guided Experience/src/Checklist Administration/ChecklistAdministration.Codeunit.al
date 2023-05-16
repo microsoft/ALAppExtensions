@@ -6,6 +6,8 @@
 codeunit 1995 "Checklist Administration"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata AllObjWithCaption = r,
                   tabledata "Guided Experience Item" = r,
                   tabledata "Checklist Item" = r,

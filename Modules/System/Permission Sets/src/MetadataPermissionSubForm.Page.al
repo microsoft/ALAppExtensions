@@ -22,6 +22,20 @@ page 9856 "Metadata Permission Subform"
         {
             repeater(Permissions)
             {
+                field("Role ID"; Rec."Role ID")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Permission Set';
+                    ToolTip = 'Specifies the permission set.';
+                    Visible = false;
+                }
+                field(Name; Rec."Role Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Permission Set Name';
+                    ToolTip = 'Specifies the name of the permission set.';
+                    Visible = false;
+                }
                 field(Type; Rec.Type)
                 {
                     ApplicationArea = All;
@@ -74,7 +88,6 @@ page 9856 "Metadata Permission Subform"
                     Style = Strong;
                     StyleExpr = ZeroObjStyleExpr;
                     ToolTip = 'Specifies information about whether the permission set has insert permission to this object. The values for the field are blank, Yes, and Indirect. Indirect means permission only through another object. If the field is empty, the permission set does not have insert permission.';
-
                 }
                 field("Modify Permission"; Rec."Modify Permission")
                 {

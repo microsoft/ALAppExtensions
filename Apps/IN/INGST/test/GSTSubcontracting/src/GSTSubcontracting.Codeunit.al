@@ -800,6 +800,61 @@ codeunit 18479 "GST Subcontracting"
         Assert.ExpectedError(StrSubstNo(DeliveryChallanLineExistsErr, PurchaseLine."Document No.", PurchaseLine."Line No."));
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,PostConfirmation,DeliveryChallanSentMsgHandler')]
+    procedure SubconOrderToCheckOutputDateInItemLedgerEntry()
+    var
+        ProductionOrderFirst: Record "Production Order";
+        ProductionOrderSecond: Record "Production Order";
+        PurchaseLineFirst: Record "Purchase Line";
+        PurchaseLineSecond: Record "Purchase Line";
+        PurchaseHeaderFirst: Record "Purchase Header";
+        PurchaseHeaderSecond: Record "Purchase Header";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        MultipleSubconOrderDetailsNo: Code[20];
+        OutputQtyFirst: Decimal;
+        OutputDateFirst: Date;
+        OutputDateSecond: Date;
+        OutputQtySecond: Decimal;
+        DocumentNoFirst: Code[20];
+        DocumentNoSecond: Code[20];
+    begin
+        // [SCENARIO] [469048] Posting date of Purchase receipt and Order subcon receipt dfifers when Order subcon receipt has a different posting date
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, true);
+
+        // [WHEN] Create Multiple Subcontracting Order from Released Purchase Order, Send Subcon Components
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrderFirst, PurchaseLineFirst);
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrderSecond, PurchaseLineSecond);
+        DeliverSubconComponentsMultiple(PurchaseLineFirst, PurchaseLineSecond, MultipleSubconOrderDetailsNo);
+        ReceiptSubconItemMultipleWithOutputDate(PurchaseLineFirst, PurchaseLineSecond, MultipleSubconOrderDetailsNo, WorkDate(), OutputQtyFirst, OutputQtySecond, OutputDateFirst, OutputDateSecond);
+
+        PurchaseHeaderFirst.Get(PurchaseLineFirst."Document Type", PurchaseLineFirst."Document No.");
+        PurchaseHeaderFirst.Validate("Vendor Invoice No.", PurchaseHeaderFirst."No.");
+        PurchaseHeaderFirst.Modify(true);
+        DocumentNoFirst := LibraryPurchase.PostPurchaseDocument(PurchaseHeaderFirst, false, true);
+
+        PurchaseHeaderSecond.Get(PurchaseLineSecond."Document Type", PurchaseLineSecond."Document No.");
+        PurchaseHeaderSecond.Validate("Vendor Invoice No.", PurchaseHeaderSecond."No.");
+        PurchaseHeaderSecond.Modify(true);
+        DocumentNoSecond := LibraryPurchase.PostPurchaseDocument(PurchaseHeaderSecond, false, true);
+
+        // [THEN] Delivery Challan, Item ledger entries and G/L Entries are Verified
+        VerifyDeliveryChallanLine(PurchaseLineFirst);
+        VerifyItemLedgerEntryComponentTransfer(PurchaseLineFirst);
+        VerifyDeliveryChallanLine(PurchaseLineSecond);
+        VerifyItemLedgerEntryComponentTransfer(PurchaseLineSecond);
+        VerifyItemLedgerEntryComponentConsumption(PurchaseLineFirst);
+        VerifyItemLedgerEntryItemOutput(PurchaseLineFirst, OutputQtyFirst);
+        VerifyItemLedgerEntryOutputDate(PurchaseLineFirst, OutputDateFirst);
+        VerifyItemLedgerEntryComponentConsumption(PurchaseLineSecond);
+        VerifyItemLedgerEntryItemOutput(PurchaseLineSecond, OutputQtySecond);
+        VerifyItemLedgerEntryOutputDate(PurchaseLineSecond, OutputDateSecond);
+        LibraryGST.VerifyGLEntries(PurchaseHeaderFirst."Document Type"::Invoice, DocumentNoFirst, 4);
+        LibraryGST.VerifyGLEntries(PurchaseHeaderSecond."Document Type"::Invoice, DocumentNoSecond, 4);
+    end;
+
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
                            GSTGroupType: Enum "GST Group Type";
@@ -1472,6 +1527,51 @@ codeunit 18479 "GST Subcontracting"
         SubconPostBatch.PostPurchorder(MultipleSubconOrderDetails);
     end;
 
+    local procedure ReceiptSubconItemMultipleWithOutputDate(var PurchaseLineFirst: Record "Purchase Line";
+        var PurchaseLineSecond: Record "Purchase Line";
+        MultipleSubconOrderDetailsNo: Code[20];
+        PostingDate: Date;
+        var OutputQtyFirst: Decimal;
+        var OutputQtySecond: Decimal;
+        var OutputDateFirst: Date;
+        var OutputDateSecond: Date)
+    var
+        MultipleSubconOrderDetails: Record "Multiple Subcon. Order Details";
+        SubconPostBatch: Codeunit "Subcontracting Post Batch";
+        VendorNo: Code[20];
+    begin
+        VendorNo := (Storage.Get(XVendorNoTok));
+
+        MultipleSubconOrderDetails.SetRange("No.", MultipleSubconOrderDetailsNo);
+        MultipleSubconOrderDetails.SetRange("Subcontractor No.", VendorNo);
+        MultipleSubconOrderDetails.FindFirst();
+        MultipleSubconOrderDetails.Validate("Posting Date", PostingDate);
+        MultipleSubconOrderDetails."Vendor Shipment No." :=
+            LibraryUtility.GenerateRandomCode(MultipleSubconOrderDetails.FieldNo("Vendor Shipment No."), Database::"Multiple Subcon. Order Details");
+        MultipleSubconOrderDetails.Modify();
+
+        PurchaseLineFirst.FindFirst();
+        PurchaseLineFirst.Validate("Posting Date", PostingDate);
+        PurchaseLineFirst.Validate("Qty. to Receive", PurchaseLineFirst.Quantity);
+        PurchaseLineFirst.Validate("Applies-to ID (Receipt)", MultipleSubconOrderDetails."No.");
+        PurchaseLineFirst.Modify();
+        OutputQtyFirst := PurchaseLineFirst."Qty. to Receive";
+        OutputDateFirst := PurchaseLineFirst."Posting Date";
+
+        PurchaseLineSecond.FindFirst();
+        PurchaseLineSecond.Validate("Posting Date", PostingDate);
+        PurchaseLineSecond.Validate("Qty. to Receive", PurchaseLineSecond.Quantity);
+        PurchaseLineSecond.Validate("Applies-to ID (Receipt)", MultipleSubconOrderDetails."No.");
+        PurchaseLineSecond.Modify();
+        OutputQtySecond := PurchaseLineSecond."Qty. to Receive";
+        OutputDateSecond := PurchaseLineSecond."Posting Date";
+
+        ApplyDeliveryChallan(PurchaseLineFirst);
+        ApplyDeliveryChallan(PurchaseLineSecond);
+
+        SubconPostBatch.PostPurchorder(MultipleSubconOrderDetails);
+    end;
+
     local procedure ApplyDeliveryChallan(PurchaseLine: Record "Purchase Line")
     var
         DeliveryChallanLine: Record "Delivery Challan Line";
@@ -1700,6 +1800,21 @@ codeunit 18479 "GST Subcontracting"
         ItemLedgerEntry.CalcSums(Quantity);
         OutputQty := ItemLedgerEntry.Quantity;
         LibraryAssert.AreEqual(OutputQty, ExpectedOutputQty, StrSubstNo(FieldVerifyErr, ItemLedgerEntry.FieldCaption(Quantity), ItemLedgerEntry.TableCaption));
+    end;
+
+    local procedure VerifyItemLedgerEntryOutputDate(PurchaseLine: Record "Purchase Line"; ExpectedOutputPostingDate: Date)
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        OutputDate: Date;
+    begin
+        ItemLedgerEntry.SetRange("Document No.", PurchaseLine."Prod. Order No.");
+        ItemLedgerEntry.SetRange("Entry Type", ItemLedgerEntry."Entry Type"::Output);
+        ItemLedgerEntry.SetRange("Item No.", PurchaseLine."No.");
+        ItemLedgerEntry.SetRange("Location Code", PurchaseLine."Location Code");
+        ItemLedgerEntry.FindSet();
+        ItemLedgerEntry.CalcSums(Quantity);
+        OutputDate := ItemLedgerEntry."Posting Date";
+        LibraryAssert.AreEqual(OutputDate, ExpectedOutputPostingDate, StrSubstNo(FieldVerifyErr, ItemLedgerEntry.FieldCaption("Posting Date"), ItemLedgerEntry.TableCaption));
     end;
 
     local procedure VerifyDimensionsOnItemLedgerEntry(var ProductionOrder: Record "Production Order")

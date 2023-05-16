@@ -12,7 +12,6 @@ PermissionSet 9701 "Cues and KPIs - Read"
                              "Field Selection - Read",
                              "User Selection - Read";
 
-    Permissions = tabledata "Cue Setup" = r,
-                  tabledata Field = r,
+    Permissions = tabledata Field = r,
                   tabledata "Record Link" = R;
 }

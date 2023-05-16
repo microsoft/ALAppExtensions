@@ -14,7 +14,7 @@ codeunit 18390 "GST Transfer Order Receipt"
 #if not CLEAN22      
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         ReserveTransLine: Codeunit "Transfer Line-Reserve";
-#endif
+#endif        
         GSTBaseValidation: Codeunit "GST Base Validation";
         CustomDutyAmount: Decimal;
         ItemJournalCustom: Decimal;
@@ -569,9 +569,8 @@ codeunit 18390 "GST Transfer Order Receipt"
                                                                     (QFactor * (DetailedGSTEntryBuffer."GST Assessable Value" +
                                                                     DetailedGSTEntryBuffer."Custom Duty Amount")))
                 else
-                    TempGSTPostingBufferStage."GST Base Amount" := -GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent
-                                                                    (DetailedGSTEntryBuffer."GST Component Code",
-                                                                    (QFactor * DetailedGSTEntryBuffer."GST Base Amount"));
+                    TempGSTPostingBufferStage."GST Base Amount" := -GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code",
+                                                                                                                        (QFactor * DetailedGSTEntryBuffer."GST Base Amount"));
                 TempGSTPostingBufferStage."GST Amount" := -GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code", (QFactor * DetailedGSTEntryBuffer."GST Amount"));
                 TempGSTPostingBufferStage."GST %" := DetailedGSTEntryBuffer."GST %";
                 TempGSTPostingBufferStage."GST Component Code" := DetailedGSTEntryBuffer."GST Component Code";
@@ -991,9 +990,9 @@ codeunit 18390 "GST Transfer Order Receipt"
 #if not CLEAN22
     [Obsolete('Replaced by InitRevaluationEntryUnrealizedProfit', '22.0')]
     local procedure PostRevaluationEntryunrealizedProfit(
-        var TransferLine3: Record "Transfer Line";
-        TransferReceiptHeader2: Record "Transfer Receipt Header";
-        TransferReceiptLine2: Record "Transfer Receipt Line")
+            var TransferLine3: Record "Transfer Line";
+            TransferReceiptHeader2: Record "Transfer Receipt Header";
+            TransferReceiptLine2: Record "Transfer Receipt Line")
     var
         ValueEntry: Record "Value Entry";
         SourceCodeSetup: Record "Source Code Setup";
@@ -1102,7 +1101,6 @@ codeunit 18390 "GST Transfer Order Receipt"
             PostingNoSeries."Document Type"::"Transfer Receipt Header");
         exit(NoSeriesCode);
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnRunWithCheckOnAfterRetrieveItemTracking', '', false, false)]
     local procedure OnRunWithCheckOnAfterRetrieveItemTracking(var ItemJournalLine: Record "Item Journal Line"; var TempTrackingSpecification: Record "Tracking Specification"; var TrackingSpecExists: Boolean)

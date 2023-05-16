@@ -6,8 +6,10 @@
 codeunit 1998 "Guided Experience Upgrade Tag"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", OnGetPerCompanyUpgradeTags, '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetGuidedExperienceItemAddSpotlightTourTypeTag());

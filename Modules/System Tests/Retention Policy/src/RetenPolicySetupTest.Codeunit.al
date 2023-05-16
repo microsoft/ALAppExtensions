@@ -546,7 +546,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
 #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
-        // #pragma warning enable AA0210
+#pragma warning restore AA0210
         RetentionPolicySetupLine.FindFirst();
 
         // exercise
@@ -580,7 +580,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
 #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
-        // #pragma warning enable AA0210
+#pragma warning restore AA0210
         RetentionPolicySetupLine.FindFirst();
 
         // exercise
@@ -607,7 +607,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine.SetRange("Table ID", Database::"Retention Policy Test Data 4");
 #pragma warning disable AA0210 // The table Retention Policy Setup Line does not contain a key with the field Locked.
         RetentionPolicySetupLine.SetRange(Locked, true);
-        // #pragma warning enable AA0210
+#pragma warning restore AA0210
         RetentionPolicySetupLine.FindFirst();
 
         // exercise

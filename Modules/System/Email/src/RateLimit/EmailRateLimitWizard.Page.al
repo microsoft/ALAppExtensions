@@ -77,9 +77,9 @@ page 8898 "Email Rate Limit Wizard"
         UpdateRateLimitDisplay();
     end;
 
-    internal procedure SetEmailAccount(EmailAccount: Record "Email Account")
+    internal procedure SetEmailAccountName(EmailAccountName: Text[250])
     begin
-        EmailName := EmailAccount.Name;
+        EmailName := EmailAccountName;
     end;
 
     internal procedure UpdateRateLimitDisplay()

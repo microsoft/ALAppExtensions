@@ -99,11 +99,6 @@ codeunit 31278 "Release Compens. Document CZC"
                             CustLedgerEntry.TestField(Prepayment, false);
                             if CustLedgerEntry.RelatedToAdvanceLetterCZL() then
                                 Error(RelatedToAdvanceLetterErr, CustLedgerEntry.TableCaption(), CustLedgerEntry."Entry No.");
-#if not CLEAN19
-#pragma warning disable AL0432
-                            CustLedgerEntry.TestField("Prepayment Type", CustLedgerEntry."Prepayment Type"::" ");
-#pragma warning restore AL0432
-#endif
                         end;
                     CompensationLineCZC."Source Type"::Vendor:
                         if CompensationLineCZC."Source Entry No." <> 0 then begin
@@ -111,11 +106,6 @@ codeunit 31278 "Release Compens. Document CZC"
                             VendorLedgerEntry.TestField(Prepayment, false);
                             if VendorLedgerEntry.RelatedToAdvanceLetterCZL() then
                                 Error(RelatedToAdvanceLetterErr, VendorLedgerEntry.TableCaption(), VendorLedgerEntry."Entry No.");
-#if not CLEAN19
-#pragma warning disable AL0432
-                            VendorLedgerEntry.TestField("Prepayment Type", VendorLedgerEntry."Prepayment Type"::" ");
-#pragma warning restore AL0432
-#endif
                         end;
                 end;
                 if CompensationLineCZC.CalcRelatedAmountToApply() <> 0 then

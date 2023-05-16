@@ -10,7 +10,8 @@ codeunit 2202 "Azure Key Vault Impl."
 {
     Access = Internal;
     SingleInstance = true;
-
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]
@@ -30,6 +31,7 @@ codeunit 2202 "Azure Key Vault Impl."
         AllowedApplicationSecretsSecretNotFetchedMsg: Label 'The list of allowed secret names could not be fetched.', Locked = true;
         AzureKeyVaultTxt: Label 'Azure Key Vault', Locked = true;
         InitializeAllowedSecretNamesErr: Label 'Initialization of allowed secret names failed.';
+        CertificateInfoTxt: Label 'Successfully constructed certificate from secret %1. Certificate thumbprint %2', Locked = true;
 
     [NonDebuggable]
     procedure GetAzureKeyVaultSecret(SecretName: Text; var Secret: Text)
@@ -100,6 +102,10 @@ codeunit 2202 "Azure Key Vault Impl."
 
     [NonDebuggable]
     local procedure GetCertificateFromClient(CertificateName: Text) Certificate: Text
+    var
+        X509Certificate2: Codeunit X509Certificate2;
+        EnvironmentInformation: Codeunit "Environment Information";
+        CertificateThumbprint: Text;
     begin
         if CachedCertificatesDictionary.ContainsKey(CertificateName) then begin
             Certificate := CachedCertificatesDictionary.Get(CertificateName);
@@ -112,7 +118,11 @@ codeunit 2202 "Azure Key Vault Impl."
             IsKeyVaultClientInitialized := true;
         end;
         Certificate := NavAzureKeyVaultClient.GetAzureKeyVaultCertificate(CertificateName);
-
+        if EnvironmentInformation.IsSaaS() then begin
+            X509Certificate2.GetCertificateThumbprint(Certificate, '', CertificateThumbprint);
+            if CertificateThumbprint <> '' then
+                Session.LogMessage('0000C17', StrSubstNo(CertificateInfoTxt, CertificateName, CertificateThumbprint), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', AzureKeyVaultTxt);
+        end;
         CachedCertificatesDictionary.Add(CertificateName, Certificate);
     end;
 

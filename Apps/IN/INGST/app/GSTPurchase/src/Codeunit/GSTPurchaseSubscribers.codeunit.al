@@ -1395,6 +1395,7 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
         PurchaseLine.SetFilter("GST Group Type", '%1', PurchaseLine."GST Group Type"::Goods);
         PurchaseLine.SetFilter(Type, '<>%1&<>%2', PurchaseLine.Type::" ", PurchaseLine.Type::"Charge (Item)");
+        PurchaseLine.SetFilter("GST Group Code", '<>%1', '');
         PurchaseLine.SetFilter("GST Assessable Value", '%1', 0);
         PurchaseLine.SetFilter("Qty. to Receive", '<>%1', 0);
         if PurchaseLine.FindSet() then
@@ -1413,6 +1414,7 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine.SetFilter(Type, '<>%1', PurchaseLine.Type::" ");
         PurchaseLine.SetFilter("Qty. to Invoice", '<>%1', 0);
         PurchaseLine.SetRange("GST Group Type", PurchaseLine."GST Group Type"::Goods);
+        PurchaseLine.SetFilter("GST Group Code", '<>%1', '');
         if PurchaseLine.FindFirst() then begin
             PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
             PurchaseHeader.TestField("Bill of Entry Date");

@@ -12,6 +12,8 @@
 codeunit 3911 "PBT Expired Record Count"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnRun()
     var

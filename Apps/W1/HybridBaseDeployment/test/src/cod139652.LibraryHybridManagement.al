@@ -218,6 +218,12 @@ codeunit 139652 "Library - Hybrid Management"
         CanSetup := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnBeforeCanScheduleTask', '', false, false)]
+    local procedure HandleOnBeforeCanScheduleTask(var Handled: Boolean)
+    begin
+        Handled := true;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnCanCreateCompanies', '', false, false)]
     local procedure HandleCanCreateCompanies(var CanCreateCompanies: Boolean)
     begin

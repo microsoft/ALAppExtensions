@@ -6,6 +6,8 @@
 codeunit 1432 "Satisfaction Survey Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Net Promoter Score" = rimd,
                   tabledata "Net Promoter Score Setup" = rimd,
                   tabledata "User Property" = r;
@@ -754,7 +756,7 @@ codeunit 1432 "Satisfaction Survey Impl."
         exit(60000);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", OnAfterLogin, '', false, false)]
     local procedure HandleOnAfterLogin()
     begin
         ActivateSurvey();

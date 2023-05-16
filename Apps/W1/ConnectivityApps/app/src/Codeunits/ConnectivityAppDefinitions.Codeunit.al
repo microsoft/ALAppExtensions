@@ -25,6 +25,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterIQBanking();
         RegisterWiseBanking();
         RegisterDirectBankingNL();
+        RegisterSofteraBankfeed();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -250,6 +251,36 @@ codeunit 20352 "Connectivity App Definitions"
         AppWorksOn := 'NL';
 
         AddDescriptionTranslation(AppId, 'Integreer ABN, Rabo, ING, Triodos, Knab, ASN, SNS etc. met Microsoft Dynamics 365 Business Central.', 1043);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+    local procedure RegisterSofteraBankfeed()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU
+        ***************************************************/
+
+        AppId := '8051ee19-8246-489f-9f2c-4d89e1710f7e';
+        AppName := 'Bankfeed - Bank Statement Import & Reconciliation';
+        AppPublisher := 'Softera Baltic';
+        AppDescription := 'Bank statement import & reconciliation.';
+        AppProviderSupportURL := 'https://www.softera.lt/en/supported-banks-softera-bankfeed/';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.8051ee19-8246-489f-9f2c-4d89e1710f7e';
+        AppApprovedFor := 'LT,DK,HU';
+        AppWorksOn := 'LT,DK,HU';
+
+        AddDescriptionTranslation(AppId, 'Banko išrašo importas ir suderinimas.', 1063);
+        AddDescriptionTranslation(AppId, 'Kontoudtog import & afstemning.', 1030);
+        AddDescriptionTranslation(AppId, 'Banki kivonat importálása és egyeztetése.', 1038);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 

@@ -78,6 +78,7 @@ codeunit 4708 "VAT Group Settlement"
         GenJournalLine."System-Created Entry" := true;
         GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
         GenJournalLine."Posting Date" := WorkDate();
+        GenJournalLine."VAT Reporting Date" := WorkDate();
         GenJournalLine."Document Type" := GenJournalLine."Document Type"::" ";
         GenJournalLine."Document No." := DocNo;
         SourceCodeSetup.Get();
