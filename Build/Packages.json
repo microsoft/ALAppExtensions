@@ -3,11 +3,10 @@
                                                             "Version":  "22.1.20230503.4"
                                                         },
     "microsoft-ALAppExtensions-Modules-preview":  {
-                                                      "Version":  "22.1.967"
+                                                      "Version":  "22.2.980"
                                                   },
     "AppBaselines-BCArtifacts":  {
-                                     "Version":  "22.0.54157.56368",
-                                     "_comment": "Deprecated. Temporary workaround for not having enough baselines packages"
-
+                                     "Version":  "22.1.55890.56656",
+                                     "_comment":  "Deprecated. Temporary workaround for not having enough baselines packages"
                                  }
 }
