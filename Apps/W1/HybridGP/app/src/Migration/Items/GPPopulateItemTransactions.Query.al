@@ -35,12 +35,15 @@ query 40100 "GP Populate Item Transactions"
             {
             }
 
-
             column(QTYRECVD; QTYRECVD)
             {
             }
 
             column(QTYSOLD; QTYSOLD)
+            {
+            }
+
+            column(QTYTYPE; QTYTYPE)
             {
             }
 

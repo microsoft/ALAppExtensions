@@ -41,6 +41,7 @@ codeunit 4018 "GP Customer Migrator"
 #endif
     var
         HelperFunctions: Codeunit "Helper Functions";
+        PostingGroupNo: Code[20];
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -54,10 +55,9 @@ codeunit 4018 "GP Customer Migrator"
             HelperFunctions.GetPostingAccountNumber('ReceivablesAccount')
         );
 
-        Sender.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
+        PostingGroupNo := CreateCustomerPostingGroupIfNeeded(RecordIdToMigrate);
+        Sender.SetCustomerPostingGroup(PostingGroupNo);
         Sender.ModifyCustomer(true);
-
-        CreateCustomerPostingGroupIfNeeded(Sender, RecordIdToMigrate);
     end;
 
 #if not CLEAN22
@@ -179,7 +179,7 @@ codeunit 4018 "GP Customer Migrator"
     end;
 #pragma warning restore AA0207
 
-    local procedure CreateCustomerPostingGroupIfNeeded(var CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure CreateCustomerPostingGroupIfNeeded(RecordIdToMigrate: RecordId): Code[20]
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPCustomer: Record "GP Customer";
@@ -187,30 +187,30 @@ codeunit 4018 "GP Customer Migrator"
         GPRM00101: Record "GP RM00101";
         CustomerPostingGroup: Record "Customer Posting Group";
         HelperFunctions: Codeunit "Helper Functions";
-        ClassId: Text[20];
+        ClassId: Code[20];
         AccountNumber: Code[20];
     begin
         if not GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
-            exit;
+            exit(PostingGroupCodeTxt);
 
         if not GPCustomer.Get(RecordIdToMigrate) then
-            exit;
+            exit(PostingGroupCodeTxt);
 
         if not GPRM00101.Get(GPCustomer.CUSTNMBR) then
-            exit;
+            exit(PostingGroupCodeTxt);
 
 #pragma warning disable AA0139
         ClassId := GPRM00101.CUSTCLAS.Trim();
 #pragma warning restore AA0139
 
         if ClassId = '' then
-            exit;
-
-        if CustomerPostingGroup.Get(ClassId) then
-            exit;
+            exit(PostingGroupCodeTxt);
 
         if not GPRM00201.Get(ClassId) then
-            exit;
+            exit(PostingGroupCodeTxt);
+
+        if CustomerPostingGroup.Get(ClassId) then
+            exit(ClassId);
 
         CustomerPostingGroup.Validate("Code", ClassId);
         CustomerPostingGroup.Validate("Description", GPRM00201.CLASDSCR);
@@ -254,8 +254,7 @@ codeunit 4018 "GP Customer Migrator"
 
         CustomerPostingGroup.Insert();
 
-        CustomerDataMigrationFacade.SetCustomerPostingGroup(ClassId);
-        CustomerDataMigrationFacade.ModifyCustomer(true);
+        exit(ClassId);
     end;
 
     local procedure MigrateCustomerDetails(MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
