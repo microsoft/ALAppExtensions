@@ -256,6 +256,275 @@ page 9859 "Tenant Permission Subform"
                         until TenantPermission.Next() = 0;
                 end;
             }
+            group("Allow Read")
+            {
+                Caption = 'Allow Read';
+                Enabled = "Object Type" = "Object Type"::"Table Data";
+                Image = Confirm;
+                action(AllowReadYes)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Yes';
+                    Image = Approve;
+                    ToolTip = 'Allow access to read data in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('R', "Read Permission"::Yes);
+                    end;
+                }
+                action(AllowReadNo)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'No';
+                    Image = Reject;
+                    ToolTip = 'Disallow access to read data in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('R', "Read Permission"::" ");
+                    end;
+                }
+                action(AllowReadIndirect)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Indirect';
+                    Image = Indent;
+                    ToolTip = 'Allow access to read data in the object if there is read access to a related object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('R', "Read Permission"::Indirect);
+                    end;
+                }
+            }
+            group("Allow Insertion")
+            {
+                Caption = 'Allow Insertion';
+                Enabled = "Object Type" = "Object Type"::"Table Data";
+                Image = Confirm;
+                action(AllowInsertYes)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Yes';
+                    Image = Approve;
+                    ToolTip = 'Allow access to insert data in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('I', "Insert Permission"::Yes);
+                    end;
+                }
+                action(AllowInsertNo)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'No';
+                    Image = Reject;
+                    ToolTip = 'Disallow access to insert data in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('I', "Insert Permission"::" ");
+                    end;
+                }
+                action(AllowInsertIndirect)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Indirect';
+                    Image = Indent;
+                    ToolTip = 'Allow access to insert data in the object if there is insert access to a related object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('I', "Insert Permission"::Indirect);
+                    end;
+                }
+            }
+            group("Allow Modification")
+            {
+                Caption = 'Allow Modification';
+                Enabled = "Object Type" = "Object Type"::"Table Data";
+                Image = Confirm;
+                action(AllowModifyYes)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Yes';
+                    Image = Approve;
+                    ToolTip = 'Allow access to modify data in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('M', "Modify Permission"::Yes);
+                    end;
+                }
+                action(AllowModifyNo)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'No';
+                    Image = Reject;
+                    ToolTip = 'Disallow access to modify data in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('M', "Modify Permission"::" ");
+                    end;
+                }
+                action(AllowModifyIndirect)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Indirect';
+                    Image = Indent;
+                    ToolTip = 'Allow access to modify data in the object if there is modify access to a related object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('M', "Modify Permission"::Indirect);
+                    end;
+                }
+            }
+            group("Allow Deletion")
+            {
+                Caption = 'Allow Deletion';
+                Enabled = "Object Type" = "Object Type"::"Table Data";
+                Image = Confirm;
+                action(AllowDeleteYes)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Yes';
+                    Image = Approve;
+                    ToolTip = 'Allow access to delete data in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('D', "Delete Permission"::Yes);
+                    end;
+                }
+                action(AllowDeleteNo)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'No';
+                    Image = Reject;
+                    ToolTip = 'Disallow access to delete data in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('D', "Delete Permission"::" ");
+                    end;
+                }
+                action(AllowDeleteIndirect)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Indirect';
+                    Image = Indent;
+                    ToolTip = 'Allow access to delete data in the object if there is delete access to a related object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('D', "Delete Permission"::Indirect);
+                    end;
+                }
+            }
+            group("Allow Execution")
+            {
+                Caption = 'Allow Execution';
+                Enabled = "Object Type" <> "Object Type"::"Table Data";
+                Image = Confirm;
+                action(AllowExecuteYes)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Yes';
+                    Image = Approve;
+                    ToolTip = 'Allow access to execute functions in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('X', "Execute Permission"::Yes);
+                    end;
+                }
+                action(AllowExecuteNo)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'No';
+                    Image = Reject;
+                    ToolTip = 'Disallow access to execute functions in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('X', "Execute Permission"::" ");
+                    end;
+                }
+                action(AllowExecuteIndirect)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Indirect';
+                    Image = Indent;
+                    ToolTip = 'Allow access to execute functions in the object if there is execute access to a related object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('X', "Execute Permission"::Indirect);
+                    end;
+                }
+            }
+            group("Allow All")
+            {
+                Caption = 'Allow All';
+                Image = Confirm;
+                action(AllowAllYes)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Yes';
+                    Image = Approve;
+                    ToolTip = 'Allow access to perform all actions in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('*', "Read Permission"::Yes);
+                    end;
+                }
+                action(AllowAllNo)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'No';
+                    Image = Reject;
+                    ToolTip = 'Disallow access to perform all actions in the object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('*', "Read Permission"::" ");
+                    end;
+                }
+                action(AllowAllIndirect)
+                {
+                    AccessByPermission = TableData "Tenant Permission" = M;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Indirect';
+                    Image = Indent;
+                    ToolTip = 'Allow access to perform all actions in the object if there is full access to a related object.';
+
+                    trigger OnAction()
+                    begin
+                        UpdateSelected('*', "Read Permission"::Indirect);
+                    end;
+                }
+            }
         }
     }
 
@@ -373,6 +642,46 @@ page 9859 "Tenant Permission Subform"
     begin
         PermissionSetRelationImpl.RefreshPermissionSets(CurrentRoleID, CurrentAppID, CurrentScope);
         CurrPage.Update(false);
+    end;
+
+    local procedure UpdateSelected(RIMDX: Text[1]; PermissionOption: Option)
+    var
+        TenantPermission: Record "Tenant Permission";
+        OriginalTenantPermission: Record "Tenant Permission";
+    begin
+        CurrPage.SetSelectionFilter(TenantPermission);
+
+        if TenantPermission.FindSet() then
+            repeat
+                case RIMDX of
+                    'R':
+                        if TenantPermission."Object Type" = "Object Type"::"Table Data" then
+                            TenantPermission."Read Permission" := PermissionOption;
+                    'I':
+                        if TenantPermission."Object Type" = "Object Type"::"Table Data" then
+                            TenantPermission."Insert Permission" := PermissionOption;
+                    'M':
+                        if TenantPermission."Object Type" = "Object Type"::"Table Data" then
+                            TenantPermission."Modify Permission" := PermissionOption;
+                    'D':
+                        if TenantPermission."Object Type" = "Object Type"::"Table Data" then
+                            TenantPermission."Delete Permission" := PermissionOption;
+                    'X':
+                        if TenantPermission."Object Type" <> "Object Type"::"Table Data" then
+                            TenantPermission."Execute Permission" := PermissionOption;
+                    '*':
+                        begin
+                            if TenantPermission."Object Type" = "Object Type"::"Table Data" then begin
+                                TenantPermission."Read Permission" := PermissionOption;
+                                TenantPermission."Insert Permission" := PermissionOption;
+                                TenantPermission."Modify Permission" := PermissionOption;
+                                TenantPermission."Delete Permission" := PermissionOption;
+                            end else
+                                TenantPermission."Execute Permission" := PermissionOption;
+                        end;
+                end;
+                TenantPermission.Modify();
+            until TenantPermission.Next() = 0;
     end;
 
     var
