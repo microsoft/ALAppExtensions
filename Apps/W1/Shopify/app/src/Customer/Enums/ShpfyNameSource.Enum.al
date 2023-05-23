@@ -3,8 +3,9 @@
 /// </summary>
 enum 30108 "Shpfy Name Source" implements "Shpfy ICustomer Name"
 {
+    Access = Internal;
     Caption = 'Shopify Name Source';
-    Extensible = false;
+    Extensible = true;
     DefaultImplementation = "Shpfy ICustomer Name" = "Shpfy Name is Empty";
 
     value(0; CompanyName)

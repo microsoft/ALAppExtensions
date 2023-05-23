@@ -3,6 +3,7 @@
 /// </summary>
 interface "Shpfy ICustomer Mapping"
 {
+    Access = Internal;
 
     /// <summary>
     /// DoMapping.
@@ -12,10 +13,7 @@ interface "Shpfy ICustomer Mapping"
     /// <param name="ShopCode">Code[20].</param>
     /// <returns>Return value of type Code[20].</returns>
     procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]): Code[20]
-<<<<<<< HEAD
 
-=======
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     /// <summary>
     /// DoMapping.
     /// </summary>
@@ -25,9 +23,5 @@ interface "Shpfy ICustomer Mapping"
     /// <param name="TemplateCode">Code[10].</param>
     /// <param name="AllowCreate">Boolean.</param>
     /// <returns>Return value of type Code[20].</returns>
-<<<<<<< HEAD
     procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]; TemplateCode: Code[10]; AllowCreate: Boolean): Code[20]
-=======
-    procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]; TemplateCode: Code[20]; AllowCreate: Boolean): Code[20]
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
 }

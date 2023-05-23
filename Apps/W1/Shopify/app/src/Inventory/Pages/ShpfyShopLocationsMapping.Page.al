@@ -48,7 +48,6 @@ page 30117 "Shpfy Shop Locations Mapping"
                         Text := OldText + LocationList.GetSelectionFilter();
                         exit(true);
                     end;
-
                 }
 #if not CLEAN22
                 field(Disabled; Rec.Disabled)
@@ -70,10 +69,6 @@ page 30117 "Shpfy Shop Locations Mapping"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies if the location is active in Shopify.';
-<<<<<<< HEAD
-=======
-                    Visible = false;
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                 }
                 field("Is Primary"; Rec."Is Primary")
                 {

@@ -3,8 +3,9 @@
 /// </summary>
 enum 30125 "Shpfy Inventory Policy"
 {
+    Access = Internal;
     Caption = 'Shopify Inventory Policy';
-    Extensible = false;
+    Extensible = true;
 
     value(0; DENY)
     {

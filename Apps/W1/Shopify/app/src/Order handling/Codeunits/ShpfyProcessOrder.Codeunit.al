@@ -22,10 +22,10 @@ codeunit 30166 "Shpfy Process Order"
         OrderHeader: Record "Shpfy Order Header";
         ReleaseSalesDocument: Codeunit "Release Sales Document";
         OrderMapping: Codeunit "Shpfy Order Mapping";
+        IsHandled: Boolean;
         MappingErr: Label 'Not everything can be mapped.';
     begin
         OrderHeader.Get(Rec."Shopify Order Id");
-        OrderEvents.OnBeforeProcessSalesDocument(OrderHeader);
         if not OrderMapping.DoMapping(OrderHeader) then
             Error(MappingErr);
 
@@ -33,21 +33,16 @@ codeunit 30166 "Shpfy Process Order"
         CreateHeaderFromShopifyOrder(SalesHeader, OrderHeader);
         CreateLinesFromShopifyOrder(SalesHeader, OrderHeader);
 
-        if ShopifyShop."Auto Release Sales Orders" then
-            ReleaseSalesDocument.Run(SalesHeader);
-
+        IsHandled := false;
         OrderHeader.Get(OrderHeader."Shopify Order Id");
-<<<<<<< HEAD
         OrderEvents.OnBeforeReleaseSalesHeader(SalesHeader, OrderHeader, IsHandled);
         OrderHeader.Get(OrderHeader."Shopify Order Id");
         if not IsHandled then
             ReleaseSalesDocument.Run(SalesHeader);
         OrderEvents.OnAfterReleaseSalesHeader(SalesHeader, OrderHeader);
-=======
-        OrderEvents.OnAfterProcessSalesDocument(SalesHeader, OrderHeader);
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
 
         Rec.Get(OrderHeader."Shopify Order Id");
+
     end;
 
     /// <summary> 
@@ -143,7 +138,7 @@ codeunit 30166 "Shpfy Process Order"
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     local procedure CreateLinesFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
     var
-        Item: Record Item;
+        Item: REcord Item;
         SalesLine: Record "Sales Line";
         ShopifyOrderLine: Record "Shpfy Order Line";
         OrderShippingCharges: Record "Shpfy Order Shipping Charges";
@@ -282,12 +277,6 @@ codeunit 30166 "Shpfy Process Order"
     begin
         if SalesHeader.GetBySystemId(LastCreatedDocumentId) then
             SalesHeader.Delete(true);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnInsertShipmentHeaderOnAfterTransferfieldsToSalesShptHeader', '', false, false)]
-    local procedure TransferShopifyOrderNoToShipmentHeader(SalesHeader: Record "Sales Header"; var SalesShptHeader: Record "Sales Shipment Header")
-    begin
-        SalesShptHeader."Shpfy Order No." := SalesHeader."Shpfy Order No.";
     end;
 }
 

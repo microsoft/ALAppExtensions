@@ -3,13 +3,14 @@
 /// </summary>
 enum 30131 "Shpfy Remove Product Action" implements "Shpfy IRemoveProductAction"
 {
+    Access = Internal;
     Caption = 'Shopify Remove Product Action';
-    Extensible = false;
+    Extensible = true;
+    DefaultImplementation = "Shpfy IRemoveProductAction" = "Shpfy RemoveProductDoNothing";
 
     value(0; DoNothing)
     {
         Caption = ' ';
-        Implementation = "Shpfy IRemoveProductAction" = "Shpfy RemoveProductDoNothing";
     }
     value(1; StatusToArchived)
     {

@@ -3,6 +3,7 @@
 /// </summary>
 table 30129 "Shpfy Variant"
 {
+    Access = Internal;
     Caption = 'Shopify Variant';
     DataClassification = CustomerContent;
 

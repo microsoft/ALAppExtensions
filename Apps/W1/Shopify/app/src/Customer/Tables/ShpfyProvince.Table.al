@@ -6,20 +6,9 @@ table 30108 "Shpfy Province"
     Access = Internal;
     Caption = 'Shopify Province';
     DataClassification = SystemMetadata;
-<<<<<<< HEAD
     ObsoleteState = Removed;
     ObsoleteReason = 'Replaced by Shpfy Tax Area';
     ObsoleteTag = '21.4';
-=======
-    ObsoleteReason = 'Replaced by Shpfy Tax Area';
-#if not CLEAN22
-    ObsoleteState = Pending;
-    ObsoleteTag = '22.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '25.0';
-#endif
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
 
     fields
     {

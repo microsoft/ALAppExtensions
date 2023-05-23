@@ -45,12 +45,9 @@ codeunit 30191 "Shpfy Shipping Charges"
         JOrder: JsonObject;
         JShipmentLines: JsonArray;
         JResponse: JsonToken;
-<<<<<<< HEAD
         Url: Text;
         JShippingCosts: JsonArray;
         OrderShippingLinesUrlTxt: Label 'orders/%1.json?fields=shipping_lines', Comment = '%1 = Shopify order id', Locked = true;
-=======
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     begin
         if CommunicationMgt.GetTestInProgress() then
             exit;

@@ -22,11 +22,7 @@ codeunit 30217 "Shpfy GQL CloseOrder" implements "Shpfy IGraphQL"
     begin
         exit(55);
     end;
-<<<<<<< HEAD
 }
 
 
 
-=======
-}
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2

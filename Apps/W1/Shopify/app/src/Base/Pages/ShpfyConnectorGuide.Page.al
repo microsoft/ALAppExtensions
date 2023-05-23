@@ -2,8 +2,6 @@ page 30136 "Shpfy Connector Guide"
 {
     Caption = 'Shopify Connector Setup';
     PageType = NavigatePage;
-    ApplicationArea = All;
-    UsageCategory = Administration;
     Permissions = tabledata "Shpfy Initial Import Line" = rimd;
 
     layout
@@ -212,59 +210,34 @@ page 30136 "Shpfy Connector Guide"
                         Caption = 'Item Template Code';
                         ApplicationArea = All;
                         Lookup = true;
-#if not CLEAN22
                         LookupPageId = "Config. Template List";
-#else
-                        LookupPageId = "Select Item Templ. List";
-#endif
                         ToolTip = 'Specifies the item template to use when creating items in Business Central. These are products in Shopify that don''t exist as items in Business Central.';
 
                         trigger OnLookup(var Text: Text): Boolean
-#if not CLEAN22
                         var
                             ConfigTemplateHeader: Record "Config. Template Header";
-                            ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
                         begin
-#if not CLEAN22
-                            if not ShpfyTemplates.NewTemplatesEnabled() then begin
-                                ConfigTemplateHeader.SetRange("Table ID", Database::Item);
-                                if Page.RunModal(Page::"Config. Template List", ConfigTemplateHeader) = Action::LookupOK then begin
-                                    ItemTemplateCode := ConfigTemplateHeader.Code;
-                                    NextActionEnabled := true;
-                                end
-                            end else
-                                if LookupItemTemplateCode(ItemTemplateCode) then
-                                    NextActionEnabled := true;
-#else
-                            if LookUpItemTemplateCode(ItemTemplateCode) then
+                            ConfigTemplateHeader.SetRange("Table ID", Database::Item);
+                            if Page.RunModal(Page::"Config. Template List", ConfigTemplateHeader) = Action::LookupOK then begin
+                                ItemTemplateCode := ConfigTemplateHeader.Code;
                                 NextActionEnabled := true;
-#endif
+                            end;
                         end;
 
                         trigger OnValidate()
                         var
-                            ItemTempl: Record "Item Templ.";
-#if not CLEAN22
                             ConfigTemplateHeader: Record "Config. Template Header";
-                            ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
                         begin
                             if ItemTemplateCode = '' then begin
                                 NextActionEnabled := false;
                                 exit;
                             end;
-#if not CLEAN22
-                            if not ShpfyTemplates.NewTemplatesEnabled() then begin
-                                ConfigTemplateHeader.Get(ItemTemplateCode);
-                                if ConfigTemplateHeader."Table ID" <> Database::Item then
-                                    Error(SelectedTemplateNotItemErr, ItemTemplateCode)
-                            end else
-                                ItemTempl.Get(ItemTemplateCode);
-#else
-                            ItemTempl.Get(ItemTemplateCode);
-#endif
-                            NextActionEnabled := true;
+
+                            ConfigTemplateHeader.Get(ItemTemplateCode);
+                            if ConfigTemplateHeader."Table ID" <> Database::Item then
+                                Error(SelectedTemplateNotItemErr, ItemTemplateCode)
+                            else
+                                NextActionEnabled := true;
                         end;
                     }
                 }
@@ -289,59 +262,34 @@ page 30136 "Shpfy Connector Guide"
                         Caption = 'Customer Template Code';
                         ApplicationArea = All;
                         Lookup = true;
-#if not CLEAN22
                         LookupPageId = "Config. Template List";
-#else
-                        LookupPageId = "Select Customer Templ. List";
-#endif
                         ToolTip = 'Specifies the customer template to use to create unknown customers. These are customers in Shopify that don''t already exist in Business Central.';
 
                         trigger OnLookup(var Text: Text): Boolean
-#if not CLEAN22
                         var
                             ConfigTemplateHeader: Record "Config. Template Header";
-                            ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
                         begin
-#if not CLEAN22
-                            if not ShpfyTemplates.NewTemplatesEnabled() then begin
-                                ConfigTemplateHeader.SetRange("Table ID", Database::Customer);
-                                if Page.RunModal(Page::"Config. Template List", ConfigTemplateHeader) = Action::LookupOK then begin
-                                    CustomerTemplateCode := ConfigTemplateHeader.Code;
-                                    NextActionEnabled := true;
-                                end
-                            end else
-                                if LookupCustomerTemplateCode(CustomerTemplateCode) then
-                                    NextActionEnabled := true;
-#else
-                            if LookupCustomerTemplateCode(CustomerTemplateCode) then
+                            ConfigTemplateHeader.SetRange("Table ID", Database::Customer);
+                            if Page.RunModal(Page::"Config. Template List", ConfigTemplateHeader) = Action::LookupOK then begin
+                                CustomerTemplateCode := ConfigTemplateHeader.Code;
                                 NextActionEnabled := true;
-#endif
+                            end;
                         end;
 
                         trigger OnValidate()
                         var
-                            CustomerTempl: Record "Customer Templ.";
-#if not CLEAN22
                             ConfigTemplateHeader: Record "Config. Template Header";
-                            ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
                         begin
                             if CustomerTemplateCode = '' then begin
                                 NextActionEnabled := false;
                                 exit;
                             end;
-#if not CLEAN22
-                            if not ShpfyTemplates.NewTemplatesEnabled() then begin
-                                ConfigTemplateHeader.Get(CustomerTemplateCode);
-                                if ConfigTemplateHeader."Table ID" <> Database::Customer then
-                                    Error(SelectedTemplateNotCustomerErr, CustomerTemplateCode)
-                            end else
-                                CustomerTempl.Get(CustomerTemplateCode);
-#else
-                            CustomerTempl.Get(CustomerTemplateCode);
-#endif
-                            NextActionEnabled := true;
+
+                            ConfigTemplateHeader.Get(CustomerTemplateCode);
+                            if ConfigTemplateHeader."Table ID" <> Database::Customer then
+                                Error(SelectedTemplateNotCustomerErr, CustomerTemplateCode)
+                            else
+                                NextActionEnabled := true;
                         end;
                     }
                 }
@@ -576,8 +524,8 @@ page 30136 "Shpfy Connector Guide"
         ImportCustomers: Boolean;
         SyncItemImages: Boolean;
         AutoCreateOrders: Boolean;
-        ItemTemplateCode: Code[20];
-        CustomerTemplateCode: Code[20];
+        ItemTemplateCode: Code[10];
+        CustomerTemplateCode: Code[10];
         ShippingChargesAccountNo: Code[20];
         Step: Option Start,ConsentStep,Step2,Step3,Step4,Step5,Step6,Step7,FinishDemoCompany,FinishMyCompany;
         SetupNotCompletedQst: Label 'The setup is not complete.\\Are you sure you want to exit?';
@@ -593,10 +541,8 @@ page 30136 "Shpfy Connector Guide"
         CustomerConfigTemplateDescLbl: Label 'Shopify customer template', Comment = 'Shopify must not be translated.';
         CustomerTemplateNotFoundErr: Label 'No customer template was found, please visit Configuration Templates page to create a customer template.';
         ItemTemplateNotFoundErr: Label 'No item template was found, please visit Configuration Templates page to create an item template.';
-#if not CLEAN22
         SelectedTemplateNotItemErr: Label 'Template %1 is not an item template.', Comment = '%1 = template name';
         SelectedTemplateNotCustomerErr: Label 'Template %1 is not a customer template.', Comment = '%1 = template name';
-#endif
         InitialImportWaitMsg: Label 'We''re still importing data from your shop.';
         InitialImportTakingLongerMsg: Label 'It looks like this may take a while. You can look around Business Central while we continue to import in the background. Please visit the Shopify Initial Import page to check the status.', Comment = 'Shopify Initial Import is page 30137 "Shpfy Initial Import"';
         InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
@@ -615,10 +561,6 @@ page 30136 "Shpfy Connector Guide"
     end;
 
     local procedure NextStep(Backwards: Boolean)
-#if not CLEAN22
-    var
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
     begin
         if (Step = Step::Step2) and not Backwards then begin
             AccessRequested := true;
@@ -636,24 +578,10 @@ page 30136 "Shpfy Connector Guide"
         until IsStepAvailable();
 
         if Step = Step::Step5 then
-#if not CLEAN22
-            if not ShpfyTemplates.NewTemplatesEnabled() then
-                ItemTemplateCode := GetItemTemplateCode()
-            else
-                ItemTemplateCode := GetItemTemplCode();
-#else
-                ItemTemplateCode := GetItemTemplCode();
-#endif
+            ItemTemplateCode := GetItemTemplateCode();
 
         if Step = Step::Step6 then
-#if not CLEAN22
-            if not ShpfyTemplates.NewTemplatesEnabled() then
-                CustomerTemplateCode := GetCustomerTemplateCode()
-            else
-                CustomerTemplateCode := GetCustomerTemplCode();
-#else
-            CustomerTemplateCode := GetCustomerTemplCode();
-#endif
+            CustomerTemplateCode := GetCustomerTemplateCode();
 
         if (Step = Step::FinishDemoCompany) and IsDemoCompany and not Backwards and not SyncScheduled then
             ScheduleInitialImport();
@@ -896,31 +824,17 @@ page 30136 "Shpfy Connector Guide"
     end;
 
     local procedure SetShopProperties(var Shop: Record "Shpfy Shop")
-#if not CLEAN22
-    var
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
     begin
         Shop.Validate("Allow Background Syncs", true);
         Shop.Validate("Allow Outgoing Requests", false);
 
         // Item synchronization
         if IsDemoCompany then begin
-#if not CLEAN22
             Shop.Validate("Item Template Code", GetItemTemplateCode());
-#endif
-            Shop.Validate("Item Templ. Code", GetItemTemplCode());
             Shop.Validate("Sync Item Images", Shop."Sync Item Images"::"From Shopify");
         end else
             if ImportProducts then begin
-#if not CLEAN22
-                if not ShpfyTemplates.NewTemplatesEnabled() then
-                    Shop.Validate("Item Template Code", ItemTemplateCode)
-                else
-                    Shop.Validate("Item Templ. Code", ItemTemplateCode);
-#else
-                Shop.Validate("Item Templ. Code", ItemTemplateCode);
-#endif
+                Shop.Validate("Item Template Code", ItemTemplateCode);
                 if SyncItemImages then
                     Shop.Validate("Sync Item Images", Shop."Sync Item Images"::"From Shopify");
             end;
@@ -928,25 +842,11 @@ page 30136 "Shpfy Connector Guide"
         Shop.Validate("Sync Item", Shop."Sync Item"::"From Shopify");
 
         // Customer synchronization
-#if not CLEAN22
-        if IsDemoCompany then begin
-            Shop.Validate("Customer Template Code", GetCustomerTemplateCode());
-            Shop.Validate("Customer Templ. Code", GetCustomerTemplCode());
-        end else
-#else
         if IsDemoCompany then
-            Shop.Validate("Customer Templ. Code", GetCustomerTemplCode())
+            Shop.Validate("Customer Template Code", GetCustomerTemplateCode())
         else
-#endif
             if ImportCustomers then
-#if not CLEAN22
-                if not ShpfyTemplates.NewTemplatesEnabled() then
-                    Shop.Validate("Customer Template Code", CustomerTemplateCode)
-                else
-                    Shop.Validate("Customer Templ. Code", CustomerTemplateCode);
-#else
-                Shop.Validate("Customer Templ. Code", CustomerTemplateCode);               
-#endif
+                Shop.Validate("Customer Template Code", CustomerTemplateCode);
         Shop.Validate("Auto Create Unknown Customers", true);
         Shop.Validate("Customer Import From Shopify", Shop."Customer Import From Shopify"::AllCustomers);
         Shop.Validate("Export Customer To Shopify", false);
@@ -974,7 +874,6 @@ page 30136 "Shpfy Connector Guide"
         exit(ShopCode);
     end;
 
-#if not CLEAN22
     local procedure GetItemTemplateCode(): Code[10]
     var
         ItemTempl: Record "Item Templ.";
@@ -990,24 +889,7 @@ page 30136 "Shpfy Connector Guide"
             if IsDemoCompany then
                 Error(ItemTemplateNotFoundErr);
     end;
-#endif
 
-    local procedure GetItemTemplCode(): Code[20]
-    var
-        ItemTempl: Record "Item Templ.";
-    begin
-        if ItemTempl.Get(ItemConfigTemplateCodeLbl) then
-            exit(ItemTempl.Code);
-
-        ItemTempl.SetRange(Type, ItemTempl.Type::Inventory);
-        if ItemTempl.FindFirst() then
-            exit(CreateItemTemplFromInventoryItemTempl(ItemTempl))
-        else
-            if IsDemoCompany then
-                Error(ItemTemplateNotFoundErr);
-    end;
-
-#if not CLEAN22
     local procedure GetCustomerTemplateCode(): Code[10]
     var
         CustomerTempl: Record "Customer Templ.";
@@ -1023,45 +905,7 @@ page 30136 "Shpfy Connector Guide"
             if IsDemoCompany then
                 Error(CustomerTemplateNotFoundErr);
     end;
-#endif
 
-    local procedure GetCustomerTemplCode(): Code[20]
-    var
-        CustomerTempl: Record "Customer Templ.";
-    begin
-        if CustomerTempl.Get(CustomerConfigTemplateCodeLbl) then
-            exit(CustomerTempl.Code);
-        CustomerTempl.SetRange("Contact Type", CustomerTempl."Contact Type"::Person);
-        if CustomerTempl.FindFirst() then
-            exit(CreateCustomerTemplFromPersonCustomerTempl(CustomerTempl))
-        else
-            if IsDemoCompany then
-                Error(CustomerTemplateNotFoundErr);
-    end;
-
-    local procedure CreateCustomerTemplFromPersonCustomerTempl(var OriginalCustomerTempl: Record "Customer Templ."): Code[20]
-    var
-        NewCustomerTempl: Record "Customer Templ.";
-    begin
-        NewCustomerTempl.Code := CustomerConfigTemplateCodeLbl;
-        NewCustomerTempl.Description := CustomerConfigTemplateDescLbl;
-        NewCustomerTempl.Insert(true);
-        NewCustomerTempl.CopyFromTemplate(OriginalCustomerTempl);
-        exit(NewCustomerTempl.Code);
-    end;
-
-    local procedure CreateItemTemplFromInventoryItemTempl(var OriginalItemTempl: Record "Item Templ."): Code[20]
-    var
-        NewItemTempl: Record "Item Templ.";
-    begin
-        NewItemTempl.Code := ItemConfigTemplateCodeLbl;
-        NewItemTempl.Description := ItemConfigTemplateDescLbl;
-        NewItemTempl.Insert(true);
-        NewItemTempl.CopyFromTemplate(OriginalItemTempl);
-        exit(NewItemTempl.Code);
-    end;
-
-#if not CLEAN22
     local procedure CreateItemConfigTemplate(ItemTempl: Record "Item Templ."): Code[10]
     var
         ConfigTemplateHeader: Record "Config. Template Header";
@@ -1130,7 +974,6 @@ page 30136 "Shpfy Connector Guide"
 
         exit(10000);
     end;
-#endif
 
     local procedure GetShippingChargesGLAccount(): Code[20]
     var
@@ -1166,25 +1009,4 @@ page 30136 "Shpfy Connector Guide"
         ImportProducts := Item.IsEmpty();
         exit(not ImportProducts);
     end;
-
-    local procedure LookupItemTemplateCode(var SelectedItemTemplateCode: Code[20]): Boolean
-    var
-        ItemTempl: Record "Item Templ.";
-    begin
-        if Page.RunModal(Page::"Select Item Templ. List", ItemTempl) = Action::LookupOK then begin
-            SelectedItemTemplateCode := ItemTempl.Code;
-            exit(true);
-        end;
-    end;
-
-    local procedure LookupCustomerTemplateCode(var SelectedCustomerTemplateCode: Code[20]): Boolean
-    var
-        CustomerTempl: Record "Customer Templ.";
-    begin
-        if Page.RunModal(Page::"Select Customer Templ. List", CustomerTempl) = Action::LookupOK then begin
-            SelectedCustomerTemplateCode := CustomerTempl.Code;
-            exit(true);
-        end;
-    end;
-
 }

@@ -9,4 +9,3 @@ codeunit 30212 "Shpfy Balance Today" implements "Shpfy Stock Calculation"
         exit(ProjAvailableBalance);
     end;
 }
-

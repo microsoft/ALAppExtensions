@@ -3,6 +3,7 @@
 /// </summary>
 table 30104 "Shpfy Tag"
 {
+    Access = Internal;
     Caption = 'Shopify Tag';
     DataClassification = CustomerContent;
 
@@ -52,9 +53,8 @@ table 30104 "Shpfy Tag"
     /// </summary>
     /// <param name="ParentId">Parameter of type BigInteger.</param>
     /// <returns>Return value of type Text.</returns>
-    internal procedure GetCommaSeparatedTags(ParentId: BigInteger): Text
+    internal procedure GetCommaSeperatedTags(ParentId: BigInteger): Text
     var
-<<<<<<< HEAD
         Tag: Record "Shpfy Tag";
         Tags: TextBuilder;
     begin
@@ -64,16 +64,6 @@ table 30104 "Shpfy Tag"
                 Tags.Append(',');
                 Tags.Append(Tag.Tag);
             until Tag.Next() = 0;
-=======
-        Tags: TextBuilder;
-    begin
-        Rec.SetRange("Parent Id", ParentId);
-        if Rec.FindSet(false, false) then begin
-            repeat
-                Tags.Append(',');
-                Tags.Append(Rec.Tag);
-            until Rec.Next() = 0;
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
             Tags.Remove(1, 1);
         end;
         exit(Tags.ToText());
@@ -115,22 +105,22 @@ table 30104 "Shpfy Tag"
     /// <param name="JTags">Parameter of type JsonArray.</param>
     internal procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; JTags: JsonArray)
     var
-        Tag: Record "Shpfy Tag";
+        ShopifyTag: Record "Shpfy Tag";
         JTag: JsonToken;
         Index: Integer;
     begin
-        Tag.SetRange("Parent Id", ParentId);
-        if not Tag.IsEmpty() then
-            Tag.DeleteAll();
+        ShopifyTag.SetRange("Parent Id", ParentId);
+        if not ShopifyTag.IsEmpty() then
+            ShopifyTag.DeleteAll();
 
         for Index := 1 to JTags.Count do
             if JTags.Get(Index, JTag) then
                 if JTag.IsValue and not (JTag.AsValue().IsNull or JTag.AsValue().IsUndefined) then begin
-                    Clear(Tag);
-                    Tag."Parent Table No." := ParentTableNo;
-                    Tag."Parent Id" := ParentId;
-                    Tag.Tag := CopyStr(JTag.AsValue().AsText().Trim(), 1, MaxStrLen(Tag.Tag));
-                    Tag.Insert();
+                    Clear(ShopifyTag);
+                    ShopifyTag."Parent Table No." := ParentTableNo;
+                    ShopifyTag."Parent Id" := ParentId;
+                    ShopifyTag.Tag := CopyStr(JTag.AsValue().AsText().Trim(), 1, MaxStrLen(ShopifyTag.Tag));
+                    ShopifyTag.Insert();
                 end;
     end;
 }

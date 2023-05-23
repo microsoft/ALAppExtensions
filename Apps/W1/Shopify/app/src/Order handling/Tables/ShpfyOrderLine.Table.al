@@ -3,6 +3,7 @@
 /// </summary>
 table 30119 "Shpfy Order Line"
 {
+    Access = Internal;
     Caption = 'Shopify Order Line';
     DataClassification = SystemMetadata;
 

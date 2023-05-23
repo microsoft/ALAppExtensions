@@ -282,7 +282,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     local procedure GetContent(HttpResponseMessage: HttpResponseMessage; var Response: Text)
     begin
         if IsTestInProgress then
-            CommunicationEvents.OnGetContent(HttpResponseMsg, Response)
+            CommunicationEvents.OnGetContent(HttpResponseMessage, Response)
         else
             HttpResponseMessage.Content.ReadAs(Response);
     end;
@@ -305,7 +305,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <summary> 
     /// Set Shop.
     /// </summary>
-    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         Shop := ShopifyShop;
@@ -357,8 +357,8 @@ codeunit 30103 "Shpfy Communication Mgt."
         HttpHeaders: HttpHeaders;
         AccessToken: Text;
     begin
-        HttpRequestMsg.SetRequestUri(url);
-        HttpRequestMsg.GetHeaders(HttpHeaders);
+        HttpRequestMessage.SetRequestUri(url);
+        HttpRequestMessage.GetHeaders(HttpHeaders);
 
 
         if IsTestInProgress then
@@ -367,7 +367,7 @@ codeunit 30103 "Shpfy Communication Mgt."
             AccessToken := Shop.GetAccessToken();
 
         HttpHeaders.Add('X-Shopify-Access-Token', AccessToken);
-        HttpRequestMsg.Method := Method;
+        HttpRequestMessage.Method := Method;
 
         if Method in ['POST', 'PUT'] then begin
             HttpContent.WriteFrom(Request);
@@ -375,7 +375,7 @@ codeunit 30103 "Shpfy Communication Mgt."
             if ContentHttpHeaders.Contains('Content-Type') then
                 ContentHttpHeaders.Remove('Content-Type');
             ContentHttpHeaders.Add('Content-Type', 'application/json');
-            HttpRequestMsg.Content(HttpContent);
+            HttpRequestMessage.Content(HttpContent);
         end;
     end;
 
@@ -472,7 +472,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     begin
         Clear(Shop);
         Shop.Get(ShopCode);
-        FeatureTelemetry.LogUsage('0000JW7', 'Shopify', Format(Shop."Shop Id"));
+        FeatureTelemetry.LogUsage('0000IU1', 'Shopify', Shop."Shopify URL");
     end;
 
     /// <summary>

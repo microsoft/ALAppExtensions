@@ -50,7 +50,6 @@ codeunit 30178 "Shpfy Product Export"
     /// <returns>Return variable "ProductBodyHtml" of type Text.</returns>
     local procedure CreateProductBody(ItemNo: Code[20]) ProductBodyHtml: Text
     var
-        Item: Record Item;
         ExtendedTextHeader: Record "Extended Text Header";
         ExtendedTextLine: Record "Extended Text Line";
         ItemAttrValueTranslation: Record "Item Attr. Value Translation";
@@ -59,13 +58,7 @@ codeunit 30178 "Shpfy Product Export"
         ItemAttributeValue: Record "Item Attribute Value";
         ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
         Translator: Report "Shpfy Translator";
-<<<<<<< HEAD
-=======
-        EntityText: Codeunit "Entity Text";
-        EntityTextScenario: Enum "Entity Text Scenario";
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         IsHandled: Boolean;
-        MarketingText: Text;
         Result: TextBuilder;
     begin
         ProductEvents.OnBeforeCreateProductBodyHtml(ItemNo, Shop, ProductBodyHtml, IsHandled);
@@ -109,20 +102,8 @@ codeunit 30178 "Shpfy Product Export"
                         end;
                     until ExtendedTextHeader.Next() = 0;
                     result.Append('</div>');
-                    Result.Append('<br>');
                 end;
             end;
-
-            if Shop."Sync Item Marketing Text" then
-                if Item.Get(ItemNo) then begin
-                    MarketingText := EntityText.GetText(Database::Item, Item.SystemId, EntityTextScenario::"Marketing Text");
-                    if MarketingText <> '' then begin
-                        Result.Append('<div class="productDescription">');
-                        Result.Append(MarketingText);
-                        Result.Append('</div>');
-                        Result.Append('<br>');
-                    end
-                end;
 
             if Shop."Sync Item Attributes" then begin
                 ItemAttributeValueMapping.SetRange("Table ID", Database::Item);
@@ -240,11 +221,7 @@ codeunit 30178 "Shpfy Product Export"
         if ItemTranslation.FindFirst() and (ItemTranslation.Description <> '') then
             Title := RemoveTabChars(ItemTranslation.Description)
         else
-<<<<<<< HEAD
             Title := RemoveTabChars(Item.Description);
-=======
-            Title := Item.Description;
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         ProductEvents.OnBeforSetProductTitle(Item, Shop."Language Code", Title, IsHandled);
         if not IsHandled then begin
             ProductEvents.OnAfterSetProductTitle(Item, Shop."Language Code", Title);
@@ -260,8 +237,8 @@ codeunit 30178 "Shpfy Product Export"
     var
         Tab: Text[1];
     begin
-        Tab[0] := 9;
-        Exit(Source.Replace(Tab, ' '));
+        Tab[1] := 9;
+        exit(Source.Replace(Tab, ' '));
     end;
 
     /// <summary> 
@@ -311,7 +288,7 @@ codeunit 30178 "Shpfy Product Export"
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(ShopifyVariant.Barcode));
-            ShopifyVariant.Title := RemoveTabChars(ItemVariant.Description);
+            ShopifyVariant.Title := ItemVariant.Description;
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":
@@ -356,11 +333,7 @@ codeunit 30178 "Shpfy Product Export"
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
-<<<<<<< HEAD
-            ShopifyVariant.Title := RemoveTabChars(ItemVariant.Description);
-=======
             ShopifyVariant.Title := ItemVariant.Description;
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":

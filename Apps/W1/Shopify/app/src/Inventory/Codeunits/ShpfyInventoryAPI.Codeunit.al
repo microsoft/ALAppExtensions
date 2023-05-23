@@ -58,16 +58,11 @@ codeunit 30195 "Shpfy Inventory API"
             if (UOM <> '') and (UOM <> Item."Base Unit of Measure") then
                 if ItemUnitofMeasure.Get(Item."No.", UOM) then
                     Stock := Stock / ItemUnitofMeasure."Qty. per Unit of Measure";
-<<<<<<< HEAD
                     InventoryEvents.OnAfterCalculationStock(Item, ShopifyShop, ShopLocation."Location Filter", Stock);
-=======
-            InventoryEvents.OnAfterCalculationStock(Item, ShopifyShop, ShopLocation."Location Filter", Stock);
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         end;
     end;
 
     /// <summary> 
-<<<<<<< HEAD
     /// Create Stock As Json.
     /// </summary>
     /// <param name="ShopInventory">Parameter of type Record "Shopify Shop Inventory".</param>
@@ -96,8 +91,6 @@ codeunit 30195 "Shpfy Inventory API"
 
 
     /// <summary> 
-=======
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     /// Export Stock.
     /// </summary>
     /// <param name="ShopInventory">Parameter of type Record "Shopify Shop Inventory".</param>
@@ -107,19 +100,13 @@ codeunit 30195 "Shpfy Inventory API"
         DelShopInventory: Record "Shpfy Shop Inventory";
         ShopLocation: Record "Shpfy Shop Location";
         ShopifyVariant: Record "Shpfy Variant";
-<<<<<<< HEAD
         IGraphQL: Interface "Shpfy IGraphQL";
-=======
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Parameters: Dictionary of [Text, Text];
         DeltaQty: Integer;
         JArray: JsonArray;
         JResponse: JsonToken;
-<<<<<<< HEAD
         Url: Text;
         Ishandled: Boolean;
-=======
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     begin
         ShopifyVariant.SetRange(Id, ShopInventory."Variant Id");
         if ShopifyVariant.IsEmpty then begin
@@ -134,7 +121,6 @@ codeunit 30195 "Shpfy Inventory API"
                 ShopInventory.Modify();
                 DeltaQty := ShopInventory.Stock - ShopInventory."Shopify Stock";
                 if DeltaQty <> 0 then
-<<<<<<< HEAD
                     if ShopLocation.Get(ShopInventory."Shop Code", ShopInventory."Location Id") and (not ShopLocation.Disabled) then begin
                         InventoryEvents.OnBeforeExportStock(Item, ShopifyShop, ShopInventory, ShopLocation, Ishandled);
                         if not Ishandled then begin
@@ -149,19 +135,6 @@ codeunit 30195 "Shpfy Inventory API"
                                         ShopInventory.Modify();
                                     end
                         end;
-=======
-                    if ShopLocation.Get(ShopInventory."Shop Code", ShopInventory."Location Id") and (ShopLocation."Stock Calculation" <> ShopLocation."Stock Calculation"::Disabled) then begin
-                        Parameters.Add('InventoryItemId', Format(ShopInventory."Inventory Item Id", 0, 9));
-                        Parameters.Add('LocationId', Format(ShopInventory."Location Id", 0, 9));
-                        Parameters.Add('DeltaQuantity', Format(DeltaQty, 0, 9));
-                        JResponse := ShopifyCommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::ModifyInventory, Parameters);
-                        if JsonHelper.GetJsonArray(JResponse, JArray, 'data.inventoryBulkAdjustQuantityAtLocation.inventoryLevels') then
-                            if JArray.Count = 1 then
-                                if JArray.Get(0, JResponse) then begin
-                                    ShopInventory."Shopify Stock" := JsonHelper.GetValueAsInteger(JResponse, 'available');
-                                    ShopInventory.Modify();
-                                end;
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                     end;
             end;
     end;

@@ -12,17 +12,10 @@ codeunit 30125 "Shpfy Gift Cards"
     internal procedure GetGiftCardsFromFulfillment(OrderId: BigInteger; FulfillmentId: BigInteger)
     var
         Response: Text;
-<<<<<<< HEAD
         Url: Label 'orders/%1/fulfillments/%2.json?fields=id,receipt', Locked = true;
         JToken: JsonToken;
     begin
         Response := CommunicationMgt.ExecuteWebRequest(CommunicationMgt.CreateWebRequestURL(StrSubstNo(Url, OrderId, FulfillmentId)), 'GET', '');
-=======
-        UrlLbl: Label 'orders/%1/fulfillments/%2.json?fields=id,receipt', Locked = true;
-        JToken: JsonToken;
-    begin
-        Response := CommunicationMgt.ExecuteWebRequest(CommunicationMgt.CreateWebRequestURL(StrSubstNo(UrlLbl, OrderId, FulfillmentId)), 'GET', '');
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         if JToken.ReadFrom(Response) then
             AddSoldGiftCards(JsonHelper.GetJsonArray(JToken, 'fulfillment.receipt.gift_cards'));
     end;

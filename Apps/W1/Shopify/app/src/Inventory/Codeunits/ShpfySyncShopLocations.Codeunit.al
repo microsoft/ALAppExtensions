@@ -76,10 +76,7 @@ codeunit 30198 "Shpfy Sync Shop Locations"
                     Parameters.Add('After', Cursor);
             end;
         until not HasNextResults(JLocations);
-<<<<<<< HEAD
 
-=======
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     local procedure HasNextResults(JObject: JsonObject): Boolean

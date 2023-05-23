@@ -44,7 +44,6 @@ table 30122 "Shpfy Order Tax Line"
             Caption = 'Currency Code';
             DataClassification = SystemMetadata;
             Editable = false;
-<<<<<<< HEAD
 #if CLEAN22
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
@@ -53,16 +52,6 @@ table 30122 "Shpfy Order Tax Line"
             ObsoleteTag = '22.0';
 #endif
             ObsoleteReason = 'Is available in Shopify Order Header table';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'This information is available in Shopify Order Header table.';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(7; "Presentment Amount"; Decimal)
         {

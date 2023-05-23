@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30177 "Shpfy Product Events"
 {
+    Access = Internal;
+
     [InternalEvent(false)]
     /// <summary> 
     /// Description for OnAfterSetProductTitle.
@@ -14,7 +16,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Item.
     /// </summary>
@@ -26,7 +28,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Item Variant.
     /// </summary>
@@ -39,19 +41,20 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
-    /// Raised After Temp Shopify Product and Variant are created.
+    /// Raised After Create Item Variant Code.
     /// </summary>
-    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
-    /// <param name="ShopifyTag">Parameter of type Record "Shopify Tag".</param>
-    internal procedure OnAfterCreateTempShopifyProduct(Item: Record Item; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyTag: Record "Shpfy Tag")
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="ItemVariantCode">Parameter of type Code[10].</param>
+    internal procedure OnAfterCreateItemVariantCode(Shop: Record "Shpfy Shop"; ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; var ItemVariantCode: Code[10]);
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Product Body Html.
     /// </summary>
@@ -62,8 +65,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-#pragma warning disable AS0027
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Find Item Template.
     /// </summary>
@@ -71,17 +73,16 @@ codeunit 30177 "Shpfy Product Events"
     /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="TemplateCode">Parameter of type Code[20].</param>
-    internal procedure OnAfterFindItemTemplate(Shop: Record "Shpfy Shop"; ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; var TemplateCode: Code[20]);
-    begin
-    end;
-#pragma warning restore AS0027
-
-    [IntegrationEvent(false, false)]
-    internal procedure OnAfterGetCommaSeparatedTags(ShopifyProduct: Record "Shpfy Product"; var Tags: Text)
+    internal procedure OnAfterFindItemTemplate(Shop: Record "Shpfy Shop"; ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; var TemplateCode: Code[10]);
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
+    internal procedure OnAfterGetCommaSeperatedTags(ShopifyProduct: Record "Shpfy Product"; var Tags: Text)
+    begin
+    end;
+
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnAfterGetBarcode.
     /// </summary>
@@ -94,7 +95,7 @@ codeunit 30177 "Shpfy Product Events"
     end;
 
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Item.
     /// </summary>
@@ -107,7 +108,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Item Variant.
     /// </summary>
@@ -121,7 +122,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Item Variant Code.
     /// </summary>
@@ -135,7 +136,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Product Body Html.
     /// </summary>
@@ -147,8 +148,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-#pragma warning disable AS0027
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Find Item Template.
     /// </summary>
@@ -157,12 +157,11 @@ codeunit 30177 "Shpfy Product Events"
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="TemplateCode">Parameter of type Code[20].</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
-    internal procedure OnBeforeFindItemTemplate(Shop: Record "Shpfy Shop"; ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; var TemplateCode: Code[20]; var Handled: Boolean);
+    internal procedure OnBeforeFindItemTemplate(Shop: Record "Shpfy Shop"; ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; var TemplateCode: Code[10]; var Handled: Boolean);
     begin
     end;
-#pragma warning restore AS0027
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforGetBarcode.
     /// </summary>
@@ -175,7 +174,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforSetProductTitle.
     /// </summary>
@@ -187,7 +186,20 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
+    /// <summary> 
+    /// Raised After Find Mapping.
+    /// </summary>
+    /// <param name="Direction">Parameter of type enum "Shopify Mapping Direction".</param>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
+    /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
+    internal procedure OnAfterFindMapping(Direction: enum "Shpfy Mapping Direction"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; ItemVariant: Record "Item Variant");
+    begin
+    end;
+
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Find Mapping.
     /// </summary>
@@ -201,7 +213,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Calculate Unit Price.
     /// </summary>
@@ -216,7 +228,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Calculate Unit Price.
     /// </summary>
@@ -232,7 +244,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Update Item.
     /// </summary>
@@ -244,7 +256,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Update Item Variant.
     /// </summary>
@@ -257,7 +269,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Update Item.
     /// </summary>
@@ -270,7 +282,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Update Item Variant.
     /// </summary>
@@ -284,18 +296,18 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Create Shopify Product.
     /// </summary>
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
-    internal procedure OnBeforeSendCreateShopifyProduct(ShopifyShop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShpfyTag: Record "Shpfy Tag")
+    internal procedure OnBeforeSendCreateShopifyProduct(ShopifyShop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant")
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Update Shopify Product.
     /// </summary>
@@ -306,7 +318,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Add Shopify Product Variant.
     /// </summary>
@@ -316,7 +328,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Update Shopify Product Variant.
     /// </summary>

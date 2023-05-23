@@ -13,10 +13,7 @@ codeunit 30116 "Shpfy Customer Export"
         CustomerId: BigInteger;
     begin
         CustomerAPI.FillInMissingShopIds();
-<<<<<<< HEAD
 
-=======
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Customer.CopyFilters(Rec);
         if Shop."Export Customer To Shopify" and Customer.FindSet(false, false) then begin
             CustomerMapping.SetShop(Shop);

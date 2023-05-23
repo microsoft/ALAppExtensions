@@ -3,6 +3,7 @@
 /// </summary>
 table 30102 "Shpfy Shop"
 {
+    Access = Internal;
     Caption = 'Shopify Shop';
     DataClassification = SystemMetadata;
     DrillDownPageId = "Shpfy Shops";
@@ -19,7 +20,6 @@ table 30102 "Shpfy Shop"
         field(2; "Shopify URL"; Text[250])
         {
             Caption = 'Shopify URL';
-            Access = Internal;
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
 
@@ -105,14 +105,6 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             TableRelation = "Config. Template Header".Code where("Table Id" = const(27));
             ValidateTableRelation = true;
-            ObsoleteReason = 'Replaced by Item Templ. Code';
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
         }
         field(12; "Sync Item Images"; Option)
         {
@@ -129,11 +121,6 @@ table 30102 "Shpfy Shop"
         field(14; "Sync Item Attributes"; boolean)
         {
             Caption = 'Sync Item Attributes';
-            DataClassification = SystemMetadata;
-        }
-        field(15; "Sync Item Marketing Text"; Boolean)
-        {
-            Caption = 'Sync Item Marketing Text';
             DataClassification = SystemMetadata;
         }
         field(21; "Auto Create Orders"; Boolean)
@@ -157,14 +144,6 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
             ValidateTableRelation = true;
-            ObsoleteReason = 'Replaced by  "Customer Templ. Code"';
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
         }
         field(25; "Product Collection"; Option)
         {
@@ -359,19 +338,19 @@ table 30102 "Shpfy Shop"
             Caption = 'Action for Removed Products';
             DataClassification = CustomerContent;
         }
-        field(52; "Currency Code"; Code[10])
+        field(52; "Currency Code"; code[10])
         {
             Caption = 'Currency Code';
             DataClassification = CustomerContent;
             TableRelation = Currency.Code;
         }
-        field(53; "Gen. Bus. Posting Group"; Code[20])
+        field(53; "Gen. Bus. Posting Group"; code[20])
         {
             Caption = 'Gen. Bus. Posting Group';
             DataClassification = CustomerContent;
             TableRelation = "Gen. Business Posting Group";
         }
-        field(54; "VAT Bus. Posting Group"; Code[20])
+        field(54; "VAT Bus. Posting Group"; code[20])
         {
             Caption = 'VAT Bus. Posting Group';
             DataClassification = CustomerContent;
@@ -405,37 +384,16 @@ table 30102 "Shpfy Shop"
             Caption = 'Prices Including VAT';
             DataClassification = CustomerContent;
         }
-        field(60; "Auto Release Sales Orders"; Boolean)
-        {
-            Caption = 'Auto Release Sales Orders';
-            DataClassification = CustomerContent;
-            InitValue = true;
-        }
-        field(61; "Allow Line Disc."; Boolean)
+        field(60; "Allow Line Disc."; Boolean)
         {
             Caption = 'Allow Line Disc.';
             DataClassification = CustomerContent;
-        }
-        field(62; "Customer Templ. Code"; Code[20])
-        {
-            Caption = 'Customer Template Code';
-            DataClassification = SystemMetadata;
-            TableRelation = "Customer Templ.".Code;
-            ValidateTableRelation = true;
-        }
-        field(63; "Item Templ. Code"; Code[20])
-        {
-            Caption = 'Item Template Code';
-            DataClassification = SystemMetadata;
-            TableRelation = "Item Templ.".Code;
-            ValidateTableRelation = true;
         }
         field(100; "Collection Last Export Version"; BigInteger)
         {
             Caption = 'Collection Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
-            Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
 #if not CLEAN21
             ObsoleteTag = '21.0';
@@ -450,7 +408,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Collection Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
-            Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
 #if not CLEAN21
             ObsoleteTag = '21.0';
@@ -465,7 +422,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Product Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
-            Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
 #if not CLEAN21
             ObsoleteTag = '21.0';
@@ -480,7 +436,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Product Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
-            Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
 #if not CLEAN21
             ObsoleteTag = '21.0';
@@ -490,9 +445,7 @@ table 30102 "Shpfy Shop"
             ObsoleteState = Removed;
 #endif
         }
-#pragma warning disable AS0004
-        field(104; "SKU Mapping"; Enum "Shpfy SKU Mapping")
-#pragma warning restore AS0004
+        field(104; "SKU Mapping"; enum "Shpfy SKU Mappging")
         {
             Caption = 'SKU Mapping';
             DataClassification = SystemMetadata;
@@ -515,24 +468,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Allow Outgoing Requests';
             DataClassification = SystemMetadata;
             InitValue = true;
-        }
-        field(108; "Order Created Webhooks"; Boolean)
-        {
-            Caption = 'Order Created Webhooks';
-            DataClassification = SystemMetadata;
-        }
-        field(109; "Order Created Webhook User"; Code[50])
-        {
-            Caption = 'Order Created Webhook User';
-            DataClassification = EndUserIdentifiableInformation;
-            Editable = false;
-            TableRelation = User."User Name";
-        }
-        field(110; "Fulfillment Service Activated"; Boolean)
-        {
-            Caption = 'Fulfillment Service Activated';
-            DataClassification = SystemMetadata;
-            Description = 'Indicates whether the Shopify Fulfillment Service is activated.';
         }
         field(200; "Shop Id"; Integer)
         {
@@ -656,13 +591,13 @@ table 30102 "Shpfy Shop"
         else
             ShopCode := Rec.Code;
         if SynchronizationInfo.Get(ShopCode, Type) then begin
-            SynchronizationInfo."Last Sync Time" := ToDateTime;
+            SynchronizationInfo."Last Sync Time" := LastSyncTime;
             SynchronizationInfo.Modify();
         end else begin
             Clear(SynchronizationInfo);
             SynchronizationInfo."Shop Code" := ShopCode;
             SynchronizationInfo."Synchronization Type" := Type;
-            SynchronizationInfo."Last Sync Time" := ToDateTime;
+            SynchronizationInfo."Last Sync Time" := LastSyncTime;
             SynchronizationInfo.Insert();
         end;
     end;
@@ -674,28 +609,6 @@ table 30102 "Shpfy Shop"
         GLAccount.TestField(Blocked, false);
     end;
 
-#if CLEAN22
-    internal procedure CopyPriceCalculationFieldsFromCustomerTempl(TemplateCode: Code[20])
-    var
-        CustomerTempl: Record "Customer Templ.";
-    begin
-        if TemplateCode = '' then
-            exit;
-        if not CustomerTempl.Get(TemplateCode) then
-            exit;
-        Rec."Gen. Bus. Posting Group" := CustomerTempl."Gen. Bus. Posting Group";
-        Rec."VAT Bus. Posting Group" := CustomerTempl."VAT Bus. Posting Group";
-        Rec."Tax Area Code" := CustomerTempl."Tax Area Code";
-        Rec."Tax Liable" := CustomerTempl."Tax Liable";
-        Rec."VAT Country/Region Code" := CustomerTempl."Country/Region Code";
-        Rec."Customer Posting Group" := CustomerTempl."Customer Posting Group";
-        Rec."Prices Including VAT" := CustomerTempl."Prices Including VAT";
-        Rec."Allow Line Disc." := CustomerTempl."Allow Line Disc.";
-        Rec.Modify();
-    end;
-#endif
-
-#if not CLEAN22
     internal procedure CopyPriceCalculationFieldsFromCustomerTemplate(TemplateCode: Code[10])
     var
         Customer: Record Customer;
@@ -704,11 +617,11 @@ table 30102 "Shpfy Shop"
             Rec."Gen. Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Gen. Bus. Posting Group"));
             Rec."VAT Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("VAT Bus. Posting Group"));
             Rec."Tax Area Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Area Code"));
-            if Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable"))) then;
+            Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable")));
             Rec."VAT Country/Region Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Country/Region Code"));
             Rec."Customer Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Customer Posting Group"));
-            if Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT"))) then;
-            if Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc."))) then;
+            Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT")));
+            Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc.")));
             Rec.Modify();
         end;
     end;
@@ -725,5 +638,4 @@ table 30102 "Shpfy Shop"
         if ConfigTemplateLine.FindFirst() then
             exit(ConfigTemplateLine."Default Value");
     end;
-#endif
 }

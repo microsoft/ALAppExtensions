@@ -9,7 +9,6 @@ page 30102 "Shpfy Shops"
     PageType = List;
     SourceTable = "Shpfy Shop";
     UsageCategory = Administration;
-    AdditionalSearchTerms = 'Shopify Setup';
     Editable = false;
     DeleteAllowed = true;
     InsertAllowed = true;

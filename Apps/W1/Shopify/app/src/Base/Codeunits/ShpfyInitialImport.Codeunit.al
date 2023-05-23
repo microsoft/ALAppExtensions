@@ -146,11 +146,11 @@ codeunit 30202 "Shpfy Initial Import"
         InitialImportLine.SetRange("Job Queue Entry Status", InitialImportLine."Job Queue Entry Status"::" ");
         if InitialImportLine.FindSet() then
             repeat
-                if AreAllParentalJobsFinished(ShpfyInitialImportLine."Dependency Filter") then begin
-                    TempInitialImportLine := ShpfyInitialImportLine;
+                if AreAllParentalJobsFinished(InitialImportLine."Dependency Filter") then begin
+                    TempInitialImportLine := InitialImportLine;
                     TempInitialImportLine.Insert();
                 end;
-            until ShpfyInitialImportLine.Next() = 0;
+            until InitialImportLine.Next() = 0;
         exit(TempInitialImportLine.FindSet());
     end;
 

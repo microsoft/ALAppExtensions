@@ -19,7 +19,6 @@ codeunit 30221 "Shpfy GQL UpdateProductImage" implements "Shpfy IGraphQL"
     begin
         exit(10);
     end;
-<<<<<<< HEAD
 }
 
 
@@ -28,6 +27,3 @@ codeunit 30221 "Shpfy GQL UpdateProductImage" implements "Shpfy IGraphQL"
 
 
 
-=======
-}
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2

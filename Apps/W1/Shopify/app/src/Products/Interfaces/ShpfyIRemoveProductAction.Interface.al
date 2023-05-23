@@ -9,5 +9,5 @@ interface "Shpfy IRemoveProductAction"
     /// RemoveProductAction.
     /// </summary>
     /// <param name="Product">VAR Record "Shopify Product".</param>
-    procedure RemoveProductAction(var Product: Record "Shpfy Product");
+    internal procedure RemoveProductAction(var Product: Record "Shpfy Product");
 }

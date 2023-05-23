@@ -29,11 +29,7 @@ codeunit 30165 "Shpfy Orders API"
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     internal procedure GetOrdersToImport(ShopifyShop: Record "Shpfy Shop")
     var
-<<<<<<< HEAD
         OrderstoImport: Record "Shpfy Orders to Import";
-=======
-        OrdersToImport: Record "Shpfy Orders to Import";
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         LastSyncTime: DateTime;
         Cursor: Text;
         Parameters: Dictionary of [Text, Text];
@@ -41,11 +37,7 @@ codeunit 30165 "Shpfy Orders API"
     begin
         CommunicationMgt.SetShop(ShopifyShop);
 
-<<<<<<< HEAD
         Clear(OrderstoImport);
-=======
-        Clear(OrdersToImport);
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         LastSyncTime := ShopifyShop.GetLastSyncTime("Shpfy Synchronization Type"::Orders);
         Parameters.Add('Time', Format(LastSyncTime, 0, 9));
         if LastSyncTime = 0DT then

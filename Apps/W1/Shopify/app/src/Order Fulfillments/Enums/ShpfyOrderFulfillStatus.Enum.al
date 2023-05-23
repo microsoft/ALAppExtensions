@@ -3,8 +3,9 @@
 /// </summary>
 enum 30113 "Shpfy Order Fulfill. Status"
 {
+    Access = Internal;
     Caption = 'Shopify Order Fulfill. Status';
-    Extensible = false;
+    Extensible = true;
 
     value(0; " ")
     {

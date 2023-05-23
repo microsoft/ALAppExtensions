@@ -19,11 +19,10 @@ report 30104 "Shpfy Sync Orders from Shopify"
             {
                 DataItemLink = "Shop Code" = field(Code);
                 DataItemLinkReference = Shop;
-                RequestFilterFields = "Fully Paid", "Risk Level", "Financial Status", "Fulfillment Status", Confirmed, "Import Action", "Attribute Key Filter", "Attribute Key Exists", "Channel Name", "Order No.";
+                RequestFilterFields = "Fully Paid", "Risk Level", "Financial Status", "Fulfillment Status", Confirmed, "Import Action", "Attribute Key Filter", "Attribute Key Exists";
 
                 trigger OnPreDataItem()
                 var
-<<<<<<< HEAD
                     OrdersToImport: Record "Shpfy Orders to Import";
                 begin
                     OrdersToImport.SetView(ToImportView);
@@ -31,16 +30,6 @@ report 30104 "Shpfy Sync Orders from Shopify"
                     OrdersToImport.SetRange("Shop Code", '');
                     OrdersToImport.ModifyAll("Shop Code", Shop.Code);
                     Commit();
-=======
-                    OrdersToImport2: Record "Shpfy Orders to Import";
-                begin
-                    OrdersToImport2.SetView(ToImportView);
-                    OrdersToImport2.SetRange("Shop Id", Shop."Shop Id");
-                    OrdersToImport2.SetRange("Shop Code", '');
-                    OrdersToImport2.ModifyAll("Shop Code", Shop.Code);
-                    Commit();
-
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                     OrdersToImport.SetRange("Shop Code", Shop.Code);
 
                     if GuiAllowed then begin
@@ -100,18 +89,9 @@ report 30104 "Shpfy Sync Orders from Shopify"
     var
         OrdersAPI: Codeunit "Shpfy Orders API";
         Dialog: Dialog;
-<<<<<<< HEAD
-=======
-        ToImportView: Text;
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         ToProcess: Integer;
         ProcessMsg: Label 'To Process: #1###########', Comment = '#1 = ToPrgress';
         ToImportView: Text;
-
-    trigger OnPreReport()
-    begin
-        ToImportView := OrdersToImport.GetView(false);
-    end;
 
     trigger OnPreReport()
     begin

@@ -3,8 +3,9 @@
 /// </summary>
 enum 30117 "Shpfy Financial Status"
 {
+    Access = Internal;
     Caption = 'Shopify Financial Status';
-    Extensible = false;
+    Extensible = true;
 
     value(0; " ")
     {
@@ -14,12 +15,10 @@ enum 30117 "Shpfy Financial Status"
     {
         Caption = 'Pending';
     }
-#pragma warning disable AS0082
-    value(2; Authorized)
+    value(2; authorized)
     {
         Caption = 'Authorized';
     }
-#pragma warning restore AS0082
     value(3; "Partially Paid")
     {
         Caption = 'Partially Paid';

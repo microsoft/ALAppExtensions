@@ -3,6 +3,7 @@
 /// </summary>
 table 30118 "Shpfy Order Header"
 {
+    Access = Internal;
     Caption = 'Shopify Order Header';
     DataCaptionFields = "Shopify Order No.", "Sell-to Customer Name";
     DataClassification = SystemMetadata;
@@ -62,7 +63,6 @@ table 30118 "Shpfy Order Header"
             Caption = 'Token';
             DataClassification = CustomerContent;
             Editable = false;
-<<<<<<< HEAD
 #if CLEAN22
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
@@ -71,16 +71,6 @@ table 30118 "Shpfy Order Header"
             ObsoleteTag = '22.0';
 #endif
             ObsoleteReason = 'Not available in GraphQL data';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'Not available in GraphQL data.';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(13; Gateway; Text[50])
         {
@@ -103,80 +93,36 @@ table 30118 "Shpfy Order Header"
             Caption = 'Currency';
             DataClassification = Customercontent;
             Editable = false;
-<<<<<<< HEAD
             ObsoleteState = Pending;
             ObsoleteTag = '21.3';
             ObsoleteReason = 'Replacesd by the fields  "Currency Code" and "Presentment Currency code".';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'Replaced with the fields "Currency Code" and "Presentment Currency Code".';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(17; "Cart Token"; Text[50])
         {
             Caption = 'Cart Token';
             DataClassification = CustomerContent;
             Editable = false;
-<<<<<<< HEAD
             ObsoleteState = Pending;
             ObsoleteTag = '21.3';
             ObsoleteReason = 'Not available in GraphQL data';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'Not available in GraphQL data.';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(18; "Checkout Token"; Text[50])
         {
             Caption = 'Checkout Token';
             DataClassification = CustomerContent;
             Editable = false;
-<<<<<<< HEAD
             ObsoleteState = Pending;
             ObsoleteTag = '21.3';
             ObsoleteReason = 'Not available in GraphQL data';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'Not available in GraphQL data.';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(19; Reference; Text[50])
         {
             Caption = 'Reference';
             DataClassification = CustomerContent;
             Editable = false;
-<<<<<<< HEAD
             ObsoleteState = Pending;
             ObsoleteTag = '21.3';
             ObsoleteReason = 'Not available in GraphQL data';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'Not available in GraphQL data.';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(21; "Risk Level"; Enum "Shpfy Risk Level")
         {
@@ -207,20 +153,9 @@ table 30118 "Shpfy Order Header"
             Caption = 'Contact Email';
             DataClassification = CustomerContent;
             Editable = false;
-<<<<<<< HEAD
             ObsoleteState = Pending;
             ObsoleteTag = '21.3';
             ObsoleteReason = 'Not available in GraphQL data';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'Not available in GraphQL data.';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(26; "Total Tip Received"; Decimal)
         {
@@ -233,20 +168,9 @@ table 30118 "Shpfy Order Header"
             Caption = 'Session Hash';
             DataClassification = SystemMetadata;
             Editable = false;
-<<<<<<< HEAD
             ObsoleteState = Pending;
             ObsoleteTag = '21.3';
             ObsoleteReason = 'Not available in GraphQL data';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'Not available in GraphQL data.';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(48; "Ship-to First Name"; Text[50])
         {
@@ -406,20 +330,9 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Buyer Accepts Marketing';
             DataClassification = SystemMetadata;
-<<<<<<< HEAD
             ObsoleteState = Pending;
             ObsoleteTag = '21.3';
             ObsoleteReason = 'Not available in GraphQL data';
-=======
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-            ObsoleteReason = 'Not available in GraphQL data.';
->>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         }
         field(80; "Cancelled At"; DateTime)
         {
@@ -604,20 +517,6 @@ table 30118 "Shpfy Order Header"
             Caption = 'Customer Template Code';
             DataClassification = SystemMetadata;
             TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
-            ObsoleteReason = 'Replaced by Customer Templ. Code';
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
-            ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
-        }
-        field(502; "Customer Templ. Code"; Code[20])
-        {
-            Caption = 'Customer Template Code';
-            DataClassification = SystemMetadata;
-            TableRelation = "Customer Templ.".Code;
         }
         field(601; "Total Quantity of Items"; Decimal)
         {
@@ -814,3 +713,4 @@ table 30118 "Shpfy Order Header"
     end;
 
 }
+
