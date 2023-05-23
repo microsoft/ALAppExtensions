@@ -32,6 +32,7 @@ codeunit 30166 "Shpfy Process Order"
         ShopifyShop.Get(OrderHeader."Shop Code");
         CreateHeaderFromShopifyOrder(SalesHeader, OrderHeader);
         CreateLinesFromShopifyOrder(SalesHeader, OrderHeader);
+        ApplyGlobalDiscounts(OrderHeader, SalesHeader);
 
         IsHandled := false;
         OrderHeader.Get(OrderHeader."Shopify Order Id");
@@ -129,6 +130,24 @@ codeunit 30166 "Shpfy Process Order"
         end;
         OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.");
         OrderEvents.OnAfterCreateSalesHeader(ShopifyOrderHeader, SalesHeader);
+    end;
+
+    local procedure ApplyGlobalDiscounts(OrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
+    var
+        OrderLine: Record "Shpfy Order Line";
+        OrderShippingCharges: Record "Shpfy Order Shipping Charges";
+        SalesLine: REcord "Sales Line";
+        SalesCalcDiscountByType: Codeunit "Sales - Calc Discount By Type";
+        Discount: Decimal;
+    begin
+        OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        OrderLine.CalcSums("Discount Amount");
+        OrderShippingCharges.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        OrderShippingCharges.CalcSums("Discount Amount");
+        SalesHeader.Get(SalesHeader."Document Type", SalesHeader."No.");
+        Discount := OrderHeader."Discount Amount" - OrderLine."Discount Amount" - OrderShippingCharges."Discount Amount";
+        if Discount > 0 then
+            SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(Discount, SalesHeader);
     end;
 
     /// <summary> 

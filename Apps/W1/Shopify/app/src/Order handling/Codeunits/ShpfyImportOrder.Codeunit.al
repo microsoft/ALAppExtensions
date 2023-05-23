@@ -323,16 +323,24 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrderLine, 'fulfillmentService.serviceName', OrderLineRecordRef, OrderLine.FieldNo("Fulfillment Service"));
             JsonHelper.GetValueIntoField(JOrderLine, 'product.isGiftCard', OrderLineRecordRef, OrderLine.FieldNo("Gift Card"));
             JsonHelper.GetValueIntoField(JOrderLine, 'taxable', OrderLineRecordRef, OrderLine.FieldNo(Taxable));
-            JsonHelper.GetValueIntoField(JOrderLine, 'originalUnitPriceSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Unit Price"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'originalUnitPriceSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Unit Price"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Discount Amount"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Discount Amount"));
+            JsonHelper.GetValueIntoField(JOrderLine, 'discountedUnitPriceSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Unit Price"));
+            JsonHelper.GetValueIntoField(JOrderLine, 'discountedUnitPriceSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Unit Price"));
             OrderLineRecordRef.SetTable(OrderLine);
+            OrderLine."Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'shopMoney');
+            OrderLine."Presentment Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'presentmentMoney');
             UpdateLocationIdOnOrderLine(OrderLine);
             OrderLine.Modify();
             OrderLineRecordRef.Close();
             AddTaxLines(OrderLine."Line Id", JsonHelper.GetJsonArray(JOrderLine, 'taxLines'));
         end;
+    end;
+
+    local procedure GetTotalLineDiscountAmount(JDiscountSets: JsonArray; MoneyType: Text) Result: Decimal
+    var
+        JDiscountSet: JsonToken;
+    begin
+        foreach JDiscountSet in JDiscountSets do
+            Result += JsonHelper.GetValueAsDecimal(JDiscountSet, 'allocatedAmountSet.' + MoneyType + '.amount');
     end;
 
     /// <summary>
