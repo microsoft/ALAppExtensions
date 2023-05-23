@@ -18,7 +18,7 @@ codeunit 30176 "Shpfy Product API"
     /// </summary>
     /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
-    internal procedure CreateProduct(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant")
+    internal procedure CreateProduct(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyTag: Record "Shpfy Tag"): BigInteger
     var
         NewShopifyProduct: Record "Shpfy Product";
         ShopLocation: Record "Shpfy Shop Location";
@@ -31,7 +31,11 @@ codeunit 30176 "Shpfy Product API"
 
     begin
         ShopifyVariant.FindSet();
+<<<<<<< HEAD
         ProductEvents.OnBeforeSendCreateShopifyProduct(Shop, ShopifyProduct, ShopifyVariant);
+=======
+        ProductEvents.OnBeforeSendCreateShopifyProduct(Shop, ShopifyProduct, ShopifyVariant, ShopifyTag);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         GraphQuery.Append('{"query":"mutation {productCreate(input: {');
         GraphQuery.Append('title: \"');
         GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Title));
@@ -49,7 +53,7 @@ codeunit 30176 "Shpfy Product API"
         end;
         GraphQuery.Append(', status: ');
         GraphQuery.Append(ConvertToProductStatus(ShopifyProduct.Status));
-        Data := ShopifyProduct.GetCommaSeperatedTags();
+        Data := ShopifyTag.GetCommaSeparatedTags(ShopifyProduct.Id);
         if Data <> '' then begin
             GraphQuery.Append(', tags: \"');
             GraphQuery.Append(Data);
@@ -141,7 +145,7 @@ codeunit 30176 "Shpfy Product API"
         end;
         GraphQuery.Append('}}}) ');
 
-        GraphQuery.Append('{product {legacyResourceId, onlineStoreUrl, onlineStorePreviewUrl, createdAt, updatedAt, variants(first: 1) {edges {node {legacyResourceId, createdAt, updatedAt}}}}}');
+        GraphQuery.Append('{product {legacyResourceId, onlineStoreUrl, onlineStorePreviewUrl, createdAt, updatedAt, tags, variants(first: 1) {edges {node {legacyResourceId, createdAt, updatedAt}}}}}');
         GraphQuery.Append('}"}');
 
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
@@ -152,6 +156,10 @@ codeunit 30176 "Shpfy Product API"
 #pragma warning disable AA0139
         NewShopifyProduct."Preview URL" := JsonHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStorePreviewUrl', MaxStrLen(NewShopifyProduct."Preview URL"));
         NewShopifyProduct.URL := JsonHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStoreUrl', MaxStrLen(NewShopifyProduct.URL));
+<<<<<<< HEAD
+=======
+        NewShopifyProduct.UpdateTags(JsonHelper.GetArrayAsText(JResponse, 'data.productCreate.product.tags'));
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
 #pragma warning restore AA0139
         NewShopifyProduct."Created At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.createdAt');
         NewShopifyProduct."Updated At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.updatedAt');
@@ -171,9 +179,11 @@ codeunit 30176 "Shpfy Product API"
             VariantApi.AddProductVariant(ShopifyVariant);
         end;
 
+        exit(NewShopifyProduct.Id);
     end;
 
     local procedure CreateImageUploadUrl(Item: Record Item; var Url: Text; var ResourceUrl: Text; var TenantMedia: Record "Tenant Media"): boolean
+<<<<<<< HEAD
     var
         MimeType: Text;
         MediaId: Guid;
@@ -274,29 +284,38 @@ codeunit 30176 "Shpfy Product API"
     /// <returns>Return variable "Result" of type JsonObject.</returns>
     [Obsolete('Not used any more.', '21.4')]
     internal procedure CreateProductImageAsJson(Item: Record Item; ProductId: BigInteger; ImageId: BigInteger) Result: JsonObject;/// 
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     var
-        TenantMedia: Record "Tenant Media";
+        MimeType: Text;
         MediaId: Guid;
-        Image: JsonObject;
-        ImageString: Text;
+        Filename: Text;
+        JResponse: JsonToken;
+        JArray: JsonArray;
+        Parameters: Dictionary of [Text, Text];
     begin
+        Clear(Url);
+        Clear(ResourceUrl);
         if Item.Picture.Count > 0 then begin
             MediaId := Item.Picture.Item(1);
-            if TenantMedia.Get(MediaId) then
-                ImageString := CreateTenantMediaBase64String(TenantMedia);
+            if TenantMedia.Get(MediaId) then begin
+                MimeType := TenantMedia."Mime Type";
+                Filename := 'BC_Upload.' + MimeType.Split('/').Get(MimeType.Split('/').Count);
+                Parameters.Add('Filename', Filename);
+                Parameters.Add('MimeType', MimeType);
+                JResponse := CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::CreateImageUploadUrl, Parameters);
+                JArray := JsonHelper.GetJsonArray(JResponse, 'data.stagedUploadsCreate.stagedTargets');
+                if JArray.Count = 1 then
+                    if JArray.Get(0, JResponse) then begin
+                        Url := JsonHelper.GetValueAsText(JResponse, 'url');
+                        ResourceUrl := JsonHelper.GetValueAsText(JResponse, 'resourceUrl');
+                        exit((Url <> '') and (ResourceUrl <> ''));
+                    end;
+            end;
         end;
-
-        if ImageId <> 0 then
-            Image.Add('id', ImageId)
-        else
-            Image.Add('position', 1);
-        if ProductId <> 0 then
-            Image.Add('product_id', ProductId);
-
-        Image.Add('attachment', ImageString);
-        Result.Add('image', Image);
     end;
 
+<<<<<<< HEAD
     [Obsolete('Not used any more.', '21.4')]
     internal procedure CreateProductImageUrl(Item: Record Item; ProductId: BigInteger; ImageId: BigInteger): Text
     var
@@ -330,13 +349,71 @@ codeunit 30176 "Shpfy Product API"
     local procedure CreateTenantMediaBase64String(TenantMedia: Record "Tenant Media"): Text;
     var
         Base64Convert: Codeunit "Base64 Convert";
+=======
+    [TryFunction]
+    local procedure UploadImage(TenantMedia: Record "Tenant Media"; Url: Text)
+    var
+        Client: HttpClient;
+        Content: HttpContent;
+        Headers: HttpHeaders;
+        Response: HttpResponseMessage;
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         InStream: InStream;
     begin
+        Content.GetHeaders(Headers);
+        if Headers.Contains('Content-Type') then
+            Headers.Remove('Content-Type');
+        Headers.Add('Content-Type', TenantMedia."Mime Type");
         TenantMedia.CalcFields(Content);
         if TenantMedia.Content.HasValue then begin
             TenantMedia.Content.CreateInStream(InStream);
+<<<<<<< HEAD
             exit(Base64Convert.ToBase64(InStream));
+=======
+            Content.WriteFrom(InStream);
+            Client.Put(Url, Content, Response);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         end;
+    end;
+
+    local procedure SetProductImage(Product: Record "Shpfy Product"; ResourceUrl: Text): BigInteger
+    var
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+        JArray: JsonArray;
+    begin
+        Parameters.Add('ProductId', Format(Product.Id));
+        Parameters.Add('ResourceUrl', ResourceUrl);
+        if Product."Image Id" = 0 then begin
+            JResponse := CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::AddProductImage, Parameters);
+            JArray := JsonHelper.GetJsonArray(JResponse, 'data.productAppendImages.newImages');
+            if JArray.Count = 1 then
+                if JArray.Get(0, JResponse) then
+                    exit(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JResponse, 'id')));
+        end else begin
+            Parameters.Add('ImageId', Format(Product."Image Id"));
+            CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::UpdateProductImage, Parameters);
+            exit(Product."Image Id");
+        end;
+    end;
+
+    /// <summary> 
+    /// Create Shopify Product Image.
+    /// </summary>
+    /// <param name="Product">Parameter of type Record "Shopify Product".</param>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <returns>Return value of type BigInteger.</returns>
+    internal procedure CreateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item): BigInteger
+    var
+        TenantMedia: Record "Tenant Media";
+        Url: Text;
+        ResourceUrl: Text;
+    begin
+        if Shop."Sync Item Images" = Shop."Sync Item Images"::"To Shopify" then
+            if Item.Picture.Count > 0 then
+                if CreateImageUploadUrl(Item, Url, ResourceUrl, TenantMedia) then
+                    if UploadImage(TenantMedia, Url) then
+                        exit(SetProductImage(Product, ResourceUrl));
     end;
 
     /// <summary> 
@@ -523,7 +600,7 @@ codeunit 30176 "Shpfy Product API"
             GraphQuery.Append(', status: ');
             GraphQuery.Append(ConvertToProductStatus(ShopifyProduct.Status));
         end;
-        Data := ShopifyProduct.GetCommaSeperatedTags();
+        Data := ShopifyProduct.GetCommaSeparatedTags();
         GraphQuery.Append(', tags: \"');
         GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
         GraphQuery.Append('\"');

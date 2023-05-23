@@ -10,5 +10,5 @@ interface "Shpfy ICreateProductStatusValue"
     /// </summary>
     /// <param name="Item">Record Item.</param>
     /// <returns>Return value of type Enum "Shopify Product Status".</returns>
-    internal procedure GetStatus(Item: Record Item): Enum "Shpfy Product Status";
+    procedure GetStatus(Item: Record Item): Enum "Shpfy Product Status";
 }

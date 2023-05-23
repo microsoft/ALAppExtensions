@@ -57,8 +57,7 @@ page 18005 "HSN/SAC"
                 begin
                     EditinExcel.EditPageInExcel(
                         'HSNSAC',
-                        CurrPage.ObjectId(false),
-                        Rec.GetFilter(Code));
+                        Page::"HSN/SAC");
                 end;
             }
         }

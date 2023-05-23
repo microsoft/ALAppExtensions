@@ -6,7 +6,7 @@ pageextension 4816 "Intrastat Report Bus.Man. RC" extends "Business Manager Role
         {
             action(IntrastatReports)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = 'Intrastat Reports';
                 RunObject = Page "Intrastat Report List";
                 Image = ListPage;

@@ -261,7 +261,7 @@ codeunit 18434 "GST Application Session Mgt."
             repeat
                 TempGenJnlLine := TempGenJournalLine;
                 TempGenJnlLine."Line No." := 0;
-                GenJnlPostLine.RunWithCheck(TempGenJnlLine);
+                GenJnlPostLine.RunWithoutCheck(TempGenJnlLine);
                 TempGenJournalLine.Delete();
             until TempGenJournalLine.Next() = 0;
 

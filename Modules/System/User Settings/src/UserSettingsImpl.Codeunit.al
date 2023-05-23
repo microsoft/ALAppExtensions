@@ -6,10 +6,14 @@
 codeunit 9175 "User Settings Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "All Profile" = r,
                   tabledata Company = r,
 #if not CLEAN20
+#pragma warning disable AL0432
                   tabledata "Extra Settings" = rim,
+#pragma warning restore AL0432
 #endif
                   tabledata "Application User Settings" = rim,
                   tabledata "Tenant Profile" = r,
@@ -70,7 +74,9 @@ codeunit 9175 "User Settings Impl."
         end;
 
 #if not CLEAN19
+#pragma warning disable AL0432
         UserSettings.OnUserRoleCenterChange(TempAllProfile);
+#pragma warning restore AL0432
 #endif
     end;
 
@@ -196,7 +202,9 @@ codeunit 9175 "User Settings Impl."
 
         if OldUserSettings."Language ID" <> NewUserSettings."Language ID" then begin
 #if not CLEAN19
+#pragma warning disable AL0432
             UserSettings.OnBeforeLanguageChange(OldUserSettings."Language ID", NewUserSettings."Language ID");
+#pragma warning restore AL0432
 #endif
             sessionSetting.LanguageId := NewUserSettings."Language ID";
             ShouldRefreshSession := true;
@@ -231,6 +239,7 @@ codeunit 9175 "User Settings Impl."
         end;
 
 #if not CLEAN19
+#pragma warning disable AL0432
         if OldUserSettings."Work Date" <> NewUserSettings."Work Date" then begin
             UserSettings.OnBeforeWorkdateChange(WorkDate(), NewUserSettings."Work Date");
             WorkDate(NewUserSettings."Work Date");
@@ -238,6 +247,7 @@ codeunit 9175 "User Settings Impl."
 
         if AllProfile.Get(NewUserSettings.Scope, NewUserSettings."App ID", NewUserSettings."Profile ID") then;
         UserSettings.OnAfterQueryClosePage(NewUserSettings."Language ID", NewUserSettings."Locale ID", NewUserSettings."Time Zone", NewUserSettings.Company, AllProfile);
+#pragma warning restore AL0432
 #else
         if OldUserSettings."Work Date" <> NewUserSettings."Work Date" then
             WorkDate(NewUserSettings."Work Date");
@@ -335,6 +345,7 @@ codeunit 9175 "User Settings Impl."
     end;
 
 #if not CLEAN20
+#pragma warning disable AL0432
     [Obsolete('Replaced with function that takes Application User Settings record', '20.0')]
     procedure InitializeAppSettings(UserSecurityID: Guid; var ExtraSettings: Record "Extra Settings")
     begin
@@ -342,6 +353,7 @@ codeunit 9175 "User Settings Impl."
         ExtraSettings."Teaching Tips" := true;
         ExtraSettings.Insert();
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure InitializeAppSettings(UserSecurityID: Guid; var ApplicationUserSettings: Record "Application User Settings")
@@ -352,12 +364,14 @@ codeunit 9175 "User Settings Impl."
     end;
 
 #if not CLEAN20
+#pragma warning disable AL0432
     [Obsolete('Replaced with function that takes Application User Settings record', '20.0')]
     procedure GetAppSettings(UserSecurityID: Guid; var ExtraSettings: Record "Extra Settings")
     begin
         if not ExtraSettings.Get(UserSecurityID) then
             InitializeAppSettings(UserSecurityID, ExtraSettings);
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure GetAppSettings(UserSecurityID: Guid; var ApplicationUserSettings: Record "Application User Settings")
@@ -406,7 +420,7 @@ codeunit 9175 "User Settings Impl."
         ApplicationUserSettings.Modify();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetAutoStartTours', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", GetAutoStartTours, '', false, false)]
     local procedure CheckIfUserCalloutsAreEnabled(var IsEnabled: Boolean)
     var
         ApplicationUserSettings: Record "Application User Settings";
@@ -415,7 +429,7 @@ codeunit 9175 "User Settings Impl."
         IsEnabled := ApplicationUserSettings."Teaching Tips";
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OpenSettings', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", OpenSettings, '', false, false)]
     local procedure OpenSettings()
     begin
         OpenUserSettings(UserSecurityId());
@@ -445,7 +459,7 @@ codeunit 9175 "User Settings Impl."
 
         UserPersonalization.FilterGroup(2);
         UserPersonalization.CalcFields("License Type");
-        UserPersonalization.SetFilter("License Type", '<>%1&<>%2', UserPersonalization."License Type"::"External User", UserPersonalization."License Type"::Application);
+        UserPersonalization.SetFilter("License Type", '<>%1&<>%2&<>%3', UserPersonalization."License Type"::"External User", UserPersonalization."License Type"::Application, UserPersonalization."License Type"::"AAD Group");
         UserPersonalization.FilterGroup(0);
     end;
 

@@ -17,7 +17,9 @@ codeunit 30174 "Shpfy Create Product"
         ProductExport: Codeunit "Shpfy Product Export";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         VariantApi: Codeunit "Shpfy Variant API";
+        Events: Codeunit "Shpfy Product Events";
         Getlocations: Boolean;
+        ProductId: BigInteger;
 
     trigger OnRun()
     var
@@ -42,13 +44,22 @@ codeunit 30174 "Shpfy Create Product"
     var
         TempShopifyProduct: Record "Shpfy Product" temporary;
         TempShopifyVariant: Record "Shpfy Variant" temporary;
+        TempShopifyTag: Record "Shpfy Tag" temporary;
     begin
+<<<<<<< HEAD
         CreateProduct(Item, TempShopifyProduct, TempShopifyVariant);
+=======
+        CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant, TempShopifyTag);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         if not VariantApi.FindShopifyProductVariant(TempShopifyProduct, TempShopifyVariant) then
-            ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant);
+            ProductId := ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant, TempShopifyTag);
     end;
 
+<<<<<<< HEAD
     internal procedure CreateProduct(Item: Record Item; var ShopifyProduct: Record "Shpfy Product" temporary; var ShopifyVariant: Record "Shpfy Variant" temporary)
+=======
+    internal procedure CreateTempProduct(Item: Record Item; var TempShopifyProduct: Record "Shpfy Product" temporary; var TempShopifyVariant: Record "Shpfy Variant" temporary; var TempShopifyTag: Record "Shpfy Tag" temporary)
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     var
         ItemUnitofMeasure: Record "Item Unit of Measure";
         ItemVariant: Record "Item Variant";
@@ -70,6 +81,7 @@ codeunit 30174 "Shpfy Create Product"
                     if ItemUnitofMeasure.FindSet(false, false) then
                         repeat
                             Id += 1;
+<<<<<<< HEAD
                             Clear(ShopifyVariant);
                             ShopifyVariant.Id := Id;
                             ShopifyVariant."Available For Sales" := true;
@@ -77,6 +89,15 @@ codeunit 30174 "Shpfy Create Product"
                             ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price");
                             ShopifyVariant.Title := ItemVariant.Description;
                             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+=======
+                            Clear(TempShopifyVariant);
+                            TempShopifyVariant.Id := Id;
+                            TempShopifyVariant."Available For Sales" := true;
+                            TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(TempShopifyVariant.Barcode));
+                            ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
+                            TempShopifyVariant.Title := ItemVariant.Description;
+                            TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                             case Shop."SKU Mapping" of
                                 Shop."SKU Mapping"::"Bar Code":
                                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
@@ -93,6 +114,7 @@ codeunit 30174 "Shpfy Create Product"
                                 Shop."SKU Mapping"::"Vendor Item No.":
                                     ShopifyVariant.SKU := Item."Vendor Item No.";
                             end;
+<<<<<<< HEAD
                             ShopifyVariant."Tax Code" := Item."Tax Group Code";
                             ShopifyVariant.Taxable := true;
                             ShopifyVariant.Weight := Item."Gross Weight";
@@ -105,6 +127,20 @@ codeunit 30174 "Shpfy Create Product"
                             ShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
                             ShopifyVariant."UoM Option Id" := 2;
                             ShopifyVariant.Insert(false);
+=======
+                            TempShopifyVariant."Tax Code" := Item."Tax Group Code";
+                            TempShopifyVariant.Taxable := true;
+                            TempShopifyVariant.Weight := Item."Gross Weight";
+                            TempShopifyVariant."Option 1 Name" := 'Variant';
+                            TempShopifyVariant."Option 1 Value" := ItemVariant.Code;
+                            TempShopifyVariant."Option 2 Name" := Shop."Option Name for UoM";
+                            TempShopifyVariant."Option 2 Value" := ItemUnitofMeasure.Code;
+                            TempShopifyVariant."Shop Code" := Shop.Code;
+                            TempShopifyVariant."Item SystemId" := Item.SystemId;
+                            TempShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
+                            TempShopifyVariant."UoM Option Id" := 2;
+                            TempShopifyVariant.Insert(false);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                         until ItemUnitofMeasure.Next() = 0;
                 end else begin
                     Id += 1;
@@ -148,6 +184,7 @@ codeunit 30174 "Shpfy Create Product"
                 if ItemUnitofMeasure.FindSet(false, false) then
                     repeat
                         Id += 1;
+<<<<<<< HEAD
                         Clear(ShopifyVariant);
                         ShopifyVariant.Id := Id;
                         ShopifyVariant."Available For Sales" := true;
@@ -155,6 +192,15 @@ codeunit 30174 "Shpfy Create Product"
                         ProductPriceCalc.CalcPrice(Item, '', ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price");
                         ShopifyVariant.Title := Item.Description;
                         ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+=======
+                        Clear(TempShopifyVariant);
+                        TempShopifyVariant.Id := Id;
+                        TempShopifyVariant."Available For Sales" := true;
+                        TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', ItemUnitofMeasure.Code), 1, MaxStrLen(TempShopifyVariant.Barcode));
+                        ProductPriceCalc.CalcPrice(Item, '', ItemUnitofMeasure.Code, TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
+                        TempShopifyVariant.Title := Item.Description;
+                        TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                         case Shop."SKU Mapping" of
                             Shop."SKU Mapping"::"Bar Code":
                                 ShopifyVariant.SKU := ShopifyVariant.Barcode;
@@ -171,6 +217,7 @@ codeunit 30174 "Shpfy Create Product"
                             Shop."SKU Mapping"::"Vendor Item No.":
                                 ShopifyVariant.SKU := Item."Vendor Item No.";
                         end;
+<<<<<<< HEAD
                         ShopifyVariant."Tax Code" := Item."Tax Group Code";
                         ShopifyVariant.Taxable := true;
                         ShopifyVariant.Weight := Item."Gross Weight";
@@ -180,6 +227,17 @@ codeunit 30174 "Shpfy Create Product"
                         ShopifyVariant."Item SystemId" := Item.SystemId;
                         ShopifyVariant."UoM Option Id" := 1;
                         ShopifyVariant.Insert(false);
+=======
+                        TempShopifyVariant."Tax Code" := Item."Tax Group Code";
+                        TempShopifyVariant.Taxable := true;
+                        TempShopifyVariant.Weight := Item."Gross Weight";
+                        TempShopifyVariant."Option 1 Name" := Shop."Option Name for UoM";
+                        TempShopifyVariant."Option 1 Value" := ItemUnitofMeasure.Code;
+                        TempShopifyVariant."Shop Code" := Shop.Code;
+                        TempShopifyVariant."Item SystemId" := Item.SystemId;
+                        TempShopifyVariant."UoM Option Id" := 1;
+                        TempShopifyVariant.Insert(false);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                     until ItemUnitofMeasure.Next() = 0;
             end else begin
                 Clear(ShopifyVariant);
@@ -211,7 +269,13 @@ codeunit 30174 "Shpfy Create Product"
                 ShopifyVariant."Item SystemId" := Item.SystemId;
                 ShopifyVariant.Insert(false);
             end;
+<<<<<<< HEAD
         ShopifyProduct.Insert(false);
+=======
+        TempShopifyProduct.Insert(false);
+        Events.OnAfterCreateTempShopifyProduct(Item, TempShopifyProduct, TempShopifyVariant, TempShopifyTag);
+
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     /// <summary> 
@@ -268,5 +332,10 @@ codeunit 30174 "Shpfy Create Product"
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         SetShop(ShopifyShop.Code);
+    end;
+
+    internal procedure GetProductId(): BigInteger
+    begin
+        exit(ProductId);
     end;
 }

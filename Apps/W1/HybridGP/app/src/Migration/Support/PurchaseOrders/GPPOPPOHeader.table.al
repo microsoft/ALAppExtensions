@@ -2,7 +2,14 @@ table 40102 "GP POPPOHeader"
 {
     DataClassification = CustomerContent;
     Extensible = false;
-
+    ObsoleteReason = 'Replaced by table GP POP10100.';    
+#if not CLEAN22
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '25.0';
+#endif
     fields
     {
         field(1; PONUMBER; Text[18])
@@ -787,6 +794,8 @@ table 40102 "GP POPPOHeader"
         PostingDescriptionTxt: Label 'Migrated from GP';
         PostingGroupTxt: Label 'GP', Locked = true;
 
+#if not CLEAN22
+    [Obsolete('Logic moved to GP PO Migrator codeunit', '22.0')]
     procedure MoveStagingData()
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
@@ -833,6 +842,7 @@ table 40102 "GP POPPOHeader"
             until Next() = 0;
         end;
     end;
+#endif
 
     local procedure UpdateShipToAddress(CountryCode: Code[10]; var PurchaseHeader: Record "Purchase Header")
     begin

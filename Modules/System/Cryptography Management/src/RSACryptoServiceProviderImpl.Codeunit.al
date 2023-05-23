@@ -6,6 +6,8 @@
 codeunit 1446 "RSACryptoServiceProvider Impl." implements SignatureAlgorithm
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetRSACryptoServiceProvider: DotNet RSACryptoServiceProvider;

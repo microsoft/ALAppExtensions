@@ -243,43 +243,112 @@ report 31191 "Sales Shipment CZL"
                     column(UnitofMeasure_SalesShipmentLine; "Unit of Measure")
                     {
                     }
-                    dataitem(ItemTrackingLine; "Integer")
-                    {
-                        DataItemTableView = sorting(Number);
-                        column(LotNo_TrackingSpecBuffer; TempTrackingSpecification."Lot No.")
-                        {
-                        }
-                        column(SerNo_TrackingSpecBuffer; TempTrackingSpecification."Serial No.")
-                        {
-                        }
-                        column(Expiration_TrackingSpecBuffer; TempTrackingSpecification."Expiration Date")
-                        {
-                        }
-                        column(Quantity_TrackingSpecBuffer; TempTrackingSpecification."Quantity (Base)")
-                        {
-                        }
-                        trigger OnAfterGetRecord()
-                        begin
-                            if Number = 1 then
-                                TempTrackingSpecification.FindSet()
-                            else
-                                TempTrackingSpecification.Next();
-                        end;
-
-                        trigger OnPreDataItem()
-                        begin
-                            TempTrackingSpecification.SetRange("Source Ref. No.", "Sales Shipment Line"."Line No.");
-
-                            TrackingSpecCount := TempTrackingSpecification.Count();
-                            if TrackingSpecCount = 0 then
-                                CurrReport.Break();
-
-                            SetRange(Number, 1, TrackingSpecCount);
-                            TempTrackingSpecification.SetCurrentKey("Source ID", "Source Type", "Source Subtype", "Source Batch Name",
-                              "Source Prod. Order Line", "Source Ref. No.");
-                        end;
-                    }
+                    trigger OnAfterGetRecord()
+                    begin
+                        if not ShowCorrectionLines and "Sales Shipment Line".Correction then
+                            CurrReport.Skip();
+                    end;
                 }
+                dataitem(ItemTrackingLine; "Integer")
+                {
+                    DataItemTableView = sorting(Number);
+                    column(ItemNo_TrackingSpecBuffer; TempTrackingSpecification."Item No.")
+                    {
+                    }
+                    column(Description_TrackingSpecBuffer; TempTrackingSpecification.Description)
+                    {
+                    }
+                    column(LotNo_TrackingSpecBuffer; TempTrackingSpecification."Lot No.")
+                    {
+                    }
+                    column(SerNo_TrackingSpecBuffer; TempTrackingSpecification."Serial No.")
+                    {
+                    }
+                    column(Expiration_TrackingSpecBuffer; TempTrackingSpecification."Expiration Date")
+                    {
+                    }
+                    column(Quantity_TrackingSpecBuffer; TempTrackingSpecification."Quantity (Base)")
+                    {
+                    }
+                    column(ShowTotal; ShowTotal)
+                    {
+                    }
+                    column(ShowGroup; ShowGroup)
+                    {
+                    }
+                    column(QuantityCaption; QuantityCaptionLbl)
+                    {
+                    }
+                    column(SerialNoCaption; SerialNoCaptionLbl)
+                    {
+                    }
+                    column(LotNoCaption; LotNoCaptionLbl)
+                    {
+                    }
+                    column(DescriptionCaption; DescriptionCaptionLbl)
+                    {
+                    }
+                    column(NoCaption; NoCaptionLbl)
+                    {
+                    }
+                    column(ExpirationDateCaption; ExpirationDateLbl)
+                    {
+                    }
+                    dataitem(TotalItemTracking; "Integer")
+                    {
+                        DataItemTableView = sorting(Number) where(Number = const(1));
+                        column(Quantity1; TotalQty)
+                        {
+                        }
+                    }
+                    trigger OnAfterGetRecord()
+                    begin
+                        if Number = 1 then
+                            TempTrackingSpecification.FindSet()
+                        else
+                            TempTrackingSpecification.Next();
+
+                        if not ShowCorrectionLines and TempTrackingSpecification.Correction then
+                            CurrReport.Skip();
+
+                        if TempTrackingSpecification.Correction then
+                            TempTrackingSpecification."Quantity (Base)" := -TempTrackingSpecification."Quantity (Base)";
+
+                        ShowTotal := false;
+                        if ItemTrackingAppendix.IsStartNewGroup(TempTrackingSpecification) then
+                            ShowTotal := true;
+
+                        ShowGroup := false;
+                        if (TempTrackingSpecification."Source Ref. No." <> OldRefNo) or
+                           (TempTrackingSpecification."Item No." <> OldNo)
+                        then begin
+                            OldRefNo := TempTrackingSpecification."Source Ref. No.";
+                            OldNo := TempTrackingSpecification."Item No.";
+                            TotalQty := 0;
+                        end else
+                            ShowGroup := true;
+                        TotalQty += TempTrackingSpecification."Quantity (Base)";
+                    end;
+
+                    trigger OnPreDataItem()
+                    begin
+                        TrackingSpecCount := TempTrackingSpecification.Count();
+                        if TrackingSpecCount = 0 then
+                            CurrReport.Break();
+
+                        SetRange(Number, 1, TrackingSpecCount);
+                        TempTrackingSpecification.SetCurrentKey("Source ID", "Source Type", "Source Subtype", "Source Batch Name",
+                          "Source Prod. Order Line", "Source Ref. No.");
+                    end;
+
+                    trigger OnPostDataItem()
+                    begin
+                        OldRefNo := 0;
+                        ShowGroup := false;
+                        TotalQty := 0;
+                    end;
+                }
+
                 dataitem("User Setup"; "User Setup")
                 {
                     DataItemLink = "User ID" = field("User ID");
@@ -316,6 +385,8 @@ report 31191 "Sales Shipment CZL"
                 end;
             }
             trigger OnAfterGetRecord()
+            var
+                ItemTrackingDocHandlerCZL: Codeunit "Item Tracking Doc. Handler CZL";
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
@@ -330,9 +401,11 @@ report 31191 "Sales Shipment CZL"
                       "Campaign No.", "Posting Description", '');
                 if ShowLotSN then begin
                     ItemTrackingDocManagement.SetRetrieveAsmItemTracking(true);
+                    BindSubscription(ItemTrackingDocHandlerCZL);
                     TrackingSpecCount :=
                       ItemTrackingDocManagement.RetrieveDocumentItemTracking(TempTrackingSpecification,
                         "No.", Database::"Sales Shipment Header", 0);
+                    UnbindSubscription(ItemTrackingDocHandlerCZL);
                     ItemTrackingDocManagement.SetRetrieveAsmItemTracking(false);
                 end;
 
@@ -365,6 +438,12 @@ report 31191 "Sales Shipment CZL"
                         Enabled = LogInteractionEnable;
                         ToolTip = 'Specifies if you want the program to record the sales shipment you print as Interactions and add them to the Interaction Log Entry table.';
                     }
+                    field("Show Correction Lines"; ShowCorrectionLines)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Show Correction Lines';
+                        ToolTip = 'Specifies if the correction lines of an undoing of quantity posting will be shown on the report.';
+                    }
                     field(ShowLotSNCZL; ShowLotSN)
                     {
                         ApplicationArea = Basic, Suite;
@@ -394,6 +473,7 @@ report 31191 "Sales Shipment CZL"
     var
         ShipmentMethod: Record "Shipment Method";
         TempTrackingSpecification: Record "Tracking Specification" temporary;
+        ItemTrackingAppendix: Report "Item Tracking Appendix";
         Language: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
@@ -406,10 +486,16 @@ report 31191 "Sales Shipment CZL"
         DocFooterText: Text[1000];
         NoOfCopies: Integer;
         NoOfLoops: Integer;
+        OldRefNo: Integer;
+        OldNo: Code[20];
         LogInteraction: Boolean;
+        ShowCorrectionLines: Boolean;
         [InDataSet]
         LogInteractionEnable: Boolean;
         ShowLotSN: Boolean;
+        ShowTotal: Boolean;
+        ShowGroup: Boolean;
+        TotalQty: Decimal;
         TrackingSpecCount: Integer;
         DocumentLbl: Label 'Shipment';
         PageLbl: Label 'Page';
@@ -427,10 +513,16 @@ report 31191 "Sales Shipment CZL"
         DiscPercentLbl: Label 'Discount %';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
+        QuantityCaptionLbl: Label 'Quantity';
+        SerialNoCaptionLbl: Label 'Serial No.';
+        LotNoCaptionLbl: Label 'Lot No.';
+        DescriptionCaptionLbl: Label 'Description';
+        NoCaptionLbl: Label 'No.';
+        ExpirationDateLbl: Label 'Expiration Date';
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(5) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(5) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

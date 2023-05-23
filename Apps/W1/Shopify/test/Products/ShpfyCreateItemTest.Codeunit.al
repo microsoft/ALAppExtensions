@@ -18,13 +18,20 @@ codeunit 139567 "Shpfy Create Item Test"
         ShopifyVariant: Record "Shpfy Variant";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         InitializeTest: Codeunit "Shpfy Initialize Test";
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     begin
         // [SCENARIO] Create a Item from a Shopify Product with the SKU value containing the Item No.
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Item No.";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Item No.";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Item No.";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -63,7 +70,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Item No.";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Item No.";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Item No.";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -106,7 +117,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Item No. + Variant code";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Item No. + Variant Code";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Item No. + Variant Code";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -151,7 +166,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Item No. + Variant Code";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Item No. + Variant Code";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Item No. + Variant Code";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -203,7 +222,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Variant Code";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Variant Code";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Variant Code";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -246,7 +269,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Variant Code";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Variant Code";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Variant Code";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -291,7 +318,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Vendor Item No.";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Vendor Item No.";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Vendor Item No.";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -334,7 +365,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Vendor Item No.";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Vendor Item No.";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Vendor Item No.";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -381,7 +416,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Bar Code";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Bar Code";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Bar Code";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)
@@ -424,7 +463,11 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] The Shop with the setting "SKU Mapping" = "Bar Code";
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Bar Code";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Bar Code";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
 
         // [GIVEN] A Shopify variant record of a standard shopify product. (The variant record always exists, even if the products don't have any variants.)

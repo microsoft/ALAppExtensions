@@ -53,7 +53,7 @@ codeunit 139585 "Shpfy Customer Init Test"
     end;
 
 
-    internal procedure CreateJsonCustomerInfo(NameSource: Enum "Shpfy Name Source"; Name2Source: Enum "Shpfy Name Source"): JsonObject
+    internal procedure CreateJsonCustomerInfo(NameSource: Enum "Shpfy Name Source"; NameSource2: Enum "Shpfy Name Source"): JsonObject
     var
         Name: Text;
         Name2: Text;
@@ -69,7 +69,7 @@ codeunit 139585 "Shpfy Customer Init Test"
             "Shpfy Name Source"::None:
                 Name := '';
         end;
-        case Name2Source of
+        case NameSource2 of
             "Shpfy Name Source"::CompanyName:
                 Name2 := 'Company';
             "Shpfy Name Source"::FirstAndLastName:

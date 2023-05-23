@@ -10,6 +10,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         GraphURLTxt: label 'https://graph.microsoft.com', Locked = true;
         SendEmailErr: Label 'Could not send the email message. Try again later.';
         SendEmailCodeErr: Label 'Failed to send email with status code %1.', Comment = '%1 - Http status code', Locked = true;
+        SendEmailMessageErr: Label 'Failed to send email. Error:\\%1', Comment = '%1 = Error message';
         SendEmailExternalUserErr: Label 'Could not send the email because the user is external.';
         EmailSentTxt: Label 'Email sent.', Locked = true;
         DraftEmailCreatedTxt: Label 'Draft email created.', Locked = true;
@@ -23,6 +24,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         ContentRangeLbl: Label 'bytes %1-%2/%3', Comment = '%1 - From byte, %2 - To byte, %3 - Total bytes', Locked = true;
         RestAPINotSupportedErr: Label 'REST API is not yet supported for this mailbox', Locked = true;
         TheMailboxIsNotValidErr: Label 'The mailbox is not valid.\\A likely cause is that the user does not have a valid license for Office 365. To read about other potential causes, visit https://go.microsoft.com/fwlink/?linkid=2206177';
+        ExternalSecurityChallengeNotSatisfiedMsg: Label 'Multi-Factor Authentication is enabled on this account but the user did not complete the setup. Please sign in to the account and try again.';
 
     [NonDebuggable]
     procedure GetAccountInformation(AccessToken: Text; var Email: Text[250]; var Name: Text[250]): Boolean
@@ -138,8 +140,14 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     local procedure ProcessErrorMessageResponse(ErrorMessage: Text)
     begin
         if ErrorMessage.Contains(RestAPINotSupportedErr) then
-            ErrorMessage := TheMailboxIsNotValidErr;
-        Error(ErrorMessage);
+            Error(TheMailboxIsNotValidErr);
+
+        // AADSTS50158 - External security challenge not satisfied. MFA was enabled for tenant but user did not enable it yet.
+        // https://learn.microsoft.com/azure/active-directory/develop/reference-aadsts-error-codes
+        if ErrorMessage.Contains('AADSTS50158') then
+            Error(ExternalSecurityChallengeNotSatisfiedMsg);
+
+        Error(StrSubstNo(SendEmailMessageErr, ErrorMessage));
     end;
 
     [NonDebuggable]

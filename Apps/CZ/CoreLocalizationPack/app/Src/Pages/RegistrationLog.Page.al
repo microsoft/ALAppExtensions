@@ -131,29 +131,6 @@ page 11756 "Registration Log CZL"
                 RunObject = Codeunit "Reg. Lookup Ext. Data CZL";
                 ToolTip = 'Verify a Registration number. If the number is verified the Status field contains the value Valid.';
             }
-#if not CLEAN19
-            action("Update Card")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Update Card';
-                Image = Refresh;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                ToolTip = 'Update verified data to card.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The ARES Update report is discontinued, use the Registration Log Details page instead.';
-                ObsoleteTag = '19.0';
-
-                trigger OnAction()
-                begin
-#pragma warning disable AL0432
-                    Rec.UpdateCard();
-#pragma warning restore AL0432
-                end;
-            }
-#endif
             action(ValidationDetail)
             {
                 ApplicationArea = Basic, Suite;

@@ -9,6 +9,8 @@
 codeunit 1474 "Signature Key"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         SignatureKeyImpl: Codeunit "Signature Key Impl.";

@@ -16,7 +16,6 @@ codeunit 4001 "Hybrid Cloud Management"
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         MigrationDisabledTelemetryTxt: Label 'Migration disabled. Source Product=%1; Reason=%2', Comment = '%1 - source product, %2 - reason for disabling', Locked = true;
         UserMustBeAbleToScheduleTasksMsg: Label 'You do not have the right permissions to schedule tasks, which is required for running the migration. Please check your permissions and license entitlements before you continue.';
-        IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
         CreatingIntegrationRuntimeMsg: Label 'Creating Integration Runtime for Product ID: %1', Comment = '%1 - The source product id', Locked = true;
         CreatedIntegrationRuntimeMsg: Label 'Created Integration Runtime, IRName" %1', Comment = '%1 - Name of Integration Runtime', Locked = true;
         ReplicationCompletedServiceTypeTxt: Label 'ReplicationCompleted', Locked = true;
@@ -24,7 +23,7 @@ codeunit 4001 "Hybrid Cloud Management"
         CannotStartReplicationCompanyUpgradeFailedErr: Label 'You cannot start the replication because there are companies in which data upgrade has failed. After investigating the failure you must delete these companies and start the migration again.';
         CannotTriggerUpgradeErr: Label 'Upgrade cannot be started until all companies are successfully replicated.';
         CannotStartUpgradeNotAllComapniesAreMigratedErr: Label 'Cannot start upgrade because following companies are not ready to be migrated:%1', Comment = '%1 - Comma separated list of companies pending cloud migration';
-        ScheduledFixingDataTelemetryMsg: Label 'Scheduled fixing data after cloud migration.';
+        ScheduledFixingDataTelemetryMsg: Label 'Companion table repair scheduled.', Locked = true;
         MarkedCompanyAsUpgradePendingTelemetryMsg: Label 'Marked Company as Upgrade Pending. Comany name: %1', Locked = true;
         DelegatedAdminCannotRunCloudMigrationErr: Label 'A delegated admin cannot run the cloud migration until a licensed user has approved access to the migration tool.';
         DisableReplicationRevokedConsentTxt: Label 'Cloud migration has been disabled because a user has revoked consent.';
@@ -32,18 +31,49 @@ codeunit 4001 "Hybrid Cloud Management"
         StatusIsAlreadyGrantedErr: Label 'The access was already granted';
         GrantApprovalPermissionErr: Label 'You do not have permission to grant approval to run the cloud migration setup. You must be a licensed user, and your user account must have the SUPER permission set.';
         DoYouWantToDisableQst: Label 'If you revoke consent, the cloud migration stops.\\Are you sure that you want to continue?';
-        RemovingTheTablesWillRemoveHistoryQst: Label 'If you exclude per-database tables in this way, already migrated data will be deleted. This way, if the same tables are included in the cloud migration later, data from the on-premises database will replace the existing data in the target environment.\\Are you sure that you want to continue?';
+        RemovingTheTablesWillRemoveHistoryQst: Label 'If you exclude tables in this way, already migrated data may be deleted. This way, if the same tables are included in the cloud migration later, data from the on-premises database will replace the existing data in the target environment. If you do not want this to happen, do not include the table to the cloud migration again.\\Are you sure that you want to continue?';
         CompletedCloudMigrationSetupMsg: Label 'Completed Cloud Migration Setup.';
         CompanyWasNotCreatedErr: Label 'Company creation failed. Errors could be found on the assisted setup page. Company name is: %1.', Comment = '%1 - Company name';
         CompanySetupIsNotcompleteErr: Label 'The company %1 was not setup correctly. Current setup status: %2', Comment = '%1 - Company name, %2 - Company Status';
         MigraitonAlreadyInProgressErr: Label 'A migration is already in progress.';
         CompanyCreationFailedErr: Label 'Company creation failed with error %1. Please fix this and re-run the Cloud Migration Setup wizard.', Comment = '%1 - the error message';
-        CompanyInProgressErr: Label 'Cannot run migration since the background task has not finished creating companies yet.';
+        CompanyInProgressErr: Label 'Cannot run data replication since the background task has not finished creating companies yet.';
         UpgradeNotExecutedErr: Label 'Upgrade was not run, because there were no extensions capable of handling the upgrade.';
         CannotStartUpgradeFromOldRunErr: Label 'The selected summary is not from the latest replication run. To start the upgrade, select the summary from the lastest run.';
         ResetCloudFailedErr: Label 'Failed to reset cloud data';
-        DisablereplicationTxt: Label 'Cloud Migration has been disabled.';
-        DisabledCloudMigrationFromCompanyTxt: Label 'Cloud Migration has been disabled from company %1.', Locked = true;
+        DisablereplicationTxt: Label 'Cloud migration has been disabled.';
+        DisabledCloudMigrationFromCompanyTxt: Label 'Cloud migration has been disabled.', Locked = true;
+        UnfavorableStyleLbl: Label 'Unfavorable', Locked = true;
+        CloudMigrationStatusNotSetupLbl: Label 'Cloud migration is disabled';
+        CloudMigrationStatusCreatingCompaniesInProgressLbl: Label 'Creating companies';
+        CloudMigrationStatusCreatingCompaniesFailedLbl: Label 'Creating companies has failed';
+        CloudMigrationFailedTablesStatusLbl: Label 'Replication completed with failed tables';
+        RunFailedTablesStatusLbl: Label '%1 replication completed with failed tables', Comment = '%1 - will be replaced by run type like Azure Data Lake or Diagnostic';
+        UpgradeCompletedStatusLbl: Label 'Upgrade completed successfully';
+        UpgradeFailedStatusLbl: Label 'Upgrade failed';
+        UpgradeIsRunningStatusLbl: Label 'Upgrade is in progress';
+        CloudMigrationStatusInProgressLbl: Label 'Replication in progress';
+        CloudMigrationRunProgressLbl: Label '%1 run in progress', Comment = '%1 - will be replaced by run type like Azure Data Lake or Diagnostic';
+        CloudMigrationWasAbandonedLbl: Label 'Cloud migration was abandoned.';
+        CloudMigrationIsPausedLbl: Label 'Cloud migration is paused.';
+        CloudMigrationIsCompletedLbl: Label 'Cloud migration is completed.';
+        FixCloudMigrationFailedTablesStatusLbl: Label 'Investigate the error messages for the failed tables. After fixing the root cause in the OnPremise database or if the issue is transient, invoke the Run replication action to delta sync the tables.';
+        ScheduleNewRunLbl: Label 'Investigate the error messages for the failed tables. After fixing the root cause or if the issue is transient, schedule a new run the Run replication action to delta sync the tables.';
+        WaitForMigrationLbl: Label 'You need to wait for the replication of the data to complete. The system is copying the data, if it seems that progress is not updated, it is copying the data in bulk.\\If you need to stop this process, you can stop the integration runtime on the OnPremise machine.';
+        WaitForReplicationRunLbl: Label 'You need to wait for the %1 run to complete.', Comment = '%1 - will be replaced by run type like Azure Data Lake or Diagnostic';
+        FixCloudMigrationStatusCreatingCompaniesFailedLbl: Label 'Creation of the companies has failed. Investigate the error messages and after fixing the root cause delete the failed companies and invoke Select Companies to migrate action to start the creation of the companies again.';
+        DataRepairInProgressLbl: Label 'Repairing OnPrem data';
+        DataRepairInProgressMessageLbl: Label 'The repair of the OnPrem data is in progress. During this time we are inserting the missing table extension records and doing other repair processes. If the repair fails, you can invoke it manually by using Repair OnPrem data acton.';
+        CloudMigrationLastStepLbl: Label 'Last step - %1', Comment = '%1 - Text for step name';
+        ReadyForReplicationStatusLbl: Label 'Ready for replication';
+        CloudMigrationCompletedTxt: Label 'Cloud migration was completed.';
+        CannotCompleteMigrationUpgradeNotCompleteErr: Label 'You cannot complete the cloud migration because upgrade was not completed. If you want to stop the cloud migration, use pause or abandon actions.';
+        CannotCompleteCloudMigrationWithFailedTablesErr: Label 'You cannot complete the cloud migration because there are failed tables. To fix the issue run the replication again to pull the failed tables. If you want to stop the cloud migration, use pause or abandon actions.';
+        CannotCompleteCloudMigrationDataRepairPendingErr: Label 'You need to invoke repair companion table records before completing the cloud migration.';
+        TableWasUnblockedMsg: Label 'Table was successfully unblocked. You can move the missing data through configuration packages or via other means.';
+        DataReplicationStartedLbl: Label 'Replication run started.', Locked = true;
+        DataUpgradeScheduledLbl: Label 'Cloud Migration data upgrade scheduled.', Locked = true;
+        UnblockedManuallyLbl: Label 'Unblocked manually';
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -100,6 +130,11 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudSetup.LockTable();
         IntelligentCloudSetup.Get();
         IntelligentCloudSetup."Company Creation Task Status" := IntelligentCloudSetup."Company Creation Task Status"::InProgress;
+        Clear(IntelligentCloudSetup."Company Creation Session ID");
+        Clear(IntelligentCloudSetup."Company Creation Task Error");
+        Clear(IntelligentCloudSetup."Company Creation Task ID");
+        IntelligentCloudSetup.Modify();
+
         BackupDataPerDatabase(IntelligentCloudSetup);
 
         if TaskScheduler.CanCreateTask() then begin
@@ -115,6 +150,18 @@ codeunit 4001 "Hybrid Cloud Management"
         end;
 
         Commit();
+    end;
+
+    internal procedure VerifyCanScheduleTasks()
+    var
+        Handled: Boolean;
+    begin
+        OnBeforeCanScheduleTask(Handled);
+        if Handled then
+            exit;
+
+        if not TaskScheduler.CanCreateTask() then
+            Error(UserMustBeAbleToScheduleTasksMsg);
     end;
 
     procedure ClearCompanyCreationStatus()
@@ -182,14 +229,14 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         UpgradeTag: Codeunit "Upgrade Tag";
         Handled: Boolean;
-        BackupUpgradeTags: Boolean;
+        ShouldBackupUpgradeTags: Boolean;
     begin
-        OnBackupUpgradeTags(IntelligentCloudSetup."Product ID", Handled, BackupUpgradeTags);
+        OnBackupUpgradeTags(IntelligentCloudSetup."Product ID", Handled, ShouldBackupUpgradeTags);
 
         if Handled then
             exit;
 
-        if not BackupUpgradeTags then
+        if not ShouldBackupUpgradeTags then
             exit;
 
         IntelligentCloudSetup."Upgrade Tag Backup ID" := UpgradeTag.BackupUpgradeTags();
@@ -235,6 +282,8 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         IntelligentCloud: Record "Intelligent Cloud";
         HybridDeployment: Codeunit "Hybrid Deployment";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         RestoreDataPerDatabaseTables(HybridReplicationSummary."Run ID", SourceProduct);
 
@@ -261,6 +310,8 @@ codeunit 4001 "Hybrid Cloud Management"
         Commit(); // Manual commit in case subscriber to the call below crashes
 
         OnAfterDisableMigration(SourceProduct);
+        FeatureTelemetry.LogUptake('0000JMT', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000JMX', HybridCloudManagement.GetFeatureTelemetryName(), 'Disabling cloud migration');
     end;
 
     local procedure DisableMigrationOnly(Reason: Text)
@@ -288,11 +339,25 @@ codeunit 4001 "Hybrid Cloud Management"
     [Scope('OnPrem')]
     procedure RepairCompanionTableRecordConsistency()
     var
+        LastHybridReplicationSummary: Record "Hybrid Replication Summary";
+        ReplicationRunCompletedArg: Record "Replication Run Completed Arg";
+    begin
+        RepairCompanionTables();
+        Commit();
+        ReplicationRunCompletedArg.DeleteAll();
+
+        GetLastReplicationSummary(LastHybridReplicationSummary);
+        LastHybridReplicationSummary."Data Repair Status" := LastHybridReplicationSummary."Data Repair Status"::Completed;
+        LastHybridReplicationSummary.Modify();
+    end;
+
+    procedure RepairCompanionTables()
+    var
         AllObj: Record AllObj;
         PublishedApplication: Record "Published Application";
         CompanionTableRecordConsistencyRepair: DotNet CompanionTableRecordConsistencyRepair;
     begin
-        Session.LogMessage('0000FJ1', 'Starting Repair of Companion Tables', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        Session.LogMessage('0000FJ1', 'Companion table repair started.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', GetTelemetryCategory());
         CompanionTableRecordConsistencyRepair := CompanionTableRecordConsistencyRepair.CompanionTableRecordConsistencyRepair();
         AllObj.SetRange("Object Type", AllObj."Object Type"::"TableExtension");
         PublishedApplication.SetRange(Installed, true);
@@ -309,7 +374,7 @@ codeunit 4001 "Hybrid Cloud Management"
                 end;
             until PublishedApplication.Next() = 0;
 
-        Session.LogMessage('0000FJ4', 'Completed Repair of Companion Tables', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        Session.LogMessage('0000FJ4', 'Companion table repair completed successfully.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', GetTelemetryCategory());
     end;
 
     [Scope('OnPrem')]
@@ -387,7 +452,7 @@ codeunit 4001 "Hybrid Cloud Management"
             repeat
                 HybridReplicationSummary.Get(HybridReplicationDetail."Run ID");
 
-                if HybridReplicationSummary.ReplicationType IN [HybridReplicationSummary.ReplicationType::Full, HybridReplicationSummary.ReplicationType::Normal] then begin
+                if HybridReplicationSummary.ReplicationType in [HybridReplicationSummary.ReplicationType::Full, HybridReplicationSummary.ReplicationType::Normal] then begin
                     if (HybridReplicationDetail."Company Name" <> HybridReplicationDetailPreviousRecord."Company Name") or (HybridReplicationDetail."Table Name" <> HybridReplicationDetailPreviousRecord."Table Name") then
                         Count += 1;
 
@@ -401,15 +466,15 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridCompany: Record "Hybrid Company";
         TableMetadata: Record "Table Metadata";
     begin
-        TableMetadata.RESET();
-        TableMetadata.SETRANGE(ReplicateData, false);
+        TableMetadata.Reset();
+        TableMetadata.SetRange(ReplicateData, false);
         TableMetadata.SetFilter(ID, '<%1|>%2', 2000000000, 2000000300);
         TableMetadata.SetFilter(Name, '<>*Buffer');
         HybridCompany.Reset();
         HybridCompany.SetRange(Replicate, true);
         if HybridCompany.FindSet() then
             repeat
-                IF TableMetadata.CHANGECOMPANY(HybridCompany.Name) THEN // CHANGECOMPANY should transfer the range to the new company
+                if TableMetadata.ChangeCompany(HybridCompany.Name) then // CHANGECOMPANY should transfer the range to the new company
                     TotalTables := TotalTables + TableMetadata.CountApprox();
             until HybridCompany.Next() = 0;
 
@@ -425,7 +490,7 @@ codeunit 4001 "Hybrid Cloud Management"
 
     procedure GetSaasWizardRedirectUrl(var IntelligentCloudSetup: Record "Intelligent Cloud Setup") RedirectUrl: Text
     begin
-        RedirectUrl := GetUrl(CLIENTTYPE::Web, '', OBJECTTYPE::Page, Page::"Hybrid Cloud Setup Wizard", IntelligentCloudSetup, true);
+        RedirectUrl := GetUrl(ClientType::Web, '', ObjectType::Page, Page::"Hybrid Cloud Setup Wizard", IntelligentCloudSetup, true);
     end;
 
     procedure GetRedirectFilter() RedirectFilter: Text
@@ -503,22 +568,25 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         HybridCompany: Record "Hybrid Company";
         GuidedExperience: Codeunit "Guided Experience";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
+        TelemetryDimensions.Add('TotalNumberOfOnPremCompanies', Format(HybridCompany.Count(), 0, 9));
         HybridCompany.SetRange(Replicate, true);
-
-        TelemetryDimensions.Add('Category', CloudMigrationTok);
-        TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
-        TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
-
-        Session.LogMessage('0000EUR', CompletedCloudMigrationSetupMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
-
         GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard");
         IntelligentCloudSetup.Validate("Replication User", UserId());
         IntelligentCloudSetup.Modify();
         RestoreDefaultMigrationTableMappings(false);
         RefreshIntelligentCloudStatusTable();
         CreateCompanies();
+
+        FeatureTelemetry.LogUptake('0000JMU', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
+        TelemetryDimensions.Add('Category', CloudMigrationTok);
+        TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
+        TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
+        TelemetryDimensions.Add('TotalOnPremSize', Format(HybridCompany.GetTotalOnPremSize(), 0, 9));
+        TelemetryDimensions.Add('Product', IntelligentCloudSetup."Product ID");
+        FeatureTelemetry.LogUsage('0000EUR', GetFeatureTelemetryName(), CompletedCloudMigrationSetupMsg, TelemetryDimensions);
     end;
 
     procedure HandleShowIRInstructionsStep(var HybridProductType: Record "Hybrid Product Type"; var IRName: Text; var PrimaryKey: Text)
@@ -526,7 +594,7 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridDeployment: Codeunit "Hybrid Deployment";
         HandledExternally: Boolean;
     begin
-        Session.LogMessage('0000EV4', StrSubstNo(CreatingIntegrationRuntimeMsg, HybridProductType.ID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000EV4', StrSubstNo(CreatingIntegrationRuntimeMsg, HybridProductType.ID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
 
         OnBeforeShowIRInstructionsStep(HybridProductType, IRName, PrimaryKey, HandledExternally);
         if HandledExternally OR (IRName <> '') then
@@ -534,7 +602,7 @@ codeunit 4001 "Hybrid Cloud Management"
 
         HybridDeployment.Initialize(HybridProductType.ID);
         HybridDeployment.CreateIntegrationRuntime(IRName, PrimaryKey);
-        Session.LogMessage('0000EV5', StrSubstNo(CreatedIntegrationRuntimeMsg, IRName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000EV5', StrSubstNo(CreatedIntegrationRuntimeMsg, IRName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
     end;
 
     procedure GetJobQueueCategory(): Code[10]
@@ -633,7 +701,9 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         HybridDeployment: Codeunit "Hybrid Deployment";
+        TelemetryDictionary: Dictionary of [Text, Text];
         Handled: Boolean;
     begin
         IntelligentCloudSetup.Get();
@@ -646,6 +716,32 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridDeployment.RunReplication(RunId, ReplicationType);
 
         HybridReplicationSummary.CreateInProgressRecord(RunId, ReplicationType);
+        if HybridReplicationSummary.FindLast() then;
+        TelemetryDictionary.Add('Category', GetTelemetryCategory());
+        TelemetryDictionary.Add('ReplicationType', GetReplicationTypeTelemetryText(HybridReplicationSummary));
+
+        Session.LogMessage('0000K0J', DataReplicationStartedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDictionary);
+
+        FeatureTelemetry.LogUptake('0000JMV', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000JMY', GetFeatureTelemetryName(), 'Running data replication');
+    end;
+
+    internal procedure GetReplicationTypeTelemetryText(var HybridReplicationSummary: Record "Hybrid Replication Summary"): Text
+    begin
+        case HybridReplicationSummary.ReplicationType of
+            HybridReplicationSummary.ReplicationType::Full, HybridReplicationSummary.ReplicationType::Normal:
+                exit('Data Replication');
+            HybridReplicationSummary.ReplicationType::"Azure Data Lake":
+                exit('Azure Data Lake');
+            HybridReplicationSummary.ReplicationType::Diagnostic:
+                exit('Diagnostic');
+        end;
+        exit('');
+    end;
+
+    internal procedure GetFeatureTelemetryName(): Text
+    begin
+        exit('Cloud Migration');
     end;
 
     procedure CheckFixDataOnReplicationCompleted(NotificationText: Text): Boolean
@@ -661,10 +757,41 @@ codeunit 4001 "Hybrid Cloud Management"
 
         JsonManagement.InitializeObject(NotificationText);
         JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType);
-        if not (ReplicationCompletedServiceTypeTxt = ServiceType) then
+        if not IsReplicationCompleted(ServiceType) then
             exit(false);
 
         exit(true);
+    end;
+
+    internal procedure IsReplicationCompleted(ServiceType: Text): Boolean
+    begin
+        exit(ReplicationCompletedServiceTypeTxt = ServiceType);
+    end;
+
+    internal procedure SendCloudMigrationTelemetry()
+    var
+        IntelligentCloud: Record "Intelligent Cloud";
+        HybridCompany: Record "Hybrid Company";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        if not IntelligentCloud.Get() then
+            exit;
+
+        Clear(HybridCompany);
+        FeatureTelemetry.LogUptake('0000JMQ', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+
+        TelemetryDimensions.Add('Category', HybridCloudManagement.GetTelemetryCategory());
+        TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
+        TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
+        TelemetryDimensions.Add('TotalOnPremSize', Format(HybridCompany.GetTotalOnPremSize(), 0, 9));
+        IntelligentCloudSetup."Product ID" := 'Unknown';
+        if IntelligentCloudSetup.Get() then;
+        TelemetryDimensions.Add('Product', IntelligentCloudSetup."Product ID");
+        TelemetryDimensions.Add('MigrationDateTime', Format(IntelligentCloud.SystemModifiedAt, 0, 9));
+        FeatureTelemetry.LogUsage('0000JMR', HybridCloudManagement.GetFeatureTelemetryName(), 'Tenant was cloud migrated', TelemetryDimensions);
     end;
 
     procedure RestoreDefaultMigrationTableMappings(DeleteExisting: Boolean)
@@ -678,6 +805,26 @@ codeunit 4001 "Hybrid Cloud Management"
         if IntelligentCloudSetup.Get() then;
 
         OnInsertDefaultTableMappings(IntelligentCloudSetup."Product ID", DeleteExisting);
+    end;
+
+    procedure CompleteCloudMigration()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        IntelligentCloudSetup.Get();
+        DisableMigration(IntelligentCloudSetup."Product ID", CloudMigrationCompletedTxt, true);
+        IntelligentCloudSetup.Find();
+        IntelligentCloudSetup.DisabledReason := IntelligentCloudSetup.DisabledReason::Completed;
+        IntelligentCloudSetup.Modify();
+
+        FeatureTelemetry.LogUptake('0000JV4', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000JV5', HybridCloudManagement.GetFeatureTelemetryName(), 'Completed the cloud migration succesfully');
+        SendCloudMigrationTelemetry();
+
+        if GuiAllowed then
+            Message(CloudMigrationCompletedTxt);
     end;
 
     procedure SendMissingScheduleTasksNotification();
@@ -698,12 +845,14 @@ codeunit 4001 "Hybrid Cloud Management"
         CreateSession: Boolean;
         SessionID: Integer;
     begin
+        ReplicationRunCompletedArg.DeleteAll();
         ReplicationRunCompletedArg."Run ID" := RunId;
         ReplicationRunCompletedArg."Subscription ID" := CopyStr(SubscriptionId, 1, MaxStrLen(ReplicationRunCompletedArg."Subscription ID"));
         ReplicationRunCompletedArg.Insert();
         ReplicationRunCompletedArg."Notification Text".CreateOutStream(NotificationOutStream);
         NotificationOutStream.WriteText(NotificationText);
         ReplicationRunCompletedArg.Modify();
+        Commit();
 
         CreateSession := true;
         OnCreateSessionForDataFixAfterReplication(CreateSession);
@@ -715,13 +864,13 @@ codeunit 4001 "Hybrid Cloud Management"
         end;
 
         if TaskScheduler.CanCreateTask() then
-            ReplicationRunCompletedArg.TaskId := TaskScheduler.CreateTask(Codeunit::"Fix Data OnRun Completed", Codeunit::"Handle Fix Data Failure", true, CompanyName(), CurrentDateTime() + 4000, ReplicationRunCompletedArg.RecordId)
+            ReplicationRunCompletedArg.TaskId := TaskScheduler.CreateTask(Codeunit::"Fix Data OnRun Completed", Codeunit::"Handle Fix Data Failure", true, CompanyName(), CurrentDateTime() + 5000, ReplicationRunCompletedArg.RecordId)
         else begin
             Session.StartSession(SessionID, Codeunit::"Fix Data OnRun Completed", CompanyName(), ReplicationRunCompletedArg);
             ReplicationRunCompletedArg."Session Id" := SessionID;
         end;
 
-        Session.LogMessage('0000FXC', ScheduledFixingDataTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000FXC', ScheduledFixingDataTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', CloudMigrationTok);
 
         ReplicationRunCompletedArg.Modify();
         Commit();
@@ -852,7 +1001,7 @@ codeunit 4001 "Hybrid Cloud Management"
             exit((IntelligentCloudSetup."Company Creation Task Status" = IntelligentCloudSetup."Company Creation Task Status"::Failed));
         end;
 
-        exit(not HybridCloudManagement.VerifyCompaniesCreatedSuccesfully(ErrorMessage));
+        exit(not HybridCloudManagement.VerifyCompaniesCreatedSuccessfully(ErrorMessage));
     end;
 
     internal procedure CompanyCreationInProgress(): Boolean
@@ -903,6 +1052,33 @@ codeunit 4001 "Hybrid Cloud Management"
         exit(CanReplicate);
     end;
 
+    internal procedure VerifyCanCompleteCloudMigration()
+    var
+        LastHybridReplicationSummary: Record "Hybrid Replication Summary";
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
+        HybridReplicationStatistics: Codeunit "Hybrid Replication Statistics";
+        UpgradeSupported: Boolean;
+        Handled: Boolean;
+        FixData: Boolean;
+    begin
+        HybridReplicationStatistics.GetTotalFailedTables(HybridReplicationDetail);
+        if HybridReplicationDetail.Count() > 0 then
+            Error(CannotCompleteCloudMigrationWithFailedTablesErr);
+
+        FixData := true;
+        OnHandleFixDataOnReplicationCompleted(Handled, FixData);
+        if FixData then begin
+            GetLastReplicationSummary(LastHybridReplicationSummary);
+            if LastHybridReplicationSummary."Data Repair Status" <> LastHybridReplicationSummary."Data Repair Status"::Completed then
+                Error(CannotCompleteCloudMigrationDataRepairPendingErr);
+        end;
+
+        OnIsUpgradeSupported(UpgradeSupported);
+        if UpgradeSupported then
+            if not IsUpgradeCompleted() then
+                Error(CannotCompleteMigrationUpgradeNotCompleteErr);
+    end;
+
     [Scope('OnPrem')]
     internal procedure RevokeConsentFromDelegatedAdmin()
     var
@@ -920,16 +1096,20 @@ codeunit 4001 "Hybrid Cloud Management"
     internal procedure CheckNeedsApprovalToRunCloudMigration(): Boolean
     var
         HybridDAAPproval: Record "Hybrid DA Approval";
-        IdentityManagement: Codeunit "Identity Management";
+        AzureADGraphUser: Codeunit "Azure AD Graph User";
+        IsUserDelegated: Boolean;
     begin
-        if not IdentityManagement.IsUserDelegatedAdmin() then
+        IsUserDelegated := AzureADGraphUser.IsUserDelegatedAdmin() or AzureADGraphUser.IsUserDelegatedHelpdesk();
+        if not IsUserDelegated then begin
+            VerifyCanScheduleTasks();
             exit(false);
+        end;
 
         HybridDAAPproval.SetRange(Status, HybridDAAPproval.Status::Granted);
         exit(HybridDAAPproval.IsEmpty());
     end;
 
-    internal procedure VerifyCompaniesCreatedSuccesfully(var ErrorMessage: Text): Boolean
+    internal procedure VerifyCompaniesCreatedSuccessfully(var ErrorMessage: Text): Boolean
     var
         AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
         HybridCompany: Record "Hybrid Company";
@@ -1111,7 +1291,7 @@ codeunit 4001 "Hybrid Cloud Management"
         else
             DisableMigrationOnly(CloudMigrationDisabledDueToUpgradeMsg);
 
-        Session.LogMessage('0000IGC', StrSubstNo(DisabledCloudMigrationFromCompanyTxt, CompanyName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
+        Session.LogMessage('0000IGC', DisabledCloudMigrationFromCompanyTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', CloudMigrationTok);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnBeforeEnableReplication', '', false, false)]
@@ -1203,13 +1383,39 @@ codeunit 4001 "Hybrid Cloud Management"
         if GuiAllowed() then
             if not Confirm(RemovingTheTablesWillRemoveHistoryQst) then
                 exit;
+
+        IntelligentCloudStatus.SetFilter("Company Name", '<>''''');
+        IntelligentCloudStatus.DeleteAll();
+    end;
+
+    procedure ExcludePerDatabaseTablesFromCloudMigration()
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    begin
+        if GuiAllowed() then
+            if not Confirm(RemovingTheTablesWillRemoveHistoryQst) then
+                exit;
+
         IntelligentCloudStatus.SetRange("Company Name", '');
         IntelligentCloudStatus.DeleteAll();
+    end;
+
+    procedure ExcludeTableFromCloudMigration(TableName: Text[250]; CompanyName: Text[30])
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    begin
+        if GuiAllowed() then
+            if not Confirm(RemovingTheTablesWillRemoveHistoryQst) then
+                exit;
+
+        IntelligentCloudStatus.Get(TableName, CompanyName);
+        IntelligentCloudStatus.Delete();
     end;
 
     procedure RunDataUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary")
     var
         ExistingHybridReplicationSummary: Record "Hybrid Replication Summary";
+        TelemetryDictionary: Dictionary of [Text, Text];
         Handled: Boolean;
         ErrorMessage: Text;
     begin
@@ -1223,6 +1429,9 @@ codeunit 4001 "Hybrid Cloud Management"
         OnInvokeDataUpgrade(HybridReplicationSummary, Handled);
         if not Handled then
             Error(UpgradeNotExecutedErr);
+
+        TelemetryDictionary.Add('Category', GetTelemetryCategory());
+        Session.LogMessage('0000K0K', DataUpgradeScheduledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDictionary);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]
@@ -1244,6 +1453,40 @@ codeunit 4001 "Hybrid Cloud Management"
     begin
         if HybridCompanyStatus.Get(Company.Name) then
             HybridCompanyStatus.Delete();
+    end;
+
+    procedure UnblockTable(CompanyName: Text; TableName: Text[250])
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        LastHybridReplicationDetail: Record "Hybrid Replication Detail";
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
+        StatusText: Text;
+    begin
+        IntelligentCloudStatus.SetFilter("Table Name", '%1|%2', '*$' + TableName, TableName);
+        IntelligentCloudStatus.SetRange("Company Name", CompanyName);
+        IntelligentCloudStatus.SetRange(Blocked, true);
+        if not IntelligentCloudStatus.FindFirst() then
+            exit;
+
+        IntelligentCloudStatus.Blocked := false;
+        IntelligentCloudStatus.Modify();
+
+        LastHybridReplicationDetail.SetRange("Table Name", TableName);
+        LastHybridReplicationDetail.SetRange("Company Name", CompanyName);
+        LastHybridReplicationDetail.SetRange(Status, LastHybridReplicationDetail.Status::Failed);
+        LastHybridReplicationDetail.SetCurrentKey("End Time");
+        if not LastHybridReplicationDetail.FindLast() then
+            exit;
+
+        StatusText := UnblockedManuallyLbl;
+        if LastHybridReplicationDetail."Error Message" <> '' then
+            StatusText += ' - ' + LastHybridReplicationDetail."Error Message";
+        LastHybridReplicationDetail."Error Message" := CopyStr(StatusText, 1, MaxStrLen(HybridReplicationDetail."Error Message"));
+        LastHybridReplicationDetail.Status := LastHybridReplicationDetail.Status::Successful;
+        LastHybridReplicationDetail.Modify();
+
+        if GuiAllowed() then
+            Message(TableWasUnblockedMsg);
     end;
 
     procedure OpenWizardAction(OpenWizardNotification: Notification)
@@ -1270,13 +1513,24 @@ codeunit 4001 "Hybrid Cloud Management"
 
     procedure VerifyCanStartUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary")
     var
+        ErrorMessage: Text;
+    begin
+        ErrorMessage := CannotTriggerUpgradeErr;
+        if not VerifyCanStartUpgrade(HybridReplicationSummary, ErrorMessage) then
+            Error(ErrorMessage);
+    end;
+
+    procedure VerifyCanStartUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; var ErrorMessage: Text): Boolean
+    var
         HybridCompany: Record "Hybrid Company";
         HybridCompanyStatus: Record "Hybrid Company Status";
         CompaniesNotReadyForUpgrade: Text;
     begin
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Failed);
-        if not HybridCompanyStatus.IsEmpty() then
-            Error(CannotStartReplicationCompanyUpgradeFailedErr);
+        if not HybridCompanyStatus.IsEmpty() then begin
+            ErrorMessage := CannotStartReplicationCompanyUpgradeFailedErr;
+            exit(false);
+        end;
 
         HybridCompany.SetRange(Replicate, true);
         if not HybridCompany.IsEmpty() then begin
@@ -1286,12 +1540,18 @@ codeunit 4001 "Hybrid Cloud Management"
                     CompaniesNotReadyForUpgrade += ', ' + HybridCompany.Name;
             until HybridCompany.Next() = 0;
 
-            if CompaniesNotReadyForUpgrade <> '' then
-                Error(CannotStartUpgradeNotAllComapniesAreMigratedErr, CompaniesNotReadyForUpgrade.TrimStart(','));
+            if CompaniesNotReadyForUpgrade <> '' then begin
+                ErrorMessage := StrSubstNo(CannotStartUpgradeNotAllComapniesAreMigratedErr, CompaniesNotReadyForUpgrade.TrimStart(','));
+                exit(false);
+            end;
         end;
 
-        if not (HybridReplicationSummary.Status = HybridReplicationSummary.Status::UpgradePending) then
-            Error(CannotTriggerUpgradeErr);
+        if not (HybridReplicationSummary.Status = HybridReplicationSummary.Status::UpgradePending) then begin
+            ErrorMessage := CannotTriggerUpgradeErr;
+            exit(false);
+        end;
+
+        exit(true);
     end;
 
     procedure SetUpgradePendingOnReplicationRunCompleted(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
@@ -1302,14 +1562,150 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridReplicationSummary.Get(RunId);
 
         JsonManagement.InitializeObject(NotificationText);
-        if CompanyReplicatedSuccessfully(HybridReplicationSummary, JsonManagement) then begin
+        if CompaniesReplicatedSuccessfully(HybridReplicationSummary, JsonManagement) then begin
             HybridReplicationSummary.Status := HybridReplicationSummary.Status::UpgradePending;
             HybridReplicationSummary.Modify();
             SetPendingOnHybridCompanyStatus();
         end;
     end;
 
-    local procedure CompanyReplicatedSuccessfully(var HybridReplicationSummary: Record "Hybrid Replication Summary"; var JsonManagement: Codeunit "JSON Management"): Boolean
+    internal procedure IsUpgradeCompleted(): Boolean
+    var
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridCompany: Record "Hybrid Company";
+    begin
+        GetLastReplicationSummary(HybridReplicationSummary);
+        if not (HybridReplicationSummary.Status = HybridReplicationSummary.Status::Completed) then
+            exit(false);
+
+        HybridCompany.SetRange(Replicated, true);
+        if not HybridCompany.FindSet() then
+            exit;
+
+        repeat
+            if not HybridCompanyStatus.Get(HybridCompany.Name) then
+                exit(false);
+
+            if HybridCompanyStatus."Upgrade Status" <> HybridCompanyStatus."Upgrade Status"::Completed then
+                exit(false);
+        until HybridCompany.Next() = 0;
+
+        exit(true);
+    end;
+
+    procedure GetLastReplicationSummary(var HybridReplicationSummary: Record "Hybrid Replication Summary"): Boolean
+    begin
+        HybridReplicationSummary.SetCurrentKey("Start Time");
+        exit(HybridReplicationSummary.FindLast());
+    end;
+
+    internal procedure GetCloudMigrationStatusText(var CloudMigrationStatusText: Text; var CloudMigrationStatusTextStyle: Text; var MoreInformationTxt: Text)
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        Clear(CloudMigrationStatusTextStyle);
+        Clear(CloudMigrationStatusText);
+        Clear(MoreInformationTxt);
+
+        CloudMigrationStatusText := CloudMigrationStatusNotSetupLbl;
+        if not IsIntelligentCloudEnabled() then begin
+            case IntelligentCloudSetup.DisabledReason of
+                IntelligentCloudSetup.DisabledReason::Abandoned:
+                    CloudMigrationStatusText := CloudMigrationWasAbandonedLbl;
+                IntelligentCloudSetup.DisabledReason::Paused:
+                    CloudMigrationStatusText := CloudMigrationIsPausedLbl;
+                IntelligentCloudSetup.DisabledReason::Completed:
+                    CloudMigrationStatusText := CloudMigrationIsCompletedLbl;
+            end;
+            exit;
+        end;
+
+        if not IntelligentCloudSetup.Get() then
+            exit;
+
+        Clear(CloudMigrationStatusText);
+        if IntelligentCloudSetup."Company Creation Task Status" = IntelligentCloudSetup."Company Creation Task Status"::InProgress then begin
+            CloudMigrationStatusText := CloudMigrationStatusCreatingCompaniesInProgressLbl;
+            exit;
+        end;
+
+        if IntelligentCloudSetup."Company Creation Task Status" = IntelligentCloudSetup."Company Creation Task Status"::Failed then begin
+            CloudMigrationStatusText := CloudMigrationStatusCreatingCompaniesFailedLbl;
+            CloudMigrationStatusTextStyle := UnfavorableStyleLbl;
+            MoreInformationTxt := FixCloudMigrationStatusCreatingCompaniesFailedLbl;
+            exit;
+        end;
+
+        HybridReplicationSummary.SetAutoCalcFields("Tables Failed");
+        if not GetLastReplicationSummary(HybridReplicationSummary) then
+            exit;
+
+        if HybridReplicationSummary.Status = HybridReplicationSummary.Status::InProgress then begin
+            if (HybridReplicationSummary.ReplicationType in [HybridReplicationSummary.ReplicationType::Normal, HybridReplicationSummary.ReplicationType::Full]) then begin
+                CloudMigrationStatusText := CloudMigrationStatusInProgressLbl;
+                MoreInformationTxt := WaitForMigrationLbl;
+                exit;
+            end;
+
+            if (HybridReplicationSummary.ReplicationType in [HybridReplicationSummary.ReplicationType::"Azure Data Lake", HybridReplicationSummary.ReplicationType::Diagnostic]) then begin
+                CloudMigrationStatusText := StrSubstNo(CloudMigrationRunProgressLbl, HybridReplicationSummary.ReplicationType);
+                MoreInformationTxt := StrSubstNo(WaitForReplicationRunLbl, HybridReplicationSummary.ReplicationType);
+                exit;
+            end;
+        end;
+
+        if HybridReplicationSummary."Data Repair Status" = HybridReplicationSummary."Data Repair Status"::"In Progress" then begin
+            CloudMigrationStatusText := DataRepairInProgressLbl;
+            MoreInformationTxt := DataRepairInProgressMessageLbl;
+            exit;
+        end;
+
+        CloudMigrationStatusText := HybridReplicationSummary.GetDetails();
+        if CloudMigrationStatusText = '' then
+            CloudMigrationStatusText := StrSubstNo(CloudMigrationLastStepLbl, HybridReplicationSummary.Status);
+
+        if not (HybridReplicationSummary.Status in [HybridReplicationSummary.Status::UpgradePending, HybridReplicationSummary.Status::Completed]) then
+            exit;
+
+        if HybridReplicationSummary."Tables Failed" > 0 then begin
+            if (HybridReplicationSummary.ReplicationType in [HybridReplicationSummary.ReplicationType::Normal, HybridReplicationSummary.ReplicationType::Full]) then begin
+                CloudMigrationStatusText := CloudMigrationFailedTablesStatusLbl;
+                MoreInformationTxt := FixCloudMigrationFailedTablesStatusLbl;
+                CloudMigrationStatusTextStyle := UnfavorableStyleLbl;
+                exit;
+            end;
+            if (HybridReplicationSummary.ReplicationType in [HybridReplicationSummary.ReplicationType::"Azure Data Lake", HybridReplicationSummary.ReplicationType::Diagnostic]) then begin
+                CloudMigrationStatusText := StrSubstNo(RunFailedTablesStatusLbl, HybridReplicationSummary.ReplicationType);
+                MoreInformationTxt := ScheduleNewRunLbl;
+                CloudMigrationStatusTextStyle := UnfavorableStyleLbl;
+                exit;
+            end;
+        end;
+
+        if IsUpgradeCompleted() then begin
+            CloudMigrationStatusText := UpgradeCompletedStatusLbl;
+            exit;
+        end;
+
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Failed);
+        if not HybridCompanyStatus.IsEmpty() then begin
+            CloudMigrationStatusText := UpgradeFailedStatusLbl;
+            exit;
+        end;
+
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Started);
+        if not HybridCompanyStatus.IsEmpty() then begin
+            CloudMigrationStatusText := UpgradeIsRunningStatusLbl;
+            exit;
+        end;
+
+        CloudMigrationStatusText := ReadyForReplicationStatusLbl;
+    end;
+
+    internal procedure CompaniesReplicatedSuccessfully(var HybridReplicationSummary: Record "Hybrid Replication Summary"; var JsonManagement: Codeunit "JSON Management"): Boolean
     var
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
         HybridCompany: Record "Hybrid Company";
@@ -1332,7 +1728,7 @@ codeunit 4001 "Hybrid Cloud Management"
         if not JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType) then
             exit(false);
 
-        exit(ServiceType = ReplicationCompletedServiceTypeTxt);
+        exit(IsReplicationCompleted(ServiceType));
     end;
 
     local procedure SetPendingOnHybridCompanyStatus()
@@ -1341,7 +1737,7 @@ codeunit 4001 "Hybrid Cloud Management"
     begin
         InsertOrUpdateHybridCompanyStatus('');
 
-        HybridCompany.SetRange(Replicate, true);
+        HybridCompany.SetRange(Replicated, true);
         if HybridCompany.FindSet() then
             repeat
                 InsertOrUpdateHybridCompanyStatus(HybridCompany.Name);
@@ -1362,7 +1758,7 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridCompanyStatus.Name := HybridCompanyName;
             HybridCompanyStatus.Insert();
         end;
-        Session.LogMessage('0000FXD', StrSubstNo(MarkedCompanyAsUpgradePendingTelemetryMsg, HybridCompanyStatus.Name), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000FXD', StrSubstNo(MarkedCompanyAsUpgradePendingTelemetryMsg, HybridCompanyStatus.Name), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
     end;
 
     procedure IsCompanyReadyForUpgrade(HybridCompany: Record "Hybrid Company"): Boolean
@@ -1416,8 +1812,18 @@ codeunit 4001 "Hybrid Cloud Management"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnIsUpgradeSupported(var UpgradeSupported: Boolean)
+    begin
+    end;
+
     [InternalEvent(false, false)]
     local procedure OnCreateSessionForDataFixAfterReplication(var CreateSession: Boolean)
+    begin
+    end;
+
+    [InternalEvent(false, false)]
+    local procedure OnBeforeCanScheduleTask(var Handled: Boolean)
     begin
     end;
 }

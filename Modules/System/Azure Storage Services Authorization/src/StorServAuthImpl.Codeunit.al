@@ -6,6 +6,8 @@
 codeunit 9063 "Stor. Serv. Auth. Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure CreateSAS(SigningKey: Text; SignedVersion: Enum "Storage Service API Version"; SignedServices: List of [Enum "SAS Service Type"]; SignedResources: List of [Enum "SAS Resource Type"]; SignedPermissions: List of [Enum "SAS Permission"]; SignedExpiry: DateTime): Interface "Storage Service Authorization"
@@ -29,11 +31,10 @@ codeunit 9063 "Stor. Serv. Auth. Impl."
         StorServAuthSAS.SetSignedExpiry(SignedExpiry);
 
         // Set optional parameters
-        StorServAuthSAS.SetVersion(OptionalParams.ApiVersion);
         StorServAuthSAS.SetSignedStart(CurrentDateTime());
         StorServAuthSAS.SetIPrange(OptionalParams.SignedIp);
         StorServAuthSAS.SetProtocol(OptionalParams.SignedProtocol);
-		StorServAuthSAS.SetSignedEncryptionScope(OptionalParams.SignedEncryptionScope);
+        StorServAuthSAS.SetSignedEncryptionScope(OptionalParams.SignedEncryptionScope);
 
         exit(StorServAuthSAS);
     end;

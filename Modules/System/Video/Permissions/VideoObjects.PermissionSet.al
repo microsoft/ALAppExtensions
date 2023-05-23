@@ -8,9 +8,7 @@ permissionset 1821 "Video - Objects"
     Access = Internal;
     Assignable = false;
 
-    Permissions = Codeunit "Video Impl." = X,
-                  Codeunit Video = X,
+    Permissions = Codeunit Video = X,
                   Page "Product Videos" = X,
-                  Page "Video Link" = X,
-                  Table "Product Video Buffer" = X;
+                  Page "Video Link" = X;
 }

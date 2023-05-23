@@ -84,6 +84,7 @@ codeunit 18080 "GST Purchase Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Location Code', false, false)]
     local procedure OnAfterValidateLocationCodePurchase(var Rec: Record "Purchase Line")
     begin
+        CheckHeaderLocation(Rec);
         UpdateGSTJurisdictionType(Rec);
     end;
 
@@ -1394,6 +1395,7 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
         PurchaseLine.SetFilter("GST Group Type", '%1', PurchaseLine."GST Group Type"::Goods);
         PurchaseLine.SetFilter(Type, '<>%1&<>%2', PurchaseLine.Type::" ", PurchaseLine.Type::"Charge (Item)");
+        PurchaseLine.SetFilter("GST Group Code", '<>%1', '');
         PurchaseLine.SetFilter("GST Assessable Value", '%1', 0);
         PurchaseLine.SetFilter("Qty. to Receive", '<>%1', 0);
         if PurchaseLine.FindSet() then
@@ -1412,6 +1414,7 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine.SetFilter(Type, '<>%1', PurchaseLine.Type::" ");
         PurchaseLine.SetFilter("Qty. to Invoice", '<>%1', 0);
         PurchaseLine.SetRange("GST Group Type", PurchaseLine."GST Group Type"::Goods);
+        PurchaseLine.SetFilter("GST Group Code", '<>%1', '');
         if PurchaseLine.FindFirst() then begin
             PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
             PurchaseHeader.TestField("Bill of Entry Date");
@@ -1630,6 +1633,24 @@ codeunit 18080 "GST Purchase Subscribers"
             Error(ShipToOptionErr);
     end;
 
+    local procedure CheckHeaderLocation(PurchaseLine: Record "Purchase Line")
+    var
+        PurchaseHeader: Record "Purchase Header";
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckHeaderLocation(PurchaseLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.") then
+            exit;
+
+        if PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::" " then
+            exit;
+
+        PurchaseLine.TestField("Location Code", PurchaseHeader."Location Code");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Purchase Subscribers", 'OnBeforePurchaseLineHSNSACEditable', '', false, false)]
     local procedure SetGstHsnEditableforAllType(var IsEditable: Boolean; var IsHandled: Boolean)
     begin
@@ -1639,6 +1660,11 @@ codeunit 18080 "GST Purchase Subscribers"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePurchaseLineHSNSACEditable(PurchaseLine: Record "Purchase Line"; var IsEditable: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckHeaderLocation(PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
     begin
     end;
 }

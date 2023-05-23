@@ -22,6 +22,12 @@ table 4005 "Hybrid Company"
         {
             Description = 'Indicates whether to replicate the company data';
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if not Rec.IsTemporary() then
+                    ShowWarningForTooManyCompanies();
+            end;
         }
         field(4; "Estimated Size"; Decimal)
         {
@@ -56,6 +62,13 @@ table 4005 "Hybrid Company"
             Description = 'ID of the task used to initialize the company.';
             DataClassification = SystemMetadata;
         }
+
+        field(30; Replicated; Boolean)
+        {
+            Description = 'Indicates if the company was replicated';
+            FieldClass = FlowField;
+            CalcFormula = exist("Hybrid Replication Detail" where("Company Name" = field(Name), Status = Const(2)));
+        }
     }
 
     keys
@@ -77,6 +90,20 @@ table 4005 "Hybrid Company"
     begin
         Reset();
         SetRange(Replicate, true);
+
+        if FindSet() then
+            repeat
+                DataToMigrate += Rec."Estimated Size";
+            until Rec.Next() = 0;
+
+        exit(DataToMigrate);
+    end;
+
+    procedure GetTotalOnPremSize(): Decimal
+    var
+        DataToMigrate: Decimal;
+    begin
+        Reset();
 
         if FindSet() then
             repeat
@@ -112,7 +139,32 @@ table 4005 "Hybrid Company"
 
     procedure GetRecommendedNumberOfCompaniesToReplicateInBatch(): Integer
     begin
-        exit(10);
+        exit(300);
     end;
 
+    local procedure ShowWarningForTooManyCompanies()
+    var
+        SelectedForMigrationHybridCompany: Record "Hybrid Company";
+    begin
+        if WarningShown then
+            exit;
+
+        if not Replicate then
+            exit;
+
+        if not GuiAllowed() then
+            exit;
+
+        SelectedForMigrationHybridCompany.SetRange(Replicate, true);
+        if SelectedForMigrationHybridCompany.Count() < GetRecommendedNumberOfCompaniesToReplicateInBatch() then
+            exit;
+
+        WarningShown := true;
+        if not Confirm(MovingTooManyCompaniesQst) then
+            Replicate := false;
+    end;
+
+    var
+        WarningShown: Boolean;
+        MovingTooManyCompaniesQst: Label 'You''ve selected many companies to move in the batch. This may lead to an error because of the large amount of metadata when you attempt to replicate the data. If this occurs, we recommend you return to this page and select fewer companies to move in a batch.\\Do you want to continue?';
 }

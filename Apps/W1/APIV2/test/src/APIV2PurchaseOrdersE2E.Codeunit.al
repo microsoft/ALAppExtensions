@@ -426,7 +426,6 @@ codeunit 139851 "APIV2 - Purchase Orders E2E"
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiPurchaseHeader.FieldNo("No."), Database::"Purchase Header");
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiPurchaseHeader.FieldNo("Posting Description"), Database::"Purchase Header");
-        LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiPurchaseHeader.FieldNo(Id), Database::"Purchase Header");
         // Special ignore case for ES
         RecordField.SetRange(TableNo, Database::"Purchase Header");
         RecordField.SetRange(FieldName, 'Due Date Modified');

@@ -537,6 +537,13 @@ page 30066 "APIV2 - Purchase Orders"
                     EntitySetName = 'dimensionSetLines';
                     SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const("Purchase Order");
                 }
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Purchase Order");
+                }
             }
         }
     }
@@ -654,7 +661,7 @@ page 30066 "APIV2 - Purchase Orders"
 
         Clear(TempFieldBuffer);
         TempFieldBuffer.Order := LastOrderNo;
-        TempFieldBuffer."Table ID" := Database::"Purch. Inv. Entity Aggregate";
+        TempFieldBuffer."Table ID" := Database::"Purchase Order Entity Buffer";
         TempFieldBuffer."Field ID" := FieldNo;
         TempFieldBuffer.Insert();
     end;

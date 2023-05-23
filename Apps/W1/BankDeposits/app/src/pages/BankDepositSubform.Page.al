@@ -30,6 +30,7 @@ page 1693 "Bank Deposit Subform"
                             CurType := Rec."Account Type";
                             OnValidateAccountTypeOnBeforeInit(Rec);
                             Rec.Init();
+                            Rec.SetUpNewLine(Rec, Rec.Amount, false);
                             CopyValuesFromHeader();
                             Rec."Account Type" := CurType;
                         end;

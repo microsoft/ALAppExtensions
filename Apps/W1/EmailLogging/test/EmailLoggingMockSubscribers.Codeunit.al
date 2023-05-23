@@ -18,10 +18,4 @@ codeunit 139764 "Email Logging Mock Subscribers"
     begin
         EmailLoggngAPIClient := EmailLoggingAPIMock;
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Email Logging Management", 'OnIsEmailLoggingUsingGraphApiFeatureEnabled', '', false, false)]
-    local procedure OnIsEmailLoggingUsingGraphApiFeatureEnabled(var FeatureEnabled: Boolean)
-    begin
-        FeatureEnabled := true;
-    end;
 }

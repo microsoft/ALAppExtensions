@@ -45,7 +45,7 @@ query 30300 "API Finance - GL Entry"
             {
                 Caption = 'Document Number';
             }
-            column(externalDocumentNumber; "Document No.")
+            column(externalDocumentNumber; "External Document No.")
             {
                 Caption = 'External Document Number';
             }

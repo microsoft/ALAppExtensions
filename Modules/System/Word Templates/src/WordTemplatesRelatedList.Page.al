@@ -1,3 +1,4 @@
+#if not CLEAN22
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -14,41 +15,14 @@ page 9985 "Word Templates Related List"
     InsertAllowed = false;
     Permissions = tabledata "Word Templates Related Table" = rimd;
     Extensible = false;
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'No longer used. Use page 9987 Word Templates Related Part instead.';
 
     layout
     {
         area(content)
         {
-            field(AddRelatedEntity; AddRelatedEntityLbl)
-            {
-                ApplicationArea = All;
-                ShowCaption = false;
-                ToolTip = ' ';
-
-                trigger OnDrillDown()
-                var
-                    WordTemplateImpl: Codeunit "Word Template Impl.";
-                begin
-                    WordTemplateImpl.AddRelatedTable(Rec, Rec."Table ID", true);
-                    CurrPage.Update(false);
-                end;
-            }
-
-            field(AddRelatedEntityAdvanced; AddRelatedEntityAdvancedLbl)
-            {
-                ApplicationArea = All;
-                ShowCaption = false;
-                ToolTip = ' ';
-
-                trigger OnDrillDown()
-                var
-                    WordTemplateImpl: Codeunit "Word Template Impl.";
-                begin
-                    WordTemplateImpl.AddRelatedTable(Rec, Rec."Table ID", false);
-                    CurrPage.Update(false);
-                end;
-            }
-
             repeater(Tables)
             {
                 field("Table ID"; Rec."Related Table ID")
@@ -100,6 +74,5 @@ page 9985 "Word Templates Related List"
 
     var
         TableId: Integer;
-        AddRelatedEntityLbl: Label 'Add a related entity (simple)';
-        AddRelatedEntityAdvancedLbl: Label 'Add a related entity (advanced)';
 }
+#endif

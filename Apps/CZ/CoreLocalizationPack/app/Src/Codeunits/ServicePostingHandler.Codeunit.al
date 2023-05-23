@@ -46,7 +46,10 @@ codeunit 31040 "Service Posting Handler CZL"
 
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := ServiceHeader."Posting Date";
-        GenJournalLine.Validate("VAT Date CZL", ServiceHeader."VAT Date CZL");
+        if not GenJournalLine.IsReplaceVATDateEnabled() then
+            GenJournalLine.Validate("VAT Date CZL", ServiceHeader."VAT Date CZL")
+        else
+            GenJournalLine.Validate("VAT Reporting Date", ServiceHeader."VAT Reporting Date");
         GenJournalLine."Document Date" := ServiceHeader."Document Date";
         GenJournalLine.Description := ServiceHeader."Posting Description";
         GenJournalLine."Reason Code" := ServiceHeader."Reason Code";
@@ -138,7 +141,14 @@ codeunit 31040 "Service Posting Handler CZL"
 
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := ServiceHeader."Posting Date";
-        GenJournalLine.Validate("VAT Date CZL", ServiceHeader."VAT Date CZL");
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not GenJournalLine.IsReplaceVATDateEnabled() then
+            GenJournalLine.Validate("VAT Date CZL", ServiceHeader."VAT Date CZL")
+        else
+#pragma warning restore AL0432
+#endif
+            GenJournalLine.Validate("VAT Reporting Date", ServiceHeader."VAT Reporting Date");
         GenJournalLine."Document Date" := ServiceHeader."Document Date";
         GenJournalLine.Description := ServiceHeader."Posting Description";
         GenJournalLine."Reason Code" := ServiceHeader."Reason Code";

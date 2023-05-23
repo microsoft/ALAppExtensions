@@ -1,29 +1,38 @@
 codeunit 11743 "Sales Header Handler CZL"
 {
+#if not CLEAN22
     var
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
-
+#endif
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterInitRecord', '', false, false)]
     local procedure UpdateVatDateOnAfterInitRecord(var SalesHeader: Record "Sales Header")
     begin
-        SalesReceivablesSetup.Get();
-        case SalesReceivablesSetup."Default VAT Date CZL" of
-            SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
-                SalesHeader."VAT Date CZL" := SalesHeader."Posting Date";
-            SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
-                SalesHeader."VAT Date CZL" := SalesHeader."Document Date";
-            SalesReceivablesSetup."Default VAT Date CZL"::Blank:
-                SalesHeader."VAT Date CZL" := 0D;
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not SalesHeader.IsReplaceVATDateEnabled() then begin
+            SalesReceivablesSetup.Get();
+            case SalesReceivablesSetup."Default VAT Date CZL" of
+                SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
+                    SalesHeader."VAT Date CZL" := SalesHeader."Posting Date";
+                SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
+                    SalesHeader."VAT Date CZL" := SalesHeader."Document Date";
+                SalesReceivablesSetup."Default VAT Date CZL"::Blank:
+                    SalesHeader."VAT Date CZL" := 0D;
+            end;
         end;
-
+#pragma warning restore AL0432
+#endif
         if SalesHeader.IsCreditDocType() then
             SalesHeader."Credit Memo Type CZL" := SalesHeader."Credit Memo Type CZL"::"Corrective Tax Document";
         SalesHeader.Validate("Credit Memo Type CZL");
     end;
-
+#if not CLEAN22
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Posting Date', false, false)]
     local procedure UpdateVatDateOnBeforePostingDateValidate(var Rec: Record "Sales Header")
     begin
+        if Rec.IsReplaceVATDateEnabled() then
+            exit;
         SalesReceivablesSetup.Get();
         if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date" then
             Rec.Validate("VAT Date CZL", Rec."Posting Date");
@@ -32,10 +41,14 @@ codeunit 11743 "Sales Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Document Date', false, false)]
     local procedure UpdateVatDateOnBeforeDocumentDateValidate(var Rec: Record "Sales Header")
     begin
+        if Rec.IsReplaceVATDateEnabled() then
+            exit;
         SalesReceivablesSetup.Get();
         if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Document Date" then
             Rec.Validate("VAT Date CZL", Rec."Document Date");
     end;
+#pragma warning restore AL0432
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnUpdateBillToCustOnAfterSalesQuote', '', false, false)]
     local procedure UpdateRegNoOnUpdateBillToCustOnAfterSalesQuote(var SalesHeader: Record "Sales Header"; Contact: Record Contact)
@@ -98,15 +111,30 @@ codeunit 11743 "Sales Header Handler CZL"
     begin
         SalesHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
-
+#if not CLEAN20
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Customer Posting Group', false, false)]
     local procedure CheckPostingGroupChangeOnBeforeCustomerPostingGroupValidate(var Rec: Record "Sales Header"; var xRec: Record "Sales Header"; CurrFieldNo: Integer)
     var
         PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
     begin
+        if PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled() then
+            exit;
         if CurrFieldNo = Rec.FieldNo("Customer Posting Group") then
             PostingGroupManagementCZL.CheckPostingGroupChange(Rec."Customer Posting Group", xRec."Customer Posting Group", Rec);
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeCheckCustomerPostingGroupChange', '', false, false)]
+    local procedure SuppressPostingGroupChangeOnBeforeCheckCustomerPostingGroupChange(var IsHandled: Boolean)
+    var
+        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
+    begin
+        if IsHandled then
+            exit;
+        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
+    end;
+#pragma warning restore AL0432
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterInitFromSalesHeader', '', false, false)]
     local procedure UpdateBankAccountOnAfterInitFromSalesHeader(var SalesHeader: Record "Sales Header"; SourceSalesHeader: Record "Sales Header")
@@ -128,16 +156,6 @@ codeunit 11743 "Sales Header Handler CZL"
                 if (SalesLine.Type = SalesLine.Type::Item) and (SalesLine."No." <> '') then
                     SalesLine."Physical Transfer CZL" := SalesHeader."Physical Transfer CZL";
         end;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Ship-to Country/Region Code', false, false)]
-    local procedure UpdateVATCountryRegionCodeOnAfterShipToCountryRegionCodeValidate(var Rec: Record "Sales Header")
-    begin
-        if Rec."Ship-to Country/Region Code" <> '' then
-            Rec."VAT Country/Region Code" := Rec."Ship-to Country/Region Code"
-        else
-            Rec."VAT Country/Region Code" := Rec."Sell-to Country/Region Code";
-        Rec.Validate("VAT Country/Region Code");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterUpdateShipToAddress', '', false, false)]

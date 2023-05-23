@@ -6,6 +6,8 @@
 codeunit 1484 "XmlWriter Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         StringBuilder: DotNet StringBuilder;

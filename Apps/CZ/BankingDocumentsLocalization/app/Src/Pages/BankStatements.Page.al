@@ -91,9 +91,6 @@ page 31253 "Bank Statements CZB"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Statistics';
                 Image = Statistics;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ShortCutKey = 'F7';
                 ToolTip = 'View the statistics on the selected bank statement.';
 
@@ -131,8 +128,6 @@ page 31253 "Bank Statements CZB"
                     Caption = 'Bank Statement Import';
                     Ellipsis = true;
                     Image = ImportChartOfAccounts;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ToolTip = 'Allows import bank statement in the system.';
 
                     trigger OnAction()
@@ -176,8 +171,6 @@ page 31253 "Bank Statements CZB"
                     Caption = 'Issue';
                     Ellipsis = true;
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'F9';
                     ToolTip = 'Issue the bank statement to indicate that it has been printed or exported. Bank statement will be moved to issued bank statement.';
 
@@ -209,15 +202,53 @@ page 31253 "Bank Statements CZB"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
                 begin
                     Rec.PrintToDocumentAttachment();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                group(Category_Issuing)
+                {
+                    Caption = 'Issuing';
+                    ShowAs = SplitButton;
+                    actionref(Issue_Promoted; Issue)
+                    {
+                    }
+                    actionref(IssueAndPrint_Promoted; IssueAndPrint)
+                    {
+                    }
+                    actionref(TestReport_Promoted; "Test Report")
+                    {
+                    }
+                }
+                actionref("Bank Statement Import_Promoted"; "Bank Statement Import")
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Print';
+
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Bank Statement';
+
+                actionref(Statistics_Promoted; Statistics)
+                {
+                }
             }
         }
     }

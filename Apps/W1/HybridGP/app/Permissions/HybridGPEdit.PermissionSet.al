@@ -47,9 +47,19 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GPSOPTrxHist" = IMD,
                     tabledata "GPSOPUserDefinedWorkHist" = IMD,
                     tabledata "GPSOPWorkflowWorkHist" = IMD,
+#if not CLEAN21
 #pragma warning disable AL0432
+#endif
                     tabledata "GPForecastTemp" = IMD,
+#if not CLEAN21
 #pragma warning restore AL0432
+#endif
+#if not CLEAN22
+#pragma warning disable AL0432
+                    tabledata "GP POPPOHeader" = IMD,
+                    tabledata "GP POPPOLine" = IMD,
+#pragma warning restore AL0432
+#endif
                     tabledata "GP Item" = IMD,
                     tabledata "GP Item Location" = IMD,
                     tabledata "GP Item Transactions" = IMD,
@@ -61,8 +71,6 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GP Bank MSTR" = IMD,
                     tabledata "GP Checkbook MSTR" = IMD,
                     tabledata "GP Checkbook Transactions" = IMD,
-                    tabledata "GP POPPOHeader" = IMD,
-                    tabledata "GP POPPOLine" = IMD,
                     tabledata "GP Vendor" = IMD,
                     tabledata "GP Vendor Transactions" = IMD,
                     tabledata "GP Company Migration Settings" = IMD,
@@ -98,5 +106,14 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GP SY00300" = IMD,
                     tabledata "GP SY01100" = IMD,
                     tabledata "GP SY01200" = IMD,
-                    tabledata "GP SY03300" = IMD;
+                    tabledata "GP SY03300" = IMD,
+                    tabledata "GP GL00105" = IMD,
+                    tabledata "GP GL20000" = IMD,
+                    tabledata "GP GL30000" = IMD,
+                    tabledata "GP BM30200" = IMD,
+                    tabledata "GP Hist. Source Progress" = IMD,
+                    tabledata "GP Hist. Source Error" = IMD,
+                    tabledata "GP POP10100" = IMD,
+                    tabledata "GP POP10110" = IMD,
+                    tabledata "GP PM00204" = IMD;
 }

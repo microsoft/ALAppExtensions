@@ -42,7 +42,7 @@ page 9855 "Permission Set"
                     ApplicationArea = All;
                     Editable = false;
                     Caption = 'Name';
-                    ToolTip = 'Specifies the name of the record.';
+                    ToolTip = 'Specifies the name of the permission set.';
                 }
             }
 
@@ -95,10 +95,6 @@ page 9855 "Permission Set"
 #if not CLEAN22
         area(factboxes)
         {
-            ObsoleteState = Pending;
-            ObsoleteReason = 'Factbox no longer used. Use the "View Permissions In Set" actions on the Permission Set parts instead.';
-            ObsoleteTag = '22.0';
-
             part(PermissionsRelated; "Expanded Permissions Factbox")
             {
                 ObsoleteState = Pending;
@@ -199,7 +195,6 @@ page 9855 "Permission Set"
             AggregatePermissionSet.FindFirst();
             Rec."App ID" := AggregatePermissionSet."App ID";
             Rec."Role ID" := AggregatePermissionSet."Role ID";
-            Rec.Name := AggregatePermissionSet.Name;
             Rec.Scope := AggregatePermissionSet.Scope;
         end;
 

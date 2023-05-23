@@ -586,7 +586,7 @@ codeunit 139655 "Hybrid Cue Setup Mgt Tests"
     var
         HybridReplicationDetail: Record "Hybrid Replication Detail";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
         DummyRunId: Guid;
         DummyDateTime: DateTime;
         DummyCompanyName: Text[50];
@@ -618,14 +618,13 @@ codeunit 139655 "Hybrid Cue Setup Mgt Tests"
         Assert.AreEqual(0, HybridReplicationSummary."Tables Successful", HybridReplicationSummary.FieldCaption("Tables Successful"));
 
         // [WHEN] User opens the Cloud Migration Management page
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
+        CloudMigrationManagement.Trap();
+        Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] The statistics cues show the correct numbers
-        IntelligentCloudManagement."Replication Statistics"."Tables Remaining".AssertEquals(5);
-        IntelligentCloudManagement."Replication Statistics"."Tables Failed".AssertEquals(1);
-        IntelligentCloudManagement."Replication Statistics"."Tables with Warnings".AssertEquals(1);
-        IntelligentCloudManagement."Replication Statistics"."Tables Successful".AssertEquals(0);
+        CloudMigrationManagement."Tables Remaining".AssertEquals(5);
+        CloudMigrationManagement.HybridMigrationLog.FailedTables.AssertEquals(1);
+        CloudMigrationManagement.HybridMigrationLog.SuccessfulTables.AssertEquals(0);
     end;
 
     var

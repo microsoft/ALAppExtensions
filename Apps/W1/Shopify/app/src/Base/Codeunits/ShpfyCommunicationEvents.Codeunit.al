@@ -11,6 +11,7 @@ codeunit 30200 "Shpfy Communication Events"
     end;
 
     [InternalEvent(false)]
+    [NonDebuggable]
     internal procedure OnGetAccessToken(var AccessToken: Text)
     begin
     end;

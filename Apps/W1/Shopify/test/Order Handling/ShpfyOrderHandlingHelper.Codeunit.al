@@ -172,7 +172,11 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('totalTaxSet', CreateTaxLines(TaxPrice, TaxRate));
         JOrder.Add('totalTipReceivedSet', AddPriceSet(0));
 
+<<<<<<< HEAD
         JShopifyLineItems := CreateLineItem(Shop, Price, TaxPrice, TaxRate, DiscountPrice)
+=======
+        JShopifyLineItems := CreateLineItem(Shop, Price, TaxPrice, TaxRate, DiscountPrice);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     internal procedure CreateLineItem(Shop: Record "Shpfy Shop"; Price: Decimal; TaxPrice: Decimal; TaxRate: Decimal; Discount: Decimal) JLines: JsonArray
@@ -180,8 +184,14 @@ codeunit 139607 "Shpfy Order Handling Helper"
         Item: Record Item;
         Location: Record Location;
         ShopLocation: Record "Shpfy Shop Location";
+<<<<<<< HEAD
         ShopifyProduct: Record "Shpfy Product";
         ShopifyVariant: Record "Shpfy Variant";
+=======
+        TempShopifyProduct: Record "Shpfy Product" temporary;
+        TempShopifyVariant: Record "Shpfy Variant" temporary;
+        TempTag: Record "Shpfy Tag" temporary;
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         CreateProduct: Codeunit "Shpfy Create Product";
         ProductInitTest: codeunit "Shpfy Product Init Test";
         Id: BigInteger;
@@ -196,6 +206,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
     begin
         Item := ProductInitTest.CreateItem();
         Item.SetRecFilter();
+<<<<<<< HEAD
         ShopifyProduct.SetRange(Id, 0);
         if not ShopifyProduct.IsEmpty then
             ShopifyProduct.Delete();
@@ -203,20 +214,33 @@ codeunit 139607 "Shpfy Order Handling Helper"
         if not ShopifyVariant.IsEmpty then
             ShopifyVariant.Delete();
         CreateProduct.CreateProduct(Item, ShopifyProduct, ShopifyVariant);
+=======
+        CreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant, TempTag);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
 
         ShopLocation.Init();
         ShopLocation."Shop Code" := Shop.Code;
         ShopLocation.Id := Any.IntegerInRange(10000, 999999);
+<<<<<<< HEAD
         ShopLocation.Disabled := false;
+=======
+        ShopLocation."Stock Calculation" := ShopLocation."Stock Calculation"::Disabled;
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         if Location.FindFirst() then begin
             ShopLocation."Default Location Code" := Location.Code;
             ShopLocation.Name := CopyStr(Location.Name, 1, MaxStrLen(ShopLocation.Name));
         end;
         ShopLocation.Insert();
         Id := Any.IntegerInRange(10000, 99999);
+<<<<<<< HEAD
         JProduct.Add('legacyResourceId', ShopifyProduct.Id);
         JProduct.Add('isGiftCard', false);
         JVariant.Add('legacyResourceId', ShopifyVariant.Id);
+=======
+        JProduct.Add('legacyResourceId', TempShopifyProduct.Id);
+        JProduct.Add('isGiftCard', false);
+        JVariant.Add('legacyResourceId', TempShopifyVariant.Id);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         JLocation.Add('legacyResourceId', ShopLocation.Id);
         JLocation.Add('name', ShopLocation.Name);
         JFulfillmentService.Add('location', JLocation);
@@ -228,12 +252,21 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JLine.Add('quantity', 1);
         JLine.Add('currentQuantity', 1);
         JLine.Add('nonFulfillableQuantity', 0);
+<<<<<<< HEAD
         JLine.Add('sku', ShopifyVariant.SKU);
         JLine.Add('title', Item.Description);
         JLine.Add('variantTitle', '');
         JLine.Add('vendor', ShopifyProduct.Vendor);
         JLine.Add('product', JProduct);
         JLine.Add('varaint', JVariant);
+=======
+        JLine.Add('sku', TempShopifyVariant.SKU);
+        JLine.Add('title', Item.Description);
+        JLine.Add('variantTitle', '');
+        JLine.Add('vendor', TempShopifyProduct.Vendor);
+        JLine.Add('product', JProduct);
+        JLine.Add('variant', JVariant);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         JLine.Add('customAttributes', JArray);
         JLine.Add('refundableQuantity', 0);
         JLine.Add('requiresShipping', true);
@@ -293,7 +326,11 @@ codeunit 139607 "Shpfy Order Handling Helper"
         Index: Integer;
     begin
         for Index := 1 to Any.IntegerInRange(5, 10) do
+<<<<<<< HEAD
             JRisks.Add(GetRiskLevel);
+=======
+            JRisks.Add(GetRiskLevel());
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     local procedure GetRiskLevel() JRisk: JsonObject
@@ -339,7 +376,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         end;
     end;
 
-    local procedure CreateCustomerAddress(Customer: Record Customer; CustomerId: BigInteger) JAddress: JsonObject
+    local procedure CreateCustomerAddress(Customer: Record Customer) JAddress: JsonObject
     var
         CountryRegion: Record "Country/Region";
         CompanyInformation: Record "Company Information";
@@ -370,6 +407,10 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JCustomer.Add('legacyResourceId', ShopifyCustomer.Id);
         JCustomer.Add('email', Customer."E-Mail");
         JCustomer.Add('phone', Customer."Phone No.");
+<<<<<<< HEAD
         JCustomer.Add('defaultAddress', CreateCustomerAddress(Customer, ShopifyCustomer.Id));
+=======
+        JCustomer.Add('defaultAddress', CreateCustomerAddress(Customer));
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 }

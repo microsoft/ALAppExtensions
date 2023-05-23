@@ -7,6 +7,9 @@
 codeunit 9051 "ABS Client Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
 
     var
         ABSOperationPayload: Codeunit "ABS Operation Payload";
@@ -106,10 +109,10 @@ codeunit 9051 "ABS Client Impl."
     [NonDebuggable]
     procedure ListBlobs(var ABSContainerContent: Record "ABS Container Content"; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        ABSOperationResponse: Codeunit "ABS Operation Response";
         ABSHelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        ResponseText: Text;
+        NextMarker, ResponseText : Text;
         NodeList: XmlNodeList;
     begin
         ABSOperationPayload.SetOperation(Operation::ListBlobs);
@@ -117,8 +120,33 @@ codeunit 9051 "ABS Client Impl."
 
         ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(ListBlobsContainercOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
 
-        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText);
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText, NextMarker);
+        ABSOperationResponse.SetNextMarker(NextMarker);
+
         ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
+
+        exit(ABSOperationResponse);
+    end;
+
+    [NonDebuggable]
+    procedure ListBlobs(var BlobList: Dictionary of [Text, XmlNode]; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    var
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        Operation: Enum "ABS Operation";
+        NextMarker, ResponseText : Text;
+        NodeList: XmlNodeList;
+    begin
+        Clear(BlobList);
+        ABSOperationPayload.SetOperation(Operation::ListBlobs);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(ListBlobsContainercOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
+
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText, NextMarker);
+        ABSOperationResponse.SetNextMarker(NextMarker);
+
+        ABSHelperLibrary.BlobNodeListToBlobList(NodeList, BlobList);
 
         exit(ABSOperationResponse);
     end;
@@ -188,11 +216,7 @@ codeunit 9051 "ABS Client Impl."
         SourceContentVariant: Variant;
     begin
         SourceContentVariant := SourceInStream;
-
-        ABSOperationPayload.SetBlobName(BlobName);
-        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
-
-        ABSOperationResponse := PutBlobBlockBlob(SourceContentVariant);
+        ABSOperationResponse := PutBlobBlockBlob(BlobName, ABSOptionalParameters, SourceContentVariant);
         exit(ABSOperationResponse);
     end;
 
@@ -201,15 +225,12 @@ codeunit 9051 "ABS Client Impl."
         ABSOperationResponse: Codeunit "ABS Operation Response";
         SourceContentVariant: Variant;
     begin
-        ABSOperationPayload.SetBlobName(BlobName);
-        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
-
         SourceContentVariant := SourceText;
-        ABSOperationResponse := PutBlobBlockBlob(SourceContentVariant);
+        ABSOperationResponse := PutBlobBlockBlob(BlobName, ABSOptionalParameters, SourceContentVariant);
         exit(ABSOperationResponse);
     end;
 
-    local procedure PutBlobBlockBlob(var SourceContentVariant: Variant): Codeunit "ABS Operation Response"
+    local procedure PutBlobBlockBlob(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var SourceContentVariant: Variant): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
@@ -218,6 +239,8 @@ codeunit 9051 "ABS Client Impl."
         SourceText: Text;
     begin
         ABSOperationPayload.SetOperation(Operation::PutBlob);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
         case true of
             SourceContentVariant.IsInStream():
@@ -350,8 +373,10 @@ codeunit 9051 "ABS Client Impl."
     begin
         ABSOperationResponse := GetBlobAsStream(BlobName, TargetInStream, ABSOptionalParameters);
 
-        BlobName := ABSOperationPayload.GetBlobName();
-        DownloadFromStream(TargetInStream, '', '', '', BlobName);
+        if ABSOperationResponse.IsSuccessful() then begin
+            BlobName := ABSOperationPayload.GetBlobName();
+            DownloadFromStream(TargetInStream, '', '', '', BlobName);
+        end;
         exit(ABSOperationResponse);
     end;
 

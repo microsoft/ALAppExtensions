@@ -9,6 +9,8 @@
 codeunit 3802 "In Memory Secret Provider" implements "Secret Provider"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

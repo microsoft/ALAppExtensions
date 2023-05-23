@@ -7,7 +7,5 @@ permissionset 9150 "SharePoint Auth. - Objects"
 {
     Assignable = false;
 
-    Permissions = codeunit "SharePoint Authorization Code" = X,
-                  codeunit "SharePoint Auth." = X,
-                  codeunit "SharePoint Auth. - Impl." = X;
+    Permissions = codeunit "SharePoint Auth." = X;
 }

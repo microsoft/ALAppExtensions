@@ -1,10 +1,21 @@
+#pragma warning disable AL0432
 tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
+#pragma warning restore AL0432
 {
     fields
     {
         field(31081; "Declaration No. CZL"; Code[20])
         {
             Caption = 'Declaration No.';
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
@@ -13,17 +24,29 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
                 if xRec."Declaration No. CZL" <> '' then
                     CheckJnlLinesExistCZL(FieldNo("Declaration No. CZL"));
             end;
+#endif
         }
         field(31082; "Statement Type CZL"; Enum "Intrastat Statement Type CZL")
         {
             Caption = 'Statement Type';
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
                 CheckJnlLinesExistCZL(FieldNo("Statement Type CZL"));
             end;
+#endif
         }
     }
+#if not CLEAN22
 
     var
         IntrastatJnlLine: Record "Intrastat Jnl. Line";
@@ -85,4 +108,5 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
         end;
         exit(false);
     end;
+#endif
 }

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Predict whether payments for sales will be on-time.",
     "description":  "Keep receivables healthy by assessing the risk of late payments up-front. This extension uses historical data to predict delinquent invoices, so you can take a pre-emptive action such as changing the payment terms.",
-    "version":  "21.4.0.0",
+    "version":  "22.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206446",
@@ -17,12 +17,12 @@
     "screenshots":  [
 
                     ],
-    "platform":  "21.0.0.0",
+    "platform":  "22.0.0.0",
     "target":  "OnPrem",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "21.4.0.0"
+    "application":  "22.2.0.0"
 }

@@ -9,6 +9,8 @@
 codeunit 9806 "Field Selection"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Opens the fields lookup page and assigns the selected fields on the <paramref name="SelectedField"/> parameter.

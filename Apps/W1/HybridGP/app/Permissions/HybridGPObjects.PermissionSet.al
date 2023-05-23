@@ -56,12 +56,23 @@ permissionset 4029 "HybridGP - Objects"
                     table "GPSOPTrxHist" = X,
                     table "GPSOPUserDefinedWorkHist" = X,
                     table "GPSOPWorkflowWorkHist" = X,
-                    codeunit "Install GP SmartLists" = X,
                     codeunit "GPForecastHandler" = X,
                     codeunit "GP PO Migrator" = X,
+                    codeunit "GP Populate Hist. Tables" = X,
+#if not CLEAN21
 #pragma warning disable AL0432
+#endif
                     table "GPForecastTemp" = X,
+                    codeunit "Install GP SmartLists" = X,
+#if not CLEAN21
 #pragma warning restore AL0432
+#endif
+#if not CLEAN22
+#pragma warning disable AL0432
+                    table "GP POPPOHeader" = X,
+                    table "GP POPPOLine" = X,
+#pragma warning restore AL0432
+#endif
                     page "GP Item" = X,
                     table "GP Item" = X,
                     table "GP Item Location" = X,
@@ -81,8 +92,6 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP Bank MSTR" = X,
                     table "GP Checkbook MSTR" = X,
                     table "GP Checkbook Transactions" = X,
-                    table "GP POPPOHeader" = X,
-                    table "GP POPPOLine" = X,
                     codeunit "GP Intelligent Cloud Upgrade" = X,
                     page "GP Vendor" = X,
                     table "GP Vendor" = X,
@@ -124,5 +133,16 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP SY00300" = X,
                     table "GP SY01100" = X,
                     table "GP SY01200" = X,
-                    table "GP SY03300" = X;
+                    table "GP SY03300" = X,
+                    table "GP GL00105" = X,
+                    table "GP GL20000" = X,
+                    table "GP GL30000" = X,
+                    table "GP BM30200" = X,
+                    table "GP Hist. Source Progress" = X,
+                    table "GP Hist. Source Error" = X,
+                    page "Hist. Migration Errors" = X,
+                    page "Hist. Migration Status Factbox" = X,
+                    table "GP POP10100" = X,
+                    table "GP POP10110" = X,
+                    table "GP PM00204" = X;
 }

@@ -4,10 +4,22 @@ pageextension 11752 "Posted Service Invoices CZL" extends "Posted Service Invoic
     {
         addafter("Posting Date")
         {
+#if not CLEAN22
             field("VAT Date CZL"; Rec."VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'VAT Date (Obsolete)';
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by VAT Reporting Date.';
+            }
+#endif
+            field("VAT Reporting Date CZL"; Rec."VAT Reporting Date")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the date used to include entries on VAT reports in a VAT period. This is either the date that the document was created or posted, depending on your setting on the General Ledger Setup page.';
                 Visible = false;
             }
         }

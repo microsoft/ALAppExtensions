@@ -9,6 +9,8 @@
 codeunit 9026 "User Login Time Tracker"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Returns true if this is the first time the user logs in to the current company.

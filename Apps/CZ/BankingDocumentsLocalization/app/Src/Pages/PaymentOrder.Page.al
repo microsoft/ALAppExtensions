@@ -2,7 +2,6 @@ page 31262 "Payment Order CZB"
 {
     Caption = 'Payment Order';
     PageType = Document;
-    PromotedActionCategories = 'New,Process,Report,Approve,Request Approval';
     RefreshOnActivate = true;
     SourceTable = "Payment Order Header CZB";
 
@@ -222,8 +221,6 @@ page 31262 "Payment Order CZB"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Statistics';
                 Image = Statistics;
-                Promoted = true;
-                PromotedCategory = Process;
                 ShortCutKey = 'F7';
                 ToolTip = 'View the statistics on the selected payment order.';
 
@@ -261,8 +258,6 @@ page 31262 "Payment Order CZB"
                     Caption = 'Suggest Payments';
                     Ellipsis = true;
                     Image = SuggestPayment;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ToolTip = 'Opens suggest payments lines batch.';
 
                     trigger OnAction()
@@ -321,8 +316,6 @@ page 31262 "Payment Order CZB"
                     Caption = 'Issue';
                     Ellipsis = true;
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'F9';
                     ToolTip = 'Issue the payment order to indicate that it has been printed or exported. Payment order will be moved to issued payment order.';
 
@@ -354,10 +347,6 @@ page 31262 "Payment Order CZB"
                     ApplicationArea = All;
                     Caption = 'Approve';
                     Image = Approve;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
                     ToolTip = 'Relations to the workflow.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -373,10 +362,6 @@ page 31262 "Payment Order CZB"
                     ApplicationArea = All;
                     Caption = 'Reject';
                     Image = Reject;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
                     ToolTip = 'Rejects cash document';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -392,9 +377,6 @@ page 31262 "Payment Order CZB"
                     ApplicationArea = All;
                     Caption = 'Delegate';
                     Image = Delegate;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedOnly = true;
                     ToolTip = 'Specifies enu delegate of payment order.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -410,9 +392,6 @@ page 31262 "Payment Order CZB"
                     ApplicationArea = All;
                     Caption = 'Comments';
                     Image = ViewComments;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedOnly = true;
                     ToolTip = 'Specifies payment order comments.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -428,9 +407,6 @@ page 31262 "Payment Order CZB"
                     ApplicationArea = All;
                     Caption = 'Re&open';
                     Image = ReOpen;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedIsBig = true;
                     ToolTip = 'Reopen the document to change it after it has been approved. Approved documents have the Approved status and must be opened before they can be changed.';
 
                     trigger OnAction()
@@ -451,9 +427,6 @@ page 31262 "Payment Order CZB"
                     Caption = 'Send A&pproval Request';
                     Enabled = not OpenApprovalEntriesExist;
                     Image = SendApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -470,9 +443,6 @@ page 31262 "Payment Order CZB"
                     Caption = 'Cancel Approval Re&quest';
                     Enabled = OpenApprovalEntriesExist;
                     Image = CancelApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -491,15 +461,90 @@ page 31262 "Payment Order CZB"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
                 begin
                     Rec.PrintToDocumentAttachment();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("Suggest Payments_Promoted"; "Suggest Payments")
+                {
+                }
+                actionref(Import_Promoted; Import)
+                {
+                }
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Issuing';
+                ShowAs = SplitButton;
+                actionref(Issue_Promoted; Issue)
+                {
+                }
+                actionref(IssueAndPrint_Promoted; IssueAndPrint)
+                {
+                }
+                actionref(TestReport_Promoted; "Test Report")
+                {
+                }
+            }
+            group(Category_Category5)
+            {
+                Caption = 'Request Approval';
+
+                actionref(SendApprovalRequest_Promoted; SendApprovalRequest)
+                {
+                }
+                actionref(CancelApprovalRequest_Promoted; CancelApprovalRequest)
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Print';
+
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Payment Order';
+
+                actionref(Statistics_Promoted; Statistics)
+                {
+                }
+                actionref(Approvals_Promoted; "A&pprovals")
+                {
+                }
+            }
+            group(Category_Category8)
+            {
+                Caption = 'Approval';
+
+                actionref(Approve_Promoted; Approve)
+                {
+                }
+                actionref(Reject_Promoted; Reject)
+                {
+                }
+                actionref(Delegate_Promoted; Delegate)
+                {
+                }
+                actionref(Comment_Promoted; Comment)
+                {
+                }
+                actionref(Reopen_Promoted; Reopen)
+                {
+                }
             }
         }
     }

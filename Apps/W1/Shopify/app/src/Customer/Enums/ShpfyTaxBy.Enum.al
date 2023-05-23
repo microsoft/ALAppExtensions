@@ -3,9 +3,8 @@
 /// </summary>
 enum 30109 "Shpfy Tax By"
 {
-    Access = Internal;
     Caption = 'Shopify Tax By';
-    Extensible = true;
+    Extensible = false;
     value(0; "No Taxes")
     {
         Caption = 'No Taxes';

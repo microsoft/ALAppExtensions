@@ -18,3 +18,4 @@ enum 30135 "Shpfy Stock Calculation" implements "Shpfy Stock Calculation"
         Implementation = "Shpfy Stock Calculation" = "Shpfy Balance Today";
     }
 }
+

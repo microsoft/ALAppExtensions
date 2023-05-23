@@ -6,6 +6,8 @@
 codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata AllObj = r,
                   tabledata AllObjWithCaption = r,
                   tabledata Field = r,
@@ -137,7 +139,7 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
         exit(RetentionPolicyAllowedTable.Delete());
     end;
 
-    procedure IsAllowedTable(TableId: Integer): boolean
+    procedure IsAllowedTable(TableId: Integer): Boolean
     var
         RetentionPolicyAllowedTable: Record "Retention Policy Allowed Table";
         AllObjWithCaption: Record AllObjWithCaption;
@@ -367,7 +369,7 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
     begin
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tbl. Impl.", 'OnVerifyAddtoAllowedList', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tbl. Impl.", OnVerifyAddtoAllowedList, '', false, false)]
     local procedure AllowAddtoAllowedList(TableId: Integer; var InsertAllowed: Boolean)
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
@@ -396,7 +398,7 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
     begin
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tbl. Impl.", 'OnVerifyModifyAllowedList', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tbl. Impl.", OnVerifyModifyAllowedList, '', false, false)]
     local procedure AllowModifyAllowedList(TableId: Integer; var ModifyAllowed: Boolean)
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";

@@ -66,6 +66,27 @@ page 9661 "Report Layout Edit Dialog"
                 Caption = 'Save Changes to a Copy';
                 ToolTip = 'Create a copy of the selected layout with the specified changes.';
                 Editable = CreateCopyEditable;
+
+                trigger OnValidate()
+                begin
+                    if (CreateCopy) then
+                        AvailableInAllCompaniesEditable := true
+                    else
+                        if (IsLayoutOwnedByCurrentCompany) then begin
+                            AvailableInAllCompaniesEditable := true;
+                            AvailableInAllCompanies := false;
+                        end else begin
+                            AvailableInAllCompaniesEditable := false;
+                            AvailableInAllCompanies := true;
+                        end;
+                end;
+            }
+            field(AvailableInAllCompanies; AvailableInAllCompanies)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Available in All Companies';
+                ToolTip = 'Specifies whether the layout should be available in all companies or just the current company.';
+                Editable = AvailableInAllCompaniesEditable;
             }
         }
     }
@@ -82,6 +103,9 @@ page 9661 "Report Layout Edit Dialog"
         emptyGuid: Guid;
         CreateCopy: Boolean;
         CreateCopyEditable: Boolean;
+        AvailableInAllCompanies: Boolean;
+        AvailableInAllCompaniesEditable: Boolean;
+        IsLayoutOwnedByCurrentCompany: Boolean;
 
     internal procedure SelectedLayoutDescription(): Text[250]
     begin
@@ -93,12 +117,17 @@ page 9661 "Report Layout Edit Dialog"
         exit(NewLayoutName);
     end;
 
+    internal procedure SelectedAvailableInAllCompanies(): Boolean
+    begin
+        exit(AvailableInAllCompanies);
+    end;
+
     internal procedure CopyOperationEnabled(): Boolean
     begin
         exit(CreateCopy);
     end;
 
-    internal procedure SetupDialog(ReportLayoutList: Record "Report Layout List"; ForceCopy: Boolean): Text
+    internal procedure SetupDialog(ReportLayoutList: Record "Report Layout List"; CurrentSelectedCompany: Text[30]): Text
     begin
         ReportID := ReportLayoutList."Report ID";
         ReportName := ReportLayoutList."Report Name";
@@ -106,12 +135,25 @@ page 9661 "Report Layout Edit Dialog"
         OldLayoutName := ReportLayoutList."Caption";
         NewLayoutName := OldLayoutName;
 
-        if ForceCopy then begin
+        if not ReportLayoutList."User Defined" then begin
             CreateCopy := true;
             CreateCopyEditable := false;
+            AvailableInAllCompaniesEditable := true;
+            AvailableInAllCompanies := true;
+
         end else begin
             CreateCopy := false;
             CreateCopyEditable := true;
+
+            TenantReportLayout.Get(ReportID, ReportLayoutList.Name, emptyGuid);
+            if (TenantReportLayout."Company Name" = CurrentSelectedCompany) then begin
+                AvailableInAllCompaniesEditable := true;
+                AvailableInAllCompanies := false;
+                IsLayoutOwnedByCurrentCompany := true;
+            end else begin
+                AvailableInAllCompaniesEditable := false;
+                AvailableInAllCompanies := true;
+            end;
         end;
     end;
 }

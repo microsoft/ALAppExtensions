@@ -2,22 +2,6 @@ pageextension 31021 "Customer Ledger Entries CZZ" extends "Customer Ledger Entri
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify(Prepayment)
-        {
-            Visible = false;
-        }
-        modify("Prepayment Type")
-        {
-            Visible = false;
-        }
-        modify("Open For Advance Letter")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast(Control1)
         {
             field("Advance Letter No. CZZ"; Rec."Advance Letter No. CZZ")
@@ -37,18 +21,6 @@ pageextension 31021 "Customer Ledger Entries CZZ" extends "Customer Ledger Entri
 
     actions
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Link Advances")
-        {
-            Visible = false;
-        }
-        modify("U&nlink Advances")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast(processing)
         {
             group(AdvanceLetterCZZ)

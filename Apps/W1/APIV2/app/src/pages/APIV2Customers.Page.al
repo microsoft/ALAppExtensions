@@ -361,6 +361,13 @@ page 30009 "APIV2 - Customers"
                     EntitySetName = 'contactsInformation';
                     SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(Customer);
                 }
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Customer);
+                }
             }
         }
     }

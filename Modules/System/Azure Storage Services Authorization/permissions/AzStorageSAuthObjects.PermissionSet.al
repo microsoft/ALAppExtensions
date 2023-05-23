@@ -8,13 +8,7 @@ permissionset 9065 "Az. Storage S. Auth. - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Cryptography Mgt. - Objects",
-                             "URI - Objects";
+    IncludedPermissionSets = "Cryptography Mgt. - Objects";
 
-    Permissions = Codeunit "Auth. Format Helper" = X,
-                  Codeunit "Stor. Serv. Auth. Impl." = X,
-                  Codeunit "Stor. Serv. Auth. SAS" = X,
-                  Codeunit "Stor. Serv. Auth. Shared Key" = X,
-                  Codeunit "Storage Service Authorization" = X,
-                  Table "SAS Parameters" = X;
+    Permissions = Codeunit "Storage Service Authorization" = X;
 }

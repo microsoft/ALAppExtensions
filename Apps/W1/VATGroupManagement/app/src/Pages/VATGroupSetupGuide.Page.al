@@ -101,7 +101,8 @@ page 4705 "VAT Group Setup Guide"
                     Caption = 'My company is the group representative';
                     InstructionalText = 'As the group representative you must define a list of approved group members who submit their VAT returns to you. You can manage group members on the VAT Report Setup page.';
                     label(RepresentativeSetupInfoMembers)
-                    {
+                    {  
+                        ApplicationArea = Basic, Suite;
                         Caption = 'To add members, choose the number in the Approved Members field.';
                     }
                 }

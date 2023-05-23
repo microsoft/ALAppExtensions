@@ -6,6 +6,8 @@
 codeunit 8885 "Email Activities"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     trigger OnRun()
     var

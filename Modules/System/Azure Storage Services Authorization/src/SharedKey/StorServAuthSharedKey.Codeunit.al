@@ -10,14 +10,16 @@
 codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authorization"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure Authorize(var HttpRequest: HttpRequestMessage; StorageAccount: Text)
     var
         Headers: HttpHeaders;
     begin
         HttpRequest.GetHeaders(Headers);
-
-        Headers.Remove('Authorization');
+        if Headers.Contains('Authorization') then
+            Headers.Remove('Authorization');
         Headers.Add('Authorization', GetSharedKeySignature(HttpRequest, StorageAccount));
     end;
 
@@ -85,6 +87,9 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     var
         ReturnValue: array[1] of Text;
     begin
+        if not Headers.Contains(HeaderKey) then
+            exit('');
+            
         if not Headers.GetValues(HeaderKey, ReturnValue) then
             exit('');
 
@@ -105,11 +110,12 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     begin
         foreach HeaderKey in Headers.Keys() do
             if HeaderKey.StartsWith('x-ms-') then
-                if Headers.GetValues(HeaderKey, HeaderValue) then begin
-                    if CanonicalizedHeaders <> '' then
-                        CanonicalizedHeaders += NewLine();
-                    CanonicalizedHeaders += StrSubstNo(KeyValuePairLbl, HeaderKey.ToLower(), HeaderValue[1])
-                end;
+                if Headers.Contains(HeaderKey) then
+                    if Headers.GetValues(HeaderKey, HeaderValue) then begin
+                        if CanonicalizedHeaders <> '' then
+                            CanonicalizedHeaders += NewLine();
+                        CanonicalizedHeaders += StrSubstNo(KeyValuePairLbl, HeaderKey.ToLower(), HeaderValue[1])
+                    end;
 
         exit(CanonicalizedHeaders);
     end;

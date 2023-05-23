@@ -6,6 +6,8 @@
 codeunit 8704 "Feature Telemetry Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         UptakeLbl: Label 'Feature %1 is %2', Locked = true, Comment = '%1 - feature name; %2 - uptake status, for example, Discovered';

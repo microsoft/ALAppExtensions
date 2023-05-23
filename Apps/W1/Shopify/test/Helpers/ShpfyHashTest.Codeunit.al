@@ -9,7 +9,11 @@ codeunit 139573 "Shpfy Hash Test"
     [Test]
     procedure UnitTestCalcHash()
     var
+<<<<<<< HEAD
         Hash: codeunit "Shpfy Hash";
+=======
+        Hash: Codeunit "Shpfy Hash";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         HashA: Integer;
         HashB: Integer;
         TextA: Text;

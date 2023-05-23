@@ -122,15 +122,26 @@ report 31189 "Sales Invoice CZL"
             column(VATLbl; VATLbl)
             {
             }
+#if not CLEAN22
             column(PrepayedLbl; PrepayedLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
             column(TotalAfterPrepayedLbl; TotalAfterPrepayedLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
             column(PaymentsLbl; PaymentsLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
+#endif
             column(DisplayAdditionalFeeNote; DisplayAdditionalFeeNote)
             {
             }
@@ -185,10 +196,10 @@ report 31189 "Sales Invoice CZL"
             column(PostingDate_SalesInvoiceHeader; "Posting Date")
             {
             }
-            column(VATDate_SalesInvoiceHeaderCaption; FieldCaption("VAT Date CZL"))
+            column(VATDate_SalesInvoiceHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_SalesInvoiceHeader; "VAT Date CZL")
+            column(VATDate_SalesInvoiceHeader; "VAT Reporting Date")
             {
             }
             column(DueDate_SalesInvoiceHeaderCaption; FieldCaption("Due Date"))
@@ -254,11 +265,6 @@ report 31189 "Sales Invoice CZL"
             column(AmountIncludingVAT_SalesInvoiceHeader; "Amount Including VAT")
             {
             }
-#if not CLEAN19
-            column(PrepaymentAmt_SalesInvoiceHeader; PrepaymentAmt)
-            {
-            }
-#endif
             column(CalculatedExchRate; CalculatedExchRate)
             {
             }
@@ -329,7 +335,7 @@ report 31189 "Sales Invoice CZL"
                 {
                     DataItemLink = "Document No." = field("No.");
                     DataItemLinkReference = "Sales Invoice Header";
-                    DataItemTableView = sorting("Document No.", "Line No.") WHERE("Prepayment Line" = CONST(false));
+                    DataItemTableView = sorting("Document No.", "Line No.");
                     column(LineNo_SalesInvoiceLine; "Line No.")
                     {
                     }
@@ -395,7 +401,6 @@ report 31189 "Sales Invoice CZL"
                             UnitPriceExclVAT := Round("Unit Price" / (1 + "VAT %" / 100), Currency."Amount Rounding Precision");
                     end;
                 }
-#if CLEAN19
                 dataitem(SalesInvoiceAdvance; "Integer")
                 {
                     DataItemTableView = sorting(Number);
@@ -422,40 +427,6 @@ report 31189 "Sales Invoice CZL"
                         SetRange(Number, 1, 0);
                     end;
                 }
-#else
-#pragma warning disable AL0432
-                dataitem(SalesInvoiceAdvance; "Sales Invoice Line")
-                {
-                    DataItemLink = "Document No." = field("No.");
-                    DataItemLinkReference = "Sales Invoice Header";
-                    DataItemTableView = sorting("Document No.", "Line No.") WHERE("Prepayment Line" = CONST(true), "Letter No." = FILTER(<> ''));
-                    column(LetterNo_SalesInvoiceAdvanceCaption; FieldCaption("Letter No."))
-                    {
-                    }
-                    column(LetterNo_SalesInvoiceAdvance; "Letter No.")
-                    {
-                    }
-                    column(AmountIncludingVAT_SalesInvoiceAdvance; "Amount Including VAT")
-                    {
-                    }
-                    column(VATDocLetterNo_SalesInvoiceAdvanceCaption; FieldCaption("VAT Doc. Letter No."))
-                    {
-                    }
-                    column(VATDocLetterNo_SalesInvoiceAdvance; "VAT Doc. Letter No.")
-                    {
-                    }
-                    column(PostingDate_SalesInvoiceAdvance; SalesInvoiceHeader."Posting Date")
-                    {
-                    }
-                    trigger OnAfterGetRecord()
-                    begin
-                        if "VAT Doc. Letter No." <> '' then
-                            if not SalesInvoiceHeader.Get("VAT Doc. Letter No.") then
-                                SalesInvoiceHeader.Init();
-                    end;
-                }
-#pragma warning restore AL0432
-#endif
                 dataitem(VATCounter; "Integer")
                 {
                     DataItemTableView = sorting(Number);
@@ -605,21 +576,9 @@ report 31189 "Sales Invoice CZL"
                     CalculatedExchRate := 1;
 
                 SalesInvLine.SetRange("Document No.", "No.");
-#if not CLEAN19
-#pragma warning disable AL0432
-                SalesInvLine.SetFilter("Letter No.", '%1', '');
-#pragma warning restore AL0432
-#endif
                 SalesInvLine.CalcSums(Amount, "Amount Including VAT");
                 Amount := SalesInvLine.Amount;
                 "Amount Including VAT" := SalesInvLine."Amount Including VAT";
-#if not CLEAN19
-#pragma warning disable AL0432
-                SalesInvLine.SetFilter("Letter No.", '<>%1', '');
-                SalesInvLine.CalcSums("Amount Including VAT");
-                PrepaymentAmt := SalesInvLine."Amount Including VAT";
-#pragma warning restore AL0432
-#endif
 
                 GetLineFeeNoteOnReportHist("No.");
 
@@ -635,6 +594,12 @@ report 31189 "Sales Invoice CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
         }
     }
@@ -699,13 +664,13 @@ report 31189 "Sales Invoice CZL"
         Currency: Record Currency;
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
-#if not CLEAN19
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-#endif
         Language: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#endif
         SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
         VATClauseText: Text;
@@ -717,9 +682,6 @@ report 31189 "Sales Invoice CZL"
         PaymentSymbolLabel: array[2] of Text;
         DocumentLbl: Label 'Invoice';
         CalculatedExchRate: Decimal;
-#if not CLEAN19
-        PrepaymentAmt: Decimal;
-#endif
         UnitPriceExclVAT: Decimal;
         NoOfCopies: Integer;
         NoOfLoops: Integer;
@@ -744,9 +706,11 @@ report 31189 "Sales Invoice CZL"
         VATAmtLbl: Label 'VAT Amount';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
+#if not CLEAN22
         PrepayedLbl: Label 'Prepayed Advances';
         TotalAfterPrepayedLbl: Label 'Total after Prepayed Advances';
         PaymentsLbl: Label 'Payments List';
+#endif
         UnitPriceExclVATLbl: Label 'Unit Price Excl. VAT';
         GreetingLbl: Label 'Hello';
         ClosingLbl: Label 'Sincerely';
@@ -758,7 +722,7 @@ report 31189 "Sales Invoice CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(4) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(4) <> '';
     end;
 
     local procedure GetLineFeeNoteOnReportHist(SalesInvoiceHeaderNo: Code[20])

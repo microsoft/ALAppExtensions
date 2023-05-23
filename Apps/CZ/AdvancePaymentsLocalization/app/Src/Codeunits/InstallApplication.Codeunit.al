@@ -31,7 +31,6 @@ codeunit 31087 "Install Application CZZ"
     var
         VATPostingSetup: Record "VAT Posting Setup";
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
-        PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
         AppInfo: ModuleInfo;
 
     trigger OnInstallAppPerDatabase()
@@ -103,15 +102,11 @@ codeunit 31087 "Install Application CZZ"
         CopyVATEntries();
         CopyCustomerLedgerEntries();
         CopyVendorLedgerEntries();
-        CopyVATStatementLines();
         CopyGenJournalLines();
         CopyCashDocumentLinesCZP();
         CopyPaymentOrderLinesCZB();
         CopyIssPaymentOrderLinesCZB();
-        CopyCashFlowAccounts();
-        CopyCashFlowForecastEntry();
         CopyCashFlowSetup();
-        CopyCashFlowWorksheetLine();
         CopyAccScheduleExtension();
         MoveIncomingDocument();
         ModifyReportSelections();
@@ -222,8 +217,6 @@ codeunit 31087 "Install Application CZZ"
                     PurchAdvLetterHeaderCZZ."Currency Code" := PurchAdvanceLetterHeader."Currency Code";
                     PurchAdvLetterHeaderCZZ."Currency Factor" := PurchAdvanceLetterHeader."Currency Factor";
                     PurchAdvLetterHeaderCZZ."VAT Country/Region Code" := PurchAdvanceLetterHeader."VAT Country/Region Code";
-                    PurchAdvanceLetterHeader.CalcFields(Status);
-                    PurchAdvLetterHeaderCZZ.Status := GetStatus(PurchAdvanceLetterHeader.Status);
                     PurchAdvLetterHeaderCZZ."Automatic Post VAT Usage" := true;
                     PurchAdvLetterHeaderCZZ."Dimension Set ID" := PurchAdvanceLetterHeader."Dimension Set ID";
                     PurchAdvLetterHeaderCZZ."Incoming Document Entry No." := PurchAdvanceLetterHeader."Incoming Document Entry No.";
@@ -274,6 +267,7 @@ codeunit 31087 "Install Application CZZ"
         PurchAdvanceLetterEntry2: Record "Purch. Advance Letter Entry";
         PurchAdvLetterEntryCZZ1: Record "Purch. Adv. Letter Entry CZZ";
         PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+        TempPurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ" temporary;
         VATEntry2: Record "VAT Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         PurchAdvLetterManagementCZZ: Codeunit "PurchAdvLetterManagement CZZ";
@@ -326,7 +320,7 @@ codeunit 31087 "Install Application CZZ"
                             PurchAdvLetterManagementCZZ.AdvEntryInitCancel();
                         PurchAdvLetterManagementCZZ.AdvEntryInitRelatedEntry(PurchAdvLetterEntryCZZ1."Entry No.");
                         PurchAdvLetterManagementCZZ.AdvEntryInitVAT(PurchAdvanceLetterEntry1."VAT Bus. Posting Group", PurchAdvanceLetterEntry1."VAT Prod. Posting Group", PurchAdvanceLetterEntry1."VAT Date",
-                            PurchAdvanceLetterEntry1."VAT Entry No.", PurchAdvanceLetterEntry1."VAT %", PurchAdvanceLetterEntry1."VAT Identifier", "TAX Calculation Type"::"Normal VAT",
+                            PurchAdvanceLetterEntry1."VAT Date", PurchAdvanceLetterEntry1."VAT Entry No.", PurchAdvanceLetterEntry1."VAT %", PurchAdvanceLetterEntry1."VAT Identifier", "TAX Calculation Type"::"Normal VAT",
                             PurchAdvanceLetterEntry1."VAT Amount", PurchAdvanceLetterEntry1."VAT Amount (LCY)", PurchAdvanceLetterEntry1."VAT Base Amount", PurchAdvanceLetterEntry1."VAT Base Amount (LCY)");
                         PurchAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::"VAT Payment", PurchAdvLetterHeaderCZZ."No.", PurchAdvanceLetterEntry1."Posting Date",
                             PurchAdvanceLetterEntry1."VAT Base Amount" + PurchAdvanceLetterEntry1."VAT Amount", PurchAdvanceLetterEntry1."VAT Base Amount (LCY)" + PurchAdvanceLetterEntry1."VAT Amount (LCY)",
@@ -371,7 +365,7 @@ codeunit 31087 "Install Application CZZ"
                                     PurchAdvLetterManagementCZZ.AdvEntryInitCancel();
                                 PurchAdvLetterManagementCZZ.AdvEntryInitRelatedEntry(PurchAdvLetterEntryCZZ2."Entry No.");
                                 PurchAdvLetterManagementCZZ.AdvEntryInitVAT(PurchAdvanceLetterEntry2."VAT Bus. Posting Group", PurchAdvanceLetterEntry2."VAT Prod. Posting Group", PurchAdvanceLetterEntry2."VAT Date",
-                                    PurchAdvanceLetterEntry2."VAT Entry No.", PurchAdvanceLetterEntry2."VAT %", PurchAdvanceLetterEntry2."VAT Identifier", "TAX Calculation Type"::"Normal VAT",
+                                    PurchAdvanceLetterEntry2."VAT Date", PurchAdvanceLetterEntry2."VAT Entry No.", PurchAdvanceLetterEntry2."VAT %", PurchAdvanceLetterEntry2."VAT Identifier", "TAX Calculation Type"::"Normal VAT",
                                     PurchAdvanceLetterEntry2."VAT Amount", PurchAdvanceLetterEntry2."VAT Amount (LCY)", PurchAdvanceLetterEntry2."VAT Base Amount", PurchAdvanceLetterEntry2."VAT Base Amount (LCY)");
                                 PurchAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::"VAT Usage", PurchAdvLetterHeaderCZZ."No.", PurchAdvanceLetterEntry2."Posting Date",
                                     PurchAdvanceLetterEntry2."VAT Base Amount" + PurchAdvanceLetterEntry2."VAT Amount", PurchAdvanceLetterEntry2."VAT Base Amount (LCY)" + PurchAdvanceLetterEntry2."VAT Amount (LCY)",
@@ -387,7 +381,7 @@ codeunit 31087 "Install Application CZZ"
                                     PurchAdvLetterManagementCZZ.AdvEntryInitCancel();
                                 PurchAdvLetterManagementCZZ.AdvEntryInitRelatedEntry(PurchAdvLetterEntryCZZ2."Entry No.");
                                 PurchAdvLetterManagementCZZ.AdvEntryInitVAT(PurchAdvanceLetterEntry2."VAT Bus. Posting Group", PurchAdvanceLetterEntry2."VAT Prod. Posting Group", PurchAdvanceLetterEntry2."VAT Date",
-                                    0, PurchAdvanceLetterEntry2."VAT %", PurchAdvanceLetterEntry2."VAT Identifier", "TAX Calculation Type"::"Normal VAT",
+                                    PurchAdvanceLetterEntry2."VAT Date", 0, PurchAdvanceLetterEntry2."VAT %", PurchAdvanceLetterEntry2."VAT Identifier", "TAX Calculation Type"::"Normal VAT",
                                     0, PurchAdvanceLetterEntry2."VAT Amount (LCY)", 0, PurchAdvanceLetterEntry2."VAT Base Amount (LCY)");
                                 PurchAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::"VAT Rate", PurchAdvLetterHeaderCZZ."No.", PurchAdvanceLetterEntry2."Posting Date",
                                     0, PurchAdvanceLetterEntry2."VAT Base Amount (LCY)" + PurchAdvanceLetterEntry2."VAT Amount (LCY)", '', 0, PurchAdvanceLetterEntry2."Document No.", VendorLedgerEntry."External Document No.",
@@ -401,16 +395,59 @@ codeunit 31087 "Install Application CZZ"
             until AdvanceLink.Next() = 0;
 
         if PurchAdvLetterHeaderCZZ.Status = PurchAdvLetterHeaderCZZ.Status::Closed then begin
+            if LastClosedDate = 0D then
+                LastClosedDate := PurchAdvLetterHeaderCZZ."Posting Date";
             PurchAdvLetterHeaderCZZ.CalcFields("To Use", "To Use (LCY)");
             if (PurchAdvLetterHeaderCZZ."To Use" <> 0) or (PurchAdvLetterHeaderCZZ."To Use (LCY)" <> 0) then begin
-                if LastClosedDate = 0D then
-                    LastClosedDate := PurchAdvLetterHeaderCZZ."Posting Date";
                 PurchAdvLetterManagementCZZ.AdvEntryInit(false);
                 PurchAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::Close, PurchAdvLetterHeaderCZZ."No.", LastClosedDate,
                     -PurchAdvLetterHeaderCZZ."To Use", -PurchAdvLetterHeaderCZZ."To Use (LCY)",
                     PurchAdvLetterHeaderCZZ."Currency Code", PurchAdvLetterHeaderCZZ."Currency Factor", PurchAdvLetterHeaderCZZ."No.", '',
                     PurchAdvLetterHeaderCZZ."Shortcut Dimension 1 Code", PurchAdvLetterHeaderCZZ."Shortcut Dimension 2 Code", PurchAdvLetterHeaderCZZ."Dimension Set ID", false);
             end;
+            PurchAdvLetterEntryCZZ1.Reset();
+            PurchAdvLetterEntryCZZ1.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+            PurchAdvLetterEntryCZZ1.SetFilter("Entry Type", '%1|%2',
+                PurchAdvLetterEntryCZZ1."Entry Type"::"VAT Payment", PurchAdvLetterEntryCZZ1."Entry Type"::"VAT Usage");
+            if PurchAdvLetterEntryCZZ1.FindSet() then
+                repeat
+                    TempPurchAdvLetterEntryCZZ.SetRange("VAT Bus. Posting Group", PurchAdvLetterEntryCZZ1."VAT Bus. Posting Group");
+                    TempPurchAdvLetterEntryCZZ.SetRange("VAT Prod. Posting Group", PurchAdvLetterEntryCZZ1."VAT Prod. Posting Group");
+                    if not TempPurchAdvLetterEntryCZZ.FindFirst() then begin
+                        TempPurchAdvLetterEntryCZZ.Init();
+                        TempPurchAdvLetterEntryCZZ := PurchAdvLetterEntryCZZ1;
+                        TempPurchAdvLetterEntryCZZ.Insert();
+                    end else begin
+                        TempPurchAdvLetterEntryCZZ.Amount += PurchAdvLetterEntryCZZ1.Amount;
+                        TempPurchAdvLetterEntryCZZ."Amount (LCY)" += PurchAdvLetterEntryCZZ1."Amount (LCY)";
+                        TempPurchAdvLetterEntryCZZ."VAT Amount" += PurchAdvLetterEntryCZZ1."VAT Amount";
+                        TempPurchAdvLetterEntryCZZ."VAT Amount (LCY)" += PurchAdvLetterEntryCZZ1."VAT Amount (LCY)";
+                        TempPurchAdvLetterEntryCZZ."VAT Base Amount" += PurchAdvLetterEntryCZZ1."VAT Base Amount";
+                        TempPurchAdvLetterEntryCZZ."VAT Base Amount (LCY)" += PurchAdvLetterEntryCZZ1."VAT Base Amount (LCY)";
+                        TempPurchAdvLetterEntryCZZ.Modify();
+                    end;
+                until PurchAdvLetterEntryCZZ1.Next() = 0;
+
+            TempPurchAdvLetterEntryCZZ.Reset();
+            if TempPurchAdvLetterEntryCZZ.FindSet() then
+                repeat
+                    if (TempPurchAdvLetterEntryCZZ.Amount <> 0) or (TempPurchAdvLetterEntryCZZ."Amount (LCY)" <> 0) or
+                       (TempPurchAdvLetterEntryCZZ."VAT Amount" <> 0) or (TempPurchAdvLetterEntryCZZ."VAT Amount (LCY)" <> 0) or
+                       (TempPurchAdvLetterEntryCZZ."VAT Base Amount" <> 0) or (TempPurchAdvLetterEntryCZZ."VAT Base Amount (LCY)" <> 0)
+                    then begin
+                        PurchAdvLetterManagementCZZ.AdvEntryInit(false);
+                        PurchAdvLetterManagementCZZ.AdvEntryInitVAT(
+                            TempPurchAdvLetterEntryCZZ."VAT Bus. Posting Group", TempPurchAdvLetterEntryCZZ."VAT Prod. Posting Group",
+                            LastClosedDate, LastClosedDate, 0, TempPurchAdvLetterEntryCZZ."VAT %", TempPurchAdvLetterEntryCZZ."VAT Identifier", TempPurchAdvLetterEntryCZZ."VAT Calculation Type",
+                            -TempPurchAdvLetterEntryCZZ."VAT Amount", -TempPurchAdvLetterEntryCZZ."VAT Amount (LCY)",
+                            -TempPurchAdvLetterEntryCZZ."VAT Base Amount", -TempPurchAdvLetterEntryCZZ."VAT Base Amount (LCY)");
+                        PurchAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::"VAT Close", PurchAdvLetterHeaderCZZ."No.", LastClosedDate,
+                            -TempPurchAdvLetterEntryCZZ.Amount, -TempPurchAdvLetterEntryCZZ."Amount (LCY)",
+                            PurchAdvLetterHeaderCZZ."Currency Code", PurchAdvLetterHeaderCZZ."Currency Factor", PurchAdvLetterHeaderCZZ."No.", '',
+                            PurchAdvLetterHeaderCZZ."Shortcut Dimension 1 Code", PurchAdvLetterHeaderCZZ."Shortcut Dimension 2 Code", PurchAdvLetterHeaderCZZ."Dimension Set ID", false);
+                    end;
+                until TempPurchAdvLetterEntryCZZ.Next() = 0;
+            PurchAdvLetterManagementCZZ.CancelInitEntry(PurchAdvLetterHeaderCZZ, LastClosedDate, false);
         end;
     end;
 
@@ -572,6 +609,7 @@ codeunit 31087 "Install Application CZZ"
         SalesAdvanceLetterEntry2: Record "Sales Advance Letter Entry";
         SalesAdvLetterEntryCZZ1: Record "Sales Adv. Letter Entry CZZ";
         SalesAdvLetterEntryCZZ2: Record "Sales Adv. Letter Entry CZZ";
+        TempSalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ" temporary;
         CustLedgerEntry: Record "Cust. Ledger Entry";
         SalesAdvLetterManagementCZZ: Codeunit "SalesAdvLetterManagement CZZ";
         CurrFactor: Decimal;
@@ -696,16 +734,59 @@ codeunit 31087 "Install Application CZZ"
             until AdvanceLink.Next() = 0;
 
         if SalesAdvLetterHeaderCZZ.Status = SalesAdvLetterHeaderCZZ.Status::Closed then begin
+            if LastClosedDate = 0D then
+                LastClosedDate := SalesAdvLetterHeaderCZZ."Posting Date";
             SalesAdvLetterHeaderCZZ.CalcFields("To Use", "To Use (LCY)");
             if (SalesAdvLetterHeaderCZZ."To Use" <> 0) or (SalesAdvLetterHeaderCZZ."To Use (LCY)" <> 0) then begin
-                if LastClosedDate = 0D then
-                    LastClosedDate := SalesAdvLetterHeaderCZZ."Posting Date";
                 SalesAdvLetterManagementCZZ.AdvEntryInit(false);
                 SalesAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::Close, SalesAdvLetterHeaderCZZ."No.", LastClosedDate,
-                    -SalesAdvLetterHeaderCZZ."To Use", -SalesAdvLetterHeaderCZZ."To Use (LCY)",
+                    SalesAdvLetterHeaderCZZ."To Use", SalesAdvLetterHeaderCZZ."To Use (LCY)",
                     SalesAdvLetterHeaderCZZ."Currency Code", SalesAdvLetterHeaderCZZ."Currency Factor", SalesAdvLetterHeaderCZZ."No.",
                     SalesAdvLetterHeaderCZZ."Shortcut Dimension 1 Code", SalesAdvLetterHeaderCZZ."Shortcut Dimension 2 Code", SalesAdvLetterHeaderCZZ."Dimension Set ID", false);
             end;
+            SalesAdvLetterEntryCZZ1.Reset();
+            SalesAdvLetterEntryCZZ1.SetRange("Sales Adv. Letter No.", SalesAdvLetterHeaderCZZ."No.");
+            SalesAdvLetterEntryCZZ1.SetFilter("Entry Type", '%1|%2',
+                SalesAdvLetterEntryCZZ1."Entry Type"::"VAT Payment", SalesAdvLetterEntryCZZ1."Entry Type"::"VAT Usage");
+            if SalesAdvLetterEntryCZZ1.FindSet() then
+                repeat
+                    TempSalesAdvLetterEntryCZZ.SetRange("VAT Bus. Posting Group", SalesAdvLetterEntryCZZ1."VAT Bus. Posting Group");
+                    TempSalesAdvLetterEntryCZZ.SetRange("VAT Prod. Posting Group", SalesAdvLetterEntryCZZ1."VAT Prod. Posting Group");
+                    if not TempSalesAdvLetterEntryCZZ.FindFirst() then begin
+                        TempSalesAdvLetterEntryCZZ.Init();
+                        TempSalesAdvLetterEntryCZZ := SalesAdvLetterEntryCZZ1;
+                        TempSalesAdvLetterEntryCZZ.Insert();
+                    end else begin
+                        TempSalesAdvLetterEntryCZZ.Amount += SalesAdvLetterEntryCZZ1.Amount;
+                        TempSalesAdvLetterEntryCZZ."Amount (LCY)" += SalesAdvLetterEntryCZZ1."Amount (LCY)";
+                        TempSalesAdvLetterEntryCZZ."VAT Amount" += SalesAdvLetterEntryCZZ1."VAT Amount";
+                        TempSalesAdvLetterEntryCZZ."VAT Amount (LCY)" += SalesAdvLetterEntryCZZ1."VAT Amount (LCY)";
+                        TempSalesAdvLetterEntryCZZ."VAT Base Amount" += SalesAdvLetterEntryCZZ1."VAT Base Amount";
+                        TempSalesAdvLetterEntryCZZ."VAT Base Amount (LCY)" += SalesAdvLetterEntryCZZ1."VAT Base Amount (LCY)";
+                        TempSalesAdvLetterEntryCZZ.Modify();
+                    end;
+                until SalesAdvLetterEntryCZZ1.Next() = 0;
+
+            TempSalesAdvLetterEntryCZZ.Reset();
+            if TempSalesAdvLetterEntryCZZ.FindSet() then
+                repeat
+                    if (TempSalesAdvLetterEntryCZZ.Amount <> 0) or (TempSalesAdvLetterEntryCZZ."Amount (LCY)" <> 0) or
+                       (TempSalesAdvLetterEntryCZZ."VAT Amount" <> 0) or (TempSalesAdvLetterEntryCZZ."VAT Amount (LCY)" <> 0) or
+                       (TempSalesAdvLetterEntryCZZ."VAT Base Amount" <> 0) or (TempSalesAdvLetterEntryCZZ."VAT Base Amount (LCY)" <> 0)
+                    then begin
+                        SalesAdvLetterManagementCZZ.AdvEntryInit(false);
+                        SalesAdvLetterManagementCZZ.AdvEntryInitVAT(
+                            TempSalesAdvLetterEntryCZZ."VAT Bus. Posting Group", TempSalesAdvLetterEntryCZZ."VAT Prod. Posting Group",
+                            LastClosedDate, 0, TempSalesAdvLetterEntryCZZ."VAT %", TempSalesAdvLetterEntryCZZ."VAT Identifier", TempSalesAdvLetterEntryCZZ."VAT Calculation Type",
+                            -TempSalesAdvLetterEntryCZZ."VAT Amount", -TempSalesAdvLetterEntryCZZ."VAT Amount (LCY)",
+                            -TempSalesAdvLetterEntryCZZ."VAT Base Amount", -TempSalesAdvLetterEntryCZZ."VAT Base Amount (LCY)");
+                        SalesAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::"VAT Close", SalesAdvLetterHeaderCZZ."No.", LastClosedDate,
+                            -TempSalesAdvLetterEntryCZZ.Amount, -TempSalesAdvLetterEntryCZZ."Amount (LCY)",
+                            SalesAdvLetterHeaderCZZ."Currency Code", SalesAdvLetterHeaderCZZ."Currency Factor", SalesAdvLetterHeaderCZZ."No.",
+                            SalesAdvLetterHeaderCZZ."Shortcut Dimension 1 Code", SalesAdvLetterHeaderCZZ."Shortcut Dimension 2 Code", SalesAdvLetterHeaderCZZ."Dimension Set ID", false);
+                    end;
+                until TempSalesAdvLetterEntryCZZ.Next() = 0;
+            SalesAdvLetterManagementCZZ.CancelInitEntry(SalesAdvLetterHeaderCZZ, LastClosedDate, false);
         end;
     end;
 
@@ -923,14 +1004,6 @@ codeunit 31087 "Install Application CZZ"
             until VendorLedgerEntry.Next() = 0;
     end;
 
-    local procedure CopyVATStatementLines()
-    var
-        VATStatementLine: Record "VAT Statement Line";
-    begin
-        VATStatementLine.SetRange("Amount Type", VATStatementLine."Amount Type"::"Adv. Base");
-        VATStatementLine.DeleteAll();
-    end;
-
     local procedure CopyGenJournalLines()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -940,12 +1013,6 @@ codeunit 31087 "Install Application CZZ"
         if GenJournalLine.FindSet() then
             repeat
                 GenJournalLine2 := GenJournalLine;
-                case GenJournalLine2."Account Type" of
-                    GenJournalLine2."Account Type"::Customer:
-                        PrepaymentLinksManagement.UnLinkWholeSalesLetter(GenJournalLine2."Advance Letter Link Code");
-                    GenJournalLine2."Account Type"::Vendor:
-                        PrepaymentLinksManagement.UnLinkWholePurchLetter(GenJournalLine2."Advance Letter Link Code");
-                end;
                 GenJournalLine2.Validate("Advance Letter Link Code", '');
                 GenJournalLine2.Validate(Prepayment, false);
                 GenJournalLine2.Validate("Prepayment Type", GenJournalLine2."Prepayment Type"::" ");
@@ -962,12 +1029,6 @@ codeunit 31087 "Install Application CZZ"
         if CashDocumentLineCZP.FindSet() then
             repeat
                 CashDocumentLineCZP2 := CashDocumentLineCZP;
-                case CashDocumentLineCZP2."Account Type" of
-                    CashDocumentLineCZP2."Account Type"::Customer:
-                        PrepaymentLinksManagement.UnLinkWholeSalesLetter(CashDocumentLineCZP2."Advance Letter Link Code");
-                    CashDocumentLineCZP2."Account Type"::Vendor:
-                        PrepaymentLinksManagement.UnLinkWholePurchLetter(CashDocumentLineCZP2."Advance Letter Link Code");
-                end;
                 CashDocumentLineCZP2.Validate("Advance Letter Link Code", '');
                 CashDocumentLineCZP2.Modify();
             until CashDocumentLineCZP.Next() = 0;
@@ -1036,54 +1097,6 @@ codeunit 31087 "Install Application CZZ"
         CashFlowSetup."S. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."S. Adv. Letter CF Account No.";
         CashFlowSetup."P. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."P. Adv. Letter CF Account No.";
         CashFlowSetup.Modify(false);
-    end;
-
-    local procedure CopyCashFlowAccounts()
-    var
-        CashFlowAccount: Record "Cash Flow Account";
-    begin
-        CashFlowAccount.SetLoadFields("Source Type");
-        CashFlowAccount.SetRange("Source Type", CashFlowAccount."Source Type"::"Sales Advance Letters", CashFlowAccount."Source Type"::"Purchase Advance Letters");
-        if CashFlowAccount.FindSet() then
-            repeat
-                if CashFlowAccount."Source Type" = CashFlowAccount."Source Type"::"Sales Advance Letters" then
-                    CashFlowAccount."Source Type" := CashFlowAccount."Source Type"::"Sales Advance Letters CZZ";
-                if CashFlowAccount."Source Type" = CashFlowAccount."Source Type"::"Purchase Advance Letters" then
-                    CashFlowAccount."Source Type" := CashFlowAccount."Source Type"::"Purchase Advance Letters CZZ";
-                CashFlowAccount.Modify(false);
-            until CashFlowAccount.Next() = 0;
-    end;
-
-    local procedure CopyCashFlowForecastEntry()
-    var
-        CashFlowForecastEntry: Record "Cash Flow Forecast Entry";
-    begin
-        CashFlowForecastEntry.SetLoadFields("Source Type");
-        CashFlowForecastEntry.SetRange("Source Type", CashFlowForecastEntry."Source Type"::"Sales Advance Letters", CashFlowForecastEntry."Source Type"::"Purchase Advance Letters");
-        if CashFlowForecastEntry.FindSet() then
-            repeat
-                if CashFlowForecastEntry."Source Type" = CashFlowForecastEntry."Source Type"::"Sales Advance Letters" then
-                    CashFlowForecastEntry."Source Type" := CashFlowForecastEntry."Source Type"::"Sales Advance Letters CZZ";
-                if CashFlowForecastEntry."Source Type" = CashFlowForecastEntry."Source Type"::"Purchase Advance Letters" then
-                    CashFlowForecastEntry."Source Type" := CashFlowForecastEntry."Source Type"::"Purchase Advance Letters CZZ";
-                CashFlowForecastEntry.Modify(false);
-            until CashFlowForecastEntry.Next() = 0;
-    end;
-
-    local procedure CopyCashFlowWorksheetLine()
-    var
-        CashFlowWorksheetLine: Record "Cash Flow Worksheet Line";
-    begin
-        CashFlowWorksheetLine.SetLoadFields("Source Type");
-        CashFlowWorksheetLine.SetRange("Source Type", CashFlowWorksheetLine."Source Type"::"Sales Advance Letters", CashFlowWorksheetLine."Source Type"::"Purchase Advance Letters");
-        if CashFlowWorksheetLine.FindSet() then
-            repeat
-                if CashFlowWorksheetLine."Source Type" = CashFlowWorksheetLine."Source Type"::"Sales Advance Letters" then
-                    CashFlowWorksheetLine."Source Type" := CashFlowWorksheetLine."Source Type"::"Sales Advance Letters CZZ";
-                if CashFlowWorksheetLine."Source Type" = CashFlowWorksheetLine."Source Type"::"Purchase Advance Letters" then
-                    CashFlowWorksheetLine."Source Type" := CashFlowWorksheetLine."Source Type"::"Purchase Advance Letters CZZ";
-                CashFlowWorksheetLine.Modify(false);
-            until CashFlowWorksheetLine.Next() = 0;
     end;
 
     local procedure CopyAccScheduleExtension()

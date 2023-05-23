@@ -751,7 +751,7 @@ True if the table is not in the list of allowed tables. False if the table is in
 
 #### Syntax
 ```
-procedure IsAllowedTable(TableId: Integer): boolean
+procedure IsAllowedTable(TableId: Integer): Boolean
 ```
 #### Parameters
 *TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 

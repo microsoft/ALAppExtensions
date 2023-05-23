@@ -9,6 +9,8 @@
 codeunit 479 "Business Chart"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         BusinessChartImpl: Codeunit "Business Chart Impl.";

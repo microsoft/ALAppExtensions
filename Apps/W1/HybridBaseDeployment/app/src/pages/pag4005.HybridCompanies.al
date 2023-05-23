@@ -48,6 +48,13 @@ page 4005 "Hybrid Companies"
                     Editable = false;
                     ToolTip = 'Estimated size in GB of the company data to migrate';
                 }
+                field(Replicated; Rec.Replicated)
+                {
+                    Caption = 'Replicated';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Indicates if the company was replicated already.';
+                }
             }
         }
     }

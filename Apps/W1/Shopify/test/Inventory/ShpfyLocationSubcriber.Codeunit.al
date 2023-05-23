@@ -9,7 +9,7 @@ codeunit 139587 "Shpfy Location Subcriber"
     var
         JLocations: JsonObject;
 
-    internal procedure InitShopiyLocations(Locations: JsonObject)
+    internal procedure InitShopifyLocations(Locations: JsonObject)
     begin
         JLocations := Locations;
     end;
@@ -18,7 +18,11 @@ codeunit 139587 "Shpfy Location Subcriber"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
     local procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     begin
+<<<<<<< HEAD
         MakeReponse(HttpRequestMessage, HttpResponseMessage);
+=======
+        MakeResponse(HttpRequestMessage, HttpResponseMessage);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnGetContent', '', true, false)]
@@ -27,7 +31,11 @@ codeunit 139587 "Shpfy Location Subcriber"
         HttpResponseMessage.Content.ReadAs(Response);
     end;
 
+<<<<<<< HEAD
     local procedure MakeReponse(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+=======
+    local procedure MakeResponse(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     var
         Uri: Text;
         GraphQlQuery: Text;

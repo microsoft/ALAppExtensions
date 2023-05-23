@@ -48,10 +48,11 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCompany: Record "Hybrid Company";
         DummyHybridCompanyStatus: Record "Hybrid Company Status";
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
         CloudMigE2EEventHandler: Codeunit "Cloud Mig E2E Event Handler";
         LibraryHybridBCLast: Codeunit "Library - Hybrid BC Last";
         BCLastE2EEventHandler: Codeunit "BC Last E2E Event Handler";
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
+        CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [GIVEN] Cloud Migration has been succesfully setup
         Initialize();
@@ -60,12 +61,19 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         InsertSetupRecords();
 
         // [GIVEN] User invokes run replication now
-        IntelligentCloudManagement.OpenEdit();
+        CloudMigrationManagement.OpenEdit();
         LibraryVariableStorage.Enqueue(true);
-        IntelligentCloudManagement.RunReplicationNow.Invoke();
-        IntelligentCloudManagement.Close();
+        CloudMigrationManagement.RunReplicationNow.Invoke();
+        CloudMigrationManagement.Close();
 
         HybridCompany.SetRange(Replicate, true);
+        HybridCompany.FindSet();
+        repeat
+            HybridReplicationDetail."Company Name" := HybridCompany.Name;
+            HybridReplicationDetail."Table Name" := 'Tenant Media';
+            HybridReplicationDetail.Status := HybridReplicationDetail.Status::Successful;
+            HybridReplicationDetail.Insert();
+        until HybridCompany.Next() = 0;
         HybridCompany.FindLast();
         HybridReplicationSummary.SetCurrentKey("Start Time");
         HybridReplicationSummary.FindLast();
@@ -77,10 +85,10 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         VerifyHybridReplicationSummaryIsPending();
         VerifyHybridCompanyStatusRecords(DummyHybridCompanyStatus."Upgrade Status"::Pending);
 
-        IntelligentCloudManagement.OpenEdit();
+        CloudMigrationManagement.OpenEdit();
         LibraryVariableStorage.Enqueue(true);
-        IntelligentCloudManagement.RunDataUpgrade.Invoke();
-        IntelligentCloudManagement.Close();
+        CloudMigrationManagement.RunDataUpgrade.Invoke();
+        CloudMigrationManagement.Close();
 
         VerifyHybridReplicationSummaryIsCompleted();
         VerifyHybridCompanyStatusRecords(DummyHybridCompanyStatus."Upgrade Status"::Completed);

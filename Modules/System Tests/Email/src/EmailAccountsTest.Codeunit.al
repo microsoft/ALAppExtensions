@@ -159,7 +159,7 @@ codeunit 134686 "Email Accounts Test"
         Accounts: TestPage "Email Accounts";
         SentEmails: TestPage "Sent Emails";
     begin
-        // [SCENARIO] Sent emails page can be opened from the Accouns page
+        // [SCENARIO] Sent emails page can be opened from the Accounts page
         SentEmails.Trap();
         // [GIVEN] A connector is installed and an account is added
         ConnectorMock.Initialize();
@@ -167,18 +167,15 @@ codeunit 134686 "Email Accounts Test"
 
         PermissionsMock.Set('Email Edit');
 
-        // [WHEN] The Outbox action is invoked
+        // [WHEN] The Sent Emails action is invoked
         Accounts.OpenView();
-        Accounts.Outbox.Invoke();
+        Accounts.SentEmails.Invoke();
 
-        // [THEN] The Editor page opens to create a new message
+        // [THEN] The sent emails page opens
         // Verify with Trap
     end;
 
     [Test]
-    [Scope('OnPrem')]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [HandlerFunctions('SentEmailsPageHandler')]
     procedure OpenOutBoxFromAccountsPageTest()
     var
         TempAccount: Record "Email Account" temporary;
@@ -194,11 +191,11 @@ codeunit 134686 "Email Accounts Test"
 
         PermissionsMock.Set('Email Edit');
 
-        // [WHEN] The Sent Emails action is invoked
+        // [WHEN] The Outbox action is invoked
         Accounts.OpenView();
-        Accounts.SentEmails.Invoke();
+        Accounts.Outbox.Invoke();
 
-        // [THEN] The Editor page opens to create a new message
+        // [THEN] The outbox page opens
         // Verify with Trap
     end;
 
@@ -543,19 +540,13 @@ codeunit 134686 "Email Accounts Test"
 
 
     [ModalPageHandler]
-    procedure AddAccountModalPageHandler(var AccountWizzardTestPage: TestPage "Email Account Wizard")
+    procedure AddAccountModalPageHandler(var AccountWizardTestPage: TestPage "Email Account Wizard")
     begin
 
     end;
 
     [PageHandler]
     procedure SentEmailsPageHandler(var SentEmailsPage: TestPage "Sent Emails")
-    begin
-
-    end;
-
-    [ModalPageHandler]
-    procedure ChooseAccountCancel(var AccountWizzardTestPage: TestPage "Email Account Wizard")
     begin
 
     end;

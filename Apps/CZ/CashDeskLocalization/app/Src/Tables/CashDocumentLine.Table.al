@@ -3,6 +3,7 @@ table 11733 "Cash Document Line CZP"
 {
     Caption = 'Cash Document Line';
     DrillDownPageID = "Cash Document Lines CZP";
+    LookupPageID = "Cash Document Lines CZP";
 
     fields
     {
@@ -36,10 +37,6 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-#if not CLEAN19
-                if "Account Type" <> xRec."Account Type" then
-                    TestField("Advance Letter Link Code", '');
-#endif
                 GetCashDeskEventCZP();
                 if CashDeskEventCZP."Account Type" <> CashDeskEventCZP."Account Type"::" " then
                     CashDeskEventCZP.TestField("Account Type", "Account Type");
@@ -76,10 +73,6 @@ table 11733 "Cash Document Line CZP"
                 CashDeskCZP: Record "Bank Account";
                 Employee: Record Employee;
             begin
-#if not CLEAN19
-                if "Account No." <> xRec."Account No." then
-                    TestField("Advance Letter Link Code", '');
-#endif
                 GetCashDeskEventCZP();
                 if CashDeskEventCZP."Account No." <> '' then
                     CashDeskEventCZP.TestField("Account No.", "Account No.");
@@ -202,6 +195,7 @@ table 11733 "Cash Document Line CZP"
             if ("Account Type" = const(Customer)) "Customer Posting Group" else
             if ("Account Type" = const(Vendor)) "Vendor Posting Group";
             DataClassification = CustomerContent;
+#if not CLEAN22
 
             trigger OnValidate()
             var
@@ -210,6 +204,16 @@ table 11733 "Cash Document Line CZP"
                 if CurrFieldNo = FieldNo("Posting Group") then
                     PostingGroupManagementCZL.CheckPostingGroupChange("Posting Group", xRec."Posting Group", Rec);
             end;
+#else
+
+            trigger OnValidate()
+            var
+                PostingGroupChange: Codeunit "Posting Group Change";
+            begin
+                if CurrFieldNo = FieldNo("Posting Group") then
+                    PostingGroupChange.ChangePostingGroup("Posting Group", xRec."Posting Group", Rec);
+            end;
+#endif
         }
         field(14; "Applies-To Doc. Type"; Enum "Gen. Journal Document Type")
         {
@@ -270,11 +274,13 @@ table 11733 "Cash Document Line CZP"
                 if GenJournalLine."Applies-to Doc. No." = '' then
                     exit;
 
+                OnLookupAppliesToDocNoOnBeforeValidateAccountNo(GenJournalLine, Rec);
                 if AccountNo = '' then
                     Validate("Account No.", GenJournalLine."Account No.");
                 "Applies-To Doc. Type" := GenJournalLine."Applies-to Doc. Type";
                 "Applies-To Doc. No." := GenJournalLine."Applies-to Doc. No.";
                 "Applies-to ID" := GenJournalLine."Applies-to ID";
+                OnLookupAppliesToDocNoOnAfterFillAppliesToDocNo(Rec, GenJournalLine);
                 Validate(Amount, SignAmount() * GenJournalLine.Amount);
                 if PreviousAmount <> 0 then begin
                     PaymentToleranceManagement.SetSuppressCommit(true);
@@ -368,6 +374,7 @@ table 11733 "Cash Document Line CZP"
                     "Applies-To Doc. Type" := GenJournalLine."Applies-to Doc. Type";
                     "Applies-To Doc. No." := GenJournalLine."Applies-to Doc. No.";
                     "Applies-to ID" := GenJournalLine."Applies-to ID";
+                    OnValidateAppliesToDocNoOnAfterFillAppliesToDocNo(Rec, GenJournalLine);
                 end;
 
                 if ("Applies-To Doc. No." <> xRec."Applies-To Doc. No.") and (Amount <> 0) then begin
@@ -394,10 +401,6 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-#if not CLEAN19
-                if Amount <> xRec.Amount then
-                    TestField("Advance Letter Link Code", '');
-#endif
                 TestField("Account Type");
                 TestField("Account No.");
                 UpdateAmounts();
@@ -484,12 +487,7 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-#if not CLEAN19
-                if "Cash Desk Event" <> xRec."Cash Desk Event" then begin
-                    TestField("Advance Letter Link Code", '');
-#else
                 if "Cash Desk Event" <> xRec."Cash Desk Event" then
-#endif
                     if "Cash Desk Event" <> '' then begin
                         CashDeskCZP.Get("Cash Desk No.");
                         GetCashDeskEventCZP();
@@ -524,9 +522,6 @@ table 11733 "Cash Document Line CZP"
 
                         CreateDimFromDefaultDim(Rec.FieldNo("Cash Desk Event"));
                     end;
-#if not CLEAN19
-                end;
-#endif
             end;
         }
         field(42; "Salespers./Purch. Code"; Code[20])
@@ -882,13 +877,9 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'Advance Letter Link Code';
             DataClassification = CustomerContent;
-#if CLEAN19
             ObsoleteState = Removed;
-#else
-            ObsoleteState = Pending;
-#endif    
             ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '22.0';
 
             trigger OnValidate()
             begin
@@ -926,21 +917,6 @@ table 11733 "Cash Document Line CZP"
         Error(RenameErr, TableCaption);
     end;
 
-#if not CLEAN19
-    trigger OnDelete()
-    var
-        PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
-    begin
-        if "Advance Letter Link Code" <> '' then
-            case "Account Type" of
-                "Account Type"::Customer:
-                    PrepaymentLinksManagement.UnLinkWholeSalesLetter("Advance Letter Link Code");
-                "Account Type"::Vendor:
-                    PrepaymentLinksManagement.UnLinkWholePurchLetter("Advance Letter Link Code");
-            end;
-    end;
-
-#endif
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         Currency: Record Currency;
@@ -1592,11 +1568,7 @@ table 11733 "Cash Document Line CZP"
             GetCashDeskEventCZP();
             EETTransaction := CashDeskEventCZP."EET Transaction";
         end else
-#if not CLEAN19
-            EETTransaction := IsInvoicePayment() or IsCreditMemoRefund() or IsAdvancePayment() or IsAdvanceRefund();
-#else
             EETTransaction := IsInvoicePayment() or IsCreditMemoRefund();
-#endif
 
         OnAfterIsEETTransaction(Rec, EETTransaction);
     end;
@@ -1634,144 +1606,6 @@ table 11733 "Cash Document Line CZP"
             ("Applies-To Doc. Type" = "Applies-To Doc. Type"::"Credit Memo") and
             ("Applies-To Doc. No." <> ''));
     end;
-
-#if not CLEAN19
-    internal procedure IsAdvancePayment(): Boolean
-    begin
-        exit(
-          ("Account Type" = "Account Type"::Customer) and
-          ("Gen. Document Type" = "Gen. Document Type"::Payment) and
-          ("Advance Letter Link Code" <> ''));
-    end;
-
-    internal procedure IsAdvanceRefund(): Boolean
-    var
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-    begin
-        if ("Account Type" = "Account Type"::Customer) and
-           ("Gen. Document Type" = "Gen. Document Type"::Refund) and
-           ("Applies-To Doc. Type" = "Applies-To Doc. Type"::Payment) and
-           ("Applies-To Doc. No." <> '')
-        then
-            if SalesCrMemoHeader.Get("Applies-To Doc. No.") then
-                exit(SalesCrMemoHeader."Prepayment Credit Memo");
-    end;
-
-    internal procedure LinkToAdvLetter()
-    var
-        GenJournalLine: Record "Gen. Journal Line";
-    begin
-        TestField("Gen. Document Type", "Gen. Document Type"::Payment);
-        if not ("Account Type" in ["Account Type"::Customer, "Account Type"::Vendor]) then
-            FieldError("Account Type");
-
-        GetCashDocumentHeaderCZP();
-        GenJournalLine.Init();
-        GenJournalLine."Line No." := "Line No.";
-        GenJournalLine."Account No." := "Account No.";
-        GenJournalLine."Document Type" := "Document Type";
-        GenJournalLine."Document No." := "Cash Document No.";
-        GenJournalLine."Currency Code" := CashDocumentHeaderCZP."Currency Code";
-        GenJournalLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
-        GenJournalLine."Posting Group" := "Posting Group";
-        GenJournalLine.Prepayment := true;
-        GenJournalLine."Prepayment Type" := GenJournalLine."Prepayment Type"::Advance;
-        GenJournalLine."Advance Letter Link Code" := "Advance Letter Link Code";
-        case "Account Type" of
-            "Account Type"::Customer:
-                begin
-                    GenJournalLine."Account Type" := GenJournalLine."Account Type"::Customer;
-                    GenJournalLine.Amount := -Amount;
-                end;
-            "Account Type"::Vendor:
-                begin
-                    GenJournalLine."Account Type" := GenJournalLine."Account Type"::Vendor;
-                    GenJournalLine.Amount := Amount;
-                end;
-        end;
-        Codeunit.Run(Codeunit::"Gen. Jnl.-Link Letters", GenJournalLine);
-
-        if (GenJournalLine."Advance Letter Link Code" <> "Advance Letter Link Code") or
-           (GenJournalLine."Posting Group" <> "Posting Group")
-        then begin
-            Validate("Advance Letter Link Code", GenJournalLine."Advance Letter Link Code");
-            Validate("Posting Group", GenJournalLine."Posting Group");
-            Modify();
-        end;
-    end;
-
-    internal procedure LinkWholeLetter()
-    begin
-        LinkCashDocLine();
-    end;
-
-    internal procedure UnLinkWholeLetter()
-    begin
-        UnLinkCashDocLine();
-    end;
-
-    internal procedure LinkCashDocLine()
-    var
-        PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
-        LinkCode: Code[30];
-        AmountToLink: Decimal;
-        PostingGroup: Code[20];
-    begin
-        TestField("Advance Letter Link Code", '');
-        case "Document Type" of
-            "Document Type"::Receipt:
-                TestField("Account Type", "Account Type"::Customer);
-            "Document Type"::Withdrawal:
-                TestField("Account Type", "Account Type"::Vendor);
-        end;
-        TestField("Account No.");
-
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.TestField("Prepayment Type", GeneralLedgerSetup."Prepayment Type"::Advances);
-
-        LinkCode := "Cash Document No." + ' ' + Format("Line No.");
-        case "Account Type" of
-            "Account Type"::Customer:
-                AmountToLink := PrepaymentLinksManagement.LinkWholeSalesLetter("Account No.", CashDocumentHeaderCZP."Currency Code",
-                    LinkCode, PostingGroup);
-            "Account Type"::Vendor:
-                AmountToLink := PrepaymentLinksManagement.LinkWholePurchLetter("Account No.", CashDocumentHeaderCZP."Currency Code",
-                    LinkCode, PostingGroup);
-        end;
-
-        if AmountToLink <> 0 then begin
-            Validate(Amount, AmountToLink);
-            Validate("Advance Letter Link Code", LinkCode);
-            Validate("Posting Group", PostingGroup);
-            Modify();
-        end;
-    end;
-
-    local procedure UnLinkCashDocLine()
-    var
-        PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
-    begin
-        if "Advance Letter Link Code" = '' then
-            exit;
-
-        case "Document Type" of
-            "Document Type"::Receipt:
-                TestField("Account Type", "Account Type"::Customer);
-            "Document Type"::Withdrawal:
-                TestField("Account Type", "Account Type"::Vendor);
-        end;
-        TestField("Account No.");
-
-        case "Account Type" of
-            "Account Type"::Customer:
-                PrepaymentLinksManagement.UnLinkWholeSalesLetter("Advance Letter Link Code");
-            "Account Type"::Vendor:
-                PrepaymentLinksManagement.UnLinkWholePurchLetter("Advance Letter Link Code");
-        end;
-        Validate("Advance Letter Link Code", '');
-        Modify();
-    end;
-#endif
 
     procedure CalcRelatedAmountToApply(): Decimal
     var
@@ -1880,6 +1714,21 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitDefaultDimensionSources(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnLookupAppliesToDocNoOnBeforeValidateAccountNo(var GenJournalLine: Record "Gen. Journal Line"; var CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnValidateAppliesToDocNoOnAfterFillAppliesToDocNo(var CashDocumentLineCZP: Record "Cash Document Line CZP"; GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnLookupAppliesToDocNoOnAfterFillAppliesToDocNo(var CashDocumentLineCZP: Record "Cash Document Line CZP"; GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 }

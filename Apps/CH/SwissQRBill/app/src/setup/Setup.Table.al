@@ -22,6 +22,14 @@ table 11512 "Swiss QR-Bill Setup"
         field(6; "Umlaut Chars Encode Mode"; Enum "Swiss QR-Bill Umlaut Encoding")
         {
             Caption = 'German Umlaut Chars Encoding Mode';
+            ObsoleteReason = 'No need to convert umlauts, because encoding was changed to UTF-8.';
+#if CLEAN23
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
+#endif
         }
         field(8; "Default Layout"; Code[20])
         {

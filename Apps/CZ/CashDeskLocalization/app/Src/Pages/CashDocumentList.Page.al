@@ -156,6 +156,30 @@ page 31162 "Cash Document List CZP"
         }
         area(processing)
         {
+            group("F&unctions")
+            {
+                Caption = 'F&unctions';
+                Image = "Action";
+
+                action(CopyDocument)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Copy Document';
+                    Ellipsis = true;
+                    Image = CopyDocument;
+                    ToolTip = 'Create a new cash document by copying an existing cash document.';
+
+                    trigger OnAction()
+                    var
+                        CopyCashDocumentCZP: Report "Copy Cash Document CZP";
+                    begin
+                        CopyCashDocumentCZP.SetCashDocument(Rec);
+                        CopyCashDocumentCZP.RunModal();
+                        Clear(CopyCashDocumentCZP);
+                        if Rec.Get(Rec."Cash Desk No.", Rec."No.") then;
+                    end;
+                }
+            }
             group("&Releasing")
             {
                 Caption = '&Releasing';
@@ -175,12 +199,17 @@ page 31162 "Cash Document List CZP"
                         Rec.PerformManualRelease(CashDocumentHeaderCZP);
                     end;
                 }
+#if not CLEAN22
                 action("Release and &Print")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Release and &Print';
                     Image = ConfirmAndPrint;
                     ToolTip = 'Release and prepare to print the cash document.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The action will only be available on the card page of the cash document.';
+                    ObsoleteTag = '22.0';
 
                     trigger OnAction()
                     var
@@ -193,6 +222,7 @@ page 31162 "Cash Document List CZP"
                         CurrPage.Update(false);
                     end;
                 }
+#endif
                 action("Re&open")
                 {
                     ApplicationArea = Basic, Suite;
@@ -326,6 +356,14 @@ page 31162 "Cash Document List CZP"
         }
         area(Promoted)
         {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(CopyDocument_Promoted; CopyDocument)
+                {
+                }
+            }
             group(Category_Category4)
             {
                 Caption = 'Release';
@@ -334,9 +372,14 @@ page 31162 "Cash Document List CZP"
                 actionref(ReleasePromoted; "&Release")
                 {
                 }
+#if not CLEAN22
                 actionref(ReleaseAndPrintPromoted; "Release and &Print")
                 {
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The action will only be available on the card page of the cash document.';
+                    ObsoleteTag = '22.0';
                 }
+#endif
                 actionref(ReopenPromoted; "Re&open")
                 {
                 }
@@ -367,6 +410,34 @@ page 31162 "Cash Document List CZP"
                 {
                 }
             }
+#if not CLEAN22
+            group(Category_Report)
+            {
+                Caption = 'Report';
+                ObsoleteTag = '22.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'This group has been removed.';
+                Visible = false;
+
+                actionref(PrintToAttachmentPromoted; PrintToAttachment)
+                {
+                }
+                actionref(PrintPromoted; "&Print")
+                {
+                }
+            }
+#endif
+            group(Category_Category8)
+            {
+                Caption = 'Print';
+
+                actionref(Print_Promoted; "&Print")
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
             group(Category_Category7)
             {
                 Caption = 'Cash Document';
@@ -375,14 +446,6 @@ page 31162 "Cash Document List CZP"
                 {
                 }
                 actionref(ApprovalsPromoted; "A&pprovals")
-                {
-                }
-            }
-            group(Category_Report)
-            {
-                Caption = 'Report';
-
-                actionref(PrintToAttachmentPromoted; PrintToAttachment)
                 {
                 }
             }

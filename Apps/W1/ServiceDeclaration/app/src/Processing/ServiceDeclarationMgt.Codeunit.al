@@ -11,6 +11,10 @@ codeunit 5012 "Service Declaration Mgt."
         AssistedSetupDescriptionTxt: Label 'The Service Declaration it easy to export the servide declaration in the format that the authorities in your country require.';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2203744', Locked = true;
         CurrentLbl: Label 'CURRENT';
+        PeriodAlreadyReportedQst: Label 'You''ve already submitted the report for this period.\Do you want to continue?';
+        ImportDefaultServDeclDataExchDefConfirmQst: Label 'This will create the default Service Declaration %1 . \\All existing default Service Declaration %1 will be overwritten.\\Do you want to continue?', Comment = '%1 - Data Exchange Definition caption';
+        UpdateVATReportConfigConfirmQst: Label 'Do you want to recreate %1 ?', Comment = '%1 - VAT Reports Configuration caption';
+        DataExchangeXMLTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><root>  <DataExchDef Code="SERVDECL-2022" Name="SERVICEDECLARATION" Type="5" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="1277" ColumnSeparator="5" CustomColumnSeparator=";" FileType="1" ReadingWritingCodeunit="1276">    <DataExchLineDef LineType="1" Code="DEFAULT" Name="DEFAULT" ColumnCount="5">      <DataExchColumnDef ColumnNo="1" Name="Service Transaction Type" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchColumnDef ColumnNo="2" Name="Country/Region Code" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchColumnDef ColumnNo="3" Name="Currency Code" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchColumnDef ColumnNo="4" Name="Sales Amount" Show="false" DataType="2" DataFormat="&lt;Sign&gt;&lt;Integer&gt;&lt;Decimals&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchColumnDef ColumnNo="5" Name="Purchase Amount" Show="false" DataType="2" DataFormat="&lt;Sign&gt;&lt;Integer&gt;&lt;Decimals&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchMapping TableId="5024" Name="" MappingCodeunit="1269">        <DataExchFieldMapping ColumnNo="1" FieldID="5" />        <DataExchFieldMapping ColumnNo="2" FieldID="6" />        <DataExchFieldMapping ColumnNo="3" FieldID="7" />        <DataExchFieldMapping ColumnNo="4" FieldID="10" Optional="true" TransformationRule="ROUNDNEAR1">          <TransformationRules>            <Code>ROUNDNEAR1</Code>            <Description>Rounding decimal nearest to 1</Description>            <TransformationType>14</TransformationType>            <FindValue />            <ReplaceValue />            <StartPosition>0</StartPosition>            <Length>0</Length>            <DataFormat />            <DataFormattingCulture />            <NextTransformationRule />            <TableID>0</TableID>            <SourceFieldID>0</SourceFieldID>            <TargetFieldID>0</TargetFieldID>            <FieldLookupRule>0</FieldLookupRule>            <Precision>1.00</Precision>            <Direction>=</Direction>            <ExportFromDateType>0</ExportFromDateType>          </TransformationRules>        </DataExchFieldMapping>        <DataExchFieldMapping ColumnNo="5" FieldID="11" Optional="true" TransformationRule="ROUNDNEAR1">          <TransformationRules>            <Code>ROUNDNEAR1</Code>            <Description>Rounding decimal nearest to 1</Description>            <TransformationType>14</TransformationType>            <FindValue />            <ReplaceValue />            <StartPosition>0</StartPosition>            <Length>0</Length>            <DataFormat />            <DataFormattingCulture />            <NextTransformationRule />            <TableID>0</TableID>            <SourceFieldID>0</SourceFieldID>            <TargetFieldID>0</TargetFieldID>            <FieldLookupRule>0</FieldLookupRule>            <Precision>1.00</Precision>            <Direction>=</Direction>            <ExportFromDateType>0</ExportFromDateType>          </TransformationRules>        </DataExchFieldMapping>        <DataExchFieldGrouping FieldID="5" />        <DataExchFieldGrouping FieldID="6" />        <DataExchFieldGrouping FieldID="7" />      </DataExchMapping>    </DataExchLineDef>  </DataExchDef></root>', Locked = true;
 
     procedure IsFeatureEnabled() IsEnabled: Boolean
     var
@@ -19,6 +23,13 @@ codeunit 5012 "Service Declaration Mgt."
     begin
         IsEnabled := FeatureMgtFacade.IsEnabled(GetServiceDeclarationFeatureKeyId()) and ServDeclSetup.Get();
         OnAfterCheckFeatureEnabled(IsEnabled);
+    end;
+
+    internal procedure IsFeatureEnabledWithoutSetup() IsEnabled: Boolean
+    var
+        FeatureMgtFacade: Codeunit "Feature Management Facade";
+    begin
+        IsEnabled := FeatureMgtFacade.IsEnabled(GetServiceDeclarationFeatureKeyId());
     end;
 
     procedure IsServTransTypeEnabled(): Boolean
@@ -76,7 +87,6 @@ codeunit 5012 "Service Declaration Mgt."
         XMLOutStream: OutStream;
         XMLInStream: InStream;
         ServDeclDataExchDefCode: Code[20];
-        DataExchangeXMLTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><root>  <DataExchDef Code="SERVDECL-2022" Name="SERVICEDECLARATION" Type="5" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="1277" ColumnSeparator="5" CustomColumnSeparator=";" FileType="1" ReadingWritingCodeunit="1276">    <DataExchLineDef LineType="1" Code="DEFAULT" Name="DEFAULT" ColumnCount="5">      <DataExchColumnDef ColumnNo="1" Name="Service Transaction Type" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchColumnDef ColumnNo="2" Name="Country/Region Code" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchColumnDef ColumnNo="3" Name="Currency Code" Show="false" DataType="0" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchColumnDef ColumnNo="4" Name="Sales Amount" Show="false" DataType="2" DataFormat="&lt;Sign&gt;&lt;Integer&gt;&lt;Decimals&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchColumnDef ColumnNo="5" Name="Purchase Amount" Show="false" DataType="2" DataFormat="&lt;Sign&gt;&lt;Integer&gt;&lt;Decimals&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />      <DataExchMapping TableId="5024" Name="" MappingCodeunit="1269">        <DataExchFieldMapping ColumnNo="1" FieldID="5" />        <DataExchFieldMapping ColumnNo="2" FieldID="6" />        <DataExchFieldMapping ColumnNo="3" FieldID="7" />        <DataExchFieldMapping ColumnNo="4" FieldID="10" Optional="true" TransformationRule="ROUNDNEAR1">          <TransformationRules>            <Code>ROUNDNEAR1</Code>            <Description>Rounding decimal nearest to 1</Description>            <TransformationType>14</TransformationType>            <FindValue />            <ReplaceValue />            <StartPosition>0</StartPosition>            <Length>0</Length>            <DataFormat />            <DataFormattingCulture />            <NextTransformationRule />            <TableID>0</TableID>            <SourceFieldID>0</SourceFieldID>            <TargetFieldID>0</TargetFieldID>            <FieldLookupRule>0</FieldLookupRule>            <Precision>1.00</Precision>            <Direction>=</Direction>            <ExportFromDateType>0</ExportFromDateType>          </TransformationRules>        </DataExchFieldMapping>        <DataExchFieldMapping ColumnNo="5" FieldID="11" Optional="true" TransformationRule="ROUNDNEAR1">          <TransformationRules>            <Code>ROUNDNEAR1</Code>            <Description>Rounding decimal nearest to 1</Description>            <TransformationType>14</TransformationType>            <FindValue />            <ReplaceValue />            <StartPosition>0</StartPosition>            <Length>0</Length>            <DataFormat />            <DataFormattingCulture />            <NextTransformationRule />            <TableID>0</TableID>            <SourceFieldID>0</SourceFieldID>            <TargetFieldID>0</TargetFieldID>            <FieldLookupRule>0</FieldLookupRule>            <Precision>1.00</Precision>            <Direction>=</Direction>            <ExportFromDateType>0</ExportFromDateType>          </TransformationRules>        </DataExchFieldMapping>        <DataExchFieldGrouping FieldID="5" />        <DataExchFieldGrouping FieldID="6" />        <DataExchFieldGrouping FieldID="7" />      </DataExchMapping>    </DataExchLineDef>  </DataExchDef></root>';
         HandledDataExchDefCode: Code[20];
     begin
         OnBeforeAssignExchDefToServDeclSetup(HandledDataExchDefCode);
@@ -213,6 +223,39 @@ codeunit 5012 "Service Declaration Mgt."
         exit('ServiceDeclaration');
     end;
 
+    internal procedure ReleaseIntrastatReport(var ServiceDeclHeader: Record "Service Declaration Header")
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeReleaseServiceDeclaration(ServiceDeclHeader, IsHandled);
+        if IsHandled then
+            exit;
+
+        ServiceDeclHeader.Status := ServiceDeclHeader.Status::Released;
+        ServiceDeclHeader.Modify();
+
+        OnAfterReleaseServiceDeclaration(ServiceDeclHeader);
+    end;
+
+    internal procedure ReopenIntrastatReport(var ServiceDeclHeader: Record "Service Declaration Header")
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeReopenServiceDeclaration(ServiceDeclHeader, IsHandled);
+        if IsHandled then
+            exit;
+
+        if ServiceDeclHeader.Reported then
+            if not Confirm(PeriodAlreadyReportedQst) then
+                exit;
+
+        ServiceDeclHeader.Status := ServiceDeclHeader.Status::Open;
+        ServiceDeclHeader.Modify();
+
+        OnAfterReopenServiceDeclaration(ServiceDeclHeader);
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', true, true)]
     local procedure InsertIntoAssistedSetup()
@@ -502,6 +545,40 @@ codeunit 5012 "Service Declaration Mgt."
         end;
     end;
 
+    internal procedure CreateDefaultDataExchangeDef()
+    var
+        ServDeclSetup: Record "Service Declaration Setup";
+        DataExchDef: Record "Data Exch. Def";
+        VATReportsConfiguration: Record "VAT Reports Configuration";
+        TempBlob: Codeunit "Temp Blob";
+        DataExchDefCard: Page "Data Exch Def Card";
+        IsHandled: Boolean;
+        XMLOutStream: OutStream;
+        XMLInStream: InStream;
+    begin
+        if not Confirm(StrSubstNo(ImportDefaultServDeclDataExchDefConfirmQst, DataExchDefCard.Caption)) then
+            exit;
+
+        IsHandled := false;
+        OnBeforeCreateDefaultDataExchangeDef(IsHandled);
+        if not IsHandled then begin
+            if DataExchDef.Get('SERVDECL-2022') then
+                DataExchDef.Delete(true);
+
+            TempBlob.CreateOutStream(XMLOutStream);
+            XMLOutStream.WriteText(DataExchangeXMLTxt);
+            TempBlob.CreateInStream(XMLInStream);
+            Xmlport.Import(Xmlport::"Imp / Exp Data Exch Def & Map", XMLInStream);
+
+            ServDeclSetup.Get();
+            ServDeclSetup."Data Exch. Def. Code" := 'SERVDECL-2022';
+            ServDeclSetup.Modify();
+        end;
+
+        if Confirm(StrSubstNo(UpdateVATReportConfigConfirmQst, VATReportsConfiguration.TableCaption)) then
+            InsertVATReportsConfiguration();
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromSalesLine', '', false, false)]
     local procedure OnAfterCopyItemJnlLineFromSalesLine(var ItemJnlLine: Record "Item Journal Line"; SalesLine: Record "Sales Line")
     begin
@@ -592,6 +669,30 @@ codeunit 5012 "Service Declaration Mgt."
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitServDeclSetup(var ServDeclSetup: Record "Service Declaration Setup")
     begin
+    end;
 
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeReleaseServiceDeclaration(var ServiceDeclHeader: Record "Service Declaration Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterReleaseServiceDeclaration(var ServiceDeclHeader: Record "Service Declaration Header")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeReopenServiceDeclaration(var ServiceDeclHeader: Record "Service Declaration Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterReopenServiceDeclaration(var ServiceDeclHeader: Record "Service Declaration Header")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeCreateDefaultDataExchangeDef(var IsHandled: Boolean);
+    begin
     end;
 }

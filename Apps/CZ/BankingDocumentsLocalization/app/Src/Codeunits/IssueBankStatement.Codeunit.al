@@ -77,9 +77,6 @@ codeunit 31357 "Issue Bank Statement CZB"
         NothingToIssueErr: Label 'There is nothing to issue.';
         CustVendIsBlockedErr: Label '%1 %2 is Blocked.', Comment = '%1 = TableCaption; %2 = No.';
         PrivacyBlockedErr: Label '%1 %2 is blocked for privacy.', Comment = '%1 = TableCaption; %2 = No.';
-#if not CLEAN19
-        DuplicityFoundErr: Label '%1 %2 was found. Resolve this before issue banking document.', Comment = '%1 = TableCaption, %2 = No.';
-#endif
 
     procedure CheckBankStatementLine(IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB"; CauseError: Boolean; AddError: Boolean) ReturnValue: Boolean
     var
@@ -139,28 +136,6 @@ codeunit 31357 "Issue Bank Statement CZB"
         ErrorText2 := ErrorText[NumberNo];
     end;
 
-#if not CLEAN19
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Issue Bank Statement CZB", 'OnBeforeIssueBankStatement', '', false, false)]
-    local procedure CheckObsoleteOnBeforeIssuePaymentOrderCZB(var BankStatementHeaderCZB: Record "Bank Statement Header CZB")
-    var
-        DuplicitBankStatementHeader: Record "Bank Statement Header";
-    begin
-        if DuplicitBankStatementHeader.Get(BankStatementHeaderCZB."No.") then
-            Error(DuplicityFoundErr, DuplicitBankStatementHeader.TableCaption(), DuplicitBankStatementHeader."No.");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Issue Bank Statement", 'OnBeforeIssueBankStatement', '', false, false)]
-    local procedure CheckObsoleteOnBeforeIssuePaymentOrder(var BankStatementHeader: Record "Bank Statement Header")
-    var
-        DuplicitBankStatementHeaderCZB: Record "Bank Statement Header CZB";
-    begin
-        if DuplicitBankStatementHeaderCZB.Get(BankStatementHeader."No.") then
-            Error(DuplicityFoundErr, DuplicitBankStatementHeaderCZB.TableCaption(), DuplicitBankStatementHeaderCZB."No.");
-    end;
-#pragma warning restore
-
-#endif
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIssueBankStatement(var BankStatementHeaderCZB: Record "Bank Statement Header CZB")
     begin

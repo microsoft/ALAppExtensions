@@ -8,10 +8,7 @@ permissionset 4692 "Recurrence Schedule - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Confirm Management - Objects";
-
-    Permissions = Codeunit "Recurrence Schedule Impl." = X,
-                  Codeunit "Recurrence Schedule" = X,
+    Permissions = Codeunit "Recurrence Schedule" = X,
                   Page "Recurrence Schedule Card" = X,
                   Table "Recurrence Schedule" = X;
 }

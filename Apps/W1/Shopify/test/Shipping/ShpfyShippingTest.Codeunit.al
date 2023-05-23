@@ -65,6 +65,7 @@ codeunit 139606 "Shpfy Shipping Test"
         OrderLine.Insert();
 
         exit(OrderHeader."Shopify Order Id");
+<<<<<<< HEAD
     end;
 
     local procedure CreateShopifyFulfillmentOrder(ShopifyOrderId: BigInteger): BigInteger
@@ -93,9 +94,39 @@ codeunit 139606 "Shpfy Shipping Test"
             until OrderLine.Next() = 0;
 
         exit(FulfillmentOrderHeader."Shopify Fulfillment Order Id");
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
-    local procedure CreateRandomSalesShipment(var SalesShipmentHeader: record "Sales Shipment Header"; ShopifyOrderId: BigInteger; LocationCode: Code[10])
+    local procedure CreateShopifyFulfillmentOrder(ShopifyOrderId: BigInteger): BigInteger
+    var
+        OrderLine: Record "Shpfy Order Line";
+        FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
+        FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
+    begin
+        Clear(FulfillmentOrderHeader);
+        FulfillmentOrderHeader."Shopify Fulfillment Order Id" := Any.IntegerInRange(10000, 99999);
+        FulfillmentOrderHeader."Shopify Order Id" := ShopifyOrderId;
+        FulfillmentOrderHeader.Insert();
+
+        OrderLine.Reset();
+        OrderLine.SetRange("Shopify Order Id", ShopifyOrderId);
+        if OrderLine.FindSet() then
+            repeat
+                Clear(FulfillmentOrderLine);
+                FulfillmentOrderLine."Shopify Fulfillment Order Id" := FulfillmentOrderHeader."Shopify Fulfillment Order Id";
+                FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id" := Any.IntegerInRange(10000, 99999);
+                FulfillmentOrderLine."Shopify Order Id" := FulfillmentOrderHeader."Shopify Order Id";
+                FulfillmentOrderLine."Shopify Product Id" := OrderLine."Shopify Product Id";
+                FulfillmentOrderLine."Shopify Variant Id" := OrderLine."Shopify Variant Id";
+                FulfillmentOrderLine."Remaining Quantity" := OrderLine.Quantity;
+                FulfillmentOrderLine.Insert();
+            until OrderLine.Next() = 0;
+
+        exit(FulfillmentOrderHeader."Shopify Fulfillment Order Id");
+    end;
+
+    local procedure CreateRandomSalesShipment(var SalesShipmentHeader: Record "Sales Shipment Header"; ShopifyOrderId: BigInteger; LocationCode: Code[10])
     var
         SalesShipmentLine: Record "Sales Shipment Line";
         OrderLine: Record "Shpfy Order Line";

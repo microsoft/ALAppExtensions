@@ -63,7 +63,10 @@ codeunit 139589 "Shpfy Customer API Test"
     procedure UnitTestUpdateShopifyCustomerFields()
     var
         ShopifyCustomer: Record "Shpfy Customer";
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         CustomerAddress: Record "Shpfy Customer Address";
         CustomerApi: Codeunit "Shpfy Customer API";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";

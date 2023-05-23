@@ -364,7 +364,13 @@ table 31254 "Iss. Bank Statement Header CZB"
     local procedure SetGeneralJournalLineFilter(var GenJournalLine: Record "Gen. Journal Line"; DocumentNo: Code[20])
     var
         BankAccount: Record "Bank Account";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeSetGeneralJournalLineFilter(GenJournalLine, DocumentNo, IsHandled);
+        if IsHandled then
+            exit;
+
         TestField("Bank Account No.");
         BankAccount.Get("Bank Account No.");
         BankAccount.TestField("Payment Jnl. Template Name CZB");
@@ -507,6 +513,11 @@ table 31254 "Iss. Bank Statement Header CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeRunGeneralJournalCreation(var IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var ShowRequestForm: Boolean; var HideMessages: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeSetGeneralJournalLineFilter(var GenJournalLine: Record "Gen. Journal Line"; DocumentNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

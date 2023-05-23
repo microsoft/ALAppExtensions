@@ -5,6 +5,7 @@
 
 codeunit 132524 "Edit in Excel Test Library"
 {
+#if not CLEAN22
     /// <summary>    
     /// Calls the CreateDataEntityExportInfo function of the Edit in Excel Impl. codeunit. This function exists purely 
     /// for test purposes.
@@ -21,22 +22,7 @@ codeunit 132524 "Edit in Excel Test Library"
     begin
         EditinExcelImpl.CreateDataEntityExportInfo(TenantWebService, DataEntityExportInfoParam, TenantWebServiceColumns, SearchText, FilterClause);
     end;
-
-    /// <summary>    
-    /// Calls the AssembleFilter function of the Edit in Excel Impl. codeunit. This function exists purely 
-    /// for test purposes.
-    /// </summary>
-    /// <param name="EntityFilterCollectionNode">The main collection node that represents the whole filter</param>
-    /// <param name="ODataJsonFilter">Structured filter json object</param>
-    /// <param name="ODataJsonPayload">Structured filter payload</param>
-    /// <param name="PageNumber">The page number filtering applies to.</param>
-    [Scope('OnPrem')]
-    procedure AssembleFilter(var EntityFilterCollectionNode: DotNet FilterCollectionNode; ODataJsonFilter: JsonObject; ODataJsonPayload: JsonObject; PageNumber: Integer)
-    var
-        EditinExcelImpl: Codeunit "Edit in Excel Impl.";
-    begin
-        EditinExcelImpl.AssembleFilter(EntityFilterCollectionNode, ODataJsonFilter, ODataJsonPayload, PageNumber);
-    end;
+#endif
 
     /// <summary>    
     /// Calls the ExternalizeODataObjectName function of the Edit in Excel Impl. codeunit. This function exists purely 
@@ -52,37 +38,29 @@ codeunit 132524 "Edit in Excel Test Library"
     end;
 
     /// <summary>
-    /// Calls the ConvertStructuredFiltersToEntityFilterCollection function of the Edit in Excel Impl. codeunit. This function exists purely 
+    /// Calls the ReadFromJsonFilters function of the Edit in Excel Filters codeunit. This function exists purely 
     /// for test purposes.
     /// </summary>
-    /// <param name="StructuredFilterObject">Filter json object</param>
-    /// <param name="ODataJsonPayload">Payload json binding edm types with al names of fields</param>
-    /// <param name="FieldFilterGroupingOperator">The dictionary of already used operators on fields</param>
-    /// <param name="PageNumber">Number of the filtered page</param>
-    /// <param name="Excel Filter Node Type">Type of filtered applied on the node</param>
-    /// <param name="FilterNodes">The dictionary of filtered field names and their filter collection nodes</param>
+    /// <param name="EditinExcelFilters">The excel filter codeunit onto which the filters are applied.</param>
+    /// <param name="JsonFilter">Filter json object.</param>
+    /// <param name="JsonPayload">Payload json binding edm types with al names of fields.</param>
+    /// <param name="PageId">The ID of the page being filtered on.</param>
     [Scope('OnPrem')]
-    procedure ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject: JsonObject; var ODataJsonPayload: JsonObject; var EntityFilterCollectionNode: DotNet FilterCollectionNode; var FieldFilterGroupingOperator: Dictionary of [Text, Text]; PageNumber: Integer; ParentGroupingOperator: Enum "Excel Filter Node Type"; var FilterNodes: DotNet GenericDictionary2)
-    var
-        EditinExcelImpl: Codeunit "Edit in Excel Impl.";
+    procedure ReadFromJsonFilters(var EditinExcelFilters: Codeunit "Edit in Excel Filters"; JsonFilter: JsonObject; JsonPayload: JsonObject; PageId: Integer)
     begin
-        EditinExcelImpl.ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject, ODataJsonPayload, FieldFilterGroupingOperator, PageNumber, ParentGroupingOperator, FilterNodes);
+        EditinExcelFilters.ReadFromJsonFilters(JsonFilter, JsonPayload, PageId);
     end;
 
     /// <summary>
-    /// Calls the GetEndPointAndCreateWorkbookJson function of the Edit in Excel Impl. codeunit. This function exists purely 
+    /// Calls the GetFilters function of the Edit in Excel Filters codeunit. This function exists purely 
     /// for test purposes.
     /// </summary>
-    /// <param name="ServiceName">The name of the web service</param>
-    /// <param name="ODataJsonFilter">Filter json object</param>
-    /// <param name="ODataJsonPayload">Payload json binding edm types with al names of fields</param>
-    /// <param name="SearchFilter">The search parameter</param>
+    /// <param name="EditinExcelFilters">The excel filter codeunit onto which the filters are applied.</param>
+    /// <param name="FieldFilters">Dictionary of [Text, DotNet FilterCollectionNode], (FieldName, FiltersForField).</param>
     [Scope('OnPrem')]
-    procedure GetEndPointAndCreateWorkbookWStructuredFilter(ServiceName: Text[240]; ODataJsonFilter: JsonObject; ODataJsonPayload: JsonObject; SearchFilter: Text)
-    var
-        EditInExcelImpl: Codeunit "Edit in Excel Impl.";
+    procedure GetFilters(var EditinExcelFilters: Codeunit "Edit in Excel Filters"; var FieldFilters: DotNet GenericDictionary2)
     begin
-        EditInExcelImpl.GetEndPointAndCreateWorkbookWStructuredFilter(ServiceName, ODataJsonFilter, ODataJsonPayload, SearchFilter);
+        EditinExcelFilters.GetFilters(FieldFilters);
     end;
 
     /// <summary>
@@ -93,9 +71,9 @@ codeunit 132524 "Edit in Excel Test Library"
     [Scope('OnPrem')]
     procedure ReduceRedundantFilterCollectionNodes(var EntityfilterCollectionNode: DotNet FilterCollectionNode)
     var
-        EditInExcelImpl: Codeunit "Edit in Excel Impl.";
+        EditinExcelWorkbookImpl: Codeunit "Edit in Excel Workbook Impl.";
     begin
-        EditInExcelImpl.ReduceRedundantFilterCollectionNodes(EntityfilterCollectionNode);
+        EditinExcelWorkbookImpl.ReduceRedundantFilterCollectionNodes(EntityfilterCollectionNode);
     end;
 
 }

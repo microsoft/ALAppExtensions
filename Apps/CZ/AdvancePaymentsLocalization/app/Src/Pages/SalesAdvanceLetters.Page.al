@@ -7,7 +7,6 @@ page 31170 "Sales Advance Letters CZZ"
     SourceTable = "Sales Adv. Letter Header CZZ";
     UsageCategory = Lists;
     CardPageId = "Sales Advance Letter CZZ";
-    PromotedActionCategories = 'New,Process,Report,Release,History,Print/Send,Navigate';
     Editable = false;
 
     layout
@@ -167,6 +166,11 @@ page 31170 "Sales Advance Letters CZZ"
                 Caption = 'Attachments';
                 SubPageLink = "Table ID" = const(31004), "No." = field("No.");
             }
+            part(IncomingDocAttachFactBox; "Incoming Doc. Attach. FactBox")
+            {
+                ApplicationArea = Basic, Suite;
+                ShowFilter = false;
+            }
             systempart(Links; Links)
             {
                 ApplicationArea = RecordLinks;
@@ -214,6 +218,20 @@ page 31170 "Sales Advance Letters CZZ"
                     RunObject = Page "Suggested Usage CZZ";
                     RunPageLink = "Advance Letter Type" = const(Sales), "Advance Letter No." = field("No.");
                 }
+                action(Approvals)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Approvals';
+                    Image = Approvals;
+                    ToolTip = 'This function opens the approvals entries.';
+
+                    trigger OnAction()
+                    var
+                        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+                    begin
+                        ApprovalsMgmt.OpenApprovalEntriesPage(Rec.RecordId);
+                    end;
+                }
                 action(DocAttach)
                 {
                     ApplicationArea = Basic, Suite;
@@ -243,10 +261,6 @@ page 31170 "Sales Advance Letters CZZ"
                     Caption = 'Advance Letter Entries';
                     Image = Entries;
                     ShortCutKey = 'Ctrl+F7';
-                    Promoted = true;
-                    PromotedIsBig = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'View a list of entries related to this document.';
                     RunObject = Page "Sales Adv. Letter Entries CZZ";
                     RunPageLink = "Sales Adv. Letter No." = field("No.");
@@ -264,38 +278,31 @@ page 31170 "Sales Advance Letters CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Release';
-                    Enabled = Status = Status::New;
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
-                    PromotedCategory = Category4;
                     ShortCutKey = 'Ctrl+F9';
-                    ToolTip = 'Release the document.';
+                    ToolTip = 'Release the advance letter document to indicate that it has been account. The status then changes to To Pay.';
 
                     trigger OnAction()
                     var
-                        RelSalesAdvLetterDoc: Codeunit "Rel. Sales Adv.Letter Doc. CZZ";
+                        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
                     begin
-                        RelSalesAdvLetterDoc.Run(Rec);
+                        CurrPage.SetSelectionFilter(SalesAdvLetterHeaderCZZ);
+                        Rec.PerformManualRelease(SalesAdvLetterHeaderCZZ);
                     end;
                 }
                 action(Reopen)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Reopen';
-                    Enabled = Status = Status::"To Pay";
                     Image = ReOpen;
-                    Promoted = true;
-                    PromotedOnly = true;
-                    PromotedCategory = Category4;
-                    ToolTip = 'Reopen the document.';
+                    ToolTip = 'Reopen the document to change it after it has been approved. Approved documents have the To Pay status and must be opened before they can be changed.';
 
                     trigger OnAction()
                     var
-                        RelSalesAdvLetterDoc: Codeunit "Rel. Sales Adv.Letter Doc. CZZ";
+                        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
                     begin
-                        RelSalesAdvLetterDoc.Reopen(Rec);
+                        CurrPage.SetSelectionFilter(SalesAdvLetterHeaderCZZ);
+                        Rec.PerformManualReopen(SalesAdvLetterHeaderCZZ);
                     end;
                 }
             }
@@ -307,9 +314,6 @@ page 31170 "Sales Advance Letters CZZ"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Advance Letter';
                 Image = PrintReport;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Report;
                 Ellipsis = true;
                 ToolTip = 'Allows the print of advance letter.';
 
@@ -327,8 +331,6 @@ page 31170 "Sales Advance Letters CZZ"
                 ApplicationArea = Basic, Suite;
                 Caption = '&Send by Email';
                 Image = Email;
-                Promoted = true;
-                PromotedCategory = Report;
                 ToolTip = 'Prepare to email the document. The Send Email window opens prefilled with the customer''s email address so you can add or edit information.';
 
                 trigger OnAction()
@@ -345,9 +347,6 @@ page 31170 "Sales Advance Letters CZZ"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
@@ -387,5 +386,59 @@ page 31170 "Sales Advance Letters CZZ"
                 RunObject = Report "Sales Adv. Letters Recap. CZZ";
             }
         }
+        area(Promoted)
+        {
+            group(Category_Category4)
+            {
+                Caption = 'Release';
+                ShowAs = SplitButton;
+
+                actionref(Release_Promoted; Release)
+                {
+                }
+                actionref(Reopen_Promoted; Reopen)
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Print/Send';
+
+                actionref(AdvanceLetter_Promoted; AdvanceLetter)
+                {
+                }
+                actionref(Email_Promoted; Email)
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Sales Advance Letter';
+
+                actionref(Dimensions_Promoted; Dimensions)
+                {
+                }
+                actionref(SuggestedUsage_Promoted; SuggestedUsage)
+                {
+                }
+                actionref(Approvals_Promoted; Approvals)
+                {
+                }
+                actionref(DocAttach_Promoted; DocAttach)
+                {
+                }
+                actionref(Entries_Promoted; Entries)
+                {
+                }
+            }
+        }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        CurrPage.IncomingDocAttachFactBox.Page.LoadDataFromRecord(Rec);
+    end;
 }

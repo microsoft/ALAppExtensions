@@ -6,6 +6,8 @@
 codeunit 1908 "Camera Page Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         FileHelper: Codeunit "File Helper";

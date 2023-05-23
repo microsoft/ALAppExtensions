@@ -14,10 +14,6 @@ codeunit 31072 "User Setup Adv. Management CZL"
         JournalPermErr: Label 'Access to journal %1 is not allowed in extended user check.', Comment = '%1 = journal template code';
         ReqWkshPermErr: Label 'Access to worksheet %1 is not allowed in extended user check.', Comment = '%1 = journal template code';
         VATStmtPermErr: Label 'Access to statement %1 is not allowed in extended user check.', Comment = '%1 = journal template code';
-#if not CLEAN19
-        PaymOrdDeniedErr: Label 'Access to payment orders of bank account %1 is not allowed in extended user check.', Comment = '%1 = bank account number';
-        BankStmtDeniedErr: Label 'Access to bank statements of bank account %1 is not allowed in extended user check.', Comment = '%1 = bank account number';
-#endif
 
     [TryFunction]
     procedure CheckJournalTemplate(Type: Enum "User Setup Line Type CZL"; JournalTemplateCode: Code[10])
@@ -294,26 +290,6 @@ codeunit 31072 "User Setup Adv. Management CZL"
         TempUserID := CopyStr(UserId, 1, MaxStrLen(TempUserID));
     end;
 
-#if not CLEAN19
-    [Obsolete('Moved to Banking Documents Localization for Czech.', '19.0')]
-    procedure CheckBankAccountNo(Type: Enum "User Setup Line Type CZL"; BankAccNo: Code[20])
-    var
-        UserSetupLineCZL: Record "User Setup Line CZL";
-    begin
-        GetUserSetup();
-        if not UserSetup."Check Payment Orders" and not UserSetup."Check Bank Statements" then
-            exit;
-
-        if not CheckUserSetupLineCZL(UserSetup."User ID", Type, BankAccNo) then
-            case true of
-                (Type = UserSetupLineCZL.Type::"Payment Order") and UserSetup."Check Payment Orders":
-                    Error(PaymOrdDeniedErr, BankAccNo);
-                (Type = UserSetupLineCZL.Type::"Bank Statement") and UserSetup."Check Bank Statements":
-                    Error(BankStmtDeniedErr, BankAccNo);
-            end;
-    end;
-
-#endif
     procedure CheckWhseNetChangeTemplate(var ItemJournalLine: Record "Item Journal Line"): Boolean
     var
         UserSetupLineCZL: Record "User Setup Line CZL";

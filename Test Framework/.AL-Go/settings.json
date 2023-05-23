@@ -1,0 +1,14 @@
+{
+    "appFolders":  [
+        "..\\Modules\\DevTools\\TestFramework\\TestLibraries\\*",
+        "..\\Modules\\DevTools\\TestFramework\\TestRunner"
+    ],
+    "testFolders":  [
+    ],
+    "buildModes": [
+        "Translated"
+    ],
+    "doNotRunTests": true,
+    "enableAppSourceCop": true,
+    "enablePerTenantExtensionCop":  true
+}

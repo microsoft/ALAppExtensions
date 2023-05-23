@@ -853,7 +853,7 @@ page 18493 "Subcontracting Order Subform"
     end;
 
     var
-#if not CLEAN19
+#if not CLEAN21
         PurchHeader: Record "Purchase Header";
         PurchPriceCalcMgt: Codeunit "Purch. Price Calc. Mgt.";
 #endif
@@ -967,7 +967,7 @@ page 18493 "Subcontracting Order Subform"
         exit(true);
     end;
 
-#if not CLEAN19
+#if not CLEAN21
 #pragma warning disable AS0072
     [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
 #pragma warning restore AS0072

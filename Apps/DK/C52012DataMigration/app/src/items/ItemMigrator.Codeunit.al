@@ -21,13 +21,19 @@ codeunit 1867 "C5 Item Migrator"
         UnitOfMeasureNotSpecifiedErr: Label 'A unit of measure is not specified for item %1.', Comment = '%1 is the current item number';
         ServiceItemInBOMErr: Label 'BOMs cannot include service items in %1. You must remove %2 from the BOM for %3.', Comment = '%1=Product name %2=Component item %3 = main item';
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
     procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
+    local procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateItem(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -39,13 +45,19 @@ codeunit 1867 "C5 Item Migrator"
         CreateNavItem(C5InvenTable, Sender);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateCostingMethod', '', true, true)]
     procedure OnMigrateCostingMethod(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateCostingMethod', '', true, true)]
+    local procedure OnMigrateCostingMethod(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateCostingMethod(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateCostingMethod(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -121,13 +133,19 @@ codeunit 1867 "C5 Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemTrackingCode', '', true, true)]
     procedure OnMigrateItemTrackingCode(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemTrackingCode', '', true, true)]
+    local procedure OnMigrateItemTrackingCode(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateItemTrackingCode(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItemTrackingCode(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -143,13 +161,19 @@ codeunit 1867 "C5 Item Migrator"
         end;
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemUnitOfMeasure', '', true, true)]
     procedure OnMigrateItemUnitOfMeasure(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemUnitOfMeasure', '', true, true)]
+    local procedure OnMigrateItemUnitOfMeasure(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateItemUnitOfMeasure(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItemUnitOfMeasure(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -167,13 +191,19 @@ codeunit 1867 "C5 Item Migrator"
         Sender.ModifyItem(false);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemDiscountGroup', '', true, true)]
     procedure OnMigrateItemDiscountGroup(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemDiscountGroup', '', true, true)]
+    local procedure OnMigrateItemDiscountGroup(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateItemDiscountGroup(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItemDiscountGroup(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -191,13 +221,19 @@ codeunit 1867 "C5 Item Migrator"
         end;
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemSalesLineDiscount', '', true, true)]
     procedure OnMigrateItemSalesLineDiscount(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemSalesLineDiscount', '', true, true)]
+    local procedure OnMigrateItemSalesLineDiscount(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateItemSalesLineDiscount(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItemSalesLineDiscount(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -209,13 +245,19 @@ codeunit 1867 "C5 Item Migrator"
         ImportItemInventoryCustomerDiscountsFromStaging(C5InvenTable);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPrice', '', true, true)]
     procedure OnMigrateItemPrices(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPrice', '', true, true)]
+    local procedure OnMigrateItemPrices(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateItemPrices(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItemPrices(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -227,13 +269,19 @@ codeunit 1867 "C5 Item Migrator"
         ImportItemPricesFromStaging(C5InvenTable);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemTariffNo', '', true, true)]
     procedure OnMigrateItemTariffNo(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemTariffNo', '', true, true)]
+    local procedure OnMigrateItemTariffNo(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateItemTariffNo(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItemTariffNo(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -250,13 +298,19 @@ codeunit 1867 "C5 Item Migrator"
         end;
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemDimensions', '', true, true)]
     procedure OnMigrateItemDimensions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemDimensions', '', true, true)]
+    local procedure OnMigrateItemDimensions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+#endif
     begin
         MigrateItemDimensions(Sender, RecordIdToMigrate);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItemDimensions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -287,13 +341,19 @@ codeunit 1867 "C5 Item Migrator"
                 C5HelperFunctions.GetDimensionValueName(Database::"C5 Purpose", C5InvenTable.Purpose));
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
     procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
+    local procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+#endif
     begin
         MigrateItemPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
@@ -341,13 +401,19 @@ codeunit 1867 "C5 Item Migrator"
         exit(FakeProductPostingGroupPrefixLbl + Group);
     end;
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
     procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
+    local procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+#endif
     begin
         MigrateInventoryTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
-#pragma warning restore AA0207
 
     internal procedure MigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
@@ -461,7 +527,7 @@ codeunit 1867 "C5 Item Migrator"
             until C5InvenPrice.Next() = 0;
     end;
 
-#if not CLEAN19
+#if not CLEAN21
     local procedure CreateSalesLineDiscountIfNeeded(C5InvenCustDisc: Record "C5 InvenCustDisc")
     var
         SalesTypeToSet: Option Customer,"Customer Disc. Group","All Customers",Campaign;
@@ -571,7 +637,7 @@ codeunit 1867 "C5 Item Migrator"
         UninitializedItemDataMigrationFacade.CreateItemDiscGroupIfNeeded(C5DiscountGroupCode, GroupDescription);
     end;
 
-#if not CLEAN19
+#if not CLEAN21
     local procedure CreateNavSalesPriceIfNeeded(C5InvenPrice: Record "C5 InvenPrice")
     var
         SalesType: Option Customer,"Customer Price Group","All Customers",Campaign;

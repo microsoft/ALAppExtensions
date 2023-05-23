@@ -7,6 +7,7 @@ entitlement "Dynamics 365 Business Central Device"
 #pragma warning disable AL0684
     ObjectEntitlements = "Application Objects - Exec",
                          "Azure AD Plan - Admin",
+                         "Security Groups - Admin",
                          "System Application - Admin";
 #pragma warning restore
 }

@@ -550,8 +550,8 @@ report 18031 "General Journal - Test GST"
         VendBlockLbl: Label '%1 must not be blocked with type %2 when %3 is %4', Comment = '%1 = Account Type", %2 = Cust.Blocked, %3 = Document Type field Caption, %4 = Document Type';
         AccountTypeErrLbl: Label 'You cannot enter G/L Account or Bank Account in both %1 and %2.', Comment = '%1 = Account No. is field Caption, %2 =  Bal. Account No. field Caption';
         ICPartnerBlockedLbl: Label '%1 %2 is linked to %3 %4.', Comment = '%1 = TableCaption , %2 = Account No., %3 = ICPartner.Table Caption, %4 =  IC Partner Code';
-        ICPartnerGLAccDirectionLbl: Label '%1 must not be specified when %2 is %3.', Comment = '%1 =FieldCaption("IC Partner G/L Acc. No."), %2 = FieldCaption("IC Direction"),%3 = Format("IC Direction")';
-        ICPartnerGLAccLbl: Label '%1 must not be specified when the document is not an intercompany transaction.', Comment = '%1 = FieldCaption("IC Partner G/L Acc. No.")';
+        ICPartnerGLAccDirectionLbl: Label '%1 must not be specified when %2 is %3.', Comment = '%1 =FieldCaption("IC Account No."), %2 = FieldCaption("IC Direction"),%3 = Format("IC Direction")';
+        ICPartnerGLAccLbl: Label '%1 must not be specified when the document is not an intercompany transaction.', Comment = '%1 = FieldCaption("IC Account No.")';
         JobNoCaptionLbl: Label '%1 %2 does not exist.', Comment = '%1 =Job.TableCaption,%2 = GenJnlLine."Job No."';
         JobNoBlockedLbl: Label '%1 must not be %2 for %3 %4.', Comment = '%1 = Job.FieldCaption(Blocked), %2 = Job.Blocked, %3 = Job.TableCaption, %4 = GenJnlLine."Job No."';
         DocumentNoLbl: Label '%1 %2 already exists.', Comment = '%1= FieldCaption("Document No."), %2 = "Document No."';
@@ -684,7 +684,6 @@ report 18031 "General Journal - Test GST"
     procedure CheckICDocument()
     var
         GenJnlLine4: Record "Gen. Journal Line";
-        "IC G/L Account": Record "IC G/L Account";
     begin
         if GenJnlTemplate.Type = GenJnlTemplate.Type::Intercompany then begin
             if ("Gen. Journal Line"."Posting Date" <> LastDate) or ("Gen. Journal Line"."Document Type" <> LastDocType) or ("Gen. Journal Line"."Document No." <> LastDocNo) then begin
@@ -699,50 +698,97 @@ report 18031 "General Journal - Test GST"
                 else
                     CurrentICPartner := '';
             end;
-            if (CurrentICPartner <> '') and ("Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Outgoing) then begin
-                if ("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-                   ("Gen. Journal Line"."Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-                   ("Gen. Journal Line"."Account No." <> '') and
-                   ("Gen. Journal Line"."Bal. Account No." <> '')
-                then
-                    AddError(
-                      StrSubstNo(
-                        AccountTypeErrLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."Account No."), "Gen. Journal Line".FieldCaption("Gen. Journal Line"."Bal. Account No.")))
-                else
-                    if (("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and ("Gen. Journal Line"."Account No." <> '')) XOR
-                       (("Gen. Journal Line"."Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-                        ("Gen. Journal Line"."Bal. Account No." <> ''))
-                    then begin
-                        if "Gen. Journal Line"."IC Partner G/L Acc. No." = '' then
-                            AddError(
-                              StrSubstNo(
-                                Text002Lbl, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No.")))
-                        else
-                            if "IC G/L Account".Get("Gen. Journal Line"."IC Partner G/L Acc. No.") then
-                                if "IC G/L Account".Blocked then
-                                    AddError(
-                                      StrSubstNo(
-                                        TableFieldLbl,
-                                        "IC G/L Account".FieldCaption(Blocked), false, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No."),
-                                        "Gen. Journal Line"."IC Partner G/L Acc. No."
-                                        ));
-                    end else
-                        if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then
-                            AddError(
-                              StrSubstNo(
-                                SpecifiedLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No.")));
-            end else
-                if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then begin
-                    if "Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Incoming then
-                        AddError(
-                          StrSubstNo(
-                            ICPartnerGLAccDirectionLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No."), "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Direction"), Format("Gen. Journal Line"."IC Direction")));
-                    if CurrentICPartner = '' then
-                        AddError(
-                          StrSubstNo(
-                            ICPartnerGLAccLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No.")));
-                end;
+            CheckICAccountNo();
         end;
+    end;
+
+    local procedure CheckICAccountNo()
+    var
+        ICGLAccount: Record "IC G/L Account";
+        ICBankAccount: Record "IC Bank Account";
+    begin
+#if not CLEAN22
+        if (CurrentICPartner <> '') and ("Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Outgoing) then begin
+            if ("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+               ("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+               ("Gen. Journal Line"."Account No." <> '') and
+               ("Gen. Journal Line"."Bal. Account No." <> '')
+            then
+                AddError(StrSubstNo(AccountTypeErrLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."Account No."),
+                    "Gen. Journal Line".FieldCaption("Gen. Journal Line"."Bal. Account No.")))
+            else
+                if (("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and ("Gen. Journal Line"."Account No." <> '')) XOR
+                   (("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+                    ("Gen. Journal Line"."Bal. Account No." <> ''))
+                then begin
+                    if "Gen. Journal Line"."IC Partner G/L Acc. No." = '' then
+                        AddError(StrSubstNo(Text002Lbl, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No.")))
+                    else begin
+                        if ICGLAccount.Get("Gen. Journal Line"."IC Partner G/L Acc. No.") then
+                            if ICGLAccount.Blocked then
+                                AddError(StrSubstNo(TableFieldLbl, ICGLAccount.FieldCaption(Blocked), false,
+                                    "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No."), "Gen. Journal Line"."IC Partner G/L Acc. No."));
+
+                        if "Gen. Journal Line"."IC Account Type" = "IC Journal Account Type"::"Bank Account" then
+                            if ICBankAccount.Get("Gen. Journal Line"."IC Account No.", CurrentICPartner) then
+                                if ICBankAccount.Blocked then
+                                    AddError(StrSubstNo(TableFieldLbl, ICBankAccount.FieldCaption(Blocked), false,
+                                        "Gen. Journal Line".FieldCaption("IC Account No."), "Gen. Journal Line"."IC Account No."));
+                    end;
+                end else
+                    if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then
+                        AddError(StrSubstNo(SpecifiedLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No.")));
+        end else
+            if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then begin
+                if "Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Incoming then
+                    AddError(StrSubstNo(ICPartnerGLAccDirectionLbl, "Gen. Journal Line".FieldCaption(
+                        "Gen. Journal Line"."IC Partner G/L Acc. No."), "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Direction"),
+                        Format("Gen. Journal Line"."IC Direction")));
+                if CurrentICPartner = '' then
+                    AddError(StrSubstNo(ICPartnerGLAccLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Partner G/L Acc. No.")));
+            end;
+#else
+        if (CurrentICPartner <> '') and ("Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Outgoing) then begin
+            if ("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+               ("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+               ("Gen. Journal Line"."Account No." <> '') and
+               ("Gen. Journal Line"."Bal. Account No." <> '')
+            then
+                AddError(StrSubstNo(AccountTypeErrLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."Account No."),
+                    "Gen. Journal Line".FieldCaption("Gen. Journal Line"."Bal. Account No.")))
+            else
+                if (("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and ("Gen. Journal Line"."Account No." <> '')) XOR
+                   (("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+                    ("Gen. Journal Line"."Bal. Account No." <> ''))
+                then begin
+                    if "Gen. Journal Line"."IC Account No." = '' then
+                        AddError(StrSubstNo(Text002Lbl, "Gen. Journal Line".FieldCaption("IC Account No.")))
+                    else begin
+                        if "Gen. Journal Line"."IC Account Type" = "IC Journal Account Type"::"G/L Account" then
+                            if ICGLAccount.Get("Gen. Journal Line"."IC Account No.") then
+                                if ICGLAccount.Blocked then
+                                    AddError(StrSubstNo(TableFieldLbl, ICGLAccount.FieldCaption(Blocked), false,
+                                        "Gen. Journal Line".FieldCaption("IC Account No."), "Gen. Journal Line"."IC Account No."));
+
+                        if "Gen. Journal Line"."IC Account Type" = "IC Journal Account Type"::"Bank Account" then
+                            if ICBankAccount.Get("Gen. Journal Line"."IC Account No.", CurrentICPartner) then
+                                if ICBankAccount.Blocked then
+                                    AddError(StrSubstNo(TableFieldLbl, ICBankAccount.FieldCaption(Blocked), false,
+                                        "Gen. Journal Line".FieldCaption("IC Account No."), "Gen. Journal Line"."IC Account No."));
+                    end;
+                end else
+                    if "Gen. Journal Line"."IC Account No." <> '' then
+                        AddError(StrSubstNo(SpecifiedLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Account No.")));
+        end else
+            if "Gen. Journal Line"."IC Account No." <> '' then begin
+                if "Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Incoming then
+                    AddError(StrSubstNo(ICPartnerGLAccDirectionLbl, "Gen. Journal Line".FieldCaption(
+                        "Gen. Journal Line"."IC Account No."), "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Direction"),
+                        Format("Gen. Journal Line"."IC Direction")));
+                if CurrentICPartner = '' then
+                    AddError(StrSubstNo(ICPartnerGLAccLbl, "Gen. Journal Line".FieldCaption("Gen. Journal Line"."IC Account No.")));
+            end;
+#endif
     end;
 
     procedure TestJobFields(var GenJnlLine: Record "Gen. Journal Line")

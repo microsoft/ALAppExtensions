@@ -67,14 +67,80 @@ page 9069 "Plan Configuration Card"
         }
     }
 
+    actions
+    {
+        area(Promoted)
+        {
+            actionref(BCAdminCenter_Promoted; BCAdminCenter)
+            {
+            }
+
+            actionref(M365AdminCenter_Promoted; M365AdminCenter)
+            {
+            }
+        }
+
+        area(Navigation)
+        {
+            action(BCAdminCenter)
+            {
+                ApplicationArea = All;
+                Caption = 'Business Central admin center', Locked = true;
+                Image = Setup;
+                ToolTip = 'Manage security groups and license-related features for each environment.';
+                Visible = IsSaaS;
+
+                trigger OnAction()
+                var
+                    PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+                begin
+                    PlanConfigurationImpl.OpenBCAdminCenter();
+                end;
+            }
+
+            action(M365AdminCenter)
+            {
+                ApplicationArea = All;
+                Caption = 'Microsoft 365 admin center', Locked = true;
+                Image = Setup;
+                ToolTip = 'Assign licenses to existing users or create new users.';
+
+
+                trigger OnAction()
+                var
+                    PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+                begin
+                    PlanConfigurationImpl.OpenM365AdminCenter();
+                end;
+            }
+        }
+    }
+
+    var
+        IsSaaS: Boolean;
+
     trigger OnAfterGetCurrRecord()
     var
         PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
     begin
+#if not CLEAN22
         CurrPage.DefaultPermissionSets.Page.Refresh(Rec."Plan ID");
+#endif
         CurrPage.CustomPermissionSets.Page.SetPlanId(Rec."Plan ID");
 
         PlanConfigurationImpl.ShowCustomPermissionsEffectNotification(Rec);
         CurrPage.Update(false);
+    end;
+
+    trigger OnInit()
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        IsSaaS := EnvironmentInformation.IsSaaS();
+    end;
+
+    procedure SetPlan(PlanId: Guid)
+    begin
+        Rec.SetRange("Plan ID", PlanId);
     end;
 }

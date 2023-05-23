@@ -22,7 +22,11 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [SCENARIO] Shopify product to an item and with the SKU empty.
         // [SCENARIO] Because there is no SKU mapping, it will try to find the mapping based on the bar code field on the Shopify Variant record.
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::" ";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::" ";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
         Item := ProductInitTest.CreateItem();
         ItemReference.SetRange("Item No.", Item."No.");
@@ -37,6 +41,7 @@ codeunit 139604 "Shpfy Product Mapping Test"
         ShopifyVariant.Modify();
         ShopifyProduct.Get(ShopifyVariant."Product Id");
 
+<<<<<<< HEAD
         // [WHEN] Invoke ShpfyProductMapping.FindMapping(ShpfyProduct, ShpfyVariant)
         ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant);
 
@@ -45,6 +50,16 @@ codeunit 139604 "Shpfy Product Mapping Test"
 
         // [THEN] ShpfyProduct."Item SystemId"= Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShpfyProduct."Item SystemId"= Item.SystemId');
+=======
+        // [WHEN] Invoke ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant)
+        ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant);
+
+        // [THEN] ShopifyVariant."Item SystemId" = Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShopifyVariant."Item SystemId" = Item.SystemId');
+
+        // [THEN] ShopifyProduct."Item SystemId"= Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShopifyProduct."Item SystemId"= Item.SystemId');
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     [Test]
@@ -61,7 +76,11 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [SCENARIO] Shopify product to an item and with the SKU mapped to Item No.
         // [SCENARIO] Because there is no SKU mapping, it will try to find the mapping based on the bar code field on the Shopify Variant record.
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Item No.";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Item No.";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
         Item := ProductInitTest.CreateItem();
         ShopifyVariant := ProductInitTest.CreateStandardProduct(Shop);
@@ -73,11 +92,19 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [GIVEN] A Shopify Variant record that belongs to the Shopify Product record and has SKU filled in with the item no.
         ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant);
 
+<<<<<<< HEAD
         // [THEN] ShpfyVariant."Item SystemId" = Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShpfyVariant."Item SystemId" = Item.SystemId');
 
         // [THEN] ShpfyProduct."Item SystemId"= Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShpfyProduct."Item SystemId"= Item.SystemId');
+=======
+        // [THEN] ShopifyVariant."Item SystemId" = Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShopifyVariant."Item SystemId" = Item.SystemId');
+
+        // [THEN] ShopifyProduct."Item SystemId"= Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShopifyProduct."Item SystemId"= Item.SystemId');
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     [Test]
@@ -95,7 +122,11 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [SCENARIO] Shopify product to an item and with the SKU mapped to Variant Code.
         // [SCENARIO] Because there is no SKU mapping, it will try to find the mapping based on the bar code field on the Shopify Variant record.
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Variant Code";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Variant Code";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
         Item := ProductInitTest.CreateItem(true);
         ItemVariant.SetRange("Item No.", Item."No.");
@@ -109,6 +140,7 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [GIVEN] A Shopify Variant record that belongs to the Shopify Product record and has SKU filled in with the variant code of a variant of item.
         ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant);
 
+<<<<<<< HEAD
         // [THEN] ShpfyVariant."Item SystemId" = Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShpfyVariant."Item SystemId" = Item.SystemId');
 
@@ -117,6 +149,16 @@ codeunit 139604 "Shpfy Product Mapping Test"
 
         // [THEN] ShpfyProduct."Item SystemId"= Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShpfyProduct."Item SystemId"= Item.SystemId');
+=======
+        // [THEN] ShopifyVariant."Item SystemId" = Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShopifyVariant."Item SystemId" = Item.SystemId');
+
+        // [THEN] ShopifyVariant."Item Variant SystemId" = ItemVariant.SystemId
+        LibraryAssert.AreEqual(ItemVariant.SystemId, ShopifyVariant."Item Variant SystemId", 'ShopifyVariant."Item Variant SystemId" = ItemVariant.SystemId');
+
+        // [THEN] ShopifyProduct."Item SystemId"= Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShopifyProduct."Item SystemId"= Item.SystemId');
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     [Test]
@@ -124,7 +166,11 @@ codeunit 139604 "Shpfy Product Mapping Test"
     var
         Item: Record Item;
         ItemVariant: Record "Item Variant";
+<<<<<<< HEAD
         yShop: Record "Shpfy Shop";
+=======
+        Shop: Record "Shpfy Shop";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         ShopifyProduct: Record "Shpfy Product";
         ShopifyVariant: Record "Shpfy Variant";
         InitializeTest: Codeunit "Shpfy Initialize Test";
@@ -133,6 +179,7 @@ codeunit 139604 "Shpfy Product Mapping Test"
     begin
         // [SCENARIO] Shopify product to an item and with the SKU mapped to Item No. + Variant Code.
         // [SCENARIO] Because there is no SKU mapping, it will try to find the mapping based on the bar code field on the Shopify Variant record.
+<<<<<<< HEAD
         yShop := InitializeTest.CreateShop();
         yShop."SKU Mapping" := "Shpfy SKU Mappging"::"Item No. + Variant Code";
         yShop.Modify();
@@ -141,6 +188,16 @@ codeunit 139604 "Shpfy Product Mapping Test"
         ItemVariant.FindFirst();
         ShopifyVariant := ProductInitTest.CreateStandardProduct(yShop);
         ShopifyVariant.SKU := Item."No." + yShop."SKU Field Separator" + ItemVariant.Code;
+=======
+        Shop := InitializeTest.CreateShop();
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Item No. + Variant Code";
+        Shop.Modify();
+        Item := ProductInitTest.CreateItem(true);
+        ItemVariant.SetRange("Item No.", Item."No.");
+        ItemVariant.FindFirst();
+        ShopifyVariant := ProductInitTest.CreateStandardProduct(Shop);
+        ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code;
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         ShopifyVariant.Modify();
         ShopifyProduct.Get(ShopifyVariant."Product Id");
 
@@ -148,6 +205,7 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [GIVEN] A Shopify Variant record that belongs to the Shopify Product record and has SKU filled in with the item.no. + variant code of a variant of item.
         ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant);
 
+<<<<<<< HEAD
         // [THEN] ShpfyVariant."Item SystemId" = Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShpfyVariant."Item SystemId" = Item.SystemId');
 
@@ -156,6 +214,16 @@ codeunit 139604 "Shpfy Product Mapping Test"
 
         // [THEN] ShpfyProduct."Item SystemId"= Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShpfyProduct."Item SystemId"= Item.SystemId');
+=======
+        // [THEN] ShopifyVariant."Item SystemId" = Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShopifyVariant."Item SystemId" = Item.SystemId');
+
+        // [THEN] ShopifyVariant."Item Variant SystemId" = ItemVariant.SystemId
+        LibraryAssert.AreEqual(ItemVariant.SystemId, ShopifyVariant."Item Variant SystemId", 'ShopifyVariant."Item Variant SystemId" = ItemVariant.SystemId');
+
+        // [THEN] ShopifyProduct."Item SystemId"= Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShopifyProduct."Item SystemId"= Item.SystemId');
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     [Test]
@@ -172,7 +240,11 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [SCENARIO] Shopify product to an item and with the SKU mapped to Vendor Item No.
         // [SCENARIO] Because there is no SKU mapping, it will try to find the mapping based on the vendor and SKU field.
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Vendor Item No.";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Vendor Item No.";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
         Item := ProductInitTest.CreateItem();
         ShopifyVariant := ProductInitTest.CreateStandardProduct(Shop);
@@ -186,11 +258,19 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [GIVEN] A Shopify Variant record that belongs to the Shopify Product record and has SKU filled in with the vendor item no.
         ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant);
 
+<<<<<<< HEAD
         // [THEN] ShpfyVariant."Item SystemId" = Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShpfyVariant."Item SystemId" = Item.SystemId');
 
         // [THEN] ShpfyProduct."Item SystemId"= Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShpfyProduct."Item SystemId"= Item.SystemId');
+=======
+        // [THEN] ShopifyVariant."Item SystemId" = Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShopifyVariant."Item SystemId" = Item.SystemId');
+
+        // [THEN] ShopifyProduct."Item SystemId"= Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShopifyProduct."Item SystemId"= Item.SystemId');
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
     [Test]
@@ -209,7 +289,11 @@ codeunit 139604 "Shpfy Product Mapping Test"
         // [SCENARIO] Shopify product to an item and with the SKU empty.
         // [SCENARIO] Because there is no SKU mapping, it will try to find the mapping based on the bar code in the SKU field on the Shopify Variant record.
         Shop := InitializeTest.CreateShop();
+<<<<<<< HEAD
         Shop."SKU Mapping" := "Shpfy SKU Mappging"::"Bar Code";
+=======
+        Shop."SKU Mapping" := "Shpfy SKU Mapping"::"Bar Code";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Shop.Modify();
         Item := ProductInitTest.CreateItem();
         ItemReference.SetRange("Item No.", Item."No.");
@@ -224,6 +308,7 @@ codeunit 139604 "Shpfy Product Mapping Test"
         ShopifyVariant.Modify();
         ShopifyProduct.Get(ShopifyVariant."Product Id");
 
+<<<<<<< HEAD
         // [WHEN] Invoke ShpfyProductMapping.FindMapping(ShpfyProduct, ShpfyVariant)
         ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant);
 
@@ -232,5 +317,15 @@ codeunit 139604 "Shpfy Product Mapping Test"
 
         // [THEN] ShpfyProduct."Item SystemId"= Item.SystemId
         LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShpfyProduct."Item SystemId"= Item.SystemId');
+=======
+        // [WHEN] Invoke ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant)
+        ProductMapping.FindMapping(ShopifyProduct, ShopifyVariant);
+
+        // [THEN] ShopifyVariant."Item SystemId" = Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyVariant."Item SystemId", 'ShopifyVariant."Item SystemId" = Item.SystemId');
+
+        // [THEN] ShopifyProduct."Item SystemId"= Item.SystemId
+        LibraryAssert.AreEqual(Item.SystemId, ShopifyProduct."Item SystemId", 'ShopifyProduct."Item SystemId"= Item.SystemId');
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 }

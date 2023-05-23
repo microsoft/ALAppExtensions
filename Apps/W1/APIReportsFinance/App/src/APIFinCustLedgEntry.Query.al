@@ -33,7 +33,7 @@ query 30302 "API Fin - Cust Ledg Entry"
             {
                 Caption = 'Document Number';
             }
-            column(externalDocumentNumber; "Document No.")
+            column(externalDocumentNumber; "External Document No.")
             {
                 Caption = 'External Document Number';
             }
@@ -84,6 +84,10 @@ query 30302 "API Fin - Cust Ledg Entry"
             column(currencyCode; "Currency Code")
             {
                 Caption = 'Currency Code';
+            }
+            column(yourReference; "Your Reference")
+            {
+                Caption = 'Your Reference';
             }
             column(lastModifiedDateTime; SystemModifiedAt)
             {

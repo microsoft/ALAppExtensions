@@ -44,12 +44,14 @@ page 18544 "Concessional Codes"
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    ConcessionalCodeLbl: Label 'Code eq %1', Comment = '%1= Concessional Code';
+                    EditinExcelFilters: Codeunit "Edit in Excel Filters";
                 begin
+                    EditinExcelFilters.AddField('Code', Enum::"Edit in Excel Filter Type"::Equal, Rec.Code, Enum::"Edit in Excel Edm Type"::"Edm.String");
+
                     EditinExcel.EditPageInExcel(
                         'Concessional Codes',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(ConcessionalCodeLbl, Rec.Code));
+                        Page::"Concessional Codes",
+                        EditinExcelFilters);
                 end;
             }
         }

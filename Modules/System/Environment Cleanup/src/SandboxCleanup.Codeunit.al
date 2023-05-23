@@ -13,6 +13,8 @@ codeunit 1884 "Sandbox Cleanup"
     ObsoleteState = Pending;
     ObsoleteTag = '20.0';
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
 #if not CLEAN17
     /// <summary>

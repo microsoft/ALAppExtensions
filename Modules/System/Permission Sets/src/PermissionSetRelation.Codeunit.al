@@ -11,6 +11,24 @@ codeunit 9855 "Permission Set Relation"
     Access = Public;
 
     /// <summary>
+    /// Adds a new permission set relation.
+    /// </summary>
+    /// <param name="AppId">The app ID of the permission set.</param>
+    /// <param name="RoleId">The role ID of the permission set.</param>
+    /// <param name="Scope">The scope of the permission set.</param>
+    /// <param name="RelatedAppId">The app ID of the related permission set.</param>
+    /// <param name="RelatedRoleId">The role ID of the related permission set.</param>
+    /// <param name="RelatedScope">The scope of the related permission set.</param>
+    /// <param name="PermissionType">The type of the new permission set relation.</param>
+    /// <returns>true if creating the permission set relation was successful</returns>
+    procedure AddNewPermissionSetRelation(AppId: Guid; RoleId: Code[30]; Scope: Option System,Tenant; RelatedAppId: Guid; RelatedRoleId: Code[30]; RelatedScope: Option System,Tenant; PermissionType: Option Include,Exclude) Success: Boolean
+    var
+        PermissionSetRelationImpl: Codeunit "Permission Set Relation Impl.";
+    begin
+        exit(PermissionSetRelationImpl.AddNewPermissionSetRelation(AppId, RoleId, Scope, RelatedAppId, RelatedRoleId, RelatedScope, PermissionType));
+    end;
+
+    /// <summary>
     /// Opens the permission set page for the specified role ID.
     /// </summary>
     /// <param name="Name">The name of the permission set to open.</param> 
@@ -57,6 +75,19 @@ codeunit 9855 "Permission Set Relation"
         PermissionSetCopyImpl: Codeunit "Permission Set Copy Impl.";
     begin
         PermissionSetCopyImpl.CopyPermissionSet(NewRoleId, NewName, SourceRoleId, SourceAppId, SourceScope, CopyType);
+    end;
+
+    /// <summary>
+    /// Opens the permission set page in lookup mode and assigns the selected record to specified Permission Set record.
+    /// </summary>
+    /// <param name="AllowMultiselect">Allow for selecting multiple Permission Sets.</param>
+    /// <param name="AggregatePermissionSet">The target Permission Set.</param>
+    /// <returns>true if lookup was successful</returns>
+    procedure LookupPermissionSet(AllowMultiselect: Boolean; var AggregatePermissionSet: Record "Aggregate Permission Set"): Boolean
+    var
+        PermissionSetRelationImpl: Codeunit "Permission Set Relation Impl.";
+    begin
+        exit(PermissionSetRelationImpl.LookupPermissionSet(AllowMultiselect, AggregatePermissionSet));
     end;
 
     /// <summary>

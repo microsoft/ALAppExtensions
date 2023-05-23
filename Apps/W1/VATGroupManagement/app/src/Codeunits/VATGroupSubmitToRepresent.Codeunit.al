@@ -41,8 +41,8 @@ codeunit 4706 "VAT Group Submit To Represent."
             ErrorMessage.LogLastError();
             while HttpResponseBodyText <> '' do begin
                 ErrorMessage.LogSimpleMessage(
-                    ErrorMessage."Message Type"::Error, CopyStr(HttpResponseBodyText, 1, MaxStrLen(ErrorMessage.Description)));
-                HttpResponseBodyText := CopyStr(HttpResponseBodyText, MaxStrLen(ErrorMessage.Description) + 1);
+                    ErrorMessage."Message Type"::Error, CopyStr(HttpResponseBodyText, 1, MaxStrLen(ErrorMessage."Message")));
+                HttpResponseBodyText := CopyStr(HttpResponseBodyText, MaxStrLen(ErrorMessage."Message") + 1);
             end;
         end;
 

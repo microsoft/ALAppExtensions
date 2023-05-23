@@ -7,6 +7,8 @@ table 1990 "Guided Experience Item"
 {
     Caption = 'Guided Experience Item';
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     ReplicateData = false;
     Permissions = tabledata "Primary Guided Experience Item" = rd;
 

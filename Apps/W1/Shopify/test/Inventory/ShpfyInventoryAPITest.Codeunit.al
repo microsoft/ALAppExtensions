@@ -18,10 +18,10 @@ codeunit 139586 "Shpfy Inventory API Test"
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
         LibraryInventory: Codeunit "Library - Inventory";
-        Stock: Decimal;
         isInitialized: Boolean;
 
     local procedure Initialize()
+
     begin
         if isInitialized then
             exit;
@@ -66,14 +66,6 @@ codeunit 139586 "Shpfy Inventory API Test"
         ShopLocation.Modify();
         StockResult := InventoryAPI.GetStock(ShopInventory);
         LibraryAssert.AreEqual(9, StockResult, 'must be 9');
-    end;
-
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Inventory Events", 'OnBeforeCalculationStock', '', true, false)]
-    local procedure OnCalculateStock(Item: Record Item; ShopifyShop: Record "Shpfy Shop"; LocationFilter: Text; CurrentShopifyStock: Decimal; var StockResult: Decimal; var Handled: Boolean)
-    begin
-        StockResult := Stock;
-        Handled := true;
     end;
 
     local procedure CreateItem(var Item: Record Item)

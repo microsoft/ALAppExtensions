@@ -7,6 +7,8 @@
 table 3700 "Manual Setup"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Caption = 'Manual Setup';
 #pragma warning disable AS0034
     TableType = Temporary;
@@ -14,11 +16,12 @@ table 3700 "Manual Setup"
 
 #if CLEAN18
     ObsoleteState = Removed;
+    ObsoleteTag = '23.0';
 #else
     ObsoleteState = Pending;
+    ObsoleteTag = '18.0';
 #endif
     ObsoleteReason = 'The Manual Setup module and its objects have been consolidated in the Guided Experience module. Use the Guided Experience Item table instead.';
-    ObsoleteTag = '18.0';
     ReplicateData = false;
 
     fields

@@ -8,9 +8,6 @@ permissionset 9844 "User Selection - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Environment Info. - Objects";
-
-    Permissions = Codeunit "User Selection Impl." = X,
-                  Codeunit "User Selection" = X,
+    Permissions = Codeunit "User Selection" = X,
                   Page "User Lookup" = X;
 }

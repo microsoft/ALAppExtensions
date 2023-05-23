@@ -930,7 +930,7 @@ report 18016 "Sales - Invoice IN GST"
                     if not CurrReport.Preview then
                         if "Bill-to Contact No." <> '' then
                             SegManagement.LogDocument(
-                              SegManagement.SalesInvoiceInterDocType(),
+                              "Interaction Log Entry Document Type"::"Sales Inv.",
                               "No.",
                               0,
                               0,
@@ -942,7 +942,7 @@ report 18016 "Sales - Invoice IN GST"
                               '')
                         else
                             SegManagement.LogDocument(
-                              SegManagement.SalesInvoiceInterDocType(),
+                              "Interaction Log Entry Document Type"::"Sales Inv.",
                               "No.",
                               0,
                               0,
@@ -1188,7 +1188,7 @@ report 18016 "Sales - Invoice IN GST"
 
     procedure InitLogInteraction()
     begin
-        LogIntaction := SegManagement.FindInteractTmplCode(4) <> '';
+        LogIntaction := SegManagement.FindInteractionTemplateCode(4) <> '';
     end;
 
     procedure FindPostedShipmentDate(): Date

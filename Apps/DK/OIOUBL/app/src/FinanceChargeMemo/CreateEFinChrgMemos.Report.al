@@ -123,7 +123,7 @@ report 13633 "OIOUBL-Create E-Fin Chrg Memos"
 
     procedure InitLogInteraction();
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(19) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(19) <> '';
     end;
 }
 

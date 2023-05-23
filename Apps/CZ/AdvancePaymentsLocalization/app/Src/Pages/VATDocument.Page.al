@@ -148,7 +148,13 @@ page 31185 "VAT Document CZZ"
 #endif
     procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewDocumentDate: Date; NewPostingDate: Date; NewVATDate: Date; NewOriginalDocumentVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+#if not CLEAN22
+#pragma warning disable AL0432
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
+#endif
     begin
         NoSeriesCode := NewNoSeriesCode;
         InitNoSeriesCode := NewNoSeriesCode;
@@ -158,25 +164,26 @@ page 31185 "VAT Document CZZ"
         CurrencyCode := NewCurrencyCode;
         CurrencyFactor := NewCurrencyFactor;
         VATDate := NewVATDate;
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not ReplaceVATDateMgtCZL.IsEnabled() then
+            if VATDate = 0D then
+                case PurchasesPayablesSetup."Default VAT Date CZL" of
+                    PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date":
+                        VATDate := PostingDate;
+                    PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date":
+                        VATDate := DocumentDate;
+                    PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
+                        VATDate := 0D;
+                end;
+#pragma warning restore AL0432
+#endif
         if VATDate = 0D then
-            case PurchasesPayablesSetup."Default VAT Date CZL" of
-                PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date":
-                    VATDate := PostingDate;
-                PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date":
-                    VATDate := DocumentDate;
-                PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
-                    VATDate := 0D;
-            end;
+            VATDate := GeneralLedgerSetup.GetVATDate(PostingDate, DocumentDate);
         OriginalDocumentVATDate := NewOriginalDocumentVATDate;
         if OriginalDocumentVATDate = 0D then
-            case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
-                PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
-                    OriginalDocumentVATDate := PostingDate;
-                PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
-                    OriginalDocumentVATDate := VATDate;
-                PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
-                    OriginalDocumentVATDate := DocumentDate;
-            end;
+            OriginalDocumentVATDate :=
+                GeneralLedgerSetup.GetOriginalDocumentVATDateCZL(PostingDate, VATDate, DocumentDate);
         CurrPage.Lines.Page.InitDocumentLines(NewCurrencyCode, NewCurrencyFactor, AdvancePostingBufferCZZ);
 
         if NewDocumentNo <> '' then begin

@@ -13,6 +13,8 @@
 codeunit 9999 "Upgrade Tag"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = TableData "Upgrade Tags" = rimd;
 
     var

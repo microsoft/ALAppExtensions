@@ -9,7 +9,6 @@ permissionset 9515 "AAD User Management - Exec"
     Assignable = false;
 
     IncludedPermissionSets = "AAD User Management - Objects",
-                             "User Login Times - Read",
                              "Azure AD User - View",
                              "Azure AD Plan - View",
                              "Language - View",

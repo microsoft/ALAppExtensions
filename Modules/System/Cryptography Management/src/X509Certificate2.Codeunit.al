@@ -9,6 +9,8 @@
 codeunit 1286 "X509Certificate2"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         X509Certificate2Impl: Codeunit "X509Certificate2 Impl.";
@@ -144,5 +146,29 @@ codeunit 1286 "X509Certificate2"
     procedure GetCertificatePrivateKey(CertBase64Value: Text; Password: Text): Text
     begin
         exit(X509Certificate2Impl.GetCertificatePrivateKey(CertBase64Value, Password));
+    end;
+
+    /// <summary>
+    /// Gets Certificate serial number
+    /// </summary>
+    /// <param name="CertBase64Value">Represents the certificate value encoded using the Base64 algorithm</param>
+    /// <param name="Password">Certificate Password</param>
+    /// <param name="SerialNumber">Certificate serial number</param>  
+    [NonDebuggable]
+    procedure GetCertificateSerialNumber(CertBase64Value: Text; Password: Text; var SerialNumber: Text)
+    begin
+        X509Certificate2Impl.GetCertificateSerialNumber(CertBase64Value, Password, SerialNumber);
+    end;
+
+    /// <summary>
+    /// Gets Certificate serial number as ASCII
+    /// </summary>
+    /// <param name="CertBase64Value">Represents the certificate value encoded using the Base64 algorithm</param>
+    /// <param name="Password">Certificate Password</param>
+    /// <param name="SerialNumberASCII">Certificate serial number as ascii</param>  
+    [NonDebuggable]
+    procedure GetCertificateSerialNumberAsASCII(CertBase64Value: Text; Password: Text; var SerialNumberASCII: Text)
+    begin
+        X509Certificate2Impl.GetCertificateSerialNumberAsASCII(CertBase64Value, Password, SerialNumberASCII);
     end;
 }

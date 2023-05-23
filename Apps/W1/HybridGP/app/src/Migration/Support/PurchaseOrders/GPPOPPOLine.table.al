@@ -2,6 +2,14 @@ table 40103 "GP POPPOLine"
 {
     DataClassification = CustomerContent;
     Extensible = false;
+    ObsoleteReason = 'Replaced by table GP POP10110.';
+ #if not CLEAN22
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '25.0';
+#endif
 
     fields
     {
@@ -555,6 +563,8 @@ table 40103 "GP POPPOLine"
     var
         PostingGroupTxt: Label 'GP', Locked = true;
 
+#if not CLEAN22
+    [Obsolete('Logic moved to GP PO Migrator codeunit', '22.0')]
     procedure MoveStagingData(PO_Number: Text[18])
     var
         PurchaseLine: Record "Purchase Line";
@@ -619,6 +629,7 @@ table 40103 "GP POPPOLine"
                 LineNo := LineNo + 10000;
             until Next() = 0;
     end;
+#endif
 
     local procedure CreateNonInventoryItem(ItemNo: Code[20]; ItemDescription: Text[100]; ItemUnitCost: Decimal; UnitOfMeasure: Text[10])
     var

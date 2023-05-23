@@ -27,6 +27,7 @@ codeunit 11505 "Transformation CH"
         PstdExpPhysInvtTrack: Record "Pstd. Exp. Phys. Invt. Track";
         PhysInvtCountBuffer: Record "Phys. Invt. Count Buffer";
         HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
+        W1Management: Codeunit "W1 Management";
         ExtensionInfo: ModuleInfo;
         W1AppId: Guid;
     begin
@@ -34,6 +35,9 @@ codeunit 11505 "Transformation CH"
             exit;
 
         if TargetVersion <> 15.0 then
+            exit;
+
+        if not W1Management.GetLegacyUpgradeSupported() then
             exit;
 
         NavApp.GetCurrentModuleInfo(ExtensionInfo);

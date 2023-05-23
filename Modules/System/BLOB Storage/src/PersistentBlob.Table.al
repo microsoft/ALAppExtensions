@@ -6,6 +6,8 @@
 table 4151 "Persistent Blob"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

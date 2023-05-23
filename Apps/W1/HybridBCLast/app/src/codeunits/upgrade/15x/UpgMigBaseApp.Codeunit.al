@@ -68,24 +68,16 @@ codeunit 4052 "Upg Mig - BaseApp"
     local procedure UpdateJobs()
     var
         Job: Record "Job";
-        IntegrationManagement: Codeunit "Integration Management";
-        RecordRef: RecordRef;
     begin
         if Job.FindSet(true, false) then
             repeat
-                if IsNullGuid(Job.Id) then begin
-                    RecordRef.GetTable(Job);
-                    IntegrationManagement.InsertUpdateIntegrationRecord(RecordRef, CurrentDateTime());
-                    RecordRef.SetTable(Job);
-                    Job.Modify();
+                if IsNullGuid(Job.SystemId) then
                     Job.UpdateReferencedIds();
-                end;
             until Job.Next() = 0;
     end;
 
     local procedure UpgradeAPIs()
     begin
-        CreateTimeSheetDetailsIds();
         UpgradeSalesInvoiceEntityAggregate();
         UpgradePurchInvEntityAggregate();
         UpgradeSalesOrderEntityBuffer();
@@ -94,14 +86,6 @@ codeunit 4052 "Upg Mig - BaseApp"
         UpgradeSalesOrderShipmentMethod();
         UpgradeSalesCrMemoShipmentMethod();
     end;
-
-    local procedure CreateTimeSheetDetailsIds()
-    var
-        GraphMgtTimeRegistration: Codeunit "Graph Mgt - Time Registration";
-    begin
-        GraphMgtTimeRegistration.UpdateIntegrationRecords(true);
-    end;
-
 
     local procedure UpgradeSalesInvoiceEntityAggregate()
     var
@@ -114,7 +98,7 @@ codeunit 4052 "Upg Mig - BaseApp"
         if SalesInvoiceEntityAggregate.FindSet(true, false) then
             repeat
                 if SalesInvoiceEntityAggregate.Posted then begin
-                    SalesInvoiceHeader.SetRange(Id, SalesInvoiceEntityAggregate.Id);
+                    SalesInvoiceHeader.SetRange(SystemId, SalesInvoiceEntityAggregate.Id);
                     if SalesInvoiceHeader.FindFirst() then begin
                         SourceRecordRef.GetTable(SalesInvoiceHeader);
                         TargetRecordRef.GetTable(SalesInvoiceEntityAggregate);
@@ -122,7 +106,7 @@ codeunit 4052 "Upg Mig - BaseApp"
                     end;
                 end else begin
                     SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Invoice);
-                    SalesHeader.SetRange(Id, SalesInvoiceEntityAggregate.Id);
+                    SalesHeader.SetRange(SystemId, SalesInvoiceEntityAggregate.Id);
                     if SalesHeader.FindFirst() then begin
                         SourceRecordRef.GetTable(SalesHeader);
                         TargetRecordRef.GetTable(SalesInvoiceEntityAggregate);
@@ -143,7 +127,7 @@ codeunit 4052 "Upg Mig - BaseApp"
         if PurchInvEntityAggregate.FindSet(true, false) then
             repeat
                 if PurchInvEntityAggregate.Posted then begin
-                    PurchInvHeader.SetRange(Id, PurchInvEntityAggregate.Id);
+                    PurchInvHeader.SetRange(SystemId, PurchInvEntityAggregate.Id);
                     if PurchInvHeader.FindFirst() then begin
                         SourceRecordRef.GetTable(PurchInvHeader);
                         TargetRecordRef.GetTable(PurchInvEntityAggregate);
@@ -151,7 +135,7 @@ codeunit 4052 "Upg Mig - BaseApp"
                     end;
                 end else begin
                     PurchaseHeader.SetRange("Document Type", PurchaseHeader."Document Type"::Invoice);
-                    PurchaseHeader.SetRange(Id, PurchInvEntityAggregate.Id);
+                    PurchaseHeader.SetRange(SystemId, PurchInvEntityAggregate.Id);
                     if PurchaseHeader.FindFirst() then begin
                         SourceRecordRef.GetTable(PurchaseHeader);
                         TargetRecordRef.GetTable(PurchInvEntityAggregate);
@@ -171,7 +155,7 @@ codeunit 4052 "Upg Mig - BaseApp"
         if SalesOrderEntityBuffer.FindSet(true, false) then
             repeat
                 SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
-                SalesHeader.SetRange(Id, SalesOrderEntityBuffer.Id);
+                SalesHeader.SetRange(SystemId, SalesOrderEntityBuffer.Id);
                 if SalesHeader.FindFirst() then begin
                     SourceRecordRef.GetTable(SalesHeader);
                     TargetRecordRef.GetTable(SalesOrderEntityBuffer);
@@ -190,7 +174,7 @@ codeunit 4052 "Upg Mig - BaseApp"
         if SalesQuoteEntityBuffer.FindSet(true, false) then
             repeat
                 SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Quote);
-                SalesHeader.SetRange(Id, SalesQuoteEntityBuffer.Id);
+                SalesHeader.SetRange(SystemId, SalesQuoteEntityBuffer.Id);
                 if SalesHeader.FindFirst() then begin
                     SourceRecordRef.GetTable(SalesHeader);
                     TargetRecordRef.GetTable(SalesQuoteEntityBuffer);
@@ -210,7 +194,7 @@ codeunit 4052 "Upg Mig - BaseApp"
         if SalesCrMemoEntityBuffer.FindSet(true, false) then
             repeat
                 if SalesCrMemoEntityBuffer.Posted then begin
-                    SalesCrMemoHeader.SetRange(Id, SalesCrMemoEntityBuffer.Id);
+                    SalesCrMemoHeader.SetRange(SystemId, SalesCrMemoEntityBuffer.Id);
                     if SalesCrMemoHeader.FindFirst() then begin
                         SourceRecordRef.GetTable(SalesCrMemoHeader);
                         TargetRecordRef.GetTable(SalesCrMemoEntityBuffer);
@@ -218,7 +202,7 @@ codeunit 4052 "Upg Mig - BaseApp"
                     end;
                 end else begin
                     SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::"Credit Memo");
-                    SalesHeader.SetRange(Id, SalesCrMemoEntityBuffer.Id);
+                    SalesHeader.SetRange(SystemId, SalesCrMemoEntityBuffer.Id);
                     if SalesHeader.FindFirst() then begin
                         SourceRecordRef.GetTable(SalesHeader);
                         TargetRecordRef.GetTable(SalesCrMemoEntityBuffer);
@@ -254,7 +238,7 @@ codeunit 4052 "Upg Mig - BaseApp"
             CodeFieldRef := TargetRecordRef.Field(SalesOrderEntityBuffer.FIELDNO("Bill-to Customer No."));
             IdFieldRef := TargetRecordRef.Field(SalesOrderEntityBuffer.FIELDNO("Bill-to Customer Id"));
             if Customer.Get(CodeFieldRef.Value()) then
-                IdFieldRef.Value(Customer.Id)
+                IdFieldRef.Value(Customer.SystemId)
             ELSE
                 IdFieldRef.Value(EmptyGuid);
         end;
@@ -295,13 +279,13 @@ codeunit 4052 "Upg Mig - BaseApp"
             CodeFieldRef := TargetRecordRef.Field(PurchInvEntityAggregate.FIELDNO("Pay-to Vendor No."));
             IdFieldRef := TargetRecordRef.Field(PurchInvEntityAggregate.FIELDNO("Pay-to Vendor Id"));
             if Vendor.Get(CodeFieldRef.Value()) then
-                IdFieldRef.Value(Vendor.Id)
+                IdFieldRef.Value(Vendor.SystemId)
             ELSE
                 IdFieldRef.Value(EmptyGuid);
             CodeFieldRef := TargetRecordRef.Field(PurchInvEntityAggregate.FIELDNO("Currency Code"));
             IdFieldRef := TargetRecordRef.Field(PurchInvEntityAggregate.FIELDNO("Currency Id"));
             if Vendor.Get(CodeFieldRef.Value()) then
-                IdFieldRef.Value(Currency.Id)
+                IdFieldRef.Value(Currency.SystemId)
             ELSE
                 IdFieldRef.Value(EmptyGuid);
         end;
@@ -374,7 +358,7 @@ codeunit 4052 "Upg Mig - BaseApp"
         if SalesOrderEntityBuffer.FindSet(true, false) then
             repeat
                 SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
-                SalesHeader.SetRange(Id, SalesOrderEntityBuffer.Id);
+                SalesHeader.SetRange(SystemId, SalesOrderEntityBuffer.Id);
                 if SalesHeader.FindFirst() then begin
                     SourceRecordRef.GetTable(SalesHeader);
                     TargetRecordRef.GetTable(SalesOrderEntityBuffer);
@@ -394,7 +378,7 @@ codeunit 4052 "Upg Mig - BaseApp"
         if SalesCrMemoEntityBuffer.FindSet(true, false) then
             repeat
                 if SalesCrMemoEntityBuffer.Posted then begin
-                    SalesCrMemoHeader.SetRange(Id, SalesCrMemoEntityBuffer.Id);
+                    SalesCrMemoHeader.SetRange(SystemId, SalesCrMemoEntityBuffer.Id);
                     if SalesCrMemoHeader.FindFirst() then begin
                         SourceRecordRef.GetTable(SalesCrMemoHeader);
                         TargetRecordRef.GetTable(SalesCrMemoEntityBuffer);
@@ -402,7 +386,7 @@ codeunit 4052 "Upg Mig - BaseApp"
                     end;
                 end else begin
                     SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::"Credit Memo");
-                    SalesHeader.SetRange(Id, SalesCrMemoEntityBuffer.Id);
+                    SalesHeader.SetRange(SystemId, SalesCrMemoEntityBuffer.Id);
                     if SalesHeader.FindFirst() then begin
                         SourceRecordRef.GetTable(SalesHeader);
                         TargetRecordRef.GetTable(SalesCrMemoEntityBuffer);
@@ -425,7 +409,7 @@ codeunit 4052 "Upg Mig - BaseApp"
         CodeFieldRef := TargetRecordRef.Field(SalesOrderEntityBuffer.FIELDNO("Shipment Method Code"));
         IdFieldRef := TargetRecordRef.Field(SalesOrderEntityBuffer.FIELDNO("Shipment Method Id"));
         if ShipmentMethod.Get(CodeFieldRef.Value()) then
-            IdFieldRef.Value(ShipmentMethod.Id)
+            IdFieldRef.Value(ShipmentMethod.SystemId)
         ELSE
             IdFieldRef.Value(EmptyGuid);
         TargetRecordRef.Modify();

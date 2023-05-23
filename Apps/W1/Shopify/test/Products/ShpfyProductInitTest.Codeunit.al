@@ -47,33 +47,75 @@ codeunit 139603 "Shpfy Product Init Test"
     var
         Shop: Record "Shpfy Shop";
         InitializeTest: Codeunit "Shpfy Initialize Test";
+<<<<<<< HEAD
     begin
         Shop := InitializeTest.CreateShop();
         exit(CreateItem(Shop."Item Template Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2), WithVariants));
+=======
+#if not CLEAN22
+        ShpfyTemplates: Codeunit "Shpfy Templates";
+#endif
+        ItemTemplateCode: Code[20];
+    begin
+        Shop := InitializeTest.CreateShop();
+#if not CLEAN22
+        if not ShpfyTemplates.NewTemplatesEnabled() then
+            ItemTemplateCode := Shop."Item Template Code"
+        else
+            ItemTemplateCode := Shop."Item Templ. Code";
+#else
+        ItemTemplateCode := Shop."Item Templ. Code";
+#endif
+        exit(CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2), WithVariants));
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     end;
 
-    internal procedure CreateItem(TemplateCode: code[10]; InitUnitCost: Decimal; InitPrice: Decimal): Record Item
+    internal procedure CreateItem(TemplateCode: code[20]; InitUnitCost: Decimal; InitPrice: Decimal): Record Item
     begin
         exit(CreateItem(TemplateCode, InitUnitCost, InitPrice, false));
     end;
 
-    internal procedure CreateItem(TemplateCode: code[10]; InitUnitCost: Decimal; InitPrice: Decimal; WithVariants: Boolean) Item: Record Item
+    internal procedure CreateItem(TemplateCode: code[20]; InitUnitCost: Decimal; InitPrice: Decimal; WithVariants: Boolean) Item: Record Item
     var
+#if not CLEAN22
         ConfigTemplateHeader: Record "Config. Template Header";
+#endif
+        ItemTempl: Record "Item Templ.";
         ItemVendor: Record "Item Vendor";
+#if not CLEAN22
         ConfigTemplateManagement: Codeunit "Config. Template Management";
+<<<<<<< HEAD
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+=======
+        ShpfyTemplates: Codeunit "Shpfy Templates";
+#endif
+        ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
+        ItemTemplMgt: Codeunit "Item Templ. Mgt.";
+#if not CLEAN22
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         RecordRef: RecordRef;
+#endif
         Index: Integer;
     begin
         Any.SetDefaultSeed();
         Item.Init();
         Item."No." := Any.AlphabeticText(MaxStrLen(Item."No."));
         Item.Insert(true);
-        RecordRef.GetTable(Item);
-        ConfigTemplateHeader.Get(TemplateCode);
-        ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecordRef);
-        RecordRef.SetTable(Item);
+#if not CLEAN22
+        if not ShpfyTemplates.NewTemplatesEnabled() then begin
+            RecordRef.GetTable(Item);
+            ConfigTemplateHeader.Get(TemplateCode);
+            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecordRef);
+            RecordRef.SetTable(Item);
+        end
+        else begin
+            ItemTempl.Get(TemplateCode);
+            ItemTemplMgt.ApplyItemTemplate(Item, ItemTempl);
+        end;
+#else
+        ItemTempl.Get(TemplateCode);
+        ItemTemplMgt.ApplyItemTemplate(Item, ItemTempl);
+#endif
         Item.Validate("Price/Profit Calculation", Enum::"Item Price Profit Calculation"::"Profit=Price-Cost");
         Item.Validate("Unit Price", InitPrice);
         Item.Validate("Unit Cost", InitUnitCost);
@@ -177,7 +219,7 @@ codeunit 139603 "Shpfy Product Init Test"
         ItemAttributeValue.Insert();
     end;
 
-#if not CLEAN19
+#if not CLEAN21
     internal procedure CreateSalesPrice(Code: Code[10]; ItemNo: Code[20]; Price: Decimal)
     var
         CustomerPriceGroup: Record "Customer Price Group";
@@ -228,7 +270,11 @@ codeunit 139603 "Shpfy Product Init Test"
         ShopifyProduct: Record "Shpfy Product";
     begin
         ShopifyProduct := InitProduct(Shop);
+<<<<<<< HEAD
         ShopifyProduct."Has Variants" := (Shop."SKU Mapping" = Enum::"Shpfy SKU Mappging"::"Item No. + Variant Code");
+=======
+        ShopifyProduct."Has Variants" := (Shop."SKU Mapping" = Enum::"Shpfy SKU Mapping"::"Item No. + Variant Code");
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         ShopifyProduct.Insert();
         Clear(LastItemNo);
         exit(AddProductVariants(Shop, ShopifyProduct, Any.IntegerInRange(2, 5)));
@@ -253,7 +299,11 @@ codeunit 139603 "Shpfy Product Init Test"
         for Index := 1 to numberOfVariants do begin
             clear(ShopifyVariant);
             ShopifyVariant."Shop Code" := Shop.Code;
+<<<<<<< HEAD
             ShopifyVariant.Id := GetShpfyVariantId();
+=======
+            ShopifyVariant.Id := GetShopifyVariantId();
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
             ShopifyVariant."Product Id" := ShopifyProduct.Id;
             ShopifyVariant.Barcode := Format(Any.IntegerInRange(1111111, 9999999));
             ShopifyVariant."Unit Cost" := Any.DecimalInRange(10, 20, 2);
@@ -272,15 +322,19 @@ codeunit 139603 "Shpfy Product Init Test"
     var
     begin
         case Shop."SKU Mapping" of
+<<<<<<< HEAD
             "Shpfy SKU Mappging"::" ":
+=======
+            "Shpfy SKU Mapping"::" ":
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                 exit('');
-            "Shpfy SKU Mappging"::"Bar Code":
+            "Shpfy SKU Mapping"::"Bar Code":
                 exit(Format(Any.IntegerInRange(1111111, 9999999)));
-            "Shpfy SKU Mappging"::"Item No.",
-            "Shpfy SKU Mappging"::"Variant Code",
-            "Shpfy SKU Mappging"::"Vendor Item No.":
+            "Shpfy SKU Mapping"::"Item No.",
+            "Shpfy SKU Mapping"::"Variant Code",
+            "Shpfy SKU Mapping"::"Vendor Item No.":
                 exit(Any.AlphabeticText(10));
-            "Shpfy SKU Mappging"::"Item No. + Variant Code":
+            "Shpfy SKU Mapping"::"Item No. + Variant Code":
                 begin
                     if LastItemNo = '' then
                         LastItemNo := Any.AlphabeticText(10).ToUpper();
@@ -308,7 +362,7 @@ codeunit 139603 "Shpfy Product Init Test"
             ShopifyProduct.Vendor := Vendor.Name;
     end;
 
-    local procedure GetShpfyVariantId(): BigInteger
+    local procedure GetShopifyVariantId(): BigInteger
     var
         ShopifyVariant: Record "Shpfy Variant";
     begin

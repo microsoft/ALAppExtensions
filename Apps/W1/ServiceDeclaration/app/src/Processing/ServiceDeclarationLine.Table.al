@@ -63,7 +63,7 @@ table 5024 "Service Declaration Line"
         }
         field(15; "VAT Reg. No."; Text[50])
         {
-            Caption = 'VAT Registration No.';
+            Caption = 'Partner VAT ID';
         }
         field(30; "Posting Date"; Date)
         {
@@ -94,5 +94,32 @@ table 5024 "Service Declaration Line"
     fieldgroups
     {
     }
-}
 
+    trigger OnDelete()
+    begin
+        CheckHeaderStatusOpen();
+    end;
+
+    trigger OnInsert()
+    begin
+        CheckHeaderStatusOpen();
+    end;
+
+    trigger OnModify()
+    begin
+        CheckHeaderStatusOpen();
+    end;
+
+    trigger OnRename()
+    begin
+        xRec.CheckHeaderStatusOpen();
+    end;
+
+    procedure CheckHeaderStatusOpen()
+    var
+        ServiceDeclHeader: Record "Service Declaration Header";
+    begin
+        ServiceDeclHeader.Get(Rec."Service Declaration No.");
+        ServiceDeclHeader.CheckStatusOpen();
+    end;
+}

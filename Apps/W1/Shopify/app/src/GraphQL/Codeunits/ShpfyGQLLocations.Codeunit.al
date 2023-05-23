@@ -22,5 +22,9 @@ codeunit 30100 "Shpfy GQL Locations" implements "Shpfy IGraphQL"
     begin
         exit(12);
     end;
+<<<<<<< HEAD
 
 }
+=======
+}
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2

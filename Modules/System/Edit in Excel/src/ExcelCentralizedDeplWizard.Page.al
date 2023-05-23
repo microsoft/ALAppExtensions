@@ -17,6 +17,7 @@ page 1480 "Excel Centralized Depl. Wizard"
     Extensible = false;
     AccessByPermission = tabledata "Edit in Excel Settings" = M;
     Permissions = tabledata "Media Resources" = r;
+    HelpLink = 'https://go.microsoft.com/fwlink/?linkid=2221526';
 
     layout
     {

@@ -6,6 +6,8 @@
 codeunit 7803 "Azure Functions Impl"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         SendRequstErr: Label 'Sending the request has failed.';

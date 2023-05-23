@@ -50,9 +50,8 @@ report 31246 "Fixed Asset Card CZF"
                 column(FixedAsset_Description2; "Description 2")
                 {
                 }
-                column(FixedAsset_Inactive; Inactive)
+                column(FixedAsset_Inactive; FormatBoolean(Inactive))
                 {
-                    IncludeCaption = true;
                 }
                 column(Employee_FullName; Employee.FullName())
                 {
@@ -306,6 +305,7 @@ report 31246 "Fixed Asset Card CZF"
         FADepreciationBookLbl = 'FA Depreciation Book';
         ReceiptDateLbl = 'Receipt Date';
         ExternalCompanyNameLbl = 'External Company Name';
+        InactiveLbl = 'Inactive';
     }
 
     var
@@ -320,4 +320,12 @@ report 31246 "Fixed Asset Card CZF"
         ReceiptDate: Date;
         NotDispTxt: Label 'Not Disposed Of';
         DispTxt: Label 'Disposed Of';
+        BooleanValuesTxt: Label 'Yes,No';
+
+    local procedure FormatBoolean(BoolValue: Boolean): Text
+    begin
+        if BoolValue then
+            exit(SelectStr(1, BooleanValuesTxt));
+        exit(SelectStr(2, BooleanValuesTxt));
+    end;
 }

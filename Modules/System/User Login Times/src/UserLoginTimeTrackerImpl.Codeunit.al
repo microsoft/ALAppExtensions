@@ -6,6 +6,8 @@
 codeunit 9013 "User Login Time Tracker Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "User Login" = rim,
                   tabledata "User Environment Login" = ri;
 
@@ -107,7 +109,9 @@ codeunit 9013 "User Login Time Tracker Impl."
         Commit();
 
 #if not CLEAN21
+#pragma warning disable AL0432
         UserLoginTimeTracker.OnAfterCreateorUpdateLoginInfo(UserSecurityId());
+#pragma warning restore AL0432
 #endif
     end;
 }

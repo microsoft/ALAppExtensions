@@ -49,7 +49,7 @@ codeunit 4035 "Wizard Integration"
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
     var
         GPConfiguration: Record "GP Configuration";
-        DataSyncStatus: Page "Data Sync Status";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         Flag: Boolean;
     begin
         if not (DataMigrationStatus."Migration Type" = HelperFunctions.GetMigrationTypeTxt()) then
@@ -71,9 +71,11 @@ codeunit 4035 "Wizard Integration"
                 HelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
             end;
 
-        DataSyncStatus.ParsePosting();
         HelperFunctions.PostGLTransactions();
         HelperFunctions.SetProcessesRunning(false);
+
+        if GPCompanyAdditionalSettings.GetMigrateHistory() then
+            ScheduleGPHistoricalSnapshotMigration();
     end;
 
     local procedure SendTelemetryForSelectedEntities(var DataMigrationEntity: Record "Data Migration Entity")
@@ -108,4 +110,95 @@ codeunit 4035 "Wizard Integration"
     begin
         exit(codeunit::"Wizard Integration");
     end;
+
+    local procedure GetDefaultGPHistoricalMigrationJobTimeoutDuration(): Integer
+    begin
+        exit(48 * 60 * 60 * 1000); // 48 hours
+    end;
+
+    local procedure GetDefaultGPHistoricalMigrationJobMaxAttempts(): Integer
+    begin
+        exit(1);
+    end;
+
+    procedure StartGPHistoricalJobMigrationAction(JobNotRanNotification: Notification)
+    begin
+        ScheduleGPHistoricalSnapshotMigration();
+    end;
+
+    procedure ScheduleGPHistoricalSnapshotMigration()
+    var
+        GPConfiguration: Record "GP Configuration";
+        JobQueueEntry: Record "Job Queue Entry";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        UserPermissions: Codeunit "User Permissions";
+        TimeoutDuration: Duration;
+        MaxAttempts: Integer;
+        QueueCategory: Code[10];
+        IsHandled: Boolean;
+        OverrideTimeoutDuration: Duration;
+        OverrideMaxAttempts: Integer;
+    begin
+        if not UserPermissions.IsSuper(UserSecurityId()) then
+            exit;
+
+        if not TaskScheduler.CanCreateTask() then
+            exit;
+
+        if not JobQueueEntry.WritePermission then
+            exit;
+
+        TimeoutDuration := GetDefaultGPHistoricalMigrationJobTimeoutDuration();
+        MaxAttempts := GetDefaultGPHistoricalMigrationJobMaxAttempts();
+
+        OnBeforeCreateGPHistoricalMigrationJob(IsHandled, OverrideTimeoutDuration, OverrideMaxAttempts);
+        if IsHandled then begin
+            TimeoutDuration := OverrideTimeoutDuration;
+            MaxAttempts := OverrideMaxAttempts;
+        end;
+
+        QueueCategory := HybridCloudManagement.GetJobQueueCategory();
+
+        CreateAndScheduleBackgroundJob(Codeunit::"GP Populate Hist. Tables",
+                TimeoutDuration,
+                MaxAttempts,
+                QueueCategory,
+                GPSnapshotJobDescriptionTxt);
+
+        if GPConfiguration.Get() then begin
+            GPConfiguration."Historical Job Ran" := true;
+            GPConfiguration.Modify();
+        end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateGPHistoricalMigrationJob(var IsHandled: Boolean; var TimeoutDuration: Duration; var MaxAttempts: Integer)
+    begin
+    end;
+
+    procedure CreateAndScheduleBackgroundJob(ObjectIdToRun: Integer; TimeoutDuration: Duration; MaxAttempts: Integer; CategoryCode: Code[10]; Description: Text[250]): Guid
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        JobQueueEntryBuffer: Record "Job Queue Entry Buffer";
+    begin
+        JobQueueEntry.Init();
+        JobQueueEntry."Object Type to Run" := JobQueueEntry."Object Type to Run"::Codeunit;
+        JobQueueEntry."Object ID to Run" := ObjectIdToRun;
+        JobQueueEntry."Maximum No. of Attempts to Run" := MaxAttempts;
+        JobQueueEntry."Job Queue Category Code" := CategoryCode;
+        JobQueueEntry.Description := Description;
+        JobQueueEntry."Job Timeout" := TimeoutDuration;
+        Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry);
+
+        JobQueueEntryBuffer.Init();
+        JobQueueEntryBuffer.TransferFields(JobQueueEntry);
+        JobQueueEntryBuffer."Job Queue Entry ID" := JobQueueEntry.SystemId;
+        JobQueueEntryBuffer."Start Date/Time" := CurrentDateTime();
+        JobQueueEntryBuffer.Insert();
+
+        exit(JobQueueEntryBuffer.SystemId);
+    end;
+
+    var
+        GPSnapshotJobDescriptionTxt: Label 'Migrate GP Historical Snapshot';
 }

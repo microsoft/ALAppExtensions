@@ -61,40 +61,31 @@ codeunit 30181 "Shpfy Product Mapping"
     begin
         SetShop(ShopifyProduct."Shop Code");
         Direction := Direction::ShopifyToBC;
-        if Handled then begin
-            if not IsNullGuid(ShopifyProduct."Item SystemId") then
-                if ShopifyProduct."Has Variants" then
-                    exit(((not IsNullGuid(ShopifyVariant."Item Variant SystemId")) or (ShopifyVariant."Mapped By Item" and (not IsNullGuid(ShopifyVariant."Item SystemId")))) or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')))
-                else
-                    exit(true);
-        end else
-            if IsNullGuid(ShopifyProduct."Item SystemId") or (ShopifyProduct."Has Variants" and IsNullGuid(ShopifyVariant."Item Variant SystemId") and not ShopifyVariant."Mapped By Item") then begin
-                ProductEvents.OnBeforeFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant, Handled);
-                if Handled then
-                    MappingResult := true
-                else
-                    MappingResult := DoFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant);
-                if MappingResult then begin
-                    ProductEvents.OnAfterFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant);
-                    if Item."No." <> '' then begin
-                        if IsNullGuid(ShopifyProduct."Item SystemId") then begin
-                            ShopifyProduct."Item SystemId" := Item.SystemId;
-                            ShopifyProduct.Modify();
-                        end;
-                        ShopifyVariant."Item SystemId" := Item.SystemId;
-                        if ItemVariant.Code <> '' then begin
-                            ShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
-                            ShopifyVariant."Mapped By Item" := false;
-                        end else begin
-                            Clear(ShopifyVariant."Item Variant SystemId");
-                            ShopifyVariant."Mapped By Item" := true;
-                        end;
-                        ShopifyVariant.Modify();
-                        exit(ShopifyVariant."Mapped By Item" or (not ShopifyProduct."Has Variants") OR (not IsNullGuid(ShopifyVariant."Item Variant SystemId")) or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')));
+        if IsNullGuid(ShopifyProduct."Item SystemId") or (ShopifyProduct."Has Variants" and IsNullGuid(ShopifyVariant."Item Variant SystemId") and not ShopifyVariant."Mapped By Item") then begin
+            ProductEvents.OnBeforeFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant, Handled);
+            if Handled then
+                MappingResult := true
+            else
+                MappingResult := DoFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant);
+            if MappingResult then
+                if Item."No." <> '' then begin
+                    if IsNullGuid(ShopifyProduct."Item SystemId") then begin
+                        ShopifyProduct."Item SystemId" := Item.SystemId;
+                        ShopifyProduct.Modify();
                     end;
+                    ShopifyVariant."Item SystemId" := Item.SystemId;
+                    if ItemVariant.Code <> '' then begin
+                        ShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
+                        ShopifyVariant."Mapped By Item" := false;
+                    end else begin
+                        Clear(ShopifyVariant."Item Variant SystemId");
+                        ShopifyVariant."Mapped By Item" := true;
+                    end;
+                    ShopifyVariant.Modify();
+                    exit(ShopifyVariant."Mapped By Item" or (not ShopifyProduct."Has Variants") OR (not IsNullGuid(ShopifyVariant."Item Variant SystemId")) or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')));
                 end;
-            end else
-                exit(true);
+        end else
+            exit(true);
     end;
 
     /// <summary> 

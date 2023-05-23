@@ -6,6 +6,8 @@
 codeunit 9171 "Default Role Center Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "All Profile" = rm,
                   tabledata AllObjWithCaption = r;
 
@@ -39,7 +41,7 @@ codeunit 9171 "Default Role Center Impl."
         exit(RoleCenterId);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetDefaultRoleCenterID', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", GetDefaultRoleCenterID, '', false, false)]
     local procedure OnGetDefaultRoleCenterId(var ID: Integer)
     begin
         Session.LogMessage('0000DUF', StartingGetDefaultRoleCenterMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);

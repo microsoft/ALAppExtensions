@@ -17,6 +17,7 @@ permissionset 4810 "Intrastat Core - Objects"
         page "Intrastat Report Subform" = X,
         page "Intrastat Report Checklist" = X,
         page "Intrastat Report Setup Wizard" = X,
+        page "Intrastat Report Lines" = X,
 
         report "Intrastat Report Get Lines" = X;
 }

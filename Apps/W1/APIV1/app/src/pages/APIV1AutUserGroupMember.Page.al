@@ -1,3 +1,4 @@
+#if not CLEAN22
 page 20059 "APIV1 - Aut. User Group Member"
 {
     Caption = 'userGroupMember', Locked = true;
@@ -5,6 +6,9 @@ page 20059 "APIV1 - Aut. User Group Member"
     PageType = ListPart;
     SourceTable = "User Group Member";
     Extensible = false;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The User Group Member table is deprecated.';
+    ObsoleteTag = '22.0';
 
     layout
     {
@@ -65,3 +69,4 @@ page 20059 "APIV1 - Aut. User Group Member"
         LinesLoaded: Boolean;
 }
 
+#endif

@@ -19,4 +19,8 @@ codeunit 30241 "Shpfy GQL AllCustomerIds" implements "Shpfy IGraphQL"
     begin
         exit(103);
     end;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2

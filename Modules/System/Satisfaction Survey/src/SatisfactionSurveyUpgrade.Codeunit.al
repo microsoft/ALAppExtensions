@@ -7,6 +7,8 @@ codeunit 1435 "Satisfaction Survey Upgrade"
 {
     Subtype = Upgrade;
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ControlNotRegisteredErr: Label 'Satisfaction Survey control add-in was not registered.', Locked = true;

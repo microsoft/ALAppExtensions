@@ -2,18 +2,6 @@ pageextension 31196 "CF Forecast Stat. FactBox CZZ" extends "CF Forecast Statist
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify(SalesAdvances)
-        {
-            Visible = false;
-        }
-        modify(PurchaseAdvances)
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter(Tax)
         {
             field(SalesAdvancesCZZ; Rec.CalcSourceTypeAmount(Enum::"Cash Flow Source Type"::"Sales Advance Letters CZZ"))

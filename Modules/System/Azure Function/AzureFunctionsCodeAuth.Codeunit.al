@@ -6,6 +6,8 @@
 codeunit 7801 "Azure Functions Code Auth" implements "Azure Functions Authentication"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

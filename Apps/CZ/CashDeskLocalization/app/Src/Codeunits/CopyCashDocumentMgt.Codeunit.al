@@ -85,6 +85,7 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
 
             if ToCashDocumentHeaderCZP.Status = ToCashDocumentHeaderCZP.Status::Released then begin
                 ToCashDocumentHeaderCZP.Status := ToCashDocumentHeaderCZP.Status::Open;
+                ToCashDocumentHeaderCZP."Released Amount" := 0;
                 ReleaseDocument := true;
             end;
 

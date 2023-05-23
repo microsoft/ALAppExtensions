@@ -9,6 +9,8 @@
 codeunit 1284 "Password Handler"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         PasswordHandlerImpl: Codeunit "Password Handler Impl.";

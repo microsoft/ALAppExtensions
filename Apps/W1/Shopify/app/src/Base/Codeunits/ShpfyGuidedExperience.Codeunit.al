@@ -19,7 +19,7 @@ codeunit 30201 "Shpfy Guided Experience"
         BusinessCentralLovesShopifyTitleTxt: Label 'Grow your business with Business Central';
         BusinessCentralLovesShopifyDescriptionTxt: Label 'Business Central includes an integration to Shopify that will make your online trade a breeze. See this video to learn how.';
         BusinessCentralLovesShopifyVideoLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2198401', Locked = true;
-        ConnectYourShopEvalTitleTxt: Label 'Connect your shop and import data';
+        ConnectYourShopEvalTitleTxt: Label 'Connect to Shopify and import data';
         ConnectYourShopEvalShortTitleTxt: Label 'Connect your shop';
         ConnectYourShopEvalDescriptionTxt: Label 'Check out how easy it is to set up the connection to Shopify. Here we connect and import your shop data. Your live shop will be untouched. Try it out!';
         ConnectYourShopTitleTxt: Label 'Get started with Shopify';

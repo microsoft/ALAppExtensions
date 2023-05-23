@@ -31,10 +31,21 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
             {
                 Caption = 'VAT';
 
+#if not CLEAN22
                 field("Use VAT Date CZL"; Rec."Use VAT Date CZL")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if you want to be able to record different accounting and VAT dates in accounting cases.';
+                    Visible = not ReplaceVATDateEnabled;
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Replaced by VAT Reporting Date.';
+                }
+#endif
+                field("Def. Orig. Doc. VAT Date CZL"; Rec."Def. Orig. Doc. VAT Date CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the default original document VAT date type for purchase document (posting date, document date, VAT date or blank).';
                 }
                 field("Allow VAT Posting From CZL"; Rec."Allow VAT Posting From CZL")
                 {
@@ -48,38 +59,29 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                 }
             }
         }
-#if CLEAN19
         addlast(content)
         {
             group("Other CZL")
             {
                 Caption = 'Other';
 
-#else
-#pragma warning disable AL0432
-        addlast(Other)
-#pragma warning restore AL0432
-        {
-#endif
-            field("User Checks Allowed CZL"; Rec."User Checks Allowed CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies whether extended user controls will be activated based on User setup.';
-            }
-            field("Closed Per. Entry Pos.Date CZL"; Rec."Closed Per. Entry Pos.Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the posting date of closed period entries in inventory adjustement';
-            }
-            field("Rounding Date CZL"; Rec."Rounding Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the date for the inventory rounding adjustment by inventory adjustement';
+                field("User Checks Allowed CZL"; Rec."User Checks Allowed CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether extended user controls will be activated based on User setup.';
+                }
+                field("Closed Per. Entry Pos.Date CZL"; Rec."Closed Per. Entry Pos.Date CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the posting date of closed period entries in inventory adjustement';
+                }
+                field("Rounding Date CZL"; Rec."Rounding Date CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the date for the inventory rounding adjustment by inventory adjustement';
+                }
             }
         }
-#if CLEAN19
-        }
-#endif
         addlast(Reporting)
         {
             field("Shared Account Schedule CZL"; Rec."Shared Account Schedule CZL")
@@ -88,13 +90,26 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                 ToolTip = 'Specifies to share the account schedule in general ledger setup.';
             }
         }
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify(Other)
+        movefirst(VatCZL; "VAT Reporting Date Usage", "Default VAT Reporting Date")
+#if not CLEAN22
+        modify("VAT Reporting Date Usage")
         {
-            Visible = true;
+            Visible = ReplaceVATDateEnabled;
         }
-#pragma warning restore AL0432
+        modify("Default VAT Reporting Date")
+        {
+            Visible = ReplaceVATDateEnabled;
+        }
 #endif
     }
+#if not CLEAN22
+    trigger OnOpenPage()
+    begin
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+    end;
+
+    var
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+        ReplaceVATDateEnabled: Boolean;
+#endif
 }

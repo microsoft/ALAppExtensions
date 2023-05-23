@@ -23,7 +23,7 @@ codeunit 10892 "Local Serv. Decl. Exp. Ext."
         IsHandled: Boolean;
     begin
         IsHandled := false;
-        OnBeforeExportToFile(DataExch, FileName, IsHandled);
+        OnBeforeExportToFile(DataExch, TempBlob, FileName, IsHandled);
         if IsHandled then
             exit;
 
@@ -32,7 +32,7 @@ codeunit 10892 "Local Serv. Decl. Exp. Ext."
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeExportToFile(DataExch: Record "Data Exch."; var FileName: Text; var Handled: Boolean)
+    local procedure OnBeforeExportToFile(DataExch: Record "Data Exch."; var TempBlob: Codeunit "Temp Blob"; var FileName: Text; var Handled: Boolean)
     begin
     end;
 }

@@ -9,6 +9,8 @@
 table 2611 "Feature Dependency"
 {
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

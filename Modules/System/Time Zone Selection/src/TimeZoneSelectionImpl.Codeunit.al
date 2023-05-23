@@ -6,6 +6,8 @@
 codeunit 9199 "Time Zone Selection Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Time Zone" = r;
 
     procedure LookupTimeZone(var TimeZoneText: Text[180]): Boolean

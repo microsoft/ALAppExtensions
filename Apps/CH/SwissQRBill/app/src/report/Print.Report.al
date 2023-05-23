@@ -150,6 +150,7 @@ report 11510 "Swiss QR-Bill Print"
                 AmountText := FormatAmount(Amount);
                 PaymentReferenceNoText := SwissQRBillMgt.FormatPaymentReference("Payment Reference Type", "Payment Reference");
                 AddInformationText := ReportAddInformationInfo(SwissQRBillBuffer);
+                SwissQRBillBuffer.Modify();
             end;
         }
     }
@@ -181,6 +182,11 @@ report 11510 "Swiss QR-Bill Print"
 
     trigger OnPostReport()
     begin
+        if SwissQRBillBuffer.FindSet() then
+            repeat
+                SwissQRBillMgt.DeleteTenantMedia(SwissQRBillBuffer."QR-Code Image".MediaId);
+            until SwissQRBillBuffer.Next() = 0;
+
         if (PrintedCount = 0) and GuiAllowed() then
             Error(BlankedOutputErr);
 

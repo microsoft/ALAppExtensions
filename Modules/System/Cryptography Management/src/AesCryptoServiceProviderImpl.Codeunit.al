@@ -6,6 +6,8 @@
 codeunit 1467 "AesCryptoServiceProvider Impl." implements SymmetricAlgorithm
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetAesCryptoServiceProvider: Dotnet "Cryptography.AesCryptoServiceProvider";

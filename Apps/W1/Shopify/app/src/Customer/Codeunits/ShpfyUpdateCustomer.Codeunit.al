@@ -5,11 +5,14 @@ codeunit 30124 "Shpfy Update Customer"
 {
     Access = Internal;
     Permissions =
+#if not CLEAN22
         tabledata "Config. Template Header" = r,
         tabledata "Config. Template Line" = r,
+        tabledata "Dimensions Template" = r,
+#endif
         tabledata "Country/Region" = r,
-        tabledata Customer = rim,
-        tabledata "Dimensions Template" = r;
+        tabledata Customer = rim;
+
     TableNo = "Shpfy Customer";
 
     var
@@ -23,10 +26,9 @@ codeunit 30124 "Shpfy Update Customer"
     begin
         if Customer.GetBySystemId(Rec."Customer SystemId") then begin
             CustomerEvents.OnBeforeUpdateCustomer(Shop, Rec, Customer, Handled);
-            if not Handled then begin
+            if not Handled then
                 DoUpdateCustomer(Shop, Rec, Customer);
-                CustomerEvents.OnAfterUpdateCustomer(Shop, Rec, Customer);
-            end;
+            CustomerEvents.OnAfterUpdateCustomer(Shop, Rec, Customer);
         end;
     end;
 

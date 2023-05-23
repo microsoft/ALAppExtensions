@@ -4,6 +4,8 @@ permissionset 18359 "D365 Common Access - India GST"
     Assignable = false;
     Caption = 'D365 Common Access - India GST';
 
+    IncludedPermissionSets = "IN Advance Objects - India GST";
+
     Permissions = tabledata "Applied Delivery Challan Entry" = RMID,
                   tabledata "Applied Delivery Challan" = RMID,
                   tabledata "Delivery Challan Header" = RIMD,
@@ -30,7 +32,9 @@ permissionset 18359 "D365 Common Access - India GST"
                   tabledata "Detailed GST Ledger Entry" = RIMD,
                   tabledata "Detailed GST Ledger Entry Info" = RIMD,
                   tabledata "Dist. Component Amount" = RIMD,
+#if not CLEAN23
                   tabledata "E-Commerce Merchant" = RIMD,
+#endif
                   tabledata "E-Comm. Merchant" = RIMD,
                   tabledata "GST Application Buffer" = RIMD,
                   tabledata "GST Claim Setoff" = RIMD,

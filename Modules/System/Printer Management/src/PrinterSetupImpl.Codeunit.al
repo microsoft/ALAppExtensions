@@ -9,6 +9,8 @@
 codeunit 2617 "Printer Setup Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         PrinterSetup: Codeunit "Printer Setup";

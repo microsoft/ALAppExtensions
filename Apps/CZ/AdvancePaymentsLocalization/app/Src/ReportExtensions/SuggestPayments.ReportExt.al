@@ -2,22 +2,6 @@ reportextension 31000 "Suggest Payments CZZ" extends "Suggest Payments CZB"
 {
     dataset
     {
-#if not CLEAN19
-        modify("Purch. Advance Letter Header")
-        {
-            trigger OnBeforePreDataItem()
-            begin
-                CurrReport.Break();
-            end;
-        }
-        modify(PurchAdvLetterHdrPerLine)
-        {
-            trigger OnBeforePreDataItem()
-            begin
-                CurrReport.Break();
-            end;
-        }
-#endif
         addafter("Vendor Ledger Entry Disc")
         {
             dataitem("Purch. Adv. Letter Header CZZ"; "Purch. Adv. Letter Header CZZ")

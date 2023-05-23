@@ -20,6 +20,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 field(MostPopularItemText; MostPopularItemText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -39,6 +40,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 field(BusiestResourceText; BusiestResourceText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -58,6 +60,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 field(TopCustomerText; TopCustomerText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -78,6 +81,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDown = true;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -98,6 +102,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDown = true;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -117,6 +122,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 field(SalesIncreaseText; SalesIncreaseText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -135,6 +141,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 field(OpenVATReturnText; OpenVATReturnText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -153,6 +160,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 field(OverdueVATReturnText; OverdueVATReturnText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -171,6 +179,7 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
                 field(RecentlyOverdueInvoicesText; RecentlyOverdueInvoicesText)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var

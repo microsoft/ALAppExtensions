@@ -6,6 +6,8 @@
 codeunit 1285 "X509Certificate2 Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CertInitializeErr: Label 'Unable to initialize certificate!';
@@ -73,6 +75,28 @@ codeunit 1285 "X509Certificate2 Impl."
     begin
         InitializeX509Certificate(CertBase64Value, Password, X509Certificate2);
         exit(X509Certificate2.HasPrivateKey());
+    end;
+
+    procedure GetCertificateSerialNumber(CertBase64Value: Text; Password: Text; var SerialNumber: Text)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        InitializeX509Certificate(CertBase64Value, Password, X509Certificate2);
+        SerialNumber := X509Certificate2.SerialNumber;
+    end;
+
+    procedure GetCertificateSerialNumberAsASCII(CertBase64Value: Text; Password: Text; var SerialNumberASCII: Text)
+    var
+        X509Certificate2: DotNet X509Certificate2;
+        SerialHex: Text;
+    begin
+        InitializeX509Certificate(CertBase64Value, Password, X509Certificate2);
+        SerialHex := X509Certificate2.SerialNumber;
+
+        if SerialHex = '' then
+            exit;
+
+        SerialNumberASCII := ConvertHexToAscii(SerialHex);
     end;
 
     procedure GetCertificatePropertiesAsJson(CertBase64Value: Text; Password: Text; var CertPropertyJson: Text)
@@ -151,5 +175,21 @@ codeunit 1285 "X509Certificate2 Impl."
             if PropertyInfo.PropertyType().ToString() in ['System.Boolean', 'System.String', 'System.DateTime', 'System.Int32'] then
                 JObject.Add(PropertyInfo.Name(), Format(PropertyInfo.GetValue(X509Certificate2), 0, 0));
         JObject.WriteTo(CertPropertyJson);
+    end;
+
+    local procedure ConvertHexToAscii(SerialHex: Text): Text
+    var
+        Convert: DotNet Convert;
+        CharObj: Char;
+        i: Integer;
+        SerialNumberASCII: Text;
+    begin
+        for i := 1 to StrLen(SerialHex) do begin
+            CharObj := Convert.ToInt32(SerialHex.Substring(i, 2), 16);
+            SerialNumberASCII += CharObj;
+            i += 1;
+        end;
+
+        exit(SerialNumberASCII);
     end;
 }

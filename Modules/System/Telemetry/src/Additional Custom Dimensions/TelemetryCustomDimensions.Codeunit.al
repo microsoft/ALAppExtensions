@@ -10,6 +10,8 @@
 codeunit 8706 "Telemetry Custom Dimensions"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TelemetryCustomDimsImpl: Codeunit "Telemetry Custom Dims Impl.";

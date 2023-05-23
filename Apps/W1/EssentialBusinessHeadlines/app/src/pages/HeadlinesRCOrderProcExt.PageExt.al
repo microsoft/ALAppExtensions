@@ -20,6 +20,7 @@ pageextension 1441 "Headlines RC Order Proc. Ext." extends "Headline RC Order Pr
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDown = true;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var
@@ -40,6 +41,7 @@ pageextension 1441 "Headlines RC Order Proc. Ext." extends "Headline RC Order Pr
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDown = true;
+                    ShowCaption = false;
 
                     trigger OnDrillDown()
                     var

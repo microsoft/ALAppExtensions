@@ -6,6 +6,8 @@
 codeunit 9844 "User Selection Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata User = r;
 
     var
@@ -17,9 +19,9 @@ codeunit 9844 "User Selection Impl."
     begin
         User.FilterGroup(2);
         if not EnvironmentInformation.IsSaaS() then
-            User.SetFilter("License Type", '<>%1', User."License Type"::Application)
+            User.SetFilter("License Type", '<>%1&<>%2', User."License Type"::Application, User."License Type"::"Windows Group")
         else
-            User.SetFilter("License Type", '<>%1&<>%2', User."License Type"::"External User", User."License Type"::Application);
+            User.SetFilter("License Type", '<>%1&<>%2&<>%3', User."License Type"::"External User", User."License Type"::Application, User."License Type"::"AAD Group");
         User.FilterGroup(0);
     end;
 
@@ -47,6 +49,16 @@ codeunit 9844 "User Selection Impl."
         User.SetRange("User Name", UserName);
         if User.IsEmpty() then
             Error(UserNameDoesNotExistErr, UserName);
+    end;
+
+    procedure FilterSystemUserAndAADGroupUsers(var User: Record User)
+    begin
+        User.SetFilter("License Type", '<>%1&<>%2', User."License Type"::"External User", User."License Type"::"AAD Group");
+    end;
+
+    procedure FilterSystemUserAndGroupUsers(var User: Record User)
+    begin
+        User.SetFilter("License Type", '<>%1&<>%2&<>%3', User."License Type"::"External User", User."License Type"::"AAD Group", User."License Type"::"Windows Group");
     end;
 }
 

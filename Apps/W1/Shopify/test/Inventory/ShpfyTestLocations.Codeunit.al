@@ -69,7 +69,10 @@ codeunit 139577 "Shpfy Test Locations"
         ShopLocation: Record "Shpfy Shop Location";
         NumberOfLocations: Integer;
     begin
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         ShopLocation.DeleteAll();
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         // [SCENARIO] Invoke a REST API to get the locations from Shopify.
@@ -91,7 +94,12 @@ codeunit 139577 "Shpfy Test Locations"
         Shop: Record "Shpfy Shop";
         LocationSubcriber: Codeunit "Shpfy Location Subcriber";
     begin
+<<<<<<< HEAD
         LocationSubcriber.InitShopiyLocations(JData);
+=======
+        Commit();
+        LocationSubcriber.InitShopifyLocations(JData);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         BindSubscription(LocationSubcriber);
         Shop := CommunicationMgt.GetShopRecord();
         Result := Codeunit.Run(Codeunit::"Shpfy Sync Shop Locations", Shop);

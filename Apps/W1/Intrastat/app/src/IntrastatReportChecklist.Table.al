@@ -50,6 +50,31 @@ table 4813 "Intrastat Report Checklist"
         {
             Caption = 'Reversed Filter Expression';
         }
+        field(6; "Must Be Blank For Filter Expr."; Text[1024])
+        {
+            Caption = 'Field Must Be Blank For Filter Expression';
+            trigger OnValidate()
+            var
+                IntrastatReportLine: Record "Intrastat Report Line";
+            begin
+                if "Must Be Blank For Filter Expr." <> '' then begin
+                    IntrastatReportLine.SetView(ConvertFilterStringToView("Must Be Blank For Filter Expr."));
+                    "Must Be Blank Rec. View String" := CopyStr(IntrastatReportLine.GetView(false), 1, MaxStrLen("Must Be Blank Rec. View String"));
+                    "Must Be Blank For Filter Expr." := CopyStr(IntrastatReportLine.GetFilters(), 1, MaxStrLen("Must Be Blank For Filter Expr."));
+                end else
+                    "Must Be Blank Rec. View String" := '';
+            end;
+
+            trigger OnLookup()
+            begin
+                LookupFilterExpressionForBlank();
+            end;
+        }
+        field(7; "Must Be Blank Rec. View String"; Text[1024])
+        {
+            Caption = 'Field Must Be Blank Record View String';
+            Editable = false;
+        }
     }
 
     keys
@@ -96,6 +121,23 @@ table 4813 "Intrastat Report Checklist"
         end;
     end;
 
+    local procedure LookupFilterExpressionForBlank()
+    var
+        IntrastatReportLine: Record "Intrastat Report Line";
+        FilterPageBuilder: FilterPageBuilder;
+        TableCaptionValue: Text;
+    begin
+        TableCaptionValue := IntrastatReportLine.TableCaption();
+        FilterPageBuilder.AddTable(TableCaptionValue, Database::"Intrastat Report Line");
+        if "Must Be Blank Rec. View String" <> '' then
+            FilterPageBuilder.SetView(TableCaptionValue, "Must Be Blank Rec. View String");
+        if FilterPageBuilder.RunModal() then begin
+            IntrastatReportLine.SetView(FilterPageBuilder.GetView(TableCaptionValue, false));
+            "Must Be Blank Rec. View String" := CopyStr(IntrastatReportLine.GetView(false), 1, MaxStrLen("Must Be Blank Rec. View String"));
+            "Must Be Blank For Filter Expr." := CopyStr(IntrastatReportLine.GetFilters(), 1, MaxStrLen("Must Be Blank For Filter Expr."));
+        end;
+    end;
+
     local procedure ConvertFilterStringToView(FilterString: Text): Text
     var
         IntrastatReportLine: Record "Intrastat Report Line";
@@ -129,11 +171,24 @@ table 4813 "Intrastat Report Checklist"
         TempIntrastatReportLine: Record "Intrastat Report Line" temporary;
     begin
         if "Record View String" = '' then
-            exit(true);
+            exit("Must Be Blank Rec. View String" = '');
 
         TempIntrastatReportLine := IntrastatReportLine;
         TempIntrastatReportLine.Insert();
         TempIntrastatReportLine.SetView("Record View String");
         exit(not TempIntrastatReportLine.IsEmpty() xor "Reversed Filter Expression");
+    end;
+
+    internal procedure LinePassesFilterExpressionForMustBeBlank(IntrastatReportLine: Record "Intrastat Report Line"): Boolean
+    var
+        TempIntrastatReportLine: Record "Intrastat Report Line" temporary;
+    begin
+        if "Must Be Blank Rec. View String" = '' then
+            exit(false);
+
+        TempIntrastatReportLine := IntrastatReportLine;
+        TempIntrastatReportLine.Insert();
+        TempIntrastatReportLine.SetView("Must Be Blank Rec. View String");
+        exit(not TempIntrastatReportLine.IsEmpty());
     end;
 }

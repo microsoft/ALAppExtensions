@@ -20,6 +20,10 @@ codeunit 30184 "Shpfy Sync Product Image"
     var
         Shop: Record "Shpfy Shop";
         ProductImageExport: Codeunit "Shpfy Product Image Export";
+<<<<<<< HEAD
+=======
+        ProductFilter: Text;
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
 
     /// <summary> 
     /// Export Images.
@@ -29,6 +33,8 @@ codeunit 30184 "Shpfy Sync Product Image"
         ShopifyProduct: Record "Shpfy Product";
     begin
         ShopifyProduct.SetRange("Shop Code", Shop.Code);
+        if ProductFilter <> '' then
+            ShopifyProduct.SetFilter(Id, ProductFilter);
         if ShopifyProduct.FindSet() then
             repeat
                 Commit();
@@ -108,5 +114,10 @@ codeunit 30184 "Shpfy Sync Product Image"
             Item.Picture.ImportStream(InStream, Item.Description);
             Item.Modify();
         end;
+    end;
+
+    internal procedure SetProductFilter(FilterText: Text)
+    begin
+        ProductFilter := FilterText;
     end;
 }

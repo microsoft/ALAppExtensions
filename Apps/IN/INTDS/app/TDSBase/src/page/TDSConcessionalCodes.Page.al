@@ -65,9 +65,8 @@ page 18690 "TDS Concessional Codes"
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    VendorNoLbl: Label 'Code eq %1', Comment = '%1 = Vendor No.';
                 begin
-                    EditinExcel.EditPageInExcel('Vendor Concessional Codes', CurrPage.ObjectId(false), StrSubstNo(VendorNoLbl, Rec."Vendor No."));
+                    EditinExcel.EditPageInExcel('Vendor Concessional Codes', Page::"TDS Concessional Codes");
                 end;
             }
         }

@@ -10,14 +10,6 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
         {
             Visible = false;
         }
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Prepayment Type")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter("Amount Type")
         {
             field("G/L Amount Type CZL"; Rec."G/L Amount Type CZL")

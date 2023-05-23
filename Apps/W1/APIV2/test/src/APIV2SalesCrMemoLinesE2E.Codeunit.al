@@ -629,7 +629,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         SalesHeader: Record "Sales Header";
         Item: Record "Item";
         SalesLine: Record "Sales Line";
-        DiscountAmount: Decimal;
+        DiscountAmount, InvDiscAmount : Decimal;
         CreditMemoLineJSON: Text;
         ResponseText: Text;
         SalesQuantity: Integer;
@@ -646,6 +646,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         Commit();
 
         FindFirstSalesLine(SalesHeader, SalesLine);
+        InvDiscAmount := SalesLine."Inv. Discount Amount";
 
         // [WHEN] we PATCH the line
         ModifyCreditMemoLinesThroughAPI(SalesHeader.SystemId, SalesLine.SystemId, CreditMemoLineJSON, ResponseText);
@@ -653,7 +654,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         // [THEN] Credit Memo discount is kept
         Assert.AreNotEqual('', ResponseText, 'Response JSON should not be blank');
         LibraryGraphMgt.VerifyIDFieldInJson(ResponseText, 'itemId');
-        VerifyTotals(SalesHeader, DiscountAmount, SalesHeader."Invoice Discount Calculation"::Amount);
+        VerifyTotals(SalesHeader, DiscountAmount - InvDiscAmount, SalesHeader."Invoice Discount Calculation"::Amount);
         RecallNotifications();
     end;
 

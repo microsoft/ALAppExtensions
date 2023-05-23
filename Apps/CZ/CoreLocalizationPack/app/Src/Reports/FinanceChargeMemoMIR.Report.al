@@ -512,7 +512,7 @@ report 31034 "Finance Charge Memo MIR CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(19) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(19) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

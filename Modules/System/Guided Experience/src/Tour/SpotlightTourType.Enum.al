@@ -34,4 +34,12 @@ enum 1996 "Spotlight Tour Type"
     {
         Caption = 'Share to Teams';
     }
+
+    /// <summary>
+    /// Specifies that the tour spotlights the Copilot functionality on the page.
+    /// </summary>
+    value(3; "Copilot")
+    {
+        Caption = 'Copilot';
+    }
 }

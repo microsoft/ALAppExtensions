@@ -5,3 +5,4 @@ codeunit 30210 "Shpfy Disabled Value" implements "Shpfy Stock Calculation"
         exit(0);
     end;
 }
+

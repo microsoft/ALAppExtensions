@@ -10,6 +10,8 @@
 codeunit 8708 "Telemetry Loggers"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TelemetryLoggersImpl: Codeunit "Telemetry Loggers Impl.";

@@ -80,6 +80,13 @@ page 30121 "Shpfy Orders to Import"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: Fulfilled, null, partial, restocked.';
                 }
+                field(ChannelName; Rec."Channel Name")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    Importance = Additional;
+                    ToolTip = 'The name of the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
+                }
                 field(Confirmed; Rec.Confirmed)
                 {
                     ApplicationArea = All;

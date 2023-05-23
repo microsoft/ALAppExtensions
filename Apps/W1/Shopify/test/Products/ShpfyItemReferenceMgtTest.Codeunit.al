@@ -29,7 +29,11 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] BarCode
         BarCode := Any.AlphanumericText(MaxStrLen(BarCode));
 
+<<<<<<< HEAD
         // [WHEN] Invoke ShpfyItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
+=======
+        // [WHEN] Invoke ItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         ItemReferenceMgt.CreateItemBarCode(Item."No.", VariantCode, UoM, BarCode);
 
         // [THEN] Find the Item Reference record with the barcode.
@@ -72,7 +76,11 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] VendorItemNo
         VendorItemNo := Any.AlphanumericText(MaxStrLen(VendorItemNo));
 
+<<<<<<< HEAD
         // [WHEN] Invoke ShpfyItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
+=======
+        // [WHEN] Invoke ItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         ItemReferenceMgt.CreateItemReference(Item."No.", VariantCode, UoM, "Item Reference Type"::Vendor, VendorNo, VendorItemNo);
 
         // [THEN] Find the Item Reference record with the VendorItemNo.
@@ -122,7 +130,11 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] FoundItemNo as output
         // [GIVEN] FoundVariantCode as output
 
+<<<<<<< HEAD
         // [WHEN] Invoke ShpfyItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+=======
+        // [WHEN] Invoke ItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Result := ItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode);
 
         // [THEN] Result is true
@@ -170,7 +182,11 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] FoundItemNo as output
         // [GIVEN] FoundVariantCode as output
 
+<<<<<<< HEAD
         // [WHEN] Invoke ShpfyItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+=======
+        // [WHEN] Invoke ItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Result := ItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode);
 
         // [THEN] Result is true
@@ -213,7 +229,11 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] VariantCode
         // [GIVEN] UoM
 
+<<<<<<< HEAD
         // [WHEN] Invoke ShpfyItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+=======
+        // [WHEN] Invoke ItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Result := ItemReferenceMgt.GetItemBarcode(Item."No.", VariantCode, UoM);
 
         // [THEN] Result = BarCode
@@ -253,7 +273,11 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] "Item Reference Type"::Vendor
         // [GIVEN] ItemReference."Reference Type No."
 
+<<<<<<< HEAD
         // [WHEN] Invoke ShpfyItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+=======
+        // [WHEN] Invoke ItemReferenceMgt.FindByReference(ReferenceNo, "Item Reference Type"::Vendor, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Result := ItemReferenceMgt.GetItemReference(Item."No.", VariantCode, UoM, "Item Reference Type"::Vendor, ItemReference."Reference Type No.");
 
         // [THEN] Result = ReferenceNo

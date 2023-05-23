@@ -12,6 +12,7 @@ page 9995 "Word Template Creation Wizard"
     SourceTable = "Word Templates Table";
     Caption = 'Create a Word Template';
     Permissions = tabledata "Word Template" = rm,
+                  tabledata "Word Template Field" = i,
                   tabledata "Word Templates Table" = rm,
                   tabledata "Word Templates Related Table" = i,
                   tabledata AllObjWithCaption = r;
@@ -34,37 +35,10 @@ page 9995 "Word Template Creation Wizard"
                     Caption = 'Choose the source of the data for the template.';
                 }
 
-                field(AddNewEntity; AddNewEntityLbl)
+                part(WordTemplateTables; "Word Templates Tables Part")
                 {
                     ApplicationArea = All;
-                    ShowCaption = false;
-                    ToolTip = ' ';
-                    Editable = false;
-                    Visible = TableFilterExpression = '';
-
-                    trigger OnDrillDown()
-                    var
-                        WordTemplateImpl: Codeunit "Word Template Impl.";
-                        TableId: Integer;
-                    begin
-                        TableId := WordTemplateImpl.AddTable();
-                        if TableId <> 0 then begin
-                            Rec.Get(TableId);
-                            CurrPage.Update(false);
-                        end;
-                    end;
-                }
-
-                repeater(Tables)
-                {
-                    Editable = false;
-                    field(Name; Rec."Table Caption")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Name';
-                        ToolTip = 'Specifies the name of the data source from which the template will get data.';
-                        Editable = false;
-                    }
+                    Caption = 'Source Tables';
                 }
             }
 
@@ -78,41 +52,22 @@ page 9995 "Word Template Creation Wizard"
                     Caption = 'You can also merge data from fields on entities that are related to the source entity. For example, if the source is the Customer entity, your template can include data from the Salesperson/Purchaser entity.​';
                 }
 
+#if not CLEAN22
                 label(RelatedEntityOptions)
                 {
                     ApplicationArea = All;
-                    Caption = 'Related entities share a field, typically an identifier such as its name, code, or ID, with the source entity. Predefined relations are available in the simple option. To define a relation, if you know the shared field, use the advanced option.​';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Moved to Word Templates Related Card.';
+                    Caption = 'Related entities share a field, typically an identifier such as its name, code, or ID, with the source entity. When adding a related entity the list is filtered to predefined relations that are available. To define a relation, if you know the shared field, you can remove the filtering and define the relation.​';
                 }
-
-                field(AddRelatedEntity; AddRelatedEntityLbl)
-                {
-                    ApplicationArea = All;
-                    ShowCaption = false;
-                    ToolTip = ' ';
-                    Editable = false;
-
-                    trigger OnDrillDown()
-                    begin
-                        Currpage.RelatedTables.Page.AddRelatedTable(WordTemplate."Table ID", true);
-                    end;
-                }
-
-                field(AddRelatedEntityAdvanced; AddRelatedEntityAdvancedLbl)
-                {
-                    ApplicationArea = All;
-                    ShowCaption = false;
-                    ToolTip = ' ';
-                    Editable = false;
-
-                    trigger OnDrillDown()
-                    begin
-                        Currpage.RelatedTables.Page.AddRelatedTable(WordTemplate."Table ID", false);
-                    end;
-                }
+#endif
 
                 part(RelatedTables; "Word Templates Related Part")
                 {
                     ApplicationArea = All;
+                    Caption = 'Entities';
                 }
             }
 
@@ -135,7 +90,8 @@ page 9995 "Word Template Creation Wizard"
 
                     trigger OnDrillDown()
                     var
-                        WordTemplates: Codeunit "Word Template";
+                        TempWordTemplateField: Record "Word Template Field" temporary;
+                        WordTemplateImpl: Codeunit "Word Template Impl.";
                         RelatedTableIds: List of [Integer];
                         RelatedTableCodes: List of [Code[5]];
                     begin
@@ -143,13 +99,14 @@ page 9995 "Word Template Creation Wizard"
                             WordTemplate."Table ID" := Rec."Table ID";
 
                         CurrPage.RelatedTables.Page.GetRelatedTables(RelatedTableIds, RelatedTableCodes);
+                        CurrPage.RelatedTables.Page.GetWordTemplateFields(TempWordTemplateField);
 
                         if RelatedTableIds.Count = 0 then
-                            WordTemplates.Create(WordTemplate."Table ID")
+                            WordTemplateImpl.Create(WordTemplate."Table ID", TempWordTemplateField)
                         else
-                            WordTemplates.Create(WordTemplate."Table ID", RelatedTableIds, RelatedTableCodes);
+                            WordTemplateImpl.Create(WordTemplate."Table ID", RelatedTableIds, RelatedTableCodes, TempWordTemplateField);
 
-                        WordTemplates.DownloadTemplate();
+                        WordTemplateImpl.DownloadTemplate();
                     end;
                 }
 
@@ -188,8 +145,10 @@ page 9995 "Word Template Creation Wizard"
                     var
                         WordTemplateImpl: Codeunit "Word Template Impl.";
                     begin
-                        if WordTemplateImpl.Upload(WordTemplate, UploadedFileName) then
+                        if WordTemplateImpl.Upload(WordTemplate, UploadedFileName) then begin
                             TemplateUploaded := true;
+                            UpdateEnabledStatus();
+                        end;
 
                         WordTemplate.CalcFields("Table Caption");
                         CurrPage.Update();
@@ -375,6 +334,7 @@ page 9995 "Word Template Creation Wizard"
                         Step::Overview:
                             Step := Step::Details;
                     end;
+                    UpdateEnabledStatus();
                 end;
             }
 
@@ -383,6 +343,7 @@ page 9995 "Word Template Creation Wizard"
                 ApplicationArea = All;
                 Image = NextRecord;
                 Visible = Step <> Step::Overview;
+                Enabled = NextEnabled;
                 InFooterBar = true;
 
                 trigger OnAction()
@@ -390,6 +351,7 @@ page 9995 "Word Template Creation Wizard"
                     case Step of
                         Step::Select:
                             begin
+                                CurrPage.WordTemplateTables.Page.GetRecord(Rec);
                                 if Rec."Table ID" = 0 then
                                     Error(MissingEntityErr);
 
@@ -399,7 +361,10 @@ page 9995 "Word Template Creation Wizard"
                                 Step := Step::SelectRelated;
                             end;
                         Step::SelectRelated:
-                            Step := Step::Download;
+                            begin
+                                CurrPage.RelatedTables.Page.VerifyNoSelectedFields();
+                                Step := Step::Download;
+                            end;
                         Step::Download:
                             begin
                                 WordTemplate.CalcFields("Table Caption");
@@ -421,6 +386,7 @@ page 9995 "Word Template Creation Wizard"
                                 Step := Step::Overview;
                             end;
                     end;
+                    UpdateEnabledStatus();
                 end;
             }
 
@@ -435,6 +401,7 @@ page 9995 "Word Template Creation Wizard"
                 begin
                     WordTemplate.CalcFields("Table Caption");
                     Step := Step::Upload;
+                    UpdateEnabledStatus();
                 end;
             }
 
@@ -449,6 +416,8 @@ page 9995 "Word Template Creation Wizard"
                 var
                     RelatedTables: Record "Word Templates Related Table";
                     TempRelatedTables: Record "Word Templates Related Table" temporary;
+                    WordTemplateField: Record "Word Template Field";
+                    TempWordTemplateField: Record "Word Template Field" temporary;
                     WordTemplateImpl: Codeunit "Word Template Impl.";
                 begin
                     WordTemplateImpl.InsertWordTemplate(WordTemplate);
@@ -465,6 +434,16 @@ page 9995 "Word Template Creation Wizard"
                             RelatedTables.Insert();
                         until TempRelatedTables.Next() = 0;
 
+                    // Add selected fields
+                    CurrPage.RelatedTables.Page.GetWordTemplateFields(TempWordTemplateField);
+                    TempWordTemplateField.Reset();
+                    if TempWordTemplateField.FindSet() then
+                        repeat
+                            WordTemplateField := TempWordTemplateField;
+                            WordTemplateField."Word Template Code" := WordTemplate.Code;
+                            WordTemplateField.Insert();
+                        until TempWordTemplateField.Next() = 0;
+
                     CurrPage.Close();
                 end;
             }
@@ -476,12 +455,21 @@ page 9995 "Word Template Creation Wizard"
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         FeatureTelemetry.LogUptake('0000FW1', 'Word templates', Enum::"Feature Uptake Status"::Discovered);
+        UpdateEnabledStatus();
 
         if WordTemplate."Table ID" <> 0 then begin
             Rec.SetFilter("Table ID", TableFilterExpression);
             Rec.Get(WordTemplate."Table ID");
             CurrPage.Update(false);
         end;
+    end;
+
+    local procedure UpdateEnabledStatus()
+    begin
+        if (Step = Step::Upload) and (not TemplateUploaded) then
+            NextEnabled := false
+        else
+            NextEnabled := true;
     end;
 
     procedure SetMultipleTableNo(TableIds: List of [Integer]; SelectedTable: Integer)
@@ -510,6 +498,7 @@ page 9995 "Word Template Creation Wizard"
     var
         TableNos: List of [Integer];
     begin
+        CurrPage.RelatedTables.Page.SetTableNo(Value);
         TableNos.Add(Value);
         SetMultipleTableNo(TableNos, Value);
     end;
@@ -517,6 +506,16 @@ page 9995 "Word Template Creation Wizard"
     procedure SetRelatedTable(RelatedTableId: Integer; FieldNo: Integer; RelatedCode: Code[5])
     begin
         CurrPage.RelatedTables.Page.SetRelatedTable(WordTemplate."Table ID", RelatedTableId, FieldNo, RelatedCode);
+    end;
+
+    procedure SetUnrelatedTable(UnrelatedTableID: Integer; RecordSystemId: Guid; RelatedCode: Code[5])
+    begin
+        CurrPage.RelatedTables.Page.SetUnrelatedTable(WordTemplate."Table ID", UnrelatedTableID, RecordSystemId, RelatedCode);
+    end;
+
+    procedure SetFieldsToBeIncluded(TableId: Integer; IncludeFields: List of [Text[30]])
+    begin
+        CurrPage.RelatedTables.Page.SetFieldsToBeIncluded(TableId, IncludeFields);
     end;
 
     local procedure SetDefaultWordTemplateLanguageCode()
@@ -542,9 +541,6 @@ page 9995 "Word Template Creation Wizard"
         UploadedFileName, TableFilterExpression : Text;
         TableSetExternally, TableSetSkipped : Boolean;
         TemplateUploaded: Boolean;
-        AddNewEntityLbl: Label 'Add new entity';
-        AddRelatedEntityLbl: Label 'Add a related entity (simple)';
-        AddRelatedEntityAdvancedLbl: Label 'Add a related entity (advanced)';
         DowloadTemplateLbl: Label 'Download a blank template.';
         UploadTemplateLbl: Label 'Upload the template';
         LearnMoreLbl: Label 'Learn more';
@@ -554,4 +550,5 @@ page 9995 "Word Template Creation Wizard"
         TemplateNotUploadedErr: Label 'Please upload a template before continuing.';
         CodeAlreadyUsedErr: Label 'A template with this code already exists.';
         Step: Option Select,SelectRelated,Download,Upload,Details,Overview;
+        NextEnabled: Boolean;
 }

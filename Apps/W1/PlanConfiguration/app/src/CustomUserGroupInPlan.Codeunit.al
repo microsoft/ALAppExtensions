@@ -1,3 +1,4 @@
+#if not CLEAN22
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,6 +10,40 @@ codeunit 9059 "Custom User Group In Plan"
     Permissions = tabledata "User Group Permission Set" = r,
                   tabledata "User Group Plan" = r,
                   tabledata "Custom User Group In Plan" = rimd;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Plan Configuration", 'OnBeforeRemoveDefaultPermissionsFromUser', '', false, false)]
+    local procedure OnBeforeRemoveDefaultPermissionsFromUser(AccessControl: Record "Access Control"; var IsAssignedViaUserGroups: Boolean)
+    var
+        UserGroupMember: Record "User Group Member";
+        UserGroupPermissionSet: Record "User Group Permission Set";
+    begin
+        // Check if the permission set is assigned to the user via one of the user groups
+        UserGroupMember.SetRange("User Security ID", AccessControl."User Security ID");
+        if UserGroupMember.FindSet() then
+            repeat
+                if UserGroupPermissionSet.Get(UserGroupMember."User Group Code", AccessControl."Role ID", AccessControl.Scope, AccessControl."App ID") then begin
+                    IsAssignedViaUserGroups := true;
+                    exit;
+                end;
+            until UserGroupMember.Next() = 0;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Plan Configuration", 'OnBeforeRemoveCustomPermissionsFromUser', '', false, false)]
+    local procedure OnBeforeRemoveCustomPermissionsFromUser(AccessControl: Record "Access Control"; var IsAssignedViaUserGroups: Boolean)
+    var
+        UserGroupMember: Record "User Group Member";
+        UserGroupAccessControl: Record "User Group Access Control";
+    begin
+        // Check if the permission set for the specific company is assigned to the user via one of the user groups
+        UserGroupMember.SetRange("User Security ID", AccessControl."User Security ID");
+        if UserGroupMember.FindSet() then
+            repeat
+                if UserGroupAccessControl.Get(UserGroupMember."User Group Code", AccessControl."User Security ID", AccessControl."Role ID", AccessControl."Company Name", AccessControl.Scope, AccessControl."App ID") then begin
+                    IsAssignedViaUserGroups := true;
+                    exit;
+                end;
+            until UserGroupMember.Next() = 0;
+    end;
 
     internal procedure VerifyUserHasRequiredUserGroup(UserGroupCode: Code[20]; SelectedCompany: Text)
     var
@@ -61,8 +96,6 @@ codeunit 9059 "Custom User Group In Plan"
         if not PlanConfiguration.IsCustomized(PlanID) then
             exit(false); // nothing to add
 
-        FeatureTelemetry.LogUptake('0000HSP', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::Used);
-
         // Add custom assignments
         CustomUserGroupInPlan.SetRange("Plan ID", PlanID);
         if CustomUserGroupInPlan.FindSet() then
@@ -70,8 +103,6 @@ codeunit 9059 "Custom User Group In Plan"
                 FeatureTelemetry.LogUsage('0000HSQ', PlanConfigurationFeatureNameTxt, CustomUserGroupAssignedLbl, GetTelemetryDimensions(CustomUserGroupInPlan, true));
                 PermissionManager.AddUserToUserGroup(UserSecurityID, CustomUserGroupInPlan."User Group Code", CustomUserGroupInPlan."Company Name");
             until CustomUserGroupInPlan.Next() = 0;
-
-        PlanConfiguration.AssignCustomPermissionsToUser(PlanID, UserSecurityID);
 
         exit(true);
     end;
@@ -240,3 +271,5 @@ codeunit 9059 "Custom User Group In Plan"
         CustomUserGroupInPlanModifiedLbl: Label 'Custom User Group In Plan was modified from user group %1, company %2 and plan %3 to user group %4, company %5 and plan %6.', Locked = true;
         CustomUserGroupAssignedLbl: Label 'Custom User Group was assigned to user', Locked = true;
 }
+
+#endif

@@ -6,15 +6,18 @@
 table 1876 "Business Setup Icon"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Caption = 'Business Setup Icon';
     DataPerCompany = false;
 #if CLEAN18
     ObsoleteState = Removed;
+    ObsoleteTag = '23.0';
 #else
     ObsoleteState = Pending;
+    ObsoleteTag = '18.0';
 #endif
     ObsoleteReason = 'The Manual Setup module and its objects have been consolidated in the Guided Experience module.';
-    ObsoleteTag = '18.0';
     ReplicateData = false;
 
     fields

@@ -224,21 +224,13 @@ codeunit 18003 "GST Preview Handler"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post", 'OnBeforeCode', '', false, false)]
     local procedure OnBeforeCode()
     begin
-        TempGSTLedgerEntry.Reset();
-        if not TempGSTLedgerEntry.IsEmpty() then
-            TempGSTLedgerEntry.DeleteAll();
+        ClearBuffers();
+    end;
 
-        TempDetailedGSTLedgerEntry.Reset();
-        if not TempDetailedGSTLedgerEntry.IsEmpty() then
-            TempDetailedGSTLedgerEntry.DeleteAll();
-
-        TempGSTTDSTCSEntry.Reset();
-        if not TempGSTTDSTCSEntry.IsEmpty() then
-            TempGSTTDSTCSEntry.DeleteAll();
-
-        TempDetailedGSTLedgerEntryInfo.Reset();
-        if not TempDetailedGSTLedgerEntryInfo.IsEmpty() then
-            TempDetailedGSTLedgerEntryInfo.DeleteAll();
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post (Yes/No)", 'OnBeforePost', '', false, false)]
+    local procedure OnBeforePostTransferDoc()
+    begin
+        ClearBuffers();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnAfterBindSubscription', '', false, false)]

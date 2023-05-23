@@ -7,6 +7,8 @@ codeunit 54 "Language Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata Language = rimd,
                   tabledata "User Personalization" = rm,
                   tabledata "Windows Language" = r;
@@ -199,7 +201,7 @@ codeunit 54 "Language Impl."
         UserPersonalization.Modify(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"UI Helper Triggers", 'GetApplicationLanguage', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"UI Helper Triggers", GetApplicationLanguage, '', false, false)]
     local procedure SetApplicationLanguageId(var language: Integer)
     begin
         language := GetDefaultApplicationLanguageId();

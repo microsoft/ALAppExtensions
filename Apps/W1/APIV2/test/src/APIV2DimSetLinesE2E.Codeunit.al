@@ -735,6 +735,105 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         TestModifyDimensionSetLine(DocumentRecordRef, TimeSheetDetailId, Page::"APIV2 - Time Registr. Entries", 'timeRegistrationEntries');
     end;
 
+    [Test]
+    procedure TestCreatePurchaseCrMemoDimensionSetLine()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentRecordRef: RecordRef;
+        LineRecordRef: RecordRef;
+        LineId: Guid;
+    begin
+        // [SCENARIO] Create a dimension line in a purchase credit memo and a purchase cr memo line through a POST method and check if it was created
+        // [GIVEN] A purchase credit memo
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+        DocumentRecordRef.GetTable(PurchaseHeader);
+
+        TestCreateDimSetLine(DocumentRecordRef, PurchaseHeader.SystemId, Page::"APIV2 - Purchase Credit Memos", 'purchaseCreditMemos');
+
+        // [GIVEN] A purchase credit memo line
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type"::"Credit Memo");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.FindFirst();
+        LineId := Format(PurchaseLine.SystemId);
+        LineRecordRef.GetTable(PurchaseLine);
+
+        TestCreateDimSetLineForLines(LineRecordRef, PurchaseHeader.SystemId, LineId, Page::"APIV2 - Purchase Credit Memos", 'purchaseCreditMemos', 'purchaseCreditMemoLines');
+    end;
+
+    [Test]
+    procedure TestGetDimensionSetLinesOfPurchaseCrMemo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineId: Guid;
+    begin
+        // [SCENARIO] Create dimension lines in a purchase cr memo and purchase cr memo line and use a GET method to retrieve them
+        // [GIVEN] a purchase cr memo with lines
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+
+        TestGetDimSetLines(PurchaseHeader.SystemId, 'Purchase Credit Memo', Page::"APIV2 - Purchase Credit Memos", 'purchaseCreditMemos');
+
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type"::"Credit Memo");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.FindFirst();
+        LineId := Format(PurchaseLine.SystemId);
+
+        TestGetDimSetLinesForLines(LineId, PurchaseHeader.SystemId, 'Purchase Credit Memo Line', Page::"APIV2 - Purchase Credit Memos", 'purchaseCreditMemos', 'purchaseCreditMemoLines');
+    end;
+
+    [Test]
+    procedure TestModifyPurchaseCrMemoDimensionSetLine()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentRecordRef: RecordRef;
+        LineRecordRef: RecordRef;
+        LineId: Guid;
+    begin
+        // [SCENARIO] Create a dimension line in a purchase credit memo and a purchase cr memo line, use a PATCH method to change it and then verify the changes
+        // [GIVEN] A purchase credit memo
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+        DocumentRecordRef.GetTable(PurchaseHeader);
+
+        TestModifyDimensionSetLine(DocumentRecordRef, PurchaseHeader.SystemId, Page::"APIV2 - Purchase Credit Memos", 'purchaseCreditMemos');
+
+        // [GIVEN] A purchase credit memo line
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type"::"Credit Memo");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.FindFirst();
+        LineId := Format(PurchaseLine.SystemId);
+        LineRecordRef.GetTable(PurchaseLine);
+
+        TestModifyDimensionSetLineForLines(LineRecordRef, PurchaseHeader.SystemId, LineId, Page::"APIV2 - Purchase Credit Memos", 'purchaseCreditMemos', 'purchaseCreditMemoLines');
+    end;
+
+    [Test]
+    procedure TestDeletePurchaseCrMemoDimensionSetLine()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentRecordRef: RecordRef;
+        LineRecordRef: RecordRef;
+        LineId: Guid;
+    begin
+        // [SCENARIO] Create a dimension line in a purchase credit memo and a purchase cr memo line, use a DELETE method to remove it and then verify the deletion
+        // [GIVEN] A purchase credit memo
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+        DocumentRecordRef.GetTable(PurchaseHeader);
+
+        TestDeleteDimSetLine(DocumentRecordRef, PurchaseHeader.SystemId, Page::"APIV2 - Purchase Credit Memos", 'purchaseCreditMemos');
+
+        // [GIVEN] A purchase credit memo line
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type"::"Credit Memo");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.FindFirst();
+        LineId := Format(PurchaseLine.SystemId);
+        LineRecordRef.GetTable(PurchaseLine);
+
+        TestDeleteDimSetLineForLines(LineRecordRef, PurchaseHeader.SystemId, LineId, Page::"APIV2 - Purchase Credit Memos", 'purchaseCreditMemos', 'purchaseCreditMemoLines');
+    end;
+
     local procedure TestModifyDimensionSetLine(DocumentRecordRef: RecordRef; DocumentId: Guid; APIPage: Integer; DocServiceNameTxt: Text)
     var
         Dimension: Record "Dimension";

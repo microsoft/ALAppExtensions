@@ -977,7 +977,7 @@ report 18006 "Blanket Sales Order GST"
 
         trigger OnOpenPage()
         begin
-            LogIntaction := SegManagement.FindInteractTmplCode(2) <> '';
+            LogIntaction := SegManagement.FindInteractionTemplateCode(2) <> '';
             LogInteractionEnable := LogIntaction;
         end;
     }

@@ -6,6 +6,8 @@
 codeunit 8906 "Email Editor"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email Outbox" = rimd,
                   tabledata "Tenant Media" = r,
                   tabledata "Email Related Record" = rd,
@@ -155,8 +157,9 @@ codeunit 8906 "Email Editor"
         AttachmentName, ContentType : Text[250];
         AttachamentSize: Integer;
     begin
-        if not UploadIntoStream('', '', '', FileName, Instream) then
-            Error(GetLastErrorText());
+        UploadIntoStream('', '', '', FileName, Instream);
+        if FileName = '' then
+            exit;
 
         AttachmentName := CopyStr(FileName, 1, 250);
         ContentType := EmailMessageImpl.GetContentTypeFromFilename(Filename);
@@ -169,20 +172,44 @@ codeunit 8906 "Email Editor"
     var
         TenantMedia: Record "Tenant Media";
         EmailMessage: Codeunit "Email Message";
-        MediaInstream: InStream;
+        MediaInStream: InStream;
         Handled: Boolean;
     begin
         TenantMedia.Get(MediaID);
         TenantMedia.CalcFields(Content);
 
         if TenantMedia.Content.HasValue() then
-            TenantMedia.Content.CreateInStream(MediaInstream)
+            TenantMedia.Content.CreateInStream(MediaInStream)
         else begin
-            EmailMessage.OnGetAttachmentContent(MediaID, MediaInstream, Handled);
+            EmailMessage.OnGetAttachmentContent(MediaID, MediaInStream, Handled);
             if not Handled then
                 Error(NoAttachmentContentMsg);
         end;
-        DownloadFromStream(MediaInstream, '', '', '', Filename);
+        DownloadFromStream(MediaInStream, '', '', '', FileName);
+    end;
+
+    procedure DownloadAttachments(Attachments: Dictionary of [Guid, Text]; FileName: Text)
+    var
+        TenantMedia: Record "Tenant Media";
+        DataCompression: Codeunit "Data Compression";
+        ZipTempBlob: Codeunit "Temp Blob";
+        MediaID: Guid;
+        MediaInStream: InStream;
+        ZipOutStream: OutStream;
+        ZipInStream: InStream;
+    begin
+        DataCompression.CreateZipArchive();
+        foreach MediaID in Attachments.Keys do begin
+            TenantMedia.Get(MediaID);
+            TenantMedia.CalcFields(Content);
+            TenantMedia.Content.CreateInStream(MediaInStream);
+            DataCompression.AddEntry(MediaInStream, Attachments.Get(MediaID));
+        end;
+        ZipTempBlob.CreateOutStream(ZipOutStream);
+        DataCompression.SaveZipArchive(ZipOutStream);
+        DataCompression.CloseZipArchive();
+        ZipTempBlob.CreateInStream(ZipInStream);
+        DownloadFromStream(ZipInStream, '', '', '', FileName);
     end;
 
     procedure ValidateEmailData(FromEmailAddress: Text; var EmailMessageImpl: Codeunit "Email Message Impl."): Boolean
@@ -346,7 +373,8 @@ codeunit 8906 "Email Editor"
             FileSize := EmailMessageImpl.AddAttachmentInternal(CopyStr(Filename, 1, 250), ContentType, Instream);
 
             Session.LogMessage('0000FL4', StrSubstNo(UploadingTemplateAttachmentMsg, FileSize, ContentType), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
-        end;
+        end else
+            Error(NoEmailSourceEntitiesErr);
     end;
 
     procedure GetRelatedAttachments(EmailMessageId: Guid; var EmailRelatedAttachmentOut: Record "Email Related Attachment")
@@ -502,4 +530,5 @@ codeunit 8906 "Email Editor"
         NoPrimarySourceOnEmailErr: Label 'Failed to find the primary source entity';
         NoAttachmentContentMsg: Label 'The attachment content is no longer available.';
         EmailModifiedByEventTxt: Label 'Email has been modified by event', Locked = true;
+        NoEmailSourceEntitiesErr: Label 'There are no linked email source entities';
 }

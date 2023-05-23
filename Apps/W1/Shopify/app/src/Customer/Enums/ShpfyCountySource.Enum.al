@@ -3,9 +3,8 @@
 /// </summary>
 enum 30104 "Shpfy County Source" implements "Shpfy ICounty", "Shpfy ICounty From Json"
 {
-    Access = Internal;
     Caption = 'Shopify County Source';
-    Extensible = true;
+    Extensible = false;
     DefaultImplementation = "Shpfy ICounty" = "Shpfy County Name";
 
     value(0; Code)

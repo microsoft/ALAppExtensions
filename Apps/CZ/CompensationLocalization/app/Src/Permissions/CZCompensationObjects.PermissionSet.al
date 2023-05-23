@@ -25,7 +25,11 @@ permissionset 11772 "CZ Compensation - Objects CZC"
                   Codeunit "Install Application CZC" = X,
                   Codeunit "Navigate Handler CZC" = X,
                   Codeunit "Notification Handler CZC" = X,
+#if not CLEAN22
+#pragma warning disable AL0432
                   Codeunit "Posting Group Mgt. Handler CZC" = X,
+#pragma warning restore AL0432
+#endif
                   Codeunit "Release Compens. Document CZC" = X,
                   Codeunit "Upgrade Application CZC" = X,
                   Codeunit "Upgrade Tag Definitions CZC" = X,
@@ -43,6 +47,7 @@ permissionset 11772 "CZ Compensation - Objects CZC"
                   Page "Posted Compensation Card CZC" = X,
                   Page "Posted Compensation List CZC" = X,
                   Page "Posted Compensation Subf. CZC" = X,
+                  Page "Posted Compensation Lines CZC" = X,
                   Report "Compensation CZC" = X,
                   Report "Posted Compensation CZC" = X,
                   Table "Compensation Header CZC" = X,

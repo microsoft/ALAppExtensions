@@ -3,7 +3,6 @@
 /// </summary>
 table 30105 "Shpfy Customer"
 {
-    Access = Internal;
     Caption = 'Shopify Customer';
     DataClassification = CustomerContent;
     DrillDownPageId = "Shpfy Customers";
@@ -127,7 +126,10 @@ table 30105 "Shpfy Customer"
         }
 
         key(Idx1; "Customer SystemId") { }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         key(Idx2; "Shop Id") { }
     }
 
@@ -154,11 +156,11 @@ table 30105 "Shpfy Customer"
     /// Get Comma Seperated Tags.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    internal procedure GetCommaSeperatedTags(): Text
+    internal procedure GetCommaSeparatedTags(): Text
     var
         ShopifyTag: Record "Shpfy Tag";
     begin
-        ShopifyTag.GetCommaSeperatedTags(Id);
+        ShopifyTag.GetCommaSeparatedTags(Id);
     end;
 
     /// <summary> 

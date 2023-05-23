@@ -9,6 +9,8 @@ table 9017 "Plan Configuration"
     Extensible = false;
     DataPerCompany = false;
     ReplicateData = false;
+    InherentEntitlements = rX;
+    InherentPermissions = rX;
 
     fields
     {

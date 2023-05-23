@@ -7,6 +7,8 @@ table 1998 "Primary Guided Experience Item"
 {
     Caption = 'Primary Guided Experience Item';
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     ReplicateData = false;
 
     fields

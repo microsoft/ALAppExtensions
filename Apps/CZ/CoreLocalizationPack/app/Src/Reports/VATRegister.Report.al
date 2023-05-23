@@ -68,7 +68,7 @@ report 31122 "VAT Register CZL"
             dataitem("VAT Entry"; "VAT Entry")
             {
                 DataItemTableView = sorting("Entry No.");
-                column(PostingDate_VatEntry; Format("VAT Date CZL"))
+                column(PostingDate_VatEntry; Format("VAT Reporting Date"))
                 {
                 }
                 column(DocumentType_VatEntry; "Document Type")
@@ -131,6 +131,12 @@ report 31122 "VAT Register CZL"
                         Base := "Additional-Currency Base";
                         Amount := "Additional-Currency Amount";
                     end;
+#if not CLEAN22
+#pragma warning disable AL0432
+                    if not IsReplaceVATDateEnabled() then
+                        "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
                 end;
 
                 trigger OnPreDataItem()

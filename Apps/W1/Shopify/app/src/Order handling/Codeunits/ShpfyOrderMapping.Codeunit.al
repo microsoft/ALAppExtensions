@@ -66,10 +66,22 @@ codeunit 30163 "Shpfy Order Mapping"
         OrderTransaction: Record "Shpfy Order Transaction";
         ShipmentMethodMapping: Record "Shpfy Shipment Method Mapping";
         CustomerMapping: Codeunit "Shpfy Customer Mapping";
+#if not CLEAN22
+        ShpfyTemplates: Codeunit "Shpfy Templates";
+#endif
+        CustomerTemplateCode: Code[20];
         IsHandled: Boolean;
         Priority: Integer;
         JCustomer: JsonObject;
     begin
+#if not CLEAN22
+        if not ShpfyTemplates.NewTemplatesEnabled() then
+            CustomerTemplateCode := OrderHeader."Customer Template Code"
+        else
+            CustomerTemplateCode := OrderHeader."Customer Templ. Code";
+#else
+        CustomerTemplateCode := OrderHeader."Customer Templ. Code";
+#endif
         CustomerMapping.SetShop(OrderHeader."Shop Code");
         if OrderHeader."Bill-to Customer No." = '' then begin
             OrderEvents.OnBeforeMapCustomer(OrderHeader, IsHandled);
@@ -82,7 +94,11 @@ codeunit 30163 "Shpfy Order Mapping"
                 JCustomer.Add('City', OrderHeader."Sell-to City");
                 JCustomer.Add('County', OrderHeader."Sell-to County");
                 JCustomer.Add('CountryCode', OrderHeader."Sell-to Country/Region Code");
+<<<<<<< HEAD
                 OrderHeader."Sell-to Customer No." := CustomerMapping.DoMapping(OrderHeader."Customer Id", JCustomer, OrderHeader."Shop Code", OrderHeader."Customer Template Code", AllowCreateCustomer);
+=======
+                OrderHeader."Sell-to Customer No." := CustomerMapping.DoMapping(OrderHeader."Customer Id", JCustomer, OrderHeader."Shop Code", CustomerTemplateCode, AllowCreateCustomer);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
 
                 Clear(JCustomer);
                 JCustomer.Add('Name', OrderHeader."Bill-to Name");
@@ -93,7 +109,7 @@ codeunit 30163 "Shpfy Order Mapping"
                 JCustomer.Add('City', OrderHeader."Bill-to City");
                 JCustomer.Add('County', OrderHeader."Bill-to County");
                 JCustomer.Add('CountryCode', OrderHeader."Bill-to Country/Region Code");
-                OrderHeader."Bill-to Customer No." := CustomerMapping.DoMapping(OrderHeader."Customer Id", JCustomer, OrderHeader."Shop Code", OrderHeader."Customer Template Code", AllowCreateCustomer);
+                OrderHeader."Bill-to Customer No." := CustomerMapping.DoMapping(OrderHeader."Customer Id", JCustomer, OrderHeader."Shop Code", CustomerTemplateCode, AllowCreateCustomer);
                 if (OrderHeader."Bill-to Customer No." = '') and (not Shop."Auto Create Unknown Customers") and (Shop."Default Customer No." <> '') then
                     OrderHeader."Bill-to Customer No." := Shop."Default Customer No.";
 

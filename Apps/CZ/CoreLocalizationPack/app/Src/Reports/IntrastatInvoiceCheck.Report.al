@@ -1,8 +1,12 @@
+#if not CLEAN22
 report 31008 "Intrastat - Invoice Check CZL"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/IntrastatInvoiceCheck.rdl';
     Caption = 'Intrastat - Invoice Checklist';
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
     dataset
     {
@@ -222,3 +226,4 @@ report 31008 "Intrastat - Invoice Check CZL"
         end;
     end;
 }
+#endif

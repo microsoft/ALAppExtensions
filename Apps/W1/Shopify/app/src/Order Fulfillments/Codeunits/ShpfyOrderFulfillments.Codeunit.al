@@ -18,6 +18,7 @@ codeunit 30160 "Shpfy Order Fulfillments"
             exit(Enum::"Shpfy Fulfillment Status"::" ");
     end;
 
+<<<<<<< HEAD
     local procedure ConvertToShipmentStatus(Value: Text): Enum "Shpfy Shipment Status"
     begin
         Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
@@ -27,6 +28,8 @@ codeunit 30160 "Shpfy Order Fulfillments"
             exit(Enum::"Shpfy Shipment Status"::" ");
     end;
 
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
     internal procedure GetFulfillments(Shop: Record "Shpfy Shop"; OrderId: BigInteger)
     var
         Parameters: Dictionary of [Text, Text];

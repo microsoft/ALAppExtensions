@@ -2,6 +2,17 @@ pageextension 18159 "GST Blanket Sales Order" extends "Blanket Sales Order"
 {
     layout
     {
+        modify("Ship-to Code")
+        {
+            trigger OnAfterValidate()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                CurrPage.SaveRecord();
+                GSTSalesValidation.UpdateGSTJurisdictionTypeFromPlaceOfSupply(Rec);
+                GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
+            end;
+        }
         addafter("Foreign Trade")
         {
             group("Tax Information")

@@ -104,12 +104,15 @@ codeunit 148043 "DIOT Wizard Tests"
     procedure CanFinishSetup()
     var
         DIOTSetupWizard: TestPage "DIOT Setup Wizard";
+        AssistedSetupPage: TestPage "Assisted Setup";
     begin
         // [SCENARIO] User can finish Setup wizard by clicking 'Next' and 'Finish' buttons
         Initialize();
 
+        AssistedSetupPage.OpenView();
         LibraryMXDIOT.OpenDIOTSetupWizardStep(DIOTSetupWizard, 4);
         DIOTSetupWizard.ActionFinish.Invoke();
+        AssistedSetupPage.Close();
 
         Assert.IsTrue(DIOTDataMgmt.GetAssistedSetupComplete(), 'Assised Setup for wizard must be completed');
     end;

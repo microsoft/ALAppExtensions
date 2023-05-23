@@ -6,6 +6,8 @@
 codeunit 502 OAuth2Impl
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

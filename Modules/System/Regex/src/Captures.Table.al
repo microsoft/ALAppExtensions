@@ -13,6 +13,8 @@ table 3963 Captures
 {
     TableType = Temporary;
     Extensible = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

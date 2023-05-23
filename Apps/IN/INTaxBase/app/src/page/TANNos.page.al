@@ -43,12 +43,14 @@ page 18548 "T.A.N. Nos."
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    TANNoLbl: Label 'Code eq %1', Comment = '%1= T.A.N. No.';
+                    EditinExcelFilters: Codeunit "Edit in Excel Filters";
                 begin
+                    EditinExcelFilters.AddField('Code', Enum::"Edit in Excel Filter Type"::Equal, Rec.Code, Enum::"Edit in Excel Edm Type"::"Edm.String");
+
                     EditinExcel.EditPageInExcel(
                         'TAN Nos',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(TANNoLbl, Rec.Code));
+                        Page::"T.A.N. Nos.",
+                        EditinExcelFilters);
                 end;
             }
         }

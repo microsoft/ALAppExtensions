@@ -6,6 +6,8 @@
 codeunit 3961 "Regex Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetRegex: DotNet Regex;

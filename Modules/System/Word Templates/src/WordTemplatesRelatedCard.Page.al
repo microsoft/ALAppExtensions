@@ -11,6 +11,7 @@ page 9986 "Word Templates Related Card"
     PageType = Card;
     ApplicationArea = All;
     Caption = 'Related Entity';
+    DataCaptionExpression = Rec."Related Table Caption";
     UsageCategory = Administration;
     SourceTable = "Word Templates Related Table";
     SourceTableTemporary = true;
@@ -23,6 +24,7 @@ page 9986 "Word Templates Related Card"
             group(Group)
             {
                 Caption = 'Related Entity';
+                ShowCaption = false;
 
                 field("Table ID"; Rec."Related Table ID")
                 {
@@ -36,23 +38,25 @@ page 9986 "Word Templates Related Card"
                     Caption = 'Name';
                     ToolTip = 'Specifies the related entity.';
                     Editable = false;
+                    Enabled = not IsEditOnly;
 
                     trigger OnAssistEdit()
                     var
                         AllObjWithCaption: Record AllObjWithCaption;
                         WordTemplateImpl: Codeunit "Word Template Impl.";
                     begin
-                        WordTemplateImpl.GetTable(SelectRelatedTableCaptionLbl, AllObjWithCaption, FilterExpression);
+                        if not WordTemplateImpl.GetTable(SelectRelatedTableCaptionLbl, AllObjWithCaption, FilterExpression) then
+                            exit;
+
                         Rec."Related Table ID" := AllObjWithCaption."Object ID";
 
                         if Rec."Related Table ID" <> 0 then begin
-                            Rec."Related Table Code" := WordTemplateImpl.GenerateCode(AllObjWithCaption."Object Caption");
+                            Rec."Related Table Code" := WordTemplateImpl.GenerateCode(AllObjWithCaption."Object Caption", WordTemplateImpl.GetExistingCodes(Rec));
                             Rec."Field No." := WordTemplateImpl.GetFieldNo(FieldFilterExpression, Rec."Table ID", Rec."Related Table ID");
                             Rec.CalcFields("Related Table Caption");
                             Rec.CalcFields("Field Caption");
                         end;
 
-                        UpdateFieldSelectionVisibility();
                         CurrPage.Update();
                     end;
                 }
@@ -60,7 +64,6 @@ page 9986 "Word Templates Related Card"
                 {
                     ShowCaption = false;
                     Caption = ' ';
-                    Visible = ShowFieldSelection;
 
                     field("Field No."; Rec."Field No.")
                     {
@@ -79,11 +82,18 @@ page 9986 "Word Templates Related Card"
                         trigger OnAssistEdit()
                         var
                             WordTemplateImpl: Codeunit "Word Template Impl.";
+                            FieldNo: Integer;
                         begin
+                            if Rec."Related Table ID" = 0 then
+                                Error(SelectRelatedTableErr);
+
                             if TableId <> 0 then begin
-                                Rec."Field No." := WordTemplateImpl.GetField(SelectTableFieldLbl, TableId, FieldFilterExpression);
-                                Rec.CalcFields("Field Caption");
-                                CurrPage.Update();
+                                FieldNo := WordTemplateImpl.GetField(SelectTableFieldLbl, TableId, FieldFilterExpression);
+                                if FieldNo <> 0 then begin
+                                    Rec."Field No." := FieldNo;
+                                    Rec.CalcFields("Field Caption");
+                                    CurrPage.Update();
+                                end;
                             end;
                         end;
                     }
@@ -93,20 +103,16 @@ page 9986 "Word Templates Related Card"
                     ApplicationArea = All;
                     Caption = 'Field Prefix';
                     ToolTip = 'Specifies a prefix that will indicate that the field is from the related entity when you are setting up the template. For example, if you enter Sales, the field names are prefixed with Sales_. The prefix must be unique.';
+                    Editable = not IsEditOnly;
+                }
+                label(RelatedEntityOptions)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Related entities share a field, typically an identifier such as its name, code, or ID, with the source entity. When choosing a related entity the view is filtered to known predefined relations. To define your own custom relation, you can remove the filtering.​';
                 }
             }
         }
     }
-
-    var
-        [InDataSet]
-        ShowFieldSelection: Boolean;
-        TableId: Integer;
-        FilterExpression: Text;
-        FieldFilterExpression: Text;
-        SelectRelatedTableCaptionLbl: Label 'Select related entity for the Word template.';
-        SelectTableFieldLbl: Label 'Select the source entity relation.';
-        EmptyParentFieldErr: Label 'No source entity relation was specified.';
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
@@ -127,7 +133,6 @@ page 9986 "Word Templates Related Card"
     internal procedure SetFilterExpression(Expression: Text)
     begin
         FilterExpression := Expression;
-        UpdateFieldSelectionVisibility();
     end;
 
     internal procedure SetTableNo(TableNo: Integer)
@@ -135,15 +140,21 @@ page 9986 "Word Templates Related Card"
         TableId := TableNo;
     end;
 
-    internal procedure SetRelatedTable(var WordTemplatesRelatedTable: Record "Word Templates Related Table" temporary)
+    internal procedure SetEditOnly(EditOnly: Boolean)
     begin
-        if WordTemplatesRelatedTable.IsTemporary then
-            Rec.Copy(WordTemplatesRelatedTable, true)
-        else
-            if WordTemplatesRelatedTable."Table ID" <> 0 then begin
-                Rec.Copy(WordTemplatesRelatedTable);
-                Rec.Insert();
-            end;
+        IsEditOnly := EditOnly;
+    end;
+
+    internal procedure SetRelatedTable(var WordTemplatesRelatedTable: Record "Word Templates Related Table" temporary)
+    var
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+    begin
+        if IsEditOnly then begin
+            Rec.Copy(WordTemplatesRelatedTable);
+            Rec.Insert();
+            WordTemplateImpl.GetFieldNo(FieldFilterExpression, Rec."Table ID", Rec."Related Table ID");
+        end else
+            Rec.Copy(WordTemplatesRelatedTable, true);
     end;
 
     internal procedure GetRelatedTable(var WordTemplatesRelatedTable: Record "Word Templates Related Table" temporary)
@@ -151,8 +162,13 @@ page 9986 "Word Templates Related Card"
         WordTemplatesRelatedTable.TransferFields(Rec);
     end;
 
-    local procedure UpdateFieldSelectionVisibility()
-    begin
-        ShowFieldSelection := (FilterExpression = '') or (FieldFilterExpression <> '');
-    end;
+    var
+        IsEditOnly: Boolean;
+        TableId: Integer;
+        FilterExpression: Text;
+        FieldFilterExpression: Text;
+        SelectRelatedTableCaptionLbl: Label 'Select related entity for the Word template.';
+        SelectRelatedTableErr: Label 'Select a related entity before specifying the relation.';
+        SelectTableFieldLbl: Label 'Select the source entity relation.';
+        EmptyParentFieldErr: Label 'No source entity relation was specified.';
 }

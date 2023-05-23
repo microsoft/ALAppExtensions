@@ -20,7 +20,8 @@
 codeunit 2501 "Extension Marketplace"
 {
     Access = Internal;
-    Permissions = tabledata "Published Application" = r, tabledata "Extension Pending Setup" = rimd;
+    Permissions = tabledata "Published Application" = r,
+                  tabledata "Extension Pending Setup" = rimd;
 
     var
         HttpWebRequest: DotNet HttpWebRequest;
@@ -316,20 +317,6 @@ codeunit 2501 "Extension Marketplace"
             end;
     end;
 
-    local procedure AppIsInstalled(APPID: Guid; PackageID: Guid): Boolean;
-    var
-        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
-    begin
-        if not IsNullGuid(APPID) then
-            exit(ExtensionInstallationImpl.IsInstalledByAppId(APPID));
-
-        if not IsNullGuid(PackageID) then
-            exit(ExtensionInstallationImpl.IsInstalledByPackageId(PackageID));
-
-        // This condition is ckecked before and a proper error and telemetry signal is sent
-        exit(false);
-    end;
-
     [TryFunction]
     procedure InstallExtension(ApplicationID: Text; ResponseURL: Text)
     var
@@ -504,7 +491,7 @@ codeunit 2501 "Extension Marketplace"
         EXIT(GetValue(TempObject, 'applicationId', true));
     END;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'InvokeExtensionInstallation', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", InvokeExtensionInstallation, '', false, false)]
     local procedure InvokeExtensionInstallation(AppId: Text; ResponseUrl: Text)
     begin
         if not InstallExtension(AppId, ResponseUrl) then
@@ -517,7 +504,7 @@ codeunit 2501 "Extension Marketplace"
         // Provides an option to rewrite URL in non SaaS environments.
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OpenAppSourceMarket', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", OpenAppSourceMarket, '', false, false)]
     local procedure OpenAppSourceMarket()
     begin
         page.Run(Page::"Extension Marketplace");

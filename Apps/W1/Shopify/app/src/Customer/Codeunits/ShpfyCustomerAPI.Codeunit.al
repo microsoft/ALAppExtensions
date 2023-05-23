@@ -494,5 +494,8 @@ codeunit 30114 "Shpfy Customer API"
         end;
         Commit();
     end;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
 }

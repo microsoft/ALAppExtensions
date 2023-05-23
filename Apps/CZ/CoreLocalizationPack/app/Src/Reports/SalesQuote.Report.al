@@ -392,6 +392,9 @@ report 31186 "Sales Quote CZL"
                               "Salesperson Code", "Campaign No.", "Posting Description", "Opportunity No.");
                     end;
                 end;
+
+                if "Currency Code" = '' then
+                    "Currency Code" := "General Ledger Setup"."LCY Code";
             end;
         }
     }
@@ -521,7 +524,7 @@ report 31186 "Sales Quote CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(1) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(1) <> '';
     end;
 
     local procedure FormatDocumentFields(SalesHeader: Record "Sales Header")

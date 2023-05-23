@@ -21,11 +21,30 @@ report 30106 "Shpfy Add Item to Shopify"
 
                 Clear(ShopifyCreateProduct);
                 ShopifyCreateProduct.SetShop(ShopCode);
+
+                if GuiAllowed then begin
+                    CurrItemNo := Item."No.";
+                    ProcessDialog.Open(ProcessMsg, CurrItemNo);
+                    ProcessDialog.Update();
+                end;
             end;
 
             trigger OnAfterGetRecord()
             begin
+                if GuiAllowed then begin
+                    CurrItemNo := Item."No.";
+                    ProcessDialog.Update();
+                end;
+
                 ShopifyCreateProduct.Run(Item);
+
+                ProductFilter += Format(ShopifyCreateProduct.GetProductId()) + '|';
+            end;
+
+            trigger OnPostDataItem()
+            begin
+                if GuiAllowed then
+                    ProcessDialog.Close();
             end;
         }
     }
@@ -57,11 +76,21 @@ report 30106 "Shpfy Add Item to Shopify"
                         begin
                             if Shop.Get(ShopCode) then begin
                                 SyncImagesVisible := Shop."Sync Item Images" = Shop."Sync Item Images"::"To Shopify";
+<<<<<<< HEAD
                                 SyncImages := SyncImagesVisible;
                                 ShopLocation.SetRange("Shop Code", Shop.Code);
                                 ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
                                 SyncInventoryVisible := not ShopLocation.IsEmpty();
                                 SyncInventory := SyncInventoryVisible;
+=======
+                                if not SyncImagesVisible or GuiAllowed then
+                                    SyncImages := SyncImagesVisible;
+                                ShopLocation.SetRange("Shop Code", Shop.Code);
+                                ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
+                                SyncInventoryVisible := not ShopLocation.IsEmpty();
+                                if not SyncInventoryVisible or GuiAllowed then
+                                    SyncInventory := SyncInventoryVisible;
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
                             end else begin
                                 SyncImages := false;
                                 SyncImagesVisible := false;
@@ -95,11 +124,21 @@ report 30106 "Shpfy Add Item to Shopify"
         begin
             if Shop.Get(ShopCode) then begin
                 SyncImagesVisible := Shop."Sync Item Images" = Shop."Sync Item Images"::"To Shopify";
+<<<<<<< HEAD
                 SyncImages := SyncImagesVisible;
                 ShopLocation.SetRange("Shop Code", Shop.Code);
                 ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
                 SyncInventoryVisible := not ShopLocation.IsEmpty();
                 SyncInventory := SyncInventoryVisible;
+=======
+                if not SyncImagesVisible then
+                    SyncImages := SyncImagesVisible;
+                ShopLocation.SetRange("Shop Code", Shop.Code);
+                ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
+                SyncInventoryVisible := not ShopLocation.IsEmpty();
+                if not SyncInventoryVisible then
+                    SyncInventory := SyncInventoryVisible;
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
             end else begin
                 SyncImages := false;
                 SyncImagesVisible := false;
@@ -113,8 +152,9 @@ report 30106 "Shpfy Add Item to Shopify"
     var
         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
     begin
+        ProductFilter := ProductFilter.TrimEnd('|');
         if SyncImages then
-            BackgroundSyncs.ProductImagesSync(ShopCode);
+            BackgroundSyncs.ProductImagesSync(ShopCode, ProductFilter);
         if SyncInventory then
             BackgroundSyncs.InventorySync(ShopCode);
     end;
@@ -122,10 +162,14 @@ report 30106 "Shpfy Add Item to Shopify"
     var
         ShopifyCreateProduct: Codeunit "Shpfy Create Product";
         ShopCode: Code[20];
+        CurrItemNo: Code[20];
         SyncImages: Boolean;
         SyncInventory: Boolean;
         SyncInventoryVisible: Boolean;
         SyncImagesVisible: Boolean;
+        ProcessMsg: Label 'Adding item #1####################', Comment = '#1 = Item no.';
+        ProcessDialog: Dialog;
+        ProductFilter: Text;
 
 
 

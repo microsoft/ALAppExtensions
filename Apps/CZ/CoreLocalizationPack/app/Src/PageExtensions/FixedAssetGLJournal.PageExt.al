@@ -4,10 +4,27 @@ pageextension 31212 "Fixed Asset G/L Journal CZL" extends "Fixed Asset G/L Journ
     {
         addafter("Posting Date")
         {
+#if not CLEAN22
             field("VAT Date CZL"; Rec."VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'VAT Date (Obsolete)';
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by VAT Reporting Date.';
+                Visible = not ReplaceVATDateEnabled;
+            }
+#endif
+            field("VAT Reporting Date CZL"; Rec."VAT Reporting Date")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the date used to include entries on VAT reports in a VAT period. This is either the date that the document was created or posted, depending on your setting on the General Ledger Setup page.';
+#if not CLEAN22
+                Visible = ReplaceVATDateEnabled and VATDateEnabled;
+#else
+                Visible = VATDateEnabled;
+#endif
             }
             field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
             {
@@ -43,4 +60,19 @@ pageextension 31212 "Fixed Asset G/L Journal CZL" extends "Fixed Asset G/L Journ
             }
         }
     }
+    trigger OnOpenPage()
+    begin
+        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
+#if not CLEAN22
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+#endif
+    end;
+
+    var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+        ReplaceVATDateEnabled: Boolean;
+#endif
+        VATDateEnabled: Boolean;
 }

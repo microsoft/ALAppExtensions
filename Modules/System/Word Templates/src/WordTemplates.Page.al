@@ -39,7 +39,7 @@ page 9989 "Word Templates"
                 {
                     ApplicationArea = All;
                     Caption = 'Record';
-                    ToolTip = 'Specifies entity assosiated with the template.';
+                    ToolTip = 'Specifies entity associated with the template.';
 
                     trigger OnDrillDown()
                     var
@@ -74,7 +74,7 @@ page 9989 "Word Templates"
 
         area(Factboxes)
         {
-            part("Word Template Related"; "Word Templates Related Factbox")
+            part("Word Template Related"; "Word Templates Related FactBox")
             {
                 ApplicationArea = All;
                 Caption = 'Related Entities';
@@ -179,15 +179,48 @@ page 9989 "Word Templates"
 
                 trigger OnAction()
                 var
-                    WordTemplateRelatedTable: Record "Word Templates Related Table";
-                    WordTemplateRelatedList: Page "Word Templates Related List";
+                    WordTemplateRelatedEdit: Page "Word Templates Related Edit";
                 begin
-                    WordTemplateRelatedTable.SetRange(Code, Rec.Code);
-                    WordTemplateRelatedList.SetTableView(WordTemplateRelatedTable);
-                    WordTemplateRelatedList.SetTableNo(Rec."Table ID");
-                    WordTemplateRelatedList.LookupMode(true);
-                    WordTemplateRelatedList.RunModal();
+                    WordTemplateRelatedEdit.SetWordTemplate(Rec);
+                    WordTemplateRelatedEdit.RunModal();
                     CurrPage.Update();
+                end;
+            }
+
+            action(EditInOneDrive)
+            {
+                ApplicationArea = All;
+                Image = Cloud;
+                Caption = 'Edit in OneDrive';
+                ToolTip = 'Copy the file to your Business Central folder in OneDrive and open it in a new window so you can edit the file.', Comment = 'OneDrive should not be translated';
+                Scope = Repeater;
+                Visible = EditOptionVisible;
+
+                trigger OnAction()
+                var
+                    TempDocumentSharing: Record "Document Sharing" temporary;
+                    DocumentSharingCodeunit: Codeunit "Document Sharing";
+                    PreviousLength: Integer;
+                    InStream: InStream;
+                    OutStream: OutStream;
+                begin
+                    TempDocumentSharing.Name := Rec.Name + '.docx';
+                    TempDocumentSharing.Extension := '.docx';
+
+                    TempDocumentSharing."Document Sharing Intent" := Enum::"Document Sharing Intent"::Edit;
+
+                    TempDocumentSharing.Data.CreateOutStream(OutStream);
+                    Rec.Template.ExportStream(OutStream);
+                    PreviousLength := TempDocumentSharing.Data.Length;
+
+                    TempDocumentSharing.Insert();
+                    DocumentSharingCodeunit.Share(TempDocumentSharing);
+
+                    if TempDocumentSharing.Data.Length <> PreviousLength then begin
+                        TempDocumentSharing.Data.CreateInStream(InStream);
+                        Rec.Template.ImportStream(InStream, '');
+                        Rec.Modify();
+                    end;
                 end;
             }
         }
@@ -195,8 +228,13 @@ page 9989 "Word Templates"
 
     trigger OnOpenPage()
     var
+        DocumentSharing: Codeunit "Document Sharing";
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         FeatureTelemetry.LogUptake('0000FW2', 'Word templates', Enum::"Feature Uptake Status"::Discovered);
+        EditOptionVisible := DocumentSharing.ShareEnabled(Enum::"Document Sharing Source"::System);
     end;
+
+    var
+        EditOptionVisible: Boolean;
 }

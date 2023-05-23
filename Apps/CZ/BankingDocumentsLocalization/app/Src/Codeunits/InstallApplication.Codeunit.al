@@ -91,13 +91,7 @@ codeunit 31330 "Install Application CZB"
             repeat
                 BankAccount."Default Constant Symbol CZB" := BankAccount."Default Constant Symbol";
                 BankAccount."Default Specific Symbol CZB" := BankAccount."Default Specific Symbol";
-#if not CLEAN19
-                if BankAccount."Domestic Payment Order" = Report::"Payment Order" then
-#endif
                 BankAccount."Domestic Payment Order ID CZB" := Report::"Iss. Payment Order CZB";
-#if not CLEAN19
-                if BankAccount."Foreign Payment Order" = Report::"Payment Order" then
-#endif
                 BankAccount."Foreign Payment Order ID CZB" := Report::"Iss. Payment Order CZB";
                 BankAccount."Dimension from Apply Entry CZB" := BankAccount."Dimension from Apply Entry";
                 BankAccount."Check Ext. No. Curr. Year CZB" := BankAccount."Check Ext. No. by Current Year";
@@ -501,9 +495,6 @@ codeunit 31330 "Install Application CZB"
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         InitExpLauncherSEPA();
-#if not CLEAN19
-        RecreateWorkflowEvents();
-#endif
 
         DataClassEvalHandlerCZB.ApplyEvaluationClassificationsForPrivacy();
         UpgradeTag.SetAllUpgradeTags();
@@ -528,18 +519,4 @@ codeunit 31330 "Install Application CZB"
         BankExportImportSetup."Preserve Non-Latin Characters" := false;
         BankExportImportSetup.Modify();
     end;
-#if not CLEAN19
-
-    local procedure RecreateWorkflowEvents()
-    var
-        WorkflowEvent: Record "Workflow Event";
-        WorkflowEventHandling: Codeunit "Workflow Event Handling";
-    begin
-        WorkflowEvent.SetRange("Table ID", Database::"Payment Order Header");
-        if not WorkflowEvent.IsEmpty() then begin
-            WorkflowEvent.DeleteAll();
-            WorkflowEventHandling.CreateEventsLibrary();
-        end;
-    end;
-#endif
 }

@@ -3,7 +3,6 @@
 /// </summary>
 table 30127 "Shpfy Product"
 {
-    Access = Internal;
     Caption = 'Shopify Product';
     DataClassification = CustomerContent;
 
@@ -163,13 +162,18 @@ table 30127 "Shpfy Product"
     /// Get Comma Seperated Tags.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    internal procedure GetCommaSeperatedTags() Tags: Text
+    internal procedure GetCommaSeparatedTags() Tags: Text
     var
         ShopifyTag: Record "Shpfy Tag";
         ProductEvents: Codeunit "Shpfy Product Events";
     begin
+<<<<<<< HEAD
         Tags := ShopifyTag.GetCommaSeperatedTags(Id);
         ProductEvents.OnAfterGetCommaSeperatedTags(Rec, Tags);
+=======
+        Tags := ShopifyTag.GetCommaSeparatedTags(Id);
+        ProductEvents.OnAfterGetCommaSeparatedTags(Rec, Tags);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         exit(Tags);
     end;
 
@@ -207,17 +211,17 @@ table 30127 "Shpfy Product"
     /// Update Tags.
     /// </summary>
     /// <param name="CommaSeperatedTags">Parameter of type Text.</param>
-    internal procedure UpdateTags(CommaSeperatedTags: Text)
+    internal procedure UpdateTags(CommaSeparatedTags: Text)
     var
         ShopifyTag: Record "Shpfy Tag";
     begin
-        ShopifyTag.UpdateTags(Database::"Shpfy Product", Id, CommaSeperatedTags);
+        ShopifyTag.UpdateTags(Database::"Shpfy Product", Id, CommaSeparatedTags);
     end;
 
     internal procedure CalcTagsHash(): Integer;
     var
         Hash: Codeunit "Shpfy Hash";
     begin
-        exit(Hash.CalcHash(Rec.GetCommaSeperatedTags()));
+        exit(Hash.CalcHash(Rec.GetCommaSeparatedTags()));
     end;
 }

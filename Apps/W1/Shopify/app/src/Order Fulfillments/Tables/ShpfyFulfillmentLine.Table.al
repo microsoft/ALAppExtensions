@@ -53,4 +53,8 @@ table 30139 "Shpfy Fulfillment Line"
         }
         key(Indx001; "Fulfillment Id", "Is Gift Card") { }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2

@@ -1,0 +1,14 @@
+{
+    "appFolders":  [
+        "..\\Modules\\System"
+    ],
+    "testFolders":  [
+        "..\\Modules\\System Test Libraries",
+        "..\\Modules\\System Tests"
+    ],
+    "buildModes": [
+        "Translated"
+    ],
+    "enableAppSourceCop": true,
+    "enablePerTenantExtensionCop":  true
+}

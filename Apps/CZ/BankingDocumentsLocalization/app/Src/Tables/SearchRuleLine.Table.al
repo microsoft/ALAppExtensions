@@ -162,6 +162,28 @@ table 31251 "Search Rule Line CZB"
                     CheckFilterRule();
             end;
         }
+        field(44; "Bank Account Filter"; Text[100])
+        {
+            Caption = 'Bank Account Filter';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Constant Symbol Filter" <> '' then
+                    CheckFilterRule();
+            end;
+        }
+        field(45; "IBAN Filter"; Text[100])
+        {
+            Caption = 'IBAN Filter';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Constant Symbol Filter" <> '' then
+                    CheckFilterRule();
+            end;
+        }
         field(50; "Account Type"; Enum "Search Rule Account Type CZB")
         {
             Caption = 'Account Type';

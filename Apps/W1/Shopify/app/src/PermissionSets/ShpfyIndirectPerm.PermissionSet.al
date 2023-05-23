@@ -4,8 +4,10 @@ permissionset 30101 "Shpfy Indirect Perm"
     Caption = 'Shopify Indirect Permissions', MaxLength = 30;
 
     Permissions =
+#if not CLEAN22
         tabledata "Config. Template Header" = r,
         tabledata "Config. Template Line" = r,
+#endif
         tabledata "Country/Region" = r,
         tabledata Customer = rimd,
         tabledata "Dimensions Template" = r,

@@ -10,6 +10,8 @@ table 8909 "Email Related Record"
 {
     DataClassification = SystemMetadata;
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {
@@ -43,6 +45,9 @@ table 8909 "Email Related Record"
         key(PK; "Table Id", "System Id", "Email Message Id")
         {
             Clustered = true;
+        }
+        key(Key2; "Email Message Id")
+        {
         }
     }
 }

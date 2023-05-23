@@ -6,7 +6,9 @@ codeunit 30182 "Shpfy Product Price Calc."
     Access = Internal;
     EventSubscriberInstance = Manual;
     Permissions =
+#if not CLEAN22
         tabledata "Config. Template Header" = r,
+#endif
         tabledata Customer = rmid,
         tabledata Item = r,
         tabledata "Item Unit of Measure" = r,
@@ -64,14 +66,19 @@ codeunit 30182 "Shpfy Product Price Calc."
             end;
             if ComparePrice <= Price then
                 ComparePrice := 0;
+<<<<<<< HEAD
             ProductEvents.OnAfterCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, UnitCost, Price, ComparePrice);
+=======
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         end;
+        ProductEvents.OnAfterCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, UnitCost, Price, ComparePrice);
     end;
 
     /// <summary> 
     /// Create Temp Sales Header.
     /// </summary>
     local procedure CreateTempSalesHeader()
+<<<<<<< HEAD
     var
         PostingSetupManagement: Codeunit PostingSetupManagement;
     begin
@@ -79,6 +86,9 @@ codeunit 30182 "Shpfy Product Price Calc."
         Shop.testfield("Gen. Bus. Posting Group");
         Shop.TestField("VAT Bus. Posting Group");
         Shop.TestField("VAT Country/Region Code");
+=======
+    begin
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         Clear(TempSalesHeader);
         TempSalesHeader."Document Type" := TempSalesHeader."Document Type"::Quote;
         TempSalesHeader."No." := Shop.Code;
@@ -91,12 +101,18 @@ codeunit 30182 "Shpfy Product Price Calc."
         TempSalesHeader."VAT Country/Region Code" := Shop."VAT Country/Region Code";
         TempSalesHeader."Customer Price Group" := Shop."Customer Price Group";
         TempSalesHeader."Customer Disc. Group" := Shop."Customer Discount Group";
+<<<<<<< HEAD
         PostingSetupManagement.CheckCustPostingGroupReceivablesAccount(Shop."Customer Posting Group");
         TempSalesHeader."Customer Posting Group" := Shop."Customer Posting Group";
         TempSalesHeader."Prices Including VAT" := Shop."Prices Including VAT";
         TempSalesHeader."Allow Line Disc." := Shop."Allow Line Disc.";
         TempSalesHeader."Tax Area Code" := Shop."Tax Area Code";
         TempSalesHeader."Tax Liable" := Shop."Tax Liable";
+=======
+        TempSalesHeader."Customer Posting Group" := Shop."Customer Posting Group";
+        TempSalesHeader."Prices Including VAT" := Shop."Prices Including VAT";
+        TempSalesHeader."Allow Line Disc." := Shop."Allow Line Disc.";
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         TempSalesHeader.Validate("Document Date", WorkDate());
         TempSalesHeader.Validate("Order Date", WorkDate());
         TempSalesHeader.Validate("Currency Code", Shop."Currency Code");
@@ -106,7 +122,11 @@ codeunit 30182 "Shpfy Product Price Calc."
     internal procedure PricesIncludingVAT(ShopCode: Code[20]): Boolean
     begin
         if Shop.Code <> ShopCode then
+<<<<<<< HEAD
             shop.Get(ShopCode);
+=======
+            Shop.Get(ShopCode);
+>>>>>>> 7d2dcc7d383d53737ef62941c8139e946afb8fb2
         exit(Shop."Prices Including VAT");
     end;
 

@@ -16,7 +16,7 @@ page 20353 "Banking Apps"
     DeleteAllowed = false;
     Extensible = false;
     AboutTitle = 'Connect to banks';
-    AboutText = 'This page lists apps that you can use to connect with banks and easily import bank transactions and transfer funds. You can filter the list to find apps that offer connections in specific countries.';
+    AboutText = 'The banking apps in this list let you easily import bank transactions and transfer funds. Filter the list to find out which apps are supported in which countries.';
 
     layout
     {
