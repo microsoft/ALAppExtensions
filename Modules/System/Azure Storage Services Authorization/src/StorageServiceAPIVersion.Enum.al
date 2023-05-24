@@ -20,4 +20,8 @@ enum 9060 "Storage Service API Version"
     {
         Caption = '2020-12-06', Locked = true;
     }
+    value(2; "2022-11-02")
+    {
+        Caption = '2022-11-02', Locked = true;
+    }
 }
