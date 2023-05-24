@@ -109,10 +109,10 @@ codeunit 9051 "ABS Client Impl."
     [NonDebuggable]
     procedure ListBlobs(var ABSContainerContent: Record "ABS Container Content"; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        ABSOperationResponse: Codeunit "ABS Operation Response";
         ABSHelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        ResponseText: Text;
+        NextMarker, ResponseText : Text;
         NodeList: XmlNodeList;
     begin
         ABSOperationPayload.SetOperation(Operation::ListBlobs);
@@ -120,8 +120,33 @@ codeunit 9051 "ABS Client Impl."
 
         ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(ListBlobsContainercOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
 
-        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText);
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText, NextMarker);
+        ABSOperationResponse.SetNextMarker(NextMarker);
+
         ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
+
+        exit(ABSOperationResponse);
+    end;
+
+    [NonDebuggable]
+    procedure ListBlobs(var BlobList: Dictionary of [Text, XmlNode]; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    var
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        Operation: Enum "ABS Operation";
+        NextMarker, ResponseText : Text;
+        NodeList: XmlNodeList;
+    begin
+        Clear(BlobList);
+        ABSOperationPayload.SetOperation(Operation::ListBlobs);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(ListBlobsContainercOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
+
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText, NextMarker);
+        ABSOperationResponse.SetNextMarker(NextMarker);
+
+        ABSHelperLibrary.BlobNodeListToBlobList(NodeList, BlobList);
 
         exit(ABSOperationResponse);
     end;

@@ -90,9 +90,18 @@ codeunit 9043 "ABS Helper Library"
 
     // #region Blob-specific Helper
     [NonDebuggable]
-    procedure CreateBlobNodeListFromResponse(ResponseAsText: Text): XmlNodeList
+    procedure CreateBlobNodeListFromResponse(ResponseAsText: Text; var NextMarker: Text): XmlNodeList
+    var
+        XmlDoc: XmlDocument;
+        Node: XmlNode;
+        NodeList: XmlNodeList;
     begin
-        exit(CreateXPathNodeListFromResponse(ResponseAsText, '/*/Blobs/Blob'));
+        Clear(NextMarker);
+        GetXmlDocumentFromResponse(XmlDoc, ResponseAsText);
+        if XmlDoc.SelectSingleNode('//NextMarker', Node) then
+            NextMarker := Node.AsXmlElement().InnerText;
+        XmlDoc.SelectNodes('//Blobs/Blob', NodeList);
+        exit(NodeList);
     end;
 
     [NonDebuggable]
@@ -107,6 +116,16 @@ codeunit 9043 "ABS Helper Library"
     procedure BlobNodeListToTempRecord(NodeList: XmlNodeList; var ABSContainerContent: Record "ABS Container Content")
     begin
         NodeListToTempRecord(NodeList, './/Name', ABSContainerContent);
+    end;
+
+    procedure BlobNodeListToBlobList(NodeList: XmlNodeList; var BlobList: Dictionary of [Text, XmlNode])
+    var
+        Name, Node : XmlNode;
+    begin
+        foreach Node in NodeList do begin
+            Node.SelectSingleNode('Name', Name);
+            BlobList.Add(Name.AsXmlElement().InnerText, Node);
+        end;
     end;
     // #endregion
 
@@ -160,14 +179,16 @@ codeunit 9043 "ABS Helper Library"
     var
         ABSContainerContentHelper: Codeunit "ABS Container Content Helper";
         Node: XmlNode;
+        EntryNo: Integer;
     begin
+        ABSContainerContent.Reset();
         ABSContainerContent.DeleteAll();
 
         if NodeList.Count = 0 then
             exit;
 
         foreach Node in NodeList do
-            ABSContainerContentHelper.AddNewEntryFromNode(ABSContainerContent, Node, XPathName);
+            ABSContainerContentHelper.AddNewEntryFromNode(ABSContainerContent, Node, XPathName, EntryNo);
     end;
 
     [NonDebuggable]

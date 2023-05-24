@@ -36,6 +36,20 @@ codeunit 9050 "ABS Operation Response"
     end;
 
     /// <summary>
+    /// Gets the NextMarker (if any) of the response.
+    /// </summary>
+    /// <returns>Text representation of the NextMarker that is returned during the operation.</returns>
+    procedure GetNextMarker(): Text
+    begin
+        exit(ResponseNextMarker);
+    end;
+
+    internal procedure SetNextMarker(NextMarker: Text)
+    begin
+        ResponseNextMarker := NextMarker;
+    end;
+
+    /// <summary>
     /// Gets the result of a ABS client operation as text, 
     /// </summary>
     /// <returns>The content of the response.</returns>
@@ -70,6 +84,8 @@ codeunit 9050 "ABS Operation Response"
         Values: array[100] of Text;
     begin
         Headers := HttpResponseMessage.Headers;
+        if not Headers.Contains(HeaderName) then
+            exit('');
         if not Headers.GetValues(HeaderName, Values) then
             exit('');
         exit(Values[1]);
@@ -78,5 +94,5 @@ codeunit 9050 "ABS Operation Response"
     var
         [NonDebuggable]
         HttpResponseMessage: HttpResponseMessage;
-        ResponseError: Text;
+        ResponseError, ResponseNextMarker : Text;
 }

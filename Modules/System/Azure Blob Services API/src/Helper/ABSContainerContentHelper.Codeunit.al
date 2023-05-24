@@ -10,7 +10,7 @@ codeunit 9054 "ABS Container Content Helper"
     InherentPermissions = X;
 
     [NonDebuggable]
-    procedure AddNewEntryFromNode(var ABSContainerContent: Record "ABS Container Content"; var Node: XmlNode; XPathName: Text)
+    procedure AddNewEntryFromNode(var ABSContainerContent: Record "ABS Container Content"; var Node: XmlNode; XPathName: Text; var EntryNo: Integer)
     var
         ABSHelperLibrary: Codeunit "ABS Helper Library";
         NameFromXml: Text;
@@ -23,24 +23,21 @@ codeunit 9054 "ABS Container Content Helper"
         Node.SelectSingleNode('.//Properties', PropertiesNode);
         ChildNodes := PropertiesNode.AsXmlElement().GetChildNodes();
 
-        AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes);
+        AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes, EntryNo);
     end;
 
     [NonDebuggable]
-    procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
+    procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList; var EntryNo: Integer)
     var
         OutStream: OutStream;
-        EntryNo: Integer;
     begin
-        AddParentEntries(NameFromXml, ABSContainerContent);
-
-        EntryNo := GetNextEntryNo(ABSContainerContent);
+        AddParentEntries(NameFromXml, ABSContainerContent, EntryNo);
 
         ABSContainerContent.Init();
         ABSContainerContent.Level := GetLevel(NameFromXml);
-        ABSContainerContent."Parent Directory" := GetParentDirectory(NameFromXml);
-        ABSContainerContent."Full Name" := CopyStr(NameFromXml, 1, 250);
-        ABSContainerContent.Name := GetName(NameFromXml);
+        ABSContainerContent."Parent Directory" := CopyStr(GetParentDirectory(NameFromXml), 1, MaxStrLen(ABSContainerContent."Parent Directory"));
+        ABSContainerContent."Full Name" := CopyStr(NameFromXml, 1, MaxStrLen(ABSContainerContent."Full Name"));
+        ABSContainerContent.Name := CopyStr(GetName(NameFromXml), 1, MaxStrLen(ABSContainerContent.Name));
 
         SetPropertyFields(ABSContainerContent, ChildNodes);
 
@@ -49,14 +46,16 @@ codeunit 9054 "ABS Container Content Helper"
 
         ABSContainerContent."Entry No." := EntryNo;
         ABSContainerContent.Insert(true);
+        EntryNo += 1;
     end;
 
     [NonDebuggable]
-    local procedure AddParentEntries(NameFromXml: Text; var ABSContainerContent: Record "ABS Container Content")
+    local procedure AddParentEntries(NameFromXml: Text; var ABSContainerContent: Record "ABS Container Content"; var EntryNo: Integer)
     var
+        DirectoryContentTypeTxt: Label 'Directory', Locked = true;
         ParentEntries: List of [Text];
         CurrentParent, ParentEntryFullName, ParentEntryName : Text[2048];
-        Level, EntryNo : Integer;
+        Level: Integer;
     begin
         // Check if the entry has parents: the Name will be something like /folder1/folder2/blob-name.
         // For every parent folder, add a parent entry.
@@ -69,28 +68,28 @@ codeunit 9054 "ABS Container Content Helper"
 
         ParentEntries := NameFromXml.Split('/');
 
-        for Level := 1 to ParentEntries.Count() - 1
-        do begin
+        for Level := 1 to ParentEntries.Count() - 1 do begin
             ParentEntryName := CopyStr(ParentEntries.Get(Level), 1, MaxStrLen(ABSContainerContent.Name));
             ParentEntryFullName := CopyStr(CurrentParent + ParentEntryName, 1, MaxStrLen(ABSContainerContent.Name));
 
             // Only create the parent entry if it doesn't exist already.
             // The full name should be unique.
-            ABSContainerContent.SetRange("Full Name", ParentEntryFullName);
-            if not ABSContainerContent.FindLast() then begin
-                EntryNo := GetNextEntryNo(ABSContainerContent);
+            if not ParentEntryFullNameList.Contains(ParentEntryFullName) then begin
+                ParentEntryFullNameList.Add(ParentEntryFullName);
 
                 ABSContainerContent.Init();
                 ABSContainerContent.Level := Level - 1; // Levels start from 0 to be used for indentation
                 ABSContainerContent.Name := ParentEntryName;
                 ABSContainerContent."Full Name" := ParentEntryFullName;
                 ABSContainerContent."Parent Directory" := CurrentParent;
+                ABSContainerContent."Content Type" := DirectoryContentTypeTxt;
 
                 ABSContainerContent."Entry No." := EntryNo;
                 ABSContainerContent.Insert(true);
+                EntryNo += 1;
             end;
 
-            CurrentParent := CopyStr(ABSContainerContent."Full Name" + '/', 1, MaxStrLen(ABSContainerContent.Name));
+            CurrentParent := CopyStr(ParentEntryFullName + '/', 1, MaxStrLen(CurrentParent));
         end;
     end;
 
@@ -133,17 +132,6 @@ codeunit 9054 "ABS Container Content Helper"
     end;
 
     [NonDebuggable]
-    local procedure GetNextEntryNo(var ABSContainerContent: Record "ABS Container Content"): Integer
-    begin
-        ABSContainerContent.Reset();
-
-        if ABSContainerContent.FindLast() then
-            exit(ABSContainerContent."Entry No." + 1)
-        else
-            exit(1);
-    end;
-
-    [NonDebuggable]
     local procedure GetLevel(Name: Text): Integer
     var
         StringSplit: List of [Text];
@@ -155,18 +143,18 @@ codeunit 9054 "ABS Container Content Helper"
     end;
 
     [NonDebuggable]
-    local procedure GetName(Name: Text): Text[250]
+    local procedure GetName(Name: Text): Text
     var
         StringSplit: List of [Text];
     begin
         if not Name.Contains('/') then
-            exit(CopyStr(Name, 1, 250));
+            exit(Name);
         StringSplit := Name.Split('/');
-        exit(CopyStr(StringSplit.Get(StringSplit.Count()), 1, 250));
+        exit(StringSplit.Get(StringSplit.Count()));
     end;
 
     [NonDebuggable]
-    local procedure GetParentDirectory(Name: Text): Text[250]
+    local procedure GetParentDirectory(Name: Text): Text
     var
         Parent: Text;
     begin
@@ -175,7 +163,7 @@ codeunit 9054 "ABS Container Content Helper"
 
         Parent := CopyStr(Name, 1, Name.LastIndexOf('/'));
 
-        exit(CopyStr(Parent, 1, 250));
+        exit(Parent);
     end;
 
     /// <summary>
@@ -208,4 +196,7 @@ codeunit 9054 "ABS Container Content Helper"
         XmlDocument.ReadFrom(XmlAsText, Document);
         Node := Document.AsXmlNode();
     end;
+
+    var
+        ParentEntryFullNameList: List of [Text];
 }
