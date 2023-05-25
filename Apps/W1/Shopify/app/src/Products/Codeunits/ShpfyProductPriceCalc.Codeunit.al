@@ -77,7 +77,7 @@ codeunit 30182 "Shpfy Product Price Calc."
     begin
         Shop.TestField("Customer Posting Group");
         Shop.testfield("Gen. Bus. Posting Group");
-        Shop.TestField("VAT Bus. Posting Group");
+        //Shop.TestField("VAT Bus. Posting Group");
         Shop.TestField("VAT Country/Region Code");
         Clear(TempSalesHeader);
         TempSalesHeader."Document Type" := TempSalesHeader."Document Type"::Quote;
