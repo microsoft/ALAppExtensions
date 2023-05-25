@@ -237,7 +237,7 @@ codeunit 30178 "Shpfy Product Export"
     var
         Tab: Text[1];
     begin
-        Tab[0] := 9;
+        Tab[1] := 9;
         exit(Source.Replace(Tab, ' '));
     end;
 

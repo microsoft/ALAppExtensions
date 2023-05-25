@@ -30,7 +30,7 @@ report 30104 "Shpfy Sync Orders from Shopify"
                     OrdersToImport2.SetRange("Shop Code", '');
                     OrdersToImport2.ModifyAll("Shop Code", Shop.Code);
                     Commit();
-                    OrdersToImport.SetRange("Shop Code", Shop.Code);
+                    OrdersToImport2.SetRange("Shop Code", Shop.Code);
 
                     if GuiAllowed then begin
                         ToProcess := OrdersToImport2.Count;
