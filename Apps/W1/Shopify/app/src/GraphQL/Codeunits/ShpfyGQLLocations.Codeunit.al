@@ -11,7 +11,7 @@ codeunit 30100 "Shpfy GQL Locations" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{ locationsAvailableForDeliveryProfilesConnection(first: 10) { pageInfo { hasNextPage endCursor } nodes { legacyResourceId isActive isPrimary name fulfillmentService { serviceName } }}}"}');
+        exit('{"query":"{ locationsAvailableForDeliveryProfilesConnection(first: 10) { pageInfo { hasNextPage endCursor } nodes { legacyResourceId isActive isPrimary name fulfillmentService { serviceName }}}}"}');
     end;
 
     /// <summary>

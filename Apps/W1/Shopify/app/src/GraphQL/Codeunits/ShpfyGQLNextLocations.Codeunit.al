@@ -11,7 +11,7 @@ codeunit 30214 "Shpfy GQL Next Locations" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{ locationsAvailableForDeliveryProfilesConnection(first: 10, after:\"{{After}}\") { pageInfo { hasNextPage endCursor } nodes { legacyResourceId isActive isPrimary name }}}"}');
+        exit('{"query":"{ locationsAvailableForDeliveryProfilesConnection(first: 10, after:\"{{After}}\") { pageInfo { hasNextPage endCursor } nodes { legacyResourceId isActive isPrimary name fulfillmentService { serviceName }}}}"}');
     end;
 
     /// <summary>
