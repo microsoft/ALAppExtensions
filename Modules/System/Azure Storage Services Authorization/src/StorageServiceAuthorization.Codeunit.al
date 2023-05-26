@@ -87,7 +87,7 @@ codeunit 9062 "Storage Service Authorization"
     /// <param name="SASToken">A pre-generated SAS token.</param>
     /// <returns>An account SAS authorization.</returns>
     [NonDebuggable]
-    procedure UseReadySAS(SASToken: Text;): Interface "Storage Service Authorization"
+    procedure UseReadySAS(SASToken: Text): Interface "Storage Service Authorization"
     var
         StorServAuthImpl: Codeunit "Stor. Serv. Auth. Impl.";
     begin
