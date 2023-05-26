@@ -254,8 +254,11 @@ page 7233 "Master Data Synch. Tables"
                 trigger OnAction()
                 var
                     MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+                    MasterDataManagement: Codeunit "Master Data Management";
                     IntegrationSynchJobList: Page "Integration Synch. Job List";
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     if Rec.IsEmpty() then
                         exit;
 
@@ -279,8 +282,11 @@ page 7233 "Master Data Synch. Tables"
 
                 trigger OnAction()
                 var
+                    MasterDataManagement: Codeunit "Master Data Management";
                     IntegrationSynchJobList: Page "Integration Synch. Job List";
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     if Rec.IsEmpty() then
                         exit;
 
@@ -345,6 +351,8 @@ page 7233 "Master Data Synch. Tables"
                     ConfirmMsg: Text;
                     ResultMsg: Text;
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     CurrPage.SetSelectionFilter(IntegrationTableMapping);
                     if not IntegrationTableMapping.FindSet() then
                         exit;
@@ -393,6 +401,8 @@ page 7233 "Master Data Synch. Tables"
                     ConfirmMsg: Text;
                     ResultMsg: Text;
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     CurrPage.SetSelectionFilter(IntegrationTableMapping);
                     if not IntegrationTableMapping.FindFirst() then
                         exit;

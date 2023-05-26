@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 20351 "Connectivity App Country"
+table 20351 "Conn. App Country/Region"
 {
     Access = Internal;
     TableType = Temporary;
@@ -15,25 +15,27 @@ table 20351 "Connectivity App Country"
         field(1; "App Id"; Guid)
         {
             Caption = 'App Id';
-            DataClassification = SystemMetadata;
         }
-        field(2; Country; Enum "Conn. Apps Supported Country")
+        field(2; "Country/Region"; Enum "Conn. Apps Country/Region")
         {
-            DataClassification = SystemMetadata;
+            Caption = 'Country/Region';
         }
         field(3; Category; Enum "Connectivity Apps Category")
         {
-            DataClassification = SystemMetadata;
+        }
+        field(4; Localization; Enum "Connectivity Apps Localization")
+        {
+            Caption = 'Localization';
         }
     }
 
     keys
     {
-        key(Key1; "App Id", Country)
+        key(Key1; "App Id", "Country/Region", Localization)
         {
             Clustered = true;
         }
-        key(Key2; Country, Category)
+        key(Key2; "Country/Region", Category, Localization)
         {
         }
     }

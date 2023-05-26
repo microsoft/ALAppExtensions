@@ -360,6 +360,37 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         RenameDestination(SourceRecordRef, DestinationRecordRef);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeTransferRecordFields', '', false, false)]
+    local procedure OnBeforeTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    begin
+        ApplyTransformations(SourceRecordRef, DestinationRecordRef);
+    end;
+
+    local procedure ApplyTransformations(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        TransformationRule: Record "Transformation Rule";
+        CRMSynchHelper: Codeunit "CRM Synch. Helper";
+    begin
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange("Integration Table ID", SourceRecordRef.Number());
+        IntegrationTableMapping.SetRange("Table ID", DestinationRecordRef.Number());
+        if not IntegrationTableMapping.FindFirst() then
+            exit;
+
+        IntegrationFieldMapping.SetFilter("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetFilter("Transformation Rule", '<>%1', ' ');
+
+        if IntegrationFieldMapping.FindSet() then
+            repeat
+                if TransformationRule.Get(IntegrationFieldMapping."Transformation Rule") then
+                    if IntegrationFieldMapping."Transformation Direction" = IntegrationFieldMapping."Transformation Direction"::FromIntegrationTable then
+                        CrmsynchHelper.TransformValue(SourceRecordRef, DestinationRecordRef, TransformationRule, IntegrationFieldMapping."Integration Table Field No.", IntegrationFieldMapping."Field No.");
+            until IntegrationFieldMapping.Next() <= 0;
+    end;
+
     local procedure IsPrimaryKeyDifferent(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef): Boolean
     var
         SourcePrimaryKeyRef: KeyRef;

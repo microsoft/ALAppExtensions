@@ -62,6 +62,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBankImpBankListHndl: Codeunit "AMC Bank Imp.BankList Hndl";
         LongTimeout: Integer;
         ShortTimeout: Integer;
+        AMCBoughtModule: Boolean;
         AMCSolution: text;
         AMCSpecificURL: Text;
         AMCSignUpURL: Text;
@@ -80,6 +81,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         end;
 
         if ((AMCBankingSetup."User Name" <> AMCBankingSetup.GetDemoUserName()) and
+            (not AMCBankingMgt.IsLicenseEqualAMC()) and
            (AMCBankingSetup."User Name" <> AMCBankingMgt.GetLicenseNumber())) then begin
             Error_Text := StrSubstNo(NotCorrectUserLbl, AMCBankingSetup."User Name", AMCBankingMgt.GetLicenseNumber(), AMCBankingSetup.GetDemoUserName()) + '\\' +
                           YouHave2OptionsLbl + '\\' +
@@ -96,7 +98,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         end
         else
             if (CallLicenseServer) then
-                GetModuleInfoFromWebservice(AMCSpecificURL, AMCSignUpURL, AMCSupportURL, AMCSolution, ShortTimeout);
+                AMCBoughtModule := GetModuleInfoFromWebservice(AMCSpecificURL, AMCSignUpURL, AMCSupportURL, AMCSolution, ShortTimeout);
 
         if (AMCSolution <> '') then begin
             AMCBankingSetup.Solution := CopyStr(AMCSolution, 1, 50);
@@ -296,7 +298,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBankingMgt.CheckCredentials();
         AMCBankingSetup.Get();
 
-        AMCBankServiceRequestMgt.InitializeHttp(HttpRequestMessage, AMCBankingMgt.GetLicenseServerName() + '/' + AMCBankingMgt.GetLicenseXmlApi(), 'POST');
+        AMCBankServiceRequestMgt.InitializeHttp(HttpRequestMessage, AMCBankingMgt.GetCleanLicenseServerName(AMCBankingSetup) + '/' + AMCBankingMgt.GetLicenseXmlApi(), 'POST');
 
         PrepareSOAPRequestBodyModuleCreate(HttpRequestMessage);
 

@@ -9,6 +9,7 @@ pageextension 20111 "AMC Bank Bank Account Page Ext" extends "Bank Account List"
             action(AMCShowServicePage)
             {
                 ApplicationArea = Basic, Suite;
+                Visible = IsAMCFundamentalsEnabled;
                 Caption = 'AMC Bank Page';
                 Image = SignUp;
                 Promoted = true;
@@ -25,5 +26,13 @@ pageextension 20111 "AMC Bank Bank Account Page Ext" extends "Bank Account List"
 
     var
         AMCBankServiceRequestMgt: codeunit "AMC Bank Service Request Mgt.";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
+        IsAMCFundamentalsEnabled: Boolean;
+
+    trigger OnOpenPage()
+    begin
+        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
+
+    end;
 
 }

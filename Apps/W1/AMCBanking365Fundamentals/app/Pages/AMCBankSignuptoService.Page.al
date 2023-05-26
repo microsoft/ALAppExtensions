@@ -193,12 +193,14 @@ page 20109 "AMC Bank Signup to Service"
         Handled: Boolean;
         restcall: text;
         ResponseResult: Text;
+        RestUrl: Text;
     begin
 
         restcall := AMCBankRESTRequestMgt.GetEasyRegistartionURLRestCall();
         AMCBankingSetup.Get();
 
-        AMCBankRESTRequestMgt.InitializeHttp(HttpRequestMessage, AMCBankingSetup."Sign-up URL", 'POST');
+        RestUrl := AMCBankingMgt.GetCleanLicenseServerName(AMCBankingSetup) + AMCBankingMgt.GetLicenseRegisterTag();
+        AMCBankRESTRequestMgt.InitializeHttp(HttpRequestMessage, RestUrl, 'POST');
 
         if (CountryRegion.Get(rec."Country/Region Code")) then;
 

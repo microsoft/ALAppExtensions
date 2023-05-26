@@ -40,6 +40,8 @@ codeunit 20126 "AMC Bank Process Statement"
         stateTxt: Label 'state', Locked = true;
         countryisocodeTxt: Label 'countryisocode', Locked = true;
         referenceTxt: Label 'reference', Locked = true;
+        uniqueustecrefTxt: Label 'uniqueustecref', Locked = true;
+        uniquethemtecrefTxt: Label 'uniquethemtecref', locked = true;
         typeTxt: Label 'type', Locked = true;
         DOCTxt: Label 'DOC', Locked = true;
         PIDTxt: Label 'PID', Locked = true;
@@ -92,6 +94,9 @@ codeunit 20126 "AMC Bank Process Statement"
 
                     MakeDataExchFieldRecords(TempFinstaUSLevelXmlBuffer);
 
+                    //get Uniquetecref tags
+                    getUniqueTecRef(TempTopLevelXmlBuffer, FinstaRecordRef, TempFinstaUSLevelXmlBuffer."Entry No.");
+
                     //Get Amountposting tags
                     ChildsParentEntryNo := getChildsParentEntryNo(TempTopLevelXmlBuffer, amountpostingTxt, TempFinstaUSLevelXmlBuffer."Entry No.");
                     getAmountPosting(TempTopLevelXmlBuffer, FinstaRecordRef, ChildsParentEntryNo);
@@ -124,6 +129,9 @@ codeunit 20126 "AMC Bank Process Statement"
                     getNextLevels(TempFinstaTHLevelXmlBuffer, finstatransthemTxt, TempFinstaUSLevelXmlBuffer."Entry No.");
                     if (not TempFinstaTHLevelXmlBuffer.IsEmpty) then
                         repeat
+                            //get Uniquetecref tags
+                            getUniqueTecRef(TempTopLevelXmlBuffer, FinstaRecordRef, TempFinstaTHLevelXmlBuffer."Entry No.");
+
                             //Get message th level
                             getNextLevels(TempChildLevelXmlBuffer, messageTxt, TempFinstaTHLevelXmlBuffer."Entry No.");
                             if (not TempChildLevelXmlBuffer.IsEmpty) then
@@ -279,6 +287,24 @@ codeunit 20126 "AMC Bank Process Statement"
                 AMCBankingMgt.SetFieldValue(RecordRef, BankAccReconciliationLine.FieldNo("Related-Party City"), AddressValue, true, false);
         end;
 
+    end;
+
+    Local procedure getUniqueTecRef(var ElementXMLBuffer: Record "XML Buffer"; RecordRef: RecordRef; ChildsParentEntryNo: Integer)
+    var
+        BankAccReconciliationLine: record "Bank Acc. Reconciliation Line";
+        uniqueustecrefValue: Text;
+    begin
+        uniqueustecrefValue := getChildsValue(ElementXMLBuffer, uniqueustecrefTxt, ChildsParentEntryNo);
+        if (uniqueustecrefValue <> '') then begin
+            AMCBankingMgt.SetFieldValue(RecordRef, BankAccReconciliationLine.FieldNo("Transaction Text"), uniqueustecrefValue, true, false);
+            AMCBankingMgt.SetFieldValue(RecordRef, BankAccReconciliationLine.FieldNo(Description), AMCBankingMgt.GetFieldValue(RecordRef, BankAccReconciliationLine.FieldNo("Transaction Text")), false, false);
+        end;
+
+        uniqueustecrefValue := getChildsValue(ElementXMLBuffer, uniquethemtecrefTxt, ChildsParentEntryNo);
+        if (uniqueustecrefValue <> '') then begin
+            AMCBankingMgt.SetFieldValue(RecordRef, BankAccReconciliationLine.FieldNo("Transaction Text"), uniqueustecrefValue, true, false);
+            AMCBankingMgt.SetFieldValue(RecordRef, BankAccReconciliationLine.FieldNo(Description), AMCBankingMgt.GetFieldValue(RecordRef, BankAccReconciliationLine.FieldNo("Transaction Text")), false, false);
+        end;
     end;
 
     local procedure getMessage(var ElementXMLBuffer: Record "XML Buffer"; RecordRef: RecordRef; ChildsParentEntryNo: Integer)

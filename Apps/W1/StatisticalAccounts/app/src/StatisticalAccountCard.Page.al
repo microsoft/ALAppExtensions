@@ -131,4 +131,11 @@ page 2631 "Statistical Account Card"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
+    begin
+        StatAccTelemetry.LogDiscovered();
+    end;
 }

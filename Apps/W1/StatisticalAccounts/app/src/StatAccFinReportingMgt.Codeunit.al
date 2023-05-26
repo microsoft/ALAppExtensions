@@ -59,6 +59,7 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
     local procedure OnAfterCalcCellValue(sender: Codeunit AccSchedManagement; var AccSchedLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; var GLAcc: Record "G/L Account"; var Result: Decimal; var SourceAccScheduleLine: Record "Acc. Schedule Line")
     var
         StatisticalAccount: Record "Statistical Account";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
         if AccSchedLine."Totaling Type" <> AccSchedLine."Totaling Type"::"Statistical Account" then
             exit;
@@ -69,6 +70,7 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
             exit;
         end;
 
+        StatAccTelemetry.LogFinancialReportUsage();
         SetStatAccColumnFilters(sender, StatisticalAccount, AccSchedLine, ColumnLayout);
         Result := Result + CalcStatisticalAccount(StatisticalAccount, AccSchedLine, SourceAccScheduleLine, ColumnLayout, sender);
     end;

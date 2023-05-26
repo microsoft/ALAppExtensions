@@ -165,7 +165,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         Notification.Send();
     end;
 
-#pragma warning disable AS0074
 #if not CLEAN23
     [Obsolete('Notifications to enable image analysis have been discontinued.', '23.0')]
     procedure SendEnableNotification(CodeToSet: Code[20]; OnRecord: Option " ",Item,Contact)
@@ -213,7 +212,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         ImageAnalyzerWizard.RunModal();
     end;
 #endif
-#pragma warning restore AS0074
 
     procedure HandleSetupAndEnable()
     var

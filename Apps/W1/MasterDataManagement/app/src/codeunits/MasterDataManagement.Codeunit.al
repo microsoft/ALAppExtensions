@@ -61,6 +61,9 @@ codeunit 7233 "Master Data Management"
         FeatureNameTxt: Label 'Master Data Management', Locked = true;
         CachedIsSynchronizationRecord: Dictionary of [Text, Boolean];
         CachedDisableEventDrivenSynchJobReschedule: Dictionary of [Text, Boolean];
+        NoPermissionToSetUpErr: Label 'Your license does not allow you to set up Master Data Management. To view details about your permissions, see the Effective Permissions page.';
+        NoPermissionToUseErr: Label 'Your license does not allow you to use Master Data Management. To view details about your permissions, see the Effective Permissions page.';
+        NoPermissionToScheduleJobErr: Label 'Your license does not allow you to schedule a background task. To view details about your permissions, see the Effective Permissions page.';
 
     internal procedure GetFeatureName(): Text
     begin
@@ -2157,6 +2160,46 @@ codeunit 7233 "Master Data Management"
                     exit(true);
             until IntegrationTableMapping.Next() = 0;
         exit(false);
+    end;
+
+    internal procedure CheckSetupPermissions()
+    var
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+        IntegrationTableMapping: Record "Integration Table Mapping";
+    begin
+        if not MasterDataManagementSetup.WritePermission() then
+            Error(NoPermissionToSetUpErr);
+
+        if not IntegrationTableMapping.WritePermission() then
+            Error(NoPermissionToSetUpErr);
+    end;
+
+    internal procedure CheckUsagePermissions()
+    var
+        MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+    begin
+        if not MasterDataMgtCoupling.WritePermission() then
+            Error(NoPermissionToUseErr);
+    end;
+
+    internal procedure CheckTaskSchedulePermissions()
+    begin
+        if not CanScheduleJob() then
+            Error(NoPermissionToScheduleJobErr);
+    end;
+
+    local procedure CanScheduleJob(): Boolean
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        User: Record User;
+    begin
+        if not (JobQueueEntry.WritePermission() and JobQueueEntry.ReadPermission()) then
+            exit(false);
+        if not User.Get(UserSecurityId()) then
+            exit(false);
+        if User."License Type" = User."License Type"::"Limited User" then
+            exit(false);
+        exit(true);
     end;
 
     [IntegrationEvent(false, false)]

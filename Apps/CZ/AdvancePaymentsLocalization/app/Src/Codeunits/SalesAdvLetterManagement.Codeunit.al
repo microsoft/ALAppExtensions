@@ -409,6 +409,8 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 GenJournalLine."VAT Registration No." := SalesAdvLetterHeaderCZZ."VAT Registration No.";
                 GenJournalLine."Registration No. CZL" := SalesAdvLetterHeaderCZZ."Registration No.";
                 GenJournalLine."Tax Registration No. CZL" := SalesAdvLetterHeaderCZZ."Tax Registration No.";
+                OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, GenJournalLine);
+
                 BindSubscription(VATPostingSetupHandlerCZZ);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
                 UnbindSubscription(VATPostingSetupHandlerCZZ);
@@ -2483,6 +2485,11 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeCorrectDocumentAfterPaymentUsage(DocumentNo: Code[20]; var CustLedgerEntry: Record "Cust. Ledger Entry"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 }

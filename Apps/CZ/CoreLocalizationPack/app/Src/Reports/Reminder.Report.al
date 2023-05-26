@@ -265,7 +265,7 @@ report 31182 "Reminder CZL"
 
                     trigger OnPreDataItem()
                     begin
-                        SetFilter("Line Type", '<>%1&<>%2&<>%3', "Line Type"::"Not Due", "Line Type"::"On Hold", "Line Type"::"Ending Text");
+                        SetFilter("Line Type", '<>%1&<>%2', "Line Type"::"Not Due", "Line Type"::"On Hold");
                         SetRange("Detailed Interest Rates Entry", false);
                     end;
                 }
@@ -310,7 +310,7 @@ report 31182 "Reminder CZL"
                         if not ShowNotDueAmounts then
                             CurrReport.Break();
 
-                        SetFilter("Line Type", '%1|%2|%3', "Line Type"::"Not Due", "Line Type"::"On Hold", "Line Type"::"Ending Text");
+                        SetFilter("Line Type", '%1|%2', "Line Type"::"Not Due", "Line Type"::"On Hold");
                     end;
                 }
                 dataitem(LineSum; Integer)

@@ -193,11 +193,12 @@ report 11757 "Documentation for VAT CZL"
 #endif
                         VATBase := 0;
                         VATAmount := 0;
-                        CalculatedVATBase := VATEntry.Base;
+
+                        CalculatedVATBase := "VAT Entry".Base;
                         CalculatedVATAmount := CalcVATAmount("VAT Entry");
 
-                        if VATEntry.Base <> CalculatedVATBase then
-                            CalculatedVATBase := VATEntry.Base;
+                        if "VAT Entry".Base <> CalculatedVATBase then
+                            VATBase := "VAT Entry".Base;
                         if Amount <> CalculatedVATAmount then
                             VATAmount := Amount;
 

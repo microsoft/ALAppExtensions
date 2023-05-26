@@ -15,17 +15,14 @@ table 20353 "Connectivity App Description"
         field(1; "App Id"; Guid)
         {
             Caption = 'App Id';
-            DataClassification = SystemMetadata;
         }
         field(2; "Language Id"; Integer)
         {
             Caption = 'Language Id';
-            DataClassification = SystemMetadata;
         }
         field(3; Description; Text[2048])
         {
             Caption = 'Description';
-            DataClassification = SystemMetadata;
         }
     }
 

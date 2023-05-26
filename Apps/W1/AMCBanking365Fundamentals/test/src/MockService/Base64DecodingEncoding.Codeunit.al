@@ -98,6 +98,7 @@ codeunit 135081 "Base64 Decoding / Encoding"
         if IsInitialized then
             exit;
 
+        LibraryAMCWebService.SetHttpClientRequestallowed();
         LibraryAMCWebService.SetupDefaultService();
         LibraryAMCWebService.SetServiceUrlToTest();
         LibraryAMCWebService.SetServiceCredentialsToTest();

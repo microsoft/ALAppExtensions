@@ -264,6 +264,9 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         Assert.IsTrue(IntegrationFieldMapping.Count() > 0, 'Expected synchronization fields for the added table (Activity Log).');
         IntegrationFieldMapping.SetRange(Status, IntegrationFieldMapping.Status::Enabled);
         Assert.IsTrue(IntegrationFieldMapping.Count() = 0, 'All synchronization fields for the added table should be disabled by default.');
+        IntegrationFieldMapping.SetRange(Status);
+        IntegrationFieldMapping.SetRange("Field Caption", '');
+        Assert.IsTrue(IntegrationFieldMapping.Count() = 0, 'All synchronization fields for the added table should have a caption.');
     end;
 
     [Test]

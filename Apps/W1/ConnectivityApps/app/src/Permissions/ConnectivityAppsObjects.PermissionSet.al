@@ -20,7 +20,7 @@ permissionset 20352 "Connectivity Apps - Objects"
                     page "Connectivity App" = X,
                     page "Connectivity Apps" = X,
                     table "Connectivity App" = X,
-                    table "Connectivity App Country" = X,
+                    table "Conn. App Country/Region" = X,
                     table "Connectivity App Description" = X,
                     table "Connectivity App Logo" = X;
 }

@@ -125,6 +125,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
     local procedure DisplayErrorFromResponse(PaymentFileTempBlob: Codeunit "Temp Blob"; DataExchEntryNo: Integer)
     var
         GenJournalLine: Record "Gen. Journal Line";
+        GenJournalLineCopy: Record "Gen. Journal Line";
         ResponseXmlDoc: XmlDocument;
         DataInStream: InStream;
         SysLogXMLNodeList: XmlNodeList;
@@ -144,7 +145,10 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
             end;
             GenJournalLine.SetRange("Data Exch. Entry No.", DataExchEntryNo);
             GenJournalLine.FindFirst();
-            if GenJournalLine.HasPaymentFileErrorsInBatch() then begin
+            GenJournalLineCopy."Journal Template Name" := GenJournalLine."Journal Template Name";
+            GenJournalLineCopy."Journal Batch Name" := GenJournalLine."Journal Batch Name";
+
+            if GenJournalLineCopy.HasPaymentFileErrorsInBatch() then begin
                 Commit();
                 Error(HasErrorsErr);
             end;

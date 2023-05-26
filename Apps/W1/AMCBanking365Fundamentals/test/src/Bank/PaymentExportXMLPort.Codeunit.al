@@ -25,6 +25,7 @@ codeunit 134423 "Payment Export XMLPort"
         DataExch: Record "Data Exch.";
         DataExchDef: Record "Data Exch. Def";
         TempXmlBuffer: Record "XML Buffer" temporary;
+        AMCBankingSetup: Record "AMC Banking Setup";
         TempBlob: Codeunit "Temp Blob";
         OutStream: OutStream;
     begin
@@ -32,6 +33,13 @@ codeunit 134423 "Payment Export XMLPort"
         CompanyInformation.Get();
         CompanyInformation.County := LibraryUtility.GenerateGUID();
         CompanyInformation.Modify();
+
+        if (NOT AMCBankingSetup.Get()) then begin
+            AMCBankingSetup.Init();
+            AMCBankingSetup.Insert(true);
+        end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
 
         SetupExport(TempBlob, DataExch, DataExchDef, TempXMLBuffer, XMLPORT::"AMC Bank Export CT", DataExchDef."File Type"::Xml);
 

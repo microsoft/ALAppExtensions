@@ -16,61 +16,47 @@ table 20350 "Connectivity App"
         field(1; "App Id"; Guid)
         {
             Caption = 'App Id';
-            DataClassification = SystemMetadata;
         }
         field(2; Name; Text[1024])
         {
             Caption = 'Name';
-            DataClassification = SystemMetadata;
         }
         field(3; Description; Text[2048])
         {
             Caption = 'Description';
-            DataClassification = SystemMetadata;
         }
-        field(4; "Supported Countries"; Text[2048])
+        field(4; "Country/Region"; Code[20])
         {
-            Caption = 'Supported Countries';
-            DataClassification = SystemMetadata;
+            Caption = 'Country/Region';
+            TableRelation = "Country/Region";
         }
         field(5; Category; Enum "Connectivity Apps Category")
         {
             Caption = 'Category';
-            DataClassification = SystemMetadata;
         }
         field(6; Publisher; Text[250])
         {
             Caption = 'Publisher';
-            DataClassification = SystemMetadata;
         }
         field(7; "Provider Support URL"; Text[2048])
         {
             Caption = 'Provider Support URL';
-            DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
         }
         field(8; "AppSource URL"; Text[2048])
         {
             Caption = 'Provider Support URL';
-            DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
         }
         field(9; Logo; Media)
         {
             Caption = 'Logo';
-            DataClassification = SystemMetadata;
-        }
-        field(10; Country; Code[20])
-        {
-            Caption = 'Country';
-            DataClassification = SystemMetadata;
-            TableRelation = "Country/Region";
         }
     }
 
     keys
     {
-        key(Key1; "App Id", Country)
+        key(Key1; "App Id", "Country/Region")
         {
             Clustered = true;
         }
@@ -78,7 +64,7 @@ table 20350 "Connectivity App"
 
     fieldgroups
     {
-        fieldgroup(Brick; Publisher, Name, Country, Description, Logo)
+        fieldgroup(Brick; Publisher, Name, "Country/Region", Description, Logo)
         {
         }
     }

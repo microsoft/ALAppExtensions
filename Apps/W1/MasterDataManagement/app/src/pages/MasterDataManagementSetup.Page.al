@@ -49,7 +49,9 @@ page 7230 "Master Data Management Setup"
                 trigger OnAction()
                 var
                     MasterDataManagementSetupDefaults: Codeunit "Master Data Mgt. Setup Default";
+                    MasterDataManagement: Codeunit "Master Data Management";
                 begin
+                    MasterDataManagement.CheckSetupPermissions();
                     if Confirm(ResetIntegrationTableMappingConfirmQst, false) then begin
                         MasterDataManagementSetupDefaults.ResetConfiguration(Rec);
                         Message(SetupSuccessfulMsg);
@@ -85,7 +87,9 @@ page 7230 "Master Data Management Setup"
                 trigger OnAction()
                 var
                     DotNetExceptionHandler: Codeunit "DotNet Exception Handler";
+                    MasterDataManagement: Codeunit "Master Data Management";
                 begin
+                    MasterDataManagement.CheckSetupPermissions();
                     if not Confirm(ImportIntegrationTableMappingConfirmQst, false) then
                         exit;
 
@@ -117,8 +121,11 @@ page 7230 "Master Data Management Setup"
                 trigger OnAction()
                 var
                     MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+                    MasterDataManagement: Codeunit "Master Data Management";
                     IntegrationSynchJobList: Page "Integration Synch. Job List";
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     if MasterDataMgtCoupling.IsEmpty() then begin
                         Message(NoCoupledRecordsMsg);
                         exit;

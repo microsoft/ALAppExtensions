@@ -48,6 +48,7 @@ codeunit 148104 "Test Initialize Handler CZL"
 #endif
             134008, // ERM VAT Settlement with Apply
             134992, // ERM Financial Reports IV
+            134088,
             134045: // ERM VAT Sales/Purchase
 #if not CLEAN22
                 begin

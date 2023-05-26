@@ -6,6 +6,9 @@ tableextension 4817 "Intrastat Report Purch. Head." extends "Purchase Header"
         {
             trigger OnAfterValidate()
             begin
+                if Rec.IsTemporary() then
+                    exit;
+
                 if IntrastatReportSetup.Get() and (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT") then
                     UpdateIntrastatFields("Buy-from Vendor No.");
             end;
@@ -14,6 +17,9 @@ tableextension 4817 "Intrastat Report Purch. Head." extends "Purchase Header"
         {
             trigger OnAfterValidate()
             begin
+                if Rec.IsTemporary() then
+                    exit;
+
                 if IntrastatReportSetup.Get() and (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT") then
                     UpdateIntrastatFields("Pay-to Vendor No.");
             end;

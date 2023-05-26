@@ -79,9 +79,10 @@ codeunit 13631 "OIOUBL-Check Reminder"
                     if Description = '' then
                         if (Type <> Type::" ") AND ("No." <> '') then
                             ERROR(EmptyDescriptionErr, "Reminder No.");
-                    if (Type = Type::" ") OR ("No." = '')
-                    then
-                        EmptyLineFound := TRUE;
+                    if Type = Type::" " then
+                        EmptyLineFound := true;
+                    if (Type = Type::"G/L Account") and ("No." = '') then
+                        EmptyLineFound := true;
                 until (NEXT() = 0);
 
             if EmptyLineFound then

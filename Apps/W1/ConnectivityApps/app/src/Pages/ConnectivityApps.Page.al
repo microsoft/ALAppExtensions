@@ -48,7 +48,7 @@ page 20350 "Connectivity Apps"
                     Caption = 'Logo';
                     ToolTip = 'Specifies the logo of the app.';
                 }
-                field(SupportedCountry; Rec.Country)
+                field(SupportedCountry; Rec."Country/Region")
                 {
                     ApplicationArea = All;
                     Caption = 'Supported Country';
@@ -111,7 +111,7 @@ page 20350 "Connectivity Apps"
         ConnectivityApps.LoadImages(Rec);
 
         CompanyInformation.Get();
-        Rec.SetRange(Country, CompanyInformation."Country/Region Code");
+        Rec.SetRange("Country/Region", CompanyInformation."Country/Region Code");
 
         FeatureTelemetry.LogUptake('0000I4R', 'Connectivity Apps', Enum::"Feature Uptake Status"::Discovered);
     end;

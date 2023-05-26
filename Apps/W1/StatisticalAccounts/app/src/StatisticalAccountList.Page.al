@@ -172,11 +172,14 @@ page 2632 "Statistical Account List"
 
     trigger OnOpenPage()
     var
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
         StatAccDemoData: Codeunit "Stat. Acc. Demo Data";
     begin
         DemoDataVisible := StatAccDemoData.CanSetupDemoData();
         if DemoDataVisible then
             StatAccDemoData.ShowSetupNotification();
+
+        StatAccTelemetry.LogDiscovered();
     end;
 
     internal procedure GetSelectionFilter(): Text

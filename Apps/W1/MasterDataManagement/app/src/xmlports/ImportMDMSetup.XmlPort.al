@@ -117,6 +117,9 @@ xmlport 7231 ImportMDMSetup
                     fieldattribute(IntegrationFieldMapping_FieldNo; IntegrationFieldMapping."Field No.")
                     {
                     }
+                    fieldattribute(IntegrationFieldMapping_FieldCaption; IntegrationFieldMapping."Field Caption")
+                    {
+                    }
                     fieldattribute(IntegrationFieldMapping_IntegrationTableFieldNo; IntegrationFieldMapping."Integration Table Field No.")
                     {
                     }
