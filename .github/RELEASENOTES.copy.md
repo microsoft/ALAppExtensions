@@ -4,6 +4,12 @@ Note that when using the preview version of AL-Go for GitHub, you need to Update
 
 ### Issues
 
+Issue 542 Deploy Workflow fails
+
+## v3.1
+
+### Issues
+
 Issue #446 Wrong NewLine character in Release Notes
 Issue #453 DeliverToStorage - override fails reading secrets
 Issue #434 Use gh auth token to get authentication token instead of gh auth status
