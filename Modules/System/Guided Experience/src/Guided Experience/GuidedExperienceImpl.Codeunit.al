@@ -533,7 +533,6 @@ codeunit 1991 "Guided Experience Impl."
         InsertItem: Boolean;
     begin
         repeat
-            InsertItem := false;
             if (GuidedExperienceItem."Object Type to Run" <> PrevGuidedExperienceItem."Object Type to Run")
                 or (GuidedExperienceItem."Object ID to Run" <> PrevGuidedExperienceItem."Object ID to Run")
                 or (GuidedExperienceItem.Link <> PrevGuidedExperienceItem.Link)
