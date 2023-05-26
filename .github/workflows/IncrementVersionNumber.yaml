@@ -38,13 +38,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v3.1
         with:
           shell: powershell
           eventId: "DO0096"
 
       - name: Increment Version Number
-        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@preview
+        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@v3.1
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -54,7 +54,7 @@ jobs:
   
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v3.1
         with:
           shell: powershell
           eventId: "DO0096"

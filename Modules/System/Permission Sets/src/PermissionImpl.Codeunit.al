@@ -25,8 +25,6 @@ codeunit 9864 "Permission Impl."
         TempAllObjWithCaption: Record AllObjWithCaption temporary;
         Objects: Page Objects;
     begin
-        TempAllObjWithCaption.SetRange("Object Type", TempAllObjWithCaption."Object Type"::TableData);
-
         SetupObjectsPage(SelectObjectsLbl, Objects, TempAllObjWithCaption);
 
         if Objects.RunModal() <> Action::LookupOK then
