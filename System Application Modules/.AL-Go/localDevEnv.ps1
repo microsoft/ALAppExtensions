@@ -102,8 +102,8 @@ if (-not $credential) {
 
 if (-not $licenseFileUrl) {
     if ($settings.type -eq "AppSource App") {
-        $description = "When developing AppSource Apps, your local development environment needs the developer licensefile with permissions to your AppSource app object IDs"
-        $default = ""
+        $description = "When developing AppSource Apps for Business Central versions prior to 22, your local development environment needs the developer licensefile with permissions to your AppSource app object IDs"
+        $default = "none"
     }
     else {
         $description = "When developing PTEs, you can optionally specify a developer licensefile with permissions to object IDs of your dependant apps"

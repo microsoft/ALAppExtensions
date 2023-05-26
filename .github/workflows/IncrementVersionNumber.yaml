@@ -1,5 +1,7 @@
 name: ' Increment Version Number'
 
+run-name: "Increment Version Number in [${{ github.ref_name }}]"
+
 on:
   workflow_dispatch:
     inputs:
