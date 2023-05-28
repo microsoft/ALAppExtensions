@@ -64,6 +64,8 @@ permissionset 4764 "Contoso Coffee -Read"
         tabledata "Sales Header" = r,
         tabledata "Sales Line" = r,
         tabledata "Scrap" = r,
+        tabledata "Svc Demo Account" = R,
+        tabledata "Svc Demo Data Setup" = R,
         tabledata "Shop Calendar Working Days" = r,
         tabledata "Shop Calendar" = r,
         tabledata "Source Code Setup" = r,
