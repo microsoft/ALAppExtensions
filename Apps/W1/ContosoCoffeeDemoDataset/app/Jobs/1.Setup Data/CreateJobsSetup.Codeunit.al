@@ -13,6 +13,7 @@ codeunit 5113 "Create Jobs Setup"
         JobNosDescTok: Label 'Jobs', MaxLength = 100;
         JobNosStartTok: Label 'J00020', MaxLength = 20;
         JobNosEndTok: Label 'J99999', MaxLength = 20;
+        JobPostingGroupTok: Label 'Setting up', MaxLength = 50;
 
     trigger OnRun()
     begin
@@ -21,7 +22,9 @@ codeunit 5113 "Create Jobs Setup"
         JobsDemoDataSetup.Get();
 
         CreateJobsSetup(JobsNosTok);
-        CreateServiceGLAccounts();
+        CreateJobsGLAccounts();
+
+        CreateJobPostingGroup();
     end;
 
     local procedure CreateJobsSetup(JobNos: Code[20])
@@ -77,23 +80,32 @@ codeunit 5113 "Create Jobs Setup"
     end;
 
 
-    local procedure CreateServiceGLAccounts()
+    local procedure CreateJobsGLAccounts()
     var
         GLAccountIndent: Codeunit "G/L Account-Indent";
     begin
         JobsDemoAccount.ReturnAccountKey(true);
 
-        // This function would be used by WIP scenarios to create the WIP G/L accounts
-
+        InsertGLAccount(JobsDemoAccount.WIPCosts(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(JobsDemoAccount.WIPAccruedCosts(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(JobsDemoAccount.JobCostsApplied(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.ItemCostsApplied(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.ResourceCostsApplied(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.GLCostsApplied(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.JobCostsAdjustment(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.GLExpense(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.WIPAccruedSales(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(JobsDemoAccount.WIPInvoicedSales(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(JobsDemoAccount.JobSalesApplied(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.JobSalesAdjustment(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.RecognizedCosts(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(JobsDemoAccount.RecognizedSales(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
 
         JobsDemoAccount.ReturnAccountKey(false);
         GLAccountIndent.Indent();
     end;
 
-    // This function would be used by WIP scenarios to create the WIP G/L accounts
-#pragma warning disable AA0228
     local procedure InsertGLAccount("No.": Code[20]; AccountType: Enum "G/L Account Type"; "Income/Balance": Enum "G/L Account Income/Balance")
-#pragma warning restore AA0228
     var
         GLAccount: Record "G/L Account";
     begin
@@ -108,6 +120,36 @@ codeunit 5113 "Create Jobs Setup"
         GLAccount.Validate("Account Type", AccountType);
         GLAccount.Validate("Income/Balance", "Income/Balance");
         GLAccount.Insert(DoRunTriggers);
+    end;
+
+    local procedure CreateJobPostingGroup()
+    var
+        JobPostingGroup: Record "Job Posting Group";
+    begin
+        if JobPostingGroup.Get(JobsDemoDataSetup."Job Posting Group") then
+            exit;
+
+        JobsDemoAccount.ReturnAccountKey(false);
+
+        JobPostingGroup.Init();
+        JobPostingGroup.Validate("Code", JobsDemoDataSetup."Job Posting Group");
+        JobPostingGroup.Validate("Description", JobPostingGroupTok);
+        JobPostingGroup.Validate("WIP Costs Account", JobsDemoAccount.WIPCosts());
+        JobPostingGroup.Validate("WIP Accrued Costs Account", JobsDemoAccount.WIPAccruedCosts());
+        JobPostingGroup.Validate("Job Costs Applied Account", JobsDemoAccount.JobCostsApplied());
+        JobPostingGroup.Validate("Item Costs Applied Account", JobsDemoAccount.ItemCostsApplied());
+        JobPostingGroup.Validate("Resource Costs Applied Account", JobsDemoAccount.ResourceCostsApplied());
+        JobPostingGroup.Validate("G/L Costs Applied Account", JobsDemoAccount.GLCostsApplied());
+        JobPostingGroup.Validate("Job Costs Adjustment Account", JobsDemoAccount.JobCostsAdjustment());
+        JobPostingGroup.Validate("G/L Expense Acc. (Contract)", JobsDemoAccount.GLExpense());
+        JobPostingGroup.Validate("WIP Accrued Sales Account", JobsDemoAccount.WIPAccruedSales());
+        JobPostingGroup.Validate("WIP Invoiced Sales Account", JobsDemoAccount.WIPInvoicedSales());
+        JobPostingGroup.Validate("Job Sales Applied Account", JobsDemoAccount.JobSalesApplied());
+        JobPostingGroup.Validate("Job Sales Adjustment Account", JobsDemoAccount.JobSalesAdjustment());
+        JobPostingGroup.Validate("Recognized Costs Account", JobsDemoAccount.RecognizedCosts());
+        JobPostingGroup.Validate("Recognized Sales Account", JobsDemoAccount.RecognizedSales());
+        OnBeforeInsertJobPostingGroup(JobPostingGroup);
+        JobPostingGroup.Insert(DoRunTriggers);
     end;
 
     [IntegrationEvent(false, false)]
@@ -132,6 +174,11 @@ codeunit 5113 "Create Jobs Setup"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertJobPostingGroup(JobPostingGroup: Record "Job Posting Group")
     begin
     end;
 }

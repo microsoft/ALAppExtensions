@@ -137,6 +137,13 @@ table 4767 "Jobs Demo Data Setup"
             TableRelation = Resource;
             ValidateTableRelation = false;
         }
+        field(80; "Job Posting Group"; Code[20])
+        {
+            Caption = 'Job Posting Group';
+            DataClassification = CustomerContent;
+            TableRelation = "Job Posting Group";
+            ValidateTableRelation = false;
+        }
     }
 
     keys
