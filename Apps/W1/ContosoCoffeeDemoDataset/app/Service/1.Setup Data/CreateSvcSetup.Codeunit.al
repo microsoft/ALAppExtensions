@@ -270,7 +270,7 @@ codeunit 5103 "Create Svc Setup"
     begin
         SvcDemoAccount.ReturnAccountKey(true);
 
-        InsertGLAccount(SvcDemoAccount.Contract(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(SvcDemoAccount.Contract(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
 
         // For the Service scenarios, we need to be able to charge Sales directly to the Contract G/L account
         SvcDemoAccount.ReturnAccountKey(false);
