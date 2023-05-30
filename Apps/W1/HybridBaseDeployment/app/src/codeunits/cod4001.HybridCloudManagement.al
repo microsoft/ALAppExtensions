@@ -1750,6 +1750,11 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridCompanyStatusExist: Boolean;
     begin
         HybridCompanyStatusExist := HybridCompanyStatus.Get(HybridCompanyName);
+
+        if HybridCompanyStatusExist then
+            if (HybridCompanyStatus."Upgrade Status" = HybridCompanyStatus."Upgrade Status"::Completed) then
+                exit;
+
         HybridCompanyStatus.Replicated := true;
         HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Pending;
         if HybridCompanyStatusExist then
