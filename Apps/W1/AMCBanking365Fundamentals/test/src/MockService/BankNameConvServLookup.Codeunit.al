@@ -21,6 +21,7 @@ codeunit 135085 "Bank Name Conv Serv Lookup"
         if IsInitialized then
             exit;
 
+        LibraryAMCWebService.SetHttpClientRequestallowed();
         LibraryAMCWebService.SetupDefaultService();
         LibraryAMCWebService.SetServiceUrlToTest();
         LibraryAMCWebService.SetServiceCredentialsToTest();

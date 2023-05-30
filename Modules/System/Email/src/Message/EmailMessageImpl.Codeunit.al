@@ -586,6 +586,22 @@ codeunit 8905 "Email Message Impl."
         until EmailRelatedAttachment2.Next() = 0;
     end;
 
+    // Used for formatting a filesize in KB or MB (only)
+    internal procedure FormatFileSize(SizeInBytes: Integer): Text
+    var
+        FileSizeConverted: Decimal;
+        FileSizeUnit: Text;
+    begin
+        FileSizeConverted := SizeInBytes / 1024; // The smallest size we show is KB
+        if FileSizeConverted < 1024 then
+            FileSizeUnit := 'KB'
+        else begin
+            FileSizeConverted := FileSizeConverted / 1024; // The largest size we show is MB
+            FileSizeUnit := 'MB'
+        end;
+        exit(StrSubstNo(FileSizeTxt, Round(FileSizeConverted, 1, '>'), FileSizeUnit));
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Sent Email", OnAfterDeleteEvent, '', false, false)]
     local procedure OnAfterDeleteSentEmail(var Rec: Record "Sent Email"; RunTrigger: Boolean)
     var
@@ -784,4 +800,5 @@ codeunit 8905 "Email Message Impl."
         RecordNotFoundMsg: Label 'Record not found in table: %1', Comment = '%1 - File size', Locked = true;
         RgbReplacementTok: Label 'rgb($1, $2, $3)', Locked = true;
         RbgaPatternTok: Label 'rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*1(\.0{0,2})?\)', Locked = true;
+        FileSizeTxt: Label '%1 %2', Comment = '%1 = File Size, %2 = Unit of measurement', Locked = true;
 }

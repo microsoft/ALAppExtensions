@@ -66,6 +66,8 @@ codeunit 31331 "Data Class. Eval. Handler CZB"
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Account", BankAccount.FieldNo("Bank Statement Nos. CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Account", BankAccount.FieldNo("Issued Bank Statement Nos. CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Account", BankAccount.FieldNo("Search Rule Code CZB"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Bank Account", BankAccount.FieldNo("Pmt.Jnl. Templ. Name Order CZB"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Bank Account", BankAccount.FieldNo("Pmt. Jnl. Batch Name Order CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Acc. Reconciliation", BankAccReconciliation.FieldNo("Created From Bank Stat. CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Export/Import Setup", BankExportImportSetup.FieldNo("Processing Report ID CZB"));
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Export/Import Setup", BankExportImportSetup.FieldNo("Default File Type CZB"));

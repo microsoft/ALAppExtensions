@@ -10,7 +10,7 @@ tableextension 4851 "AutoAcc Gen. Journal Line" extends "Gen. Journal Line"
             trigger OnValidate()
             var
                 FeatureTelemetry: Codeunit "Feature Telemetry";
-                AacTok: Label 'Automatic Account Codes', Locked = true;
+                AacTok: Label 'W1 Automatic Account', Locked = true;
             begin
                 FeatureTelemetry.LogUptake('0001P9M', AacTok, Enum::"Feature Uptake Status"::"Used");
                 TestField("Account Type", "Account Type"::"G/L Account");

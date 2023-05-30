@@ -36,7 +36,7 @@ page 20352 "Banking App"
                     Caption = 'Publisher';
                     ToolTip = 'Specifies the publisher of the app.';
                 }
-                field(SupportedCountry; Rec.Country)
+                field(SupportedCountry; Rec."Country/Region")
                 {
                     ApplicationArea = All;
                     Caption = 'Supported Country';

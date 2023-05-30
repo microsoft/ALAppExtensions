@@ -16,15 +16,20 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
 
             trigger OnPreDataItem();
             begin
-                FulfillmentOrdersAPI.GetShopifyFulFillmentOrders();
-
                 SetFilter("Shpfy Order Id", '<>%1', 0);
                 SetRange("Shpfy Fulfillment Id", 0);
             end;
 
             trigger OnAfterGetRecord();
+            var
+                ShopifyOrderHeader: Record "Shpfy Order Header";
+                Shop: Record "Shpfy Shop";
             begin
-                ExportShipments.CreateShopifyFulfillment("Sales Shipment Header");
+                if ShopifyOrderHeader.Get("Sales Shipment Header"."Shpfy Order Id") then begin
+                    Shop.Get(ShopifyOrderHeader."Shop Code");
+                    FulfillmentOrdersAPI.GetShopifyFulfillmentOrdersFromShopifyOrder(Shop, "Sales Shipment Header"."Shpfy Order Id");
+                    ExportShipments.CreateShopifyFulfillment("Sales Shipment Header");
+                end;
             end;
         }
     }

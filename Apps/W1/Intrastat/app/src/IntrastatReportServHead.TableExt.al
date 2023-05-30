@@ -6,6 +6,9 @@ tableextension 4816 "Intrastat Report Serv. Head." extends "Service Header"
         {
             trigger OnAfterValidate()
             begin
+                if Rec.IsTemporary() then
+                    exit;
+
                 if IntrastatReportSetup.Get() and (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT") then
                     UpdateIntrastatFields("Customer No.");
             end;
@@ -14,6 +17,9 @@ tableextension 4816 "Intrastat Report Serv. Head." extends "Service Header"
         {
             trigger OnAfterValidate()
             begin
+                if Rec.IsTemporary() then
+                    exit;
+
                 if IntrastatReportSetup.Get() and (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT") then
                     UpdateIntrastatFields("Bill-to Customer No.");
             end;

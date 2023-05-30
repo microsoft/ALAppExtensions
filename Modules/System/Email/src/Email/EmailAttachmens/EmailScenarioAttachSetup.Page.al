@@ -104,6 +104,7 @@ page 8897 "Email Scenario Attach Setup"
                     FeatureTelemetry: Codeunit "Feature Telemetry";
                     ScenariosForAccount: Page "Email Scenarios For Account";
                 begin
+                    ScenariosForAccount.SetIncludeDefaultEmailScenario(true);
                     ScenariosForAccount.LookupMode(true);
                     if ScenariosForAccount.RunModal() = Action::LookupOK then begin
                         ScenariosForAccount.GetSelectedScenarios(SelectedScenarios);

@@ -5,6 +5,7 @@
 codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
 {
     Access = Internal;
+    Permissions = TableData "Feature Data Update Status" = rm;
 
     procedure IsDataUpdateRequired(): Boolean;
     begin
@@ -24,7 +25,6 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
 
     procedure UpdateData(FeatureDataUpdateStatus: Record "Feature Data Update Status");
     var
-        AutoAccCodesPageMgt: Codeunit "Auto. Acc. Codes Page Mgt.";
         StartDateTime: DateTime;
         EndDateTime: DateTime;
     begin
@@ -33,8 +33,6 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
         UpgradeAutomaticAccountCodes();
         EndDateTime := CurrentDateTime;
         FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, 'UpgradeAutomaticAccountCodes', EndDateTime);
-        AutoAccCodesPageMgt.SetSetupKey(Enum::"AAC Page Setup Key"::"Automatic Acc. Groups Card", Page::"Automatic Account Header");
-        AutoAccCodesPageMgt.SetSetupKey(Enum::"AAC Page Setup Key"::"Automatic Acc. Groups List", Page::"Automatic Account List");
     end;
 
     procedure AfterUpdate(FeatureDataUpdateStatus: Record "Feature Data Update Status");
@@ -60,6 +58,32 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
 
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterUpdateData', '', false, false)]
+    local procedure HandleOnOnAfterUpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        AutoAccCodesFeatureMgt: Codeunit "Auto. Acc. Codes Feature Mgt.";
+    begin
+        if FeatureDataUpdateStatus."Feature Key" <> AutoAccCodesFeatureMgt.GetFeatureKeyId() then
+            exit;
+        FeatureDataUpdateStatus."Feature Status" := "Feature Status"::Enabled;
+        FeatureDataUpdateStatus.Modify();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnBeforeSetFeatureStatusForOtherCompanies', '', false, false)]
+    local procedure OnBeforeSetFeatureStatusForOtherCompanies(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; var IsHandled: Boolean)
+    var
+        AutoAccCodesFeatureMgt: Codeunit "Auto. Acc. Codes Feature Mgt.";
+    begin
+        if IsHandled then
+            exit;
+        if FeatureDataUpdateStatus.GetFilter("Feature Key") <> AutoAccCodesFeatureMgt.GetFeatureKeyId() then
+            exit;
+        FeatureDataUpdateStatus.SetFilter("Company Name", '<>%1', CompanyName());
+        FeatureDataUpdateStatus.ModifyAll("Feature Status", FeatureDataUpdateStatus."Feature Status"::Enabled);
+        IsHandled := true;
+    end;
+
+
     local procedure UpgradeAutomaticAccountCodes()
     var
         Company: Record Company;
@@ -78,6 +102,8 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
 
                 RemoveAutomaticAccountCodes(AutomaticAccHeaderTableId, Company);
                 RemoveAutomaticAccountCodes(AutomaticAccLineTableId, Company);
+
+                SetSetupKey(Company);
             until Company.Next() = 0;
     end;
 
@@ -98,6 +124,7 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
 
         if Company.FindSet() then
             repeat
+                // Automatic Account Codes
                 AutomaticAccHeaderRecRef.Open(AutomaticAccHeaderTableId, false, Company.Name);
                 AutomaticAccLineRecRef.Open(AutomaticAccLineTableId, false, Company.Name);
                 if AutomaticAccHeaderRecRef.FindSet() then
@@ -106,11 +133,44 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
                     LineCount += AutomaticAccLineRecRef.Count;
                 AutomaticAccHeaderRecRef.Close();
                 AutomaticAccLineRecRef.Close();
+
             until Company.Next() = 0;
 
         InsertDocumentEntry(AutomaticAccHeaderTableId, 'Automatic Acc. Header', HeaderCount);
         InsertDocumentEntry(AutomaticAccHeaderTableId, 'Automatic Acc. Line', LineCount);
 
+    end;
+
+    procedure SetSetupKey(Company: Record Company)
+    var
+        AutoAccPageSetupCardRecRef: RecordRef;
+        AutoAccPageSetupListRecRef: RecordRef;
+        AutoAccCodesIdFieldRef: FieldRef;
+        AutoAccCodesObjectIdFieldRef: FieldRef;
+    begin
+        // Set up Card page to be used
+        AutoAccPageSetupCardRecRef.Open(Database::"Auto. Acc. Page Setup", false, Company.Name);
+
+        AutoAccCodesIdFieldRef := AutoAccPageSetupCardRecRef.FieldIndex(1);
+        AutoAccCodesIdFieldRef.VALUE := Enum::"AAC Page Setup Key"::"Automatic Acc. Groups Card";
+
+        AutoAccCodesObjectIdFieldRef := AutoAccPageSetupCardRecRef.FieldIndex(2);
+        AutoAccCodesObjectIdFieldRef.VALUE := Page::"Automatic Account Header";
+
+        AutoAccPageSetupCardRecRef.Insert();
+        AutoAccPageSetupCardRecRef.Close();
+
+        // Set up List page to be used
+        AutoAccPageSetupListRecRef.Open(Database::"Auto. Acc. Page Setup", false, Company.Name);
+
+        AutoAccCodesIdFieldRef := AutoAccPageSetupListRecRef.Field(1);
+        AutoAccCodesIdFieldRef.VALUE := Enum::"AAC Page Setup Key"::"Automatic Acc. Groups List";
+
+        AutoAccCodesObjectIdFieldRef := AutoAccPageSetupListRecRef.Field(2);
+        AutoAccCodesObjectIdFieldRef.VALUE := Page::"Automatic Account List";
+        AutoAccPageSetupListRecRef.Insert();
+
+        AutoAccPageSetupListRecRef.Close();
     end;
 
     local procedure InsertDocumentEntry(TableID: Integer; TableName: Text; RecordCount: Integer)
@@ -130,8 +190,11 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
     var
         RecordRef: RecordRef;
     begin
+        if TableId = 0 then
+            exit;
         RecordRef.Open(TableId, false, Company.Name);
         RecordRef.DeleteAll();
+        RecordRef.Close();
     end;
 
     local procedure TransferRecords(SourceTableId: Integer; TargetTableId: Integer; var Company: Record Company)
@@ -144,7 +207,7 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
         SourceFieldRefNo: Integer;
     begin
         SourceRecRef.Open(SourceTableId, false, Company.Name);
-        TargetRecRef.Open(TargetTableId);
+        TargetRecRef.Open(TargetTableId, false, Company.Name);
 
         if SourceRecRef.IsEmpty() then
             exit;

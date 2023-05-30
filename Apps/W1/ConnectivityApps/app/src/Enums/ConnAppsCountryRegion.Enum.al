@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-enum 20351 "Conn. Apps Supported Country"
+enum 20351 "Conn. Apps Country/Region"
 {
     Extensible = false;
     Access = Internal;

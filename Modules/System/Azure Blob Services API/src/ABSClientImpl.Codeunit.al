@@ -10,7 +10,6 @@ codeunit 9051 "ABS Client Impl."
     InherentEntitlements = X;
     InherentPermissions = X;
 
-
     var
         ABSOperationPayload: Codeunit "ABS Operation Payload";
         ABSHttpContentHelper: Codeunit "ABS HttpContent Helper";

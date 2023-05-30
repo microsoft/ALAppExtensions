@@ -122,6 +122,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "Upgrade Tag Definitions CZL" = X,
                   codeunit "User Setup Adv. Management CZL" = X,
                   codeunit "User Setup Handler CZL" = X,
+                  codeunit "VAT Amount Line Handler CZL" = X,
                   codeunit "VAT Attribute Code Mgt. CZL" = X,
                   codeunit "VAT Control Report DPHKH1 CZL" = X,
                   codeunit "VAT Corr. Notif. Handler CZL" = X,

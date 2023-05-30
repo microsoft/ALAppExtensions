@@ -260,73 +260,73 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         XMLCurrNode.Add(XmlElement.Create('DocumentCurrencyCode', DocNameSpace, CurrencyCode));
         XMLCurrNode.Add(XmlElement.Create('AccountingCostCode', DocNameSpace, ServiceInvoiceHeader."OIOUBL-Account Code"));
 
-        with ServiceInvoiceHeader do begin
-            // Invoice->OrderReference
-            if "Order No." <> '' then
-                InsertOrderReference(XMLCurrNode,
-                  "Your Reference",
-                  "Order No.")
-            else
-                InsertOrderReference(XMLCurrNode,
-                  "Your Reference",
-                  "Pre-Assigned No.");
+        // Invoice->OrderReference
+        if ServiceInvoiceHeader."Order No." <> '' then
+            InsertOrderReference(XMLCurrNode,
+              ServiceInvoiceHeader."Your Reference",
+              ServiceInvoiceHeader."Order No.")
+        else
+            InsertOrderReference(XMLCurrNode,
+              ServiceInvoiceHeader."Your Reference",
+              ServiceInvoiceHeader."Pre-Assigned No.");
 
-            // Invoice->AccountingSupplierParty
-            OIOUBLXMLGenerator.InsertAccountingSupplierParty(XMLCurrNode, "Salesperson Code");
+        // Invoice->AccountingSupplierParty
+        OIOUBLXMLGenerator.InsertAccountingSupplierParty(XMLCurrNode, ServiceInvoiceHeader."Salesperson Code");
 
-            // Invoice->AccountingCustomerParty
-            BillToAddress.Address := "Bill-to Address";
-            BillToAddress."Address 2" := "Bill-to Address 2";
-            BillToAddress.City := "Bill-to City";
-            BillToAddress."Post Code" := "Bill-to Post Code";
-            BillToAddress."Country/Region Code" := "Bill-to Country/Region Code";
-            CustomerContact.Name := "Contact Name";
-            CustomerContact."Phone No." := "Phone No.";
-            CustomerContact."Fax No." := "Fax No.";
-            CustomerContact."E-Mail" := "E-Mail";
-            OIOUBLXMLGenerator.InsertAccountingCustomerParty(XMLCurrNode,
-              "OIOUBL-GLN",
-              "VAT Registration No.",
-              "Bill-to Name",
-              BillToAddress,
-              CustomerContact);
+        // Invoice->AccountingCustomerParty
+        BillToAddress.Address := ServiceInvoiceHeader."Bill-to Address";
+        BillToAddress."Address 2" := ServiceInvoiceHeader."Bill-to Address 2";
+        BillToAddress.City := ServiceInvoiceHeader."Bill-to City";
+        BillToAddress."Post Code" := ServiceInvoiceHeader."Bill-to Post Code";
+        BillToAddress."Country/Region Code" := ServiceInvoiceHeader."Bill-to Country/Region Code";
+        CustomerContact.Name := ServiceInvoiceHeader."Contact Name";
+        CustomerContact."Phone No." := ServiceInvoiceHeader."Phone No.";
+        CustomerContact."Fax No." := ServiceInvoiceHeader."Fax No.";
+        CustomerContact."E-Mail" := ServiceInvoiceHeader."E-Mail";
+        OIOUBLXMLGenerator.InsertAccountingCustomerParty(XMLCurrNode,
+          ServiceInvoiceHeader."OIOUBL-GLN",
+          ServiceInvoiceHeader."VAT Registration No.",
+          ServiceInvoiceHeader."Bill-to Name",
+          BillToAddress,
+          CustomerContact);
+        OnCreateXMLOnAfterInsertAccountingCustomerParty(XMLCurrNode, ServiceInvoiceHeader);
 
-            // Invoice->Delivery
-            DeliveryAddress.Address := "Ship-to Address";
-            DeliveryAddress."Address 2" := "Ship-to Address 2";
-            DeliveryAddress.City := "Ship-to City";
-            DeliveryAddress."Post Code" := "Ship-to Post Code";
-            DeliveryAddress."Country/Region Code" := "Ship-to Country/Region Code";
-            OIOUBLXMLGenerator.InsertDelivery(XMLCurrNode, DeliveryAddress, CalcDate('<0D>'));
+        // Invoice->Delivery
+        DeliveryAddress.Address := ServiceInvoiceHeader."Ship-to Address";
+        DeliveryAddress."Address 2" := ServiceInvoiceHeader."Ship-to Address 2";
+        DeliveryAddress.City := ServiceInvoiceHeader."Ship-to City";
+        DeliveryAddress."Post Code" := ServiceInvoiceHeader."Ship-to Post Code";
+        DeliveryAddress."Country/Region Code" := ServiceInvoiceHeader."Ship-to Country/Region Code";
+        OIOUBLXMLGenerator.InsertDelivery(XMLCurrNode, DeliveryAddress, CalcDate('<0D>'));
 
-            // Invoice->PaymentMeans
-            IsHandled := false;
-            OnCreateXMLOnBeforeInsertPaymentMeans(XMLCurrNode, ServiceInvoiceHeader, IsHandled);
-            if not IsHandled then
-                OIOUBLXMLGenerator.InsertPaymentMeans(XMLCurrNode, "Due Date");
+        // Invoice->PaymentMeans
+        IsHandled := false;
+        OnCreateXMLOnBeforeInsertPaymentMeans(XMLCurrNode, ServiceInvoiceHeader, IsHandled);
+        if not IsHandled then
+            OIOUBLXMLGenerator.InsertPaymentMeans(XMLCurrNode, ServiceInvoiceHeader."Due Date");
 
-            // Invoice->PaymentTerms
-            ServInvLine2.RESET();
-            ServInvLine2.COPY(ServInvLine);
-            ServInvLine2.SETRANGE(Type);
-            ServInvLine2.SETRANGE("No.");
-            ServInvLine2.SETRANGE(Quantity);
-            ServInvLine2.CALCSUMS(Amount, "Amount Including VAT", "Inv. Discount Amount");
-            OIOUBLXMLGenerator.InsertPaymentTerms(XMLCurrNode,
-              "Payment Terms Code",
-              "Payment Discount %",
-              CurrencyCode,
-              "Pmt. Discount Date",
-              "Due Date",
-              ServInvLine2."Amount Including VAT");
+        // Invoice->PaymentTerms
+        ServInvLine2.RESET();
+        ServInvLine2.COPY(ServInvLine);
+        ServInvLine2.SETRANGE(Type);
+        ServInvLine2.SETRANGE("No.");
+        ServInvLine2.SETRANGE(Quantity);
+        ServInvLine2.CALCSUMS(Amount, "Amount Including VAT", "Inv. Discount Amount");
+        OIOUBLXMLGenerator.InsertPaymentTerms(XMLCurrNode,
+          ServiceInvoiceHeader."Payment Terms Code",
+          ServiceInvoiceHeader."Payment Discount %",
+          CurrencyCode,
+          ServiceInvoiceHeader."Pmt. Discount Date",
+          ServiceInvoiceHeader."Due Date",
+          ServInvLine2."Amount Including VAT");
 
-            TotalInvDiscountAmount := 0;
-            if ServInvLine2.FINDSET() then
-                repeat
-                    ExcludeVAT(ServInvLine2, "Prices Including VAT");
-                    TotalInvDiscountAmount += ServInvLine2."Inv. Discount Amount";
-                until ServInvLine2.NEXT() = 0;
-        end;
+        TotalInvDiscountAmount := 0;
+        if ServInvLine2.FINDSET() then
+            repeat
+                ExcludeVAT(ServInvLine2, ServiceInvoiceHeader."Prices Including VAT");
+                TotalInvDiscountAmount += ServInvLine2."Inv. Discount Amount";
+            until ServInvLine2.NEXT() = 0;
+
 
         // Invoice->AllowanceCharge
         if TotalInvDiscountAmount > 0 then
@@ -431,6 +431,11 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnBeforeInsertPaymentMeans(var XMLCurrNode: XmlElement; ServiceInvoiceHeader: Record "Service Invoice Header"; var IsHandled: boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnAfterInsertAccountingCustomerParty(var XMLCurrNode: XmlElement; ServiceInvoiceHeader: Record "Service Invoice Header")
     begin
     end;
 }
