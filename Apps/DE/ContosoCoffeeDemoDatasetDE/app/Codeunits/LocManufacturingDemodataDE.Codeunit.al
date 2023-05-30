@@ -48,9 +48,55 @@ codeunit 11080 "Loc. Manufacturing Demodata-DE"
         Rec."VAT Prod. Posting Group Code" := 'MWST.19';
     end;
 
+    // Job events:
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Jobs Cust Data", 'OnBeforeCustomerInsert', false, false)]
+    local procedure UpdateJobsCustomer(var Customer: Record Customer)
+    begin
+        Customer.Validate("Customer Posting Group", 'INLAND');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Jobs Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyJobsDemoAccounts()
+    begin
+        JobsDemoAccount.ReturnAccountKey(true);
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPCosts(), '3975');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPAccruedCosts(), '3975');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobCostsApplied(), '5002');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobCostsAdjustment(), '5002');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.GLExpense(), '8452');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobSalesAdjustment(), '8451');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPAccruedSales(), '3976');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPInvoicedSales(), '3976');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobSalesApplied(), '8451');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.RecognizedCosts(), '5002');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.RecognizedSales(), '8451');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.ItemCostsApplied(), '5002');
+    end;
+
+    // Service Events:
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Svc Cust Data", 'OnBeforeCustomerInsert', false, false)]
+    local procedure UpdateSvcCustomer(var Customer: Record Customer)
+    begin
+        Customer.Validate("Customer Posting Group", 'INLAND');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Svc Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifySvcDemoAccounts()
+    begin
+        SvcDemoAccount.ReturnAccountKey(true);
+        SvcDemoAccounts.AddAccount(SvcDemoAccount.Contract(), '8600');
+    end;
+
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
         WhseDemoAccount: Record "Whse. Demo Account";
+        SvcDemoAccount: Record "Svc Demo Account";
+        JobsDemoAccount: Record "Jobs Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
         WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
+        SvcDemoAccounts: Codeunit "Svc Demo Accounts";
+        JobsDemoAccounts: Codeunit "Jobs Demo Accounts";
 }

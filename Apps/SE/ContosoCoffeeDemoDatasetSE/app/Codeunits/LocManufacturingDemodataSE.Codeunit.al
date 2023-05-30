@@ -48,9 +48,56 @@ codeunit 11299 "Loc. Manufacturing Demodata-SE"
         WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '2645');
     end;
 
+    // Job events:
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Jobs Cust Data", 'OnBeforeCustomerInsert', false, false)]
+    local procedure UpdateJobsCustomer(var Customer: Record Customer)
+    begin
+        Customer.Validate("Customer Posting Group", 'INRIKES');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Jobs Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyJobsDemoAccounts()
+    begin
+        JobsDemoAccount.ReturnAccountKey(true);
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPCosts(), '1436');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPAccruedCosts(), '1437');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobCostsApplied(), '4065');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobCostsAdjustment(), '4065');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.GLExpense(), '3081');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobSalesAdjustment(), '3057');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPAccruedSales(), '1432');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPInvoicedSales(), '1433');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobSalesApplied(), '3057');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.RecognizedCosts(), '4300');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.RecognizedSales(), '3085');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.ItemCostsApplied(), '4065');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.ResourceCostsApplied(), '4250');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.GLCostsApplied(), '4165');
+    end;
+
+    // Service Events:
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Svc Cust Data", 'OnBeforeCustomerInsert', false, false)]
+    local procedure UpdateSvcCustomer(var Customer: Record Customer)
+    begin
+        Customer.Validate("Customer Posting Group", 'INRIKES');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Svc Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifySvcDemoAccounts()
+    begin
+        SvcDemoAccount.ReturnAccountKey(true);
+        SvcDemoAccounts.AddAccount(SvcDemoAccount.Contract(), '3091');
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
         WhseDemoAccount: Record "Whse. Demo Account";
+        SvcDemoAccount: Record "Svc Demo Account";
+        JobsDemoAccount: Record "Jobs Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
         WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
+        SvcDemoAccounts: Codeunit "Svc Demo Accounts";
+        JobsDemoAccounts: Codeunit "Jobs Demo Accounts";
 }

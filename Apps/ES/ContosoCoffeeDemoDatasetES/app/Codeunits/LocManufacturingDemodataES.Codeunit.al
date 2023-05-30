@@ -48,9 +48,57 @@ codeunit 10780 "Loc. Manufacturing Demodata-ES"
         WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '4720001');
     end;
 
+    // Job events:
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Jobs Cust Data", 'OnBeforeCustomerInsert', false, false)]
+    local procedure UpdateJobsCustomer(var Customer: Record Customer)
+    begin
+        Customer.Validate("Customer Posting Group", 'UE');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Jobs Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyJobsDemoAccounts()
+    begin
+        JobsDemoAccount.ReturnAccountKey(true);
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPCosts(), '3300021');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPAccruedCosts(), '3300022');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobCostsApplied(), '6230004');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobCostsAdjustment(), '6230005');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.GLExpense(), '7050004');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobSalesAdjustment(), '7050005');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPAccruedSales(), '3300011');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPInvoicedSales(), '3300012');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobSalesApplied(), '7050003');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.RecognizedCosts(), '6230006');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.RecognizedSales(), '7050006');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.ItemCostsApplied(), '6230004');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.ResourceCostsApplied(), '6230008');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.GLCostsApplied(), '6230007');
+    end;
+
+    // Service Events:
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Svc Cust Data", 'OnBeforeCustomerInsert', false, false)]
+    local procedure UpdateSvcCustomer(var Customer: Record Customer)
+    begin
+        Customer.Validate("Customer Posting Group", 'UE');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Svc Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifySvcDemoAccounts()
+    begin
+        SvcDemoAccount.ReturnAccountKey(true);
+        SvcDemoAccounts.AddAccount(SvcDemoAccount.Contract(), '7051001');
+    end;
+
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
         WhseDemoAccount: Record "Whse. Demo Account";
+        SvcDemoAccount: Record "Svc Demo Account";
+        JobsDemoAccount: Record "Jobs Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
         WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
+        SvcDemoAccounts: Codeunit "Svc Demo Accounts";
+        JobsDemoAccounts: Codeunit "Jobs Demo Accounts";
 }

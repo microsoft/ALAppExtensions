@@ -48,9 +48,50 @@ codeunit 13699 "Loc. Manufacturing Demodata-DK"
         WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '24020');
     end;
 
+    // Job events:
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Jobs Cust Data", 'OnBeforeCustomerInsert', false, false)]
+    local procedure UpdateJobsCustomer(var Customer: Record Customer)
+    begin
+        Customer.Validate("Customer Posting Group", 'INDENLANDS');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Jobs Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyJobsDemoAccounts()
+    begin
+        JobsDemoAccount.ReturnAccountKey(true);
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPCosts(), '17840');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPAccruedCosts(), '17830');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobCostsApplied(), '02990');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPAccruedSales(), '17810');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.WIPInvoicedSales(), '17820');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.JobSalesApplied(), '01890');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.RecognizedCosts(), '02980');
+        JobsDemoAccounts.AddAccount(JobsDemoAccount.RecognizedSales(), '02980');
+    end;
+
+    // Service Events:
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Svc Cust Data", 'OnBeforeCustomerInsert', false, false)]
+    local procedure UpdateSvcCustomer(var Customer: Record Customer)
+    begin
+        Customer.Validate("Customer Posting Group", 'INDENLANDS');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Svc Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifySvcDemoAccounts()
+    begin
+        SvcDemoAccount.ReturnAccountKey(true);
+        SvcDemoAccounts.AddAccount(SvcDemoAccount.Contract(), '01750');
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
         WhseDemoAccount: Record "Whse. Demo Account";
+        SvcDemoAccount: Record "Svc Demo Account";
+        JobsDemoAccount: Record "Jobs Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
         WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
+        SvcDemoAccounts: Codeunit "Svc Demo Accounts";
+        JobsDemoAccounts: Codeunit "Jobs Demo Accounts";
 }
