@@ -8,6 +8,7 @@ codeunit 4022 "GP Vendor Migrator"
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
+        VendorEmailTypeCodeLbl: Label 'VEN', Locked = true;
 
 #if not CLEAN22
 #pragma warning disable AA0207
@@ -391,7 +392,7 @@ codeunit 4022 "GP Vendor Migrator"
         OrderAddress."Post Code" := GPVendorAddress.ZIPCODE;
         OrderAddress.County := GPVendorAddress.STATE;
 
-        if GPSY01200.Get('VEN', Vendor."No.", AddressCode) then
+        if GPSY01200.Get(VendorEmailTypeCodeLbl, Vendor."No.", AddressCode) then
             EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(OrderAddress."E-Mail"));
 
 #pragma warning disable AA0139
@@ -426,7 +427,7 @@ codeunit 4022 "GP Vendor Migrator"
         RemitAddress."Post Code" := GPVendorAddress.ZIPCODE;
         RemitAddress.County := GPVendorAddress.STATE;
 
-        if GPSY01200.Get('VEN', Vendor."No.", AddressCode) then
+        if GPSY01200.Get(VendorEmailTypeCodeLbl, Vendor."No.", AddressCode) then
             EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(RemitAddress."E-Mail"));
 
 #pragma warning disable AA0139

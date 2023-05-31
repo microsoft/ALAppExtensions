@@ -100,7 +100,7 @@ table 4048 "GP Customer Address"
             if (CopyStr(ShipToAddress."Fax No.", 1, 14) = '00000000000000') then
                 ShipToAddress."Fax No." := '';
 
-            if GPSY01200.Get('CUS', CUSTNMBR, ADRSCODE) then
+            if GPSY01200.Get(CustomerEmailTypeCodeLbl, CUSTNMBR, ADRSCODE) then
                 EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(ShipToAddress."E-Mail"));
 
 #pragma warning disable AA0139
@@ -114,4 +114,7 @@ table 4048 "GP Customer Address"
                 ShipToAddress.Modify();
         end;
     end;
+
+    var
+        CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
 }
