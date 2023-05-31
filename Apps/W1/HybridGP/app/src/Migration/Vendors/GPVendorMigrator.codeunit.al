@@ -370,7 +370,10 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure CreateOrUpdateOrderAddress(Vendor: Record Vendor; GPVendorAddress: Record "GP Vendor Address"; AddressCode: Code[10])
     var
         OrderAddress: Record "Order Address";
+        GPSY01200: Record "GP SY01200";
         HelperFunctions: Codeunit "Helper Functions";
+        MailManagement: Codeunit "Mail Management";
+        EmailAddress: Text[80];
     begin
         if not OrderAddress.Get(Vendor."No.", AddressCode) then begin
             OrderAddress."Vendor No." := Vendor."No.";
@@ -387,13 +390,25 @@ codeunit 4022 "GP Vendor Migrator"
         OrderAddress."Fax No." := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR);
         OrderAddress."Post Code" := GPVendorAddress.ZIPCODE;
         OrderAddress.County := GPVendorAddress.STATE;
+
+        if GPSY01200.Get('VEN', Vendor."No.", AddressCode) then
+            EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(OrderAddress."E-Mail"));
+
+#pragma warning disable AA0139
+        if MailManagement.ValidateEmailAddressField(EmailAddress) then
+            OrderAddress."E-Mail" := EmailAddress;
+#pragma warning restore AA0139
+
         OrderAddress.Modify();
     end;
 
     local procedure CreateOrUpdateRemitAddress(Vendor: Record Vendor; GPVendorAddress: Record "GP Vendor Address"; AddressCode: Code[10])
     var
         RemitAddress: Record "Remit Address";
+        GPSY01200: Record "GP SY01200";
         HelperFunctions: Codeunit "Helper Functions";
+        MailManagement: Codeunit "Mail Management";
+        EmailAddress: Text[80];
     begin
         if not RemitAddress.Get(AddressCode, Vendor."No.") then begin
             RemitAddress."Vendor No." := Vendor."No.";
@@ -410,6 +425,15 @@ codeunit 4022 "GP Vendor Migrator"
         RemitAddress."Fax No." := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR);
         RemitAddress."Post Code" := GPVendorAddress.ZIPCODE;
         RemitAddress.County := GPVendorAddress.STATE;
+
+        if GPSY01200.Get('VEN', Vendor."No.", AddressCode) then
+            EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(RemitAddress."E-Mail"));
+
+#pragma warning disable AA0139
+        if MailManagement.ValidateEmailAddressField(EmailAddress) then
+            RemitAddress."E-Mail" := EmailAddress;
+#pragma warning restore AA0139
+
         RemitAddress.Modify();
     end;
 
