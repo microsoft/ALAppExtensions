@@ -16,7 +16,6 @@ codeunit 9065 "Stor. Serv. Auth. Ready SAS" implements "Storage Service Authoriz
         UriBuilder: Codeunit "Uri Builder";
         UriText, QueryText : Text;
     begin
-        StorageAccountName := StorageAccount;
         UriText := HttpRequestMessage.GetRequestUri();
 
         UriBuilder.Init(UriText);
