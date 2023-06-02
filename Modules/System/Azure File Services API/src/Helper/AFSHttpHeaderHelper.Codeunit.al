@@ -2,7 +2,7 @@ codeunit 50113 "AFS HttpHeader Helper"
 {
     Access = Internal;
 
-    // [NonDebuggable]
+    [NonDebuggable]
     procedure HandleRequestHeaders(HttpRequestType: Enum "Http Request Type"; var HttpRequestMessage: HttpRequestMessage; var ABSOperationPayload: Codeunit "AFS Operation Payload")
     var
         AFSFormatHelper: Codeunit "AFS Format Helper";
@@ -25,7 +25,7 @@ codeunit 50113 "AFS HttpHeader Helper"
         end;
     end;
 
-    // [NonDebuggable]
+    [NonDebuggable]
     procedure HandleContentHeaders(var HttpContent: HttpContent; var ABSOperationPayload: Codeunit "AFS Operation Payload"): Boolean
     var
         Headers: HttpHeaders;

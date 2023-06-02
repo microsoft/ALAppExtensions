@@ -110,7 +110,6 @@ codeunit 50116 "AFS Directory Content Helper"
     local procedure SetPropertyFields(var AFSDirectoryContent: Record "AFS Directory Content"; ChildNodes: XmlNodeList)
     var
         AFSFormatHelper: Codeunit "AFS Format Helper";
-        DataTypeManagement: Codeunit "Data Type Management";
         AFSHelperLibrary: Codeunit "AFS Helper Library";
         RecordRef: RecordRef;
         FieldRef: FieldRef;
@@ -207,49 +206,5 @@ codeunit 50116 "AFS Directory Content Helper"
             exit(CopyStr(Name, 1, 250));
         StringSplit := Name.Split('/');
         exit(CopyStr(StringSplit.Get(StringSplit.Count()), 1, 250));
-    end;
-
-    [NonDebuggable]
-    local procedure GetParentDirectory(Name: Text): Text[250]
-    var
-        Parent: Text;
-    begin
-        if (not Name.Contains('/')) then
-            exit('');
-
-        Parent := CopyStr(Name, 1, Name.LastIndexOf('/'));
-
-        exit(CopyStr(Parent, 1, 250));
-    end;
-
-    /// <summary>
-    /// The name will be shortened if it has more than 250 characters
-    /// Use this function to retrieve the original name of the blob (read from saved XmlNode)
-    /// </summary>
-    /// <returns>The Full name of the Blob, recovered from saved XmlNode</returns>
-    [NonDebuggable]
-    internal procedure GetFullNameFromXML(var AFSDirectoryContent: Record "AFS Directory Content"): Text
-    var
-        AFSHelperLibrary: Codeunit "AFS Helper Library";
-        Node: XmlNode;
-        NameFromXml: Text;
-    begin
-        GetXmlNodeForEntry(AFSDirectoryContent, Node);
-        NameFromXml := AFSHelperLibrary.GetValueFromNode(Node, './/Name');
-        exit(NameFromXml);
-    end;
-
-    [NonDebuggable]
-    local procedure GetXmlNodeForEntry(var AFSDirectoryContent: Record "AFS Directory Content"; var Node: XmlNode)
-    var
-        InStream: InStream;
-        XmlAsText: Text;
-        Document: XmlDocument;
-    begin
-        AFSDirectoryContent.CalcFields("XML Value");
-        AFSDirectoryContent."XML Value".CreateInStream(InStream);
-        InStream.Read(XmlAsText);
-        XmlDocument.ReadFrom(XmlAsText, Document);
-        Node := Document.AsXmlNode();
     end;
 }

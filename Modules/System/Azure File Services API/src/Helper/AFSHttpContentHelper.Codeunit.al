@@ -6,24 +6,12 @@ codeunit 50104 "AFS HttpContent Helper"
         ContentLengthLbl: Label '%1', Comment = '%1 = Length', Locked = true;
         RangeLbl: Label 'bytes=%1-%2', Comment = '%1 = Range Start, %2 = Range End', Locked = true;
 
-    // // [NonDebuggable]
-    // procedure AddXmlDocumentAsContent(var HttpContent: HttpContent; var AFSOperationPayload: Codeunit "AFS Operation Payload"; Document: XmlDocument)
-    // var
-    //     Headers: HttpHeaders;
-    //     Length: Integer;
-    //     DocumentAsText: Text;
-    // begin
-    //     DocumentAsText := Format(Document);
-    //     Length := StrLen(DocumentAsText);
-
-    //     HttpContent.WriteFrom(DocumentAsText);
-
-    //     HttpContent.GetHeaders(Headers);
-    //     AFSOperationPayload.AddContentHeader('HttpContent-Type', 'application/xml');
-    //     AFSOperationPayload.AddContentHeader('HttpContent-Length', Format(Length));
-    // end;
-
-    // [NonDebuggable]
+    /// <summary>
+    /// Checks if the HttpContent is empty
+    /// </summary>
+    /// <param name="HttpContent">The HttpContent to check.</param>
+    /// <returns>true if the content is not empty, false otherwise.</returns>
+    [NonDebuggable]
     procedure ContentSet(HttpContent: HttpContent): Boolean
     var
         VarContent: Text;
@@ -40,7 +28,7 @@ codeunit 50104 "AFS HttpContent Helper"
     /// </summary>
     /// <param name="SourceInStream">The InStream for Request Body.</param>
     /// <returns>The length of the current stream</returns>
-    // [NonDebuggable]
+    [NonDebuggable]
     procedure GetContentLength(var SourceInStream: InStream): Integer
     var
         Length: Integer;
@@ -54,7 +42,7 @@ codeunit 50104 "AFS HttpContent Helper"
     /// </summary>
     /// <param name="SourceText">The Text for Request Body.</param>
     /// <returns>The length of the current stream</returns>
-    // [NonDebuggable]
+    [NonDebuggable]
     procedure GetContentLength(SourceText: Text): Integer
     var
         Length: Integer;
@@ -63,15 +51,7 @@ codeunit 50104 "AFS HttpContent Helper"
         exit(Length);
     end;
 
-    // [NonDebuggable]
-    procedure AddFilePutContentHeaders(AFSOperationPayload: Codeunit "AFS Operation Payload"; ContentType: Text; RangeStart: Integer; RangeEnd: Integer)
-    var
-        HttpContent: HttpContent;
-    begin
-        AddFilePutContentHeaders(HttpContent, AFSOperationPayload, 0, ContentType, RangeStart, RangeEnd);
-    end;
-
-    // [NonDebuggable]
+    [NonDebuggable]
     procedure AddFilePutContentHeaders(AFSOperationPayload: Codeunit "AFS Operation Payload"; ContentLength: Integer; ContentType: Text; RangeStart: Integer; RangeEnd: Integer)
     var
         HttpContent: HttpContent;
@@ -79,7 +59,7 @@ codeunit 50104 "AFS HttpContent Helper"
         AddFilePutContentHeaders(HttpContent, AFSOperationPayload, ContentLength, ContentType, RangeStart, RangeEnd);
     end;
 
-    // [NonDebuggable]
+    [NonDebuggable]
     procedure AddFilePutContentHeaders(var HttpContent: HttpContent; AFSOperationPayload: Codeunit "AFS Operation Payload"; var SourceInStream: InStream; RangeStart: Integer; RangeEnd: Integer)
     var
         Length: Integer;
@@ -92,19 +72,7 @@ codeunit 50104 "AFS HttpContent Helper"
         AddFilePutContentHeaders(HttpContent, AFSOperationPayload, Length, 'application/octet-stream', RangeStart, RangeEnd);
     end;
 
-    // [NonDebuggable]
-    procedure AddFilePutContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "AFS Operation Payload"; SourceText: Text; RangeStart: Integer; RangeEnd: Integer)
-    var
-        Length: Integer;
-    begin
-        HttpContent.WriteFrom(SourceText);
-
-        Length := GetContentLength(SourceText);
-
-        AddFilePutContentHeaders(HttpContent, ABSOperationPayload, Length, 'text/plain; charset=UTF-8', RangeStart, RangeEnd);
-    end;
-
-    // [NonDebuggable]
+    [NonDebuggable]
     local procedure AddFilePutContentHeaders(var HttpContent: HttpContent; AFSOperationPayload: Codeunit "AFS Operation Payload"; ContentLength: Integer; ContentType: Text; RangeStart: Integer; RangeEnd: Integer)
     var
         Headers: HttpHeaders;
@@ -127,7 +95,11 @@ codeunit 50104 "AFS HttpContent Helper"
         end;
     end;
 
-    // [NonDebuggable]
+    /// <summary>
+    /// Retrieves the max range avaialble to update with PutRange request.
+    /// </summary>
+    /// <returns>The max range available to update.</returns>
+    [NonDebuggable]
     procedure GetMaxRange(): Integer
     begin
         exit(4 * Power(2, 20));

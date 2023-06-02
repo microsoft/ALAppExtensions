@@ -7,7 +7,6 @@ codeunit 50118 "AFS Handle Helper"
 
     internal procedure AddNewEntryFromNode(var AFSHandle: Record "AFS Handle" temporary; Node: XmlNode)
     var
-        DataTypeManagement: Codeunit "Data Type Management";
         AFSHelperLibrary: Codeunit "AFS Helper Library";
         AFSFormatHelper: Codeunit "AFS Format Helper";
         ChildNode: XmlNode;

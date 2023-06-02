@@ -39,7 +39,7 @@ codeunit 50107 "AFS Optional Parameters"
     /// Sets the value for 'x-ms-lease-action' HttpHeader for a request.
     /// </summary>
     /// <param name="Value">Enum "AFS Lease Action" value specifying the LeaseAction</param>
-    procedure LeaseAction("Value": Enum "AFS Lease Action")
+    internal procedure LeaseAction("Value": Enum "AFS Lease Action")
     begin
         SetRequestHeader('x-ms-lease-action', Format("Value"));
     end;
