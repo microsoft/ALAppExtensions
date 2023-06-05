@@ -1,4 +1,4 @@
-codeunit 50116 "AFS Directory Content Helper"
+codeunit 8961 "AFS Directory Content Helper"
 {
     Access = Internal;
     InherentEntitlements = X;

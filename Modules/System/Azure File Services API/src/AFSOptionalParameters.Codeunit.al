@@ -1,4 +1,7 @@
-codeunit 50107 "AFS Optional Parameters"
+/// <summary>
+/// Holds procedures to format headers and parameters to be used in requests.
+/// </summary>
+codeunit 8956 "AFS Optional Parameters"
 {
     var
         AFSFormatHelper: Codeunit "AFS Format Helper";

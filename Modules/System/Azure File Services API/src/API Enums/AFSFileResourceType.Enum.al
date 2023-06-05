@@ -1,7 +1,7 @@
 /// <summary>
 /// Indicator of what type the resource is.
 /// </summary>
-enum 50105 "AFS File Resource Type"
+enum 8954 "AFS File Resource Type"
 {
     Access = Public;
     Extensible = false;

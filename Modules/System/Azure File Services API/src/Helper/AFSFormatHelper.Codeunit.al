@@ -1,4 +1,4 @@
-codeunit 50106 "AFS Format Helper"
+codeunit 8955 "AFS Format Helper"
 {
     Access = Internal;
 

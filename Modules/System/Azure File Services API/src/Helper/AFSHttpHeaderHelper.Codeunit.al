@@ -1,4 +1,4 @@
-codeunit 50113 "AFS HttpHeader Helper"
+codeunit 8958 "AFS HttpHeader Helper"
 {
     Access = Internal;
 

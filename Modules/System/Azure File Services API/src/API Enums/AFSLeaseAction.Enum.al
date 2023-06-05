@@ -1,4 +1,4 @@
-enum 50109 "AFS Lease Action"
+enum 8957 "AFS Lease Action"
 {
     Access = Internal;
     Extensible = false;

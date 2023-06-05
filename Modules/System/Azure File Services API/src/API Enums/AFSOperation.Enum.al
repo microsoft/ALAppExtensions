@@ -1,4 +1,4 @@
-enum 50101 "AFS Operation"
+enum 8950 "AFS Operation"
 {
     Access = Internal;
     Extensible = false;

@@ -1,4 +1,4 @@
-codeunit 50108 "AFS URI Helper"
+codeunit 8957 "AFS URI Helper"
 {
     Access = Internal;
 

@@ -1,7 +1,7 @@
 /// <summary>
 /// Holds information about directory content in a storage account.
 /// </summary>
-table 50101 "AFS Directory Content"
+table 8950 "AFS Directory Content"
 {
     Access = Public;
     InherentEntitlements = X;

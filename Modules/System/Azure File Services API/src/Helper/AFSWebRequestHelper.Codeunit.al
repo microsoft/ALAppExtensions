@@ -1,4 +1,4 @@
-codeunit 50105 "AFS Web Request Helper"
+codeunit 8954 "AFS Web Request Helper"
 {
     Access = Internal;
 

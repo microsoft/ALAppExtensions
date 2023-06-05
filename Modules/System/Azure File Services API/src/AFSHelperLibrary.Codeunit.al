@@ -1,4 +1,4 @@
-codeunit 50115 "AFS Helper Library"
+codeunit 8960 "AFS Helper Library"
 {
     Access = Internal;
     InherentEntitlements = X;

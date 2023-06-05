@@ -1,4 +1,7 @@
-codeunit 50114 "AFS Operation Response"
+/// <summary>
+/// Stores the response of an ABS client operation.
+/// </summary>
+codeunit 8959 "AFS Operation Response"
 {
     Access = Public;
 

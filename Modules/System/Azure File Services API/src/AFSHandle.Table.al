@@ -1,4 +1,7 @@
-table 50102 "AFS Handle"
+/// <summary>
+/// Holds information about file handles that are currently open.
+/// </summary>
+table 8951 "AFS Handle"
 {
     Access = Public;
     InherentEntitlements = X;

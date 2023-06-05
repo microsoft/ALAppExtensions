@@ -1,5 +1,5 @@
 
-codeunit 50118 "AFS Handle Helper"
+codeunit 8962 "AFS Handle Helper"
 {
     Access = Internal;
     InherentEntitlements = X;
