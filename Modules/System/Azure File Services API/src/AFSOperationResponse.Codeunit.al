@@ -1,5 +1,5 @@
 /// <summary>
-/// Stores the response of an ABS client operation.
+/// Stores the response of an AFS client operation.
 /// </summary>
 codeunit 8959 "AFS Operation Response"
 {
@@ -38,7 +38,7 @@ codeunit 8959 "AFS Operation Response"
     end;
 
     /// <summary>
-    /// Gets the result of a ABS client operation as text, 
+    /// Gets the result of a AFS client operation as text, 
     /// </summary>
     /// <returns>The content of the response.</returns>
     [NonDebuggable]
@@ -49,7 +49,7 @@ codeunit 8959 "AFS Operation Response"
     end;
 
     /// <summary>
-    /// Gets the result of a ABS client operation as stream, 
+    /// Gets the result of a AFS client operation as stream, 
     /// </summary>
     /// <returns>The content of the response.</returns>
     [NonDebuggable]

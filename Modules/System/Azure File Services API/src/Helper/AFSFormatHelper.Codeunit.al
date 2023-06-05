@@ -47,10 +47,10 @@ codeunit 8955 "AFS Format Helper"
     begin
         if FieldName = 'Resource Type' then
             case PropertyValue of
-                Text.LowerCase(Format(Enum::"ABS Blob Resource Type"::File)):
-                    exit(Enum::"ABS Blob Resource Type"::File);
-                Text.LowerCase(Format(Enum::"ABS Blob Resource Type"::Directory)):
-                    exit(Enum::"ABS Blob Resource Type"::Directory);
+                Text.LowerCase(Format(Enum::"AFS File Resource Type"::File)):
+                    exit(Enum::"AFS File Resource Type"::File);
+                Text.LowerCase(Format(Enum::"AFS File Resource Type"::Directory)):
+                    exit(Enum::"AFS File Resource Type"::Directory);
             end;
     end;
 
@@ -61,8 +61,10 @@ codeunit 8955 "AFS Format Helper"
 
     local procedure FormatDateTime(MyDateTime: DateTime; FormatSpecifier: Text): Text
     var
-        TypeHelper: Codeunit "Type Helper";
+        DateTimeAsXmlString: Text;
+        DateTimeDotNet: DotNet DateTime;
     begin
-        exit(TypeHelper.FormatUtcDateTime(MyDateTime, FormatSpecifier, ''));
+        DateTimeAsXmlString := Format(MyDateTime, 0, 9); // Format as XML, e.g.: 2020-11-11T08:50:07.553Z
+        exit(DateTimeDotNet.Parse(DateTimeAsXmlString).ToUniversalTime().ToString(FormatSpecifier));
     end;
 }
