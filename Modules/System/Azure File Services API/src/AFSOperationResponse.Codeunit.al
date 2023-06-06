@@ -26,7 +26,7 @@ codeunit 8959 "AFS Operation Response"
     /// <summary>
     /// Gets the HttpHeaders (if any) of the response.
     /// </summary>
-    /// <returns>HttpHeaders.</returns>
+    /// <returns>HttpHeaders of the response.</returns>
     procedure GetHeaders(): HttpHeaders
     begin
         exit(HttpResponseMessage.Headers());
