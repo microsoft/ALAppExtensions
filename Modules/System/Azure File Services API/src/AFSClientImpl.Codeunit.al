@@ -417,23 +417,6 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    // local procedure RenewLease(ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
-    // var
-    //     ABSOperationResponse: Codeunit "ABS Operation Response";
-    //     LeaseAction: Enum "ABS Lease Action";
-    // begin
-    //     ABSOptionalParameters.LeaseAction(LeaseAction::Renew);
-
-    //     TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
-
-    //     ABSOptionalParameters.LeaseId(LeaseId);
-
-    //     ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
-
-    //     ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, OperationNotSuccessfulErr);
-    //     exit(ABSOperationResponse);
-    // end;
-
     local procedure BreakLease(AFSOptionalParameters: Codeunit "AFS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
