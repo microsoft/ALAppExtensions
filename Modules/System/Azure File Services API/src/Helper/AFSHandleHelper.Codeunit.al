@@ -9,9 +9,9 @@ codeunit 8962 "AFS Handle Helper"
     var
         AFSHelperLibrary: Codeunit "AFS Helper Library";
         AFSFormatHelper: Codeunit "AFS Format Helper";
-        ChildNode: XmlNode;
         HandleRef: RecordRef;
         HandleFieldRef: FieldRef;
+        ChildNode: XmlNode;
         FieldNo: Integer;
         EntryNo: Integer;
     begin
@@ -22,7 +22,7 @@ codeunit 8962 "AFS Handle Helper"
         AFSHandle.Init();
         AFSHandle."Entry No." := EntryNo;
         HandleRef.GetTable(AFSHandle);
-        foreach ChildNode in Node.AsXmlElement().GetChildNodes() do begin
+        foreach ChildNode in Node.AsXmlElement().GetChildNodes() do
             if AFSHelperLibrary.GetFieldByCaption(Database::"AFS Handle", ChildNode.AsXmlElement().Name, FieldNo) then begin
                 HandleFieldRef := HandleRef.Field(FieldNo);
                 if HandleFieldRef.Type = HandleFieldRef.Type::DateTime then
@@ -30,7 +30,6 @@ codeunit 8962 "AFS Handle Helper"
                 else
                     HandleFieldRef.Value(ChildNode.AsXmlElement().InnerText);
             end;
-        end;
         HandleRef.SetTable(AFSHandle);
         AFSHandle.Insert();
     end;

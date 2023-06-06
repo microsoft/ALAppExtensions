@@ -29,8 +29,6 @@ codeunit 8950 "AFS File Client"
     /// <param name="Authorization">The authorization to use.</param>
     /// <param name="APIVersion">The API Version to use.</param>
     procedure Initialize(StorageAccount: Text; FileShare: Text; Authorization: Interface "Storage Service Authorization"; APIVersion: Enum "Storage Service API Version")
-    var
-        StorageServiceAuthorization: Codeunit "Storage Service Authorization";
     begin
         AFSClientImpl.Initialize(StorageAccount, FileShare, '', Authorization, APIVersion);
     end;
@@ -227,7 +225,7 @@ codeunit 8950 "AFS File Client"
     /// <param name="FilePath">The path to the file.</param>
     /// <param name="SourceText">The source text containing the content of the file.</param>
     /// <returns>An operation response object</returns>
-    procedure PutFileText(FilePath: Text; var SourceText: Text): Codeunit "AFS Operation Response"
+    procedure PutFileText(FilePath: Text; SourceText: Text): Codeunit "AFS Operation Response"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
@@ -241,7 +239,7 @@ codeunit 8950 "AFS File Client"
     /// <param name="SourceText">The source text containing the content of the file.</param>
     /// <param name="AFSOptionalParameters">Optional parameters to pass with the request.</param>
     /// <returns>An operation response object</returns>
-    procedure PutFileText(FilePath: Text; var SourceText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure PutFileText(FilePath: Text; SourceText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
         exit(AFSClientImpl.PutFileText(FilePath, SourceText, AFSOptionalParameters));
     end;

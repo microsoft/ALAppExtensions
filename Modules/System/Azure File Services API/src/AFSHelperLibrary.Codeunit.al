@@ -91,10 +91,9 @@ codeunit 8960 "AFS Helper Library"
     begin
         if not Element.HasAttributes then
             exit;
-        foreach Attribute in Element.Attributes() do begin
+        foreach Attribute in Element.Attributes() do
             if Attribute.Name = AttributeName then
-                exit(Attribute.Value)
-        end;
+                exit(Attribute.Value);
     end;
 
     [NonDebuggable]

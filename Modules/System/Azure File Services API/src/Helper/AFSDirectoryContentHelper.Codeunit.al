@@ -38,7 +38,7 @@ codeunit 8961 "AFS Directory Content Helper"
         EntryNo := GetNextEntryNo(AFSDirectoryContent);
 
         AFSDirectoryContent.Init();
-        AFSDirectoryContent."Parent Directory" := DirectoryPath;
+        AFSDirectoryContent."Parent Directory" := CopyStr(DirectoryPath, 1, MaxStrLen(AFSDirectoryContent."Parent Directory"));
         AFSDirectoryContent."Full Name" := AFSDirectoryContent."Parent Directory";
         if DirectoryPath.EndsWith('/') or (DirectoryPath = '') then
             AFSDirectoryContent."Full Name" += NameFromXml
@@ -147,10 +147,10 @@ codeunit 8961 "AFS Directory Content Helper"
     local procedure SetAttributesFields(var AFSDirectoryContent: Record "AFS Directory Content" temporary; AttributesNode: XmlNode)
     var
         AFSHelperLibrary: Codeunit "AFS Helper Library";
-        AttributesList: List of [Text];
-        Attribute: Text;
         RecordRef: RecordRef;
         FieldRef: FieldRef;
+        AttributesList: List of [Text];
+        Attribute: Text;
         FldNo: Integer;
     begin
         if not AttributesNode.IsXmlElement() then
@@ -172,7 +172,7 @@ codeunit 8961 "AFS Directory Content Helper"
     begin
         if not PermissionKeyNode.IsXmlElement() then
             exit;
-        AFSDirectoryContent."Permission Key" := PermissionKeyNode.AsXmlElement().InnerText;
+        AFSDirectoryContent."Permission Key" := CopyStr(PermissionKeyNode.AsXmlElement().InnerText, 1, MaxStrLen(AFSDirectoryContent."Permission Key"));
     end;
 
     [NonDebuggable]

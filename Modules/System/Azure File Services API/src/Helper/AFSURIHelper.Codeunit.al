@@ -145,10 +145,8 @@ codeunit 8957 "AFS URI Helper"
                         Error(ValueCanNotBeEmptyErr, PathLbl);
                 end;
             Operation in [Operation::ListDirectory]:
-                begin
-                    if FileShareName = '' then
-                        Error(ValueCanNotBeEmptyErr, FileShareLbl);
-                end;
+                if FileShareName = '' then
+                    Error(ValueCanNotBeEmptyErr, FileShareLbl);
         end;
     end;
 }

@@ -17,16 +17,14 @@ codeunit 8951 "AFS Client Impl."
         AbortCopyFileOperationNotSuccessfulErr: Label 'Could not abort copy of File %1.', Comment = '%1 = File';
         LeaseOperationNotSuccessfulErr: Label 'Could not %1 lease for %2 %3.', Comment = '%1 = Lease Action, %2 = Type (File or Share), %3 = Name';
         ListDirectoryOperationNotSuccessfulErr: Label 'Could not list directory %1 in file share %2.', Comment = '%1 = Directory Name; %2 = File Share Name';
-        ListHandlesOperationNotSuccessful: Label 'Could not list handles of %1 in file share %2.', Comment = '%1 = Path; %2 = File Share Name';
-        RenameFileOperationNotSuccessful: Label 'Could not rename file %1 to %2 on file share %3.', Comment = '%1 = Source Path; %2 = Destination Path; %3 = File Share Name';
+        ListHandlesOperationNotSuccessfulErr: Label 'Could not list handles of %1 in file share %2.', Comment = '%1 = Path; %2 = File Share Name';
+        RenameFileOperationNotSuccessfulErr: Label 'Could not rename file %1 to %2 on file share %3.', Comment = '%1 = Source Path; %2 = Destination Path; %3 = File Share Name';
         ParameterMissingErr: Label 'You need to specify %1 (%2)', Comment = '%1 = Parameter Name, %2 = Header Identifer';
         LeaseAcquireLbl: Label 'acquire';
         LeaseBreakLbl: Label 'break';
         LeaseChangeLbl: Label 'change';
         LeaseReleaseLbl: Label 'release';
-        LeaseRenewLbl: Label 'renew';
         FileLbl: Label 'File';
-        ShareLbl: Label 'Share';
 
     [NonDebuggable]
     procedure Initialize(StorageAccountName: Text; FileShare: Text; Path: Text; Authorization: Interface "Storage Service Authorization"; ApiVersion: Enum "Storage Service API Version")
@@ -105,11 +103,11 @@ codeunit 8951 "AFS Client Impl."
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(Path);
 
-        AFSOperationResponse := AFSWebRequestHelper.GetOperationAsText(AFSOperationPayload, ResponseText, StrSubstNo(ListHandlesOperationNotSuccessful, AFSOperationPayload.GetPath(), AFSOperationPayload.GetFileShareName()));
+        AFSOperationResponse := AFSWebRequestHelper.GetOperationAsText(AFSOperationPayload, ResponseText, StrSubstNo(ListHandlesOperationNotSuccessfulErr, AFSOperationPayload.GetPath(), AFSOperationPayload.GetFileShareName()));
 
         NodeList := AFSHelperLibrary.CreateHandleNodeListFromResponse(ResponseText);
         AFSHelperLibrary.HandleNodeListToTempRecord(NodeList, AFSHandle);
-        AFSHandle."Next Marker" := AFSHelperLibrary.GetNextMarkerFromResponse(ResponseText);
+        AFSHandle."Next Marker" := CopyStr(AFSHelperLibrary.GetNextMarkerFromResponse(ResponseText), 1, MaxStrLen(AFSHandle."Next Marker"));
         AFSHandle.Modify();
 
         exit(AFSOperationResponse);
@@ -125,7 +123,7 @@ codeunit 8951 "AFS Client Impl."
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(DestinationFilePath);
 
-        AFSOperationResponse := AFSWebRequestHelper.PutOperation(AFSOperationPayload, StrSubstNo(RenameFileOperationNotSuccessful, AFSOperationPayload.GetPath(), DestinationFilePath, AFSOperationPayload.GetFileShareName()));
+        AFSOperationResponse := AFSWebRequestHelper.PutOperation(AFSOperationPayload, StrSubstNo(RenameFileOperationNotSuccessfulErr, AFSOperationPayload.GetPath(), DestinationFilePath, AFSOperationPayload.GetFileShareName()));
         exit(AFSOperationResponse);
     end;
 
@@ -229,13 +227,13 @@ codeunit 8951 "AFS Client Impl."
     local procedure PutFile(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; var SourceContentVariant: Variant): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
+        TextTempBlob: Codeunit "Temp Blob";
         Operation: Enum "AFS Operation";
         HttpContent: HttpContent;
         SourceInStream: InStream;
         SourceText: Text;
         SourceTextStream: InStream;
         SourceTextOutStream: OutStream;
-        TextTempBlob: Codeunit "Temp Blob";
     begin
         AFSOperationPayload.SetOperation(Operation::PutRange);
         AFSOperationPayload.SetPath(FilePath);
@@ -264,17 +262,18 @@ codeunit 8951 "AFS Client Impl."
 
     local procedure PutFileRanges(var AFSOperationResponse: Codeunit "AFS Operation Response"; var HttpContent: HttpContent; var SourceInStream: InStream)
     var
+        TempBlob: Codeunit "Temp Blob";
         MaxAllowedRange: Integer;
         CurrentPostion: Integer;
         BytesToWrite: Integer;
         BytesLeftToWrite: Integer;
         SmallerStream: InStream;
-        TempBlob: Codeunit "Temp Blob";
         SmallerOutStream: OutStream;
         ResponseIndex: Integer;
     begin
         MaxAllowedRange := AFSHttpContentHelper.GetMaxRange();
         BytesLeftToWrite := AFSHttpContentHelper.GetContentLength(SourceInStream);
+        CurrentPostion := 0;
         while BytesLeftToWrite > 0 do begin
             ResponseIndex += 1;
             if BytesLeftToWrite > MaxAllowedRange then
