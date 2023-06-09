@@ -54,6 +54,7 @@ codeunit 9106 "SharePoint File"
     [NonDebuggable]
     local procedure ParseSingle(Payload: JsonObject) SharePointFile: Record "SharePoint File" temporary
     var
+        SharePointEvents: Codeunit "SharePoint Events";
         JToken: JsonToken;
     begin
         SharePointFile.Init();
@@ -107,12 +108,9 @@ codeunit 9106 "SharePoint File"
             if Payload.Get('Id', JToken) then
                 SharePointFile.Id := JToken.AsValue().AsInteger();
 
-            ProcessSharePointFileMetadata(JToken, SharePointFile);
+            SharePointEvents.ProcessSharePointFileMetadata(JToken, SharePointFile);
         end;
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure ProcessSharePointFileMetadata(Metadata: JsonToken; SharePointFile: Record "SharePoint File" temporary)
-    begin
-    end;
+
 }
