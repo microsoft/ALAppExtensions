@@ -350,13 +350,13 @@ report 31271 "Posted Compensation CZC"
                 case "Company Type" of
                     "Company Type"::Vendor:
                         if Vendor.Get("Company No.") then
-                            CompanyRegistrationNo := Vendor."Registration No. CZL";
+                            CompanyRegistrationNo := Vendor."Registration Number";
                     "Company Type"::Customer:
                         if Customer.Get("Company No.") then
-                            CompanyRegistrationNo := Customer."Registration No. CZL";
+                            CompanyRegistrationNo := Customer."Registration Number";
                     "Company Type"::Contact:
                         if Contact.Get("Company No.") then
-                            CompanyRegistrationNo := Contact."Registration No. CZL";
+                            CompanyRegistrationNo := Contact."Registration Number";
                 end;
 
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");

@@ -177,6 +177,23 @@ codeunit 11029 IntrastatReportManagementDE
             exit(fldRef.Value);
     end;
 
+    local procedure IsIntrastatExport(DataExchDefCode: Code[20]): Boolean
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportMgt: Codeunit IntrastatReportManagement;
+    begin
+        if not IntrastatReportMgt.IsFeatureEnabled() then
+            exit(false);
+
+        if not IntrastatReportSetup.Get() then
+            exit(false);
+
+        if IntrastatReportSetup."Split Files" then
+            exit(DataExchDefCode in [IntrastatReportSetup."Data Exch. Def. Code - Receipt", IntrastatReportSetup."Data Exch. Def. Code - Shpt."])
+        else
+            exit(DataExchDefCode = IntrastatReportSetup."Data Exch. Def. Code");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLNodeWithoutAttributes', '', true, true)]
     local procedure OnBeforeCreateXMLNodeWithoutAttributes(var xmlNodeName: Text; var xmlNodeValue: Text; var DataExchColumnDef: Record "Data Exch. Column Def"; var DefaultNameSpace: Text; var IsHandled: Boolean)
     var
@@ -184,85 +201,86 @@ codeunit 11029 IntrastatReportManagementDE
         Contact: Record Contact;
         DataExchLineDef, DataExchLineDef2 : Record "Data Exch. Line Def";
     begin
-        case DataExchColumnDef.Path of
-            '/INSTAT/Envelope/envelopeId':
-                xmlNodeValue := MessageID;
-            '/INSTAT/Envelope/DateTime/date':
-                xmlNodeValue := Format(CreationDate, 0, 9);
-            '/INSTAT/Envelope/DateTime/time':
-                xmlNodeValue := Format(CreationTime, 0, '<Hours24>:<Minutes,2>:<Seconds,2>');
-            '/Declaration/declarationId':
-                xmlNodeValue := MessageID;
-            '/Declaration/DateTime/date':
-                xmlNodeValue := Format(CreationDate, 0, 9);
-            '/Declaration/DateTime/time':
-                xmlNodeValue := Format(CreationTime, 0, '<Hours24>:<Minutes,2>:<Seconds,2>');
-            '/Declaration/referencePeriod':
-                xmlNodeValue := Format(StartDate, 0, '<Year4>-<Month,2>');
-            '/Declaration/PSIId':
-                xmlNodeValue := VATIDNo;
-            '/Declaration/currencyCode':
-                xmlNodeValue := CurrencyIdentifier;
-            '/Declaration/totalNetMass':
-                begin
-                    IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
-                    DataExchLineDef.Get(DataExchColumnDef."Data Exch. Def Code", DataExchColumnDef."Data Exch. Line Def Code");
-                    DataExchLineDef2.SetRange("Data Exch. Def Code", DataExchLineDef."Data Exch. Def Code");
-                    DataExchLineDef2.SetRange("Parent Code", DataExchLineDef.Code);
-                    DataExchLineDef2.FindFirst();
-                    if StrPos(DataExchLineDef2."Data Line Tag", '[flowCode ="A"]') <> 0 then
-                        xmlNodeValue := Format(TotalWeightRcpt, 0, '<Integer>')
-                    else
-                        xmlNodeValue := Format(TotalWeightShpt, 0, '<Integer>');
-                end;
-            '/Declaration/totalInvoicedAmount':
-                begin
-                    IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
-                    DataExchLineDef.Get(DataExchColumnDef."Data Exch. Def Code", DataExchColumnDef."Data Exch. Line Def Code");
-                    DataExchLineDef2.SetRange("Data Exch. Def Code", DataExchLineDef."Data Exch. Def Code");
-                    DataExchLineDef2.SetRange("Parent Code", DataExchLineDef.Code);
-                    DataExchLineDef2.FindFirst();
-                    if StrPos(DataExchLineDef2."Data Line Tag", '[flowCode ="A"]') <> 0 then
-                        xmlNodeValue := Format(TotalAmtRcpt, 0, '<Integer>')
-                    else
-                        xmlNodeValue := Format(TotalAmtShpt, 0, '<Integer>');
-                end;
-            '/Declaration/totalStatisticalValue':
-                begin
-                    IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
-                    DataExchLineDef.Get(DataExchColumnDef."Data Exch. Def Code", DataExchColumnDef."Data Exch. Line Def Code");
-                    DataExchLineDef2.SetRange("Data Exch. Def Code", DataExchLineDef."Data Exch. Def Code");
-                    DataExchLineDef2.SetRange("Parent Code", DataExchLineDef.Code);
-                    DataExchLineDef2.FindFirst();
-                    if StrPos(DataExchLineDef2."Data Line Tag", '[flowCode ="A"]') <> 0 then
-                        xmlNodeValue := Format(TotalStatValueRcpt, 0, '<Integer>')
-                    else
-                        xmlNodeValue := Format(TotalStatValueShpt, 0, '<Integer>');
-                end;
-            '/Party[@partyType="PSI" and @partyRole="sender"]/partyId':
-                begin
-                    CompanyInformation.Get();
-                    xmlNodeValue := Format(CompanyInformation.Area, 2) +
-                        PadStr(CopyStr(DelChr(UpperCase(CompanyInformation."Registration No."), '=', RegNoExcludeCharsTxt), 1, 11), 11, '0') +
-                        Format(CompanyInformation."Agency No.", 3);
-                end;
-            '/Party[@partyType="CC" and @partyRole="receiver"]/partyName':
-                xmlNodeValue := GetReceiverInfo(Contact.FieldNo(Name));
-            '/Party[@partyType="CC" and @partyRole="receiver"]/Address/streetName':
-                xmlNodeValue := GetReceiverInfo(Contact.FieldNo(Address));
-            '/Party[@partyType="CC" and @partyRole="receiver"]/Address/postalCode':
-                xmlNodeValue := GetReceiverInfo(Contact.FieldNo("Post Code"));
-            '/Party[@partyType="CC" and @partyRole="receiver"]/Address/cityName':
-                xmlNodeValue := GetReceiverInfo(Contact.FieldNo(City));
-            '/Party[@partyType="CC" and @partyRole="receiver"]/Address/countryName':
-                xmlNodeValue := GetReceiverInfo(Contact.FieldNo("Country/Region Code"));
-            '/Party[@partyType="CC" and @partyRole="receiver"]/Address/phoneNumber':
-                xmlNodeValue := GetReceiverInfo(Contact.FieldNo("Phone No."));
-            '/Party[@partyType="CC" and @partyRole="receiver"]/Address/faxNumber':
-                xmlNodeValue := GetReceiverInfo(Contact.FieldNo("Fax No."));
-            '/Party[@partyType="CC" and @partyRole="receiver"]/Address/e-mail':
-                xmlNodeValue := GetReceiverInfo(Contact.FieldNo("E-Mail"));
-        end;
+        if IsIntrastatExport(DataExchColumnDef."Data Exch. Def Code") then
+            case DataExchColumnDef.Path of
+                '/INSTAT/Envelope/envelopeId':
+                    xmlNodeValue := MessageID;
+                '/INSTAT/Envelope/DateTime/date':
+                    xmlNodeValue := Format(CreationDate, 0, 9);
+                '/INSTAT/Envelope/DateTime/time':
+                    xmlNodeValue := Format(CreationTime, 0, '<Hours24>:<Minutes,2>:<Seconds,2>');
+                '/Declaration/declarationId':
+                    xmlNodeValue := MessageID;
+                '/Declaration/DateTime/date':
+                    xmlNodeValue := Format(CreationDate, 0, 9);
+                '/Declaration/DateTime/time':
+                    xmlNodeValue := Format(CreationTime, 0, '<Hours24>:<Minutes,2>:<Seconds,2>');
+                '/Declaration/referencePeriod':
+                    xmlNodeValue := Format(StartDate, 0, '<Year4>-<Month,2>');
+                '/Declaration/PSIId':
+                    xmlNodeValue := VATIDNo;
+                '/Declaration/currencyCode':
+                    xmlNodeValue := CurrencyIdentifier;
+                '/Declaration/totalNetMass':
+                    begin
+                        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
+                        DataExchLineDef.Get(DataExchColumnDef."Data Exch. Def Code", DataExchColumnDef."Data Exch. Line Def Code");
+                        DataExchLineDef2.SetRange("Data Exch. Def Code", DataExchLineDef."Data Exch. Def Code");
+                        DataExchLineDef2.SetRange("Parent Code", DataExchLineDef.Code);
+                        DataExchLineDef2.FindFirst();
+                        if StrPos(DataExchLineDef2."Data Line Tag", '[flowCode ="A"]') <> 0 then
+                            xmlNodeValue := Format(TotalWeightRcpt, 0, '<Integer>')
+                        else
+                            xmlNodeValue := Format(TotalWeightShpt, 0, '<Integer>');
+                    end;
+                '/Declaration/totalInvoicedAmount':
+                    begin
+                        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
+                        DataExchLineDef.Get(DataExchColumnDef."Data Exch. Def Code", DataExchColumnDef."Data Exch. Line Def Code");
+                        DataExchLineDef2.SetRange("Data Exch. Def Code", DataExchLineDef."Data Exch. Def Code");
+                        DataExchLineDef2.SetRange("Parent Code", DataExchLineDef.Code);
+                        DataExchLineDef2.FindFirst();
+                        if StrPos(DataExchLineDef2."Data Line Tag", '[flowCode ="A"]') <> 0 then
+                            xmlNodeValue := Format(TotalAmtRcpt, 0, '<Integer>')
+                        else
+                            xmlNodeValue := Format(TotalAmtShpt, 0, '<Integer>');
+                    end;
+                '/Declaration/totalStatisticalValue':
+                    begin
+                        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
+                        DataExchLineDef.Get(DataExchColumnDef."Data Exch. Def Code", DataExchColumnDef."Data Exch. Line Def Code");
+                        DataExchLineDef2.SetRange("Data Exch. Def Code", DataExchLineDef."Data Exch. Def Code");
+                        DataExchLineDef2.SetRange("Parent Code", DataExchLineDef.Code);
+                        DataExchLineDef2.FindFirst();
+                        if StrPos(DataExchLineDef2."Data Line Tag", '[flowCode ="A"]') <> 0 then
+                            xmlNodeValue := Format(TotalStatValueRcpt, 0, '<Integer>')
+                        else
+                            xmlNodeValue := Format(TotalStatValueShpt, 0, '<Integer>');
+                    end;
+                '/Party[@partyType="PSI" and @partyRole="sender"]/partyId':
+                    begin
+                        CompanyInformation.Get();
+                        xmlNodeValue := Format(CompanyInformation.Area, 2) +
+                            PadStr(CopyStr(DelChr(UpperCase(CompanyInformation."Registration No."), '=', RegNoExcludeCharsTxt), 1, 11), 11, '0') +
+                            Format(CompanyInformation."Agency No.", 3);
+                    end;
+                '/Party[@partyType="CC" and @partyRole="receiver"]/partyName':
+                    xmlNodeValue := GetReceiverInfo(Contact.FieldNo(Name));
+                '/Party[@partyType="CC" and @partyRole="receiver"]/Address/streetName':
+                    xmlNodeValue := GetReceiverInfo(Contact.FieldNo(Address));
+                '/Party[@partyType="CC" and @partyRole="receiver"]/Address/postalCode':
+                    xmlNodeValue := GetReceiverInfo(Contact.FieldNo("Post Code"));
+                '/Party[@partyType="CC" and @partyRole="receiver"]/Address/cityName':
+                    xmlNodeValue := GetReceiverInfo(Contact.FieldNo(City));
+                '/Party[@partyType="CC" and @partyRole="receiver"]/Address/countryName':
+                    xmlNodeValue := GetReceiverInfo(Contact.FieldNo("Country/Region Code"));
+                '/Party[@partyType="CC" and @partyRole="receiver"]/Address/phoneNumber':
+                    xmlNodeValue := GetReceiverInfo(Contact.FieldNo("Phone No."));
+                '/Party[@partyType="CC" and @partyRole="receiver"]/Address/faxNumber':
+                    xmlNodeValue := GetReceiverInfo(Contact.FieldNo("Fax No."));
+                '/Party[@partyType="CC" and @partyRole="receiver"]/Address/e-mail':
+                    xmlNodeValue := GetReceiverInfo(Contact.FieldNo("E-Mail"));
+            end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportIntrastatHeader', '', true, true)]
@@ -319,19 +337,23 @@ codeunit 11029 IntrastatReportManagementDE
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLDeclaration', '', true, true)]
-    local procedure OnBeforeCreateXMLDeclaration(var xmlDec: XmlDeclaration; var IsHandled: Boolean)
+    local procedure OnBeforeCreateXMLDeclaration(DataExchDef: Record "Data Exch. Def"; var xmlDec: XmlDeclaration; var IsHandled: Boolean)
     begin
-        xmlDec := xmlDeclaration.Create('1.0', 'ISO-8859-1', 'yes');
-        IsHandled := true;
+        if IsIntrastatExport(DataExchDef.Code) then begin
+            xmlDec := xmlDeclaration.Create('1.0', 'ISO-8859-1', 'yes');
+            IsHandled := true;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateRootElement', '', true, true)]
-    local procedure OnBeforeCreateRootElement(var xmlElem: XmlElement; var nName: Text; var nVal: Text; DefaultNameSpace: Text; var xmlNamespaceManager: XmlNamespaceManager; var IsHandled: Boolean)
+    local procedure OnBeforeCreateRootElement(DataExchDef: Record "Data Exch. Def"; var xmlElem: XmlElement; var nName: Text; var nVal: Text; DefaultNameSpace: Text; var xmlNamespaceManager: XmlNamespaceManager; var IsHandled: Boolean)
     begin
-        xmlElem := xmlElement.Create(nName, DefaultNameSpace, nVal);
-        xmlElem.Add(XmlAttribute.CreateNamespaceDeclaration('xsi', LocalNamespaceURILbl));
-        xmlElem.Add(XmlAttribute.Create('noNamespaceSchemaLocation', LocalNamespaceURILbl, 'instat62.xsd'));
-        IsHandled := true;
+        if IsIntrastatExport(DataExchDef.Code) then begin
+            xmlElem := xmlElement.Create(nName, DefaultNameSpace, nVal);
+            xmlElem.Add(XmlAttribute.CreateNamespaceDeclaration('xsi', LocalNamespaceURILbl));
+            xmlElem.Add(XmlAttribute.Create('noNamespaceSchemaLocation', LocalNamespaceURILbl, 'instat62.xsd'));
+            IsHandled := true;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeExportHeader', '', true, true)]
@@ -341,22 +363,24 @@ codeunit 11029 IntrastatReportManagementDE
         InStreamFilters: InStream;
         FiltersText: Text;
     begin
-        DataExch.CalcFields("Table Filters");
-        DataExch."Table Filters".CreateInStream(InStreamFilters);
-        InStreamFilters.ReadText(FiltersText);
-        IntrastatReportLineRec.SetView(FiltersText);
+        if IsIntrastatExport(DataExch."Data Exch. Def Code") then begin
+            DataExch.CalcFields("Table Filters");
+            DataExch."Table Filters".CreateInStream(InStreamFilters);
+            InStreamFilters.ReadText(FiltersText);
+            IntrastatReportLineRec.SetView(FiltersText);
 
-        case true of
-            StrPos(DataExch."Data Exch. Line Def Code", 'RCPTHEADER') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Receipt);
-            StrPos(DataExch."Data Exch. Line Def Code", 'SHPTHEADER') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Shipment);
-            else
-                IntrastatReportLineRec.SetRange(Type);
+            case true of
+                StrPos(DataExch."Data Exch. Line Def Code", 'RCPTHEADER') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Receipt);
+                StrPos(DataExch."Data Exch. Line Def Code", 'SHPTHEADER') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Shipment);
+                else
+                    IntrastatReportLineRec.SetRange(Type);
+            end;
+
+            if IntrastatReportLineRec.IsEmpty() then
+                IsHandled := true;
         end;
-
-        if IntrastatReportLineRec.IsEmpty() then
-            IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeExportDetails', '', true, true)]
@@ -366,22 +390,24 @@ codeunit 11029 IntrastatReportManagementDE
         InStreamFilters: InStream;
         FiltersText: Text;
     begin
-        DataExch.CalcFields("Table Filters");
-        DataExch."Table Filters".CreateInStream(InStreamFilters);
-        InStreamFilters.ReadText(FiltersText);
-        IntrastatReportLineRec.SetView(FiltersText);
+        if IsIntrastatExport(DataExch."Data Exch. Def Code") then begin
+            DataExch.CalcFields("Table Filters");
+            DataExch."Table Filters".CreateInStream(InStreamFilters);
+            InStreamFilters.ReadText(FiltersText);
+            IntrastatReportLineRec.SetView(FiltersText);
 
-        case true of
-            StrPos(DataExch."Data Exch. Line Def Code", 'RCPTDETAIL') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Receipt);
-            StrPos(DataExch."Data Exch. Line Def Code", 'SHPTDETAIL') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Shipment)
-            else
-                IntrastatReportLineRec.SetRange(Type);
+            case true of
+                StrPos(DataExch."Data Exch. Line Def Code", 'RCPTDETAIL') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Receipt);
+                StrPos(DataExch."Data Exch. Line Def Code", 'SHPTDETAIL') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Shipment)
+                else
+                    IntrastatReportLineRec.SetRange(Type);
+            end;
+
+            if IntrastatReportLineRec.IsEmpty() then
+                IsHandled := true;
         end;
-
-        if IntrastatReportLineRec.IsEmpty() then
-            IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Mapping", 'OnBeforeCheckRecRefCount', '', true, true)]

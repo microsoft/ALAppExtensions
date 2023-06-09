@@ -25,6 +25,12 @@ tableextension 30101 "Shpfy Sales Header" extends "Sales Header"
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Order Header"."Risk Level" where("Shopify Order Id" = field("Shpfy Order Id")));
         }
+        field(30103; "Shpfy Refund Id"; BigInteger)
+        {
+            Caption = 'Shopify Refund Id';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
     }
 }
 

@@ -15,6 +15,7 @@ codeunit 132594 "Guided Experience Test"
         PermissionsMock: Codeunit "Permissions Mock";
         Any: Codeunit Any;
         GuidedExperienceTestLibrary: Codeunit "Guided Experience Test Library";
+        GuidedExperienceRecordCountErr: Label 'Guided Experience record count error.';
 
     [Test]
     [Scope('OnPrem')]
@@ -873,6 +874,58 @@ codeunit 132594 "Guided Experience Test"
         SpotlightTourText.SetRange("Guided Experience Item Code", 'SPOTLIGHT TOUR_PAGE_132610__' + Format(SpotlightTourType.AsInteger()));
         SpotlightTourText.SetRange("Guided Experience Item Version", 0);
         Assert.AreEqual(4, SpotlightTourText.Count, 'The spotlight tour texts have incorrect keys.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGuidedExperienceDoNotShowDuplicateRecordForSameCombination()
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        TempGuidedExperienceItem: Record "Guided Experience Item" temporary;
+        GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
+        GuidedExperienceType: Enum "Guided Experience Type";
+        ManualSetupCategory: Enum "Manual Setup Category";
+        ObjectTypeToRun1: ObjectType;
+        ObjectTypeToRun2: ObjectType;
+        ObjectIDToRun1: Integer;
+        ObjectIDToRun2: Integer;
+        Title1: Text[2048];
+        Title2: Text[2048];
+        ShortTitle1: Text[50];
+        ShortTitle2: Text[50];
+        Description1: Text[1024];
+        Description2: Text[1024];
+        Keywords: Text[250];
+        ExpectedDuration: Integer;
+    begin
+        // [SCENARIO 467947] Numerous Sales and Inventory Forecast Entries appear in Manual Setup.
+        PermissionsMock.Set('Guided Exp Edit');
+
+        // [GIVEN] The Guided Experience Item table contains 2 manual setups
+        GuidedExperienceItem.DeleteAll();
+
+        // [GIVEN] Define ObjectType, Object ID and Manual Setup Category
+        ObjectTypeToRun1 := ObjectType::Codeunit;
+        ObjectIDToRun1 := Codeunit::"Checklist Test Codeunit";
+        ManualSetupCategory := ManualSetupCategory::Uncategorized;
+
+        // [GIVEN] Insert Manual Setup
+        GuidedExperienceTestLibrary.InsertManualSetup(true, Title1, ShortTitle1, Description1, ExpectedDuration,
+            ObjectTypeToRun1, ObjectIDToRun1, ManualSetupCategory, Keywords);
+
+        // [GIVEN] Define ObjectType and Object ID 
+        ObjectTypeToRun2 := ObjectType::Codeunit;
+        ObjectIDToRun2 := Codeunit::"Checklist Test Codeunit";
+
+        // [GIVEN] Insert Manual Setup with same detail
+        GuidedExperienceTestLibrary.InsertManualSetup(true, Title2, ShortTitle2, Description2, ExpectedDuration,
+            ObjectTypeToRun2, ObjectIDToRun2, ManualSetupCategory, Keywords);
+
+        // [WHEN] Create Page to view Manual setup entry by Temporary Guided Experience Item table  
+        GuidedExperienceImpl.GetContentForSetupPage(TempGuidedExperienceItem, GuidedExperienceType::"Manual Setup");
+
+        // [THEN] Temporary Guided Experience Item table contains exactly 1 records
+        Assert.AreEqual(1, TempGuidedExperienceItem.Count, GuidedExperienceRecordCountErr);
     end;
 
     local procedure VerifyGuidedExperienceItemFields(GuidedExperienceItem: Record "Guided Experience Item"; Code: Code[300]; Version: Integer; ObjectTypeToRun: Enum "Guided Experience Object Type"; ObjectID: Integer; Link: Text[250]; Title: Text[2048]; ShortTitle: Text[2048]; Description: Text[1024]; ExpectedDuration: Integer; Completed: Boolean; GuidedExperienceType: Enum "Guided Experience Type"; AssistedSetupGroup: Enum "Assisted Setup Group"; HelpUrl: Text[250]; VideoUrl: Text[250]; VideoCategory: Enum "Video Category"; ManualSetupCategory: Enum "Manual Setup Category"; Keywords: Text[250]; SpotlightTourType: Enum "Spotlight Tour Type"; SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text])

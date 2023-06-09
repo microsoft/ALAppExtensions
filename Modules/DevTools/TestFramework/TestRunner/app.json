@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Executes one or more tests and gathers the results.",
     "description":  "Provides options for running manual tests in the UI or automated tests in the console. Manual tests are run from the Test Tool page, and automated tests are run from the Command Line Test Tool page. For each group of tests, you can define the test isolation by using the Test Runner Codeunit. The Test Runner - Isol. Codeunit codeunit reverts changes to the database after tests are complete. The Test Runner Isol. Disabled codeunit prevents changes from being reverted. This is useful when testing requires multiple sessions, such as when invoking web services, job queues, background threads, and so on.",
-    "version":  "22.2.0.0",
+    "version":  "22.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2131960",

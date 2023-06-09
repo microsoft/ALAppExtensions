@@ -14,7 +14,7 @@ codeunit 11749 "Reminder Handler CZL"
 
         if Rec."Customer No." <> '' then begin
             Customer.Get(Rec."Customer No.");
-            Rec."Registration No. CZL" := Customer."Registration No. CZL";
+            Rec."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
             Rec."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
         end;
     end;

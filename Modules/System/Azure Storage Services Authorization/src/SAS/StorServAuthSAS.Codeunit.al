@@ -24,9 +24,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 
         QueryText := DelChr(QueryText, '<', '?'); // remove ? from the query
 
-        if QueryText <> '' then
-            QueryText += '&';
-        QueryText += GetSharedAccessSignature();
+        QueryText += '&' + GetSharedAccessSignature();
         UriBuilder.SetQuery(QueryText);
 
         UriBuilder.GetUri(Uri);

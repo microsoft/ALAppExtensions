@@ -14,6 +14,12 @@ codeunit 31022 "Purch.-Post Handler CZZ"
             PurchAdvLetterManagement.CheckAdvancePayement("Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.");
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purchase Handler CZP", 'OnBeforeCreateCashDocument', '', false, false)]
+    local procedure SalesPostOnBeforeCreateCashDocument(var PurchHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    begin
+        PurchPostOnAfterFinalizePostingOnBeforeCommit(PurchHeader, PurchInvHeader, GenJnlPostLine);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterFinalizePostingOnBeforeCommit', '', false, false)]
     local procedure PurchPostOnAfterFinalizePostingOnBeforeCommit(var PurchHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var

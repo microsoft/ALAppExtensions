@@ -112,12 +112,12 @@ page 30115 "Shpfy Orders"
                 field(FinancialStatus; Rec."Financial Status")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the status of payments associated with the order. Valid values are: pending, authorized, partially_paid, paid, partially_refunded, refunded, voided.';
+                    ToolTip = 'Specifies the status of payments associated with the order. Valid values are: pending, authorized, partially paid, paid, partially refunded, refunded, voided.';
                 }
                 field(FulfillmentStatus; Rec."Fulfillment Status")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: Fulfilled, null, partial, restocked.';
+                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: fulfilled, in progress, open, pending fulfillment, restocked, unfulfilled, partially fulfilled.';
                 }
                 field(TotalAmount; Rec."Total Amount")
                 {

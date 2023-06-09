@@ -1786,8 +1786,8 @@ codeunit 7233 "Master Data Management"
         if not IsEnabled() then
             exit;
 
+        IsHandled := true;
         Removed := MasterDataMgtCoupling.RemoveCouplingToRecord(RecordId);
-
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Record Management", 'OnFindIntegrationTableUIdByRecordRef', '', false, false)]
@@ -1869,6 +1869,29 @@ codeunit 7233 "Master Data Management"
             MasterDataMgtCoupling.Delete(true);
             Removed := true;
             IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Int. Rec. Uncouple Invoke", 'OnRemoveIntegrationTableCoupling', '', false, false)]
+    local procedure HandleOnRemoveIntegrationTableCoupling(var IntegrationTableMapping: Record "Integration Table Mapping"; var LocalRecordRef: RecordRef; var IntegrationRecordRef: RecordRef; var IntegrationTableConnectionType: TableConnectionType; var IsHandled: Boolean; var Removed: Boolean)
+    var
+        MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+        SysId: Guid;
+    begin
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
+        if not IsEnabled() then
+            exit;
+
+        if not MasterDataMgtCoupling.FindSystemIdByRecordRef(SysId, LocalRecordRef) then
+            Error(IntegrationRecordNotFoundErr, LocalRecordRef.Field(LocalRecordRef.SystemIdNo()).Value());
+
+        IsHandled := true;
+
+        if MasterDataMgtCoupling.FindRowFromLocalSystemID(SysId, MasterDataMgtCoupling) then begin
+            MasterDataMgtCoupling.Delete(true);
+            Removed := true;
         end;
     end;
 
@@ -2192,10 +2215,17 @@ codeunit 7233 "Master Data Management"
     var
         JobQueueEntry: Record "Job Queue Entry";
         User: Record User;
+        EmptyGuid: Guid;
+        UserId: Guid;
     begin
         if not (JobQueueEntry.WritePermission() and JobQueueEntry.ReadPermission()) then
             exit(false);
-        if not User.Get(UserSecurityId()) then
+        UserId := UserSecurityId();
+        if User.IsEmpty() then
+            exit(true);
+        if Format(UserId) = Format(EmptyGuid) then
+            exit(true);
+        if not User.Get(UserId) then
             exit(false);
         if User."License Type" = User."License Type"::"Limited User" then
             exit(false);

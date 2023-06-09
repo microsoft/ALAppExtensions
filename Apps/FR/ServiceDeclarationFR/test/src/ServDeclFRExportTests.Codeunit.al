@@ -68,13 +68,22 @@ codeunit 144080 "Serv. Decl. FR Export Tests"
         DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
         DataExch."Table Filters".CreateOutStream(OutStr);
         ServDeclLine.SetRange("Service Declaration No.", ServDeclLine."Service Declaration No.");
-        OutStr.WriteText(ServDeclLine.GetView());
+        OutStr.WriteText(ServDeclLine.GetView(false));
         DataExch.Insert(true);
+        DataExchTableFilter.Init();
         DataExchTableFilter."Data Exch. No." := DataExch."Entry No.";
         DataExchTableFilter."Table ID" := Database::"Service Declaration Header";
         DataExchTableFilter."Table Filters".CreateOutStream(OutStr);
         ServDeclHeader.SetRecFilter();
-        OutStr.WriteText(ServDeclHeader.GetView());
+        OutStr.WriteText(ServDeclHeader.GetView(false));
+        DataExchTableFilter.Insert();
+        DataExchTableFilter.Init();
+        DataExchTableFilter."Data Exch. No." := DataExch."Entry No.";
+        DataExchTableFilter."Table ID" := Database::"Company Information";
+        DataExchTableFilter."Table Filters".CreateOutStream(OutStr);
+        CompanyInformation.FindFirst();
+        CompanyInformation.SetRecFilter();
+        OutStr.WriteText(CompanyInformation.GetView(false));
         DataExchTableFilter.Insert();
         Codeunit.Run(Codeunit::"Export Mapping", DataExch);
 

@@ -2,7 +2,7 @@
     "id":  "87990153-0e35-4e5d-ba61-2e93077d1699",
     "name":  "_Exclude_Review_General_Ledger_Entries",
     "publisher":  "Microsoft",
-    "version":  "22.2.0.0",
+    "version":  "22.3.0.0",
     "brief":  "_Exclude_Review_General_Ledger_Entries",
     "description":  "_Exclude_Review_General_Ledger_Entries",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -18,7 +18,7 @@
 
                     ],
     "platform":  "22.0.0.0",
-    "application":  "22.2.0.0",
+    "application":  "22.3.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,

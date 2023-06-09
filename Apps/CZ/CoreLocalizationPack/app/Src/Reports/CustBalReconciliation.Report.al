@@ -63,7 +63,7 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
             column(CompanyInfoVATRegistrationNo; CompanyInformation."VAT Registration No.")
             {
             }
-            column(CustomerRegistrationNo; "Registration No. CZL")
+            column(CustomerRegistrationNo; "Registration Number")
             {
             }
             column(CompanyInfoRegistrationNo; CompanyInformation."Registration No.")
@@ -108,7 +108,7 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
             column(CreditCaption; CreditCaptionLbl)
             {
             }
-            column(CustomerRegistrationNoCaption; FieldCaption("Registration No. CZL"))
+            column(CustomerRegistrationNoCaption; FieldCaption("Registration Number"))
             {
             }
             column(CompanyInfoRegistrationNoCaption; CompanyInfoRegistrationNoCaptionLbl)

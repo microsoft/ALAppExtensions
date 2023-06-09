@@ -27,7 +27,7 @@ codeunit 11753 "Vendor Handler CZL"
     local procedure CheckChangeOnBeforeIsContactUpdateNeeded(Vendor: Record Vendor; xVendor: Record Vendor; var UpdateNeeded: Boolean)
     begin
         UpdateNeeded := UpdateNeeded or
-            (Vendor."Registration No. CZL" <> xVendor."Registration No. CZL") or
+            (Vendor."Registration Number" <> xVendor."Registration Number") or
             (Vendor."Tax Registration No. CZL" <> xVendor."Tax Registration No. CZL");
     end;
 #if not CLEAN20

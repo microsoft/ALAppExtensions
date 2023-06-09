@@ -41,7 +41,7 @@ codeunit 11756 "Registration No. Mgt. CZL"
     local procedure CheckCustomerDuplicity(RegNo: Text[20]; Number: Code[20]; IsTax: Boolean)
     begin
         if not IsTax then
-            Customer.SetRange("Registration No. CZL", RegNo)
+            Customer.SetRange("Registration Number", RegNo)
         else
             Customer.SetRange("Tax Registration No. CZL", RegNo);
         Customer.SetFilter("No.", '<>%1', Number);
@@ -57,7 +57,7 @@ codeunit 11756 "Registration No. Mgt. CZL"
     local procedure CheckVendorDuplicity(RegNo: Text[20]; Number: Code[20]; IsTax: Boolean)
     begin
         if not IsTax then
-            Vendor.SetRange("Registration No. CZL", RegNo)
+            Vendor.SetRange("Registration Number", RegNo)
         else
             Vendor.SetRange("Tax Registration No. CZL", RegNo);
         Vendor.SetFilter("No.", '<>%1', Number);
@@ -73,7 +73,7 @@ codeunit 11756 "Registration No. Mgt. CZL"
     local procedure CheckContactDuplicity(RegNo: Text[20]; Number: Code[20]; IsTax: Boolean)
     begin
         if not IsTax then
-            Contact.SetRange("Registration No. CZL", RegNo)
+            Contact.SetRange("Registration Number", RegNo)
         else
             Contact.SetRange("Tax Registration No. CZL", RegNo);
         Contact.SetFilter("No.", '<>%1', Number);
@@ -103,7 +103,7 @@ codeunit 11756 "Registration No. Mgt. CZL"
     local procedure GetFieldCaption(IsTax: Boolean): Text
     begin
         if not IsTax then
-            exit(Contact.FieldCaption("Registration No. CZL"));
+            exit(Contact.FieldCaption("Registration Number"));
         exit(Contact.FieldCaption("Tax Registration No. CZL"));
     end;
 }

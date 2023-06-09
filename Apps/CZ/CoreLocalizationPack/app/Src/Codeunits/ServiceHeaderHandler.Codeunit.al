@@ -54,7 +54,7 @@ codeunit 11745 "Service Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyCustomerFields', '', false, false)]
     local procedure UpdateRegNoOnAfterCopyCustomerFields(var ServiceHeader: Record "Service Header"; Customer: Record Customer)
     begin
-        ServiceHeader."Registration No. CZL" := Customer."Registration No. CZL";
+        ServiceHeader."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
         ServiceHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
         if Customer."Transaction Type CZL" <> '' then
             ServiceHeader."Transaction Type" := Customer."Transaction Type CZL";
@@ -69,7 +69,7 @@ codeunit 11745 "Service Header Handler CZL"
             ServiceHeader.Validate("Bank Account Code CZL", ServiceHeader.GetDefaulBankAccountNoCZL())
         else
             ServiceHeader.Validate("Bank Account Code CZL", Customer."Preferred Bank Account Code");
-        ServiceHeader."Registration No. CZL" := Customer."Registration No. CZL";
+        ServiceHeader."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
         ServiceHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
         ServiceHeader."VAT Registration No." := Customer."VAT Registration No.";
     end;

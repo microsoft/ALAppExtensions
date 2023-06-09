@@ -81,9 +81,7 @@ codeunit 30160 "Shpfy Order Fulfillments"
             Clear(OrderFulfillment);
             OrderFulfillment."Shopify Fulfillment Id" := Id;
             OrderFulfillment."Shopify Order Id" := OrderId;
-        end else
-            if OrderFulfillment."Updated At" = JsonHelper.GetValueAsDateTime(JFulfillment, 'updatedAt') then
-                exit;
+        end;
         OrderFulfillment.Status := ConvertToFulFillmentStatus(JsonHelper.GetValueAsText(JFulfillment, 'status'));
         OrderFulfillmentRecordRef.GetTable(OrderFulfillment);
         JsonHelper.GetValueIntoField(JFulfillment, 'createdAt', OrderFulfillmentRecordRef, OrderFulfillment.FieldNo("Created At"));

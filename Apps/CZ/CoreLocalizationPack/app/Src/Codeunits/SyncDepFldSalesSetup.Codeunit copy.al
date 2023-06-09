@@ -20,9 +20,12 @@ codeunit 31163 "Sync.Dep.Fld-SalesSetup CZL"
     local procedure SyncDeprecatedFields(var Rec: Record "Sales & Receivables Setup")
     var
         PreviousRecord: Record "Sales & Receivables Setup";
+        PostingGroupManagement: Codeunit "Posting Group Management CZL";
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
     begin
+        if not PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled() then
+            exit;
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
         SyncDepFldUtilities.SyncFields(Rec."Allow Alter Posting Groups CZL", Rec."Allow Multiple Posting Groups", PreviousRecord."Allow Alter Posting Groups CZL", PreviousRecord."Allow Multiple Posting Groups");

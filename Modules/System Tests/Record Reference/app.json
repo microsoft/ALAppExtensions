@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for the Record Reference module",
-    "version":  "22.2.0.0",
+    "version":  "22.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,25 +15,25 @@
                              "id":  "44012bcf-22c2-40d9-bb24-410b1dfc72dc",
                              "name":  "Record Reference",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "40860557-a18d-42ad-aecb-22b7dd80dc80",
                              "name":  "Permissions Mock",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "82834e1e-bbf2-4184-b70e-ee44bca1ca10",
                              "name":  "Record Link Management",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          }
                      ],
     "screenshots":  [

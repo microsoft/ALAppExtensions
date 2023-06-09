@@ -66,7 +66,7 @@
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterCopyBuyFromVendorFieldsFromVendor', '', false, false)]
     local procedure UpdateOnAfterCopyBuyFromVendorFieldsFromVendor(var PurchaseHeader: Record "Purchase Header"; Vendor: Record Vendor)
     begin
-        PurchaseHeader."Registration No. CZL" := Vendor."Registration No. CZL";
+        PurchaseHeader."Registration No. CZL" := Vendor.GetRegistrationNoTrimmedCZL();
         PurchaseHeader."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
         if (Vendor."Transaction Type CZL" <> '') and
            (Vendor."Transaction Type CZL" <> PurchaseHeader."Transaction Type")
@@ -85,7 +85,7 @@
             PurchaseHeader.Validate("Bank Account Code CZL", PurchaseHeader.GetDefaulBankAccountNoCZL())
         else
             PurchaseHeader.Validate("Bank Account Code CZL", Vendor."Preferred Bank Account Code");
-        PurchaseHeader."Registration No. CZL" := Vendor."Registration No. CZL";
+        PurchaseHeader."Registration No. CZL" := Vendor.GetRegistrationNoTrimmedCZL();
         PurchaseHeader."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
     end;
 

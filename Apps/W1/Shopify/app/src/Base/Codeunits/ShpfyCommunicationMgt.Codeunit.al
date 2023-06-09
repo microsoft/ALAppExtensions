@@ -507,7 +507,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     internal procedure CheckOutgoingRequests(Url: Text; Method: Text; Request: Text)
     begin
         if Method in ['POST', 'PUT'] then begin
-            if Request.Contains('"query"') then // GraphQL request
+            if Request.Contains('"query"') then
                 if not Request.Contains('"mutation') then
                     exit;
 

@@ -202,6 +202,13 @@ page 30113 "Shpfy Order"
                     Importance = Additional;
                     ToolTip = 'Specifies whether the order has been confirmed.';
                 }
+                field(Edited; Rec.Edited)
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    Importance = Additional;
+                    ToolTip = 'Specifies whether the order has had any edits applied.';
+                }
                 field(Processed; Rec.Processed)
                 {
                     ApplicationArea = All;
@@ -212,13 +219,13 @@ page 30113 "Shpfy Order"
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'Specifies the status of payments associated with the order. Valid values are: pending, authorized, partially_paid, paid, partially_refunded, refunded, voided.';
+                    ToolTip = 'Specifies the status of payments associated with the order. Valid values are: pending, authorized, partially paid, paid, partially refunded, refunded, voided.';
                 }
                 field(FulfillmentStatus; Rec."Fulfillment Status")
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: Fulfilled, null, partial, restocked.';
+                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: fulfilled, in progress, open, pending fulfillment, restocked, unfulfilled, partially fulfilled.';
                 }
                 field(SalesOrderNo; Rec."Sales Order No.")
                 {
@@ -438,6 +445,12 @@ page 30113 "Shpfy Order"
         }
         area(factboxes)
         {
+            part(LinkedBCDocuments; "Shpfy Linked To Documents")
+            {
+                ApplicationArea = All;
+                Caption = 'Linked Documents';
+                SubPageLink = "Shopify Document Type" = const("Shpfy Shop Document Type"::"Shopify Shop Order"), "Shopify Document Id" = field("Shopify Order Id");
+            }
             part(SalesHistory; "Sales Hist. Sell-to FactBox")
             {
                 ApplicationArea = All;
@@ -648,6 +661,48 @@ page 30113 "Shpfy Order"
                     SalesOrder.SetRecord(SalesHeader);
                     SalesOrder.Run();
                     ;
+                end;
+            }
+            action(Refunds)
+            {
+                ApplicationArea = All;
+                Caption = 'Refunds';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify refunds.';
+
+                trigger OnAction()
+                var
+                    RefundHeader: Record "Shpfy Refund Header";
+                    RefundHeaders: Page "Shpfy Refunds";
+                begin
+                    RefundHeader.SetRange("Order Id", Rec."Shopify Order Id");
+                    RefundHeaders.SetTableView(RefundHeader);
+                    RefundHeaders.Run();
+                end;
+            }
+            action(Returns)
+            {
+                ApplicationArea = All;
+                Caption = 'Returns';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify returns.';
+
+                trigger OnAction()
+                var
+                    ReturnHeader: Record "Shpfy Return Header";
+                    ReturnHeaders: Page "Shpfy Returns";
+                begin
+                    ReturnHeader.SetRange("Order Id", Rec."Shopify Order Id");
+                    ReturnHeaders.SetTableView(ReturnHeader);
+                    ReturnHeaders.Run();
                 end;
             }
             action(SalesInvoice)

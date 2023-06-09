@@ -207,8 +207,8 @@ page 31276 "Compensation Proposal CZC"
                         CompensationsSetupCZC."Compensation Proposal Method"::"Registration No.":
                             if SourceNo <> '' then begin
                                 Customer.Get(SourceNo);
-                                if Customer."Registration No. CZL" <> '' then begin
-                                    Vendor.SetRange("Registration No. CZL", Customer."Registration No. CZL");
+                                if Customer."Registration Number" <> '' then begin
+                                    Vendor.SetRange("Registration Number", Customer."Registration Number");
                                     if Vendor.FindSet(false) then
                                         repeat
                                             if RecFilter = '' then
@@ -244,8 +244,8 @@ page 31276 "Compensation Proposal CZC"
                         CompensationsSetupCZC."Compensation Proposal Method"::"Registration No.":
                             if SourceNo <> '' then begin
                                 Vendor.Get(SourceNo);
-                                if Vendor."Registration No. CZL" <> '' then begin
-                                    Customer.SetRange("Registration No. CZL", Vendor."Registration No. CZL");
+                                if Vendor."Registration Number" <> '' then begin
+                                    Customer.SetRange("Registration Number", Vendor."Registration Number");
                                     if Customer.FindSet(false, false) then
                                         repeat
                                             if RecFilter = '' then

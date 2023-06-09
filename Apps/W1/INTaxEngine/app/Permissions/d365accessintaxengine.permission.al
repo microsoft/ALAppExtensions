@@ -4,6 +4,8 @@ permissionset 20138 "D365 Access - IN Tax Engine"
     Assignable = false;
     Caption = 'D365 Access - IN Tax Engine';
 
+    IncludedPermissionSets = "Adv Objects - Tax Engine";
+
     Permissions = tabledata "Tax Engine Notification" = RMID,
                   tabledata "Upgraded Tax Types" = RMID,
                   tabledata "Upgraded Use Cases" = RMID,
