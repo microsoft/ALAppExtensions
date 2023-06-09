@@ -58,6 +58,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Gets all list items for the given list.
     /// </summary>
+    /// <raises>ProcessSharePointListItemMetadata</raises>    
     /// <param name="ListTitle">The title of the list/</param>
     /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
@@ -69,6 +70,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Gets all list items for the given list.
     /// </summary>
+    /// <raises>ProcessSharePointListItemMetadata</raises>    
     /// <param name="ListId">The GUID of the list/</param>
     /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
@@ -207,6 +209,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Creates a new list item in specific list.
     /// </summary>
+    /// <raises>ProcessSharePointListItemMetadata</raises>    
     /// <param name="ListTitle">The title of the list.</param>
     /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
     /// <param name="ListItemTitle">The title of the new list item.</param>
@@ -220,6 +223,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Creates a new list item in specific list.
     /// </summary>
+    /// <raises>ProcessSharePointListItemMetadata</raises>    
     /// <param name="ListId">The GUID of the list.</param>
     /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
     /// <param name="ListItemTitle">The title of the new list item.</param>
@@ -249,6 +253,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Lists all files in the given folder.
     /// </summary>
+    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="SharePointFile">Collection of the result (temporary record).</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
@@ -260,6 +265,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Lists all files in the given folder.
     /// </summary>
+    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="SharePointFile">Collection of the result (temporary record).</param>
     /// <param name="ListAllFields">Include metadata in results.</param>
@@ -307,6 +313,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Adds a file to specific folder.
     /// </summary>
+    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <remarks>Requires UI interaction to pick a file.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="SharePointFile">Collection of the result (temporary record). Always one element.</param>
@@ -319,6 +326,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Adds a file to specific folder.
     /// </summary>
+    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <remarks>Requires UI interaction to pick a file.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="SharePointFile">Collection of the result (temporary record). Always one element.</param>
@@ -332,6 +340,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Adds a file to specific folder.
     /// </summary>
+    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <remarks>Does not require UI interaction.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="FileName">File name to use on SharePoint.</param>
@@ -346,6 +355,7 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Adds a file to specific folder.
     /// </summary>
+    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <remarks>Does not require UI interaction.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="FileName">File name to use on SharePoint.</param>
@@ -359,7 +369,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Updates metadata field for lsit item.
+    /// Updates metadata field for list item.
     /// </summary>
     /// <param name="ListTitle">The title of the list.</param>
     /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
@@ -372,7 +382,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Updates metadata field for lsit item.
+    /// Updates metadata field for list item.
     /// </summary>
     /// <param name="ListTitle">The GUID of the list.</param>
     /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
