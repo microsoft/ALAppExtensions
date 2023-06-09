@@ -12,7 +12,7 @@ codeunit 11751 "Contact Handler CZL"
     local procedure RegNoOnBeforeDuplicateCheck(Contact: Record Contact; xContact: Record Contact; var IsDuplicateCheckNeeded: Boolean)
     begin
         IsDuplicateCheckNeeded := IsDuplicateCheckNeeded or
-            (Contact."Registration No. CZL" <> xContact."Registration No. CZL") or
+            (Contact."Registration Number" <> xContact."Registration Number") or
             (Contact."Tax Registration No. CZL" <> xContact."Tax Registration No. CZL");
     end;
 
@@ -22,7 +22,7 @@ codeunit 11751 "Contact Handler CZL"
         case Contact.Type of
             Contact.Type::Person:
                 begin
-                    Contact.TestField("Registration No. CZL", '');
+                    Contact.TestField("Registration Number", '');
                     Contact.TestField("Tax Registration No. CZL", '');
                 end;
         end;
@@ -32,7 +32,7 @@ codeunit 11751 "Contact Handler CZL"
     local procedure RegNoOnBeforeIsUpdateNeeded(Contact: Record Contact; xContact: Record Contact; var UpdateNeeded: Boolean)
     begin
         UpdateNeeded := UpdateNeeded or
-            (Contact."Registration No. CZL" <> xContact."Registration No. CZL") or
+            (Contact."Registration Number" <> xContact."Registration Number") or
             (Contact."Tax Registration No. CZL" <> xContact."Tax Registration No. CZL");
     end;
 
@@ -47,7 +47,7 @@ codeunit 11751 "Contact Handler CZL"
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
     begin
-        if (Customer."Registration No. CZL" <> '') and (Customer.GetSavedRegistrationNoCZL() <> Customer."Registration No. CZL") then
+        if (Customer."Registration Number" <> '') and (Customer.GetSavedRegistrationNoCZL() <> Customer."Registration Number") then
             RegistrationLogMgtCZL.LogCustomer(Customer);
     end;
 
@@ -62,7 +62,7 @@ codeunit 11751 "Contact Handler CZL"
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
     begin
-        if (Vendor."Registration No. CZL" <> '') and (Vendor.GetSavedRegistrationNoCZL() <> Vendor."Registration No. CZL") then
+        if (Vendor."Registration Number" <> '') and (Vendor.GetSavedRegistrationNoCZL() <> Vendor."Registration Number") then
             RegistrationLogMgtCZL.LogVendor(Vendor);
     end;
 }

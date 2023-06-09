@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test suite for the Business Central Performance Toolkit.",
     "description":  "Contains an expansive set tests for the Business Central Performance Toolkit.",
-    "version":  "22.2.0.0",
+    "version":  "22.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2142241",
@@ -15,13 +15,13 @@
                              "id":  "75f1590f-55c5-4501-ae63-bada5534e852",
                              "name":  "Performance Toolkit",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          }
                      ],
     "screenshots":  [

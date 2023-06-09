@@ -196,6 +196,5 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
                 end else
                     break;
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.order.fulfillmentOrders.pageInfo.hasNextPage');
-        Commit();
     end;
 }

@@ -17,6 +17,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Customer Address" = R,
         tabledata "Shpfy Customer Template" = R,
         tabledata "Shpfy Data Capture" = R,
+        tabledata "Shpfy Doc. Link To Doc." = R,
         tabledata "Shpfy Fulfillment Line" = R,
         tabledata "Shpfy FulFillment Order Header" = R,
         tabledata "Shpfy FulFillment Order Line" = R,
@@ -49,6 +50,10 @@ permissionset 30100 "Shpfy - Read"
 #pragma warning restore AL0432
 #endif
         tabledata "Shpfy Registered Store New" = R,
+        tabledata "Shpfy Refund Header" = R,
+        tabledata "Shpfy Refund Line" = R,
+        tabledata "Shpfy Return Header" = R,
+        tabledata "Shpfy Return Line" = R,
         tabledata "Shpfy Shipment Method Mapping" = R,
         tabledata "Shpfy Shop" = R,
         tabledata "Shpfy Shop Collection Map" = R,

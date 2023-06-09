@@ -213,6 +213,7 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeReportSelections();
         UpgradeReplaceVATDateCZL();
         UpgradeReplaceAllowAlterPostingGroups();
+        UpgradeUseW1RegistrationNumber();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -2330,6 +2331,36 @@ codeunit 31017 "Upgrade Application CZL"
         DetVendLedgEntryDataTransfer.CopyFields();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsUpgradeTag());
+    end;
+
+    local procedure UpgradeUseW1RegistrationNumber()
+    var
+        Contact: Record Contact;
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+        ContactDataTransfer: DataTransfer;
+        CustomerDataTransfer: DataTransfer;
+        VendorDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberUpgradeTag()) then
+            exit;
+
+        CustomerDataTransfer.SetTables(Database::"Customer", Database::"Customer");
+        CustomerDataTransfer.AddSourceFilter(Customer.FieldNo("Registration No. CZL"), '<>%1', '');
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Registration No. CZL"), Customer.FieldNo("Registration Number"));
+        CustomerDataTransfer.CopyFields();
+
+        VendorDataTransfer.SetTables(Database::"Vendor", Database::"Vendor");
+        VendorDataTransfer.AddSourceFilter(Vendor.FieldNo("Registration No. CZL"), '<>%1', '');
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Registration No. CZL"), Vendor.FieldNo("Registration Number"));
+        VendorDataTransfer.CopyFields();
+
+        ContactDataTransfer.SetTables(Database::"Contact", Database::"Contact");
+        ContactDataTransfer.AddSourceFilter(Contact.FieldNo("Registration No. CZL"), '<>%1', '');
+        ContactDataTransfer.AddFieldValue(Contact.FieldNo("Registration No. CZL"), Contact.FieldNo("Registration Number"));
+        ContactDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberUpgradeTag());
     end;
 
     local procedure UpgradePermission()

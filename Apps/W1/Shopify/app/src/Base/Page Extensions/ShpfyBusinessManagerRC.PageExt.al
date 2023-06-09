@@ -55,6 +55,23 @@ pageextension 30101 "Shpfy Business Manager RC" extends "Business Manager Role C
                     RunPageView = where(Closed = const(false));
                     ToolTip = 'View your Shopify agreements with customers to sell certain products on certain delivery and payment terms.';
                 }
+                action(Refunds)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Refunds';
+                    Image = OrderList;
+                    RunObject = page "Shpfy Refunds";
+                    ToolTip = 'View your Shopify refunds.';
+
+                }
+                action(Returns)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Returns';
+                    Image = OrderList;
+                    RunObject = page "Shpfy Returns";
+                    ToolTip = 'View your Shopify returns.';
+                }
                 action(ShpfyGiftCards)
                 {
                     ApplicationArea = All;

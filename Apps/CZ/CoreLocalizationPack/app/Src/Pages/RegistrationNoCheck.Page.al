@@ -19,7 +19,7 @@ page 31209 "Registration No. Check CZL"
 
                     trigger OnValidate()
                     begin
-                        DataTypeManagement.FindFieldByName(GlobalRecordRef, FieldRefVar, DummyCustomer.FieldName("Registration No. CZL"));
+                        DataTypeManagement.FindFieldByName(GlobalRecordRef, FieldRefVar, DummyCustomer.FieldName("Registration Number"));
                         FieldRefVar.Validate(RegistrationNo);
                     end;
                 }

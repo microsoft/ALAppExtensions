@@ -77,7 +77,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 Validate("Currency Code");
 
                 Validate("Bank Account Code", Vendor."Preferred Bank Account Code");
-                "Registration No." := Vendor."Registration No. CZL";
+                "Registration No." := Vendor.GetRegistrationNoTrimmedCZL();
                 "Tax Registration No." := Vendor."Tax Registration No. CZL";
                 "Responsibility Center" := UserSetupManagement.GetRespCenter(1, Vendor."Responsibility Center");
 

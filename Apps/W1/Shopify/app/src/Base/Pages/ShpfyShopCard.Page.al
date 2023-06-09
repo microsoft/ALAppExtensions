@@ -436,6 +436,60 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies the tax area source and the sequence to be followed.';
                 }
             }
+            group(ReturnsAndRefunds)
+            {
+                Caption = 'Return and Refund Processing';
+                AboutText = 'Define how Returns and Refunds in Shopify flow into Business Central.';
+
+                field("Return and Refund Process"; Rec."Return and Refund Process")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Process Type';
+                    ToolTip = 'Specifies how returns and refunds from Shopify are handles in Business Central. The import process is always done within the import of a Shopify order.';
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update(true);
+                    end;
+                }
+                group(HandlingOfReturns)
+                {
+                    ShowCaption = false;
+                    Visible = IsReturnRefundsVisible;
+
+                    field("Location Code of Returns"; Rec."Return Location")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies location code for returned goods.';
+
+                        trigger OnValidate()
+                        begin
+                            CurrPage.Update(true);
+                        end;
+                    }
+
+                    field("G/L Account Instead of Item"; Rec."Refund Acc. non-restock Items")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies a G/L Account No. for goods where you don''t want to have an inventory correction.';
+
+                        trigger OnValidate()
+                        begin
+                            CurrPage.Update(true);
+                        end;
+                    }
+                    field("G/L Account for Amt. diff."; Rec."Refund Account")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies a G/L Account No. for the difference in the total refunded amount and the total amount of the items.';
+
+                        trigger OnValidate()
+                        begin
+                            CurrPage.Update(true);
+                        end;
+                    }
+                }
+            }
         }
     }
 
@@ -526,6 +580,48 @@ page 30101 "Shpfy Shop Card"
                     OrderHeader.SetRange("Shop Code", Rec.Code);
                     Orders.SetTableView(OrderHeader);
                     Orders.Run();
+                end;
+            }
+            action(Refunds)
+            {
+                ApplicationArea = All;
+                Caption = 'Refunds';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify refunds.';
+
+                trigger OnAction()
+                var
+                    RefundHeader: Record "Shpfy Refund Header";
+                    RefundHeaders: Page "Shpfy Refunds";
+                begin
+                    RefundHeader.SetRange("Shop Code", Rec.Code);
+                    RefundHeaders.SetTableView(RefundHeader);
+                    RefundHeaders.Run();
+                end;
+            }
+            action(Returns)
+            {
+                ApplicationArea = All;
+                Caption = 'Returns';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify returns.';
+
+                trigger OnAction()
+                var
+                    ReturnHeader: Record "Shpfy Return Header";
+                    ReturnHeaders: Page "Shpfy Returns";
+                begin
+                    ReturnHeader.SetRange("Shop Code", Rec.Code);
+                    ReturnHeaders.SetTableView(ReturnHeader);
+                    ReturnHeaders.Run();
                 end;
             }
             action(CustomerTemplates)
@@ -807,6 +903,7 @@ page 30101 "Shpfy Shop Card"
         NewTemplatesEnabled: Boolean;
 #endif
         EntityTextEnabled: Boolean;
+        IsReturnRefundsVisible: Boolean;
 
     trigger OnOpenPage()
     var
@@ -823,6 +920,11 @@ page 30101 "Shpfy Shop Card"
         EntityTextEnabled := EntityText.IsEnabled();
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        CheckReturnRefundsVisible();
+    end;
+
     local procedure GetResetSyncTo(InitDateTime: DateTime): DateTime
     var
         DateTimeDialog: Page "Date-Time Dialog";
@@ -834,5 +936,10 @@ page 30101 "Shpfy Shop Card"
         if DateTimeDialog.RunModal() = Action::LookupOK then
             exit(DateTimeDialog.GetDateTime());
         exit(InitDateTime);
+    end;
+
+    local procedure CheckReturnRefundsVisible()
+    begin
+        IsReturnRefundsVisible := Rec."Return and Refund Process" <> "Shpfy ReturnRefund ProcessType"::" ";
     end;
 }

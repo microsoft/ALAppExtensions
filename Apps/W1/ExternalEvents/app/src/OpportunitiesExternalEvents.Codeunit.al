@@ -11,11 +11,11 @@ Codeunit 38506 "Opportunities External Events"
         OpportunitiesApiUrlTok: Label 'v2.0/companies(%1)/opportunities(%2)', Locked = true;
     begin
         Url := ExternalEventsHelper.CreateLink(CopyStr(OpportunitiesApiUrlTok, 1, 250), Opportunity.SystemId);
-        OpportunityQuoted(Opportunity.SystemId, Url);
+        OpportunityQuoted(Opportunity.SystemId, SalesHeader.SystemId, Url);
     end;
 
     [ExternalBusinessEvent('OpportunityQuoted', 'Quote created for opportunity', 'This business event is triggered when a quote is created for an opportunity as part of the Quote to Cash process.', EventCategory::Opportunities)]
-    local procedure OpportunityQuoted(OpportunitiesId: Guid; Url: text[250])
+    local procedure OpportunityQuoted(OpportunitiesId: Guid; SalesQuoteId: Guid; Url: text[250])
     begin
     end;
 

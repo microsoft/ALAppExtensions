@@ -26,7 +26,7 @@ codeunit 30178 "Shpfy Product Export"
     begin
         ShopifyProduct.SetFilter("Item SystemId", '<>%1', NullGuid);
         ShopifyProduct.SetFilter("Shop Code", Rec.GetFilter(Code));
-        if ShopifyProduct.FindSet(false, false) then
+        if ShopifyProduct.FindSet(false) then
             repeat
                 SetShop(ShopifyProduct."Shop Code");
                 if Shop."Can Update Shopify Products" or OnlyUpdatePrice then
@@ -235,9 +235,9 @@ codeunit 30178 "Shpfy Product Export"
         ItemTranslation.SetRange("Language Code", Shop."Language Code");
         ItemTranslation.SetRange("Variant Code", '');
         if ItemTranslation.FindFirst() and (ItemTranslation.Description <> '') then
-            Title := ItemTranslation.Description
+            Title := RemoveTabChars(ItemTranslation.Description)
         else
-            Title := Item.Description;
+            Title := RemoveTabChars(Item.Description);
         ProductEvents.OnBeforSetProductTitle(Item, Shop."Language Code", Title, IsHandled);
         if not IsHandled then begin
             ProductEvents.OnAfterSetProductTitle(Item, Shop."Language Code", Title);
@@ -247,6 +247,19 @@ codeunit 30178 "Shpfy Product Export"
         ShopifyProduct."Product Type" := CopyStr(GetProductType(Item."Item Category Code"), 1, MaxStrLen(ShopifyProduct."Product Type"));
         ShopifyProduct.SetDescriptionHtml(CreateProductBody(Item."No."));
         ShopifyProduct."Tags Hash" := ShopifyProduct.CalcTagsHash();
+    end;
+
+    /// <summary> 
+    /// Replace Tab with spaces.
+    /// </summary>
+    /// <param name="Source">Parameter of type Text.</param>
+    /// <returns>Return value of type Text.</returns>
+    local procedure RemoveTabChars(Source: Text): Text
+    var
+        Tab: Text[1];
+    begin
+        Tab[1] := 9;
+        Exit(Source.Replace(Tab, ' '));
     end;
 
     /// <summary> 
@@ -296,7 +309,7 @@ codeunit 30178 "Shpfy Product Export"
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(ShopifyVariant.Barcode));
-            ShopifyVariant.Title := ItemVariant.Description;
+            ShopifyVariant.Title := CopyStr(RemoveTabChars(ItemVariant.Description), 1, MaxStrLen(ShopifyVariant.Title));
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":
@@ -341,7 +354,7 @@ codeunit 30178 "Shpfy Product Export"
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
-            ShopifyVariant.Title := ItemVariant.Description;
+            ShopifyVariant.Title := RemoveTabChars(ItemVariant.Description);
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":
@@ -498,7 +511,7 @@ codeunit 30178 "Shpfy Product Export"
                 ShopifyProduct.Modify();
             end;
             ShopifyVariant.SetRange("Product Id", ProductId);
-            if ShopifyVariant.FindSet(false, false) then
+            if ShopifyVariant.FindSet(false) then
                 repeat
                     if not IsNullGuid(ShopifyVariant."Item SystemId") then
                         if Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
@@ -523,14 +536,14 @@ codeunit 30178 "Shpfy Product Export"
                 until ShopifyVariant.Next() = 0;
             ItemVariant.SetRange("Item No.", Item."No.");
             ItemUnitofMeasure.SetRange("Item No.", Item."No.");
-            if ItemVariant.FindSet(false, false) then
+            if ItemVariant.FindSet(false) then
                 repeat
                     VariantAction := VariantAction::" ";
                     Clear(ShopifyVariant);
                     ShopifyVariant.SetRange("Product Id", ProductId);
                     ShopifyVariant.SetRange("Item Variant SystemId", ItemVariant.SystemId);
                     if Shop."UoM as Variant" then begin
-                        if ItemUnitofMeasure.FindSet(false, false) then
+                        if ItemUnitofMeasure.FindSet(false) then
                             repeat
                                 ShopifyVariant.SetRange("Option 2 Name", Shop."Option Name for UoM");
                                 ShopifyVariant.SetRange("Option 2 Value", ItemUnitofMeasure.Code);
@@ -581,7 +594,7 @@ codeunit 30178 "Shpfy Product Export"
                 ShopifyVariant.SetRange("Product Id", ProductId);
                 ShopifyVariant.SetRange("Item Variant SystemId");
                 if Shop."UoM as Variant" then
-                    if ItemUnitofMeasure.FindSet(false, false) then
+                    if ItemUnitofMeasure.FindSet(false) then
                         repeat
                             ShopifyVariant.SetRange("Option 1 Name", Shop."Option Name for UoM");
                             ShopifyVariant.SetRange("Option 1 Value", ItemUnitofMeasure.Code);

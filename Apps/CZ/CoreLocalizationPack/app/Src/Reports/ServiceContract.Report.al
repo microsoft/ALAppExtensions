@@ -95,7 +95,7 @@ report 31196 "Service Contract CZL"
             column(VATRegistrationNo; Customer."VAT Registration No.")
             {
             }
-            column(RegistrationNo; Customer."Registration No. CZL")
+            column(RegistrationNo; Customer."Registration Number")
             {
             }
             column(ContractNo_ServiceContractHeader; "Contract No.")

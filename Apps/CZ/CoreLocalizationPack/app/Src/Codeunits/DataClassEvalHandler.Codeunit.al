@@ -247,11 +247,19 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Company Information", CompanyInformation.FieldNo("Default Bank Account Code CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Company Information", CompanyInformation.FieldNo("Bank Account Format Check CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Company Information", CompanyInformation.FieldNo("Tax Registration No. CZL"));
+#if not CLEAN23
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::Contact, Contact.FieldNo("Registration No. CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::Contact, Contact.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Copy Gen. Journal Parameters", CopyGenJournalParameters.FieldNo("Replace VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Cust. Ledger Entry", CustLedgerEntry.FieldNo("VAT Date CZL"));
+#if not CLEAN23
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Registration No. CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Validate Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Transaction Type CZL"));
@@ -774,7 +782,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Name", VATStatementName.FieldNo("Attachments CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Template", VATStatementTemplate.FieldNo("XML Format CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Template", VATStatementTemplate.FieldNo("Allow Comments/Attachments CZL"));
+#if not CLEAN23
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Registration No. CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Validate Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Last Unreliab. Check Date CZL"));

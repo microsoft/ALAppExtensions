@@ -4,6 +4,8 @@ permissionset 20139 "D365 Read Access - Tax Engine"
     Assignable = false;
     Caption = 'D365 Read Access - Tax Engine';
 
+    IncludedPermissionSets = "Adv Objects - Tax Engine";
+
     Permissions = tabledata "Action Comment" = R,
                   tabledata "Action Concatenate" = R,
                   tabledata "Action Concatenate Line" = R,

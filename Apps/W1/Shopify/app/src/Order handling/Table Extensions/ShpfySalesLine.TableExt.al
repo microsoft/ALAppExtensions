@@ -18,6 +18,19 @@ tableextension 30104 "Shpfy Sales Line" extends "Sales Line"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(30103; "Shpfy Refund Id"; BigInteger)
+        {
+            Caption = 'Shopify Refund Id';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+
+        field(30104; "Shpfy Refund Line Id"; BigInteger)
+        {
+            Caption = 'Shopify Refund Line Id';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
     }
 }
 

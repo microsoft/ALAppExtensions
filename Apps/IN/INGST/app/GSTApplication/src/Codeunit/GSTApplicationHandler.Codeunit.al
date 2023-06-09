@@ -526,7 +526,12 @@ codeunit 18430 "GST Application Handler"
         ApplyingVendorLedgerEntry: Record "Vendor Ledger Entry";
         TransactionType: Enum "Detail Ledger Transaction Type";
         TotalTDSInclSHECessAmount: Decimal;
+        IsHandled: Boolean;
     begin
+        OnBeforePostGSTWithNormalPaymentOnline(GenJournalLine, AmountToApply, IsHandled);
+        if IsHandled then
+            exit;
+
         if not ApplyingVendorLedgerEntry.Get(OldCVLedgerEntryBuffer."Entry No.") then
             exit;
 
@@ -3041,6 +3046,11 @@ codeunit 18430 "GST Application Handler"
         var RemainingAmount: Decimal;
         var AppliedBase: Decimal;
         var AppliedAmount: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGSTWithNormalPaymentOnline(var GenJournalLine: Record "Gen. Journal Line"; var AmountToApply: Decimal; var IsHandled: Boolean)
     begin
     end;
 }

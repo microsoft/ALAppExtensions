@@ -427,12 +427,12 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             VATEntry.Type::Purchase:
                 if Vendor.Get(TempVATCtrlReportBufferCZL."Bill-to/Pay-to No.") then begin
                     TempVATCtrlReportBufferCZL."Tax Registration No." := Vendor."Tax Registration No. CZL";
-                    TempVATCtrlReportBufferCZL."Registration No." := Vendor."Registration No. CZL";
+                    TempVATCtrlReportBufferCZL."Registration No." := Vendor.GetRegistrationNoTrimmedCZL();
                 end;
             VATEntry.Type::Sale:
                 if Customer.Get(TempVATCtrlReportBufferCZL."Bill-to/Pay-to No.") then begin
                     TempVATCtrlReportBufferCZL."Tax Registration No." := Customer."Tax Registration No. CZL";
-                    TempVATCtrlReportBufferCZL."Registration No." := Customer."Registration No. CZL";
+                    TempVATCtrlReportBufferCZL."Registration No." := Customer.GetRegistrationNoTrimmedCZL();
                 end;
         end;
         TempVATCtrlReportBufferCZL."Document No." := VATEntry."Document No.";

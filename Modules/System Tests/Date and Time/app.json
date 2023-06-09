@@ -2,7 +2,7 @@
     "id":  "93de27b1-58ac-4586-8f28-805cec92d808",
     "name":  "Date and Time Test",
     "publisher":  "Microsoft",
-    "version":  "22.2.0.0",
+    "version":  "22.3.0.0",
     "brief":  "",
     "description":  "Tests for the Date and Time module",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,19 +15,19 @@
                              "id":  "4c315253-b024-4fdc-9c3d-794036768af5",
                              "name":  "Date and Time",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "name":  "Any",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          }
                      ],
     "screenshots":  [

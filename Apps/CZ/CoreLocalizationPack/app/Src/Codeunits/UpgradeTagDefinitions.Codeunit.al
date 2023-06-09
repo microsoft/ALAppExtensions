@@ -27,6 +27,7 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetReplaceVATDateCZLServiceUpgradeTag());
         PerCompanyUpgradeTags.Add(GetReplaceVATDateCZLSetupUpgradeTag());
         PerCompanyUpgradeTags.Add(GetReplaceAllowAlterPostingGroupsUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetUseW1RegistrationNumberUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -122,5 +123,10 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetReplaceAllowAlterPostingGroupsPermissionUpgradeTag(): Code[250]
     begin
         exit('CZL-463956-ReplaceAllowAlterPostingGroupsPermissionUpgrade-20230217');
+    end;
+
+    procedure GetUseW1RegistrationNumberUpgradeTag(): Code[250]
+    begin
+        exit('CZL-471081-UseW1RegistrationNumberUpgrade-20230217');
     end;
 }

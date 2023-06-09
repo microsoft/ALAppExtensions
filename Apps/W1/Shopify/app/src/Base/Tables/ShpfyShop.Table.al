@@ -74,7 +74,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Shipping Charges Account';
             DataClassification = SystemMetadata;
-            TableRelation = "G/L Account";
+            TableRelation = "G/L Account"."No.";
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -140,6 +140,20 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Auto Create Orders';
             DataClassification = SystemMetadata;
+            trigger OnValidate()
+            var
+                ErrorInfo: ErrorInfo;
+                AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
+            begin
+                if Rec."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then
+                    if not Rec."Auto Create Orders" then begin
+                        ErrorInfo.FieldNo(Rec.FieldNo("Auto Create Orders"));
+                        ErrorInfo.ErrorType := ErrorType::Client;
+                        ErrorInfo.RecordId := Rec.RecordId;
+                        ErrorInfo.Message := StrSubstNo(AutoCreateErrorMsg, Rec.FieldCaption("Auto Create Orders"), Rec.FieldCaption("Return and Refund Process"), Rec."Return and Refund Process");
+                        Error(ErrorInfo);
+                    end;
+            end;
         }
         field(22; "Auto Create Unknown Items"; Boolean)
         {
@@ -318,7 +332,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Tip Account';
             DataClassification = SystemMetadata;
-            TableRelation = "G/L Account";
+            TableRelation = "G/L Account"."No.";
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -333,7 +347,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Sold Gift Card Account';
             DataClassification = SystemMetadata;
-            TableRelation = "G/L Account";
+            TableRelation = "G/L Account"."No.";
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -429,6 +443,60 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             TableRelation = "Item Templ.".Code;
             ValidateTableRelation = true;
+        }
+        field(70; "Return and Refund Process"; Enum "Shpfy ReturnRefund ProcessType")
+        {
+            Caption = 'Return and Refund Process';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                ErrorInfo: ErrorInfo;
+                AutoCreateErrorMsg: Label 'You need to turn "%1" on if you want to set "%2" to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
+            begin
+                if Rec."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then
+                    if not Rec."Auto Create Orders" then begin
+                        ErrorInfo.FieldNo(Rec.FieldNo("Return and Refund Process"));
+                        ErrorInfo.ErrorType := ErrorType::Client;
+                        ErrorInfo.RecordId := Rec.RecordId;
+                        ErrorInfo.Message := StrSubstNo(AutoCreateErrorMsg, Rec.FieldCaption("Auto Create Orders"), Rec.FieldCaption("Return and Refund Process"), Rec."Return and Refund Process");
+                        Error(ErrorInfo);
+                    end;
+            end;
+        }
+        field(73; "Return Location"; Code[10])
+        {
+            Caption = 'Return Location';
+            DataClassification = CustomerContent;
+            TableRelation = Location WHERE("Use As In-Transit" = CONST(false));
+        }
+        field(75; "Refund Acc. non-restock Items"; Code[20])
+        {
+            Caption = 'Refund Account non-restock Items';
+            DataClassification = CustomerContent;
+            TableRelation = "G/L Account"."No.";
+
+            trigger OnValidate()
+            var
+                GLAccount: Record "G/L Account";
+            begin
+                if GLAccount.Get("Refund Acc. non-restock Items") then
+                    CheckGLAccount(GLAccount);
+            end;
+        }
+        field(76; "Refund Account"; Code[20])
+        {
+            Caption = 'Refund Account';
+            DataClassification = CustomerContent;
+            TableRelation = "G/L Account"."No.";
+
+            trigger OnValidate()
+            var
+                GLAccount: Record "G/L Account";
+            begin
+                if GLAccount.Get("Refund Account") then
+                    CheckGLAccount(GLAccount);
+            end;
         }
         field(100; "Collection Last Export Version"; BigInteger)
         {

@@ -204,8 +204,8 @@ codeunit 30202 "Shpfy Initial Import"
     var
         xJobQueueEntry: Record "Job Queue Entry";
     begin
-        xJobQueueEntry := JobQueueEntry;
-        if xJobQueueEntry.Find() then
+        xJobQueueEntry.SetRange(ID, JobQueueEntry.ID);
+        if xJobQueueEntry.FindFirst() then
             exit((xJobQueueEntry.Status = xJobQueueEntry.Status::"In Process") and (xJobQueueEntry.Status <> JobQueueEntry.Status));
     end;
 

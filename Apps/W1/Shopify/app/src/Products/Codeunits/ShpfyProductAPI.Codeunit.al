@@ -119,7 +119,7 @@ codeunit 30176 "Shpfy Product API"
         end;
         ShopLocation.SetRange("Shop Code", ShopifyProduct."Shop Code");
         ShopLocation.SetRange(Active, true);
-        if ShopLocation.FindSet(false, false) then begin
+        if ShopLocation.FindSet(false) then begin
             GraphQuery.Append(', inventoryQuantities: [');
             repeat
                 GraphQuery.Append('{availableQuantity: 0, locationId: \"gid://shopify/Location/');

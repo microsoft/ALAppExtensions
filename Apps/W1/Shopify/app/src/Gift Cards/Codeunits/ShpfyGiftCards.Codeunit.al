@@ -41,6 +41,7 @@ codeunit 30125 "Shpfy Gift Cards"
                 GiftCard.Id := Id;
             end;
             Id := JsonHelper.GetValueAsBigInteger(JToken, 'line_item_id');
+            GiftCard."Order Line Id" := Id;
             if (Id > 0) then begin
                 OrderLine.SetRange("Line Id", Id);
                 if OrderLine.FindFirst() then

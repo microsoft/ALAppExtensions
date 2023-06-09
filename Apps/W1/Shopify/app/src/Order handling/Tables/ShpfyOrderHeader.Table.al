@@ -540,6 +540,11 @@ table 30118 "Shpfy Order Header"
             Caption = 'Presentment Shipping Charges Amount';
             DataClassification = SystemMetadata;
         }
+        field(115; Edited; Boolean)
+        {
+            Caption = 'Edited';
+            DataClassification = SystemMetadata;
+        }
         field(500; "Shop Code"; Code[20])
         {
             Caption = 'Shop Code';
@@ -612,7 +617,7 @@ table 30118 "Shpfy Order Header"
 
             trigger OnValidate();
             var
-                Customer: Record 18;
+                Customer: Record Customer;
             begin
                 Validate("Sell-to Customer No.", Customer.GetCustNo("Sell-to Customer Name"));
             end;
@@ -699,17 +704,30 @@ table 30118 "Shpfy Order Header"
         {
             Clustered = true;
         }
+        key(Key2; "Shop Code", Processed)
+        {
+
+        }
     }
     var
         ShopifyOrderLine: Record "Shpfy Order Line";
 
     trigger OnDelete()
     var
+        ShopifyReturnHeader: Record "Shpfy Return Header";
+        ShopifyRefundHeader: Record "Shpfy Refund Header";
         DataCapture: Record "Shpfy Data Capture";
         FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
     begin
         ShopifyOrderLine.SetRange("Shopify Order Id", "Shopify Order Id");
-        ShopifyOrderLine.DeleteAll(true);
+        if not ShopifyOrderLine.IsEmpty then
+            ShopifyOrderLine.DeleteAll(true);
+        ShopifyReturnHeader.SetRange("Order Id", "Shopify Order Id");
+        if not ShopifyReturnHeader.IsEmpty then
+            ShopifyReturnHeader.DeleteAll(true);
+        ShopifyRefundHeader.SetRange("Order Id", "Shopify Order Id");
+        if not ShopifyRefundHeader.IsEmpty then
+            ShopifyRefundHeader.DeleteAll();
         DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
         DataCapture.SetRange("Linked To Table", Database::"Shpfy Order Header");
         DataCapture.SetRange("Linked To Id", Rec.SystemId);
@@ -758,6 +776,16 @@ table 30118 "Shpfy Order Header"
         ShopifyTag: Record "Shpfy Tag";
     begin
         ShopifyTag.UpdateTags(Database::"Shpfy Order Header", "Shopify Order Id", CommaSeperatedTags);
+    end;
+
+    internal procedure IsProcessed(): Boolean
+    var
+        DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
+    begin
+        DocLinkToBCDoc.SetRange("Shopify Document Type", "Shpfy Shop Document Type"::"Shopify Shop Order");
+        DocLinkToBCDoc.SetRange("Shopify Document Id", Rec."Shopify Order Id");
+        DocLinkToBCDoc.SetCurrentKey("Shopify Document Type", "Shopify Document Id");
+        exit(Rec.Processed or not DocLinkToBCDoc.IsEmpty);
     end;
 
 }

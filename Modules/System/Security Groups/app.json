@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Manage permissions for groups of users",
     "description":  "Specify the permissions different users will have depending on their AAD security group or Windows group.",
-    "version":  "22.2.0.0",
+    "version":  "22.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -22,43 +22,43 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
                              "name":  "Azure AD Graph",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
                              "name":  "User Permissions",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "de35f591-7216-4e60-8be1-1911d71a7fc2",
                              "name":  "Telemetry",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "name":  "Upgrade Tags",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          },
                          {
                              "id":  "4992eeac-2fd3-4515-a50b-7336a332d47f",
                              "name":  "Permission Sets",
                              "publisher":  "Microsoft",
-                             "version":  "22.2.0.0"
+                             "version":  "22.3.0.0"
                          }
                      ],
     "screenshots":  [

@@ -10,17 +10,17 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
     procedure LogCustomer(Customer: Record Customer)
     begin
-        InsertLogRegistration(Customer."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Customer, Customer."No.");
+        InsertLogRegistration(Customer.GetRegistrationNoTrimmedCZL(), Enum::"Reg. Log Account Type CZL"::Customer, Customer."No.");
     end;
 
     procedure LogVendor(Vendor: Record Vendor)
     begin
-        InsertLogRegistration(Vendor."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Vendor, Vendor."No.");
+        InsertLogRegistration(Vendor.GetRegistrationNoTrimmedCZL(), Enum::"Reg. Log Account Type CZL"::Vendor, Vendor."No.");
     end;
 
     procedure LogContact(Contact: Record Contact)
     begin
-        InsertLogRegistration(Contact."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Contact, Contact."No.");
+        InsertLogRegistration(Contact.GetRegistrationNoTrimmedCZL(), Enum::"Reg. Log Account Type CZL"::Contact, Contact."No.");
     end;
 
     local procedure InsertLogRegistration(RegNo: Text[20]; AccType: Enum "Reg. Log Account Type CZL"; AccNo: Code[20])
@@ -135,19 +135,19 @@ codeunit 11755 "Registration Log Mgt. CZL"
         case AccountType of
             AccountType::Customer:
                 if Customer.Get(AccountNo) then begin
-                    NewRegistrationLogCZL.SetRange("Registration No.", Customer."Registration No. CZL");
+                    NewRegistrationLogCZL.SetRange("Registration No.", Customer."Registration Number");
                     if NewRegistrationLogCZL.IsEmpty() then
                         LogCustomer(Customer);
                 end;
             AccountType::Vendor:
                 if Vendor.Get(AccountNo) then begin
-                    NewRegistrationLogCZL.SetRange("Registration No.", Vendor."Registration No. CZL");
+                    NewRegistrationLogCZL.SetRange("Registration No.", Vendor."Registration Number");
                     if NewRegistrationLogCZL.IsEmpty() then
                         LogVendor(Vendor);
                 end;
             AccountType::Contact:
                 if Contact.Get(AccountNo) then begin
-                    NewRegistrationLogCZL.SetRange("Registration No.", Contact."Registration No. CZL");
+                    NewRegistrationLogCZL.SetRange("Registration No.", Contact."Registration Number");
                     if NewRegistrationLogCZL.IsEmpty() then
                         LogContact(Contact);
                 end;
@@ -245,7 +245,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
     begin
         DataTypeManagement.GetRecordRef(RecordVariant, RecordRef);
         if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
-            if not DataTypeManagement.FindFieldByName(RecordRef, RegNoFieldRef, Contact.FieldName("Registration No. CZL")) then
+            if not DataTypeManagement.FindFieldByName(RecordRef, RegNoFieldRef, Contact.FieldName("Registration Number")) then
                 exit;
             RegNo := RegNoFieldRef.Value;
             RegistrationLogCZL.InitRegLog(RegistrationLogCZL, AccountType, EntryNo, RegNo);

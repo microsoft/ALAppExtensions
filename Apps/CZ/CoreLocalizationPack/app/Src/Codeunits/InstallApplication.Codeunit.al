@@ -409,7 +409,12 @@ codeunit 11748 "Install Application CZL"
         Customer.SetLoadFields("Registration No.", "Tax Registration No.", "Transaction Type", "Transaction Specification", "Transport Method");
         if Customer.FindSet() then
             repeat
+#if not CLEAN23
+#pragma warning disable AL0432
                 Customer."Registration No. CZL" := Customer."Registration No.";
+#pragma warning restore AL0432
+#endif
+                Customer."Registration Number" := Customer."Registration No.";
                 Customer."Tax Registration No. CZL" := Customer."Tax Registration No.";
                 Customer."Transaction Type CZL" := Customer."Transaction Type";
                 Customer."Transaction Specification CZL" := Customer."Transaction Specification";
@@ -426,7 +431,12 @@ codeunit 11748 "Install Application CZL"
         Vendor.SetLoadFields("Registration No.", "Tax Registration No.", "Disable Uncertainty Check", "Transaction Type", "Transaction Specification", "Transport Method");
         if Vendor.FindSet() then
             repeat
+#if not CLEAN23
+#pragma warning disable AL0432
                 Vendor."Registration No. CZL" := Vendor."Registration No.";
+#pragma warning restore AL0432
+#endif
+                Vendor."Registration Number" := Vendor."Registration No.";
                 Vendor."Tax Registration No. CZL" := Vendor."Tax Registration No.";
                 Vendor."Disable Unreliab. Check CZL" := Vendor."Disable Uncertainty Check";
                 Vendor."Transaction Type CZL" := Vendor."Transaction Type";
@@ -456,7 +466,12 @@ codeunit 11748 "Install Application CZL"
         Contact.SetLoadFields("Registration No.", "Tax Registration No.");
         if Contact.FindSet() then
             repeat
+#if not CLEAN23
+#pragma warning disable AL0432
                 Contact."Registration No. CZL" := Contact."Registration No.";
+#pragma warning restore AL0432
+#endif
+                Contact."Registration Number" := Contact."Registration No.";
                 Contact."Tax Registration No. CZL" := Contact."Tax Registration No.";
                 Contact.Modify(false);
             until Contact.Next() = 0;

@@ -140,6 +140,23 @@ codeunit 10851 IntrastatReportManagementFR
         exit(false);
     end;
 
+    local procedure IsIntrastatExport(DataExchDefCode: Code[20]): Boolean
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportMgt: Codeunit IntrastatReportManagement;
+    begin
+        if not IntrastatReportMgt.IsFeatureEnabled() then
+            exit(false);
+
+        if not IntrastatReportSetup.Get() then
+            exit(false);
+
+        if IntrastatReportSetup."Split Files" then
+            exit(DataExchDefCode in [IntrastatReportSetup."Data Exch. Def. Code - Receipt", IntrastatReportSetup."Data Exch. Def. Code - Shpt."])
+        else
+            exit(DataExchDefCode = IntrastatReportSetup."Data Exch. Def. Code");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeDefineFileNames', '', true, true)]
     local procedure OnBeforeDefineFileNames(var IntrastatReportHeader: Record "Intrastat Report Header"; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean)
     begin
@@ -158,79 +175,79 @@ codeunit 10851 IntrastatReportManagementFR
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLNodeWithoutAttributes', '', true, true)]
     local procedure OnBeforeCreateXMLNodeWithoutAttributes(var xmlNodeName: Text; var xmlNodeValue: Text; var DataExchColumnDef: Record "Data Exch. Column Def"; var DefaultNameSpace: Text; var IsHandled: Boolean)
     begin
-        case DataExchColumnDef.Path of
-            // 1-HEADER
-            '/INSTAT/Envelope/envelopeId':
-                xmlNodeValue := CompanyInformation.CISD;
-            '/INSTAT/Envelope/DateTime/date':
-                xmlNodeValue := Format(Today, 0, 9);
-            '/INSTAT/Envelope/DateTime/time':
-                xmlNodeValue := CopyStr(Format(Time, 0, 9), 1, 8);
+        if IsIntrastatExport(DataExchColumnDef."Data Exch. Def Code") then
+            case DataExchColumnDef.Path of
+                // 1-HEADER
+                '/INSTAT/Envelope/envelopeId':
+                    xmlNodeValue := CompanyInformation.CISD;
+                '/INSTAT/Envelope/DateTime/date':
+                    xmlNodeValue := Format(Today, 0, 9);
+                '/INSTAT/Envelope/DateTime/time':
+                    xmlNodeValue := CopyStr(Format(Time, 0, 9), 1, 8);
 
-            // 2-SENDER
-            '/Party/partyId':
-                xmlNodeValue := CompanyInformation.GetPartyID();
+                // 2-SENDER
+                '/Party/partyId':
+                    xmlNodeValue := CompanyInformation.GetPartyID();
 
-            // 4-RCPTHEADER, 5-SHPTHEADER
-            '/Declaration/declarationId':
-                xmlNodeValue := FormatExtendNumberToXML(GetDeclarationId(), 6);
-            '/Declaration/referencePeriod':
-                xmlNodeValue := StatisticsPeriodFormatted;
-            '/Declaration/PSIId':
-                xmlNodeValue := CompanyInformation.GetPartyID();
-            '/Declaration/functionCode':
-                xmlNodeValue := 'O';
-            '/Declaration/declarationTypeCode':
-                xmlNodeValue := Format(ObligationLevel);
+                // 4-RCPTHEADER, 5-SHPTHEADER
+                '/Declaration/declarationId':
+                    xmlNodeValue := FormatExtendNumberToXML(GetDeclarationId(), 6);
+                '/Declaration/referencePeriod':
+                    xmlNodeValue := StatisticsPeriodFormatted;
+                '/Declaration/PSIId':
+                    xmlNodeValue := CompanyInformation.GetPartyID();
+                '/Declaration/functionCode':
+                    xmlNodeValue := 'O';
+                '/Declaration/declarationTypeCode':
+                    xmlNodeValue := Format(ObligationLevel);
 
-            // 6-RCPTDETAIL, 7-SHPTDETAIL
-            '/IntrastatReportLineNo':
-                begin
-                    IntrastatReportLine.Get(IntrastatReportHeader."No.", xmlNodeValue);
-                    IsTransactionSimpleValue := IsTransactionSimple(IntrastatReportLine, xmlNodeValue);
+                // 6-RCPTDETAIL, 7-SHPTDETAIL
+                '/IntrastatReportLineNo':
+                    begin
+                        IntrastatReportLine.Get(IntrastatReportHeader."No.", xmlNodeValue);
+                        IsTransactionSimpleValue := IsTransactionSimple(IntrastatReportLine, xmlNodeValue);
+                        xmlNodeValue := '';
+                    end;
+                '/Item/CN8':
                     xmlNodeValue := '';
-                end;
-            '/Item/CN8':
-                xmlNodeValue := '';
-            '/Item/CN8/CN8Code',
-            '/Item/MSConsDestCode',
-            '/Item/countryOfOriginCode',
-            '/Item/netMass',
-            '/Item/quantityInSU',
-            '/Item/NatureOfTransaction',
-            '/Item/NatureOfTransaction/natureOfTransactionACode',
-            '/Item/NatureOfTransaction/natureOfTransactionBCode',
-            '/Item/modeOfTransportCode',
-            '/Item/regionCode':
-                if IsTransactionSimpleValue then
-                    xmlNodeValue := '';
-            '/Item/itemNumber':
-                begin
-                    ItemNumberXML += 1;
-                    xmlNodeValue := FormatExtendNumberToXML(ItemNumberXML, 6);
-                end;
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLAttribute', '', true, true)]
-    local procedure OnBeforeCreateXMLAttribute(var xmlAttributeName: Text; var xmlAttributeValue: Text; var DataExchColumnDef: Record "Data Exch. Column Def"; var DefaultNameSpace: Text; var IsHandled: Boolean)
-    begin
+                '/Item/CN8/CN8Code',
+                '/Item/MSConsDestCode',
+                '/Item/countryOfOriginCode',
+                '/Item/netMass',
+                '/Item/quantityInSU',
+                '/Item/NatureOfTransaction',
+                '/Item/NatureOfTransaction/natureOfTransactionACode',
+                '/Item/NatureOfTransaction/natureOfTransactionBCode',
+                '/Item/modeOfTransportCode',
+                '/Item/regionCode':
+                    if IsTransactionSimpleValue then
+                        xmlNodeValue := '';
+                '/Item/itemNumber':
+                    begin
+                        ItemNumberXML += 1;
+                        xmlNodeValue := FormatExtendNumberToXML(ItemNumberXML, 6);
+                    end;
+            end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLDeclaration', '', true, true)]
-    local procedure OnBeforeCreateXMLDeclaration(var xmlDec: XmlDeclaration; var IsHandled: Boolean)
+    local procedure OnBeforeCreateXMLDeclaration(DataExchDef: Record "Data Exch. Def"; var xmlDec: XmlDeclaration; var IsHandled: Boolean)
     begin
-        xmlDec := xmlDeclaration.Create('1.0', 'ISO-8859-1', 'yes');
-        IsHandled := true;
+        if IsIntrastatExport(DataExchDef.Code) then begin
+            xmlDec := xmlDeclaration.Create('1.0', 'ISO-8859-1', 'yes');
+            IsHandled := true;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateRootElement', '', true, true)]
-    local procedure OnBeforeCreateRootElement(var xmlElem: XmlElement; var nName: Text; var nVal: Text; DefaultNameSpace: Text; var xmlNamespaceManager: XmlNamespaceManager; var IsHandled: Boolean)
+    local procedure OnBeforeCreateRootElement(DataExchDef: Record "Data Exch. Def"; var xmlElem: XmlElement; var nName: Text; var nVal: Text; DefaultNameSpace: Text; var xmlNamespaceManager: XmlNamespaceManager; var IsHandled: Boolean)
     begin
-        xmlElem := xmlElement.Create(nName, DefaultNameSpace, nVal);
-        xmlElem.Add(XmlAttribute.CreateNamespaceDeclaration('xsi', LocalNamespaceURILbl));
-        xmlElem.Add(XmlAttribute.Create('noNamespaceSchemaLocation', LocalNamespaceURILbl, 'instat62.xsd'));
-        IsHandled := true;
+        if IsIntrastatExport(DataExchDef.Code) then begin
+            xmlElem := xmlElement.Create(nName, DefaultNameSpace, nVal);
+            xmlElem.Add(XmlAttribute.CreateNamespaceDeclaration('xsi', LocalNamespaceURILbl));
+            xmlElem.Add(XmlAttribute.Create('noNamespaceSchemaLocation', LocalNamespaceURILbl, 'instat62.xsd'));
+            IsHandled := true;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeExportHeader', '', true, true)]
@@ -240,22 +257,24 @@ codeunit 10851 IntrastatReportManagementFR
         InStreamFilters: InStream;
         FiltersText: Text;
     begin
-        DataExch.CalcFields("Table Filters");
-        DataExch."Table Filters".CreateInStream(InStreamFilters);
-        InStreamFilters.ReadText(FiltersText);
-        IntrastatReportLineRec.SetView(FiltersText);
+        if IsIntrastatExport(DataExch."Data Exch. Def Code") then begin
+            DataExch.CalcFields("Table Filters");
+            DataExch."Table Filters".CreateInStream(InStreamFilters);
+            InStreamFilters.ReadText(FiltersText);
+            IntrastatReportLineRec.SetView(FiltersText);
 
-        case true of
-            StrPos(DataExch."Data Exch. Line Def Code", 'RCPTHEADER') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Receipt);
-            StrPos(DataExch."Data Exch. Line Def Code", 'SHPTHEADER') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Shipment);
-            else
-                IntrastatReportLineRec.SetRange(Type);
+            case true of
+                StrPos(DataExch."Data Exch. Line Def Code", 'RCPTHEADER') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Receipt);
+                StrPos(DataExch."Data Exch. Line Def Code", 'SHPTHEADER') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Shipment);
+                else
+                    IntrastatReportLineRec.SetRange(Type);
+            end;
+
+            if IntrastatReportLineRec.IsEmpty() then
+                IsHandled := true;
         end;
-
-        if IntrastatReportLineRec.IsEmpty() then
-            IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeExportDetails', '', true, true)]
@@ -265,23 +284,25 @@ codeunit 10851 IntrastatReportManagementFR
         InStreamFilters: InStream;
         FiltersText: Text;
     begin
-        ItemNumberXML := 0;
-        DataExch.CalcFields("Table Filters");
-        DataExch."Table Filters".CreateInStream(InStreamFilters);
-        InStreamFilters.ReadText(FiltersText);
-        IntrastatReportLineRec.SetView(FiltersText);
+        if IsIntrastatExport(DataExch."Data Exch. Def Code") then begin
+            ItemNumberXML := 0;
+            DataExch.CalcFields("Table Filters");
+            DataExch."Table Filters".CreateInStream(InStreamFilters);
+            InStreamFilters.ReadText(FiltersText);
+            IntrastatReportLineRec.SetView(FiltersText);
 
-        case true of
-            StrPos(DataExch."Data Exch. Line Def Code", 'RCPTDETAIL') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Receipt);
-            StrPos(DataExch."Data Exch. Line Def Code", 'SHPTDETAIL') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Shipment)
-            else
-                IntrastatReportLineRec.SetRange(Type);
+            case true of
+                StrPos(DataExch."Data Exch. Line Def Code", 'RCPTDETAIL') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Receipt);
+                StrPos(DataExch."Data Exch. Line Def Code", 'SHPTDETAIL') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Shipment)
+                else
+                    IntrastatReportLineRec.SetRange(Type);
+            end;
+
+            if IntrastatReportLineRec.IsEmpty() then
+                IsHandled := true;
         end;
-
-        if IntrastatReportLineRec.IsEmpty() then
-            IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportIntrastatHeader', '', true, true)]

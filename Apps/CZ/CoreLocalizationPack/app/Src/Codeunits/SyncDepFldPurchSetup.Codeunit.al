@@ -20,9 +20,12 @@ codeunit 31164 "Sync.Dep.Fld-PurchSetup CZL"
     local procedure SyncDeprecatedFields(var Rec: Record "Purchases & Payables Setup")
     var
         PreviousRecord: Record "Purchases & Payables Setup";
+        PostingGroupManagement: Codeunit "Posting Group Management CZL";
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
     begin
+        if not PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled() then
+            exit;
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
         SyncDepFldUtilities.SyncFields(Rec."Allow Alter Posting Groups CZL", Rec."Allow Multiple Posting Groups", PreviousRecord."Allow Alter Posting Groups CZL", PreviousRecord."Allow Multiple Posting Groups");
