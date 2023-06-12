@@ -109,7 +109,6 @@ codeunit 5110 "Create Jobs Demo Data"
         CUSTTok: Label '10000', MaxLength = 20, Locked = true;
         CUSTPOSTINGGROUPTok: Label 'DOMESTIC', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         CUSTGENBUSPGTok: Label 'DOMESTIC', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
-        SVCGENPRODPOSTINGGROUPTok: Label 'SERVICES', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         JOBPOSTINGGROUPTok: Label 'SETTING UP', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         MachineTok: Label 'AP-XL', MaxLength = 20;
         ConsumableTok: Label 'F-100', MaxLength = 20;
