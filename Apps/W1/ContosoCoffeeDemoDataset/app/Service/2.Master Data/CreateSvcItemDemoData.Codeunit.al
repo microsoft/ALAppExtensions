@@ -19,10 +19,8 @@ codeunit 5104 "Create Svc Item Demo Data"
         SvcDemoDataSetup.Get();
 
         CreateItems();
-        OnAfterCreatedItems();
 
         CreateItemSkills();
-        OnAfterCreatedItemSkills();
     end;
 
     local procedure CreateItems()
@@ -123,16 +121,6 @@ codeunit 5104 "Create Svc Item Demo Data"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeItemInsert(var Item: Record Item)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedItems()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedItemSkills()
     begin
     end;
 }
