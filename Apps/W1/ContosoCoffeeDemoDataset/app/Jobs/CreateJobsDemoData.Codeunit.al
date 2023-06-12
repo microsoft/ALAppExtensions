@@ -81,7 +81,7 @@ codeunit 5110 "Create Jobs Demo Data"
     local procedure CreateMasterData()
     var
     begin
-        Codeunit.Run(Codeunit::"Create Jobs Cust Data");
+        Codeunit.Run(Codeunit::"Create Job Customer Data");
         Codeunit.Run(Codeunit::"Create Job Demo Data");
         Codeunit.Run(Codeunit::"Create Job Resource Demo Data");
 

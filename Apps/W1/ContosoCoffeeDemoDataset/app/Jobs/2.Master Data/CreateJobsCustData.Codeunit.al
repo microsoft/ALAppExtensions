@@ -1,4 +1,4 @@
-codeunit 5116 "Create Jobs Cust Data"
+codeunit 5116 "Create Job Customer Data"
 {
     Permissions = tabledata Customer = ri,
         tabledata "Tax Area" = ri;
