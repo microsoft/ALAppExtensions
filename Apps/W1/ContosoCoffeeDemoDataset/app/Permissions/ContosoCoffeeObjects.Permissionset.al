@@ -48,7 +48,7 @@ permissionset 4761 "Contoso Coffee - Objects"
         codeunit "Create Jobs Setup" = X,
         codeunit "Create Job Demo Data" = X,
         codeunit "Create Job Resource Demo Data" = X,
-        codeunit "Create Jobs Cust Data" = X,
+        codeunit "Create Job Customer Data" = X,
         codeunit "Create Job Jnl Demo" = X,
         codeunit "Jobs Demo Data Files" = X,
         codeunit "Adjust Jobs Demo Data" = X,
