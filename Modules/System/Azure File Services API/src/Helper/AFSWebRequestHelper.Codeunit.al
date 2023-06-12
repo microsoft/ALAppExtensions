@@ -1,6 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 8954 "AFS Web Request Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ReadResponseFailedErr: Label 'Could not read response.';
@@ -149,7 +156,7 @@ codeunit 8954 "AFS Web Request Helper"
     local procedure PrepareRequestMsg(var HttpRequestMessage: HttpRequestMessage; var AFSOperationPayload: Codeunit "AFS Operation Payload"; HttpRequestType: Enum "Http Request Type"; HttpContent: HttpContent)
     var
         AFSHttpContentHelper: Codeunit "AFS HttpContent Helper";
-        AFSHttpHeaderHelper: Codeunit "AFS HttpHeader Helper";
+                                                                                                               AFSHttpHeaderHelper: Codeunit "AFS HttpHeader Helper";
     begin
         if AFSHttpContentHelper.ContentSet(HttpContent) or AFSHttpHeaderHelper.HandleContentHeaders(HttpContent, AFSOperationPayload) then
             HttpRequestMessage.Content := HttpContent;

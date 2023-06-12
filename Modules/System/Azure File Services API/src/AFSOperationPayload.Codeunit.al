@@ -1,6 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 8952 "AFS Operation Payload"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]
@@ -21,8 +28,7 @@ codeunit 8952 "AFS Operation Payload"
         [NonDebuggable]
         Path: Text;
 
-
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
 
     procedure GetAuthorization(): Interface "Storage Service Authorization"
     begin
@@ -37,7 +43,7 @@ codeunit 8952 "AFS Operation Payload"
     [NonDebuggable]
     procedure SetOperation(NewOperation: Enum "AFS Operation")
     begin
-        Operation := NewOperation;
+        AFSOperation := NewOperation;
 
         // Clear state
         Clear(ContentHeaders);
@@ -99,7 +105,7 @@ codeunit 8952 "AFS Operation Payload"
 
     procedure GetOperation(): Enum "AFS Operation"
     begin
-        exit(Operation);
+        exit(AFSOperation);
     end;
 
     [NonDebuggable]
@@ -139,7 +145,7 @@ codeunit 8952 "AFS Operation Payload"
         AFSURIHelper: Codeunit "AFS URI Helper";
     begin
         AFSURIHelper.SetOptionalUriParameter(UriParameters);
-        exit(AFSURIHelper.ConstructUri(StorageBaseUrl, StorageAccountName, FileShareName, Path, Operation));
+        exit(AFSURIHelper.ConstructUri(StorageBaseUrl, StorageAccountName, FileShareName, Path, AFSOperation));
     end;
 
     [NonDebuggable]

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 /// <summary>
 /// Holds information about directory content in a storage account.
 /// </summary>
@@ -30,12 +35,12 @@ table 8950 "AFS Directory Content"
         }
         field(4; "Full Name"; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Full Name', Locked = true;
         }
         field(10; Name; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Name', Locked = true;
         }
         field(11; "Creation Time"; DateTime)
@@ -100,7 +105,7 @@ table 8950 "AFS Directory Content"
         }
         field(100; "XML Value"; Blob)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'XML Value', Locked = true;
         }
         field(110; URI; Text[2048])

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 /// <summary>
 /// Holds procedures to format headers and parameters to be used in requests.
 /// </summary>
@@ -190,10 +195,7 @@ codeunit 8956 "AFS Optional Parameters"
         ValueText: Text;
     begin
         // Set as text, because otherwise it might give different formatted values based on language locale
-        if "Value" then
-            ValueText := 'true'
-        else
-            ValueText := 'false';
+        ValueText := ConvertBooleanToText("Value");
 
         SetRequestHeader('x-ms-allow-trailing-dot', ValueText);
     end;
@@ -207,10 +209,7 @@ codeunit 8956 "AFS Optional Parameters"
         ValueText: Text;
     begin
         // Set as text, because otherwise it might give different formatted values based on language locale
-        if "Value" then
-            ValueText := 'true'
-        else
-            ValueText := 'false';
+        ValueText := ConvertBooleanToText("Value");
 
         SetRequestHeader('x-ms-file-rename-replace-if-exists', ValueText);
     end;
@@ -224,10 +223,7 @@ codeunit 8956 "AFS Optional Parameters"
         ValueText: Text;
     begin
         // Set as text, because otherwise it might give different formatted values based on language locale
-        if "Value" then
-            ValueText := 'true'
-        else
-            ValueText := 'false';
+        ValueText := ConvertBooleanToText("Value");
 
         SetRequestHeader('x-ms-file-rename-ignore-readonly', ValueText);
     end;
@@ -259,10 +255,7 @@ codeunit 8956 "AFS Optional Parameters"
         ValueText: Text;
     begin
         // Set as text, because otherwise it might give different formatted values based on language locale
-        if "Value" then
-            ValueText := 'true'
-        else
-            ValueText := 'false';
+        ValueText := ConvertBooleanToText("Value");
 
         SetRequestHeader('x-ms-file-copy-ignore-readonly', ValueText);
     end;
@@ -276,10 +269,7 @@ codeunit 8956 "AFS Optional Parameters"
         ValueText: Text;
     begin
         // Set as text, because otherwise it might give different formatted values based on language locale
-        if "Value" then
-            ValueText := 'true'
-        else
-            ValueText := 'false';
+        ValueText := ConvertBooleanToText("Value");
 
         SetRequestHeader('x-ms-file-copy-set-archive', ValueText);
     end;
@@ -293,10 +283,7 @@ codeunit 8956 "AFS Optional Parameters"
         ValueText: Text;
     begin
         // Set as text, because otherwise it might give different formatted values based on language locale
-        if "Value" then
-            ValueText := 'true'
-        else
-            ValueText := 'false';
+        ValueText := ConvertBooleanToText("Value");
 
         SetRequestHeader('x-ms-file-extended-info', ValueText);
     end;
@@ -310,10 +297,7 @@ codeunit 8956 "AFS Optional Parameters"
         ValueText: Text;
     begin
         // Set as text, because otherwise it might give different formatted values based on language locale
-        if "Value" then
-            ValueText := 'true'
-        else
-            ValueText := 'false';
+        ValueText := ConvertBooleanToText("Value");
 
         SetRequestHeader('x-ms-range-get-content-md5', ValueText);
     end;
@@ -327,10 +311,7 @@ codeunit 8956 "AFS Optional Parameters"
         ValueText: Text;
     begin
         // Set as text, because otherwise it might give different formatted values based on language locale
-        if "Value" then
-            ValueText := 'true'
-        else
-            ValueText := 'false';
+        ValueText := ConvertBooleanToText("Value");
 
         SetRequestHeader('x-ms-recursive', ValueText);
     end;
@@ -411,6 +392,14 @@ codeunit 8956 "AFS Optional Parameters"
     begin
         Parameters.Remove(Header);
         Parameters.Add(Header, HeaderValue);
+    end;
+
+    local procedure ConvertBooleanToText("Value": Boolean) ValueText: Text
+    begin
+        if "Value" then
+            ValueText := 'true'
+        else
+            ValueText := 'false';
     end;
 
     internal procedure GetParameters(): Dictionary of [Text, Text]

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 /// <summary>
 /// Holds information about file handles that are currently open.
 /// </summary>
@@ -27,6 +32,7 @@ table 8951 "AFS Handle"
         field(12; "Client IP"; Text[2048])
         {
             Caption = 'ClientIp';
+            DataClassification = EndUserPseudonymousIdentifiers;
         }
         field(13; "Open Time"; DateTime)
         {

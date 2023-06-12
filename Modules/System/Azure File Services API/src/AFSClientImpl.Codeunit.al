@@ -1,6 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 codeunit 8951 "AFS Client Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         AFSOperationPayload: Codeunit "AFS Operation Payload";
@@ -10,11 +17,11 @@ codeunit 8951 "AFS Client Impl."
         CreateFileOperationNotSuccessfulErr: Label 'Could not create file %1 in %2.', Comment = '%1 = File Name; %2 = File Share Name';
         PutFileOperationNotSuccessfulErr: Label 'Could not put file %1 ranges in %2.', Comment = '%1 = File Name; %2 = File Share Name';
         CreateDirectoryOperationNotSuccessfulErr: Label 'Could not create directory %1 in %2.', Comment = '%1 = Directory Name; %2 = File Share Name';
-        GetFileOperationNotSuccessfulErr: Label 'Could not get File %1.', Comment = '%1 = File';
-        CopyFileOperationNotSuccessfulErr: Label 'Could not copy File %1.', Comment = '%1 = File';
+        GetFileOperationNotSuccessfulErr: Label 'Could not get File %1.', Comment = '%1 = File Path';
+        CopyFileOperationNotSuccessfulErr: Label 'Could not copy File %1.', Comment = '%1 = File Path';
         DeleteFileOperationNotSuccessfulErr: Label 'Could not %3 File %1 in file share %2.', Comment = '%1 = File Name; %2 = File Share Name, %3 = Delete/Undelete';
         DeleteDirectoryOperationNotSuccessfulErr: Label 'Could not delete directory %1 in file share %2.', Comment = '%1 = File Name; %2 = File Share Name';
-        AbortCopyFileOperationNotSuccessfulErr: Label 'Could not abort copy of File %1.', Comment = '%1 = File';
+        AbortCopyFileOperationNotSuccessfulErr: Label 'Could not abort copy of File %1.', Comment = '%1 = File Path';
         LeaseOperationNotSuccessfulErr: Label 'Could not %1 lease for %2 %3.', Comment = '%1 = Lease Action, %2 = Type (File or Share), %3 = Name';
         ListDirectoryOperationNotSuccessfulErr: Label 'Could not list directory %1 in file share %2.', Comment = '%1 = Directory Name; %2 = File Share Name';
         ListHandlesOperationNotSuccessfulErr: Label 'Could not list handles of %1 in file share %2.', Comment = '%1 = Path; %2 = File Share Name';
@@ -32,17 +39,17 @@ codeunit 8951 "AFS Client Impl."
         AFSOperationPayload.Initialize(StorageAccountName, FileShare, Path, Authorization, ApiVersion);
     end;
 
-    internal procedure SetBaseUrl(BaseUrl: Text)
+    procedure SetBaseUrl(BaseUrl: Text)
     begin
         AFSOperationPayload.SetBaseUrl(BaseUrl);
     end;
 
-    internal procedure CreateDirectory(DirectoryPath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure CreateDirectory(DirectoryPath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::CreateDirectory);
+        AFSOperationPayload.SetOperation(AFSOperation::CreateDirectory);
         AFSOperationPayload.SetPath(DirectoryPath);
         AFSOperationPayload.AddRequestHeader('x-ms-file-attributes', 'Directory');
         AFSOperationPayload.AddRequestHeader('x-ms-file-creation-time', 'now');
@@ -54,12 +61,12 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure DeleteDirectory(DirectoryPath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure DeleteDirectory(DirectoryPath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::DeleteDirectory);
+        AFSOperationPayload.SetOperation(AFSOperation::DeleteDirectory);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(DirectoryPath);
 
@@ -68,20 +75,20 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure ListDirectory(DirectoryPath: Text; var AFSDirectoryContent: Record "AFS Directory Content"; PreserveDirectoryContent: Boolean; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure ListDirectory(DirectoryPath: Text; var AFSDirectoryContent: Record "AFS Directory Content"; PreserveDirectoryContent: Boolean; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         AFSHelperLibrary: Codeunit "AFS Helper Library";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
         ResponseText: Text;
         NodeList: XmlNodeList;
         DirectoryURI: Text;
     begin
-        AFSOperationPayload.SetOperation(Operation::ListDirectory);
+        AFSOperationPayload.SetOperation(AFSOperation::ListDirectory);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(DirectoryPath);
 
-        AFSOperationResponse := AFSWebRequestHelper.GetOperationAsText(AFSOperationPayload, ResponseText, StrSubstNo(ListDirectoryOperationNotSuccessfulErr, AFSOperationPayload.GetPath(), AFSOperationPayload.GetFileShareName())); // TODO: Fix
+        AFSOperationResponse := AFSWebRequestHelper.GetOperationAsText(AFSOperationPayload, ResponseText, StrSubstNo(ListDirectoryOperationNotSuccessfulErr, AFSOperationPayload.GetPath(), AFSOperationPayload.GetFileShareName()));
 
         NodeList := AFSHelperLibrary.CreateDirectoryContentNodeListFromResponse(ResponseText);
         DirectoryURI := AFSHelperLibrary.GetDirectoryPathFromResponse(ResponseText);
@@ -91,15 +98,15 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure ListHandles(Path: Text; var AFSHandle: Record "AFS Handle"; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure ListFileHandles(Path: Text; var AFSHandle: Record "AFS Handle"; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         AFSHelperLibrary: Codeunit "AFS Helper Library";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
         ResponseText: Text;
         NodeList: XmlNodeList;
     begin
-        AFSOperationPayload.SetOperation(Operation::ListFileHandles);
+        AFSOperationPayload.SetOperation(AFSOperation::ListFileHandles);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(Path);
 
@@ -113,12 +120,12 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure RenameFile(SourceFilePath: Text; DestinationFilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure RenameFile(SourceFilePath: Text; DestinationFilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::RenameFile);
+        AFSOperationPayload.SetOperation(AFSOperation::RenameFile);
         AFSOperationPayload.AddRequestHeader('x-ms-file-rename-source', SourceFilePath);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(DestinationFilePath);
@@ -127,17 +134,17 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure CreateFile(FilePath: Text; InStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure CreateFile(FilePath: Text; InStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
         exit(CreateFile(FilePath, AFSHttpContentHelper.GetContentLength(InStream), AFSOptionalParameters));
     end;
 
-    internal procedure CreateFile(FilePath: Text; FileSize: Integer; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure CreateFile(FilePath: Text; FileSize: Integer; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::CreateFile);
+        AFSOperationPayload.SetOperation(AFSOperation::CreateFile);
         AFSOperationPayload.SetPath(FilePath);
         AFSOperationPayload.AddRequestHeader('x-ms-type', 'file');
         AFSOperationPayload.AddRequestHeader('x-ms-file-attributes', 'None');
@@ -152,7 +159,7 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure GetFileAsFile(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure GetFileAsFile(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         TargetInStream: InStream;
@@ -166,12 +173,12 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure GetFileAsStream(FilePath: Text; var TargetInStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure GetFileAsStream(FilePath: Text; var TargetInStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::GetFile);
+        AFSOperationPayload.SetOperation(AFSOperation::GetFile);
         AFSOperationPayload.SetPath(FilePath);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
 
@@ -179,12 +186,12 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure GetFileAsText(FilePath: Text; var TargetText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure GetFileAsText(FilePath: Text; var TargetText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::GetFile);
+        AFSOperationPayload.SetOperation(AFSOperation::GetFile);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(FilePath);
 
@@ -192,7 +199,7 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure PutFileUI(AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure PutFileUI(AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         Filename: Text;
@@ -204,7 +211,7 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure PutFileStream(FilePath: Text; var SourceInStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure PutFileStream(FilePath: Text; var SourceInStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         SourceContentVariant: Variant;
@@ -214,7 +221,7 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure PutFileText(FilePath: Text; SourceText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure PutFileText(FilePath: Text; SourceText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         SourceContentVariant: Variant;
@@ -228,14 +235,14 @@ codeunit 8951 "AFS Client Impl."
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         TextTempBlob: Codeunit "Temp Blob";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
         HttpContent: HttpContent;
         SourceInStream: InStream;
         SourceText: Text;
         SourceTextStream: InStream;
         SourceTextOutStream: OutStream;
     begin
-        AFSOperationPayload.SetOperation(Operation::PutRange);
+        AFSOperationPayload.SetOperation(AFSOperation::PutRange);
         AFSOperationPayload.SetPath(FilePath);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
 
@@ -297,12 +304,12 @@ codeunit 8951 "AFS Client Impl."
         end;
     end;
 
-    internal procedure DeleteFile(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure DeleteFile(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::DeleteFile);
+        AFSOperationPayload.SetOperation(AFSOperation::DeleteFile);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(FilePath);
 
@@ -311,12 +318,12 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure CopyFile(SourceFileURI: Text; DestinationFilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure CopyFile(SourceFileURI: Text; DestinationFilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::CopyFile);
+        AFSOperationPayload.SetOperation(AFSOperation::CopyFile);
         AFSOperationPayload.AddRequestHeader('x-ms-copy-source', SourceFileURI);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(DestinationFilePath);
@@ -325,13 +332,12 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-
-    internal procedure AbortCopyFile(DestinationFilePath: Text; CopyID: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure AbortCopyFile(DestinationFilePath: Text; CopyID: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::AbortCopyFile);
+        AFSOperationPayload.SetOperation(AFSOperation::AbortCopyFile);
         AFSOperationPayload.AddRequestHeader('x-ms-copy-action', 'abort');
         AFSOperationPayload.AddUriParameter('copyid', CopyID);
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
@@ -341,38 +347,38 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    internal procedure FileAcquireLease(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "AFS Operation Response"
+    procedure FileAcquireLease(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "AFS Operation Response"
     var
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::LeaseFile);
+        AFSOperationPayload.SetOperation(AFSOperation::LeaseFile);
         AFSOperationPayload.SetPath(FilePath);
         exit(AcquireLease(AFSOptionalParameters, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, FileLbl, AFSOperationPayload.GetPath())));
     end;
 
-    internal procedure FileReleaseLease(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; LeaseId: Guid): Codeunit "AFS Operation Response"
+    procedure FileReleaseLease(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; LeaseId: Guid): Codeunit "AFS Operation Response"
     var
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::LeaseFile);
+        AFSOperationPayload.SetOperation(AFSOperation::LeaseFile);
         AFSOperationPayload.SetPath(FilePath);
         exit(ReleaseLease(AFSOptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, FileLbl, AFSOperationPayload.GetPath())));
     end;
 
-    internal procedure FileBreakLease(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; LeaseId: Guid): Codeunit "AFS Operation Response"
+    procedure FileBreakLease(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; LeaseId: Guid): Codeunit "AFS Operation Response"
     var
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::LeaseFile);
+        AFSOperationPayload.SetOperation(AFSOperation::LeaseFile);
         AFSOperationPayload.SetPath(FilePath);
         exit(BreakLease(AFSOptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, FileLbl, AFSOperationPayload.GetPath())));
     end;
 
-    internal procedure FileChangeLease(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "AFS Operation Response"
+    procedure FileChangeLease(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "AFS Operation Response"
     var
-        Operation: Enum "AFS Operation";
+        AFSOperation: Enum "AFS Operation";
     begin
-        AFSOperationPayload.SetOperation(Operation::LeaseFile);
+        AFSOperationPayload.SetOperation(AFSOperation::LeaseFile);
         AFSOperationPayload.SetPath(FilePath);
         exit(ChangeLease(AFSOptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, FileLbl, AFSOperationPayload.GetPath())));
     end;

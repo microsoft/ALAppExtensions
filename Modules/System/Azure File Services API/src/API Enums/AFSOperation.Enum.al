@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Defines possible operations to the azure file share API.
+/// Operations are divided into operations on:
+/// - file (https://learn.microsoft.com/en-us/rest/api/storageservices/operations-on-files)
+/// - directory (https://learn.microsoft.com/en-us/rest/api/storageservices/operations-on-directories)
+/// - file share (https://learn.microsoft.com/en-us/rest/api/storageservices/operations-on-shares--file-service-)
+/// - file service (https://learn.microsoft.com/en-us/rest/api/storageservices/operations-on-the-account--file-service-)
+/// </summary>
 enum 8950 "AFS Operation"
 {
     Access = Internal;

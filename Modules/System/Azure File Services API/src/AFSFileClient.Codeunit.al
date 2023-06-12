@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 /// <summary>
 /// Provides functionality to access the Azure File Storage.
 /// </summary>
@@ -425,7 +430,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.ListHandles(Path, AFSHandle, AFSOptionalParameters));
+        exit(AFSClientImpl.ListFileHandles(Path, AFSHandle, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -437,7 +442,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure ListHandles(Path: Text; var AFSHandle: Record "AFS Handle"; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.ListHandles(Path, AFSHandle, AFSOptionalParameters));
+        exit(AFSClientImpl.ListFileHandles(Path, AFSHandle, AFSOptionalParameters));
     end;
 
     /// <summary>
