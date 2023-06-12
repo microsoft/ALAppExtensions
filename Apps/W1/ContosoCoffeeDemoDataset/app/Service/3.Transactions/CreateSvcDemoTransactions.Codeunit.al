@@ -87,7 +87,6 @@ codeunit 5107 "Create Svc Demo Transactions"
         ItemJournalLine.Validate("Journal Template Name", JournalTemplateName);
         ItemJournalLine.Validate("Journal Batch Name", JournalBatchName);
 
-        LastItemJournalLine.Reset();
         LastItemJournalLine.SetRange("Journal Template Name", JournalTemplateName);
         LastItemJournalLine.SetRange("Journal Batch Name", JournalBatchName);
         if LastItemJournalLine.FindLast() then
