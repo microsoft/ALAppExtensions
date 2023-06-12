@@ -13,10 +13,7 @@ table 4766 "Jobs Demo Account"
 
     keys
     {
-        key(Key1; "Account Key")
-        {
-            Clustered = true;
-        }
+        key(Key1; "Account Key") { }
     }
 
     var

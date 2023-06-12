@@ -13,10 +13,7 @@ table 4764 "Svc Demo Account"
 
     keys
     {
-        key(Key1; "Account Key")
-        {
-            Clustered = true;
-        }
+        key(Key1; "Account Key") { }
     }
 
     var
