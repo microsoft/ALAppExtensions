@@ -20,44 +20,39 @@ codeunit 5115 "Create Job Resource Demo Data"
     end;
 
     procedure CreateResources()
+    begin
+        CreateResource(JobsDemoDataSetup."Resource Installer No.", 70, 100);
+        CreateResource(JobsDemoDataSetup."Resource Vehicle No.", 250, 300);
+    end;
+
+    procedure CreateResource(ResourceCode: Code[20]; UnitCost: Decimal; UnitPrice: Decimal)
     var
         Resource: Record Resource;
     begin
-        if not Resource.Get(JobsDemoDataSetup."Resource Installer No.") then begin
-            Resource."No." := JobsDemoDataSetup."Resource Installer No.";
-            Resource.Name := JobsDemoDataSetup."Resource Installer No.";
-            Resource."Base Unit of Measure" := ResourceUnitOfMeasureTok;
-            Resource."Gen. Prod. Posting Group" := ResourceGenProdPostingGroupTok;
-            Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
-            Resource."Unit Cost" := AdjustJobsDemoData.AdjustPrice(70);
-            Resource."Unit Price" := AdjustJobsDemoData.AdjustPrice(100);
-            OnBeforeResourceInsert(Resource);
-            Resource.Insert(true);
-            CreateResourceUnitOfMeasure(Resource);
-        end;
-        if not Resource.Get(JobsDemoDataSetup."Resource Vehicle No.") then begin
-            Resource."No." := JobsDemoDataSetup."Resource Vehicle No.";
-            Resource.Name := JobsDemoDataSetup."Resource Vehicle No.";
-            Resource."Base Unit of Measure" := ResourceUnitOfMeasureTok;
-            Resource."Gen. Prod. Posting Group" := ResourceGenProdPostingGroupTok;
-            Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
-            Resource."Unit Cost" := AdjustJobsDemoData.AdjustPrice(250);
-            Resource."Unit Price" := AdjustJobsDemoData.AdjustPrice(300);
-            OnBeforeResourceInsert(Resource);
-            Resource.Insert(true);
-            CreateResourceUnitOfMeasure(Resource);
-        end;
+        if Resource.Get(ResourceCode) then
+            exit;
+        Resource."No." := ResourceCode;
+        Resource.Name := ResourceCode;
+        Resource."Base Unit of Measure" := ResourceUnitOfMeasureTok;
+        Resource."Gen. Prod. Posting Group" := ResourceGenProdPostingGroupTok;
+        Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
+        Resource."Unit Cost" := AdjustJobsDemoData.AdjustPrice(UnitCost);
+        Resource."Unit Price" := AdjustJobsDemoData.AdjustPrice(UnitPrice);
+        OnBeforeResourceInsert(Resource);
+        Resource.Insert(true);
+        CreateResourceUnitOfMeasure(Resource);
     end;
 
     local procedure CreateResourceUnitOfMeasure(Resource: Record Resource);
     var
         ResourceUnitOfMeasure: Record "Resource Unit of Measure";
     begin
-        if not ResourceUnitOfMeasure.Get(Resource."No.", Resource."Base Unit of Measure") then begin
-            ResourceUnitOfMeasure."Resource No." := Resource."No.";
-            ResourceUnitOfMeasure."Code" := Resource."Base Unit of Measure";
-            ResourceUnitOfMeasure.Insert(true);
-        end;
+        if ResourceUnitOfMeasure.Get(Resource."No.", Resource."Base Unit of Measure") then
+            exit;
+
+        ResourceUnitOfMeasure."Resource No." := Resource."No.";
+        ResourceUnitOfMeasure."Code" := Resource."Base Unit of Measure";
+        ResourceUnitOfMeasure.Insert(true);
     end;
 
     [IntegrationEvent(false, false)]

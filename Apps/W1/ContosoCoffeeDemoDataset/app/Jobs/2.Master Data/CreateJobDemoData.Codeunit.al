@@ -120,15 +120,16 @@ codeunit 5114 "Create Job Demo Data"
     var
         Job: Record Job;
     begin
-        if not Job.Get(JobNoTok) then begin
-            Job.Init();
-            Job."No." := JobNoTok;
-            Job.Validate(Description, JobNameTok);
-            OnBeforeJobInsert(Job);
-            Job.Insert(true);
-            Job.Validate("Bill-to Customer No.", JobsDemoDataSetup."Customer No.");
-            Job.Modify(true);
-        end;
+        if Job.Get(JobNoTok) then
+            exit;
+
+        Job.Init();
+        Job."No." := JobNoTok;
+        Job.Validate(Description, JobNameTok);
+        OnBeforeJobInsert(Job);
+        Job.Insert(true);
+        Job.Validate("Bill-to Customer No.", JobsDemoDataSetup."Customer No.");
+        Job.Modify(true);
     end;
 
     local procedure CreateJobTasks()
@@ -155,15 +156,16 @@ codeunit 5114 "Create Job Demo Data"
     var
         JobTask: Record "Job Task";
     begin
-        if not JobTask.Get(JobNo, JobTaskNo) then begin
-            JobTask.Init();
-            JobTask.Validate("Job No.", JobNo);
-            JobTask.Validate("Job Task No.", JobTaskNo);
-            JobTask.Validate(Description, TaskDescription);
-            JobTask."Job Task Type" := JobTaskType;
-            OnBeforeJobTaskInsert(JobTask);
-            JobTask.Insert(true);
-        end;
+        if JobTask.Get(JobNo, JobTaskNo) then
+            exit;
+
+        JobTask.Init();
+        JobTask.Validate("Job No.", JobNo);
+        JobTask.Validate("Job Task No.", JobTaskNo);
+        JobTask.Validate(Description, TaskDescription);
+        JobTask."Job Task Type" := JobTaskType;
+        OnBeforeJobTaskInsert(JobTask);
+        JobTask.Insert(true);
     end;
 
     procedure GetJobNo(): Code[20]

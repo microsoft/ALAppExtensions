@@ -32,135 +32,78 @@ codeunit 5105 "Create Svc Resource Demo Data"
     end;
 
     procedure CreateResources()
+    begin
+        // Create Resources R1 and R2 for 'REMOTE' and L1 and L2 for 'LOCAL' workers
+        CreateResource(SvcDemoDataSetup."Resource R1 No.", 150);
+        CreateResource(SvcDemoDataSetup."Resource R2 No.", 200);
+        CreateResource(SvcDemoDataSetup."Resource L1 No.", 100);
+        CreateResource(SvcDemoDataSetup."Resource L2 No.", 125);
+    end;
+
+    procedure CreateResource(ResourceCode: Code[20]; UnitPrice: Decimal)
     var
         Resource: Record Resource;
     begin
-        // Create Resources R1 and R2 for 'REMOTE' and L1 and L2 for 'LOCAL' workers
-        if not Resource.Get(SvcDemoDataSetup."Resource R1 No.") then begin
-            Resource."No." := SvcDemoDataSetup."Resource R1 No.";
-            Resource.Name := SvcDemoDataSetup."Resource R1 No.";
-            Resource."Base Unit of Measure" := ResourceUnitOfMeasureTok;
-            Resource."Gen. Prod. Posting Group" := ResourceGenProdPostingGroupTok;
-            Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
-            Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(150);
-            OnBeforeResourceInsert(Resource);
-            Resource.Insert(true);
-            CreateResourceUnitOfMeasure(Resource);
-        end;
-        if not Resource.Get(SvcDemoDataSetup."Resource R2 No.") then begin
-            Resource."No." := SvcDemoDataSetup."Resource R2 No.";
-            Resource.Name := SvcDemoDataSetup."Resource R2 No.";
-            Resource."Base Unit of Measure" := ResourceUnitOfMeasureTok;
-            Resource."Gen. Prod. Posting Group" := ResourceGenProdPostingGroupTok;
-            Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
-            Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(200);
-            OnBeforeResourceInsert(Resource);
-            Resource.Insert(true);
-            CreateResourceUnitOfMeasure(Resource);
-        end;
-        if not Resource.Get(SvcDemoDataSetup."Resource L1 No.") then begin
-            Resource."No." := SvcDemoDataSetup."Resource L1 No.";
-            Resource.Name := SvcDemoDataSetup."Resource L1 No.";
-            Resource."Base Unit of Measure" := ResourceUnitOfMeasureTok;
-            Resource."Gen. Prod. Posting Group" := ResourceGenProdPostingGroupTok;
-            Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
-            Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(100);
-            OnBeforeResourceInsert(Resource);
-            Resource.Insert(true);
-            CreateResourceUnitOfMeasure(Resource);
-        end;
-        if not Resource.Get(SvcDemoDataSetup."Resource L2 No.") then begin
-            Resource."No." := SvcDemoDataSetup."Resource L2 No.";
-            Resource.Name := SvcDemoDataSetup."Resource L2 No.";
-            Resource."Base Unit of Measure" := ResourceUnitOfMeasureTok;
-            Resource."Gen. Prod. Posting Group" := ResourceGenProdPostingGroupTok;
-            Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
-            Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(125);
-            OnBeforeResourceInsert(Resource);
-            Resource.Insert(true);
-            CreateResourceUnitOfMeasure(Resource);
-        end;
+        if Resource.Get(ResourceCode) then
+            exit;
+        Resource."No." := ResourceCode;
+        Resource.Name := ResourceCode;
+        Resource."Base Unit of Measure" := ResourceUnitOfMeasureTok;
+        Resource."Gen. Prod. Posting Group" := ResourceGenProdPostingGroupTok;
+        Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
+        Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(UnitPrice);
+        Resource.Insert(true);
+        CreateResourceUnitOfMeasure(Resource);
     end;
 
     local procedure CreateResourceUnitOfMeasure(Resource: Record Resource);
     var
         ResourceUnitOfMeasure: Record "Resource Unit of Measure";
     begin
-        if not ResourceUnitOfMeasure.Get(Resource."No.", Resource."Base Unit of Measure") then begin
-            ResourceUnitOfMeasure."Resource No." := Resource."No.";
-            ResourceUnitOfMeasure."Code" := Resource."Base Unit of Measure";
-            ResourceUnitOfMeasure.Insert(true);
-        end;
+        if ResourceUnitOfMeasure.Get(Resource."No.", Resource."Base Unit of Measure") then
+            exit;
+        ResourceUnitOfMeasure."Resource No." := Resource."No.";
+        ResourceUnitOfMeasure."Code" := Resource."Base Unit of Measure";
+        ResourceUnitOfMeasure.Insert(true);
     end;
 
     procedure CreateResourceSkills()
+    begin
+        CreateResourceSkill(SvcDemoDataSetup."Resource L1 No.", CreateSvcSetup.GetSkillCodeSmallTok());
+        CreateResourceSkill(SvcDemoDataSetup."Resource R1 No.", CreateSvcSetup.GetSkillCodeSmallTok());
+        CreateResourceSkill(SvcDemoDataSetup."Resource L2 No.", CreateSvcSetup.GetSkillCodeLargeTok());
+        CreateResourceSkill(SvcDemoDataSetup."Resource R2 No.", CreateSvcSetup.GetSkillCodeLargeTok());
+    end;
+
+    procedure CreateResourceSkill(ResourceCode: Code[20]; SkillCode: Code[10])
     var
         ResourceSkill: Record "Resource Skill";
     begin
-        if not ResourceSkill.Get(ResourceSkill.Type::Resource, SvcDemoDataSetup."Resource L1 No.", CreateSvcSetup.GetSkillCodeSmallTok()) then begin
-            ResourceSkill.Type := ResourceSkill.Type::Resource;
-            ResourceSkill."No." := SvcDemoDataSetup."Resource L1 No.";
-            ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeSmallTok();
-            OnBeforeResourceSkillInsert(ResourceSkill);
-            ResourceSkill.Insert(true);
-        end;
-        if not ResourceSkill.Get(ResourceSkill.Type::Resource, SvcDemoDataSetup."Resource R1 No.", CreateSvcSetup.GetSkillCodeSmallTok()) then begin
-            ResourceSkill.Type := ResourceSkill.Type::Resource;
-            ResourceSkill."No." := SvcDemoDataSetup."Resource R1 No.";
-            ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeSmallTok();
-            OnBeforeResourceSkillInsert(ResourceSkill);
-            ResourceSkill.Insert(true);
-        end;
-        if not ResourceSkill.Get(ResourceSkill.Type::Resource, SvcDemoDataSetup."Resource L2 No.", CreateSvcSetup.GetSkillCodeLargeTok()) then begin
-            ResourceSkill.Type := ResourceSkill.Type::Resource;
-            ResourceSkill."No." := SvcDemoDataSetup."Resource L2 No.";
-            ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeLargeTok();
-            OnBeforeResourceSkillInsert(ResourceSkill);
-            ResourceSkill.Insert(true);
-        end;
-        if not ResourceSkill.Get(ResourceSkill.Type::Resource, SvcDemoDataSetup."Resource R2 No.", CreateSvcSetup.GetSkillCodeLargeTok()) then begin
-            ResourceSkill.Type := ResourceSkill.Type::Resource;
-            ResourceSkill."No." := SvcDemoDataSetup."Resource R2 No.";
-            ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeLargeTok();
-            OnBeforeResourceSkillInsert(ResourceSkill);
-            ResourceSkill.Insert(true);
-        end;
+        if ResourceSkill.Get(ResourceSkill.Type::Resource, ResourceCode, SkillCode) then
+            exit;
+        ResourceSkill.Type := ResourceSkill.Type::Resource;
+        ResourceSkill."No." := ResourceCode;
+        ResourceSkill."Skill Code" := SkillCode;
+        ResourceSkill.Insert(true);
     end;
 
     procedure CreateResourceServiceZones()
+    begin
+        CreateResourceServiceZones(SvcDemoDataSetup."Resource L1 No.", CreateSvcSetup.GetServiceZoneLocalTok());
+        CreateResourceServiceZones(SvcDemoDataSetup."Resource L2 No.", CreateSvcSetup.GetServiceZoneLocalTok());
+        CreateResourceServiceZones(SvcDemoDataSetup."Resource R1 No.", CreateSvcSetup.GetServiceZoneRemoteTok());
+        CreateResourceServiceZones(SvcDemoDataSetup."Resource R2 No.", CreateSvcSetup.GetServiceZoneRemoteTok());
+    end;
+
+    procedure CreateResourceServiceZones(ResourceCode: Code[20]; ZoneCode: Code[10])
     var
         ResourceServiceZone: Record "Resource Service Zone";
     begin
-        if not ResourceServiceZone.Get(SvcDemoDataSetup."Resource L1 No.", CreateSvcSetup.GetServiceZoneLocalTok()) then begin
-            ResourceServiceZone."Resource No." := SvcDemoDataSetup."Resource L1 No.";
-            ResourceServiceZone."Service Zone Code" := CreateSvcSetup.GetServiceZoneLocalTok();
-            OnBeforeResourceServiceZoneInsert(ResourceServiceZone);
-            ResourceServiceZone.Insert(true);
-        end;
-        if not ResourceServiceZone.Get(SvcDemoDataSetup."Resource R1 No.", CreateSvcSetup.GetServiceZoneRemoteTok()) then begin
-            ResourceServiceZone."Resource No." := SvcDemoDataSetup."Resource R1 No.";
-            ResourceServiceZone."Service Zone Code" := CreateSvcSetup.GetServiceZoneRemoteTok();
-            OnBeforeResourceServiceZoneInsert(ResourceServiceZone);
-            ResourceServiceZone.Insert(true);
-        end;
-        if not ResourceServiceZone.Get(SvcDemoDataSetup."Resource L2 No.", CreateSvcSetup.GetServiceZoneLocalTok()) then begin
-            ResourceServiceZone."Resource No." := SvcDemoDataSetup."Resource L2 No.";
-            ResourceServiceZone."Service Zone Code" := CreateSvcSetup.GetServiceZoneLocalTok();
-            OnBeforeResourceServiceZoneInsert(ResourceServiceZone);
-            ResourceServiceZone.Insert(true);
-        end;
-        if not ResourceServiceZone.Get(SvcDemoDataSetup."Resource R2 No.", CreateSvcSetup.GetServiceZoneRemoteTok()) then begin
-            ResourceServiceZone."Resource No." := SvcDemoDataSetup."Resource R2 No.";
-            ResourceServiceZone."Service Zone Code" := CreateSvcSetup.GetServiceZoneRemoteTok();
-            OnBeforeResourceServiceZoneInsert(ResourceServiceZone);
-            ResourceServiceZone.Insert(true);
-        end;
-    end;
-
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeResourceInsert(var Resource: Record Resource)
-    begin
+        if ResourceServiceZone.Get(ResourceCode, ZoneCode) then
+            exit;
+        ResourceServiceZone."Resource No." := ResourceCode;
+        ResourceServiceZone."Service Zone Code" := ZoneCode;
+        ResourceServiceZone.Insert(true);
     end;
 
     [IntegrationEvent(false, false)]
@@ -169,17 +112,7 @@ codeunit 5105 "Create Svc Resource Demo Data"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeResourceSkillInsert(var ResourceSkill: Record "Resource Skill")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
     local procedure OnAfterCreatedResourceSkills()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeResourceServiceZoneInsert(var ResourceServiceZone: Record "Resource Service Zone")
     begin
     end;
 

@@ -12,9 +12,9 @@ codeunit 5107 "Create Svc Demo Transactions"
         SvcDemoDataSetup: Record "Svc Demo Data Setup";
         AdjustSvcDemoData: Codeunit "Adjust Svc Demo Data";
         LineNumber: Integer;
-        XSTARTSVCTok: Label 'START-SVC', MaxLength = 10;
-        XLOANER1Tok: Label 'LOANER1', MaxLength = 10;
-        XLOANER2Tok: Label 'LOANER2', MaxLength = 10;
+        STARTSVCTok: Label 'START-SVC', MaxLength = 10;
+        LOANER1Tok: Label 'LOANER1', MaxLength = 10;
+        LOANER2Tok: Label 'LOANER2', MaxLength = 10;
 
     trigger OnRun()
     begin
@@ -38,20 +38,20 @@ codeunit 5107 "Create Svc Demo Transactions"
         ItemJournalLine: Record "Item Journal Line";
         ItemJnlTemplateName: Code[10];
     begin
-        CreateItemJournalBatch(ItemJnlTemplateName, XSTARTSVCTok);
-        InitItemJnlLine(ItemJournalLine, ItemJnlTemplateName, XSTARTSVCTok);
+        CreateItemJournalBatch(ItemJnlTemplateName, STARTSVCTok);
+        InitItemJnlLine(ItemJournalLine, ItemJnlTemplateName, STARTSVCTok);
         ItemJournalLine.Validate("Item No.", SvcDemoDataSetup."Item 1 No.");
         ItemJournalLine.Validate("Posting Date", AdjustSvcDemoData.AdjustDate(19020601D));
         ItemJournalLine.Validate("Entry Type", ItemJournalLine."Entry Type"::"Positive Adjmt.");
-        ItemJournalLine.Validate("Document No.", XSTARTSVCTok);
+        ItemJournalLine.Validate("Document No.", STARTSVCTok);
         ItemJournalLine.Validate(Quantity, 10);
         OnBeforeItemJournalLineInsert(ItemJournalLine);
         ItemJournalLine.Insert(true);
-        InitItemJnlLine(ItemJournalLine, ItemJnlTemplateName, XSTARTSVCTok);
+        InitItemJnlLine(ItemJournalLine, ItemJnlTemplateName, STARTSVCTok);
         ItemJournalLine.Validate("Item No.", SvcDemoDataSetup."Item 2 No.");
         ItemJournalLine.Validate("Posting Date", AdjustSvcDemoData.AdjustDate(19020601D));
         ItemJournalLine.Validate("Entry Type", ItemJournalLine."Entry Type"::"Positive Adjmt.");
-        ItemJournalLine.Validate("Document No.", XSTARTSVCTok);
+        ItemJournalLine.Validate("Document No.", STARTSVCTok);
         ItemJournalLine.Validate(Quantity, 10);
         OnBeforeItemJournalLineInsert(ItemJournalLine);
         ItemJournalLine.Insert(true);
@@ -97,25 +97,22 @@ codeunit 5107 "Create Svc Demo Transactions"
     end;
 
     local procedure CreateLoaners()
+    begin
+        CreateLoaner(LOANER1Tok, SvcDemoDataSetup."Item 1 No.");
+        CreateLoaner(LOANER2Tok, SvcDemoDataSetup."Item 2 No.");
+    end;
+
+    local procedure CreateLoaner(LoanerNo: Code[20]; ItemNo: Code[20])
     var
         Loaner: Record "Loaner";
     begin
-        if not Loaner.Get(XLOANER1Tok) then begin
-            Loaner.Init();
-            Loaner.Validate("No.", XLOANER1Tok);
-            Loaner.Validate("Description", XLOANER1Tok);
-            Loaner.Validate("Item No.", SvcDemoDataSetup."Item 1 No.");
-            OnBeforeLoanerInsert(Loaner);
-            Loaner.Insert(true);
-        end;
-        if not Loaner.Get(XLOANER2Tok) then begin
-            Loaner.Init();
-            Loaner.Validate("No.", XLOANER2Tok);
-            Loaner.Validate("Description", XLOANER2Tok);
-            Loaner.Validate("Item No.", SvcDemoDataSetup."Item 2 No.");
-            OnBeforeLoanerInsert(Loaner);
-            Loaner.Insert(true);
-        end;
+        if Loaner.Get(LoanerNo) then
+            exit;
+        Loaner.Init();
+        Loaner.Validate("No.", LoanerNo);
+        Loaner.Validate("Description", LoanerNo);
+        Loaner.Validate("Item No.", ItemNo);
+        Loaner.Insert(true);
     end;
 
     local procedure CreateSalesOrders()
@@ -156,11 +153,6 @@ codeunit 5107 "Create Svc Demo Transactions"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreateItemJournals()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeLoanerInsert(var Loaner: Record Loaner)
     begin
     end;
 
