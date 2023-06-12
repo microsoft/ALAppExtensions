@@ -27,15 +27,11 @@ codeunit 5113 "Create Jobs Setup"
     local procedure CreateJobsSetup(JobNos: Code[20])
     var
         JobsSetup: Record "Jobs Setup";
-        IsHandled: Boolean;
     begin
         if not JobsSetup.Get() then begin
             JobsSetup.Init();
             JobsSetup.Insert(true);
         end;
-        OnBeforePopulateJobsSetupFields(JobsSetup, IsHandled);
-        if IsHandled then
-            exit;
         JobsSetup."Job Nos." := CheckNoSeriesSetup(JobsSetup."Job Nos.", JobNos, JobNosDescTok, JobNosStartTok, JobNosEndTok);
         JobsSetup."Apply Usage Link by Default" := true;
         JobsSetup."Allow Sched/Contract Lines Def" := true;
@@ -161,11 +157,6 @@ codeunit 5113 "Create Jobs Setup"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeModifyNoSeriesLine(var NoSeries: Record "No. Series"; var NoSeriesLine: Record "No. Series Line")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePopulateJobsSetupFields(var JobsSetup: Record "Jobs Setup"; var IsHandled: Boolean)
     begin
     end;
 

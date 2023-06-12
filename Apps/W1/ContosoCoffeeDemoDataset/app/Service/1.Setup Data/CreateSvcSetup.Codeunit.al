@@ -97,15 +97,11 @@ codeunit 5103 "Create Svc Setup"
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
         BaseCalendar: Record "Base Calendar";
-        IsHandled: Boolean;
     begin
         if not ServiceMgtSetup.Get() then begin
             ServiceMgtSetup.Init();
             ServiceMgtSetup.Insert(true);
         end;
-        OnBeforePopulateServiceSetupFields(ServiceMgtSetup, IsHandled);
-        if IsHandled then
-            exit;
         ServiceMgtSetup."Service Item Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Service Item Nos.", ServiceItemNos, SeriesServiceItemNosDescTok, SeriesServiceItemNosStartTok, SeriesServiceItemNosEndTok);
         ServiceMgtSetup."Service Order Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Service Order Nos.", ServiceOrderNos, SeriesServiceOrderNosDescTok, SeriesServiceOrderNosStartTok, SeriesServiceOrderNosEndTok);
         ServiceMgtSetup."Service Invoice Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Service Invoice Nos.", ServiceInvoiceNos, SeriesServiceInvoiceNosDescTok, SeriesServiceInvoiceNosStartTok, SeriesServiceInvoiceNosEndTok);
@@ -374,8 +370,4 @@ codeunit 5103 "Create Svc Setup"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePopulateServiceSetupFields(var ServiceMgtSetup: Record "Service Mgt. Setup"; var IsHandled: Boolean)
-    begin
-    end;
 }
