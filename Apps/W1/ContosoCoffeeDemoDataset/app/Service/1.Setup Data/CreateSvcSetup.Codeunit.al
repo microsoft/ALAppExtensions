@@ -126,14 +126,12 @@ codeunit 5103 "Create Svc Setup"
         if CurrentSetupField <> '' then
             exit(CurrentSetupField);
 
-        OnBeforeConfirmNoSeriesExists(NumberSeriesCode);
         if not NoSeries.Get(NumberSeriesCode) then begin
             NoSeries.Init();
             NoSeries.Code := NumberSeriesCode;
             NoSeries.Description := SeriesDescription;
             NoSeries."Manual Nos." := true;
             NoSeries.Validate("Default Nos.", true);
-            OnBeforeInsertNoSeries(NoSeries);
             NoSeries.Insert(true);
 
             NoSeriesLine.Init();
@@ -144,7 +142,6 @@ codeunit 5103 "Create Svc Setup"
             NoSeriesLine.Validate("Ending No.", EndNo);
             NoSeriesLine.Validate("Increment-by No.", 1);
             NoSeriesLine.Validate("Allow Gaps in Nos.", true);
-            OnBeforeModifyNoSeriesLine(NoSeries, NoSeriesLine);
             NoSeriesLine.Modify(true);
         end;
 
@@ -354,20 +351,4 @@ codeunit 5103 "Create Svc Setup"
     begin
         exit(ServiceItemGroupCommercialTok);
     end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeConfirmNoSeriesExists(var NumberSeriesCode: Code[20])
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeInsertNoSeries(var NoSeries: Record "No. Series")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeModifyNoSeriesLine(var NoSeries: Record "No. Series"; var NoSeriesLine: Record "No. Series Line")
-    begin
-    end;
-
 }

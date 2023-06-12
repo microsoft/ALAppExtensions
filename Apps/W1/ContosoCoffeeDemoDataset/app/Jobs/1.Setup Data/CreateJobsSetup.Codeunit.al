@@ -47,14 +47,12 @@ codeunit 5113 "Create Jobs Setup"
         if CurrentSetupField <> '' then
             exit(CurrentSetupField);
 
-        OnBeforeConfirmNoSeriesExists(NumberSeriesCode);
         if not NoSeries.Get(NumberSeriesCode) then begin
             NoSeries.Init();
             NoSeries.Code := NumberSeriesCode;
             NoSeries.Description := SeriesDescription;
             NoSeries."Manual Nos." := true;
             NoSeries.Validate("Default Nos.", true);
-            OnBeforeInsertNoSeries(NoSeries);
             NoSeries.Insert(true);
 
             NoSeriesLine.Init();
@@ -65,7 +63,6 @@ codeunit 5113 "Create Jobs Setup"
             NoSeriesLine.Validate("Ending No.", EndNo);
             NoSeriesLine.Validate("Increment-by No.", 10);
             NoSeriesLine.Validate("Allow Gaps in Nos.", true);
-            OnBeforeModifyNoSeriesLine(NoSeries, NoSeriesLine);
             NoSeriesLine.Modify(true);
         end;
 
@@ -141,27 +138,6 @@ codeunit 5113 "Create Jobs Setup"
         JobPostingGroup.Validate("Job Sales Adjustment Account", JobsDemoAccount.JobSalesAdjustment());
         JobPostingGroup.Validate("Recognized Costs Account", JobsDemoAccount.RecognizedCosts());
         JobPostingGroup.Validate("Recognized Sales Account", JobsDemoAccount.RecognizedSales());
-        OnBeforeInsertJobPostingGroup(JobPostingGroup);
         JobPostingGroup.Insert(true);
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeConfirmNoSeriesExists(var NumberSeriesCode: Code[20])
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeInsertNoSeries(var NoSeries: Record "No. Series")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeModifyNoSeriesLine(var NoSeries: Record "No. Series"; var NoSeriesLine: Record "No. Series Line")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeInsertJobPostingGroup(JobPostingGroup: Record "Job Posting Group")
-    begin
     end;
 }
