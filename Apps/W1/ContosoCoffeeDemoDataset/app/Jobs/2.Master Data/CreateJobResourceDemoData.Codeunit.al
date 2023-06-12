@@ -7,15 +7,12 @@ codeunit 5115 "Create Job Resource Demo Data"
     var
         JobsDemoDataSetup: Record "Jobs Demo Data Setup";
         AdjustJobsDemoData: Codeunit "Adjust Jobs Demo Data";
-        DoRunTriggers: Boolean;
         ResourceUnitOfMeasureTok: Label 'HOUR', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         ResourceGenProdPostingGroupTok: Label 'SERVICES', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         ResourceVATProdPostingGroupTok: Label 'REDUCED', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
 
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         JobsDemoDataSetup.Get();
 
         CreateResources();
@@ -35,7 +32,7 @@ codeunit 5115 "Create Job Resource Demo Data"
             Resource."Unit Cost" := AdjustJobsDemoData.AdjustPrice(70);
             Resource."Unit Price" := AdjustJobsDemoData.AdjustPrice(100);
             OnBeforeResourceInsert(Resource);
-            Resource.Insert(DoRunTriggers);
+            Resource.Insert(true);
             CreateResourceUnitOfMeasure(Resource);
         end;
         if not Resource.Get(JobsDemoDataSetup."Resource Vehicle No.") then begin
@@ -47,7 +44,7 @@ codeunit 5115 "Create Job Resource Demo Data"
             Resource."Unit Cost" := AdjustJobsDemoData.AdjustPrice(250);
             Resource."Unit Price" := AdjustJobsDemoData.AdjustPrice(300);
             OnBeforeResourceInsert(Resource);
-            Resource.Insert(DoRunTriggers);
+            Resource.Insert(true);
             CreateResourceUnitOfMeasure(Resource);
         end;
     end;
@@ -59,7 +56,7 @@ codeunit 5115 "Create Job Resource Demo Data"
         if not ResourceUnitOfMeasure.Get(Resource."No.", Resource."Base Unit of Measure") then begin
             ResourceUnitOfMeasure."Resource No." := Resource."No.";
             ResourceUnitOfMeasure."Code" := Resource."Base Unit of Measure";
-            ResourceUnitOfMeasure.Insert(DoRunTriggers);
+            ResourceUnitOfMeasure.Insert(true);
         end;
     end;
 
@@ -70,11 +67,6 @@ codeunit 5115 "Create Job Resource Demo Data"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreatedResources()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
     begin
     end;
 }

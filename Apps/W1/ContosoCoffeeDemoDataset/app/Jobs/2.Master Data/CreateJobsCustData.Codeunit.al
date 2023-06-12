@@ -3,13 +3,8 @@ codeunit 5116 "Create Jobs Cust Data"
     Permissions = tabledata Customer = ri,
         tabledata "Tax Area" = ri;
 
-    var
-        DoRunTriggers: Boolean;
-
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         JobsDemoDataSetup.Get();
 
         InsertCustomerData(JobsDemoDataSetup."Customer No.", CustomerLbl, JobsDemoDataSetup."Cust. Posting Group", JobsDemoDataSetup."Cust. Gen. Bus. Posting Group");
@@ -43,7 +38,7 @@ codeunit 5116 "Create Jobs Cust Data"
             Customer.Validate("Gen. Bus. Posting Group", BusPostingGroup);
 
         OnBeforeCustomerInsert(Customer);
-        Customer.Insert(DoRunTriggers);
+        Customer.Insert(true);
     end;
 
     [IntegrationEvent(false, false)]
@@ -53,11 +48,6 @@ codeunit 5116 "Create Jobs Cust Data"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreatedCustomers()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
     begin
     end;
 }

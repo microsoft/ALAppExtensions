@@ -11,7 +11,6 @@ codeunit 5107 "Create Svc Demo Transactions"
     var
         SvcDemoDataSetup: Record "Svc Demo Data Setup";
         AdjustSvcDemoData: Codeunit "Adjust Svc Demo Data";
-        DoRunTriggers: Boolean;
         LineNumber: Integer;
         XSTARTSVCTok: Label 'START-SVC', MaxLength = 10;
         XLOANER1Tok: Label 'LOANER1', MaxLength = 10;
@@ -19,8 +18,6 @@ codeunit 5107 "Create Svc Demo Transactions"
 
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         SvcDemoDataSetup.Get();
 
         // Create Item Journals
@@ -49,7 +46,7 @@ codeunit 5107 "Create Svc Demo Transactions"
         ItemJournalLine.Validate("Document No.", XSTARTSVCTok);
         ItemJournalLine.Validate(Quantity, 10);
         OnBeforeItemJournalLineInsert(ItemJournalLine);
-        ItemJournalLine.Insert(DoRunTriggers);
+        ItemJournalLine.Insert(true);
         InitItemJnlLine(ItemJournalLine, ItemJnlTemplateName, XSTARTSVCTok);
         ItemJournalLine.Validate("Item No.", SvcDemoDataSetup."Item 2 No.");
         ItemJournalLine.Validate("Posting Date", AdjustSvcDemoData.AdjustDate(19020601D));
@@ -57,7 +54,7 @@ codeunit 5107 "Create Svc Demo Transactions"
         ItemJournalLine.Validate("Document No.", XSTARTSVCTok);
         ItemJournalLine.Validate(Quantity, 10);
         OnBeforeItemJournalLineInsert(ItemJournalLine);
-        ItemJournalLine.Insert(DoRunTriggers);
+        ItemJournalLine.Insert(true);
     end;
 
     local procedure CreateItemJournalBatch(var ItemJnlTemplateName: Code[10]; ItemJnlBatchName: Code[10])
@@ -110,7 +107,7 @@ codeunit 5107 "Create Svc Demo Transactions"
             Loaner.Validate("Description", XLOANER1Tok);
             Loaner.Validate("Item No.", SvcDemoDataSetup."Item 1 No.");
             OnBeforeLoanerInsert(Loaner);
-            Loaner.Insert(DoRunTriggers);
+            Loaner.Insert(true);
         end;
         if not Loaner.Get(XLOANER2Tok) then begin
             Loaner.Init();
@@ -118,7 +115,7 @@ codeunit 5107 "Create Svc Demo Transactions"
             Loaner.Validate("Description", XLOANER2Tok);
             Loaner.Validate("Item No.", SvcDemoDataSetup."Item 2 No.");
             OnBeforeLoanerInsert(Loaner);
-            Loaner.Insert(DoRunTriggers);
+            Loaner.Insert(true);
         end;
     end;
 
@@ -135,22 +132,22 @@ codeunit 5107 "Create Svc Demo Transactions"
     begin
         SalesHeader.Init();
         SalesHeader."Document Type" := SalesHeader."Document Type"::Order;
-        SalesHeader.Insert(DoRunTriggers);
+        SalesHeader.Insert(true);
         SalesHeader.Validate("Sell-to Customer No.", CustomerNo);
         SalesHeader.Validate("Posting Date", AdjustSvcDemoData.AdjustDate(19020601D));
         OnBeforeSalesHeaderFinalize(SalesHeader);
         SalesHeader."External Document No." := ExternalDocumentNo;
-        SalesHeader.Modify(DoRunTriggers);
+        SalesHeader.Modify(true);
         SalesLine.Init();
         SalesLine.Validate("Document Type", SalesHeader."Document Type");
         SalesLine.Validate("Document No.", SalesHeader."No.");
         SalesLine.Validate("Line No.", 10000);
-        SalesLine.Insert(DoRunTriggers);
+        SalesLine.Insert(true);
         SalesLine.Validate("Type", SalesLine.Type::Item);
         SalesLine.Validate("No.", ItemNo);
         SalesLine.Validate("Quantity", 1);
         OnBeforeSalesLineFinalize(SalesLine);
-        SalesLine.Modify(DoRunTriggers);
+        SalesLine.Modify(true);
     end;
 
     [IntegrationEvent(false, false)]
@@ -185,11 +182,6 @@ codeunit 5107 "Create Svc Demo Transactions"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreateSalesOrders()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
     begin
     end;
 }

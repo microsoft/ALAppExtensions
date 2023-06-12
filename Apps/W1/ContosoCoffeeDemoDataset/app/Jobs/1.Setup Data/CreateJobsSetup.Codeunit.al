@@ -8,7 +8,6 @@ codeunit 5113 "Create Jobs Setup"
         JobsDemoAccount: Record "Jobs Demo Account";
         JobsDemoDataSetup: Record "Jobs Demo Data Setup";
         JobsDemoAccounts: Codeunit "Jobs Demo Accounts";
-        DoRunTriggers: Boolean;
         JobsNosTok: Label 'JOBS', MaxLength = 20;
         JobNosDescTok: Label 'Jobs', MaxLength = 100;
         JobNosStartTok: Label 'J00020', MaxLength = 20;
@@ -17,8 +16,6 @@ codeunit 5113 "Create Jobs Setup"
 
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         JobsDemoDataSetup.Get();
 
         CreateJobsSetup(JobsNosTok);
@@ -34,7 +31,7 @@ codeunit 5113 "Create Jobs Setup"
     begin
         if not JobsSetup.Get() then begin
             JobsSetup.Init();
-            JobsSetup.Insert(DoRunTriggers);
+            JobsSetup.Insert(true);
         end;
         OnBeforePopulateJobsSetupFields(JobsSetup, IsHandled);
         if IsHandled then
@@ -43,7 +40,7 @@ codeunit 5113 "Create Jobs Setup"
         JobsSetup."Apply Usage Link by Default" := true;
         JobsSetup."Allow Sched/Contract Lines Def" := true;
         JobsSetup."Document No. Is Job No." := true;
-        JobsSetup.Modify(DoRunTriggers);
+        JobsSetup.Modify(true);
     end;
 
     local procedure CheckNoSeriesSetup(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text[100]; StartNo: Code[20]; EndNo: Code[20]): Code[20]
@@ -62,12 +59,12 @@ codeunit 5113 "Create Jobs Setup"
             NoSeries."Manual Nos." := true;
             NoSeries.Validate("Default Nos.", true);
             OnBeforeInsertNoSeries(NoSeries);
-            NoSeries.Insert(DoRunTriggers);
+            NoSeries.Insert(true);
 
             NoSeriesLine.Init();
             NoSeriesLine."Series Code" := NumberSeriesCode;
             NoSeriesLine."Line No." := 10000;
-            NoSeriesLine.Insert(DoRunTriggers);
+            NoSeriesLine.Insert(true);
             NoSeriesLine.Validate("Starting No.", StartNo);
             NoSeriesLine.Validate("Ending No.", EndNo);
             NoSeriesLine.Validate("Increment-by No.", 10);
@@ -119,7 +116,7 @@ codeunit 5113 "Create Jobs Setup"
         GLAccount.Validate(Name, JobsDemoAccount."Account Description");
         GLAccount.Validate("Account Type", AccountType);
         GLAccount.Validate("Income/Balance", "Income/Balance");
-        GLAccount.Insert(DoRunTriggers);
+        GLAccount.Insert(true);
     end;
 
     local procedure CreateJobPostingGroup()
@@ -149,7 +146,7 @@ codeunit 5113 "Create Jobs Setup"
         JobPostingGroup.Validate("Recognized Costs Account", JobsDemoAccount.RecognizedCosts());
         JobPostingGroup.Validate("Recognized Sales Account", JobsDemoAccount.RecognizedSales());
         OnBeforeInsertJobPostingGroup(JobPostingGroup);
-        JobPostingGroup.Insert(DoRunTriggers);
+        JobPostingGroup.Insert(true);
     end;
 
     [IntegrationEvent(false, false)]
@@ -169,11 +166,6 @@ codeunit 5113 "Create Jobs Setup"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePopulateJobsSetupFields(var JobsSetup: Record "Jobs Setup"; var IsHandled: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
     begin
     end;
 

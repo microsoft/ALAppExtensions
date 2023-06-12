@@ -13,15 +13,12 @@ codeunit 5105 "Create Svc Resource Demo Data"
         SvcDemoDataSetup: Record "Svc Demo Data Setup";
         AdjustSvcDemoData: Codeunit "Adjust Svc Demo Data";
         CreateSvcSetup: Codeunit "Create Svc Setup";
-        DoRunTriggers: Boolean;
         ResourceUnitOfMeasureTok: Label 'HOUR', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         ResourceGenProdPostingGroupTok: Label 'SERVICES', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         ResourceVATProdPostingGroupTok: Label 'REDUCED', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
 
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         SvcDemoDataSetup.Get();
 
         CreateResources();
@@ -47,7 +44,7 @@ codeunit 5105 "Create Svc Resource Demo Data"
             Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
             Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(150);
             OnBeforeResourceInsert(Resource);
-            Resource.Insert(DoRunTriggers);
+            Resource.Insert(true);
             CreateResourceUnitOfMeasure(Resource);
         end;
         if not Resource.Get(SvcDemoDataSetup."Resource R2 No.") then begin
@@ -58,7 +55,7 @@ codeunit 5105 "Create Svc Resource Demo Data"
             Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
             Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(200);
             OnBeforeResourceInsert(Resource);
-            Resource.Insert(DoRunTriggers);
+            Resource.Insert(true);
             CreateResourceUnitOfMeasure(Resource);
         end;
         if not Resource.Get(SvcDemoDataSetup."Resource L1 No.") then begin
@@ -69,7 +66,7 @@ codeunit 5105 "Create Svc Resource Demo Data"
             Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
             Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(100);
             OnBeforeResourceInsert(Resource);
-            Resource.Insert(DoRunTriggers);
+            Resource.Insert(true);
             CreateResourceUnitOfMeasure(Resource);
         end;
         if not Resource.Get(SvcDemoDataSetup."Resource L2 No.") then begin
@@ -80,7 +77,7 @@ codeunit 5105 "Create Svc Resource Demo Data"
             Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
             Resource."Unit Price" := AdjustSvcDemoData.AdjustPrice(125);
             OnBeforeResourceInsert(Resource);
-            Resource.Insert(DoRunTriggers);
+            Resource.Insert(true);
             CreateResourceUnitOfMeasure(Resource);
         end;
     end;
@@ -92,7 +89,7 @@ codeunit 5105 "Create Svc Resource Demo Data"
         if not ResourceUnitOfMeasure.Get(Resource."No.", Resource."Base Unit of Measure") then begin
             ResourceUnitOfMeasure."Resource No." := Resource."No.";
             ResourceUnitOfMeasure."Code" := Resource."Base Unit of Measure";
-            ResourceUnitOfMeasure.Insert(DoRunTriggers);
+            ResourceUnitOfMeasure.Insert(true);
         end;
     end;
 
@@ -105,28 +102,28 @@ codeunit 5105 "Create Svc Resource Demo Data"
             ResourceSkill."No." := SvcDemoDataSetup."Resource L1 No.";
             ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeSmallTok();
             OnBeforeResourceSkillInsert(ResourceSkill);
-            ResourceSkill.Insert(DoRunTriggers);
+            ResourceSkill.Insert(true);
         end;
         if not ResourceSkill.Get(ResourceSkill.Type::Resource, SvcDemoDataSetup."Resource R1 No.", CreateSvcSetup.GetSkillCodeSmallTok()) then begin
             ResourceSkill.Type := ResourceSkill.Type::Resource;
             ResourceSkill."No." := SvcDemoDataSetup."Resource R1 No.";
             ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeSmallTok();
             OnBeforeResourceSkillInsert(ResourceSkill);
-            ResourceSkill.Insert(DoRunTriggers);
+            ResourceSkill.Insert(true);
         end;
         if not ResourceSkill.Get(ResourceSkill.Type::Resource, SvcDemoDataSetup."Resource L2 No.", CreateSvcSetup.GetSkillCodeLargeTok()) then begin
             ResourceSkill.Type := ResourceSkill.Type::Resource;
             ResourceSkill."No." := SvcDemoDataSetup."Resource L2 No.";
             ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeLargeTok();
             OnBeforeResourceSkillInsert(ResourceSkill);
-            ResourceSkill.Insert(DoRunTriggers);
+            ResourceSkill.Insert(true);
         end;
         if not ResourceSkill.Get(ResourceSkill.Type::Resource, SvcDemoDataSetup."Resource R2 No.", CreateSvcSetup.GetSkillCodeLargeTok()) then begin
             ResourceSkill.Type := ResourceSkill.Type::Resource;
             ResourceSkill."No." := SvcDemoDataSetup."Resource R2 No.";
             ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeLargeTok();
             OnBeforeResourceSkillInsert(ResourceSkill);
-            ResourceSkill.Insert(DoRunTriggers);
+            ResourceSkill.Insert(true);
         end;
     end;
 
@@ -138,25 +135,25 @@ codeunit 5105 "Create Svc Resource Demo Data"
             ResourceServiceZone."Resource No." := SvcDemoDataSetup."Resource L1 No.";
             ResourceServiceZone."Service Zone Code" := CreateSvcSetup.GetServiceZoneLocalTok();
             OnBeforeResourceServiceZoneInsert(ResourceServiceZone);
-            ResourceServiceZone.Insert(DoRunTriggers);
+            ResourceServiceZone.Insert(true);
         end;
         if not ResourceServiceZone.Get(SvcDemoDataSetup."Resource R1 No.", CreateSvcSetup.GetServiceZoneRemoteTok()) then begin
             ResourceServiceZone."Resource No." := SvcDemoDataSetup."Resource R1 No.";
             ResourceServiceZone."Service Zone Code" := CreateSvcSetup.GetServiceZoneRemoteTok();
             OnBeforeResourceServiceZoneInsert(ResourceServiceZone);
-            ResourceServiceZone.Insert(DoRunTriggers);
+            ResourceServiceZone.Insert(true);
         end;
         if not ResourceServiceZone.Get(SvcDemoDataSetup."Resource L2 No.", CreateSvcSetup.GetServiceZoneLocalTok()) then begin
             ResourceServiceZone."Resource No." := SvcDemoDataSetup."Resource L2 No.";
             ResourceServiceZone."Service Zone Code" := CreateSvcSetup.GetServiceZoneLocalTok();
             OnBeforeResourceServiceZoneInsert(ResourceServiceZone);
-            ResourceServiceZone.Insert(DoRunTriggers);
+            ResourceServiceZone.Insert(true);
         end;
         if not ResourceServiceZone.Get(SvcDemoDataSetup."Resource R2 No.", CreateSvcSetup.GetServiceZoneRemoteTok()) then begin
             ResourceServiceZone."Resource No." := SvcDemoDataSetup."Resource R2 No.";
             ResourceServiceZone."Service Zone Code" := CreateSvcSetup.GetServiceZoneRemoteTok();
             OnBeforeResourceServiceZoneInsert(ResourceServiceZone);
-            ResourceServiceZone.Insert(DoRunTriggers);
+            ResourceServiceZone.Insert(true);
         end;
     end;
 
@@ -188,11 +185,6 @@ codeunit 5105 "Create Svc Resource Demo Data"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreatedResourceServiceZones()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
     begin
     end;
 }

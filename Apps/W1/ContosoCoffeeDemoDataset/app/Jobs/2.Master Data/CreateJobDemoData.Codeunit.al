@@ -9,7 +9,6 @@ codeunit 5114 "Create Job Demo Data"
         JobsDemoDataSetup: Record "Jobs Demo Data Setup";
         AdjustJobsDemoData: Codeunit "Adjust Jobs Demo Data";
         JobsDemoDataFiles: Codeunit "Jobs Demo Data Files";
-        DoRunTriggers: Boolean;
         PCSTok: Label 'PCS', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         MachineDescTok: Label 'S-210 Semi-Automatic', MaxLength = 100;
         ConsumableDescTok: Label '100-Pack Filters', MaxLength = 100;
@@ -30,8 +29,6 @@ codeunit 5114 "Create Job Demo Data"
 
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         JobsDemoDataSetup.Get();
 
         CreateItems();
@@ -102,7 +99,7 @@ codeunit 5114 "Create Job Demo Data"
         end;
 
         OnBeforeItemInsert(Item);
-        Item.Insert(DoRunTriggers);
+        Item.Insert(true);
 
         // Create the Item Unit of Measure
         CreateBaseItemUnitOfMeasure(Item);
@@ -128,9 +125,9 @@ codeunit 5114 "Create Job Demo Data"
             Job."No." := JobNoTok;
             Job.Validate(Description, JobNameTok);
             OnBeforeJobInsert(Job);
-            Job.Insert(DoRunTriggers);
+            Job.Insert(true);
             Job.Validate("Bill-to Customer No.", JobsDemoDataSetup."Customer No.");
-            Job.Modify(DoRunTriggers);
+            Job.Modify(true);
         end;
     end;
 
@@ -165,7 +162,7 @@ codeunit 5114 "Create Job Demo Data"
             JobTask.Validate(Description, TaskDescription);
             JobTask."Job Task Type" := JobTaskType;
             OnBeforeJobTaskInsert(JobTask);
-            JobTask.Insert(DoRunTriggers);
+            JobTask.Insert(true);
         end;
     end;
 
@@ -191,11 +188,6 @@ codeunit 5114 "Create Job Demo Data"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreatedItems()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
     begin
     end;
 

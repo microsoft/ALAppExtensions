@@ -17,7 +17,6 @@ codeunit 5103 "Create Svc Setup"
         SvcDemoDataSetup: Record "Svc Demo Data Setup";
         AdjustSvcDemoData: Codeunit "Adjust Svc Demo Data";
         SvcDemoAccounts: Codeunit "Svc Demo Accounts";
-        DoRunTriggers: Boolean;
         SeriesServiceItemNosDescTok: Label 'Service Items', MaxLength = 100;
         SeriesServiceItemNosStartTok: Label 'SV000001', MaxLength = 20;
         SeriesServiceItemNosEndTok: Label 'SV999999', MaxLength = 20;
@@ -66,8 +65,6 @@ codeunit 5103 "Create Svc Setup"
 
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         SvcDemoDataSetup.Get();
 
         CreateServiceSetup(
@@ -104,7 +101,7 @@ codeunit 5103 "Create Svc Setup"
     begin
         if not ServiceMgtSetup.Get() then begin
             ServiceMgtSetup.Init();
-            ServiceMgtSetup.Insert(DoRunTriggers);
+            ServiceMgtSetup.Insert(true);
         end;
         OnBeforePopulateServiceSetupFields(ServiceMgtSetup, IsHandled);
         if IsHandled then
@@ -122,7 +119,7 @@ codeunit 5103 "Create Svc Setup"
         else
             ServiceMgtSetup."Base Calendar Code" := CreateBaseCalendar();
         ServiceMgtSetup."Contract Serv. Ord.  Max. Days" := 366;
-        ServiceMgtSetup.Modify(DoRunTriggers);
+        ServiceMgtSetup.Modify(true);
     end;
 
     local procedure CheckNoSeriesSetup(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text[100]; StartNo: Code[20]; EndNo: Code[20]): Code[20]
@@ -141,12 +138,12 @@ codeunit 5103 "Create Svc Setup"
             NoSeries."Manual Nos." := true;
             NoSeries.Validate("Default Nos.", true);
             OnBeforeInsertNoSeries(NoSeries);
-            NoSeries.Insert(DoRunTriggers);
+            NoSeries.Insert(true);
 
             NoSeriesLine.Init();
             NoSeriesLine."Series Code" := NumberSeriesCode;
             NoSeriesLine."Line No." := 10000;
-            NoSeriesLine.Insert(DoRunTriggers);
+            NoSeriesLine.Insert(true);
             NoSeriesLine.Validate("Starting No.", StartNo);
             NoSeriesLine.Validate("Ending No.", EndNo);
             NoSeriesLine.Validate("Increment-by No.", 1);
@@ -167,13 +164,13 @@ codeunit 5103 "Create Svc Setup"
             SkillCode.Init();
             SkillCode.Code := SkillCodeLargeTok;
             SkillCode.Description := SkillCodeLargeDescTok;
-            SkillCode.Insert(DoRunTriggers);
+            SkillCode.Insert(true);
         end;
         if not SkillCode.Get(SkillCodeSmallTok) then begin
             SkillCode.Init();
             SkillCode.Code := SkillCodeSmallTok;
             SkillCode.Description := SkillCodeSmallDescTok;
-            SkillCode.Insert(DoRunTriggers);
+            SkillCode.Insert(true);
         end;
     end;
 
@@ -186,13 +183,13 @@ codeunit 5103 "Create Svc Setup"
             ServiceZone.Init();
             ServiceZone.Code := ServiceZoneLocalTok;
             ServiceZone.Description := AdjustSvcDemoData.TitleCase(ServiceZoneLocalTok);
-            ServiceZone.Insert(DoRunTriggers);
+            ServiceZone.Insert(true);
         end;
         if not ServiceZone.Get(ServiceZoneRemoteTok) then begin
             ServiceZone.Init();
             ServiceZone.Code := ServiceZoneRemoteTok;
             ServiceZone.Description := AdjustSvcDemoData.TitleCase(ServiceZoneRemoteTok);
-            ServiceZone.Insert(DoRunTriggers);
+            ServiceZone.Insert(true);
         end;
     end;
 
@@ -205,13 +202,13 @@ codeunit 5103 "Create Svc Setup"
             ServiceOrderType.Init();
             ServiceOrderType.Code := ServiceOrderTypeMaintTok;
             ServiceOrderType.Description := AdjustSvcDemoData.TitleCase(ServiceOrderTypeMaintTok);
-            ServiceOrderType.Insert(DoRunTriggers);
+            ServiceOrderType.Insert(true);
         end;
         if not ServiceOrderType.Get(ServiceOrderTypeBreakFixTok) then begin
             ServiceOrderType.Init();
             ServiceOrderType.Code := ServiceOrderTypeBreakFixTok;
             ServiceOrderType.Description := AdjustSvcDemoData.TitleCase(ServiceOrderTypeBreakFixTok);
-            ServiceOrderType.Insert(DoRunTriggers);
+            ServiceOrderType.Insert(true);
         end;
     end;
 
@@ -224,13 +221,13 @@ codeunit 5103 "Create Svc Setup"
             FaultReasonCode.Init();
             FaultReasonCode.Code := FaultReasonCodeDefectTok;
             FaultReasonCode.Description := AdjustSvcDemoData.TitleCase(FaultReasonCodeDefectTok);
-            FaultReasonCode.Insert(DoRunTriggers);
+            FaultReasonCode.Insert(true);
         end;
         if not FaultReasonCode.Get(FaultReasonCodeUserFaultTok) then begin
             FaultReasonCode.Init();
             FaultReasonCode.Code := FaultReasonCodeUserFaultTok;
             FaultReasonCode.Description := AdjustSvcDemoData.TitleCase(FaultReasonCodeUserFaultTok);
-            FaultReasonCode.Insert(DoRunTriggers);
+            FaultReasonCode.Insert(true);
         end;
     end;
 
@@ -244,7 +241,7 @@ codeunit 5103 "Create Svc Setup"
             ServiceItemGroup.Code := ServiceItemGroupCommercialTok;
             ServiceItemGroup.Description := AdjustSvcDemoData.TitleCase(ServiceItemGroupCommercialTok);
             ServiceItemGroup."Create Service Item" := true;
-            ServiceItemGroup.Insert(DoRunTriggers);
+            ServiceItemGroup.Insert(true);
         end;
     end;
 
@@ -257,7 +254,7 @@ codeunit 5103 "Create Svc Setup"
             BaseCalendar.Init();
             BaseCalendar.Code := BaseCalendarTok;
             BaseCalendar.Name := CopyStr(AdjustSvcDemoData.TitleCase(BaseCalendarTok), 1, MaxStrLen(BaseCalendar.Name));
-            BaseCalendar.Insert(DoRunTriggers);
+            BaseCalendar.Insert(true);
         end;
 
         exit(BaseCalendarTok);
@@ -297,7 +294,7 @@ codeunit 5103 "Create Svc Setup"
         GLAccount.Validate(Name, SvcDemoAccount."Account Description");
         GLAccount.Validate("Account Type", AccountType);
         GLAccount.Validate("Income/Balance", "Income/Balance");
-        GLAccount.Insert(DoRunTriggers);
+        GLAccount.Insert(true);
     end;
 
     local procedure CreateServiceContractAccountGroups()
@@ -311,7 +308,7 @@ codeunit 5103 "Create Svc Setup"
             ServiceContractAccountGroup.Description := AdjustSvcDemoData.TitleCase(ServiceContractAccountGroupBasicTok);
             ServiceContractAccountGroup."Non-Prepaid Contract Acc." := SvcDemoAccount.Contract();
             ServiceContractAccountGroup."Prepaid Contract Acc." := SvcDemoAccount.Contract();
-            ServiceContractAccountGroup.Insert(DoRunTriggers);
+            ServiceContractAccountGroup.Insert(true);
         end;
     end;
 
@@ -379,11 +376,6 @@ codeunit 5103 "Create Svc Setup"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePopulateServiceSetupFields(var ServiceMgtSetup: Record "Service Mgt. Setup"; var IsHandled: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
     begin
     end;
 }

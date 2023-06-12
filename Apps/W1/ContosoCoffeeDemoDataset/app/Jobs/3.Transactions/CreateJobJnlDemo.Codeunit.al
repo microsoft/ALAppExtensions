@@ -8,7 +8,6 @@ codeunit 5117 "Create Job Jnl Demo"
         JobsDemoDataSetup: Record "Jobs Demo Data Setup";
         AdjustJobsDemoData: Codeunit "Adjust Jobs Demo Data";
         CreateJobDemoData: Codeunit "Create Job Demo Data";
-        DoRunTriggers: Boolean;
         XJOBTEMPLATETok: Label 'JOB', MaxLength = 10;
         XJOBBATCHTTok: Label 'CONTOSO', MaxLength = 10;
         XJournalTok: Label 'Journal', MaxLength = 100;
@@ -17,8 +16,6 @@ codeunit 5117 "Create Job Jnl Demo"
 
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         JobsDemoDataSetup.Get();
 
         InitJournalTemplateAndBatch(XJOBTEMPLATETok, XJOBBATCHTTok);
@@ -47,7 +44,7 @@ codeunit 5117 "Create Job Jnl Demo"
         JobJournalLine."Journal Template Name" := XJOBTEMPLATETok;
         JobJournalLine."Journal Batch Name" := XJOBBATCHTTok;
         JobJournalLine."Line No." := NextLineNo;
-        JobJournalLine.Insert(DoRunTriggers);
+        JobJournalLine.Insert(true);
         JobJournalLine.Validate("Job No.", CreateJobDemoData.GetJobNo());
         JobJournalLine.Validate("Job Task No.", JobTaskNo);
         JobJournalLine.Validate("Posting Date", AdjustJobsDemoData.AdjustDate(19020601D));
@@ -58,7 +55,7 @@ codeunit 5117 "Create Job Jnl Demo"
         if LineDescription <> '' then
             JobJournalLine.Validate(Description, LineDescription);
         OnBeforeCreateJobJournalLine(JobJournalLine);
-        JobJournalLine.Modify(DoRunTriggers);
+        JobJournalLine.Modify(true);
     end;
 
     local procedure InitJournalTemplateAndBatch(JournalTemplateName: Text; JournalBatchName: Text)
@@ -80,11 +77,6 @@ codeunit 5117 "Create Job Jnl Demo"
             JobJournalBatch.Validate(Description, AdjustJobsDemoData.TitleCase(JournalBatchName) + ' ' + XJournalTok);
             JobJournalBatch.Insert(true);
         end;
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
-    begin
     end;
 
     [IntegrationEvent(false, false)]

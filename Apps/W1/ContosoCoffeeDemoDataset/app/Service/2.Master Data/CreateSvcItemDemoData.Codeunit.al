@@ -9,7 +9,6 @@ codeunit 5104 "Create Svc Item Demo Data"
         AdjustSvcDemoData: Codeunit "Adjust Svc Demo Data";
         SvcDemoDataFiles: Codeunit "Svc Demo Data Files";
         CreateSvcSetup: Codeunit "Create Svc Setup";
-        DoRunTriggers: Boolean;
         PCSTok: Label 'PCS', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         MachineDesc1Tok: Label 'S-100 Semi-Automatic', MaxLength = 100;
         MachineDesc2Tok: Label 'S-200 Semi-Automatic', MaxLength = 100;
@@ -17,8 +16,6 @@ codeunit 5104 "Create Svc Item Demo Data"
 
     trigger OnRun()
     begin
-        DoRunTriggers := true;
-        OnBeforeStartCreation(DoRunTriggers);
         SvcDemoDataSetup.Get();
 
         CreateItems();
@@ -89,7 +86,7 @@ codeunit 5104 "Create Svc Item Demo Data"
         end;
 
         OnBeforeItemInsert(Item);
-        Item.Insert(DoRunTriggers);
+        Item.Insert(true);
 
         // Create the Item Unit of Measure
         CreateBaseItemUnitOfMeasure(Item);
@@ -114,13 +111,13 @@ codeunit 5104 "Create Svc Item Demo Data"
             ResourceSkill.Type := ResourceSkill.Type::Item;
             ResourceSkill."No." := SvcDemoDataSetup."Item 1 No.";
             ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeSmallTok();
-            ResourceSkill.Insert(DoRunTriggers);
+            ResourceSkill.Insert(true);
         end;
         if not ResourceSkill.Get(ResourceSkill.Type::Item, SvcDemoDataSetup."Item 2 No.", CreateSvcSetup.GetSkillCodeLargeTok()) then begin
             ResourceSkill.Type := ResourceSkill.Type::Item;
             ResourceSkill."No." := SvcDemoDataSetup."Item 2 No.";
             ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeLargeTok();
-            ResourceSkill.Insert(DoRunTriggers);
+            ResourceSkill.Insert(true);
         end;
     end;
 
@@ -131,11 +128,6 @@ codeunit 5104 "Create Svc Item Demo Data"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreatedItems()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeStartCreation(var DoRunTriggers: Boolean)
     begin
     end;
 
