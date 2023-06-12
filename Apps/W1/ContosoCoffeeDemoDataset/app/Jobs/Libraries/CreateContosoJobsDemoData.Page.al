@@ -120,7 +120,7 @@ page 4764 "Create Contoso Jobs Demo Data"
                 PromotedIsBig = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
-                ToolTip = 'Adds new demonstration data for the Warehousing capabilities in Business Central.';
+                ToolTip = 'Adds new demonstration data for the Jobs (Project Accounting) capabilities in Business Central.';
                 Enabled = not IsDemoDataPopulated;
                 Image = Apply;
 
