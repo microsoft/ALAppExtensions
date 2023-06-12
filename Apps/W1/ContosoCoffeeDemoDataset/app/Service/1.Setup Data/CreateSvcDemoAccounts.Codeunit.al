@@ -6,14 +6,14 @@ codeunit 5102 "Create Svc Demo Accounts"
     begin
         Rec.ReturnAccountKey(true);
 
-        SvcDemoAccounts.AddAccount(Rec.Contract(), '6700', XContractRevenueTok);
+        SvcDemoAccounts.AddAccount(Rec.Contract(), '6700', ContractRevenueTok);
 
         OnAfterCreateDemoAccounts();
     end;
 
     var
         SvcDemoAccounts: Codeunit "Svc Demo Accounts";
-        XContractRevenueTok: Label 'Sale of Service Contracts', MaxLength = 50;
+        ContractRevenueTok: Label 'Sale of Service Contracts', MaxLength = 50;
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreateDemoAccounts()
