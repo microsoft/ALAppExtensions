@@ -32,14 +32,14 @@ codeunit 5113 "Create Jobs Setup"
             JobsSetup.Init();
             JobsSetup.Insert(true);
         end;
-        JobsSetup."Job Nos." := CheckNoSeriesSetup(JobsSetup."Job Nos.", JobNos, JobNosDescTok, JobNosStartTok, JobNosEndTok);
+        JobsSetup."Job Nos." := SetupNoSeries(JobsSetup."Job Nos.", JobNos, JobNosDescTok, JobNosStartTok, JobNosEndTok);
         JobsSetup."Apply Usage Link by Default" := true;
         JobsSetup."Allow Sched/Contract Lines Def" := true;
         JobsSetup."Document No. Is Job No." := true;
         JobsSetup.Modify(true);
     end;
 
-    local procedure CheckNoSeriesSetup(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text[100]; StartNo: Code[20]; EndNo: Code[20]): Code[20]
+    local procedure SetupNoSeries(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text[100]; StartNo: Code[20]; EndNo: Code[20]): Code[20]
     var
         NoSeries: Record "No. Series";
         NoSeriesLine: Record "No. Series Line";

@@ -102,14 +102,14 @@ codeunit 5103 "Create Svc Setup"
             ServiceMgtSetup.Init();
             ServiceMgtSetup.Insert(true);
         end;
-        ServiceMgtSetup."Service Item Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Service Item Nos.", ServiceItemNos, SeriesServiceItemNosDescTok, SeriesServiceItemNosStartTok, SeriesServiceItemNosEndTok);
-        ServiceMgtSetup."Service Order Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Service Order Nos.", ServiceOrderNos, SeriesServiceOrderNosDescTok, SeriesServiceOrderNosStartTok, SeriesServiceOrderNosEndTok);
-        ServiceMgtSetup."Service Invoice Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Service Invoice Nos.", ServiceInvoiceNos, SeriesServiceInvoiceNosDescTok, SeriesServiceInvoiceNosStartTok, SeriesServiceInvoiceNosEndTok);
-        ServiceMgtSetup."Posted Service Invoice Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Posted Service Invoice Nos.", PostedServiceInvoiceNos, SeriesPostedServiceInvoiceNosDescTok, SeriesPostedServiceInvoiceNosStartTok, SeriesPostedServiceInvoiceNosEndTok);
-        ServiceMgtSetup."Posted Service Shipment Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Posted Service Shipment Nos.", PostedServiceShipmentNos, SeriesPostedServiceShipmentNosDescTok, SeriesPostedServiceShipmentNosStartTok, SeriesPostedServiceShipmentNosEndTok);
-        ServiceMgtSetup."Loaner Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Loaner Nos.", LoanerNos, SeriesLoanerNosDescTok, SeriesLoanerNosStartTok, SeriesLoanerNosEndTok);
-        ServiceMgtSetup."Service Contract Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Service Contract Nos.", ServiceContractNos, SeriesServiceContractNosDescTok, SeriesServiceContractNosStartTok, SeriesServiceContractNosEndTok);
-        ServiceMgtSetup."Contract Invoice Nos." := CheckNoSeriesSetup(ServiceMgtSetup."Contract Invoice Nos.", ContractInvoiceNos, SeriesContractInvoiceNosDescTok, SeriesContractInvoiceNosStartTok, SeriesContractInvoiceNosEndTok);
+        ServiceMgtSetup."Service Item Nos." := SetupNoSeries(ServiceMgtSetup."Service Item Nos.", ServiceItemNos, SeriesServiceItemNosDescTok, SeriesServiceItemNosStartTok, SeriesServiceItemNosEndTok);
+        ServiceMgtSetup."Service Order Nos." := SetupNoSeries(ServiceMgtSetup."Service Order Nos.", ServiceOrderNos, SeriesServiceOrderNosDescTok, SeriesServiceOrderNosStartTok, SeriesServiceOrderNosEndTok);
+        ServiceMgtSetup."Service Invoice Nos." := SetupNoSeries(ServiceMgtSetup."Service Invoice Nos.", ServiceInvoiceNos, SeriesServiceInvoiceNosDescTok, SeriesServiceInvoiceNosStartTok, SeriesServiceInvoiceNosEndTok);
+        ServiceMgtSetup."Posted Service Invoice Nos." := SetupNoSeries(ServiceMgtSetup."Posted Service Invoice Nos.", PostedServiceInvoiceNos, SeriesPostedServiceInvoiceNosDescTok, SeriesPostedServiceInvoiceNosStartTok, SeriesPostedServiceInvoiceNosEndTok);
+        ServiceMgtSetup."Posted Service Shipment Nos." := SetupNoSeries(ServiceMgtSetup."Posted Service Shipment Nos.", PostedServiceShipmentNos, SeriesPostedServiceShipmentNosDescTok, SeriesPostedServiceShipmentNosStartTok, SeriesPostedServiceShipmentNosEndTok);
+        ServiceMgtSetup."Loaner Nos." := SetupNoSeries(ServiceMgtSetup."Loaner Nos.", LoanerNos, SeriesLoanerNosDescTok, SeriesLoanerNosStartTok, SeriesLoanerNosEndTok);
+        ServiceMgtSetup."Service Contract Nos." := SetupNoSeries(ServiceMgtSetup."Service Contract Nos.", ServiceContractNos, SeriesServiceContractNosDescTok, SeriesServiceContractNosStartTok, SeriesServiceContractNosEndTok);
+        ServiceMgtSetup."Contract Invoice Nos." := SetupNoSeries(ServiceMgtSetup."Contract Invoice Nos.", ContractInvoiceNos, SeriesContractInvoiceNosDescTok, SeriesContractInvoiceNosStartTok, SeriesContractInvoiceNosEndTok);
         if BaseCalendar.FindFirst() then
             ServiceMgtSetup."Base Calendar Code" := BaseCalendar.Code
         else
@@ -118,7 +118,7 @@ codeunit 5103 "Create Svc Setup"
         ServiceMgtSetup.Modify(true);
     end;
 
-    local procedure CheckNoSeriesSetup(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text[100]; StartNo: Code[20]; EndNo: Code[20]): Code[20]
+    local procedure SetupNoSeries(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text[100]; StartNo: Code[20]; EndNo: Code[20]): Code[20]
     var
         NoSeries: Record "No. Series";
         NoSeriesLine: Record "No. Series Line";
