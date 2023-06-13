@@ -8,7 +8,6 @@ codeunit 5116 "Create Job Customer Data"
         JobsDemoDataSetup.Get();
 
         InsertCustomerData(JobsDemoDataSetup."Customer No.", CustomerLbl, JobsDemoDataSetup."Cust. Posting Group", JobsDemoDataSetup."Cust. Gen. Bus. Posting Group");
-        OnAfterCreatedCustomers();
     end;
 
     var
@@ -36,18 +35,6 @@ codeunit 5116 "Create Job Customer Data"
             Customer.Validate("Customer Posting Group", CustomerPostingGroup);
         if Customer."Gen. Bus. Posting Group" = '' then
             Customer.Validate("Gen. Bus. Posting Group", BusPostingGroup);
-
-        OnBeforeCustomerInsert(Customer);
-        Customer.Insert(true);
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeCustomerInsert(var Customer: Record Customer)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedCustomers()
-    begin
-    end;
 }

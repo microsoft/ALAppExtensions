@@ -22,13 +22,8 @@ codeunit 5105 "Create Svc Resource Demo Data"
         SvcDemoDataSetup.Get();
 
         CreateResources();
-        OnAfterCreatedResources();
-
         CreateResourceSkills();
-        OnAfterCreatedResourceSkills();
-
         CreateResourceServiceZones();
-        OnAfterCreatedResourceServiceZones();
     end;
 
     procedure CreateResources()
@@ -104,20 +99,5 @@ codeunit 5105 "Create Svc Resource Demo Data"
         ResourceServiceZone."Resource No." := ResourceCode;
         ResourceServiceZone."Service Zone Code" := ZoneCode;
         ResourceServiceZone.Insert(true);
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedResources()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedResourceSkills()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedResourceServiceZones()
-    begin
     end;
 }

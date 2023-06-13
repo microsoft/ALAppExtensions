@@ -20,17 +20,9 @@ codeunit 5107 "Create Svc Demo Transactions"
     begin
         SvcDemoDataSetup.Get();
 
-        // Create Item Journals
         CreateItemJournals();
-        OnAfterCreateItemJournals();
-
-        // Create Loaners
         CreateLoaners();
-        OnAfterCreateLoaners();
-
-        // Create Sales Orders
         CreateSalesOrders();
-        OnAfterCreateSalesOrders();
     end;
 
     local procedure CreateItemJournals()
@@ -45,7 +37,6 @@ codeunit 5107 "Create Svc Demo Transactions"
         ItemJournalLine.Validate("Entry Type", ItemJournalLine."Entry Type"::"Positive Adjmt.");
         ItemJournalLine.Validate("Document No.", STARTSVCTok);
         ItemJournalLine.Validate(Quantity, 10);
-        OnBeforeItemJournalLineInsert(ItemJournalLine);
         ItemJournalLine.Insert(true);
         InitItemJnlLine(ItemJournalLine, ItemJnlTemplateName, STARTSVCTok);
         ItemJournalLine.Validate("Item No.", SvcDemoDataSetup."Item 2 No.");
@@ -53,7 +44,6 @@ codeunit 5107 "Create Svc Demo Transactions"
         ItemJournalLine.Validate("Entry Type", ItemJournalLine."Entry Type"::"Positive Adjmt.");
         ItemJournalLine.Validate("Document No.", STARTSVCTok);
         ItemJournalLine.Validate(Quantity, 10);
-        OnBeforeItemJournalLineInsert(ItemJournalLine);
         ItemJournalLine.Insert(true);
     end;
 
@@ -74,7 +64,6 @@ codeunit 5107 "Create Svc Demo Transactions"
                 ItemJournalBatch.Name := ItemJnlBatchName;
                 ItemJournalBatch.Description := ItemJnlBatchName;
                 ItemJournalBatch.Insert(true);
-                Commit();
             end;
         ItemJnlTemplateName := ItemJournalTemplate.Name;
     end;
@@ -131,7 +120,6 @@ codeunit 5107 "Create Svc Demo Transactions"
         SalesHeader.Insert(true);
         SalesHeader.Validate("Sell-to Customer No.", CustomerNo);
         SalesHeader.Validate("Posting Date", AdjustSvcDemoData.AdjustDate(19020601D));
-        OnBeforeSalesHeaderFinalize(SalesHeader);
         SalesHeader."External Document No." := ExternalDocumentNo;
         SalesHeader.Modify(true);
         SalesLine.Init();
@@ -142,37 +130,6 @@ codeunit 5107 "Create Svc Demo Transactions"
         SalesLine.Validate("Type", SalesLine.Type::Item);
         SalesLine.Validate("No.", ItemNo);
         SalesLine.Validate("Quantity", 1);
-        OnBeforeSalesLineFinalize(SalesLine);
         SalesLine.Modify(true);
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeItemJournalLineInsert(var ItemJournalLine: Record "Item Journal Line")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateItemJournals()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateLoaners()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeSalesHeaderFinalize(var SalesHeader: Record "Sales Header")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeSalesLineFinalize(var SalesLine: Record "Sales Line")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateSalesOrders()
-    begin
     end;
 }

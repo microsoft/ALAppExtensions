@@ -32,13 +32,8 @@ codeunit 5114 "Create Job Demo Data"
         JobsDemoDataSetup.Get();
 
         CreateItems();
-        OnAfterCreatedItems();
-
         CreateJob();
-        OnAfterCreatedJob();
-
         CreateJobTasks();
-        OnAfterCreatedJobTasks();
     end;
 
     local procedure CreateItems()
@@ -98,7 +93,6 @@ codeunit 5114 "Create Job Demo Data"
             Item.Picture.ImportStream(ObjInStream, ItemPictureDescription);
         end;
 
-        OnBeforeItemInsert(Item);
         Item.Insert(true);
 
         // Create the Item Unit of Measure
@@ -126,7 +120,6 @@ codeunit 5114 "Create Job Demo Data"
         Job.Init();
         Job."No." := JobNoTok;
         Job.Validate(Description, JobNameTok);
-        OnBeforeJobInsert(Job);
         Job.Insert(true);
         Job.Validate("Bill-to Customer No.", JobsDemoDataSetup."Customer No.");
         Job.Modify(true);
@@ -149,7 +142,6 @@ codeunit 5114 "Create Job Demo Data"
             Codeunit.Run(Codeunit::"Job Task-Indent", JobTask);
             UnbindSubscription(PauseJobIndentEvent);
         end;
-        OnAfterCreatedJobTasks();
     end;
 
     local procedure CreateJobTask(JobNo: Code[20]; JobTaskNo: Code[20]; TaskDescription: Text[100]; JobTaskType: Enum "Job Task Type")
@@ -164,7 +156,6 @@ codeunit 5114 "Create Job Demo Data"
         JobTask.Validate("Job Task No.", JobTaskNo);
         JobTask.Validate(Description, TaskDescription);
         JobTask."Job Task Type" := JobTaskType;
-        OnBeforeJobTaskInsert(JobTask);
         JobTask.Insert(true);
     end;
 
@@ -181,35 +172,5 @@ codeunit 5114 "Create Job Demo Data"
     procedure GetInstallationServiceTaskNo(): Code[20]
     begin
         exit(TaskInstallServiceNoTok);
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeItemInsert(var Item: Record Item)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedItems()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeJobInsert(Job: Record Job)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedJob()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeJobTaskInsert(JobTask: Record "Job Task")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedJobTasks()
-    begin
     end;
 }

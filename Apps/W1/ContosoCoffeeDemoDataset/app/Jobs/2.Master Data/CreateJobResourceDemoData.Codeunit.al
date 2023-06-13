@@ -16,7 +16,6 @@ codeunit 5115 "Create Job Resource Demo Data"
         JobsDemoDataSetup.Get();
 
         CreateResources();
-        OnAfterCreatedResources();
     end;
 
     procedure CreateResources()
@@ -38,7 +37,6 @@ codeunit 5115 "Create Job Resource Demo Data"
         Resource."VAT Prod. Posting Group" := ResourceVATProdPostingGroupTok;
         Resource."Unit Cost" := AdjustJobsDemoData.AdjustPrice(UnitCost);
         Resource."Unit Price" := AdjustJobsDemoData.AdjustPrice(UnitPrice);
-        OnBeforeResourceInsert(Resource);
         Resource.Insert(true);
         CreateResourceUnitOfMeasure(Resource);
     end;
@@ -53,15 +51,5 @@ codeunit 5115 "Create Job Resource Demo Data"
         ResourceUnitOfMeasure."Resource No." := Resource."No.";
         ResourceUnitOfMeasure."Code" := Resource."Base Unit of Measure";
         ResourceUnitOfMeasure.Insert(true);
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeResourceInsert(var Resource: Record Resource)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedResources()
-    begin
     end;
 }

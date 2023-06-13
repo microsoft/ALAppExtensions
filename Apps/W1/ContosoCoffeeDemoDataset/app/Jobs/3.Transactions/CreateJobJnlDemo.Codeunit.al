@@ -54,7 +54,6 @@ codeunit 5117 "Create Job Jnl Demo"
         JobJournalLine.Validate("Line Type", JobJournalLine."Line Type"::Billable);
         if LineDescription <> '' then
             JobJournalLine.Validate(Description, LineDescription);
-        OnBeforeCreateJobJournalLine(JobJournalLine);
         JobJournalLine.Modify(true);
     end;
 
@@ -77,10 +76,5 @@ codeunit 5117 "Create Job Jnl Demo"
             JobJournalBatch.Validate(Description, AdjustJobsDemoData.TitleCase(JournalBatchName) + ' ' + XJournalTok);
             JobJournalBatch.Insert(true);
         end;
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeCreateJobJournalLine(JobJournalLine: Record "Job Journal Line")
-    begin
     end;
 }

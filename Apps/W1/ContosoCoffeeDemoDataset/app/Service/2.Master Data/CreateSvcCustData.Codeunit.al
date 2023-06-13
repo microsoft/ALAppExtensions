@@ -8,7 +8,6 @@ codeunit 5106 "Create Svc Cust Data"
         SvcDemoDataSetup.Get();
 
         InsertCustomerData(SvcDemoDataSetup."Customer No.", CustomerLbl, SvcDemoDataSetup."Cust. Posting Group", SvcDemoDataSetup."Cust. Gen. Bus. Posting Group");
-        OnAfterCreatedCustomers();
     end;
 
     var
@@ -37,17 +36,7 @@ codeunit 5106 "Create Svc Cust Data"
         if Customer."Gen. Bus. Posting Group" = '' then
             Customer.Validate("Gen. Bus. Posting Group", BusPostingGroup);
 
-        OnBeforeCustomerInsert(Customer);
         Customer.Insert(true);
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeCustomerInsert(var Customer: Record Customer)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreatedCustomers()
-    begin
-    end;
 }

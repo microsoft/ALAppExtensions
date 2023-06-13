@@ -83,7 +83,6 @@ codeunit 5104 "Create Svc Item Demo Data"
             Item.Picture.ImportStream(ObjInStream, ItemPictureDescription);
         end;
 
-        OnBeforeItemInsert(Item);
         Item.Insert(true);
 
         // Create the Item Unit of Measure
@@ -117,10 +116,5 @@ codeunit 5104 "Create Svc Item Demo Data"
             ResourceSkill."Skill Code" := CreateSvcSetup.GetSkillCodeLargeTok();
             ResourceSkill.Insert(true);
         end;
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeItemInsert(var Item: Record Item)
-    begin
     end;
 }
