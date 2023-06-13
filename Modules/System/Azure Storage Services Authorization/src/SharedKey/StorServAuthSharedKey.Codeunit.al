@@ -136,7 +136,7 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
         StringBuilderResource: TextBuilder;
         StringBuilderQuery: TextBuilder;
         StringBuilderCanonicalizedResource: TextBuilder;
-        KeyValuePairLbl: Label '%1:%2', Comment = '%1 = Key; %2 = Value';
+        KeyValuePairLbl: Label '%1:%2', Comment = '%1 = Key; %2 = Value', Locked = true;
     begin
         Uri.Init(UriString);
         Uri.GetSegments(Segments);
