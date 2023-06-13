@@ -29,7 +29,7 @@ codeunit 5261 "Audit File Export Mgt."
         NotPossibleToScheduleTxt: label 'It is not possible to schedule the task for line %1 because the Max. No. of Jobs is %2.', Comment = '%1,%2 = numbers';
         ScheduleTaskForLineTxt: label 'Schedule a task for the line %1.', Comment = '%1 = number';
         AuditFileAlreadyExistsQst: label 'The audit file already exists and is ready for downloading. Do you want to recreate the audit file?';
-        TwoStringsTxt: label '%1%2', Comment = '%1, %2 - two strings to concatenate';
+        TwoStringsTxt: label '%1%2', Comment = '%1, %2 - two strings to concatenate', Locked = true;
 
     procedure StartExport(var AuditFileExportHeader: Record "Audit File Export Header")
     var
