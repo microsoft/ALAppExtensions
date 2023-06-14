@@ -126,45 +126,46 @@ codeunit 5103 "Create Svc Setup"
         if CurrentSetupField <> '' then
             exit(CurrentSetupField);
 
-        if not NoSeries.Get(NumberSeriesCode) then begin
-            NoSeries.Init();
-            NoSeries.Code := NumberSeriesCode;
-            NoSeries.Description := SeriesDescription;
-            NoSeries."Manual Nos." := true;
-            NoSeries.Validate("Default Nos.", true);
-            NoSeries.Insert(true);
+        if NoSeries.Get(NumberSeriesCode) then
+            exit(NumberSeriesCode);
 
-            NoSeriesLine.Init();
-            NoSeriesLine."Series Code" := NumberSeriesCode;
-            NoSeriesLine."Line No." := 10000;
-            NoSeriesLine.Insert(true);
-            NoSeriesLine.Validate("Starting No.", StartNo);
-            NoSeriesLine.Validate("Ending No.", EndNo);
-            NoSeriesLine.Validate("Increment-by No.", 1);
-            NoSeriesLine.Validate("Allow Gaps in Nos.", true);
-            NoSeriesLine.Modify(true);
-        end;
+        NoSeries.Init();
+        NoSeries.Code := NumberSeriesCode;
+        NoSeries.Description := SeriesDescription;
+        NoSeries."Manual Nos." := true;
+        NoSeries.Validate("Default Nos.", true);
+        NoSeries.Insert(true);
+
+        NoSeriesLine.Init();
+        NoSeriesLine."Series Code" := NumberSeriesCode;
+        NoSeriesLine."Line No." := 10000;
+        NoSeriesLine.Insert(true);
+        NoSeriesLine.Validate("Starting No.", StartNo);
+        NoSeriesLine.Validate("Ending No.", EndNo);
+        NoSeriesLine.Validate("Increment-by No.", 1);
+        NoSeriesLine.Validate("Allow Gaps in Nos.", true);
+        NoSeriesLine.Modify(true);
 
         exit(NumberSeriesCode);
     end;
 
     local procedure CreateSkillCodes()
+    begin
+        // Create a Skill Code for both LARGE and SMALL Commercial Units
+        CreateSkillCode(SkillCodeLargeTok, SkillCodeLargeDescTok);
+        CreateSkillCode(SkillCodeSmallTok, SkillCodeSmallDescTok);
+    end;
+
+    local procedure CreateSkillCode(NewSkillCode: Code[10]; NewSkillDescription: Text[100])
     var
         SkillCode: Record "Skill Code";
     begin
-        // Create a Skill Code for both LARGE and SMALL Commercial Units
-        if not SkillCode.Get(SkillCodeLargeTok) then begin
-            SkillCode.Init();
-            SkillCode.Code := SkillCodeLargeTok;
-            SkillCode.Description := SkillCodeLargeDescTok;
-            SkillCode.Insert(true);
-        end;
-        if not SkillCode.Get(SkillCodeSmallTok) then begin
-            SkillCode.Init();
-            SkillCode.Code := SkillCodeSmallTok;
-            SkillCode.Description := SkillCodeSmallDescTok;
-            SkillCode.Insert(true);
-        end;
+        if SkillCode.Get(SkillCodeLargeTok) then
+            exit;
+        SkillCode.Init();
+        SkillCode.Code := NewSkillCode;
+        SkillCode.Description := NewSkillDescription;
+        SkillCode.Insert(true);
     end;
 
     local procedure CreateServiceZones()
@@ -172,37 +173,39 @@ codeunit 5103 "Create Svc Setup"
         ServiceZone: Record "Service Zone";
     begin
         // Create zones for both LOCAL and REMOTE work
-        if not ServiceZone.Get(ServiceZoneLocalTok) then begin
-            ServiceZone.Init();
-            ServiceZone.Code := ServiceZoneLocalTok;
-            ServiceZone.Description := AdjustSvcDemoData.TitleCase(ServiceZoneLocalTok);
-            ServiceZone.Insert(true);
-        end;
-        if not ServiceZone.Get(ServiceZoneRemoteTok) then begin
-            ServiceZone.Init();
-            ServiceZone.Code := ServiceZoneRemoteTok;
-            ServiceZone.Description := AdjustSvcDemoData.TitleCase(ServiceZoneRemoteTok);
-            ServiceZone.Insert(true);
-        end;
+        CreateServiceZone(ServiceZoneLocalTok, AdjustSvcDemoData.TitleCase(ServiceZoneLocalTok));
+        CreateServiceZone(ServiceZoneRemoteTok, AdjustSvcDemoData.TitleCase(ServiceZoneRemoteTok));
+    end;
+
+    local procedure CreateServiceZone(NewZoneCode: Code[10]; NewZoneDescription: Text[100])
+    var
+        ServiceZone: Record "Service Zone";
+    begin
+        if ServiceZone.Get(NewZoneCode) then
+            exit;
+        ServiceZone.Init();
+        ServiceZone.Code := NewZoneCode;
+        ServiceZone.Description := NewZoneDescription;
+        ServiceZone.Insert(true);
     end;
 
     local procedure CreateServiceOrderTypes()
+    begin
+        // Create Service Order Types for MAINT or BREAKFIX orders
+        CreateServiceOrderType(ServiceOrderTypeMaintTok, AdjustSvcDemoData.TitleCase(ServiceOrderTypeMaintTok));
+        CreateServiceOrderType(ServiceOrderTypeBreakFixTok, AdjustSvcDemoData.TitleCase(ServiceOrderTypeBreakFixTok));
+    end;
+
+    local procedure CreateServiceOrderType(NewOrderTypeCode: Code[10]; NewOrderTypeDescription: Text[100])
     var
         ServiceOrderType: Record "Service Order Type";
     begin
-        // Create Service Order Types for MAINT or BREAKFIX orders
-        if not ServiceOrderType.Get(ServiceOrderTypeMaintTok) then begin
-            ServiceOrderType.Init();
-            ServiceOrderType.Code := ServiceOrderTypeMaintTok;
-            ServiceOrderType.Description := AdjustSvcDemoData.TitleCase(ServiceOrderTypeMaintTok);
-            ServiceOrderType.Insert(true);
-        end;
-        if not ServiceOrderType.Get(ServiceOrderTypeBreakFixTok) then begin
-            ServiceOrderType.Init();
-            ServiceOrderType.Code := ServiceOrderTypeBreakFixTok;
-            ServiceOrderType.Description := AdjustSvcDemoData.TitleCase(ServiceOrderTypeBreakFixTok);
-            ServiceOrderType.Insert(true);
-        end;
+        if ServiceOrderType.Get(NewOrderTypeCode) then
+            exit;
+        ServiceOrderType.Init();
+        ServiceOrderType.Code := NewOrderTypeCode;
+        ServiceOrderType.Description := NewOrderTypeDescription;
+        ServiceOrderType.Insert(true);
     end;
 
     local procedure CreateFaultReasonCodes()
@@ -210,18 +213,20 @@ codeunit 5103 "Create Svc Setup"
         FaultReasonCode: Record "Fault Reason Code";
     begin
         // Create Fault Reason Codes for DEFECT and USERFAULT
-        if not FaultReasonCode.Get(FaultReasonCodeDefectTok) then begin
-            FaultReasonCode.Init();
-            FaultReasonCode.Code := FaultReasonCodeDefectTok;
-            FaultReasonCode.Description := AdjustSvcDemoData.TitleCase(FaultReasonCodeDefectTok);
-            FaultReasonCode.Insert(true);
-        end;
-        if not FaultReasonCode.Get(FaultReasonCodeUserFaultTok) then begin
-            FaultReasonCode.Init();
-            FaultReasonCode.Code := FaultReasonCodeUserFaultTok;
-            FaultReasonCode.Description := AdjustSvcDemoData.TitleCase(FaultReasonCodeUserFaultTok);
-            FaultReasonCode.Insert(true);
-        end;
+        CreateFaultReasonCode(FaultReasonCodeDefectTok, AdjustSvcDemoData.TitleCase(FaultReasonCodeDefectTok));
+        CreateFaultReasonCode(FaultReasonCodeUserFaultTok, AdjustSvcDemoData.TitleCase(FaultReasonCodeUserFaultTok));
+    end;
+
+    local procedure CreateFaultReasonCode(NewFaultReasonCode: Code[10]; NewFaultReasonDescription: Text[100])
+    var
+        FaultReasonCode: Record "Fault Reason Code";
+    begin
+        if FaultReasonCode.Get(NewFaultReasonCode) then
+            exit;
+        FaultReasonCode.Init();
+        FaultReasonCode.Code := NewFaultReasonCode;
+        FaultReasonCode.Description := NewFaultReasonDescription;
+        FaultReasonCode.Insert(true);
     end;
 
     local procedure CreateServiceItemGroups()
@@ -229,13 +234,13 @@ codeunit 5103 "Create Svc Setup"
         ServiceItemGroup: Record "Service Item Group";
     begin
         // Create a COMMERCIAL service item group
-        if not ServiceItemGroup.Get(ServiceItemGroupCommercialTok) then begin
-            ServiceItemGroup.Init();
-            ServiceItemGroup.Code := ServiceItemGroupCommercialTok;
-            ServiceItemGroup.Description := AdjustSvcDemoData.TitleCase(ServiceItemGroupCommercialTok);
-            ServiceItemGroup."Create Service Item" := true;
-            ServiceItemGroup.Insert(true);
-        end;
+        if ServiceItemGroup.Get(ServiceItemGroupCommercialTok) then
+            exit;
+        ServiceItemGroup.Init();
+        ServiceItemGroup.Code := ServiceItemGroupCommercialTok;
+        ServiceItemGroup.Description := AdjustSvcDemoData.TitleCase(ServiceItemGroupCommercialTok);
+        ServiceItemGroup."Create Service Item" := true;
+        ServiceItemGroup.Insert(true);
     end;
 
     local procedure CreateBaseCalendar(): Code[10]
@@ -243,12 +248,12 @@ codeunit 5103 "Create Svc Setup"
         BaseCalendar: Record "Base Calendar";
     begin
         // Create a Base Calendar for the Service Order
-        if not BaseCalendar.Get(BaseCalendarTok) then begin
-            BaseCalendar.Init();
-            BaseCalendar.Code := BaseCalendarTok;
-            BaseCalendar.Name := CopyStr(AdjustSvcDemoData.TitleCase(BaseCalendarTok), 1, MaxStrLen(BaseCalendar.Name));
-            BaseCalendar.Insert(true);
-        end;
+        if BaseCalendar.Get(BaseCalendarTok) then
+            exit(BaseCalendarTok);
+        BaseCalendar.Init();
+        BaseCalendar.Code := BaseCalendarTok;
+        BaseCalendar.Name := CopyStr(AdjustSvcDemoData.TitleCase(BaseCalendarTok), 1, MaxStrLen(BaseCalendar.Name));
+        BaseCalendar.Insert(true);
 
         exit(BaseCalendarTok);
     end;
