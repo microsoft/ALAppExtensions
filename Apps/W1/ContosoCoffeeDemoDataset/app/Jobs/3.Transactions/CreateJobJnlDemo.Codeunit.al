@@ -1,4 +1,4 @@
-codeunit 5117 "Create Job Jnl Demo"
+codeunit 5122 "Create Job Jnl Demo"
 {
     Permissions = tabledata "Job Journal Template" = rim,
         tabledata "Job Journal Batch" = rim,
@@ -7,7 +7,7 @@ codeunit 5117 "Create Job Jnl Demo"
     var
         JobsDemoDataSetup: Record "Jobs Demo Data Setup";
         AdjustJobsDemoData: Codeunit "Adjust Jobs Demo Data";
-        CreateJobDemoData: Codeunit "Create Job Demo Data";
+        CreateJobDemoTasks: Codeunit "Create Job Demo Tasks";
         XJOBTEMPLATETok: Label 'JOB', MaxLength = 10;
         XJOBBATCHTTok: Label 'CONTOSO', MaxLength = 10;
         XJournalTok: Label 'Journal', MaxLength = 100;
@@ -18,14 +18,15 @@ codeunit 5117 "Create Job Jnl Demo"
     begin
         JobsDemoDataSetup.Get();
 
-        InitJournalTemplateAndBatch(XJOBTEMPLATETok, XJOBBATCHTTok);
+        InitJournalTemplate(XJOBTEMPLATETok);
+        InitJournalBatch(XJOBTEMPLATETok, XJOBBATCHTTok);
 
-        CreateJobJournalLine(CreateJobDemoData.GetDeliveryFeeTaskNo(), Enum::"Job Journal Line Type"::Resource, JobsDemoDataSetup."Resource Installer No.", 2, TravelDescTok);
-        CreateJobJournalLine(CreateJobDemoData.GetDeliveryFeeTaskNo(), Enum::"Job Journal Line Type"::Resource, JobsDemoDataSetup."Resource Vehicle No.", 2, TravelDescTok);
-        CreateJobJournalLine(CreateJobDemoData.GetDeliveryFeeTaskNo(), Enum::"Job Journal Line Type"::Item, JobsDemoDataSetup."Item Machine No.", 1, '');
+        CreateJobJournalLine(CreateJobDemoTasks.GetDeliveryFeeTaskNo(), Enum::"Job Journal Line Type"::Resource, JobsDemoDataSetup."Resource Installer No.", 2, TravelDescTok);
+        CreateJobJournalLine(CreateJobDemoTasks.GetDeliveryFeeTaskNo(), Enum::"Job Journal Line Type"::Resource, JobsDemoDataSetup."Resource Vehicle No.", 2, TravelDescTok);
+        CreateJobJournalLine(CreateJobDemoTasks.GetDeliveryFeeTaskNo(), Enum::"Job Journal Line Type"::Item, JobsDemoDataSetup."Item Machine No.", 1, '');
 
-        CreateJobJournalLine(CreateJobDemoData.GetInstallationServiceTaskNo(), Enum::"Job Journal Line Type"::Resource, JobsDemoDataSetup."Resource Installer No.", 3, InstallDescTok);
-        CreateJobJournalLine(CreateJobDemoData.GetInstallationServiceTaskNo(), Enum::"Job Journal Line Type"::Item, JobsDemoDataSetup."Item Consumable No.", 1, '');
+        CreateJobJournalLine(CreateJobDemoTasks.GetInstallationServiceTaskNo(), Enum::"Job Journal Line Type"::Resource, JobsDemoDataSetup."Resource Installer No.", 3, InstallDescTok);
+        CreateJobJournalLine(CreateJobDemoTasks.GetInstallationServiceTaskNo(), Enum::"Job Journal Line Type"::Item, JobsDemoDataSetup."Item Consumable No.", 1, '');
     end;
 
     local procedure CreateJobJournalLine(JobTaskNo: Code[20]; JobJournalLineType: Enum "Job Journal Line Type"; WhichNo: Code[20]; Quantity: Decimal; LineDescription: Text[100])
@@ -45,7 +46,7 @@ codeunit 5117 "Create Job Jnl Demo"
         JobJournalLine."Journal Batch Name" := XJOBBATCHTTok;
         JobJournalLine."Line No." := NextLineNo;
         JobJournalLine.Insert(true);
-        JobJournalLine.Validate("Job No.", CreateJobDemoData.GetJobNo());
+        JobJournalLine.Validate("Job No.", CreateJobDemoTasks.GetJobNo());
         JobJournalLine.Validate("Job Task No.", JobTaskNo);
         JobJournalLine.Validate("Posting Date", AdjustJobsDemoData.AdjustDate(19020601D));
         JobJournalLine.Validate("Type", JobJournalLineType);
@@ -57,24 +58,28 @@ codeunit 5117 "Create Job Jnl Demo"
         JobJournalLine.Modify(true);
     end;
 
-    local procedure InitJournalTemplateAndBatch(JournalTemplateName: Text; JournalBatchName: Text)
+    local procedure InitJournalTemplate(JournalTemplateName: Text)
     var
         JobJournalTemplate: Record "Job Journal Template";
+    begin
+        if JobJournalTemplate.Get(JournalTemplateName) then
+            exit;
+        JobJournalTemplate.Init();
+        JobJournalTemplate.Validate(Name, JournalTemplateName);
+        JobJournalTemplate.Validate(Description, AdjustJobsDemoData.TitleCase(JournalTemplateName) + ' ' + XJournalTok);
+        JobJournalTemplate.Insert(true);
+    end;
+
+    local procedure InitJournalBatch(JournalTemplateName: Text; JournalBatchName: Text)
+    var
         JobJournalBatch: Record "Job Journal Batch";
     begin
-        if not JobJournalTemplate.Get(JournalTemplateName) then begin
-            JobJournalTemplate.Init();
-            JobJournalTemplate.Validate(Name, JournalTemplateName);
-            JobJournalTemplate.Validate(Description, AdjustJobsDemoData.TitleCase(JournalTemplateName) + ' ' + XJournalTok);
-            JobJournalTemplate.Insert(true);
-        end;
-
-        if not JobJournalBatch.Get(JournalTemplateName, JournalBatchName) then begin
-            JobJournalBatch.Init();
-            JobJournalBatch.Validate("Journal Template Name", JournalTemplateName);
-            JobJournalBatch.Validate(Name, JournalBatchName);
-            JobJournalBatch.Validate(Description, AdjustJobsDemoData.TitleCase(JournalBatchName) + ' ' + XJournalTok);
-            JobJournalBatch.Insert(true);
-        end;
+        if JobJournalBatch.Get(JournalTemplateName, JournalBatchName) then
+            exit;
+        JobJournalBatch.Init();
+        JobJournalBatch.Validate("Journal Template Name", JournalTemplateName);
+        JobJournalBatch.Validate(Name, JournalBatchName);
+        JobJournalBatch.Validate(Description, AdjustJobsDemoData.TitleCase(JournalBatchName) + ' ' + XJournalTok);
+        JobJournalBatch.Insert(true);
     end;
 }

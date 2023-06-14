@@ -1,4 +1,4 @@
-codeunit 5115 "Create Job Resource Demo Data"
+codeunit 5121 "Create Job Resource Demo Data"
 {
 
     Permissions = tabledata "Resource" = rim,

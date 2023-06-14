@@ -86,6 +86,7 @@ codeunit 5100 "Create Service Demo Data"
         Codeunit.Run(Codeunit::"Create Svc Customer Data");
         Codeunit.Run(Codeunit::"Create Svc Item Demo Data");
         Codeunit.Run(Codeunit::"Create Svc Resource Demo Data");
+        Codeunit.Run(Codeunit::"Create Svc Loaners Demo Data");
 
         OnAfterCreateMasterData();
         Commit();
@@ -94,7 +95,8 @@ codeunit 5100 "Create Service Demo Data"
     local procedure CreateTransactionData()
     var
     begin
-        Codeunit.Run(Codeunit::"Create Svc Demo Transactions");
+        Codeunit.Run(Codeunit::"Create Svc Demo Item Stock");
+        Codeunit.Run(Codeunit::"Create Svc Demo Orders");
 
         OnAfterCreateTransactionData();
         Commit();

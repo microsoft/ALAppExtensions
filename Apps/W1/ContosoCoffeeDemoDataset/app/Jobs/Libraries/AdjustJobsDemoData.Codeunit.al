@@ -1,4 +1,4 @@
-codeunit 5119 "Adjust Jobs Demo Data"
+codeunit 5124 "Adjust Jobs Demo Data"
 {
     procedure AdjustPrice(UnitPrice: Decimal): Decimal
     var

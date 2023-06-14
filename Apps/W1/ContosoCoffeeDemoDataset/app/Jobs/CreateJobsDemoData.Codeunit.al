@@ -1,4 +1,4 @@
-codeunit 5110 "Create Jobs Demo Data"
+codeunit 5112 "Create Jobs Demo Data"
 {
     procedure Create()
     begin
@@ -82,7 +82,8 @@ codeunit 5110 "Create Jobs Demo Data"
     var
     begin
         Codeunit.Run(Codeunit::"Create Job Customer Data");
-        Codeunit.Run(Codeunit::"Create Job Demo Data");
+        Codeunit.Run(Codeunit::"Create Job Demo Items");
+        Codeunit.Run(Codeunit::"Create Job Demo Tasks");
         Codeunit.Run(Codeunit::"Create Job Resource Demo Data");
 
         OnAfterCreateMasterData();

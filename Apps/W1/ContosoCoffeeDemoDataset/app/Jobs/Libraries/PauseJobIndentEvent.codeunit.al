@@ -1,4 +1,4 @@
-codeunit 5120 "Pause Job Indent Event"
+codeunit 5125 "Pause Job Indent Event"
 {
     EventSubscriberInstance = Manual;
 

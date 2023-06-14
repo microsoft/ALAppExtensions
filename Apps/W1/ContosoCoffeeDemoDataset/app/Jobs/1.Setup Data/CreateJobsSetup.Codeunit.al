@@ -1,4 +1,4 @@
-codeunit 5113 "Create Jobs Setup"
+codeunit 5115 "Create Jobs Setup"
 {
     Permissions = tabledata "Jobs Setup" = rim,
         tabledata "No. Series" = rim,
