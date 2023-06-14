@@ -59,7 +59,7 @@ permissionset 4761 "Contoso Coffee - Objects"
         codeunit "Create Svc Setup" = X,
         codeunit "Create Svc Item Demo Data" = X,
         codeunit "Create Svc Resource Demo Data" = X,
-        codeunit "Create Svc Cust Data" = X,
+        codeunit "Create Svc Customer Data" = X,
         codeunit "Create Svc Demo Transactions" = X,
         codeunit "Svc Demo Data Files" = X,
         codeunit "Adjust Svc Demo Data" = X,

@@ -83,7 +83,7 @@ codeunit 5100 "Create Service Demo Data"
     local procedure CreateMasterData()
     var
     begin
-        Codeunit.Run(Codeunit::"Create Svc Cust Data");
+        Codeunit.Run(Codeunit::"Create Svc Customer Data");
         Codeunit.Run(Codeunit::"Create Svc Item Demo Data");
         Codeunit.Run(Codeunit::"Create Svc Resource Demo Data");
 

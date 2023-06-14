@@ -1,4 +1,4 @@
-codeunit 5106 "Create Svc Cust Data"
+codeunit 5106 "Create Svc Customer Data"
 {
     Permissions = tabledata Customer = ri,
         tabledata "Tax Area" = ri;
