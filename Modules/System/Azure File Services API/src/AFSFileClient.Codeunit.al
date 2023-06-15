@@ -39,15 +39,6 @@ codeunit 8950 "AFS File Client"
     end;
 
     /// <summary>
-    /// Sets the base URL for the request.
-    /// </summary>
-    /// <param name="BaseUrl">The base URL to use.</param>
-    procedure SetBaseUrl(BaseUrl: Text)
-    begin
-        AFSClientImpl.SetBaseUrl(BaseUrl);
-    end;
-
-    /// <summary>
     /// Creates a file in the file share.
     /// This does not fill in the file content, it only initializes the file.
     /// </summary>
@@ -174,6 +165,56 @@ codeunit 8950 "AFS File Client"
     procedure GetFileAsText(FilePath: Text; var TargetText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
         exit(AFSClientImpl.GetFileAsText(FilePath, TargetText, AFSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// Receives file metadata as dictionary from a file share.
+    /// </summary>
+    /// <param name="FilePath">The path to the file.</param>
+    /// <param name="TargetMetadata">The result dictionary containing the metadata of the file in the form of metadata key and a value.</param>
+    /// <returns>An operation response object</returns>
+    procedure GetFileMetadata(FilePath: Text; var TargetMetadata: Dictionary of [Text, Text]): Codeunit "AFS Operation Response"
+    var
+        AFSOptionalParameters: Codeunit "AFS Optional Parameters";
+    begin
+        exit(AFSClientImpl.GetFileMetadata(FilePath, TargetMetadata, AFSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// Receives file metadata as dictionary from a file share.
+    /// </summary>
+    /// <param name="FilePath">The path to the file.</param>
+    /// <param name="TargetMetadata">The result dictionary containing the metadata of the file in the form of metadata key and a value.</param>
+    /// <param name="AFSOptionalParameters">Optional parameters to pass with the request.</param>
+    /// <returns>An operation response object</returns>
+    procedure GetFileMetadata(FilePath: Text; var TargetMetadata: Dictionary of [Text, Text]; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    begin
+        exit(AFSClientImpl.GetFileMetadata(FilePath, TargetMetadata, AFSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// Sets the file metadata.
+    /// </summary>
+    /// <param name="FilePath">The path to the file.</param>
+    /// <param name="Metadata">The dictionary containing the metadata of the file in the form of metadata key and a value.</param>
+    /// <returns>An operation response object</returns>
+    procedure SetFileMetadata(FilePath: Text; Metadata: Dictionary of [Text, Text]): Codeunit "AFS Operation Response"
+    var
+        AFSOptionalParameters: Codeunit "AFS Optional Parameters";
+    begin
+        exit(AFSClientImpl.SetFileMetadata(FilePath, Metadata, AFSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// Sets the file metadata.
+    /// </summary>
+    /// <param name="FilePath">The path to the file.</param>
+    /// <param name="Metadata">The dictionary containing the metadata of the file in the form of metadata key and a value.</param>
+    /// <param name="AFSOptionalParameters">Optional parameters to pass with the request.</param>
+    /// <returns>An operation response object</returns>
+    procedure SetFileMetadata(FilePath: Text; var Metadata: Dictionary of [Text, Text]; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    begin
+        exit(AFSClientImpl.SetFileMetadata(FilePath, Metadata, AFSOptionalParameters));
     end;
 
     /// <summary>

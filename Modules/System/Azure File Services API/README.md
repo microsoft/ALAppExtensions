@@ -145,25 +145,6 @@ The authorization to use.
 The API Version to use.
 
 
-#### `SetBaseUrl()`
-
-Sets the base URL for the request.
-
-
-##### Syntax
-
-```al
-SetBaseUrl(BaseUrl: Text)
-```
-
-##### Parameters
-
-*BaseUrl*<br>
-&emsp;Type: Text <br>
-
-The base URL to use.
-
-
 #### `CreateFile()`
 
 Creates a file in the file share.
@@ -472,6 +453,132 @@ The path to the file.
 &emsp;Type: Text <br>
 
 The result text containing the content of the file.
+
+*AFSOptionalParameters*<br>
+&emsp;Type: Codeunit  "AFS Optional Parameters"<br>
+
+Optional parameters to pass with the request.
+
+
+##### Return
+
+*Codeunit "AFS Operation Response"*<br>
+
+An operation response object
+
+#### GetFileMetadata()
+
+Receives file metadata as dictionary from a file share.
+
+##### Syntax
+
+```al
+[Codeunit "AFS Operation Response"] := GetFileMetadata(FilePath: Text, var TargetMetadata: Dictionary of [Text, Text])
+```
+
+##### Parameters
+
+*FilePath*<br>
+&emsp;Type: Text <br>
+
+The path to the file.
+
+*TargetMetadata*<br>
+&emsp;Type: Dictionary of [Text, Text] <br>
+
+The result dictionary containing the metadata of the file in the form of metadata key and a value.
+
+
+##### Return
+
+*Codeunit "AFS Operation Response"*<br>
+
+An operation response object
+
+#### GetFileMetadata()
+
+Receives file metadata as dictionary from a file share.
+
+##### Syntax
+
+```al
+[Codeunit "AFS Operation Response"] := GetFileMetadata(FilePath: Text, var TargetMetadata: Dictionary of [Text, Text], AFSOptionalParameters: Codeunit "AFS Optional Parameters")
+```
+
+##### Parameters
+
+*FilePath*<br>
+&emsp;Type: Text <br>
+
+The path to the file.
+
+*TargetMetadata*<br>
+&emsp;Type: Dictionary of [Text, Text] <br>
+
+The result dictionary containing the metadata of the file in the form of metadata key and a value.
+
+*AFSOptionalParameters*<br>
+&emsp;Type: Codeunit  "AFS Optional Parameters"<br>
+
+Optional parameters to pass with the request.
+
+
+##### Return
+
+*Codeunit "AFS Operation Response"*<br>
+
+An operation response object
+
+#### SetFileMetadata()
+
+Sets the file metadata.
+
+##### Syntax
+
+```al
+[Codeunit "AFS Operation Response"] := SetFileMetadata(FilePath: Text, Metadata: Dictionary of [Text, Text])
+```
+
+##### Parameters
+
+*FilePath*<br>
+&emsp;Type: Text <br>
+
+The path to the file.
+
+*Metadata*<br>
+&emsp;Type: Dictionary of [Text, Text] <br>
+
+The dictionary containing the metadata of the file in the form of metadata key and a value.
+
+
+##### Return
+
+*Codeunit "AFS Operation Response"*<br>
+
+An operation response object
+
+#### SetFileMetadata()
+
+Sets the file metadata.
+
+##### Syntax
+
+```al
+[Codeunit "AFS Operation Response"] := SetFileMetadata(FilePath: Text, Metadata: Dictionary of [Text, Text], AFSOptionalParameters: Codeunit "AFS Optional Parameters")
+```
+
+##### Parameters
+
+*FilePath*<br>
+&emsp;Type: Text <br>
+
+The path to the file.
+
+*Metadata*<br>
+&emsp;Type: Dictionary of [Text, Text] <br>
+
+The dictionary containing the metadata of the file in the form of metadata key and a value.
 
 *AFSOptionalParameters*<br>
 &emsp;Type: Codeunit  "AFS Optional Parameters"<br>

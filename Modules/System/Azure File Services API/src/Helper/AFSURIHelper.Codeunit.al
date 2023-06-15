@@ -46,7 +46,7 @@ codeunit 8957 "AFS URI Helper"
     local procedure AppendFileShareIfNecessary(var ConstructedUrl: Text; FileShare: Text; Operation: Enum "AFS Operation")
     begin
         // e.g. https://<StorageAccountName>.blob.core.windows.net/<FileShare>?restype=container
-        if not (Operation in [Operation::CreateFile, Operation::PutRange, Operation::DeleteFile, Operation::GetFile, Operation::ListDirectory, Operation::CreateDirectory, Operation::DeleteDirectory, Operation::CopyFile, Operation::AbortCopyFile, Operation::ListFileHandles, Operation::ListDirectoryHandles, Operation::RenameFile, Operation::LeaseFile]) then
+        if not (Operation in [Operation::CreateFile, Operation::PutRange, Operation::DeleteFile, Operation::GetFile, Operation::ListDirectory, Operation::CreateDirectory, Operation::DeleteDirectory, Operation::CopyFile, Operation::AbortCopyFile, Operation::ListFileHandles, Operation::ListDirectoryHandles, Operation::RenameFile, Operation::LeaseFile, Operation::GetFileMetadata, Operation::SetFileMetadata]) then
             exit;
         if not ConstructedUrl.EndsWith('/') then
             ConstructedUrl += '/';
@@ -57,7 +57,7 @@ codeunit 8957 "AFS URI Helper"
     local procedure AppendPathIfNecessary(var ConstructedUrl: Text; Path: Text; Operation: Enum "AFS Operation")
     begin
         // e.g. https://<StorageAccountName>.blob.core.windows.net/<FileShare>/<Path>
-        if not (Operation in [Operation::CreateFile, Operation::PutRange, Operation::DeleteFile, Operation::GetFile, Operation::ListDirectory, Operation::CreateDirectory, Operation::DeleteDirectory, Operation::CopyFile, Operation::AbortCopyFile, Operation::ListFileHandles, Operation::ListDirectoryHandles, Operation::RenameFile, Operation::LeaseFile]) then
+        if not (Operation in [Operation::CreateFile, Operation::PutRange, Operation::DeleteFile, Operation::GetFile, Operation::ListDirectory, Operation::CreateDirectory, Operation::DeleteDirectory, Operation::CopyFile, Operation::AbortCopyFile, Operation::ListFileHandles, Operation::ListDirectoryHandles, Operation::RenameFile, Operation::LeaseFile, Operation::GetFileMetadata, Operation::SetFileMetadata]) then
             exit;
         if not ConstructedUrl.EndsWith('/') then
             ConstructedUrl += '/';
@@ -94,6 +94,7 @@ codeunit 8957 "AFS URI Helper"
         LeaseExtensionLbl: Label 'lease', Locked = true;
         CopyExtensionLbl: Label 'copy', Locked = true;
         RangeExtensionLbl: Label 'range', Locked = true;
+        MetadataExtensionLbl: Label 'metadata', Locked = true;
     begin
         // e.g. https://<StorageAccountName>.blob.core.windows.net/?restype=account&comp=properties
         case Operation of
@@ -109,6 +110,8 @@ codeunit 8957 "AFS URI Helper"
                 CompValue := RenameExtensionLbl;
             Operation::LeaseFile:
                 CompValue := LeaseExtensionLbl;
+            Operation::GetFileMetadata, Operation::SetFileMetadata:
+                CompValue := MetadataExtensionLbl;
         end;
         if CompValue = '' then
             exit;
@@ -144,7 +147,7 @@ codeunit 8957 "AFS URI Helper"
             Error(ValueCanNotBeEmptyErr, StorageAccountNameLbl);
 
         case true of
-            Operation in [Operation::CreateFile, Operation::PutRange, Operation::DeleteFile, Operation::CreateDirectory, Operation::CopyFile, Operation::RenameFile, Operation::ListFileHandles, Operation::ListDirectoryHandles, Operation::LeaseFile]:
+            Operation in [Operation::CreateFile, Operation::PutRange, Operation::DeleteFile, Operation::CreateDirectory, Operation::CopyFile, Operation::RenameFile, Operation::ListFileHandles, Operation::ListDirectoryHandles, Operation::LeaseFile, Operation::GetFileMetadata, Operation::SetFileMetadata]:
                 begin
                     if FileShareName = '' then
                         Error(ValueCanNotBeEmptyErr, FileShareLbl);

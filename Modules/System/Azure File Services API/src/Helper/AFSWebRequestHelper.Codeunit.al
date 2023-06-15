@@ -156,7 +156,7 @@ codeunit 8954 "AFS Web Request Helper"
     local procedure PrepareRequestMsg(var HttpRequestMessage: HttpRequestMessage; var AFSOperationPayload: Codeunit "AFS Operation Payload"; HttpRequestType: Enum "Http Request Type"; HttpContent: HttpContent)
     var
         AFSHttpContentHelper: Codeunit "AFS HttpContent Helper";
-                                                                                                               AFSHttpHeaderHelper: Codeunit "AFS HttpHeader Helper";
+        AFSHttpHeaderHelper: Codeunit "AFS HttpHeader Helper";
     begin
         if AFSHttpContentHelper.ContentSet(HttpContent) or AFSHttpHeaderHelper.HandleContentHeaders(HttpContent, AFSOperationPayload) then
             HttpRequestMessage.Content := HttpContent;

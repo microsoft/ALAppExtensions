@@ -18,6 +18,8 @@ codeunit 8951 "AFS Client Impl."
         PutFileOperationNotSuccessfulErr: Label 'Could not put file %1 ranges in %2.', Comment = '%1 = File Name; %2 = File Share Name';
         CreateDirectoryOperationNotSuccessfulErr: Label 'Could not create directory %1 in %2.', Comment = '%1 = Directory Name; %2 = File Share Name';
         GetFileOperationNotSuccessfulErr: Label 'Could not get File %1.', Comment = '%1 = File Path';
+        GetFileMetadataOperationNotSuccessfulErr: Label 'Could not get File %1 metadata.', Comment = '%1 = File Path';
+        SetFileMetadataOperationNotSuccessfulErr: Label 'Could not set File %1 metadata.', Comment = '%1 = File Path';
         CopyFileOperationNotSuccessfulErr: Label 'Could not copy File %1.', Comment = '%1 = File Path';
         DeleteFileOperationNotSuccessfulErr: Label 'Could not %3 File %1 in file share %2.', Comment = '%1 = File Name; %2 = File Share Name, %3 = Delete/Undelete';
         DeleteDirectoryOperationNotSuccessfulErr: Label 'Could not delete directory %1 in file share %2.', Comment = '%1 = File Name; %2 = File Share Name';
@@ -196,6 +198,45 @@ codeunit 8951 "AFS Client Impl."
         AFSOperationPayload.SetPath(FilePath);
 
         AFSOperationResponse := AFSWebRequestHelper.GetOperationAsText(AFSOperationPayload, TargetText, StrSubstNo(GetFileOperationNotSuccessfulErr, AFSOperationPayload.GetPath()));
+        exit(AFSOperationResponse);
+    end;
+
+    procedure GetFileMetadata(FilePath: Text; var TargetMetadata: Dictionary of [Text, Text]; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    var
+        AFSOperationResponse: Codeunit "AFS Operation Response";
+        AFSOperation: Enum "AFS Operation";
+        AFSHttpHeaderHelper: Codeunit "AFS HttpHeader Helper";
+        TargetText: Text;
+    begin
+        AFSOperationPayload.SetOperation(AFSOperation::GetFileMetadata);
+        AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
+        AFSOperationPayload.SetPath(FilePath);
+
+        AFSOperationResponse := AFSWebRequestHelper.GetOperationAsText(AFSOperationPayload, TargetText, StrSubstNo(GetFileMetadataOperationNotSuccessfulErr, AFSOperationPayload.GetPath()));
+        TargetMetadata := AFSHttpHeaderHelper.GetMetadataHeaders(AFSOperationResponse.GetHeaders());
+        exit(AFSOperationResponse);
+    end;
+
+    procedure SetFileMetadata(FilePath: Text; Metadata: Dictionary of [Text, Text]; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    var
+        AFSOperationResponse: Codeunit "AFS Operation Response";
+        AFSOperation: Enum "AFS Operation";
+        TargetText: Text;
+        MetadataKey: Text;
+        MetadataValue: Text;
+    begin
+        AFSOperationPayload.SetOperation(AFSOperation::SetFileMetadata);
+        AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
+        AFSOperationPayload.SetPath(FilePath);
+
+        foreach MetadataKey in Metadata.Keys() do begin
+            MetadataValue := Metadata.Get(MetadataKey);
+            if not MetadataKey.StartsWith('x-ms-meta-') then
+                MetadataKey := 'x-ms-meta-' + MetadataKey;
+            AFSOperationPayload.AddRequestHeader(MetadataKey, MetadataValue);
+        end;
+
+        AFSOperationResponse := AFSWebRequestHelper.PutOperation(AFSOperationPayload, StrSubstNo(SetFileMetadataOperationNotSuccessfulErr, AFSOperationPayload.GetPath()));
         exit(AFSOperationResponse);
     end;
 
@@ -412,7 +453,7 @@ codeunit 8951 "AFS Client Impl."
     begin
         AFSOptionalParameters.LeaseAction(LeaseAction::Release);
 
-        TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
+        CheckGuidNotNull(LeaseId, 'LeaseId', 'x-ms-lease-id');
 
         AFSOptionalParameters.LeaseId(LeaseId);
 
@@ -444,8 +485,8 @@ codeunit 8951 "AFS Client Impl."
     begin
         AFSOptionalParameters.LeaseAction(LeaseAction::Change);
 
-        TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
-        TestParameterSpecified(ProposedLeaseId, 'ProposedLeaseId', 'x-ms-proposed-lease-id');
+        CheckGuidNotNull(LeaseId, 'LeaseId', 'x-ms-lease-id');
+        CheckGuidNotNull(ProposedLeaseId, 'ProposedLeaseId', 'x-ms-proposed-lease-id');
 
         AFSOptionalParameters.LeaseId(LeaseId);
         AFSOptionalParameters.ProposedLeaseId(ProposedLeaseId);
@@ -457,7 +498,7 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    local procedure TestParameterSpecified(ValueVariant: Variant; ParameterName: Text; HeaderIdentifer: Text)
+    local procedure CheckGuidNotNull(ValueVariant: Variant; ParameterName: Text; HeaderIdentifer: Text)
     begin
         if ValueVariant.IsGuid() then
             if IsNullGuid(ValueVariant) then
