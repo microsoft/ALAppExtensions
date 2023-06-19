@@ -204,8 +204,8 @@ codeunit 8951 "AFS Client Impl."
     procedure GetFileMetadata(FilePath: Text; var TargetMetadata: Dictionary of [Text, Text]; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        AFSOperation: Enum "AFS Operation";
         AFSHttpHeaderHelper: Codeunit "AFS HttpHeader Helper";
+        AFSOperation: Enum "AFS Operation";
         TargetText: Text;
     begin
         AFSOperationPayload.SetOperation(AFSOperation::GetFileMetadata);
@@ -221,7 +221,6 @@ codeunit 8951 "AFS Client Impl."
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         AFSOperation: Enum "AFS Operation";
-        TargetText: Text;
         MetadataKey: Text;
         MetadataValue: Text;
     begin
