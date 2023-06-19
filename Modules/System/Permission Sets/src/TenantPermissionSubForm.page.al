@@ -271,7 +271,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('R', "Read Permission"::Yes);
+                        UpdateSelectedPermissionLines('R', "Read Permission"::Yes);
                     end;
                 }
                 action(AllowReadNo)
@@ -284,7 +284,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('R', "Read Permission"::" ");
+                        UpdateSelectedPermissionLines('R', "Read Permission"::" ");
                     end;
                 }
                 action(AllowReadIndirect)
@@ -297,7 +297,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('R', "Read Permission"::Indirect);
+                        UpdateSelectedPermissionLines('R', "Read Permission"::Indirect);
                     end;
                 }
             }
@@ -316,7 +316,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('I', "Insert Permission"::Yes);
+                        UpdateSelectedPermissionLines('I', "Insert Permission"::Yes);
                     end;
                 }
                 action(AllowInsertNo)
@@ -329,7 +329,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('I', "Insert Permission"::" ");
+                        UpdateSelectedPermissionLines('I', "Insert Permission"::" ");
                     end;
                 }
                 action(AllowInsertIndirect)
@@ -342,7 +342,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('I', "Insert Permission"::Indirect);
+                        UpdateSelectedPermissionLines('I', "Insert Permission"::Indirect);
                     end;
                 }
             }
@@ -361,7 +361,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('M', "Modify Permission"::Yes);
+                        UpdateSelectedPermissionLines('M', "Modify Permission"::Yes);
                     end;
                 }
                 action(AllowModifyNo)
@@ -374,7 +374,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('M', "Modify Permission"::" ");
+                        UpdateSelectedPermissionLines('M', "Modify Permission"::" ");
                     end;
                 }
                 action(AllowModifyIndirect)
@@ -387,7 +387,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('M', "Modify Permission"::Indirect);
+                        UpdateSelectedPermissionLines('M', "Modify Permission"::Indirect);
                     end;
                 }
             }
@@ -406,7 +406,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('D', "Delete Permission"::Yes);
+                        UpdateSelectedPermissionLines('D', "Delete Permission"::Yes);
                     end;
                 }
                 action(AllowDeleteNo)
@@ -419,7 +419,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('D', "Delete Permission"::" ");
+                        UpdateSelectedPermissionLines('D', "Delete Permission"::" ");
                     end;
                 }
                 action(AllowDeleteIndirect)
@@ -432,7 +432,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('D', "Delete Permission"::Indirect);
+                        UpdateSelectedPermissionLines('D', "Delete Permission"::Indirect);
                     end;
                 }
             }
@@ -451,7 +451,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('X', "Execute Permission"::Yes);
+                        UpdateSelectedPermissionLines('X', "Execute Permission"::Yes);
                     end;
                 }
                 action(AllowExecuteNo)
@@ -464,7 +464,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('X', "Execute Permission"::" ");
+                        UpdateSelectedPermissionLines('X', "Execute Permission"::" ");
                     end;
                 }
                 action(AllowExecuteIndirect)
@@ -477,7 +477,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('X', "Execute Permission"::Indirect);
+                        UpdateSelectedPermissionLines('X', "Execute Permission"::Indirect);
                     end;
                 }
             }
@@ -495,7 +495,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('*', "Read Permission"::Yes);
+                        UpdateSelectedPermissionLines('*', "Read Permission"::Yes);
                     end;
                 }
                 action(AllowAllNo)
@@ -508,7 +508,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('*', "Read Permission"::" ");
+                        UpdateSelectedPermissionLines('*', "Read Permission"::" ");
                     end;
                 }
                 action(AllowAllIndirect)
@@ -521,7 +521,7 @@ page 9859 "Tenant Permission Subform"
 
                     trigger OnAction()
                     begin
-                        UpdateSelected('*', "Read Permission"::Indirect);
+                        UpdateSelectedPermissionLines('*', "Read Permission"::Indirect);
                     end;
                 }
             }
@@ -644,44 +644,12 @@ page 9859 "Tenant Permission Subform"
         CurrPage.Update(false);
     end;
 
-    local procedure UpdateSelected(RIMDX: Text[1]; PermissionOption: Option)
+    local procedure UpdateSelectedPermissionLines(RIMDX: Text[1]; PermissionOption: Option)
     var
         TenantPermission: Record "Tenant Permission";
-        OriginalTenantPermission: Record "Tenant Permission";
     begin
         CurrPage.SetSelectionFilter(TenantPermission);
-
-        if TenantPermission.FindSet() then
-            repeat
-                case RIMDX of
-                    'R':
-                        if TenantPermission."Object Type" = "Object Type"::"Table Data" then
-                            TenantPermission."Read Permission" := PermissionOption;
-                    'I':
-                        if TenantPermission."Object Type" = "Object Type"::"Table Data" then
-                            TenantPermission."Insert Permission" := PermissionOption;
-                    'M':
-                        if TenantPermission."Object Type" = "Object Type"::"Table Data" then
-                            TenantPermission."Modify Permission" := PermissionOption;
-                    'D':
-                        if TenantPermission."Object Type" = "Object Type"::"Table Data" then
-                            TenantPermission."Delete Permission" := PermissionOption;
-                    'X':
-                        if TenantPermission."Object Type" <> "Object Type"::"Table Data" then
-                            TenantPermission."Execute Permission" := PermissionOption;
-                    '*':
-                        begin
-                            if TenantPermission."Object Type" = "Object Type"::"Table Data" then begin
-                                TenantPermission."Read Permission" := PermissionOption;
-                                TenantPermission."Insert Permission" := PermissionOption;
-                                TenantPermission."Modify Permission" := PermissionOption;
-                                TenantPermission."Delete Permission" := PermissionOption;
-                            end else
-                                TenantPermission."Execute Permission" := PermissionOption;
-                        end;
-                end;
-                TenantPermission.Modify();
-            until TenantPermission.Next() = 0;
+        PermissionImpl.UpdateSelectedPermissionLines(TenantPermission, RIMDX, PermissionOption);
     end;
 
     var
