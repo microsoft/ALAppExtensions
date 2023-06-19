@@ -178,7 +178,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation response object</returns>
     procedure PutBlobBlockBlobStream(BlobName: Text; var SourceInStream: InStream; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(ABSClientImpl.PutBlobBlockBlobStream(BlobName, SourceInStream, '', ABSOptionalParameters));
+        exit(ABSClientImpl.PutBlobBlockBlobStream(BlobName, SourceInStream, ContentType, ABSOptionalParameters));
     end;
 
     /// <summary>
