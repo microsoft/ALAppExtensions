@@ -266,7 +266,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU
+            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU, GB
         ***************************************************/
 
         AppId := '8051ee19-8246-489f-9f2c-4d89e1710f7e';
@@ -275,8 +275,8 @@ codeunit 20352 "Connectivity App Definitions"
         AppDescription := 'Bank statement import & reconciliation.';
         AppProviderSupportURL := 'https://www.softera.lt/en/supported-banks-softera-bankfeed/';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.8051ee19-8246-489f-9f2c-4d89e1710f7e';
-        AppApprovedFor := 'LT,DK,HU';
-        AppWorksOn := 'W1,DK';
+        AppApprovedFor := 'LT,DK,HU,GB';
+        AppWorksOn := 'W1,DK,GB';
 
         AddDescriptionTranslation(AppId, 'Banko išrašo importas ir suderinimas.', 1063);
         AddDescriptionTranslation(AppId, 'Kontoudtog import & afstemning.', 1030);
