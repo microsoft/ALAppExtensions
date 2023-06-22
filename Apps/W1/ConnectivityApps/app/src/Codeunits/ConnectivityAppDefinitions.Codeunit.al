@@ -47,7 +47,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppName := 'Sumango AutoBank';
         AppPublisher := 'Sumango AS';
         AppDescription := 'AutoBank manage payments, recivables, refunds and reconciliation in all currencies directly from Business Central. Streamlines, simplifies and expands bank functionality without leaving your Business Central environment. Sumango AutoBank support banks in Norway, Sweden, Denmark, Finland, Germany, Portugal, United Kingdom and United States. Visit www.sumango.no for more information.';
-        AppProviderSupportURL := 'https://www.sumango.no';
+        AppProviderSupportURL := 'https://oseberg.atlassian.net/wiki/spaces/Autobank/pages/2342191252/Integrated+banks';
         AppSourceUrl := 'https://www.sumango.no';
         AppApprovedFor := 'NO,SE';
         AppWorksOn := 'NO,SE';
