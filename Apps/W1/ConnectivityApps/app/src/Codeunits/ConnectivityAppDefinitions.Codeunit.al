@@ -26,6 +26,35 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterWiseBanking();
         RegisterDirectBankingNL();
         RegisterSofteraBankfeed();
+        RegisterSUManGOAutoBank();
+    end;
+    local procedure RegisterSUManGOAutoBank()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Sumango AutoBank' to NO, SE
+        ***************************************************/
+
+        AppId := '52508c8d-fb2b-49da-9657-f49859fd43cc';
+        AppName := 'Sumango AutoBank';
+        AppPublisher := 'Sumango AS';
+        AppDescription := 'AutoBank manage payments, recivables, refunds and reconciliation in all currencies directly from Business Central. Streamlines, simplifies and expands bank functionality without leaving your Business Central environment. Sumango AutoBank support banks in Norway, Sweden, Denmark, Finland, Germany, Portugal, United Kingdom and United States. Visit www.sumango.no for more information.';
+        AppProviderSupportURL := 'https://oseberg.atlassian.net/wiki/spaces/Autobank/pages/2342191252/Integrated+banks';
+        AppSourceUrl := 'https://www.sumango.no';
+        AppApprovedFor := 'NO,SE';
+        AppWorksOn := 'NO,SE';
+
+        AddDescriptionTranslation(AppId, 'AutoBank har som hovedfokus å effektivisere, forenkle og utvide funksjonalitet rundt betaling, innbetalinger, refusjoner og avstemming av banktransaksjoner i alle valutaer. Du kan nå trygt integrere banken din direkte i Business Central uten filhåndtering. AutoBank støtter alle banker i Norge, samt utvalgte banker i Sverige, Danmark, Finland, Tyskland, Portugal, England og USA. (www.sumango.no)', 1044);
+        AddDescriptionTranslation(AppId, 'AutoBanks huvudfokus är att effektivisera, förenkla och utöka funktionaliteten kring leverantör betalningar, kund betalningar, återbetalning och avstämning av banktransaktioner i alla valutor. Du kan nu säkert integrera din bank direkt i Business Central utan filhantering. AutoBank stödjer följande bankar Handelsbanken, SEB, Nordea, Danske Bank, och DNB.', 1053);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
     local procedure RegisterAppBankingNL()
