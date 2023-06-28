@@ -1,6 +1,6 @@
-enumextension 2622 "Stat. Acc. Line Totaling Type" extends "Acc. Schedule Line Totaling Type"
+enumextension 50122 "Stat. Acc. Line Totaling Type" extends "Acc. Schedule Line Totaling Type"
 {
-    value(2620; "Statistical Account")
+    value(50120; "Statistical Account")
     {
         Caption = 'Statistical Account';
     }

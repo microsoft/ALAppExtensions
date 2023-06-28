@@ -1,4 +1,4 @@
-page 2624 "Stat. Account Balance Lines"
+page 50124 "Stat. Account Balance Lines"
 {
     Caption = 'Lines';
     DeleteAllowed = false;

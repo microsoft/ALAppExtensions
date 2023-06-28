@@ -1,4 +1,4 @@
-pageextension 2620 "Stat. Acc. BC Role Center" extends "Business Manager Role Center"
+pageextension 50120 "Stat. Acc. BC Role Center" extends "Business Manager Role Center"
 {
     actions
     {

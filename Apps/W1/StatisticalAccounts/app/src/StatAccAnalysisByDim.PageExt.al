@@ -1,4 +1,4 @@
-pageextension 2626 "Stat. Acc. Analysis By Dim." extends "Analysis by Dimensions"
+pageextension 50126 "Stat. Acc. Analysis By Dim." extends "Analysis by Dimensions"
 {
     actions
     {

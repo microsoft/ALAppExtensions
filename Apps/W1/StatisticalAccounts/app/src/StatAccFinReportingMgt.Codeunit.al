@@ -1,4 +1,4 @@
-codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
+codeunit 50122 "Stat. Acc. Fin Reporting Mgt"
 {
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeLookupTotaling', '', false, false)]
     local procedure OnBeforeLookupTotaling(var AccScheduleLine: Record "Acc. Schedule Line"; var IsHandled: Boolean)

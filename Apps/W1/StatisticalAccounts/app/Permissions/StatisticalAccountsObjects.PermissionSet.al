@@ -8,7 +8,7 @@
 /// do not include this permission set in any other permission set
 /// and do not change the Access and Assignable properties
 /// </summary>
-permissionset 2626 "Statistical Accounts - Objects"
+permissionset 50126 "Statistical Accounts - Objects"
 {
     Assignable = false;
     Access = Public;

@@ -1,6 +1,6 @@
-enumextension 2630 "Stat. Analys. Acc. Source" extends "Analysis Account Source"
+enumextension 50130 "Stat. Analys. Acc. Source" extends "Analysis Account Source"
 {
-    value(2630; "Statistical Account")
+    value(50130; "Statistical Account")
     {
         Caption = 'Statistical Account';
     }

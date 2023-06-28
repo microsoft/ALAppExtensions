@@ -1,4 +1,4 @@
-codeunit 2626 "Stat. Acc. Post. Batch"
+codeunit 50126 "Stat. Acc. Post. Batch"
 {
     TableNo = "Statistical Acc. Journal Line";
 

@@ -1,4 +1,4 @@
-codeunit 2623 "Stat. Acc. Jnl Check Line"
+codeunit 50123 "Stat. Acc. Jnl Check Line"
 {
     TableNo = "Statistical Acc. Journal Line";
 

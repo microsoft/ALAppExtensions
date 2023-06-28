@@ -1,4 +1,4 @@
-table 2620 "Stat. Acc. Balance Buffer"
+table 50120 "Stat. Acc. Balance Buffer"
 {
     DataClassification = SystemMetadata;
     TableType = Temporary;

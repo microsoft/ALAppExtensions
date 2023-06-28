@@ -1,4 +1,4 @@
-table 2631 "Statistical Acc. Journal Line"
+table 50131 "Statistical Acc. Journal Line"
 {
     Caption = 'Statistical Account Journal';
     DataClassification = CustomerContent;

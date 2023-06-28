@@ -1,4 +1,4 @@
-page 2631 "Statistical Account Card"
+page 50131 "Statistical Account Card"
 {
     PageType = Card;
     SourceTable = "Statistical Account";
@@ -46,7 +46,7 @@ page 2631 "Statistical Account Card"
             part(Control1905532107; "Dimensions FactBox")
             {
                 ApplicationArea = Dimensions;
-                SubPageLink = "Table ID" = const(2632),
+                SubPageLink = "Table ID" = const(50132),
                               "No." = field("No.");
                 Visible = false;
             }
@@ -74,7 +74,7 @@ page 2631 "Statistical Account Card"
                     Caption = 'Dimensions';
                     Image = Dimensions;
                     RunObject = Page "Default Dimensions";
-                    RunPageLink = "Table ID" = const(2632),
+                    RunPageLink = "Table ID" = const(50132),
                                   "No." = field("No.");
                     ShortCutKey = 'Alt+D';
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';

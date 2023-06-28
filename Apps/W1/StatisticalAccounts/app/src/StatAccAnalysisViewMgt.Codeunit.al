@@ -1,4 +1,4 @@
-codeunit 2621 "Stat. Acc. Analysis View Mgt."
+codeunit 50121 "Stat. Acc. Analysis View Mgt."
 {
     [EventSubscriber(ObjectType::Table, Database::"Analysis View", 'OnValidateAccountFilter', '', false, false)]
     local procedure HandleOnValidateAccountFilter(var AnalysisView: Record "Analysis View"; var xRecAnalysisView: Record "Analysis View")

@@ -1,4 +1,4 @@
-codeunit 2625 "Stat. Acc. Demo Data"
+codeunit 50125 "Stat. Acc. Demo Data"
 {
     trigger OnRun()
     begin

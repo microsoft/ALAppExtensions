@@ -1,4 +1,4 @@
-page 2623 "Stat. Account Balance"
+page 50123 "Stat. Account Balance"
 {
     Caption = 'Statistical Account Balance';
     DeleteAllowed = false;
@@ -83,7 +83,7 @@ page 2623 "Stat. Account Balance"
                     Caption = 'Dimensions';
                     Image = Dimensions;
                     RunObject = Page "Default Dimensions";
-                    RunPageLink = "Table ID" = const(2632),
+                    RunPageLink = "Table ID" = const(50132),
                                   "No." = field("No.");
                     ShortCutKey = 'Alt+D';
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';

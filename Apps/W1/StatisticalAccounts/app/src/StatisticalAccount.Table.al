@@ -1,4 +1,4 @@
-table 2632 "Statistical Account"
+table 50132 "Statistical Account"
 {
     DataClassification = CustomerContent;
     DrillDownPageId = "Statistical Account List";
