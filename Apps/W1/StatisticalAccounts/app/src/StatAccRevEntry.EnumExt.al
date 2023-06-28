@@ -1,6 +1,6 @@
-enumextension 50125 "Stat. Acc. Rev. Entry" extends "Reversal Entry Type"
+enumextension 2625 "Stat. Acc. Rev. Entry" extends "Reversal Entry Type"
 {
-    value(50125; "Statistical Account")
+    value(2625; "Statistical Account")
     {
         Caption = 'Statistical Account';
     }

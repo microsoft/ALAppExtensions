@@ -1,8 +1,8 @@
-tableextension 50125 StatAccAnalysisView extends "Analysis View"
+tableextension 2625 StatAccAnalysisView extends "Analysis View"
 {
     fields
     {
-        field(50125; "Statistical Account Filter"; Code[250])
+        field(2625; "Statistical Account Filter"; Code[250])
         {
             Caption = 'Statistical Account Filter';
             TableRelation = "Statistical Account";

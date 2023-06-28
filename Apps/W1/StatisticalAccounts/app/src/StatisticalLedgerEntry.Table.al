@@ -1,4 +1,4 @@
-table 50133 "Statistical Ledger Entry"
+table 2633 "Statistical Ledger Entry"
 {
     DataClassification = CustomerContent;
     DrillDownPageId = "Statistical Ledger Entry List";

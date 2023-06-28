@@ -1,4 +1,4 @@
-page 50133 "Statistical Accounts Journal"
+page 2633 "Statistical Accounts Journal"
 {
     Caption = 'Statistical Account Journal';
     PageType = Worksheet;

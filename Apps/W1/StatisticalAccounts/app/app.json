@@ -20,15 +20,9 @@
     "platform":  "22.0.0.0",
     "target":  "Cloud",
     "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
+                                   "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "22.2.0.0",
-    "idRanges": [
-        {
-          "from": 50100,
-          "to": 50199
-        }
-    ]
+    "application":  "22.3.0.0"
 }

@@ -1,4 +1,4 @@
-page 50130 "Statistical Acc. Journal Batch"
+page 2630 "Statistical Acc. Journal Batch"
 {
     Caption = 'Statistical Account Journal Batch';
     SourceTable = "Statistical Acc. Journal Batch";

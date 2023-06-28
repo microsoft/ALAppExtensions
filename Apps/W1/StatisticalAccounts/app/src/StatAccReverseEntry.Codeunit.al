@@ -1,4 +1,4 @@
-codeunit 50130 "Stat. Acc. Reverse Entry"
+codeunit 2630 "Stat. Acc. Reverse Entry"
 {
     [EventSubscriber(ObjectType::Table, Database::"Reversal Entry", 'OnBeforeReverseEntries', '', false, false)]
     local procedure HandleOnBeforeInsertReversalEntry(Number: Integer; RevType: Integer; var IsHandled: Boolean; HideDialog: Boolean; var ReversalEntry: Record "Reversal Entry")

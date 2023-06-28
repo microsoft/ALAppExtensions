@@ -1,5 +1,5 @@
 #pragma implicitwith disable
-page 50129 "Stat. Acc. Reverse Entries"
+page 2629 "Stat. Acc. Reverse Entries"
 {
     Caption = 'Reverse Entries';
     DataCaptionExpression = Rec.Caption();

@@ -1,4 +1,4 @@
-tableextension 50130 StatAccSourceCodeSetup extends "Source Code Setup"
+tableextension 2630 StatAccSourceCodeSetup extends "Source Code Setup"
 {
     fields
     {

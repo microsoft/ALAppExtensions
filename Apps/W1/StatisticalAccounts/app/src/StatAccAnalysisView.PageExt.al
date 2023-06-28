@@ -1,4 +1,4 @@
-pageextension 50125 StatAccAnalysisView extends "Analysis View Card"
+pageextension 2625 StatAccAnalysisView extends "Analysis View Card"
 {
     layout
     {

@@ -1,4 +1,4 @@
-page 50134 "Statistical Ledger Entry List"
+page 2634 "Statistical Ledger Entry List"
 {
     ApplicationArea = All;
     AdditionalSearchTerms = 'Statistical account ledger entries, Unit account ledger entries, Non-posting account ledger entries';

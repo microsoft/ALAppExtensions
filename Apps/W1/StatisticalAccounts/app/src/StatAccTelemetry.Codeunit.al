@@ -1,4 +1,4 @@
-codeunit 50127 "Stat. Acc. Telemetry"
+codeunit 2627 "Stat. Acc. Telemetry"
 {
     SingleInstance = true;
 
