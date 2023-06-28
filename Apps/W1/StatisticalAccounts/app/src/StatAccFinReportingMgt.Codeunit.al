@@ -93,12 +93,13 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
         if ColumnLayout."Column Type" = ColumnLayout."Column Type"::Formula then
             exit(ColValue);
 
+        AccSchedLine.CopyFilters(SourceAccScheduleLine);
         if AccSchedName."Analysis View Name" = '' then begin
-            SetStatisticalAccountsLedgerEntryFilters(StatisticalAccount, StatisticalLedgerEntry, SourceAccScheduleLine, ColumnLayout, sender);
+            SetStatisticalAccountsLedgerEntryFilters(StatisticalAccount, StatisticalLedgerEntry, AccSchedLine, ColumnLayout, sender);
             StatisticalLedgerEntry.CalcSums(Amount);
             ColValue := StatisticalLedgerEntry.Amount;
         end else begin
-            SetStatisticalAccountAnalysisViewEntryFilters(StatisticalAccount, AnalysisViewEntry, SourceAccScheduleLine, ColumnLayout, AccSchedName);
+            SetStatisticalAccountAnalysisViewEntryFilters(StatisticalAccount, AnalysisViewEntry, AccSchedLine, ColumnLayout, AccSchedName);
             AnalysisViewEntry.CalcSums(Amount);
             ColValue := AnalysisViewEntry.Amount;
         end;
