@@ -90,7 +90,7 @@ Exposes the following integration events:
 
 - OnAfterCalculationStock(Item: Record Item; ShopifyShop: Record "Shpfy Shop"; LocationFilter: Text; var StockResult: Decimal)
 
-### table 30124 "Shpfy Payout"
+### table 30124 "Shpfy Payment Transaction"
 Availability date: starting with version 22.4
 
 ### table 30125 "Shpfy Payout"
