@@ -91,6 +91,14 @@ page 9859 "Tenant Permission Subform"
                     Caption = 'Object Name';
                     ToolTip = 'Specifies the name of the object to which the permissions apply.';
                 }
+                field("Object Caption"; ObjectCaption)
+                {
+                    ApplicationArea = All;
+                    Style = Strong;
+                    StyleExpr = ZeroObjStyleExpr;
+                    Caption = 'Object Caption';
+                    ToolTip = 'Specifies the caption of the object that the permissions apply to.';
+                }
                 field("Read Permission"; ReadPermissionAsTxt)
                 {
                     ApplicationArea = All;
