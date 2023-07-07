@@ -25,6 +25,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterIQBanking();
         RegisterWiseBanking();
         RegisterDirectBankingNL();
+        RegisterDirectBankingBE();
         RegisterSofteraBankfeed();
     end;
 
@@ -244,13 +245,44 @@ codeunit 20352 "Connectivity App Definitions"
         AppId := '7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
         AppName := 'Direct Banking NL';
         AppPublisher := 'IDYN B.V.';
-        AppDescription := 'Integrate ABN, Rabo, ING, Triodos, Knab, ASN, SNS, etc. with Microsoft Dynamics 365 Business Central.';
+        AppDescription := 'Automate your banking process in Business Central, no file exchange needed. Streamline bank transactions including matching for your bank accounts, and initiate payment from Business Central.';
         AppProviderSupportURL := 'https://help.idyn.nl/directbanking/bc/en/topic/about-directbanking';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking_nl%7CPAPPID.7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
         AppApprovedFor := 'NL';
         AppWorksOn := 'NL';
 
-        AddDescriptionTranslation(AppId, 'Integreer ABN, Rabo, ING, Triodos, Knab, ASN, SNS etc. met Microsoft Dynamics 365 Business Central.', 1043);
+        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 1043);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+    local procedure RegisterDirectBankingBE()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Direct Banking' to BE
+        ***************************************************/
+
+        AppId := '1b3790da-e8ba-4a11-92a9-c70e37b4f831';
+        AppName := 'Direct Banking';
+        AppPublisher := 'IDYN B.V.';
+        AppDescription := 'Automate your banking process in Business Central, no file exchange needed. Streamline bank transactions including matching for your bank accounts, and initiate payment from Business Central.';
+        AppProviderSupportURL := 'https://help.idyn.nl/directbanking/bc/en/topic/about-directbanking';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking%7CPAPPID.1b3790da-e8ba-4a11-92a9-c70e37b4f831';
+        AppApprovedFor := 'BE';
+        AppWorksOn := 'BE';
+
+        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 1043);
+        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 2067);
+        AddDescriptionTranslation(AppId, 'Automatisez votre processus bancaire dans Business Central, sans échange de fichiers. Rationalisez les transactions bancaires, y compris l'appariement de vos comptes bancaires, et initiez des paiements à partir de Business Central.', 2060);
+        AddDescriptionTranslation(AppId, 'Automatisez votre processus bancaire dans Business Central, sans échange de fichiers. Rationalisez les transactions bancaires, y compris l'appariement de vos comptes bancaires, et initiez des paiements à partir de Business Central.', 1036);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
