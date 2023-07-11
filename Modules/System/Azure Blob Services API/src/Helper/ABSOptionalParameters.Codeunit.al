@@ -367,11 +367,38 @@ codeunit 9047 "ABS Optional Parameters"
         SetParameter('blockid', "Value");
     end;
 
+    /// <summary>
+    /// Filters the results to include the specified dataset
+    /// </summary>
+    /// <param name="Value">The dataset to include in text</param>
+    procedure Include("Value": Text; RemoveExistingIncludeValues: Boolean)
+    begin
+        if RemoveExistingIncludeValues then begin
+            SetParameter('include', "Value");
+        end else
+            AddValueToParameter('include', Value)
+    end;
+
     local procedure SetParameter(Header: Text; HeaderValue: Text)
     begin
         Parameters.Remove(Header);
         Parameters.Add(Header, HeaderValue);
     end;
+
+    local procedure AddValueToParameter(Header: Text; HeaderValueToAdd: Text)
+    var
+        HeaderValue: Text;
+    begin
+        if Parameters.ContainsKey(Header) then begin
+            HeaderValue := Parameters.Get(Header);
+            HeaderValue += ', ' + HeaderValueToAdd;
+            Parameters.Remove(Header);
+            Parameters.Add(Header, HeaderValue);
+        end else begin
+            Parameters.Add(Header, HeaderValueToAdd);
+        end;
+    end;
+
 
     internal procedure GetParameters(): Dictionary of [Text, Text]
     begin
