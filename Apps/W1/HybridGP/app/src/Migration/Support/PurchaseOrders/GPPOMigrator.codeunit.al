@@ -257,7 +257,7 @@ codeunit 40108 "GP PO Migrator"
             UnitOfMeasureRec.Insert(true);
         end;
 
-        if not GenProductPostingGroup.get(GPCodeTxt) then begin
+        if not GenProductPostingGroup.Get(GPCodeTxt) then begin
             GenProductPostingGroup.Code := GPCodeTxt;
             GenProductPostingGroup.Description := MigratedFromGPDescriptionTxt;
             GenProductPostingGroup.Insert();
@@ -397,7 +397,7 @@ codeunit 40108 "GP PO Migrator"
         GPPOPReceiptHist: Record GPPOPReceiptHist;
     begin
         GPPOPReceiptApply.SetRange(PONUMBER, PurchaseHeader."No.");
-        GPPOPReceiptApply.SetFilter(Status, '%1', GPPOPReceiptApply.Status::Posted);
+        GPPOPReceiptApply.SetRange(Status, GPPOPReceiptApply.Status::Posted);
         if GPPOPReceiptApply.FindFirst() then begin
             GPPOPReceiptHist.SetRange(POPRCTNM, GPPOPReceiptApply.POPRCTNM);
             GPPOPReceiptHist.SetFilter(VNDDOCNM, '<>%1', '');
