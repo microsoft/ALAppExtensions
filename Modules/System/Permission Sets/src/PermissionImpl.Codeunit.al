@@ -88,6 +88,7 @@ codeunit 9864 "Permission Impl."
     begin
         if TenantPermission.FindSet() then
             repeat
+                ModifyPermissionLine := false;
                 case RIMDX of
                     'R':
                         if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then
@@ -97,8 +98,8 @@ codeunit 9864 "Permission Impl."
                             end;
                     'I':
                         if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then
-                            if TenantPermission."Read Permission" <> PermissionOption then begin
-                                TenantPermission."Read Permission" := PermissionOption;
+                            if TenantPermission."Insert Permission" <> PermissionOption then begin
+                                TenantPermission."Insert Permission" := PermissionOption;
                                 ModifyPermissionLine := true;
                             end;
                     'M':
