@@ -125,7 +125,7 @@ codeunit 132440 "Updating Permission Tests"
         // [THEN] all permissions for table data have direct access
         VerifyTenantPermissionsHavePermissionsAssigned(TenantPermission, TenantPermissionOriginalCount, '*', TenantPermission."Read Permission"::"Yes");
 
-        // [WHEN] adding direct permissions for object types other than table data using action for execute
+        // [WHEN] adding direct permissions for object types other than table data using using action for all permission types
         TenantPermission.SetFilter("Object Type", '<>%1', TenantPermission."Object Type"::"Table Data");
         TenantPermissionOriginalCount := TenantPermission.Count;
         PermissionImpl.UpdateSelectedPermissionLines(TenantPermission, '*', TenantPermission."Read Permission"::"Yes");
@@ -141,7 +141,7 @@ codeunit 132440 "Updating Permission Tests"
         // [THEN] all permissions for table data have indirect access
         VerifyTenantPermissionsHavePermissionsAssigned(TenantPermission, TenantPermissionOriginalCount, '*', TenantPermission."Read Permission"::"Indirect");
 
-        // [WHEN] adding direct permissions for object types other than table data using action for execute
+        // [WHEN] adding direct permissions for object types other than table data using using action for all permission types
         TenantPermission.SetFilter("Object Type", '<>%1', TenantPermission."Object Type"::"Table Data");
         TenantPermissionOriginalCount := TenantPermission.Count;
         PermissionImpl.UpdateSelectedPermissionLines(TenantPermission, '*', TenantPermission."Read Permission"::"Indirect");
