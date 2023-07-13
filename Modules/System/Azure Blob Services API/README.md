@@ -129,7 +129,7 @@ Collection of the result (temporary record).
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### ListBlobs (Method) <a name="ListBlobs"></a> 
 
  Lists the blobs in a specific container.
@@ -152,7 +152,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlobBlockBlobUI (Method) <a name="PutBlobBlockBlobUI"></a> 
 
  Uploads a file as a BlockBlob (with File Selection Dialog).
@@ -166,7 +166,7 @@ procedure PutBlobBlockBlobUI(): Codeunit "ABS Operation Response"
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlobBlockBlobUI (Method) <a name="PutBlobBlockBlobUI"></a> 
 
  Uploads a file as a BlockBlob (with File Selection Dialog).
@@ -185,7 +185,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlobBlockBlobStream (Method) <a name="PutBlobBlockBlobStream"></a> 
 
  Uploads the content of an InStream as a BlockBlob
@@ -208,7 +208,35 @@ The Content of the Blob as InStream.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
+
+### PutBlobBlockBlobStream (Method) <a name="PutBlobBlockBlobStream"></a> 
+
+ Uploads the content of an InStream as a BlockBlob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
+ 
+
+#### Syntax
+```
+procedure PutBlobBlockBlobStream(BlobName: Text; var SourceStream: InStream; ContentType: Text): Codeunit "ABS Operation Response"
+```
+#### Parameters
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+The name of the blob.
+
+*SourceStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
+
+The Content of the Blob as InStream.
+
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
+
+#### Return Value
+*[Codeunit "ABS Operation Response"]()*
+
+An operation response object
 ### PutBlobBlockBlobStream (Method) <a name="PutBlobBlockBlobStream"></a> 
 
  Uploads the content of an InStream as a BlockBlob.
@@ -235,7 +263,39 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
+
+### PutBlobBlockBlobStream (Method) <a name="PutBlobBlockBlobStream"></a> 
+
+ Uploads the content of an InStream as a BlockBlob.
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
+ 
+
+#### Syntax
+```
+procedure PutBlobBlockBlobStream(BlobName: Text; var SourceStream: InStream; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+```
+#### Parameters
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+The name of the blob.
+
+*SourceStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
+
+The Content of the Blob as InStream.
+
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
+
+*OptionalParameters ([Codeunit "ABS Optional Parameters"]())* 
+
+Optional parameters to pass.
+
+#### Return Value
+*[Codeunit "ABS Operation Response"]()*
+
+An operation response object
 ### PutBlobBlockBlobText (Method) <a name="PutBlobBlockBlobText"></a> 
 
  Uploads text as a BlockBlob.
@@ -258,7 +318,34 @@ The Content of the Blob as Text.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
+### PutBlobBlockBlobText (Method) <a name="PutBlobBlockBlobText"></a> 
+
+ Uploads text as a BlockBlob.
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
+ 
+
+#### Syntax
+```
+procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; ContentType: Text): Codeunit "ABS Operation Response"
+```
+#### Parameters
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+The name of the blob.
+
+*SourceText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+The Content of the Blob as Text.
+
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
+
+#### Return Value
+*[Codeunit "ABS Operation Response"]()*
+
+An operation response object
 ### PutBlobBlockBlobText (Method) <a name="PutBlobBlockBlobText"></a> 
 
  Uploads text as a BlockBlob.
@@ -285,7 +372,38 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
+### PutBlobBlockBlobText (Method) <a name="PutBlobBlockBlobText"></a> 
+
+ Uploads text as a BlockBlob.
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
+ 
+
+#### Syntax
+```
+procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+```
+#### Parameters
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+The name of the blob.
+
+*SourceText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+The Content of the Blob as Text.
+
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
+
+Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
+
+*OptionalParameters ([Codeunit "ABS Optional Parameters"]())* 
+
+Optional parameters to pass.
+
+#### Return Value
+*[Codeunit "ABS Operation Response"]()*
+
+An operation response object
 ### PutBlobPageBlob (Method) <a name="PutBlobPageBlob"></a> 
 
  Creates a PageBlob.
@@ -308,7 +426,7 @@ Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlobPageBlob (Method) <a name="PutBlobPageBlob"></a> 
 
  Creates a PageBlob.
@@ -335,7 +453,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlobAppendBlobStream (Method) <a name="PutBlobAppendBlobStream"></a> 
 
  The Put Blob operation creates a new append blob
@@ -355,7 +473,7 @@ The name of the blob.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlobAppendBlobStream (Method) <a name="PutBlobAppendBlobStream"></a> 
 
  The Put Blob operation creates a new append blob
@@ -379,7 +497,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlobAppendBlobText (Method) <a name="PutBlobAppendBlobText"></a> 
 
  The Put Blob operation creates a new append blob
@@ -403,7 +521,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlobAppendBlob (Method) <a name="PutBlobAppendBlob"></a> 
 
  The Put Blob operation creates a new append blob
@@ -430,7 +548,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### AppendBlockText (Method) <a name="AppendBlockText"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
@@ -454,7 +572,7 @@ Text-variable containing the content that should be added to the Blob
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### AppendBlockText (Method) <a name="AppendBlockText"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
@@ -481,7 +599,7 @@ Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### AppendBlockText (Method) <a name="AppendBlockText"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
@@ -512,7 +630,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### AppendBlockStream (Method) <a name="AppendBlockStream"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
@@ -536,7 +654,7 @@ InStream containing the content that should be added to the Blob
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### AppendBlockStream (Method) <a name="AppendBlockStream"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
@@ -567,7 +685,7 @@ Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### AppendBlock (Method) <a name="AppendBlock"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
@@ -598,7 +716,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### AppendBlockFromURL (Method) <a name="AppendBlockFromURL"></a> 
 
  The Append Block From URL operation commits a new block of data to the end of an existing append blob.
@@ -621,7 +739,7 @@ Specifies the name of the source blob.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### AppendBlockFromURL (Method) <a name="AppendBlockFromURL"></a> 
 
  The Append Block From URL operation commits a new block of data to the end of an existing append blob.
@@ -648,7 +766,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### GetBlobAsFile (Method) <a name="GetBlobAsFile"></a> 
 
  Receives a Blob as a File from a Container.
@@ -667,7 +785,7 @@ The name of the blob.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### GetBlobAsFile (Method) <a name="GetBlobAsFile"></a> 
 
  Receives a Blob as a File from a Container.
@@ -690,7 +808,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### GetBlobAsStream (Method) <a name="GetBlobAsStream"></a> 
 
  Receives a Blob as a InStream from a Container.
@@ -713,7 +831,7 @@ The result InStream containg the content of the Blob.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### GetBlobAsStream (Method) <a name="GetBlobAsStream"></a> 
 
  Receives a Blob as a InStream from a Container.
@@ -740,7 +858,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### GetBlobAsText (Method) <a name="GetBlobAsText"></a> 
 
  Receives a Blob as Text from a Container.
@@ -763,7 +881,7 @@ The result Text containg the content of the Blob.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### GetBlobAsText (Method) <a name="GetBlobAsText"></a> 
 
  Receives a Blob as Text from a Container.
@@ -790,7 +908,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### SetBlobExpiryRelativeToCreation (Method) <a name="SetBlobExpiryRelativeToCreation"></a> 
 
  The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
@@ -814,7 +932,7 @@ Number if miliseconds (Integer) until the expiration.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### SetBlobExpiryRelativeToNow (Method) <a name="SetBlobExpiryRelativeToNow"></a> 
 
  The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
@@ -838,7 +956,7 @@ Number if miliseconds (Integer) until the expiration.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### SetBlobExpiryAbsolute (Method) <a name="SetBlobExpiryAbsolute"></a> 
 
  The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
@@ -862,7 +980,7 @@ Absolute DateTime for the expiration.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### SetBlobExpiryNever (Method) <a name="SetBlobExpiryNever"></a> 
 
  The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
@@ -905,7 +1023,7 @@ A Dictionary of [Text, Text] which contains the Tags you want to set.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### DeleteBlob (Method) <a name="DeleteBlob"></a> 
 
  The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection.
@@ -924,7 +1042,7 @@ The name of the blob.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### DeleteBlob (Method) <a name="DeleteBlob"></a> 
 
  The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection.
@@ -947,7 +1065,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### UndeleteBlob (Method) <a name="UndeleteBlob"></a> 
 
  The Undelete Blob operation restores the contents and metadata of a soft deleted blob and any associated soft deleted snapshots (version 2017-07-29 or later)
@@ -966,7 +1084,7 @@ The name of the blob.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### UndeleteBlob (Method) <a name="UndeleteBlob"></a> 
 
  The Undelete Blob operation restores the contents and metadata of a soft deleted blob and any associated soft deleted snapshots (version 2017-07-29 or later)
@@ -989,7 +1107,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### CopyBlob (Method) <a name="CopyBlob"></a> 
 
  The Copy Blob operation copies a blob to a destination within the storage account.
@@ -1012,7 +1130,7 @@ Specifies the name of the source blob or file.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### CopyBlob (Method) <a name="CopyBlob"></a> 
 
  The Copy Blob operation copies a blob to a destination within the storage account.
@@ -1043,7 +1161,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlockList (Method) <a name="PutBlockList"></a> 
 
  The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob.
@@ -1066,7 +1184,7 @@ Dictionary of [Text, Integer] containing the list of uncommited blocks that shou
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlockFromURL (Method) <a name="PutBlockFromURL"></a> 
 
  The Put Block From URL operation creates a new block to be committed as part of a blob where the contents are read from a URL.
@@ -1093,7 +1211,7 @@ Specifies the BlockId that should be put.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### PutBlockFromURL (Method) <a name="PutBlockFromURL"></a> 
 
  The Put Block From URL operation creates a new block to be committed as part of a blob where the contents are read from a URL.
@@ -1124,7 +1242,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 
 ## ABS Container Client (Codeunit 9052)
 
@@ -1208,7 +1326,7 @@ procedure ListContainers(var Containers: Record "ABS Container"): Codeunit "ABS 
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### ListContainers (Method) <a name="ListContainers"></a> 
 
  List all containers in specific Storage Account.
@@ -1231,7 +1349,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### CreateContainer (Method) <a name="CreateContainer"></a> 
 
  Creates a new container in the Storage Account.
@@ -1250,7 +1368,7 @@ The name of the container.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### CreateContainer (Method) <a name="CreateContainer"></a> 
 
  Creates a new container in the Storage Account.
@@ -1273,7 +1391,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### DeleteContainer (Method) <a name="DeleteContainer"></a> 
 
  Deletes a container from the Storage Account.
@@ -1292,7 +1410,7 @@ The name of the container.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 ### DeleteContainer (Method) <a name="DeleteContainer"></a> 
 
  Deletes a container from the Storage Account.
@@ -1315,7 +1433,7 @@ Optional parameters to pass.
 #### Return Value
 *[Codeunit "ABS Operation Response"]()*
 
-An operation reponse object
+An operation response object
 
 ## ABS Operation Response (Codeunit 9050)
 

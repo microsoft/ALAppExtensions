@@ -10,7 +10,7 @@ Microsoft will ship the contributions in upcoming releases of [Microsoft Dynamic
 ## Types of engagements
 There are a couple of ways to engage with us here:  
   
-* You can grab the code and contribute to the published modules and apps. For more information, see the [_Contributing_](./CONTRIBUTING.md) guidelines.  
+* You can grab the code and contribute to the published modules and apps. For more information, see the [_Contributing_](./CONTRIBUTING.md) guidelines or watch this video: [_The Contribution Process_](https://youtu.be/a1p8fTFPVwI?t=3496).
 * If you’re building your own app and need something specific from us, like an event, you can help improve the general extensibility of the business logic. For more information, see the [_Extensibility requests_](#extensibility-requests) section below.
 
 
