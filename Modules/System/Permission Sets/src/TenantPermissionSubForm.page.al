@@ -301,9 +301,9 @@ page 9859 "Tenant Permission Subform"
                     end;
                 }
             }
-            group("Allow Insertion")
+            group("Allow Insert")
             {
-                Caption = 'Allow Insertion';
+                Caption = 'Allow Insert';
                 Enabled = "Object Type" = "Object Type"::"Table Data";
                 Image = Confirm;
                 action(AllowInsertYes)
@@ -346,9 +346,9 @@ page 9859 "Tenant Permission Subform"
                     end;
                 }
             }
-            group("Allow Modification")
+            group("Allow Modify")
             {
-                Caption = 'Allow Modification';
+                Caption = 'Allow Modify';
                 Enabled = "Object Type" = "Object Type"::"Table Data";
                 Image = Confirm;
                 action(AllowModifyYes)
@@ -391,9 +391,9 @@ page 9859 "Tenant Permission Subform"
                     end;
                 }
             }
-            group("Allow Deletion")
+            group("Allow Delete")
             {
-                Caption = 'Allow Deletion';
+                Caption = 'Allow Delete';
                 Enabled = "Object Type" = "Object Type"::"Table Data";
                 Image = Confirm;
                 action(AllowDeleteYes)
@@ -436,9 +436,9 @@ page 9859 "Tenant Permission Subform"
                     end;
                 }
             }
-            group("Allow Execution")
+            group("Allow Execute")
             {
-                Caption = 'Allow Execution';
+                Caption = 'Allow Execute';
                 Enabled = "Object Type" <> "Object Type"::"Table Data";
                 Image = Confirm;
                 action(AllowExecuteYes)
