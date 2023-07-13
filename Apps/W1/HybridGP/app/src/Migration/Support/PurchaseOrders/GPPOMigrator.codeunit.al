@@ -384,11 +384,12 @@ codeunit 40108 "GP PO Migrator"
 
         Clear(ItemJournalLine);
         ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatchNameTxt);
-        if not ItemJournalLine.IsEmpty() then
+        if ItemJournalLine.Count() <= 1 then begin
             ItemJournalLine.DeleteAll();
 
-        ItemJournalBatch.SetRange("Name", ItemJournalBatchNameTxt);
-        ItemJournalBatch.DeleteAll();
+            ItemJournalBatch.SetRange("Name", ItemJournalBatchNameTxt);
+            ItemJournalBatch.DeleteAll();
+        end;
     end;
 
     local procedure SetVendorDocumentNo(var PurchaseHeader: Record "Purchase Header")
