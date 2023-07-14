@@ -69,7 +69,6 @@ codeunit 132440 "Updating Permission Tests"
         NewRoleId: Code[30];
         NewName: Text;
         AppId: Guid;
-        NullGuid: Guid;
         TenantPermissionOriginalCount: Integer;
     begin
         // [SCENARIO] Updating a newly created tenant permission set
@@ -111,7 +110,6 @@ codeunit 132440 "Updating Permission Tests"
         NewRoleId: Code[30];
         NewName: Text;
         AppId: Guid;
-        NullGuid: Guid;
         TenantPermissionOriginalCount: Integer;
     begin
         // [SCENARIO] Updating a newly created tenant permission set
@@ -160,7 +158,6 @@ codeunit 132440 "Updating Permission Tests"
         NewRoleId: Code[30];
         NewName: Text;
         AppId: Guid;
-        NullGuid: Guid;
         TenantPermissionOriginalCount: Integer;
     begin
         // [SCENARIO] Updating a newly created tenant permission set
@@ -203,7 +200,6 @@ codeunit 132440 "Updating Permission Tests"
         NewRoleId: Code[30];
         NewName: Text;
         AppId: Guid;
-        NullGuid: Guid;
         TenantPermissionOriginalCount: Integer;
     begin
         // [SCENARIO] Updating a newly created tenant permission set
@@ -252,7 +248,6 @@ codeunit 132440 "Updating Permission Tests"
         NewRoleId: Code[30];
         NewName: Text;
         AppId: Guid;
-        NullGuid: Guid;
         TenantPermissionOriginalCount: Integer;
     begin
         // [SCENARIO] Updating a newly created tenant permission set
@@ -284,7 +279,6 @@ codeunit 132440 "Updating Permission Tests"
         VerifyTenantPermissionsHavePermissionsAssigned(TenantPermission, TenantPermissionOriginalCount, '*', TenantPermission."Read Permission"::"Indirect");
     end;
 
-
     local procedure VerifyTenantPermissionsHavePermissionsAssigned(var TenantPermission: Record "Tenant Permission"; TenantPermissionOriginalCount: Integer; RIMDX: Text[1]; PermissionOption: Option)
     begin
         case RIMDX of
@@ -299,15 +293,13 @@ codeunit 132440 "Updating Permission Tests"
             'X':
                 TenantPermission.SetRange("Execute Permission", PermissionOption);
             '*':
-                begin
-                    if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then begin
-                        TenantPermission.SetRange("Read Permission", PermissionOption);
-                        TenantPermission.SetRange("Insert Permission", PermissionOption);
-                        TenantPermission.SetRange("Modify Permission", PermissionOption);
-                        TenantPermission.SetRange("Delete Permission", PermissionOption);
-                    end else
-                        TenantPermission.SetRange("Execute Permission", PermissionOption);
-                end;
+                if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then begin
+                    TenantPermission.SetRange("Read Permission", PermissionOption);
+                    TenantPermission.SetRange("Insert Permission", PermissionOption);
+                    TenantPermission.SetRange("Modify Permission", PermissionOption);
+                    TenantPermission.SetRange("Delete Permission", PermissionOption);
+                end else
+                    TenantPermission.SetRange("Execute Permission", PermissionOption);
         end;
         LibraryAssert.AreEqual(TenantPermissionOriginalCount, TenantPermission.Count(), 'Update of tenant permissions failed.');
         TenantPermission.SetRange("Read Permission");

@@ -121,25 +121,23 @@ codeunit 9864 "Permission Impl."
                                 ModifyPermissionLine := true;
                             end;
                     '*':
-                        begin
-                            if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then begin
-                                if (TenantPermission."Read Permission" <> PermissionOption) or
-                                    (TenantPermission."Insert Permission" <> PermissionOption) or
-                                    (TenantPermission."Modify Permission" <> PermissionOption) or
-                                    (TenantPermission."Delete Permission" <> PermissionOption)
-                                then begin
-                                    TenantPermission."Read Permission" := PermissionOption;
-                                    TenantPermission."Insert Permission" := PermissionOption;
-                                    TenantPermission."Modify Permission" := PermissionOption;
-                                    TenantPermission."Delete Permission" := PermissionOption;
-                                    ModifyPermissionLine := true;
-                                end;
-                            end else
-                                if TenantPermission."Execute Permission" <> PermissionOption then begin
-                                    TenantPermission."Execute Permission" := PermissionOption;
-                                    ModifyPermissionLine := true;
-                                end;
-                        end;
+                        if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then begin
+                            if (TenantPermission."Read Permission" <> PermissionOption) or
+                                (TenantPermission."Insert Permission" <> PermissionOption) or
+                                (TenantPermission."Modify Permission" <> PermissionOption) or
+                                (TenantPermission."Delete Permission" <> PermissionOption)
+                            then begin
+                                TenantPermission."Read Permission" := PermissionOption;
+                                TenantPermission."Insert Permission" := PermissionOption;
+                                TenantPermission."Modify Permission" := PermissionOption;
+                                TenantPermission."Delete Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
+                        end else
+                            if TenantPermission."Execute Permission" <> PermissionOption then begin
+                                TenantPermission."Execute Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
                 end;
                 if ModifyPermissionLine then
                     TenantPermission.Modify();
