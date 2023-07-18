@@ -371,36 +371,16 @@ codeunit 9047 "ABS Optional Parameters"
     /// Specifies one or more datasets to include in the response.
     /// </summary>
     /// see: https://learn.microsoft.com/en-us/rest/api/storageservices/list-blobs?tabs=azure-ad#uri-parameters
-    /// <param name="Value">The dataset to include in text</param>
-    /// <param name="RemoveExistingIncludeValues">Boolean value specifying whether to remove the existing values for the include parameter</param>
-    procedure Include("Value": Text; RemoveExistingDatasets: Boolean)
+    /// <param name="Value">The dataset(s) to include in text</param>
+    procedure Include("Value": Text)
     begin
-        if RemoveExistingDatasets then begin
-            SetParameter('include', "Value");
-        end else
-            AddDatasetToInclude('include', "Value")
+        SetParameter('include', "Value");
     end;
 
     local procedure SetParameter(Header: Text; HeaderValue: Text)
     begin
         Parameters.Remove(Header);
         Parameters.Add(Header, HeaderValue);
-    end;
-
-    local procedure AddDatasetToInclude(Header: Text; HeaderValueToAdd: Text)
-    var
-        HeaderValue: Text;
-    begin
-        if Parameters.ContainsKey(Header) then begin
-            HeaderValue := Parameters.Get(Header);
-            if HeaderValue.Contains(HeaderValueToAdd) then
-                exit;
-            HeaderValue += ', ' + HeaderValueToAdd;
-            Parameters.Remove(Header);
-            Parameters.Add(Header, HeaderValue);
-        end else begin
-            Parameters.Add(Header, HeaderValueToAdd);
-        end;
     end;
 
     internal procedure GetParameters(): Dictionary of [Text, Text]
