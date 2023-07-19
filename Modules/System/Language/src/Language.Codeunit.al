@@ -10,6 +10,8 @@ codeunit 43 Language
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Gets the current user's language code.

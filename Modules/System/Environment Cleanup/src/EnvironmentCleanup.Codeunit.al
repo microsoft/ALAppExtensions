@@ -9,6 +9,8 @@
 codeunit 1886 "Environment Cleanup"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Subscribe to this event to clean up company-specific data when copying to a new environment.

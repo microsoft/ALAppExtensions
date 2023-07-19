@@ -1,7 +1,6 @@
 codeunit 31039 "Purchase Posting Handler CZL"
 {
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         VATPostingSetup: Record "VAT Posting Setup";
         SourceCodeSetup: Record "Source Code Setup";
         GLEntry: Record "G/L Entry";
@@ -25,18 +24,20 @@ codeunit 31039 "Purchase Posting Handler CZL"
             SourceCodeSetup.Get();
             SourceCodeSetup.TestField("Purchase VAT Delay CZL");
             GLEntry.Get(GLEntryNo);
+            if not PurchHeader.IsReplaceVATDateEnabled() then
+                PurchHeader."VAT Reporting Date" := PurchHeader."VAT Date CZL";
             PostPurchaseVATCurrencyFactor(
-              PurchHeader, InvoicePostBuffer, false, PurchHeader."Posting Date", true, VATPostingSetup, PurchHeader."VAT Date CZL", GenJnlPostLine);
+              PurchHeader, InvoicePostBuffer, false, PurchHeader."Posting Date", true, VATPostingSetup, PurchHeader."VAT Reporting Date", GenJnlPostLine);
             PostPurchaseVATCurrencyFactor(
-              PurchHeader, InvoicePostBuffer, true, PurchHeader."Posting Date", false, VATPostingSetup, PurchHeader."VAT Date CZL", GenJnlPostLine);
+              PurchHeader, InvoicePostBuffer, true, PurchHeader."Posting Date", false, VATPostingSetup, PurchHeader."VAT Reporting Date", GenJnlPostLine);
             // VAT Correction posting
             case InvoicePostBuffer."VAT Calculation Type" of
                 InvoicePostBuffer."VAT Calculation Type"::"Normal VAT":
                     begin
                         PostPurchVATCurrencyFactorDifference(
-                          PurchHeader, InvoicePostBuffer, PurchHeader."Posting Date", VATPostingSetup, PurchHeader."VAT Date CZL", 0, GenJnlPostLine);
+                          PurchHeader, InvoicePostBuffer, PurchHeader."Posting Date", VATPostingSetup, PurchHeader."VAT Reporting Date", 0, GenJnlPostLine);
                         PostPurchVATCurrencyFactorDifference(
-                          PurchHeader, InvoicePostBuffer, PurchHeader."Posting Date", VATPostingSetup, PurchHeader."VAT Date CZL", 1, GenJnlPostLine);
+                          PurchHeader, InvoicePostBuffer, PurchHeader."Posting Date", VATPostingSetup, PurchHeader."VAT Reporting Date", 1, GenJnlPostLine);
                     end;
             end;
         end;
@@ -76,7 +77,10 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := PostingDate;
         GenJournalLine."Document Date" := PurchaseHeader."Document Date";
-        GenJournalLine.Validate("VAT Date CZL", VATDate);
+        if not GenJournalLine.IsReplaceVATDateEnabled() then
+            GenJournalLine.Validate("VAT Date CZL", VATDate)
+        else
+            GenJournalLine.Validate("VAT Reporting Date", VATDate);
         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchaseHeader."Original Doc. VAT Date CZL");
         GenJournalLine.Description := PurchaseHeader."Posting Description";
         GenJournalLine."Reason Code" := PurchaseHeader."Reason Code";
@@ -181,7 +185,10 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := PostingDate;
         GenJournalLine."Document Date" := PurchaseHeader."Document Date";
-        GenJournalLine.Validate("VAT Date CZL", VATDate);
+        if not GenJournalLine.IsReplaceVATDateEnabled() then
+            GenJournalLine.Validate("VAT Date CZL", VATDate)
+        else
+            GenJournalLine.Validate("VAT Reporting Date", VATDate);
         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchaseHeader."Original Doc. VAT Date CZL");
         GenJournalLine.Description := PurchaseHeader."Posting Description";
         GenJournalLine."Reason Code" := PurchaseHeader."Reason Code";
@@ -233,18 +240,24 @@ codeunit 31039 "Purchase Posting Handler CZL"
             SourceCodeSetup.Get();
             SourceCodeSetup.TestField("Purchase VAT Delay CZL");
             GLEntry.Get(GLEntryNo);
+#if not CLEAN22
+#pragma warning disable AL0432
+            if not PurchHeader.IsReplaceVATDateEnabled() then
+                PurchHeader."VAT Reporting Date" := PurchHeader."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             PostPurchaseVATCurrencyFactor(
-              PurchHeader, TempInvoicePostingBuffer, false, PurchHeader."Posting Date", true, VATPostingSetup, PurchHeader."VAT Date CZL", GenJnlPostLine);
+              PurchHeader, TempInvoicePostingBuffer, false, PurchHeader."Posting Date", true, VATPostingSetup, PurchHeader."VAT Reporting Date", GenJnlPostLine);
             PostPurchaseVATCurrencyFactor(
-              PurchHeader, TempInvoicePostingBuffer, true, PurchHeader."Posting Date", false, VATPostingSetup, PurchHeader."VAT Date CZL", GenJnlPostLine);
+              PurchHeader, TempInvoicePostingBuffer, true, PurchHeader."Posting Date", false, VATPostingSetup, PurchHeader."VAT Reporting Date", GenJnlPostLine);
             // VAT Correction posting
             case TempInvoicePostingBuffer."VAT Calculation Type" of
                 TempInvoicePostingBuffer."VAT Calculation Type"::"Normal VAT":
                     begin
                         PostPurchVATCurrencyFactorDifference(
-                          PurchHeader, TempInvoicePostingBuffer, PurchHeader."Posting Date", VATPostingSetup, PurchHeader."VAT Date CZL", 0, GenJnlPostLine);
+                          PurchHeader, TempInvoicePostingBuffer, PurchHeader."Posting Date", VATPostingSetup, PurchHeader."VAT Reporting Date", 0, GenJnlPostLine);
                         PostPurchVATCurrencyFactorDifference(
-                          PurchHeader, TempInvoicePostingBuffer, PurchHeader."Posting Date", VATPostingSetup, PurchHeader."VAT Date CZL", 1, GenJnlPostLine);
+                          PurchHeader, TempInvoicePostingBuffer, PurchHeader."Posting Date", VATPostingSetup, PurchHeader."VAT Reporting Date", 1, GenJnlPostLine);
                     end;
             end;
         end;
@@ -284,7 +297,14 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := PostingDate;
         GenJournalLine."Document Date" := PurchaseHeader."Document Date";
-        GenJournalLine.Validate("VAT Date CZL", VATDate);
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not GenJournalLine.IsReplaceVATDateEnabled() then
+            GenJournalLine.Validate("VAT Date CZL", VATDate)
+        else
+#pragma warning restore AL0432
+#endif
+            GenJournalLine.Validate("VAT Reporting Date", VATDate);
         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchaseHeader."Original Doc. VAT Date CZL");
         GenJournalLine.Description := PurchaseHeader."Posting Description";
         GenJournalLine."Reason Code" := PurchaseHeader."Reason Code";
@@ -389,7 +409,14 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := PostingDate;
         GenJournalLine."Document Date" := PurchaseHeader."Document Date";
-        GenJournalLine.Validate("VAT Date CZL", VATDate);
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not GenJournalLine.IsReplaceVATDateEnabled() then
+            GenJournalLine.Validate("VAT Date CZL", VATDate)
+        else
+#pragma warning restore AL0432        
+#endif
+            GenJournalLine.Validate("VAT Reporting Date", VATDate);
         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchaseHeader."Original Doc. VAT Date CZL");
         GenJournalLine.Description := PurchaseHeader."Posting Description";
         GenJournalLine."Reason Code" := PurchaseHeader."Reason Code";
@@ -608,21 +635,29 @@ codeunit 31039 "Purchase Posting Handler CZL"
         ItemJournalLine."Incl. in Intrastat Amount CZL" := TempItemChargeAssignmentPurch."Incl. in Intrastat Amount CZL";
         ItemJournalLine."Incl. in Intrastat S.Value CZL" := TempItemChargeAssignmentPurch."Incl. in Intrastat S.Value CZL";
     end;
+#if not CLEAN22
+#pragma warning disable AL0432
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterValidatePostingAndDocumentDate', '', false, false)]
     local procedure ValidateVATDateOnAfterValidatePostingAndDocumentDate(var PurchaseHeader: Record "Purchase Header"; CommitIsSuppressed: Boolean; PreviewMode: Boolean)
     var
         BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         VATDate: Date;
         VATDateExists: Boolean;
         ReplaceVATDate: Boolean;
         PostingDate: Date;
     begin
-        GeneralLedgerSetup.Get();
-        if GeneralLedgerSetup."Use VAT Date CZL" then begin
+        if PurchaseHeader.IsReplaceVATDateEnabled() then
+            exit;
+        if VATReportingDateMgt.IsVATDateEnabled() then begin
             VATDateExists :=
-              BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDate) and
-              BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"VAT Date CZL", VATDate);
+                BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate) and
+                BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"VAT Date", VATDate);
+            if not VATDateExists then
+                VATDateExists :=
+                    BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDate) and
+                    BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"VAT Date CZL", VATDate);
             if VATDateExists and (ReplaceVATDate or (PurchaseHeader."VAT Date CZL" = 0D)) then begin
                 PurchaseHeader.Validate("VAT Date CZL", VATDate);
                 PurchaseHeader.Modify();
@@ -635,7 +670,8 @@ codeunit 31039 "Purchase Posting Handler CZL"
                 PurchaseHeader.Modify();
             end;
     end;
-
+#pragma warning restore AL0432 
+#endif
     [EventSubscriber(ObjectType::Report, Report::"Purchase Document - Test", 'OnAfterCheckPurchaseDoc', '', false, false)]
     local procedure CheckIntrastatMandatoryFieldsOnAfterCheckPurchaseDoc(PurchaseHeader: Record "Purchase Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
     var
@@ -764,22 +800,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
                 IsHandled := true;
     end;
 
-#if not CLEAN19
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostInvPostBuffer', '', false, false)]
-    local procedure EntryDescriptionOnBeforePostInvPostBuffer(var GenJnlLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-    begin
-        if InvoicePostBuffer."Entry Description" <> '' then
-            GenJnlLine.Description := InvoicePostBuffer."Entry Description";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeTestStatusRelease', '', false, false)]
-    local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
-    begin
-        IsHandled := true;
-    end;
-#pragma warning restore AL0432
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnBeforeInitAmount', '', false, false)]
     local procedure SetGLCorrectionOnPostItemJnlLineOnBeforeInitAmount(var ItemJnlLine: Record "Item Journal Line"; PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line")
     begin

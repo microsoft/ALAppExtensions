@@ -9,6 +9,8 @@
 codeunit 9810 "Password Dialog Management"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         PasswordDialogImpl: Codeunit "Password Dialog Impl.";

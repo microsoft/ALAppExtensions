@@ -19,6 +19,7 @@ pageextension 1446 "Headlines RC Team Member Ext." extends "Headline RC Team Mem
                 field(Headline1Text; Headline1Text)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
                 }
             }
         }

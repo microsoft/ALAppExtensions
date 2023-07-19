@@ -206,6 +206,20 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Adds a file attachment to the email message.
+    /// </summary>
+    /// <param name="AttachmentName">The name of the file attachment.</param>
+    /// <param name="ContentType">The Content Type of the file attachment.</param>
+    /// <param name="InLine">Specifies whether the attachment is inline.</param>
+    /// <param name="ContentId">The Content ID of the file attachment.</param>
+    /// <param name="AttachmentInStream">The instream of the attachment.</param>
+    /// <returns>True if the attachment was added; otherwise - false.</returns>
+    procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; InLine: Boolean; ContentId: Text[40]; AttachmentInStream: InStream)
+    begin
+        EmailMessageImpl.AddAttachment(AttachmentName, ContentType, AttachmentInStream, InLine, ContentId);
+    end;
+
+    /// <summary>
     /// Adds attachments from scenario to the email message.
     /// </summary>
     /// <param name="EmailAttachments">The reference to the email attachments </param>

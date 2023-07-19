@@ -1,3 +1,4 @@
+#if not CLEAN22
 reportextension 4824 "Obs. Intrastat - Form" extends "Intrastat - Form"
 {
     requestpage
@@ -18,3 +19,4 @@ reportextension 4824 "Obs. Intrastat - Form" extends "Intrastat - Form"
     var
         NewFeatureEnabledMessageTxt: Label 'The Intrastat Report extension is enabled, which means you can''t use the %1 report. You''ve been redirected to the %2 page for the extension.', Comment = '%1 - old page caption, %2 - new page caption';
 }
+#endif

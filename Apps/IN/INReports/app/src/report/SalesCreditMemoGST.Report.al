@@ -909,7 +909,7 @@ report 18015 "Sales - Credit Memo GST"
 
         trigger OnOpenPage()
         begin
-            LogIntaction := SegManagement.FindInteractTmplCode(6) <> '';
+            LogIntaction := SegManagement.FindInteractionTemplateCode(6) <> '';
             LogInteractionEnable := LogIntaction;
         end;
     }
@@ -1082,7 +1082,7 @@ report 18015 "Sales - Credit Memo GST"
 
     procedure InitLogInteraction()
     begin
-        LogIntaction := SegManagement.FindInteractTmplCode(6) <> '';
+        LogIntaction := SegManagement.FindInteractionTemplateCode(6) <> '';
     end;
 
     procedure FindPostedShipmentDate(): Date

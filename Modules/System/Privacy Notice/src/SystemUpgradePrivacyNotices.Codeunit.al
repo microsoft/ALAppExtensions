@@ -6,6 +6,8 @@
 codeunit 1567 "System Upgrade Privacy Notices"
 {
     Subtype = Upgrade;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnUpgradePerDatabase()
     begin
@@ -20,7 +22,7 @@ codeunit 1567 "System Upgrade Privacy Notices"
     begin
         if UpgradeTag.HasUpgradeTag(GetTeamsPrivacyNoticeUpgradeTag()) then
             exit;
-        
+
         PrivacyNotice.CreateDefaultPrivacyNotices();
 
         PrivacyNotice.SetApprovalState(SystemPrivacyNoticeReg.GetTeamsPrivacyNoticeId(), "Privacy Notice Approval State"::Agreed);
@@ -28,7 +30,7 @@ codeunit 1567 "System Upgrade Privacy Notices"
         UpgradeTag.SetUpgradeTag(GetTeamsPrivacyNoticeUpgradeTag());
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", OnGetPerCompanyUpgradeTags, '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetTeamsPrivacyNoticeUpgradeTag());

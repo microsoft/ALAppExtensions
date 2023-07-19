@@ -293,8 +293,7 @@ table 1690 "Bank Deposit Header"
         InitRecord();
     end;
 
-    [Scope('OnPrem')]
-    procedure InitRecord()
+    internal procedure InitRecord()
     var
         BatchFound: Boolean;
     begin
@@ -427,8 +426,7 @@ table 1690 "Bank Deposit Header"
         DimensionManagement.ValidateShortcutDimValues(FieldNumber, ShortcutDimCode, "Dimension Set ID");
     end;
 
-    [Scope('OnPrem')]
-    procedure AssistEdit(OldBankDepositHeader: Record "Bank Deposit Header"): Boolean
+    internal procedure AssistEdit(OldBankDepositHeader: Record "Bank Deposit Header"): Boolean
     var
         LocalBankDepositHeader: Record "Bank Deposit Header";
     begin
@@ -443,8 +441,7 @@ table 1690 "Bank Deposit Header"
         exit(false);
     end;
 
-    [Scope('OnPrem')]
-    procedure ShowDocDim()
+    internal procedure ShowDocDim()
     var
         IsHandled: Boolean;
         OldDimensionSetId: Integer;

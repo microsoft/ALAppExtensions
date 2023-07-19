@@ -3,7 +3,6 @@
 /// </summary>
 table 30119 "Shpfy Order Line"
 {
-    Access = Internal;
     Caption = 'Shopify Order Line';
     DataClassification = SystemMetadata;
 
@@ -105,6 +104,18 @@ table 30119 "Shpfy Order Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(18; "Presentment Unit Price"; Decimal)
+        {
+            Caption = 'Presentment Unit Price';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(19; "Presentment Discount Amount"; Decimal)
+        {
+            Caption = 'Presentment Discount Amount';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
         field(1000; "Item No."; Code[20])
         {
             Caption = 'Item No.';
@@ -155,6 +166,7 @@ table 30119 "Shpfy Order Line"
         key(Idx001; "Shopify Order Id", "Gift Card", Tip)
         {
             SumIndexFields = Quantity;
+            MaintainSiftIndex = true;
         }
     }
 

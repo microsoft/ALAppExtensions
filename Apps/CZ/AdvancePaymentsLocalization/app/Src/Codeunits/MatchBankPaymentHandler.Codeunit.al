@@ -174,18 +174,4 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         AdvanceSearchRuleLineCZB.Validate("Search Scope", AdvanceSearchRuleLineCZB."Search Scope"::"Advance CZZ");
         AdvanceSearchRuleLineCZB.Insert(true);
     end;
-#if not CLEAN19
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Match Bank Payment CZB", 'OnBeforeFillMatchBankPaymentBufferSalesAdvance', '', false, false)]
-    local procedure SkipMatchingSalesAdvanceOnBeforeFillMatchBankPaymentBufferSalesAdvance(var IsHandled: Boolean)
-    begin
-        IsHandled := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Match Bank Payment CZB", 'OnBeforeFillMatchBankPaymentBufferPurchaseAdvance', '', false, false)]
-    local procedure SkipMatchingPurchAdvanceOnBeforeFillMatchBankPaymentBufferSalesAdvance(var IsHandled: Boolean)
-    begin
-        IsHandled := true;
-    end;
-#endif
 }

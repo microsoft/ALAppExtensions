@@ -6,34 +6,10 @@ pageextension 31052 "Customer Card CZZ" extends "Customer Card"
         {
             Visible = false;
         }
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Advances (LCY)")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
     }
 
     actions
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Advance Letters")
-        {
-            Visible = false;
-        }
-        modify("Ad&vance Invoices")
-        {
-            Visible = false;
-        }
-        modify("Advance Credit &Memos")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         modify("Prepa&yment Percentages")
         {
             Visible = false;
@@ -46,8 +22,6 @@ pageextension 31052 "Customer Card CZZ" extends "Customer Card"
                 ToolTip = 'Create sales advance letter.';
                 ApplicationArea = Basic, Suite;
                 Image = NewDocument;
-                Promoted = true;
-                PromotedCategory = Category4;
 
                 trigger OnAction()
                 var
@@ -68,6 +42,12 @@ pageextension 31052 "Customer Card CZZ" extends "Customer Card"
 
                     Page.Run(Page::"Sales Advance Letter CZZ", SalesAdvLetterHeaderCZZ);
                 end;
+            }
+        }
+        addlast(Category_Category4)
+        {
+            actionref(NewSalesAdvanceLetterCZZ_Promoted; NewSalesAdvanceLetterCZZ)
+            {
             }
         }
     }

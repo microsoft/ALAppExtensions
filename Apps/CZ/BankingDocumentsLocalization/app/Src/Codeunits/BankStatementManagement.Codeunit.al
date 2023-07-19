@@ -38,8 +38,15 @@ codeunit 31360 "Bank Statement Management CZB"
         end;
     end;
 
-    local procedure SelectBankAccount(var BankAccount: Record "Bank Account"): Boolean
+    local procedure SelectBankAccount(var BankAccount: Record "Bank Account") IsSelected: Boolean
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeSelectBankAccount(BankAccount, IsSelected, IsHandled);
+        if IsHandled then
+            exit;
+
         case BankAccount.Count() of
             0:
                 exit(false);
@@ -71,6 +78,11 @@ codeunit 31360 "Bank Statement Management CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIssuedBankStatementSelection(var IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var BankStatementSelected: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeSelectBankAccount(var BankAccount: Record "Bank Account"; var IsSelected: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

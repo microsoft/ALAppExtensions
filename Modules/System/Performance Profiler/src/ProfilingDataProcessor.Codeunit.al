@@ -240,7 +240,7 @@ codeunit 1923 "Profiling Data Processor"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetPerformanceTroubleshooterPageId', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", GetPerformanceTroubleshooterPageId, '', false, false)]
     local procedure GetPerformanceTroubleshooterPageId(var PageId: Integer)
     begin
         PageId := Page::"Performance Profiler";

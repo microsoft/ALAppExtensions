@@ -13,6 +13,12 @@ codeunit 20373 "Register First Party Signals"
         RegisterFirstPartySignals();
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
+    local procedure OnCompanyInitialize()
+    begin
+        RegisterFirstPartySignals();
+    end;
+
     internal procedure RegisterFirstPartySignals()
     var
         Company: Record Company;

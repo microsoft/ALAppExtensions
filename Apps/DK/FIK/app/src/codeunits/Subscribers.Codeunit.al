@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -307,8 +307,9 @@ codeunit 13657 FIKSubscribers
     end;
 
     //tab38
-#if not CLEAN19
+#if not CLEAN22
     [EventSubscriber(ObjectType::Table, DATABASE::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNo', '', false, false)]
+    [Obsolete('Replaced by event OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '22.0')]
     procedure OnValidatePurchaseHeaderPayToVendorNo(VAR Sender: Record "Purchase Header"; Vendor: Record Vendor);
     begin
         Sender.VALIDATE(GiroAccNo, Vendor.GiroAccNo);

@@ -9,9 +9,16 @@ codeunit 1868 "C5 Data Loader"
         TempNameValueBuffer: Record "Name/Value Buffer" temporary;
         HelperFunctions: Codeunit "C5 Helper Functions";
 
+#if not CLEAN22
 #pragma warning disable AA0207
+    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFillStagingTables', '', false, false)]
     procedure FillStagingTables()
+#pragma warning restore AA0207
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFillStagingTables', '', false, false)]
+    local procedure FillStagingTables()
+#endif
     var
         DataMigrationStatus: Record "Data Migration Status";
         C5SchemaParameters: Record "C5 Schema Parameters";
@@ -110,7 +117,6 @@ codeunit 1868 "C5 Data Loader"
         DurationAsInt := CurrentDateTime() - StartTime;
         OnFillStagingTablesFinished(DurationAsInt);
     end;
-#pragma warning restore AA0207
 
     [EventSubscriber(ObjectType::XmlPort, XMLPORT::"C5 LedTrans", 'OnThousandAccountTransactionsRead', '', true, true)]
     local procedure OnThousandRecordsRead()

@@ -182,6 +182,51 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         VerifyVATNoteValueInSubmissionMessage(VATReportHeader, VATStatementReportLine.Note);
     end;
 
+    [Test]
+    procedure NonDeductibleVATBasicEndToEnd()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATStatementReportLine: Record "VAT Statement Report Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VATReportMediator: Codeunit "VAT Report Mediator";
+    begin
+        // [SCENARIO 471142] Stan can report the Non-Deductible VAT in the electronic VAT declaration
+
+        Initialize();
+        SetVATRegNoInCompanyInfo(GetVATRegNoWithLetters());
+        // [GIVEN] VAT return with "VAT %" = 25, Base = 150, Amount = 35, Non-Deductible Base = 850, Non-Deductible Amount = 215
+        LibraryElecVATSubmission.InsertElecVATReportHeader(VATReportHeader);
+        SetPeriodTypeWithFirstPeriodToVATReport(VATReportHeader, VATReportHeader."Period Type"::Month);
+        VATReportHeader.Validate(KID, LibraryUtility.GenerateGUID());
+        VATReportHeader.Modify(true);
+        // Simple VAT code
+        LibraryElecVATSubmission.InsertVATStatementReportLineWithBoxNo(
+            VATStatementReportLine, VATReportHeader, GetReverseChargeVATCode());
+        VATStatementReportLine."Non-Deductible Base" := Round(VATStatementReportLine.Base / 2);
+        VATStatementReportLine."Non-Deductible Amount" := Round(VATStatementReportLine.Amount / 2);
+        VATStatementReportLine.Modify();
+
+        // [WHEN] Generate Electronic VAT declaration message
+        VATReportMediator.Generate(VATReportHeader);
+
+        // [THEN] XML message is generated
+        LoadFromVATReportSubmissionArchive(TempXMLBuffer, VATReportHeader);
+        TempXMLBuffer.FindNodesByXPath(
+            TempXMLBuffer, 'mvaMeldingDto/skattegrunnlagOgBeregnetSkatt/fastsattMerverdiavgift');
+        TempXMLBuffer.TestField(Value, LibraryElecVATSubmission.GetAmountTextRounded(VATStatementReportLine.Amount - VATStatementReportLine."Non-Deductible Amount"));
+        TempXMLBuffer.Reset();
+        // [THEN] Two "mvaSpesifikasjonslinje" xml nodes are generated:
+        // [THEN] First one has "grunnlag" = 1000 (Base + Non-Deductible Base)
+        // [THEN] First one has "sats" = 25 (VAT Rate)
+        // [THEN] First one has "merverdiavgift" = 250 (Amount + Non-Deductible Amount)
+        VerifyVATCodeComplexXmlBlock(
+            TempXMLBuffer, VATStatementReportLine."Box No.", VATStatementReportLine.Description,
+            VATStatementReportLine.Base + VATStatementReportLine."Non-Deductible Base", VATStatementReportLine.Amount + VATStatementReportLine."Non-Deductible Amount");
+        // [THEN] Second one has "merverdiavgift" = -35 (Amount with negative sign)
+        VerifyVATCodeSimpleXmlBlock(
+            TempXMLBuffer, VATStatementReportLine."Box No.", VATStatementReportLine.Description, -VATStatementReportLine.Amount);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"Elec. VAT Submission XML Tests");

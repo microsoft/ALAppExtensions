@@ -6,6 +6,8 @@
 codeunit 1468 "TripleDESCryptoSvcProv. Impl." implements SymmetricAlgorithm
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetTripleDESCryptoServiceProvider: Dotnet "Cryptography.TripleDESCryptoServiceProvider";

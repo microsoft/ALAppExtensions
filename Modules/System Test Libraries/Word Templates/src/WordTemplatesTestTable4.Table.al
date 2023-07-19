@@ -17,5 +17,8 @@ table 130446 "Word Templates Test Table 4"
         field(2; "Value"; Text[100])
         {
         }
+        field(3; "Child Id"; BigInteger)
+        {
+        }
     }
 }

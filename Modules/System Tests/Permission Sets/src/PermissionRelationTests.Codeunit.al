@@ -766,9 +766,9 @@ codeunit 132438 "Permission Relation Tests"
         // [WHEN] Stop is pressed
         PermissionSetPage.Stop.Invoke();
 
-        // [THEN] Insert permission is added
+        // [THEN] Insert permission is added (and read due the lookup of the permission set name on the permission set buffer)
         VerifyContainsExpandedPermission(NewRoleIdLbl, NullGuid, TempExpandedPermission."Object Type"::"Table Data", Database::"Tenant Permission Set",
-            TempExpandedPermission."Read Permission"::" ", TempExpandedPermission."Insert Permission"::Yes,
+            TempExpandedPermission."Read Permission"::Yes, TempExpandedPermission."Insert Permission"::Yes,
             TempExpandedPermission."Modify Permission"::" ", TempExpandedPermission."Delete Permission"::" ",
             TempExpandedPermission."Execute Permission"::" ");
 

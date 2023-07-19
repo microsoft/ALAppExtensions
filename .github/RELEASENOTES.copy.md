@@ -2,11 +2,72 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+### Issues
+
+Issue 542 Deploy Workflow fails
+
+### New Settings
+- `keyVaultCodesignCertificateName`:  With this setting you can delegate the codesigning to an Azure Key Vault. This can be useful if your certificate has to be stored in a Hardware Security Module
+
+## v3.1
+
+### Issues
+
+Issue #446 Wrong NewLine character in Release Notes
+Issue #453 DeliverToStorage - override fails reading secrets
+Issue #434 Use gh auth token to get authentication token instead of gh auth status
+Issue #501 The Create New App action will now use 22.0.0.0 as default application reference and include NoImplicitwith feature.
+
+
+### New behavior
+
+The following workflows:
+
+- Create New App
+- Create New Test App
+- Create New Performance Test App
+- Increment Version Number
+- Add Existing App
+- Create Online Development Environment
+
+All these actions now uses the selected branch in the **Run workflow** dialog as the target for the Pull Request or Direct COMMIT.
+
+### New Settings
+
+- `UseCompilerFolder`: Setting useCompilerFolder to true causes your pipelines to use containerless compiling. Unless you also set `doNotPublishApps` to true, setting useCompilerFolder to true won't give you any performance advantage, since AL-Go for GitHub will still need to create a container in order to publish and test the apps. In the future, publishing and testing will be split from building and there will be other options for getting an instance of Business Central for publishing and testing. 
+- `vsixFile`: vsixFile should be a direct download URL to the version of the AL Language extension you want to use for building the project or repo. By default, AL-Go will use the AL Language extension that comes with the Business Central Artifacts.
+
+### New Workflows
+
+- **_BuildALGoProject** is a reusable workflow that unites the steps for building an AL-Go projects. It has been reused in the following workflows: _CI/CD_, _Pull Request Build_, _NextMinor_, _NextMajor_ and _Current_.
+The workflow appears under the _Actions_ tab in GitHub, but it is not actionable in any way.  
+
+### New Actions
+
+- **DetermineArtifactUrl** is used to determine which artifacts to use for building a project in CI/CD, PullRequestHandler, Current, NextMinor and NextMajor workflows.
+
+### License File
+
+With the changes to the CRONUS license in Business Central version 22, that license can in most cases be used as a developer license for AppSource Apps and it is no longer mandatory to specify a license file in AppSource App repositories.
+Obviously, if you build and test your app for Business Central versions prior to 21, it will fail if you don't specify a licenseFileUrl secret.
+
+## v3.0
+
 ### **NOTE:** When upgrading to this version
 When upgrading to this version form earlier versions of AL-Go for GitHub, you will need to run the _Update AL-Go System Files_ workflow twice if you have the `useProjectDependencies` setting set to _true_.
 
+### Publish to unknown environment
+You can now run the **Publish To Environment** workflow without creating the environment in GitHub or settings up-front, just by specifying the name of a single environment in the Environment Name when running the workflow.
+Subsequently, if an AuthContext secret hasn't been created for this environment, the Device Code flow authentication will be initiated from the Publish To Environment workflow and you can publish to the new environment without ever creating a secret.
+Open Workflow details to get the device Code for authentication in the job summary for the initialize job.
+
+### Create Online Dev. Environment
+When running the **Create Online Dev. Environment** workflow without having the _adminCenterApiCredentials_ secret created, the workflow will intiate the deviceCode flow and allow you to authenticate to the Business Central Admin Center.
+Open Workflow details to get the device Code for authentication in the job summary for the initialize job.
+
 ### Issues
-- Issue [#391](https://github.com/microsoft/AL-Go/issues/391) Create release action - CreateReleaseBranch error
+- Issue #391 Create release action - CreateReleaseBranch error
+- Issue 434 Building local DevEnv, downloading dependencies: Authentication fails when using "gh auth status"
 
 ### Changes to Pull Request Process
 In v2.4 and earlier, the PullRequestHandler would trigger the CI/CD workflow to run the PR build.
@@ -23,13 +84,13 @@ Build modes can now be specified per project
 ## v2.4
 
 ### Issues
-- Issue [#171](https://github.com/microsoft/AL-Go/issues/171) create a workspace file when creating a project
-- Issue [#356](https://github.com/microsoft/AL-Go/issues/356) Publish to AppSource fails in multi project repo
-- Issue [#358](https://github.com/microsoft/AL-Go/issues/358) Publish To Environment Action stopped working in v2.3
-- Issue [#362](https://github.com/microsoft/AL-Go/issues/362) Support for EnableTaskScheduler
-- Issue [#360](https://github.com/microsoft/AL-Go/issues/360) Creating a release and deploying from a release branch
-- Issue [#371](https://github.com/microsoft/AL-Go/issues/371) 'No previous release found' for builds on release branches
-- Issue [#376](https://github.com/microsoft/AL-Go/issues/376) CICD jobs that are triggered by the pull request trigger run directly to an error if title contains quotes
+- Issue #171 create a workspace file when creating a project
+- Issue #356 Publish to AppSource fails in multi project repo
+- Issue #358 Publish To Environment Action stopped working in v2.3
+- Issue #362 Support for EnableTaskScheduler
+- Issue #360 Creating a release and deploying from a release branch
+- Issue #371 'No previous release found' for builds on release branches
+- Issue #376 CICD jobs that are triggered by the pull request trigger run directly to an error if title contains quotes
 
 ### Release Branches
 **NOTE:** Release Branches are now only named after major.minor if the patch value is 0 in the release tag (which must be semver compatible)

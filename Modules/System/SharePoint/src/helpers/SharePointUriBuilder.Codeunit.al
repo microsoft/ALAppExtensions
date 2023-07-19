@@ -6,6 +6,8 @@
 codeunit 9110 "SharePoint Uri Builder"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ServerName, Namespace : Text;

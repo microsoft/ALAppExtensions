@@ -10,14 +10,16 @@
 codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authorization"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     procedure Authorize(var HttpRequest: HttpRequestMessage; StorageAccount: Text)
     var
         Headers: HttpHeaders;
     begin
         HttpRequest.GetHeaders(Headers);
-
-        Headers.Remove('Authorization');
+        if Headers.Contains('Authorization') then
+            Headers.Remove('Authorization');
         Headers.Add('Authorization', GetSharedKeySignature(HttpRequest, StorageAccount));
     end;
 
@@ -54,14 +56,18 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
         StringToSign: Text;
     begin
         HttpRequestMessage.GetHeaders(RequestHeaders);
-        if TryGetContentHeaders(HttpRequestMessage, ContentHeaders) then;
 
         StringToSign += HttpRequestMessage.Method() + NewLine();
-        StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Encoding') + NewLine();
-        StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Language') + NewLine();
-        StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Length') + NewLine();
-        StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-MD5') + NewLine();
-        StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Type') + NewLine();
+
+        if TryGetContentHeaders(HttpRequestMessage, ContentHeaders) then begin
+            StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Encoding') + NewLine();
+            StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Language') + NewLine();
+            StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Length') + NewLine();
+            StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-MD5') + NewLine();
+            StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Type') + NewLine();
+        end else
+            StringToSign += NewLine() + NewLine() + NewLine() + NewLine() + NewLine();
+
         StringToSign += GetHeaderValueOrEmpty(RequestHeaders, 'Date') + NewLine();
         StringToSign += GetHeaderValueOrEmpty(RequestHeaders, 'If-Modified-Since') + NewLine();
         StringToSign += GetHeaderValueOrEmpty(RequestHeaders, 'If-Match') + NewLine();
@@ -85,6 +91,9 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     var
         ReturnValue: array[1] of Text;
     begin
+        if not Headers.Contains(HeaderKey) then
+            exit('');
+
         if not Headers.GetValues(HeaderKey, ReturnValue) then
             exit('');
 
@@ -105,11 +114,12 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     begin
         foreach HeaderKey in Headers.Keys() do
             if HeaderKey.StartsWith('x-ms-') then
-                if Headers.GetValues(HeaderKey, HeaderValue) then begin
-                    if CanonicalizedHeaders <> '' then
-                        CanonicalizedHeaders += NewLine();
-                    CanonicalizedHeaders += StrSubstNo(KeyValuePairLbl, HeaderKey.ToLower(), HeaderValue[1])
-                end;
+                if Headers.Contains(HeaderKey) then
+                    if Headers.GetValues(HeaderKey, HeaderValue) then begin
+                        if CanonicalizedHeaders <> '' then
+                            CanonicalizedHeaders += NewLine();
+                        CanonicalizedHeaders += StrSubstNo(KeyValuePairLbl, HeaderKey.ToLower(), HeaderValue[1])
+                    end;
 
         exit(CanonicalizedHeaders);
     end;
@@ -126,7 +136,7 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
         StringBuilderResource: TextBuilder;
         StringBuilderQuery: TextBuilder;
         StringBuilderCanonicalizedResource: TextBuilder;
-        KeyValuePairLbl: Label '%1:%2', Comment = '%1 = Key; %2 = Value';
+        KeyValuePairLbl: Label '%1:%2', Comment = '%1 = Key; %2 = Value', Locked = true;
     begin
         Uri.Init(UriString);
         Uri.GetSegments(Segments);

@@ -21,6 +21,13 @@ page 1950 "LP Machine Learning Setup"
                     Caption = 'Enable Predictions';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether to use the Late Payment Prediction extension to predict if an invoice will be paid on time.';
+                    trigger OnValidate()
+                    var
+                        CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                    begin
+                        if not xRec."Make Predictions" and Rec."Make Predictions" then
+                            Rec."Make Predictions" := CustomerConsentMgt.ConfirmUserConsentToMicrosoftService();
+                    end;
                 }
 
                 field(SelectedModel; "Selected Model")

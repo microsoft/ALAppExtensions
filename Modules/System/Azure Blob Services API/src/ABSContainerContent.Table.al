@@ -9,6 +9,8 @@
 table 9043 "ABS Container Content"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Extensible = false;
     DataClassification = SystemMetadata;
     TableType = Temporary;

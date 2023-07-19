@@ -1,0 +1,172 @@
+{
+  "version": "latest",
+  "suppressionSets": {
+    "default": {
+      "name": "default",
+      "createdDate": "2023-04-26 19:48:13Z",
+      "lastUpdatedDate": "2023-04-26 19:48:13Z"
+    }
+  },
+  "results": {
+    "7cbd564df59a42e3d396e56b2b61d45d43e46af70a91be38c57e186294068b6e": {
+      "signature": "7cbd564df59a42e3d396e56b2b61d45d43e46af70a91be38c57e186294068b6e",
+      "alternativeSignatures": [
+        "a12353a0546405c9b07536f30c9252270e1942bc979d60d6a0643959dffa7656"
+      ],
+      "target": "Modules/System/OAuth/README.md",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e5656f7d9361d29bbd427651441cc33c6dfb809bfa0b9d9787de9360cb3b86f6": {
+      "signature": "e5656f7d9361d29bbd427651441cc33c6dfb809bfa0b9d9787de9360cb3b86f6",
+      "alternativeSignatures": [
+        "1a68f9956ec3623b19280845125a47efaf5744a5b4d55693215156de0210aa6b"
+      ],
+      "target": "Modules/System/OAuth/README.md",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "438478736c3be73da3e1a0837c39c22b775abce65e50be8ad272ee10818bc11a": {
+      "signature": "438478736c3be73da3e1a0837c39c22b775abce65e50be8ad272ee10818bc11a",
+      "alternativeSignatures": [
+        "edb0d63b19db21308e762b45d8a3830b3e310f40beb0ad8d387a0ef1d15a43e7"
+      ],
+      "target": "Modules/System Tests/Cryptography Management/src/DESCryptoServiceProviderTest.Codeunit.al",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "d80cb89a9aa5738ed7ecaa0b676255e2b512f37216268b3b107385da12ca2359": {
+      "signature": "d80cb89a9aa5738ed7ecaa0b676255e2b512f37216268b3b107385da12ca2359",
+      "alternativeSignatures": [
+        "46aca5329498f2e76b2e2450d7d29ca478a566da328714d94a745796da4e5019"
+      ],
+      "target": "Modules/System Tests/Password/src/PasswordHandlerTest.Codeunit.al",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "62f7a415643265d12b1d948aeccc9b7a93cb86bd4123b6b9e12006ee3c375101": {
+      "signature": "62f7a415643265d12b1d948aeccc9b7a93cb86bd4123b6b9e12006ee3c375101",
+      "alternativeSignatures": [
+        "aa8f8434d47f397b5daf3dd57e586cbce9a49142cf6736e6643e7b492c0465eb"
+      ],
+      "target": "Modules/System Tests/Password/src/PasswordHandlerTest.Codeunit.al",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "c34f041eb5bdfa76904b15f19ea721a81f4caa30cf1428e41309f2e50c0a0e8d": {
+      "signature": "c34f041eb5bdfa76904b15f19ea721a81f4caa30cf1428e41309f2e50c0a0e8d",
+      "alternativeSignatures": [
+        "dcca5327842abcce2c788318692ba9a2b34b77b1dd1caa6b8593d207202f2ac7"
+      ],
+      "target": "Modules/System Tests/Password/src/PasswordHandlerTest.Codeunit.al",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "61f861f39a054870888a20fd9a43f0d7dc424295897d01987e023a241ecd290e": {
+      "signature": "61f861f39a054870888a20fd9a43f0d7dc424295897d01987e023a241ecd290e",
+      "alternativeSignatures": [
+        "26fdcb1d96cc5182f1b03776681bf558c72d77c22dad62a6eb12ae448aa99e49"
+      ],
+      "target": "Modules/System Tests/Password/src/PasswordHandlerTest.Codeunit.al",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "da95315af9603aec299e24b7f1f74152e9d7b1c6d0a9ed61a442e9304b94bba1": {
+      "signature": "da95315af9603aec299e24b7f1f74152e9d7b1c6d0a9ed61a442e9304b94bba1",
+      "alternativeSignatures": [
+        "8688bf1421349f497fa1fd8ea5a758f478a11e4e52855c2db411d23cb779acaf"
+      ],
+      "target": "Modules/System Tests/Password/src/PasswordHandlerTest.Codeunit.al",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "fa4bedd2c4acc6f536060ec76eb654ccb00aaffeff09cf793cb3e4fa526a9723": {
+      "signature": "fa4bedd2c4acc6f536060ec76eb654ccb00aaffeff09cf793cb3e4fa526a9723",
+      "alternativeSignatures": [
+        "90ca448a391885716f666612ef469f47149d8876fd0c12e8166b37cf72f968d6"
+      ],
+      "target": "Modules/System Tests/Password/src/PasswordHandlerTest.Codeunit.al",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "577fb67ccffa46dce5f95bef1bd3774451e7589bde6c9758a08c8d1f98cbf7e0": {
+      "signature": "577fb67ccffa46dce5f95bef1bd3774451e7589bde6c9758a08c8d1f98cbf7e0",
+      "alternativeSignatures": [
+        "9be34670d5942dbaa2ef3f1db9cbd744f4c0e8a25834fd021ebecf7a94564a98"
+      ],
+      "target": "Apps/ES/HybridBCLast_ES/test/src/TestUpgradeES.Codeunit.al",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "credscan",
+      "ruleId": "CSCAN-GENERAL0060",
+      "justification": null,
+      "createdDate": "2023-04-26 19:48:13Z",
+      "expirationDate": null,
+      "type": null
+    }
+  }
+}

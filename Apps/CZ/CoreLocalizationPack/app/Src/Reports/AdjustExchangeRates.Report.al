@@ -346,10 +346,6 @@ report 31004 "Adjust Exchange Rates CZL"
                     if SkipAdvancePayments then
                         if CustLedgerEntry.RelatedToAdvanceLetterCZL() then
                             CurrReport.Skip();
-#if not CLEAN19
-                    if SkipAdvancePayments and CustLedgerEntry.Prepayment then
-                        CurrReport.Skip();
-#endif
                     AdjustCustomerLedgerEntry(CustLedgerEntry, PostingDate);
 
                     Clear(AdjDebit);
@@ -537,10 +533,6 @@ report 31004 "Adjust Exchange Rates CZL"
                     if SkipAdvancePayments then
                         if VendorLedgerEntry.RelatedToAdvanceLetterCZL() then
                             CurrReport.Skip();
-#if not CLEAN19
-                    if SkipAdvancePayments and VendorLedgerEntry.Prepayment then
-                        CurrReport.Skip();
-#endif
                     AdjustVendorLedgerEntry(VendorLedgerEntry, PostingDate);
 
                     Clear(AdjDebit);
@@ -1354,9 +1346,6 @@ report 31004 "Adjust Exchange Rates CZL"
             TempAdjExchangeRateBufferCZL."IC Partner Code" := ICCode;
             MaxAdjExchRateBufIndex += 1;
             TempAdjExchangeRateBufferCZL.Index := MaxAdjExchRateBufIndex;
-#if not CLEAN19
-            TempAdjExchangeRateBufferCZL.Advance := Advance;
-#endif
             TempAdjExchangeRateBufferCZL."Initial G/L Account No." := InitialGLAccNo;
             TempAdjExchangeRateBufferCZL.Insert();
         end else
@@ -1432,11 +1421,7 @@ report 31004 "Adjust Exchange Rates CZL"
                     TempAdjExchangeRateBufferCZL."Dimension Entry No.",
                     TempAdjExchangeRateBufferCZL."Posting Date",
                     TempAdjExchangeRateBufferCZL."IC Partner Code",
-#if not CLEAN19
-                    TempAdjExchangeRateBufferCZL.Advance,
-#else
                     false,
-#endif
                     TempAdjExchangeRateBufferCZL."Initial G/L Account No.");
 
                 TempAdjExchangeRateBufferCZL2.AdjBase := TempAdjExchangeRateBufferCZL2.AdjBase + TempAdjExchangeRateBufferCZL.AdjBase;
@@ -1964,12 +1949,12 @@ report 31004 "Adjust Exchange Rates CZL"
             TempDetailedCustLedgEntry."Entry No." := NewEntryNo;
             TempDetailedCustLedgEntry."Posting Date" := PostingDate2;
             TempDetailedCustLedgEntry."Document No." := PostingDocNo;
+#if not CLEAN22
+#pragma warning disable AL0432
             TempDetailedCustLedgEntry."Customer Posting Group CZL" := CustLedgerEntry."Customer Posting Group";
-#if not CLEAN19
-#pragma warning disable AL0432
-            TempDetailedCustLedgEntry.Advance := CustLedgerEntry."Prepayment Type" = CustLedgerEntry."Prepayment Type"::Advance;
-#pragma warning disable AL0432
+#pragma warning restore AL0432
 #endif
+            TempDetailedCustLedgEntry."Posting Group" := CustLedgerEntry."Customer Posting Group";
 
             Correction :=
               (CustLedgerEntry."Debit Amount" < 0) or
@@ -2013,11 +1998,7 @@ report 31004 "Adjust Exchange Rates CZL"
                     CustLedgerEntry."Currency Code", CustLedgerEntry."Customer Posting Group",
                     CustLedgerEntry."Remaining Amount", CustLedgerEntry."Remaining Amt. (LCY)", TempDetailedCustLedgEntry."Amount (LCY)",
                     GainsAmount, LossesAmount, DimEntryNo, PostingDate2, Customer."IC Partner Code",
-#if not CLEAN19
-                    TempDetailedCustLedgEntry.Advance,
-#else
                     false,
-#endif
                     GetInitialGLAccountNo(CustLedgerEntry."Entry No.", 0, CustLedgerEntry."Customer Posting Group"));
                 TempDetailedCustLedgEntry."Transaction No." := AdjExchRateBufIndex;
                 ModifyTempDtldCustomerLedgerEntry();
@@ -2090,10 +2071,12 @@ report 31004 "Adjust Exchange Rates CZL"
             TempDetailedVendorLedgEntry."Entry No." := NewEntryNo;
             TempDetailedVendorLedgEntry."Posting Date" := PostingDate2;
             TempDetailedVendorLedgEntry."Document No." := PostingDocNo;
+#if not CLEAN22
+#pragma warning disable AL0432
             TempDetailedVendorLedgEntry."Vendor Posting Group CZL" := VendorLedgerEntry."Vendor Posting Group";
-#if not CLEAN19
-            TempDetailedVendorLedgEntry.Advance := VendorLedgerEntry."Prepayment Type" = VendorLedgerEntry."Prepayment Type"::Advance;
+#pragma warning restore AL0432
 #endif
+            TempDetailedVendorLedgEntry."Posting Group" := VendorLedgerEntry."Vendor Posting Group";
 
             Correction :=
               (VendorLedgerEntry."Debit Amount" < 0) or
@@ -2136,11 +2119,7 @@ report 31004 "Adjust Exchange Rates CZL"
                     VendorLedgerEntry."Currency Code", VendorLedgerEntry."Vendor Posting Group",
                     VendorLedgerEntry."Remaining Amount", VendorLedgerEntry."Remaining Amt. (LCY)",
                     TempDetailedVendorLedgEntry."Amount (LCY)", GainsAmount, LossesAmount, DimEntryNo, PostingDate2, Vendor."IC Partner Code",
-#if not CLEAN19
-                    TempDetailedVendorLedgEntry.Advance,
-#else
                     false,
-#endif
                     GetInitialGLAccountNo(VendorLedgerEntry."Entry No.", 1, VendorLedgerEntry."Vendor Posting Group"));
                 TempDetailedVendorLedgEntry."Transaction No." := AdjExchRateBufIndex;
                 ModifyTempDtldVendorLedgerEntry();
@@ -2332,22 +2311,14 @@ report 31004 "Adjust Exchange Rates CZL"
                       AdjExchRateBufferUpdateUnrealGain(
                         CustLedgerEntry."Currency Code", CustLedgerEntry."Customer Posting Group", CustLedgerEntry."Remaining Amount", CustLedgerEntry."Remaining Amt. (LCY)",
                         DetailedCustLedgEntry."Amount (LCY)", DimEntryNo, PostingDate2, Customer."IC Partner Code",
-#if not CLEAN19
-                        DetailedCustLedgEntry.Advance,
-#else
                         false,
-#endif
                         GetInitialGLAccountNo(CustLedgerEntry."Entry No.", 0, CustLedgerEntry."Customer Posting Group"));
                 DetailedCustLedgEntry."Entry Type"::"Unrealized Loss":
                     AdjExchRateBufIndex :=
                       AdjExchRateBufferUpdateUnrealLoss(
                         CustLedgerEntry."Currency Code", CustLedgerEntry."Customer Posting Group", CustLedgerEntry."Remaining Amount", CustLedgerEntry."Remaining Amt. (LCY)",
                         DetailedCustLedgEntry."Amount (LCY)", DimEntryNo, PostingDate2, Customer."IC Partner Code",
-#if not CLEAN19
-                        DetailedCustLedgEntry.Advance,
-#else
                         false,
-#endif
                         GetInitialGLAccountNo(CustLedgerEntry."Entry No.", 0, CustLedgerEntry."Customer Posting Group"));
             end;
 
@@ -2407,22 +2378,14 @@ report 31004 "Adjust Exchange Rates CZL"
                       AdjExchRateBufferUpdateUnrealGain(
                         VendorLedgerEntry."Currency Code", VendorLedgerEntry."Vendor Posting Group", VendorLedgerEntry."Remaining Amount", VendorLedgerEntry."Remaining Amt. (LCY)",
                         DetailedVendorLedgEntry."Amount (LCY)", DimEntryNo, PostingDate2, Vendor."IC Partner Code",
-#if not CLEAN19
-                        DetailedVendorLedgEntry.Advance,
-#else
                         false,
-#endif
                         GetInitialGLAccountNo(VendorLedgerEntry."Entry No.", 1, VendorLedgerEntry."Vendor Posting Group"));
                 DetailedVendorLedgEntry."Entry Type"::"Unrealized Loss":
                     AdjExchRateBufIndex :=
                       AdjExchRateBufferUpdateUnrealLoss(
                         VendorLedgerEntry."Currency Code", VendorLedgerEntry."Vendor Posting Group", VendorLedgerEntry."Remaining Amount", VendorLedgerEntry."Remaining Amt. (LCY)",
                         DetailedVendorLedgEntry."Amount (LCY)", DimEntryNo, PostingDate2, Vendor."IC Partner Code",
-#if not CLEAN19
-                        DetailedVendorLedgEntry.Advance,
-#else
                         false,
-#endif
                         GetInitialGLAccountNo(VendorLedgerEntry."Entry No.", 1, VendorLedgerEntry."Vendor Posting Group"));
             end;
 

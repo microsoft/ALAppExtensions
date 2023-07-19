@@ -72,7 +72,7 @@ report 11703 "Accounting Sheets CZL"
             column(SalesInvoiceHeader_PostingDate; "Posting Date")
             {
             }
-            column(SalesInvoiceHeader_VATDate; "VAT Date CZL")
+            column(SalesInvoiceHeader_VATDate; "VAT Reporting Date")
             {
             }
             column(SalesInvoiceHeader_DocumentDate; "Document Date")
@@ -145,6 +145,12 @@ report 11703 "Accounting Sheets CZL"
                 FCYRate := 0;
                 if ("Currency Code" <> '') and ("Currency Factor" <> 0) then
                     FCYRate := 1 / "Currency Factor";
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif  
             end;
 
             trigger OnPreDataItem()
@@ -180,7 +186,7 @@ report 11703 "Accounting Sheets CZL"
             column(SalesCrMemoHeader_PostingDate; "Posting Date")
             {
             }
-            column(SalesCrMemoHeader_VATDate; "VAT Date CZL")
+            column(SalesCrMemoHeader_VATDate; "VAT Reporting Date")
             {
             }
             column(SalesCrMemoHeader_DocumentDate; "Document Date")
@@ -249,6 +255,12 @@ report 11703 "Accounting Sheets CZL"
                 FCYRate := 0;
                 if ("Currency Code" <> '') and ("Currency Factor" <> 0) then
                     FCYRate := 1 / "Currency Factor";
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
 
             trigger OnPreDataItem()
@@ -287,7 +299,7 @@ report 11703 "Accounting Sheets CZL"
             column(PurchInvHeader_PostingDate; "Posting Date")
             {
             }
-            column(PurchInvHeader_VATDate; "VAT Date CZL")
+            column(PurchInvHeader_VATDate; "VAT Reporting Date")
             {
             }
             column(PurchInvHeader_DocumentDate; "Document Date")
@@ -356,6 +368,12 @@ report 11703 "Accounting Sheets CZL"
                 FCYRate := 0;
                 if ("Currency Code" <> '') and ("Currency Factor" <> 0) then
                     FCYRate := 1 / "Currency Factor";
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
 
             trigger OnPreDataItem()
@@ -394,7 +412,7 @@ report 11703 "Accounting Sheets CZL"
             column(PurchCrMemoHdr_PostingDate; "Posting Date")
             {
             }
-            column(PurchCrMemoHdr_VATDate; "VAT Date CZL")
+            column(PurchCrMemoHdr_VATDate; "VAT Reporting Date")
             {
             }
             column(PurchCrMemoHdr_DocumentDate; "Document Date")
@@ -463,6 +481,12 @@ report 11703 "Accounting Sheets CZL"
                 FCYRate := 0;
                 if ("Currency Code" <> '') and ("Currency Factor" <> 0) then
                     FCYRate := 1 / "Currency Factor";
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
 
             trigger OnPreDataItem()
@@ -634,6 +658,9 @@ report 11703 "Accounting Sheets CZL"
         UserSetup: Record "User Setup";
         TempGLEntry: Record "G/L Entry" temporary;
         GLEntry: Record "G/L Entry";
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#endif
         LastDocNo: Code[20];
         FCYRate: Decimal;
         LastGLEntry: Integer;

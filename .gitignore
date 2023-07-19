@@ -23,6 +23,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Oo]ut/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -72,6 +73,7 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
+*.dll
 
 # Chutzpah Test files
 _Chutzpah*
@@ -310,3 +312,8 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+#Translation files
+*.xlf
+*.lcg
+#Build files
+*.al.bak

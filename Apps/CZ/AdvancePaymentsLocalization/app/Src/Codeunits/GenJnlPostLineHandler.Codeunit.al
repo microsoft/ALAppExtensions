@@ -50,11 +50,16 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId', '', false, false)]
-    local procedure SetManualApplicationOnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId(GenJournalLine: Record "Gen. Journal Line"; var OldCustLedgerEntry: Record "Cust. Ledger Entry")
+    local procedure OnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId(GenJournalLine: Record "Gen. Journal Line"; var OldCustLedgerEntry: Record "Cust. Ledger Entry")
     begin
         if (GenJournalLine."Advance Letter No. CZZ" <> '') or (GenJournalLine."Adv. Letter Template Code CZZ" <> '') then begin
+            // If the advance letter is posting then the manual application method must be used
             OldCustLedgerEntry.SetRange("Posting Date");
             OldCustLedgerEntry.SetFilter("Amount to Apply", '<>%1', 0);
+        end else begin
+            // If the advance letter is not posting then the customer ledger entries applied to advance letter mustn't be used for application
+            OldCustLedgerEntry.SetRange("Advance Letter No. CZZ", '');
+            OldCustLedgerEntry.SetRange("Adv. Letter Template Code CZZ", '');
         end;
     end;
 
@@ -92,5 +97,19 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
                     PurchAdvLetterManagementCZZ.PostAdvancePayment(VendorLedgerEntry, GenJournalLine, 0, GenJnlPostLine);
                 end;
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeVendLedgEntryModify', '', false, false)]
+    local procedure InitAdvanceLetterOnBeforeVendLedgEntryModify(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+        if VendorLedgerEntry.Open and (VendorLedgerEntry."Advance Letter No. CZZ" = '') then
+            VendorLedgerEntry."Adv. Letter Template Code CZZ" := '';
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCustLedgEntryModify', '', false, false)]
+    local procedure InitAdvanceLetterOnBeforeCustLedgEntryModify(var CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        if CustLedgerEntry.Open and (CustLedgerEntry."Advance Letter No. CZZ" = '') then
+            CustLedgerEntry."Adv. Letter Template Code CZZ" := '';
     end;
 }

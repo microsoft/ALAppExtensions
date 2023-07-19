@@ -7,6 +7,8 @@ codeunit 1434 "Satisfaction Survey Installer"
 {
     Subtype = Install;
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnInstallAppPerDatabase()
     var

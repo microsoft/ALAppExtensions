@@ -584,6 +584,14 @@ page 30012 "APIV2 - Sales Invoices"
                     EntitySetName = 'attachments';
                     SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Invoice");
                 }
+
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Invoice");
+                }
             }
         }
     }

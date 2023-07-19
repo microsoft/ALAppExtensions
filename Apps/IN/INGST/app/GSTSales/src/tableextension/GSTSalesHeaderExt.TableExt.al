@@ -52,9 +52,14 @@ tableextension 18147 "GST Sales Header Ext" extends "Sales Header"
                 "Merchant Id" = field("e-Commerce Merchant Id"),
                 "Customer No." = field("e-Commerce Customer"));
             DataClassification = CustomerContent;
-            ObsoleteState = Pending;
             ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
+#if CLEAN23
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Pending;
             ObsoleteTag = '23.0';
+#endif
         }
         field(18150; "GST Bill-to State Code"; Code[10])
         {

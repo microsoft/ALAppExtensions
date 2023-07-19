@@ -10,8 +10,7 @@ PermissionSet 1991 "Guided Experience - Read"
 
     IncludedPermissionSets = "Guided Experience - Objects",
                              "Translation - Read",
-                             "Upgrade Tags - Read",
-                             "User Login Times - Read";
+                             "Upgrade Tags - Read";
 
     Permissions = tabledata "All Profile" = r,
                   tabledata AllObj = r,

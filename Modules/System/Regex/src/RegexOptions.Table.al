@@ -13,6 +13,8 @@ table 3966 "Regex Options"
 {
     Extensible = false;
     TableType = Temporary;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

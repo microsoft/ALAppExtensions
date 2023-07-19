@@ -163,10 +163,10 @@ report 31197 "Service Invoice CZL"
             column(PostingDate_ServiceInvoiceHeader; "Posting Date")
             {
             }
-            column(VATDate_ServiceInvoiceHeaderCaption; FieldCaption("VAT Date CZL"))
+            column(VATDate_ServiceInvoiceHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_ServiceInvoiceHeader; "VAT Date CZL")
+            column(VATDate_ServiceInvoiceHeader; "VAT Reporting Date")
             {
             }
             column(DueDate_ServiceInvoiceHeaderCaption; FieldCaption("Due Date"))
@@ -507,6 +507,12 @@ report 31197 "Service Invoice CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
         }
     }
@@ -551,6 +557,9 @@ report 31197 "Service Invoice CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#endif
         ExchRateText: Text[50];
         VATClauseText: Text;
         CompanyAddr: array[8] of Text[100];

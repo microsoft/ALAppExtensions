@@ -9,6 +9,8 @@ table 1470 "Product Video Buffer"
     Extensible = false;
     Caption = 'Product Video Buffer';
     ReplicateData = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     //TableType = Temporary; // need to fix AS0034 and AS0039 first
 
     fields

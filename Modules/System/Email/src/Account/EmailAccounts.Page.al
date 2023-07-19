@@ -32,10 +32,7 @@ page 8887 "Email Accounts"
             {
                 Visible = ShowLogo;
                 FreezeColumn = NameField;
-
-#pragma warning disable
-                field(LogoField; LogoBlob)
-#pragma warning enable
+                field(LogoField; Rec.LogoBlob)
                 {
                     ApplicationArea = All;
                     ShowCaption = false;
@@ -45,7 +42,7 @@ page 8887 "Email Accounts"
                     Width = 1;
                 }
 
-                field(NameField; Name)
+                field(NameField; Rec.Name)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the account.';
@@ -57,7 +54,7 @@ page 8887 "Email Accounts"
                     end;
                 }
 
-                field(EmailAddress; "Email Address")
+                field(EmailAddress; Rec."Email Address")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the address of the email account.';
@@ -69,14 +66,14 @@ page 8887 "Email Accounts"
                     end;
                 }
 
-                field(NameFieldLookup; Name)
+                field(NameFieldLookup; Rec.Name)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the account.';
                     Visible = LookupMode;
                 }
 
-                field(EmailAddressLookup; "Email Address")
+                field(EmailAddressLookup; Rec."Email Address")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the address of the email account.';
@@ -91,7 +88,7 @@ page 8887 "Email Accounts"
                     Visible = not LookupMode;
                 }
 
-                field(EmailConnector; Connector)
+                field(EmailConnector; Rec.Connector)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the type of email extension that the account is added to.';
@@ -106,7 +103,6 @@ page 8887 "Email Accounts"
                     Visible = true;
 
                     trigger OnDrillDown()
-                    var
                     begin
                         EmailRateLimitImpl.UpdateRateLimit(Rec);
                     end;
@@ -119,7 +115,6 @@ page 8887 "Email Accounts"
             part(Scenarios; "Email Scenarios FactBox")
             {
                 Caption = 'Email Scenarios';
-                ToolTip = 'The email scenarios assigned to the selected account.';
                 SubPageLink = "Account Id" = field("Account Id"), Connector = field(Connector), Scenario = filter(<> 0); // Do not show Default scenario
                 ApplicationArea = All;
             }

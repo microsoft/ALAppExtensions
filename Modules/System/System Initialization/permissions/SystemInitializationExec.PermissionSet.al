@@ -8,9 +8,7 @@ permissionset 150 "System Initialization - Exec"
     Access = Public;
     Assignable = false;
 
-    IncludedPermissionSets = "System Initialization - Obj.",
-                             "User Login Times - View",
-                             "AAD User Management - Exec",
+    IncludedPermissionSets = "AAD User Management - Exec",
                              "Telemetry - Exec";
 
     Permissions = Tabledata "Signup Context Values" = RI;

@@ -6,6 +6,8 @@
 codeunit 9863 "Permission Set Copy Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";

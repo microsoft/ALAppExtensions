@@ -1,6 +1,10 @@
+#if not CLEAN26
 enum 11513 "Swiss QR-Bill Umlaut Encoding"
 {
     Extensible = false;
+    ObsoleteReason = 'No need to convert umlauts, because encoding was changed to UTF-8.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     value(0; Single)
     {
@@ -19,3 +23,4 @@ enum 11513 "Swiss QR-Bill Umlaut Encoding"
         Caption = 'Western European ISO-8859-1';
     }
 }
+#endif

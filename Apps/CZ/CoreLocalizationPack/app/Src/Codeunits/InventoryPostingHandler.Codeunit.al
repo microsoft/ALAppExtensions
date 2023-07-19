@@ -250,12 +250,18 @@ codeunit 31073 "Inventory Posting Handler CZL"
         if ValueEntry."Expected Cost" then
             exit;
 
+        if not TempInvtPostBuf[PostBufDimNo]."Interim Account" then
+            exit;
+
+        InventorySetup.Get();
+        if not InventorySetup."Post Exp.Cost Conv.As Corr.CZL" then
+            exit;
+
         if (ValueEntry."Item Ledger Entry Type" in [ValueEntry."Item Ledger Entry Type"::Sale, ValueEntry."Item Ledger Entry Type"::Purchase, ValueEntry."Item Ledger Entry Type"::Output]) and
            (ValueEntry."Entry Type" in [ValueEntry."Entry Type"::"Direct Cost", ValueEntry."Entry Type"::Revaluation])
-        then begin
-            InventorySetup.Get();
-            TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL" := TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL" xor InventorySetup."Post Exp.Cost Conv.As Corr.CZL";
-        end;
+        then
+            if ValueEntry."Cost Amount (Expected)" <> 0 then
+                TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL" := not TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnPostInvtPostBufProcessGlobalInvtPostBufOnAfterSetDesc', '', false, false)]

@@ -88,54 +88,60 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
             end;
         }
     }
+#if not CLEAN22
     actions
     {
-#if CLEAN19
         addafter("F&unctions")
         {
             group("Other CZL")
             {
                 Caption = 'O&ther';
+                Visible = false;
+                ObsoleteReason = 'The group will be removed.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
 
-#else
-#pragma warning disable AL0432
-        addlast("O&ther")
-#pragma warning restore AL0432
-        {
-#endif
-            action("Set up Custom Functions CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Set up Custom Functions';
-                Ellipsis = true;
-                Image = NewSum;
-                RunObject = Page "Acc. Schedule Extensions CZL";
-                ToolTip = 'Specifies acc. schedule extensions page';
-            }
-            action("File Mapping CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'File Mapping';
-                Image = ExportToExcel;
-                ToolTip = 'File Mapping allows to set up export to Excel. You can see three dots next to the field with Amount.';
+                action("Set up Custom Functions CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Set up Custom Functions';
+                    Ellipsis = true;
+                    Image = NewSum;
+                    RunObject = Page "Acc. Schedule Extensions CZL";
+                    ToolTip = 'Specifies acc. schedule extensions page';
+                    ObsoleteReason = 'The action is moved to Financial Reports.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                }
+                action("File Mapping CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'File Mapping';
+                    Image = ExportToExcel;
+                    ToolTip = 'File Mapping allows to set up export to Excel. You can see three dots next to the field with Amount.';
+                    ObsoleteReason = 'The action is moved to Financial Reports.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
 
-                trigger OnAction()
-                var
-                    AccScheuledFileMappingCZL: Page "Acc. Schedule File Mapping CZL";
-                begin
-                    AccScheuledFileMappingCZL.SetAccSchedName(Rec."Schedule Name");
-                    AccScheuledFileMappingCZL.RunModal();
-                end;
+                    trigger OnAction()
+                    var
+                        AccScheduleFileMappingCZL: Page "Acc. Schedule File Mapping CZL";
+                    begin
+                        AccScheduleFileMappingCZL.SetAccSchedName(Rec."Schedule Name");
+                        AccScheduleFileMappingCZL.RunModal();
+                    end;
+                }
             }
         }
-#if CLEAN19
-        }
-#endif
         addlast(processing)
         {
             group("Results Group CZL")
             {
                 Caption = 'Results';
+                Visible = false;
+                ObsoleteReason = 'The group will be removed.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
                 action("Save Results CZL")
                 {
                     ApplicationArea = Basic, Suite;
@@ -143,6 +149,9 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
                     Ellipsis = true;
                     Image = Save;
                     ToolTip = 'Opens window for saving results of acc. schedule';
+                    ObsoleteReason = 'The action is moved to Financial Reports.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
 
                     trigger OnAction()
                     var
@@ -159,9 +168,13 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
                     RunObject = Page "Acc. Sched. Res. Hdr. List CZL";
                     RunPageLink = "Acc. Schedule Name" = field("Schedule Name");
                     ToolTip = 'Opens acc. schedule res. header list';
+                    ObsoleteReason = 'The action is moved to Financial Reports.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
                 }
             }
 
         }
     }
+#endif
 }

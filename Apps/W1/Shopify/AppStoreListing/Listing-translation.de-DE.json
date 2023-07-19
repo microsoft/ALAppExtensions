@@ -77,6 +77,41 @@
       "limit": 64
     },
     {
+      "property": "App introduction",
+      "value to translate": "Umfassende Unternehmensverwaltungslösung, die kleinen und mittelständischen Unternehmen hilft.",
+      "limit": 100
+    },
+    {
+      "property": "App details",
+      "value to translate": "Erhöhung der finanziellen Sichtbarkeit: Verschaffen Sie sich einen Überblick über Ihren Gewinn und ihre Kosten, und behalten Sie die Kontrolle über die Steuerberechnung und Berichtserstellung. Lageroptimierung: Liefern Sie Produkte pünktlich, und passen Sie Ihr Unternehmen an wechselnde Geschäftsmodelle mit transparenten Vorgängen für Einkauf, Produktion, Lager- und Lagerstandorte an. Gewinnen Sie geschäftliche Erkenntnisse: Verschaffen Sie sich einen Überblick über Ihren Lagerwert, verwenden Sie KI, um zukünftige Verkäufe vorherzusagen, die automatische Bestellung von Produkten einzurichten und Kosten zu kontrollieren.",
+      "limit": 500
+    },
+    {
+      "property": "Feature 1",
+      "value to translate": "Unterstützung für mehr als einen Shopify-Shop, Verkaufskanal, Standort.",
+      "limit": 80
+    },
+    {
+      "property": "Feature 2",
+      "value to translate": "Bidirektionale Synchronisierung von Artikeln oder Produkten.",
+      "limit": 80
+    },
+    {
+      "property": "Feature 3",
+      "value to translate": "Synchronisierung der Lagerbestände.",
+      "limit": 80
+    },
+    {
+      "property": "Feature 4",
+      "value to translate": "Bidirektionale Synchronisierung von Debitoren.",
+      "limit": 80
+    },
+    {
+      "property": "Feature 5",
+      "value to translate": "Import von Aufträgen aus Shopify und Senden von Auftragserfüllungsinformationen an Shopify.",
+      "limit": 80
+    },
+    {
       "property": "Detailed description",
       "value to translate": "Dynamics 365 Business Central arbeitet mit Shopify zusammen, um unseren Kunden ein besseres Einkaufserlebnis zu ermöglichen. Shopify ist eine einfach zu bedienende E-Commerce-Lösung. Dynamics 365 Business Central bietet eine umfassende Geschäftsverwaltung für Finanz-, Vertriebs-, Service- und Betriebsteams in einer einzigen Anwendung. Die nahtlose Verbindung zwischen den beiden Systemen synchronisiert Auftrags-, Lager- und Kundeninformationen. So erfüllen Händler Aufträge schneller und beliefern ihre Kunden besser. Das gemeinsame Projekt unterstreicht die Ziele von Dynamics 365 Business Central: Daten miteinander verknüpfen, damit sich Unternehmen schneller anpassen, intelligenter arbeiten und bessere Leistungen erbringen können.\n#Schnellere Anpassung\n  Die Verbindung beider Systeme unterstützt Händler bei der Implementierung agilerer Online-Geschäftsprozesse, sodass sie sich auf den Verkauf konzentrieren können. Mit verknüpften Daten aus Ihren Online-Shops und Geschäftsprozessen reagieren Sie schneller auf Kundenwünsche und passen die Preisgestaltung und das Merchandising Ihrer Produkte an. Mit der Unterstützung für mehrstufige Preisstrukturen und mehrere Währungen, Unternehmen und Entitäten ermöglicht Business Central die problemlose Betreuung mehrerer Shopify-Shop-Szenarien.\n#Intelligenter arbeitenDie Abschaffung manueller Prozesse verbessert nicht nur die Zuverlässigkeit, sondern sorgt auch dafür, dass sich die Mitarbeiter auf die Kundenbetreuung konzentrieren. Durch die Verbindung von Shopify und Business Central erhalten Sie einen besseren Überblick über Lagerbestände, Preise, bestehende Kunden und den Auftragsverlauf, den Auftragsstatus, die Rechnungsstellung und die Zahlungen. Eine bessere Übersicht ermöglicht eine schnellere Beantwortung von Kundenanfragen, fristgerechte Rücksendungen und Rückerstattungen sowie eine akkuratere Auftragsabwicklung.\n#Bessere LeistungDie verbesserte operative Effizienz spart Ihnen nicht nur Zeit und senkt die Kosten, sondern kann sich auch in besseren Ergebnissen und schnelleren Entscheidungen niederschlagen. Durch die automatische Synchronisierung zwischen den Systemen bei Preisänderungen, Produktaktualisierungen und Kundendaten können Sie Ihre Online-Präsenz problemlos ausbauen und gleichzeitig Ihre Betriebskosten minimieren. Zum Ende der Bilanzierungsperiode unterstützt Business Central die Händler bei der Finanz- und Steuerberichterstattung gemäß der lokalen Vorschriften.\n#Funktionen- Mehrere Shopify-Shops, die mit demselben Business Central verbunden sind - Bidirektionale Synchronisierung von Artikeln/Produkten - Synchronisierung von Lagerbeständen - Bidirektionale Synchronisierung von Kunden - Import von Aufträge aus Shopify und Senden von Erfüllungsinformationen an Shopify",
       "limit": 2800

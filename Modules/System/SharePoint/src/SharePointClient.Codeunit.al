@@ -276,6 +276,17 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
+    /// Downloads a file to an InStream.
+    /// </summary>
+    /// <param name="OdataId">The odata.id parameter of the file entity.</param>
+    /// <param name="FileInStream">The InStream that will be populated with the file content.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure DownloadFileContent(OdataId: Text; var FileInStream: InStream): Boolean
+    begin
+        exit(SharePointClientImpl.DownloadFileContent(OdataId, FileInStream));
+    end;
+
+    /// <summary>
     /// Downloads a file to the client.
     /// </summary>
     /// <param name="OdataId">The odata.id parameter of the file entity.</param>

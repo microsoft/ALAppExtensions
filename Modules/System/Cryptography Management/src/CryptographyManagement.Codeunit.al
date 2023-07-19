@@ -12,6 +12,8 @@
 codeunit 1266 "Cryptography Management"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";

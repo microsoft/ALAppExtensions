@@ -8,8 +8,18 @@ codeunit 4014 "Notification Handler"
         RecievedWebhookNotificationMsg: Label 'Recieved Webhook Notification from Cloud Migration Service. Subscription ID %1', Locked = true;
         ProcessingServiceNotificationMsg: Label 'Processing Service Notification', Locked = true;
         ProcessingNotificationMsg: Label 'Processing Notification', Locked = true;
+        AzureDataLakeMigrationFailedLbl: Label 'Azure Data Lake migration completed with failed tables.';
+        DiagnosticFoundErrorsLbl: Label 'Diagnostic run has found errors.';
         HybridReplicationStatusMsg: Label 'Parsing Replication Summary. Status: %1, Replication type: %2', Locked = true;
         ProcessingCleanupNotificationMsg: Label 'Recieved Cleanup Notification from Replication Service. Disabling Cloud Migration.', Locked = true;
+        CloudMigrationFailedTablesStatusLbl: Label 'Replication completed with failed tables.';
+        ReplicationCompletedLbl: Label 'Replication completed successfully.';
+        AzureDataLakeCompletedLbl: Label 'Azure Data Lake migration completed successfully.';
+        DiagnosticRunCompletedLbl: Label 'Diagnostic run completed successfully.';
+        TableWasNotReplicatedRetryMsg: Label 'Table was not replicated. Run the replication again to move the data.';
+        DiagnosticRunPrefixTxt: Label 'Diagnostic run';
+        DataReplicationCompletedLbl: Label 'Replication run completed.', Locked = true;
+        DataReplicationHadFailedTablesLbl: Label 'Replication run completed with failed tables.', Locked = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Webhook Notification", 'OnAfterInsertEvent', '', false, false)]
     local procedure HandleIntelligentCloudOnInsertWebhookNotification(var Rec: Record "Webhook Notification"; RunTrigger: Boolean)
@@ -43,14 +53,8 @@ codeunit 4014 "Notification Handler"
         NotificationInStream.ReadText(NotificationText);
 
         ParseReplicationSummary(HybridReplicationSummary, NotificationText);
-
-        if HybridCloudManagement.CheckFixDataOnReplicationCompleted(NotificationText) then begin
-            HybridReplicationSummary.Status := HybridReplicationSummary.Status::RepairDataPending;
-            HybridReplicationSummary.Modify();
-            Commit();
-            HybridCloudManagement.ScheduleDataFixOnReplicationCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText);
-        end else
-            HybridCloudManagement.OnReplicationRunCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText);
+        UpdateReplicationSummaryDetailsStartAndEndTime(HybridReplicationSummary);
+        HybridCloudManagement.OnReplicationRunCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText);
     end;
 
     local procedure HandleServiceNotification(var WebhookNotification: Record "Webhook Notification")
@@ -63,6 +67,7 @@ codeunit 4014 "Notification Handler"
         Session.LogMessage('0000EUZ', ProcessingServiceNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
         WebhookNotification.Notification.CreateInStream(NotificationInStream);
         NotificationInStream.ReadText(NotificationText);
+
         JsonManagement.InitializeObject(NotificationText);
         JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType);
 
@@ -96,6 +101,8 @@ codeunit 4014 "Notification Handler"
 
     procedure ParseReplicationSummary(var HybridReplicationSummary: Record "Hybrid Replication Summary"; NotificationText: Text)
     var
+        PreviousHybridReplicationSummary: Record "Hybrid Replication Summary";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         HybridMessageManagement: Codeunit "Hybrid Message Management";
         JsonManagement: Codeunit "JSON Management";
@@ -103,16 +110,28 @@ codeunit 4014 "Notification Handler"
         Value: Text;
         Details: Text;
         MessageCode: Text;
+        ServiceType: Text;
+        ExistingDetails: Text;
+        PreviousDetails: Text;
+        TelemetryDictionary: Dictionary of [Text, Text];
+        HasFailures: Boolean;
     begin
         JsonManagement.InitializeObject(NotificationText);
         JsonManagement.GetStringPropertyValueByName('RunId', Value);
 
-        if not HybridReplicationSummary.Get(Value) then begin
-            HybridReplicationSummary.Init();
-            HybridReplicationSummary."Run ID" := CopyStr(Value, 1, MaxStrLen(HybridReplicationSummary."Run ID"));
-            HybridReplicationSummary.Source := CopyStr(HybridCloudManagement.GetChosenProductName(), 1, MaxStrLen(HybridReplicationSummary.Source));
-            HybridReplicationSummary.Insert();
+        if HybridReplicationSummary.Get(Value) then begin
+            PreviousHybridReplicationSummary.Copy(HybridReplicationSummary);
+            PreviousDetails := HybridReplicationSummary.GetDetails();
+            HybridReplicationSummary.Delete();
         end;
+
+        Clear(HybridReplicationSummary);
+        HybridReplicationSummary."Run ID" := CopyStr(Value, 1, MaxStrLen(HybridReplicationSummary."Run ID"));
+        HybridReplicationSummary.Source := CopyStr(HybridCloudManagement.GetChosenProductName(), 1, MaxStrLen(HybridReplicationSummary.Source));
+        HybridReplicationSummary."Start Time" := PreviousHybridReplicationSummary."Start Time";
+        HybridReplicationSummary.ReplicationType := PreviousHybridReplicationSummary.ReplicationType;
+        HybridReplicationSummary."Trigger Type" := PreviousHybridReplicationSummary."Trigger Type";
+        HybridReplicationSummary.Insert();
 
         if JsonManagement.GetStringPropertyValueByName('StartTime', Value) then
             if Evaluate(HybridReplicationSummary."Start Time", Value) then
@@ -155,11 +174,105 @@ codeunit 4014 "Notification Handler"
         if HybridReplicationSummary.Status <> HybridReplicationSummary.Status::InProgress then
             HybridReplicationSummary."End Time" := CurrentDateTime();
 
+        if JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType) then
+            if HybridCloudManagement.IsReplicationCompleted(ServiceType) then begin
+                if PreviousHybridReplicationSummary.Status = PreviousHybridReplicationSummary.Status::InProgress then
+                    Clear(PreviousDetails);
+
+                MarkInProgressDetailRecordsAsFailed(HybridReplicationSummary);
+                if (HybridReplicationSummary.ReplicationType in [HybridReplicationSummary.ReplicationType::Full, HybridReplicationSummary.ReplicationType::Diagnostic]) then begin
+                    HybridReplicationSummary.CalcFields("Tables Failed");
+                    if HybridReplicationSummary."Tables Failed" > 0 then
+                        case HybridReplicationSummary.ReplicationType of
+                            HybridReplicationSummary.ReplicationType::Full,
+                            HybridReplicationSummary.ReplicationType::Normal:
+                                HybridReplicationSummary.SetDetails(CloudMigrationFailedTablesStatusLbl + HybridReplicationSummary.GetDetails());
+                            HybridReplicationSummary.ReplicationType::"Azure Data Lake":
+                                HybridReplicationSummary.SetDetails(AzureDataLakeMigrationFailedLbl);
+                            HybridReplicationSummary.ReplicationType::Diagnostic:
+                                HybridReplicationSummary.SetDetails(DiagnosticFoundErrorsLbl);
+                        end
+                    else
+                        case HybridReplicationSummary.ReplicationType of
+                            HybridReplicationSummary.ReplicationType::Full,
+                            HybridReplicationSummary.ReplicationType::Normal:
+                                HybridReplicationSummary.SetDetails(ReplicationCompletedLbl);
+                            HybridReplicationSummary.ReplicationType::"Azure Data Lake":
+                                HybridReplicationSummary.SetDetails(AzureDataLakeCompletedLbl);
+                            HybridReplicationSummary.ReplicationType::Diagnostic:
+                                HybridReplicationSummary.SetDetails(DiagnosticRunCompletedLbl);
+                        end
+                end;
+
+                TelemetryDictionary.Add('Category', HybridCloudManagement.GetTelemetryCategory());
+                TelemetryDictionary.Add('ReplicationType', HybridCloudManagement.GetReplicationTypeTelemetryText(HybridReplicationSummary));
+
+                if IntelligentCloudSetup.Get() then
+                    TelemetryDictionary.Add('SourceProduct', IntelligentCloudSetup."Product ID");
+
+                Session.LogMessage('0000K0H', DataReplicationCompletedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDictionary);
+                HasFailures := HybridReplicationSummary."Tables Failed" > 0;
+
+                if HasFailures then begin
+                    TelemetryDictionary.Add('HasFailures', Format(HasFailures, 0, 9));
+                    TelemetryDictionary.Add('NumberOfFailedTables', Format(HybridReplicationSummary."Tables Failed", 0, 9));
+                    TelemetryDictionary.Add('Details', HybridReplicationSummary.GetDetails());
+                    Session.LogMessage('0000K0I', DataReplicationHadFailedTablesLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDictionary);
+                end;
+            end;
+
+        if HybridReplicationSummary.ReplicationType = HybridReplicationSummary.ReplicationType::Diagnostic then begin
+            ExistingDetails := HybridReplicationSummary.GetDetails();
+            if ExistingDetails <> '' then
+                if not (ExistingDetails.StartsWith(DiagnosticRunPrefixTxt)) then
+                    HybridReplicationSummary.SetDetails(DiagnosticRunPrefixTxt + ' - ' + ExistingDetails);
+        end;
+
+        if PreviousDetails <> '' then
+            if HybridReplicationSummary.GetDetails() = '' then
+                HybridReplicationSummary.SetDetails(PreviousDetails);
+
         HybridReplicationSummary.Modify();
         Commit();
 
         if HybridReplicationSummary.ReplicationType = HybridReplicationSummary.ReplicationType::"Azure Data Lake" then
             HybridCloudManagement.FinishDataLakeMigration(HybridReplicationSummary);
+    end;
+
+    local procedure UpdateReplicationSummaryDetailsStartAndEndTime(HybridReplicationSummary: Record "Hybrid Replication Summary")
+    var
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
+        BlankDateTime: DateTime;
+    begin
+        Clear(BlankDateTime);
+        HybridReplicationDetail.SetRange("Run ID", HybridReplicationSummary."Run ID");
+        if HybridReplicationSummary."Start Time" > BlankDateTime then begin
+            HybridReplicationDetail.SetRange("Start Time", BlankDateTime);
+            if not HybridReplicationDetail.IsEmpty() then
+                HybridReplicationDetail.ModifyAll("Start Time", HybridReplicationSummary."Start Time");
+
+            Commit();
+        end;
+
+        Clear(HybridReplicationDetail);
+        HybridReplicationDetail.SetRange("Run ID", HybridReplicationSummary."Run ID");
+        if HybridReplicationSummary."End Time" > BlankDateTime then begin
+            HybridReplicationDetail.SetRange("End Time", BlankDateTime);
+            if not HybridReplicationDetail.IsEmpty() then
+                HybridReplicationDetail.ModifyAll("End Time", HybridReplicationSummary."End Time");
+
+            Commit();
+        end;
+    end;
+
+    local procedure MarkInProgressDetailRecordsAsFailed(HybridReplicationSummary: Record "Hybrid Replication Summary")
+    var
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
+    begin
+        HybridReplicationDetail.SetRange("Run ID", HybridReplicationSummary."Run ID");
+        HybridReplicationDetail.SetRange(Status, HybridReplicationDetail.Status::InProgress);
+        HybridReplicationDetail.ModifyAll("Error Message", TableWasNotReplicatedRetryMsg);
+        HybridReplicationDetail.ModifyAll(Status, HybridReplicationDetail.Status::Failed);
     end;
 
     local procedure ProcessCleanupNotification(SubscriptionID: Text)

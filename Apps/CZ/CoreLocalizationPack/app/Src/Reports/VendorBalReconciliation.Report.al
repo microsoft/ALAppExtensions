@@ -69,7 +69,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             column(CompanyInfoTaxRegistrationNo; CompanyInformation."Tax Registration No. CZL")
             {
             }
-            column(VendorRegistrationNo; "Registration No. CZL")
+            column(VendorRegistrationNo; "Registration Number")
             {
             }
             column(VendorTaxRegistrationNo; "Tax Registration No. CZL")
@@ -117,7 +117,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             column(CompanyInfoTaxRegistrationNoCaption; CompanyInfoTaxRegistrationNoCaptionLbl)
             {
             }
-            column(VendorRegistrationNoCaption; FieldCaption("Registration No. CZL"))
+            column(VendorRegistrationNoCaption; FieldCaption("Registration Number"))
             {
             }
             column(VendorTaxRegistrationNoCaption; FieldCaption("Tax Registration No. CZL"))
@@ -483,7 +483,6 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         GeneralLedgerSetup: Record "General Ledger Setup";
         CompanyInformation: Record "Company Information";
         TempCurrency: Record Currency temporary;
-        TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
         CompanyOfficialCZL: Record "Company Official CZL";
         Employee: Record Employee;
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
@@ -545,6 +544,9 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         ResponsibleEmployeeLbl: Label 'Responsible Employee: %1', Comment = '%1 = Employee Full Name';
         RemainingAmtLCYLbl: Label 'Remaining Amt. (%1)', Comment = '%1 = LCY Code';
         DateFormatTok: Label '<Day>.<Month>.<Year4>', Locked = true;
+
+    protected var
+        TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
 
     procedure CalcDebitCredit(TotalAmt: Decimal)
     begin

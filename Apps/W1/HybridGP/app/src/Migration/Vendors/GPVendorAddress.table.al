@@ -1,7 +1,7 @@
 table 4049 "GP Vendor Address"
 {
-    ReplicateData = false;
     Permissions = tabledata "Ship-to Address" = rim;
+    DataClassification = CustomerContent;
 
     fields
     {

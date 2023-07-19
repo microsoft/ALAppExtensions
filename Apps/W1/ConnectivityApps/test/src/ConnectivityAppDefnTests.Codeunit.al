@@ -15,34 +15,34 @@ codeunit 139529 "Connectivity App Defn. Tests"
     procedure TestGetConnectivityAppDefinitions()
     var
         TempConnectivityApp: Record "Connectivity App" temporary;
-        TempApprovedForConnectivityAppCountry: Record "Connectivity App Country" temporary;
-        TempWorksOnConnectivityAppCountry: Record "Connectivity App Country" temporary;
+        TempApprovedForConnectivityAppCountryOrRegion: Record "Conn. App Country/Region" temporary;
+        TempWorksOnConnectivityAppLocalization: Record "Conn. App Country/Region" temporary;
         Assert: Codeunit Assert;
     begin
         Initialize();
 
         // This test will ensure the data in the codeunit "Connectivity App Definitions" is parsed and loaded onto the temporary tables
-        ConnectivityAppDefinitions.GetConnectivityAppDefinitions(TempConnectivityApp, TempApprovedForConnectivityAppCountry, TempWorksOnConnectivityAppCountry);
+        ConnectivityAppDefinitions.GetConnectivityAppDefinitions(TempConnectivityApp, TempApprovedForConnectivityAppCountryOrRegion, TempWorksOnConnectivityAppLocalization);
         Assert.RecordIsNotEmpty(TempConnectivityApp);
-        Assert.RecordIsNotEmpty(TempApprovedForConnectivityAppCountry);
-        Assert.RecordIsNotEmpty(TempWorksOnConnectivityAppCountry);
+        Assert.RecordIsNotEmpty(TempApprovedForConnectivityAppCountryOrRegion);
+        Assert.RecordIsNotEmpty(TempWorksOnConnectivityAppLocalization);
     end;
 
     [Test]
     procedure TestApprovedConnectivityAppShouldAlsoWorkOnACountry()
     var
         TempConnectivityApp: Record "Connectivity App" temporary;
-        TempApprovedForConnectivityAppCountry: Record "Connectivity App Country" temporary;
-        TempWorksOnConnectivityAppCountry: Record "Connectivity App Country" temporary;
+        TempApprovedForConnectivityAppCountryOrRegion: Record "Conn. App Country/Region" temporary;
+        TempWorksOnConnectivityAppLocalization: Record "Conn. App Country/Region" temporary;
     begin
         Initialize();
 
-        ConnectivityAppDefinitions.GetConnectivityAppDefinitions(TempConnectivityApp, TempApprovedForConnectivityAppCountry, TempWorksOnConnectivityAppCountry);
+        ConnectivityAppDefinitions.GetConnectivityAppDefinitions(TempConnectivityApp, TempApprovedForConnectivityAppCountryOrRegion, TempWorksOnConnectivityAppLocalization);
 
-        TempApprovedForConnectivityAppCountry.FindSet();
-        repeat
-            TempWorksOnConnectivityAppCountry.Get(TempApprovedForConnectivityAppCountry."App Id", TempApprovedForConnectivityAppCountry.Country);
-        until TempApprovedForConnectivityAppCountry.Next() = 0;
+        if TempWorksOnConnectivityAppLocalization.FindSet() then
+            repeat
+                TempApprovedForConnectivityAppCountryOrRegion.Get(TempApprovedForConnectivityAppCountryOrRegion."App Id", TempApprovedForConnectivityAppCountryOrRegion."Country/Region");
+            until TempWorksOnConnectivityAppLocalization.Next() = 0;
     end;
 
     local procedure Initialize()

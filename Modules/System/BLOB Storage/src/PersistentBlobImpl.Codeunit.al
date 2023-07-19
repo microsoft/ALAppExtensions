@@ -6,6 +6,8 @@
 codeunit 4108 "Persistent Blob Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = TableData "Persistent Blob" = rimd;
 
     procedure Create() "Key": BigInteger

@@ -2,6 +2,8 @@ table 4001 "Hybrid Replication Summary"
 {
     DataPerCompany = false;
     ReplicateData = false;
+    Permissions = tabledata "Intelligent Cloud Status" = rimd;
+
     // Do not extend this table
     // Extensible = false;
 
@@ -101,12 +103,27 @@ table 4001 "Hybrid Replication Summary"
             FieldClass = FlowField;
             CalcFormula = count("Hybrid Replication Detail" where("Run Id" = field("Run Id"), Status = filter(NotStarted | InProgress)));
         }
-
         field(20; "Companies Not Initialized"; Integer)
         {
             Description = 'The number of tables that still remain for the replication.';
             FieldClass = FlowField;
             CalcFormula = count("Hybrid Company" where("Company Initialization Status" = filter(Unknown | "Not Initialized" | "Initialization Failed")));
+        }
+
+        field(21; "Migration Stopped Reason"; Option)
+        {
+            Caption = 'Migration Type';
+            Description = 'Specifies the reason why the cloud migration was stopped.';
+            OptionMembers = ,Completed,Paused,Abandoned;
+            DataClassification = SystemMetadata;
+        }
+
+        field(22; "Data Repair Status"; Option)
+        {
+            Caption = 'Data Repair Status';
+            Description = 'Specifies the status if the OnPrem data was repaired by inserting missing table extensions.';
+            OptionMembers = ,Pending,"In Progress",Completed;
+            DataClassification = SystemMetadata;
         }
     }
 
@@ -122,6 +139,11 @@ table 4001 "Hybrid Replication Summary"
         }
     }
 
+    var
+        AzureDataLakeReplicationInProgressLbl: Label 'Azure Data Lake replication in progress';
+        ReplicationSummaryInProgressLbl: Label 'Data replication in progress';
+        DiagnosticRunInProgressLbl: Label 'Diagnostic run - In progress';
+
     procedure CreateInProgressRecord(RunId: Text; ReplicationType: Option);
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
@@ -135,6 +157,15 @@ table 4001 "Hybrid Replication Summary"
             HybridReplicationSummary."Start Time" := CurrentDateTime();
             HybridReplicationSummary.Status := Status::InProgress;
             HybridReplicationSummary.Source := CopyStr(HybridCloudManagement.GetChosenProductName(), 1, 250);
+            case ReplicationType of
+                HybridReplicationSummary.ReplicationType::Full, HybridReplicationSummary.ReplicationType::Normal:
+                    HybridReplicationSummary.SetDetails(ReplicationSummaryInProgressLbl);
+                HybridReplicationSummary.ReplicationType::"Azure Data Lake":
+                    HybridReplicationSummary.SetDetails(AzureDataLakeReplicationInProgressLbl);
+                HybridReplicationSummary.ReplicationType::Diagnostic:
+                    HybridReplicationSummary.SetDetails(DiagnosticRunInProgressLbl);
+            end;
+
             HybridReplicationSummary.Insert();
         end;
     end;
@@ -144,7 +175,7 @@ table 4001 "Hybrid Replication Summary"
         if Value = '' then
             exit;
         if Details.HasValue() then
-            Value := GetDetails() + '\\' + Value;
+            Value := GetDetails() + '; ' + Value;
         SetDetails(Value);
     end;
 

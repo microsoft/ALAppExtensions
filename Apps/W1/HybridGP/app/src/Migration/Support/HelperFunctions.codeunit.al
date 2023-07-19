@@ -1698,20 +1698,12 @@ Codeunit 4037 "Helper Functions"
     end;
 
     local procedure CreateVendorClassesImp()
-    var
-        GPVendorMigrator: CodeUnit "GP Vendor Migrator";
     begin
-        GPVendorMigrator.MigrateVendorClasses();
-        Session.LogMessage('0000HWD', 'Created Vendor Classes', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetVendorClassesCreated();
     end;
 
     local procedure CreateCustomerClassesImp()
-    var
-        GPCustomerMigrator: CodeUnit "GP Customer Migrator";
     begin
-        GPCustomerMigrator.MigrateCustomerClasses();
-        Session.LogMessage('0000HWE', 'Created Customer Classes', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetCustomerClassesCreated();
     end;
 

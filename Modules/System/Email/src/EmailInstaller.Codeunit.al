@@ -9,6 +9,8 @@ codeunit 1596 "Email Installer"
 {
     Subtype = Install;
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata Field = r;
 
     trigger OnInstallAppPerCompany()
@@ -47,13 +49,13 @@ codeunit 1596 "Email Installer"
         exit('MS-373161-EmailLogEntryAdded-20201005');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", 'OnRefreshAllowedTables', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", OnRefreshAllowedTables, '', false, false)]
     local procedure AddAllowedTablesOnRefreshAllowedTables()
     begin
         AddRetentionPolicyAllowedTables(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", OnAfterLogin, '', false, false)]
     local procedure AddAllowedTablesOnAfterSystemInitialization()
     begin
         AddRetentionPolicyAllowedTables();

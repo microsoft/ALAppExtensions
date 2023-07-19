@@ -6,6 +6,8 @@
 codeunit 1279 "Cryptography Management Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CryptographyManagement: Codeunit "Cryptography Management";
@@ -570,7 +572,7 @@ codeunit 1279 "Cryptography Management Impl."
         Encoding: DotNet Encoding;
     begin
         InitRijndaelProvider();
-        RijndaelProvider."Key" := Encoding.Default().GetBytes(EncryptionKey);
+        RijndaelProvider."Key" := Encoding.GetEncoding(0).GetBytes(EncryptionKey);
     end;
 
     procedure InitRijndaelProvider(EncryptionKey: Text; BlockSize: Integer)
@@ -632,10 +634,12 @@ codeunit 1279 "Cryptography Management Impl."
 
     procedure GetLegalKeySizeValues(var MinSize: Integer; var MaxSize: Integer; var SkipSize: Integer)
     var
+        KeySizesArray: DotNet "Cryptography.KeySizesArray";
         KeySizes: DotNet "Cryptography.KeySizes";
     begin
         Construct();
-        KeySizes := RijndaelProvider.LegalKeySizes().GetValue(0);
+        KeySizesArray := RijndaelProvider.LegalKeySizes();
+        KeySizes := KeySizesArray.GetValue(0);
         MinSize := KeySizes.MinSize();
         MaxSize := KeySizes.MaxSize();
         SkipSize := KeySizes.SkipSize();
@@ -643,10 +647,12 @@ codeunit 1279 "Cryptography Management Impl."
 
     procedure GetLegalBlockSizeValues(var MinSize: Integer; var MaxSize: Integer; var SkipSize: Integer)
     var
+        KeySizesArray: DotNet "Cryptography.KeySizesArray";
         KeySizes: DotNet "Cryptography.KeySizes";
     begin
         Construct();
-        KeySizes := RijndaelProvider.LegalBlockSizes().GetValue(0);
+        KeySizesArray := RijndaelProvider.LegalBlockSizes();
+        KeySizes := KeySizesArray.GetValue(0);
         MinSize := KeySizes.MinSize();
         MaxSize := KeySizes.MaxSize();
         SkipSize := KeySizes.SkipSize();

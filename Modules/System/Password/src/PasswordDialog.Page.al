@@ -11,6 +11,8 @@ page 9810 "Password Dialog"
     Extensible = false;
     Caption = 'Enter Password';
     PageType = StandardDialog;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {

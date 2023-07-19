@@ -6,6 +6,8 @@
 codeunit 9044 "ABS Format Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure AppendToUri(var Uri: Text; ParameterIdentifier: Text; ParameterValue: Text)

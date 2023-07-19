@@ -6,6 +6,8 @@
 table 9008 "User Login"
 {
     Access = Internal;
+    InherentEntitlements = rimX;
+    InherentPermissions = rimX;
     ReplicateData = false;
 
     fields

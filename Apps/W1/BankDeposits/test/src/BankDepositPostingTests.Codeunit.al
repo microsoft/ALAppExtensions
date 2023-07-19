@@ -25,10 +25,10 @@ codeunit 139769 "Bank Deposit Posting Tests"
         GLEntryErr: Label 'Unexpected G/L entries amount.';
         PostedDepositLinkErr: Label 'Posted Deposit is missing a link.', Locked = true;
         SingleHeaderAllowedErr: Label 'Only one %1 is allowed for each %2. Choose Change Batch action if you want to create a new bank deposit.', Locked = true;
+        BatchNameErr: Label 'Batch Name must be %1 on %2', Comment = '%1 - Batch Name , %2 - Field Name';
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure GLBankDeposit()
     var
         GLAccount: Record "G/L Account";
@@ -58,7 +58,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure DoNotPostBankDepositAsLumpSum()
     var
         GLAccount: Record "G/L Account";
@@ -92,7 +91,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure PostBankDepositAsLumpSum()
     var
         GLAccount: Record "G/L Account";
@@ -132,7 +130,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure FullyAppliedSalesInvoice()
     var
         Item: Record Item;
@@ -170,7 +167,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure ErrorOnPostVendPaymentBankDepositWithDefaultDimension()
     var
         Vendor: Record Vendor;
@@ -194,7 +190,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure ErrorOnPostCustPaymentBankDepositWithDefaultDimension()
     var
         Customer: Record Customer;
@@ -218,7 +213,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure PostedBankDepositAndBankAccLedger()
     var
         BankAccount: Record "Bank Account";
@@ -248,7 +242,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure BankDepositWithNewGenJournalBatch()
     var
         GLAccount: Record "G/L Account";
@@ -277,7 +270,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
-    [Scope('OnPrem')]
     procedure PostBankDepositWithLink()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -303,7 +295,6 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
     [Test]
     [HandlerFunctions('GeneralJournalBatchesPageHandler')]
-    [Scope('OnPrem')]
     procedure DuplicateBankDepositForSameBatchWithFilter()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -326,6 +317,56 @@ codeunit 139769 "Bank Deposit Posting Tests"
         // [THEN] Error: "Only one Deposit Header is allowed for each Gen. Journal Batch."
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(StrSubstNo(SingleHeaderAllowedErr, BankDepositHeader.TableCaption, GenJournalBatch.TableCaption));
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure CheckGenJournalBatchNameShouldNotBeChanged()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        PreviousBatchName: Code[10];
+    begin
+        // [SCENARIO 472099] Post Bank Deposits and Verify Batch Name: Batch name should not be changed.
+        // IF Increment Batch Name is disabled on the General Journal Template.
+        Initialize();
+
+        // [GIVEN] Create Gen. Journal Template with Increment Batch Name and Batch Name for Deposits template.
+        CreateGenJournalTemplateAndBatchWithIncrementBatchName(
+            GenJournalTemplate,
+            GenJournalBatch,
+            GenJournalTemplate.Type::"Bank Deposits",
+            false);
+
+        // [THEN] Save Batch Name in a variable.
+        PreviousBatchName := GenJournalBatch.Name;
+
+        // [GIVEN] Create a Deposit Header with Bank Account.
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+
+        // [GIVEN] Create a Deposit Line with Account Type "GL Account".
+        LibraryERM.CreateGeneralJnlLine(
+                  GenJournalLine,
+                  BankDepositHeader."Journal Template Name",
+                  BankDepositHeader."Journal Batch Name",
+                  GenJournalLine."Document Type"::" ",
+                  GenJournalLine."Account Type"::"G/L Account",
+                  LibraryERM.CreateGLAccountNo(),
+                  -LibraryRandom.RandInt(1000));
+
+        // [THEN] Update Deposit Amount on Bank Deposit Header.
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+
+        // [THEN] Post Bank Deposit.
+        PostBankDeposit(BankDepositHeader);
+
+        // [VERIFY] The Batch Name must be same as Increment Batch Name is False.
+        Assert.AreEqual(
+            PreviousBatchName,
+            GetBatchNameFromGenJournalTemplate(GenJournalTemplate),
+            StrSubstNo(BatchNameErr, PreviousBatchName, GenJournalTemplate.FieldCaption(Name)));
     end;
 
     local procedure Initialize()
@@ -541,15 +582,43 @@ codeunit 139769 "Bank Deposit Posting Tests"
         BankDepositHeader.Insert(true);
     end;
 
+    local procedure CreateGenJournalTemplateAndBatchWithIncrementBatchName(
+        var GenJournalTemplate: Record "Gen. Journal Template";
+        var GenJournalBatch: Record "Gen. Journal Batch";
+        Type: Enum "Gen. Journal Template Type";
+        IncrementBatchName: Boolean)
+    begin
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate(Type, Type);
+        GenJournalTemplate.Validate("Increment Batch Name", IncrementBatchName);
+        GenJournalTemplate.Modify(true);
+
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        GenJournalBatch.Rename(
+            GenJournalBatch."Journal Template Name",
+            LibraryRandom.RandText(
+                LibraryUtility.GetFieldLength(DATABASE::"Gen. Journal Batch",
+                GenJournalBatch.FieldNo(Name)) - 2) + Format(LibraryRandom.RandInt(50)));
+        GenJournalBatch.Validate(Description, GenJournalBatch.Name);
+        GenJournalBatch.Modify(true);
+    end;
+
+    local procedure GetBatchNameFromGenJournalTemplate(GenJournalTemplate: Record "Gen. Journal Template"): code[10]
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+    begin
+        GenJournalBatch.SetRange("Journal Template Name", GenJournalTemplate.Name);
+        GenJournalBatch.FindFirst();
+        exit(GenJournalBatch.Name);
+    end;
+
     [ModalPageHandler]
-    [Scope('OnPrem')]
     procedure GeneralJournalBatchesPageHandler(var GeneralJournalBatches: TestPage "General Journal Batches")
     begin
         GeneralJournalBatches.OK().Invoke();
     end;
 
     [ConfirmHandler]
-    [Scope('OnPrem')]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := true;

@@ -8,7 +8,7 @@ Modules have the following properties:
     <p align=center>
         <span>
             <img width=41 height=40
-            src="https://cloudblogs.microsoft.com/uploads/prod/sites/4/2019/08/image015.png">
+            src="https://cloudblogs.microsoft.com/dynamics365/wp-content/uploads/sites/4/2019/08/image015.png">
         </span>
     </p>
   </td>
@@ -16,7 +16,7 @@ Modules have the following properties:
     <p align=center>
         <span>
             <img width=52 height=35
-            src="https://cloudblogs.microsoft.com/uploads/prod/sites/4/2019/08/image016.png">
+            src="https://cloudblogs.microsoft.com/dynamics365/wp-content/uploads/sites/4/2019/08/image016.png">
         </span>
     </p>
   </td>
@@ -24,7 +24,7 @@ Modules have the following properties:
     <p align=center>
         <span>
             <img width=44 height=42
-            src="https://cloudblogs.microsoft.com/uploads/prod/sites/4/2019/08/image017.jpg">
+            src="https://cloudblogs.microsoft.com/dynamics365/wp-content/uploads/sites/4/2019/08/image017.jpg">
             </span>
         </p>
   </td>
@@ -32,7 +32,7 @@ Modules have the following properties:
     <p align=center>
         <span >
             <img width=48 height=48
-            src="https://cloudblogs.microsoft.com/uploads/prod/sites/4/2019/08/image019.png">
+            src="https://cloudblogs.microsoft.com/dynamics365/wp-content/uploads/sites/4/2019/08/image019.png">
         </span>
     </p>
   </td>
@@ -64,7 +64,7 @@ Modules have the following properties:
     <p align=center>
         <span >
             <img width=55 height=27
-            src="https://cloudblogs.microsoft.com/uploads/prod/sites/4/2019/08/image020.png">
+            src="https://cloudblogs.microsoft.com/dynamics365/wp-content/uploads/sites/4/2019/08/image020.png">
         </span>
     </p>
   </td>
@@ -72,7 +72,7 @@ Modules have the following properties:
     <p align=center>
         <span >
             <img width=60 height=61
-            src="https://cloudblogs.microsoft.com/uploads/prod/sites/4/2019/08/image021.jpg">
+            src="https://cloudblogs.microsoft.com/dynamics365/wp-content/uploads/sites/4/2019/08/image021.jpg">
         </span>
     </p>
   </td>
@@ -80,7 +80,7 @@ Modules have the following properties:
     <p align=center>
         <span >
             <img width=61 height=61
-            src="https://cloudblogs.microsoft.com/uploads/prod/sites/4/2019/08/image022.jpg">
+            src="https://cloudblogs.microsoft.com/dynamics365/wp-content/uploads/sites/4/2019/08/image022.jpg">
         </span>
     </p>
   </td>
@@ -88,7 +88,7 @@ Modules have the following properties:
     <p align=center>
         <span >
             <img width=73 height=41
-            src="https://cloudblogs.microsoft.com/uploads/prod/sites/4/2019/08/image023.png">
+            src="https://cloudblogs.microsoft.com/dynamics365/wp-content/uploads/sites/4/2019/08/image023.png">
         </span>
     </p>
   </td>

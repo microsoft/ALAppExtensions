@@ -975,7 +975,7 @@ report 18017 "Sales - Quote GST"
                 ArchiveDoc := true
             else
                 ArchiveDoc := false;
-            LogIntaction := SegManagement.FindInteractTmplCode(1) <> '';
+            LogIntaction := SegManagement.FindInteractionTemplateCode(1) <> '';
             LogInteractionEnable := LogIntaction;
             ShowRequestPage := true;
         end;

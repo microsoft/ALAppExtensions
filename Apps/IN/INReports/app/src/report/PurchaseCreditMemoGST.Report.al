@@ -911,7 +911,7 @@ report 18010 "Purchase - Credit Memo GST"
 
         trigger OnOpenPage()
         begin
-            LogInteraction := SegManagement.FindInteractTmplCode(16) <> '';
+            LogInteraction := SegManagement.FindInteractionTemplateCode(16) <> '';
             LogInteractionEnable := LogInteraction;
         end;
     }
@@ -1070,7 +1070,7 @@ report 18010 "Purchase - Credit Memo GST"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(16) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(16) <> '';
     end;
 
     procedure InitializeRequest(NewNoOfCopies: Integer; NewShowInternalInfo: Boolean; NewLogInteraction: Boolean)

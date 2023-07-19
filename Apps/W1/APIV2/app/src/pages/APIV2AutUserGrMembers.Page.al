@@ -1,3 +1,4 @@
+#if not CLEAN22
 page 30058 "APIV2 - Aut. User Gr. Members"
 {
     APIGroup = 'automation';
@@ -12,6 +13,9 @@ page 30058 "APIV2 - Aut. User Gr. Members"
     PageType = API;
     SourceTable = "User Group Member";
     ODataKeyFields = SystemId;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The User Group Member table is deprecated.';
+    ObsoleteTag = '22.0';
 
     layout
     {
@@ -76,3 +80,4 @@ page 30058 "APIV2 - Aut. User Gr. Members"
         LinesLoaded: Boolean;
 }
 
+#endif

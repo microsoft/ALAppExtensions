@@ -9,7 +9,7 @@ codeunit 10854 "Intrastat Rep. Filter Shpt. FR"
         InStreamFilters: InStream;
         OutStreamFilters: OutStream;
     begin
-        Rec."Table Filters".CreateInStream(InStreamFilters, TextEncoding::Windows);
+        Rec."Table Filters".CreateInStream(InStreamFilters);
         InStreamFilters.ReadText(IntrastatReportLineFilters);
         IntrastatReportLine.SetView(IntrastatReportLineFilters);
         IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Shipment);

@@ -35,6 +35,11 @@ table 30109 "Shpfy Tax Area"
             DataClassification = CustomerContent;
             TableRelation = "VAT Business Posting Group";
         }
+        field(6; "County Code"; Code[2])
+        {
+            Caption = 'County Code';
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {
@@ -42,5 +47,6 @@ table 30109 "Shpfy Tax Area"
         {
             Clustered = true;
         }
+        key(Indx01; "Country/Region Code", "County Code") { }
     }
 }

@@ -187,6 +187,27 @@ codeunit 132587 "X509Certificate2 Test"
         LibraryAssert.ExpectedError('Unable to initialize certificate!');
     end;
 
+    [Test]
+    procedure VerifyCertificateSerialNumber()
+    var
+        CertBase64Value: Text;
+        SerialNumber, SerialNumberASCII : Text;
+    begin
+        // [SCENARIO] Get certificate serial number as hex and ascii
+        // [GIVEN] Certificate Base64
+        CertBase64Value := GetCertificateBase64();
+
+        // [WHEN] Retrieving cert serial number
+        X509CertificateCryptography.GetCertificateSerialNumber(CertBase64Value, '', SerialNumber);
+        // [THEN] Verifying if serial number match the expected one
+        LibraryAssert.AreEqual('65C2091E54AB879948654BB906FD377F', SerialNumber, 'Cert serial number is not correct');
+
+        // [WHEN] Converting hex to ascii
+        X509CertificateCryptography.GetCertificateSerialNumberAsASCII(CertBase64Value, '', SerialNumberASCII);
+        // [THEN] Verifying that hex convertion to ascii was correct
+        LibraryAssert.AreEqual('eÂ	T«HeK¹ý7', SerialNumberASCII, 'Converting hex to ascii is not correct.');
+    end;
+
     local procedure ReturnJsonTokenTextValue(CertPropertyJson: Text; PropertyName: Text): Text
     var
         JObject: JsonObject;

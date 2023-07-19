@@ -35,6 +35,7 @@ page 30113 "Shpfy Order"
                     Editable = false;
                     ToolTip = 'Specifies the risk level from the Shopify order.';
                 }
+#if not CLEAN22
                 field(TemplateCodeField; Rec."Customer Template Code")
                 {
                     ApplicationArea = All;
@@ -43,6 +44,23 @@ page 30113 "Shpfy Order"
                     ShowMandatory = true;
                     TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
                     ToolTip = 'Specifies the code for the template to create a new customer.';
+                    ObsoleteReason = 'Replaced by Customer Templ. Code';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    Visible = not NewTemplatesEnabled;
+                }
+#endif
+                field(TemplCodeField; Rec."Customer Templ. Code")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Customer Template Code';
+                    Lookup = true;
+                    ShowMandatory = true;
+                    TableRelation = "Customer Templ.".Code;
+                    ToolTip = 'Specifies the code for the template to create a new customer.';
+#if not CLEAN22
+                    Visible = NewTemplatesEnabled;
+#endif
                 }
                 field(SellToCustomerNo; Rec."Sell-to Customer No.")
                 {
@@ -155,10 +173,25 @@ page 30113 "Shpfy Order"
                     Importance = Additional;
                     ToolTip = 'Specifies the reason why the order was cancelled. Valid values are: customer, fraud, inventory, declined, other.';
                 }
+                field(AppName; Rec."App Name")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    Importance = Additional;
+                    ToolTip = 'The name of the app used by the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
+                }
+                field(ChannelName; Rec."Channel Name")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    Importance = Additional;
+                    ToolTip = 'The name of the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
+                }
                 field(SourceName; Rec."Source Name")
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    Visible = false;
                     Importance = Additional;
                     ToolTip = 'Specifies where the order is originated. Example values: web, pos, iphone, android.';
                 }
@@ -168,6 +201,13 @@ page 30113 "Shpfy Order"
                     Editable = false;
                     Importance = Additional;
                     ToolTip = 'Specifies whether the order has been confirmed.';
+                }
+                field(Edited; Rec.Edited)
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    Importance = Additional;
+                    ToolTip = 'Specifies whether the order has had any edits applied.';
                 }
                 field(Processed; Rec.Processed)
                 {
@@ -179,13 +219,13 @@ page 30113 "Shpfy Order"
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'Specifies the status of payments associated with the order. Valid values are: pending, authorized, partially_paid, paid, partially_refunded, refunded, voided.';
+                    ToolTip = 'Specifies the status of payments associated with the order. Valid values are: pending, authorized, partially paid, paid, partially refunded, refunded, voided.';
                 }
                 field(FulfillmentStatus; Rec."Fulfillment Status")
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: Fulfilled, null, partial, restocked.';
+                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: fulfilled, in progress, open, pending fulfillment, restocked, unfulfilled, partially fulfilled.';
                 }
                 field(SalesOrderNo; Rec."Sales Order No.")
                 {
@@ -405,6 +445,12 @@ page 30113 "Shpfy Order"
         }
         area(factboxes)
         {
+            part(LinkedBCDocuments; "Shpfy Linked To Documents")
+            {
+                ApplicationArea = All;
+                Caption = 'Linked Documents';
+                SubPageLink = "Shopify Document Type" = const("Shpfy Shop Document Type"::"Shopify Shop Order"), "Shopify Document Id" = field("Shopify Order Id");
+            }
             part(SalesHistory; "Sales Hist. Sell-to FactBox")
             {
                 ApplicationArea = All;
@@ -617,6 +663,48 @@ page 30113 "Shpfy Order"
                     ;
                 end;
             }
+            action(Refunds)
+            {
+                ApplicationArea = All;
+                Caption = 'Refunds';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify refunds.';
+
+                trigger OnAction()
+                var
+                    RefundHeader: Record "Shpfy Refund Header";
+                    RefundHeaders: Page "Shpfy Refunds";
+                begin
+                    RefundHeader.SetRange("Order Id", Rec."Shopify Order Id");
+                    RefundHeaders.SetTableView(RefundHeader);
+                    RefundHeaders.Run();
+                end;
+            }
+            action(Returns)
+            {
+                ApplicationArea = All;
+                Caption = 'Returns';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify returns.';
+
+                trigger OnAction()
+                var
+                    ReturnHeader: Record "Shpfy Return Header";
+                    ReturnHeaders: Page "Shpfy Returns";
+                begin
+                    ReturnHeader.SetRange("Order Id", Rec."Shopify Order Id");
+                    ReturnHeaders.SetTableView(ReturnHeader);
+                    ReturnHeaders.Run();
+                end;
+            }
             action(SalesInvoice)
             {
                 ApplicationArea = All;
@@ -683,10 +771,24 @@ page 30113 "Shpfy Order"
     var
         CreateShopifyMsg: Label 'Create sales document from Shopify order %1?', Comment = '%1 = Order No.';
         WorkDescription: Text;
+#if not CLEAN22
+        NewTemplatesEnabled: Boolean;
+#endif
 
     trigger OnAfterGetRecord()
     begin
         WorkDescription := Rec.GetWorkDescription();
+    end;
+
+    trigger OnOpenPage()
+#if not CLEAN22
+    var
+        ShpfyTemplates: Codeunit "Shpfy Templates";
+#endif
+    begin
+#if not CLEAN22
+        NewTemplatesEnabled := ShpfyTemplates.NewTemplatesEnabled();
+#endif
     end;
 }
 

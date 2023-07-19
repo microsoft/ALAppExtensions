@@ -6,6 +6,8 @@
 codeunit 9103 "SharePoint List Item"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [NonDebuggable]
     procedure Parse(Payload: Text; var SharePointListItem: Record "SharePoint List Item" temporary)

@@ -21,6 +21,8 @@ codeunit 148105 "Library - Rep.Sel. Handler CZL"
                 ReportId := Report::"Sales Return Reciept CZL";
             RecUsage::"P.Quote":
                 ReportId := Report::"Purchase Quote CZL";
+            RecUsage::"P.Blanket":
+                ReportId := Report::"Blanket Purchase Order CZL";
             RecUsage::"P.Order":
                 ReportId := Report::"Purchase Order CZL";
             RecUsage::Reminder:

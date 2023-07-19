@@ -9,6 +9,8 @@ table 8700 "Table Information Cache"
     ReplicateData = false;
     Access = Internal;
     DataClassification = SystemMetadata;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

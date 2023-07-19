@@ -77,7 +77,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 Validate("Currency Code");
 
                 Validate("Bank Account Code", Vendor."Preferred Bank Account Code");
-                "Registration No." := Vendor."Registration No. CZL";
+                "Registration No." := Vendor.GetRegistrationNoTrimmedCZL();
                 "Tax Registration No." := Vendor."Tax Registration No. CZL";
                 "Responsibility Center" := UserSetupManagement.GetRespCenter(1, Vendor."Responsibility Center");
 
@@ -347,14 +347,30 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                IsHandled: Boolean;
             begin
-                Validate("Document Date", "Posting Date");
+                IsHandled := false;
+                OnValidatePostingDateOnBeforeAssignDocumentDate(Rec, xRec, IsHandled);
+                if not IsHandled then
+                    Validate("Document Date", "Posting Date");
 
                 GetSetup();
-                if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date" then
-                    Validate("VAT Date", "Posting Date");
-                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date" then
-                    Validate("Original Document VAT Date", "Posting Date");
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
+                    if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date" then
+                        Validate("VAT Date", "Posting Date");
+                end else begin
+#pragma warning restore AL0432
+#endif
+                    GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
+                    Validate("VAT Date");
+#if not CLEAN22
+                end;
+#endif
+                GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL("Posting Date", Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date", "Original Document VAT Date");
+                Validate("Original Document VAT Date");
 
                 if "Currency Code" <> '' then begin
                     UpdateCurrencyFactor();
@@ -378,10 +394,21 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 Validate("Payment Terms Code");
 
                 GetSetup();
-                if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date" then
-                    Validate("VAT Date", "Document Date");
-                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date" then
-                    Validate("Original Document VAT Date", "Document Date");
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
+                    if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date" then
+                        Validate("VAT Date", "Document Date");
+                end else begin
+#pragma warning restore AL0432
+#endif
+                    GeneralLedgerSetup.UpdateVATDate("Document Date", Enum::"VAT Reporting Date"::"Document Date", "VAT Date");
+                    Validate("VAT Date");
+#if not CLEAN22
+                end;
+#endif
+                GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL("Document Date", Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date", "Original Document VAT Date");
+                Validate("Original Document VAT Date");
             end;
         }
         field(36; "VAT Date"; Date)
@@ -391,13 +418,12 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
             trigger OnValidate()
             begin
-                GeneralLedgerSetup.GetRecordOnce();
-                if not GeneralLedgerSetup."Use VAT Date CZL" then
+                if not VATReportingDateMgt.IsVATDateEnabled() then
                     TestField("VAT Date", "Posting Date");
                 CheckCurrencyExchangeRate("VAT Date");
                 GetSetup();
-                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date" then
-                    Validate("Original Document VAT Date", "VAT Date");
+                GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL("VAT Date", Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date", "Original Document VAT Date");
+                Validate("Original Document VAT Date");
             end;
         }
         field(38; "Posting Description"; Text[100])
@@ -780,6 +806,12 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         NoSeriesManagement: Codeunit NoSeriesManagement;
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
+#if not CLEAN22
+#pragma warning disable AL0432
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
+#endif
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         HasPurchSetup: Boolean;
         HideValidationDialog: Boolean;
         SkipPayToContact: Boolean;
@@ -865,24 +897,23 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             "Posting Date" := 0D;
 
         "Document Date" := WorkDate();
-        case PurchasesPayablesSetup."Default VAT Date CZL" of
-            PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date":
-                "VAT Date" := "Posting Date";
-            PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date":
-                "VAT Date" := "Document Date";
-            PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
-                "VAT Date" := 0D;
-        end;
-        case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::Blank:
-                "Original Document VAT Date" := 0D;
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
-                "Original Document VAT Date" := "Posting Date";
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
-                "Original Document VAT Date" := "VAT Date";
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
-                "Original Document VAT Date" := "Document Date";
-        end;
+#if not CLEAN22
+#pragma warning disable AL0432
+        if not ReplaceVATDateMgtCZL.IsEnabled() then
+            case PurchasesPayablesSetup."Default VAT Date CZL" of
+                PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date":
+                    "VAT Date" := "Posting Date";
+                PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date":
+                    "VAT Date" := "Document Date";
+                PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
+                    "VAT Date" := 0D;
+            end
+        else
+#pragma warning restore AL0432
+#endif
+        "VAT Date" := GeneralLedgerSetup.GetVATDate("Posting Date", "Document Date");
+        "Original Document VAT Date" :=
+            GeneralLedgerSetup.GetOriginalDocumentVATDateCZL("Posting Date", "VAT Date", "Document Date");
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";
         "Responsibility Center" := UserSetupManagement.GetRespCenter(1, "Responsibility Center");
@@ -894,6 +925,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
     begin
         if not HasPurchSetup then begin
             PurchasesPayablesSetup.Get();
+            GeneralLedgerSetup.Get();
             HasPurchSetup := true;
         end;
 
@@ -1506,6 +1538,30 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         CrossApplicationMgtCZL.DrillDownSuggestedAmountToApplyPurchAdvLetterHeader(Rec."No.");
     end;
 
+    internal procedure PerformManualRelease(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        NoOfSelected: Integer;
+        NoOfSkipped: Integer;
+    begin
+        NoOfSelected := PurchAdvLetterHeaderCZZ.Count();
+        PurchAdvLetterHeaderCZZ.SetRange(Status, PurchAdvLetterHeaderCZZ.Status::New);
+        NoOfSkipped := NoOfSelected - PurchAdvLetterHeaderCZZ.Count();
+        BatchProcessingMgt.BatchProcess(PurchAdvLetterHeaderCZZ, Codeunit::"P.Adv.Let.Doc.Man.Release CZZ", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
+    end;
+
+    internal procedure PerformManualReopen(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    var
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        NoOfSelected: Integer;
+        NoOfSkipped: Integer;
+    begin
+        NoOfSelected := PurchAdvLetterHeaderCZZ.Count();
+        PurchAdvLetterHeaderCZZ.SetRange(Status, PurchAdvLetterHeaderCZZ.Status::"To Pay");
+        NoOfSkipped := NoOfSelected - PurchAdvLetterHeaderCZZ.Count();
+        BatchProcessingMgt.BatchProcess(PurchAdvLetterHeaderCZZ, Codeunit::"P.Adv.Let.Doc.Man.Reopen CZZ", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnValidatePaymentTermsCodeOnBeforeCalcDueDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CalledByFieldNo: Integer; CallingFieldNo: Integer; var IsHandled: Boolean)
     begin
@@ -1670,6 +1726,11 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeDoPrintToDocumentAttachment(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnValidatePostingDateOnBeforeAssignDocumentDate(var Rec: Record "Purch. Adv. Letter Header CZZ"; var xRec: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
     begin
     end;
 }

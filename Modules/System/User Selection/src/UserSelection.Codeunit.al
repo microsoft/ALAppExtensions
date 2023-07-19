@@ -43,5 +43,27 @@ codeunit 9843 "User Selection"
     begin
         UserSelectionImpl.HideExternalUsers(User);
     end;
+
+    /// <summary>
+    /// Sets Filter on the given User Record to exclude the system user and ADD Group users.
+    /// </summary>
+    /// <param name="User">The User Record to return.</param>
+    procedure FilterSystemUserAndAADGroupUsers(var User: Record User)
+    var
+        UserSelectionImpl: Codeunit "User Selection Impl.";
+    begin
+        UserSelectionImpl.FilterSystemUserAndAADGroupUsers(User);
+    end;
+
+    /// <summary>
+    /// Sets Filter on the given User Record to exclude the system user, ADD Group users and Windows Group users.
+    /// </summary>
+    /// <param name="User">The User Record to return.</param>
+    procedure FilterSystemUserAndGroupUsers(var User: Record User)
+    var
+        UserSelectionImpl: Codeunit "User Selection Impl.";
+    begin
+        UserSelectionImpl.FilterSystemUserAndGroupUsers(User);
+    end;
 }
 

@@ -1,5 +1,12 @@
+#if not CLEAN22
+#pragma warning disable AL0432
 pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
+#pragma warning restore AL0432
 {
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+
     layout
     {
         addafter("Tariff No.")
@@ -8,38 +15,54 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the Statistic indication of the Intrastat journal line.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
             field("Specific Movement CZL"; Rec."Specific Movement CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the Specific movement code of the Intrastat journal line.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
         }
-#if CLEAN19
         moveafter("Country/Region Code"; "Country/Region of Origin Code")
         moveafter("Area"; "Shpt. Method Code")
-#endif
         addafter("Supplementary Units")
         {
             field("Supplem. UoM Code CZL"; Rec."Supplem. UoM Code CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the supplementary unit of measure code for the Intrastat journal line. This number is assigned to an item.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
             field("Supplem. UoM Quantity CZL"; Rec."Supplem. UoM Quantity CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the quantity converted to the supplementary UoM of the Intrastat journal line.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
             field("Supplem. UoM Net Weight CZL"; Rec."Supplem. UoM Net Weight CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the netto weight converted to the supplementary UoM of the Intrastat journal line.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
             field("Base Unit of Measure CZL"; Rec."Base Unit of Measure CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the unit in which the item is held in inventory.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
         }
         addafter("Internal Ref. No.")
@@ -48,23 +71,35 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the previous declaration number for the Intrastat journal line.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
             field("Prev. Declaration Line No. CZL"; Rec."Prev. Declaration Line No. CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the declaration line number for the previous declaration for the Intrastat journal line.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
             field("Additional Costs CZL"; Rec."Additional Costs CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies whether additional costs have been included in the transaction on the line.';
                 Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
             field("Source Entry Date CZL"; Rec."Source Entry Date CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the source entry date of the intrastat journal line';
                 Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
         }
     }
@@ -87,6 +122,9 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 ToolTip = 'Suggests Intrastat transactions to be reported and fills in Intrastat journal.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
                 trigger OnAction()
                 var
@@ -115,6 +153,9 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
                 Ellipsis = true;
                 Image = TestReport;
                 ToolTip = 'Specifies test report';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
                 trigger OnAction()
                 var
@@ -140,6 +181,9 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 ToolTip = 'Allows the intrastat journal export do csv.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
                 trigger OnAction()
                 begin
@@ -154,6 +198,9 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
                 Ellipsis = true;
                 Image = PrintChecklistReport;
                 ToolTip = 'Open the report for intrastat - invoice checklist.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
                 trigger OnAction()
                 var
@@ -167,3 +214,4 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
         }
     }
 }
+#endif

@@ -10,6 +10,8 @@ codeunit 4030 "Client Type Management"
 {
     Access = Public;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ClientTypeMgtImpl: Codeunit "Client Type Mgt. Impl.";

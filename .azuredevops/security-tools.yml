@@ -1,0 +1,56 @@
+# Security tools
+name: 1.0.$(Year:yy)$(DayOfYear).$(Rev:r) # This is the build number
+
+trigger: none
+schedules:
+- cron: "0 0 * * 1"
+  displayName: Monday at midnight
+  branches:
+    include:
+    - main
+
+pool:
+  vmImage: 'windows-latest'
+
+resources:
+  repositories:
+  - repository: PipelineTemplates
+    type: git
+    name: Infrastructure-PipelineTemplates
+    ref: master
+
+variables:
+- template: security-tools-full-variables.yml@PipelineTemplates
+- template: ./variables-common.yml
+
+jobs:
+- job: default_job
+  displayName: Run security tools
+  timeoutInMinutes: 480
+  steps:
+  - checkout: self
+    fetchTags: 'true'
+  - powershell: |
+      Import-Module $(Build.SourcesDirectory)\Build\Scripts\EnlistmentHelperFunctions.psm1
+      $repoVersion = Get-ConfigValue -Key 'repoVersion' -ConfigType AL-Go
+      $latestVersion = (Find-Package "microsoft-ALAppExtensions-Modules-preview" -Source "nuget.org" -AllVersions -MinimumVersion $repoVersion | Select Version -First 1).Version
+      Write-Host "##vso[build.updatebuildnumber]$latestVersion"
+    displayName: Get Latest Version
+  - task: DownloadPackage@1
+    displayName: Download Package from NuGet
+    inputs:
+      feed: '/DynamicsSMBPackages'
+      definition: 'microsoft-ALAppExtensions-Modules-preview'
+      version: $(Build.BuildNumber)
+      downloadPath: $(OutputPath)
+  - template: security-tools-full.yml@PipelineTemplates
+    parameters:
+      OutputPath: $(OutputPath)
+      SourcePath: $(SourcePath)
+      BuildCommand: Powershell.exe -NonInteractive "cd $(Build.SourcesDirectory); .\build.ps1 -ALGoProject 'System Application' -InsiderSasToken '$(InsiderSasToken)' -AutoFill"
+      GdnSuppressFile: $(Build.SourcesDirectory)\.azuredevops\security-tools.gdnsuppress
+      ExcludeSecurityTools:
+      - Semmle # Not applicable (AL not supported)
+      - CodeSignValidation # Not applicable yet (Code is not signed on Github) 
+      IncludeOfficialBuildTools:
+      - ComponentGovernance

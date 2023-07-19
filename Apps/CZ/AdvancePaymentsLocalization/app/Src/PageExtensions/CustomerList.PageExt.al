@@ -14,8 +14,6 @@ pageextension 31058 "Customer List CZZ" extends "Customer List"
                 ToolTip = 'Create sales advance letter.';
                 ApplicationArea = Basic, Suite;
                 Image = NewDocument;
-                Promoted = true;
-                PromotedCategory = Category5;
 
                 trigger OnAction()
                 var
@@ -36,6 +34,12 @@ pageextension 31058 "Customer List CZZ" extends "Customer List"
 
                     Page.Run(Page::"Sales Advance Letter CZZ", SalesAdvLetterHeaderCZZ);
                 end;
+            }
+        }
+        addlast(Category_Category5)
+        {
+            actionref(NewSalesAdvanceLetterCZZ_Promoted; NewSalesAdvanceLetterCZZ)
+            {
             }
         }
     }

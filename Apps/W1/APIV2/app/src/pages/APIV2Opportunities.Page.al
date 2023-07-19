@@ -2,7 +2,7 @@ page 30070 "APIV2 - Opportunities"
 {
     APIVersion = 'v2.0';
     EntityCaption = 'Opportunity';
-    EntitySetCaption = 'Oportunities';
+    EntitySetCaption = 'Opportunities';
     DelayedInsert = true;
     EntityName = 'opportunity';
     EntitySetName = 'opportunities';

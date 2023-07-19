@@ -286,6 +286,13 @@ page 30010 "APIV2 - Vendors"
                     EntitySetName = 'contactsInformation';
                     SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(Vendor);
                 }
+                part(documentAttachments; "APIV2 - Document Attachments")
+                {
+                    Caption = 'Document Attachments';
+                    EntityName = 'documentAttachment';
+                    EntitySetName = 'documentAttachments';
+                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Vendor);
+                }
             }
         }
     }

@@ -3,9 +3,8 @@
 /// </summary>
 enum 30118 "Shpfy Processing Method"
 {
-    Access = Internal;
     Caption = 'Shopify Processing Method';
-    Extensible = true;
+    Extensible = false;
 
     value(0; Checkout)
     {

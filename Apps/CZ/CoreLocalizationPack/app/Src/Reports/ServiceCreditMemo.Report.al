@@ -160,10 +160,10 @@ report 31198 "Service Credit Memo CZL"
             column(PostingDate_ServiceCrMemoHeader; "Posting Date")
             {
             }
-            column(VATDate_ServiceCrMemoHeaderCaption; FieldCaption("VAT Date CZL"))
+            column(VATDate_ServiceCrMemoHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_ServiceCrMemoHeader; "VAT Date CZL")
+            column(VATDate_ServiceCrMemoHeader; "VAT Reporting Date")
             {
             }
             column(DueDate_ServiceCrMemoHeaderCaption; FieldCaption("Due Date"))
@@ -472,11 +472,11 @@ report 31198 "Service Credit Memo CZL"
                     "Credit Memo Type CZL"::"Insolvency Tax Document":
                         DocumentLbl := InsolvencyTaxDocumentLbl;
                     else begin
-                            IsHandled := false;
-                            OnSelectDocumentLabelCase("Service Cr.Memo Header", DocumentLbl, IsHandled);
-                            if not IsHandled then
-                                DocumentLbl := CorrectiveTaxDocumentLbl;
-                        end;
+                        IsHandled := false;
+                        OnSelectDocumentLabelCase("Service Cr.Memo Header", DocumentLbl, IsHandled);
+                        if not IsHandled then
+                            DocumentLbl := CorrectiveTaxDocumentLbl;
+                    end;
                 end;
 
                 ServiceCrMemoLine.CalcVATAmountLines("Service Cr.Memo Header", TempVATAmountLine);
@@ -492,6 +492,12 @@ report 31198 "Service Credit Memo CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
         }
     }
@@ -528,6 +534,9 @@ report 31198 "Service Credit Memo CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
+#if not CLEAN22
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#endif
         ExchRateText: Text[50];
         VATClauseText: Text;
         CompanyAddr: array[8] of Text[100];

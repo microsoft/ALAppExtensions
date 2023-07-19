@@ -286,6 +286,7 @@ page 2500 "Extension Management"
                     PromotedIsBig = true;
                     RunObject = Page "Upload And Deploy Extension";
                     ToolTip = 'Upload an extension to your application.';
+                    Ellipsis = true;
                     Visible = IsSaaS;
                 }
                 action("Deployment Status")

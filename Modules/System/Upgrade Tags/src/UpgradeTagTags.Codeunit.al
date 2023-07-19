@@ -6,6 +6,8 @@
 codeunit 9992 "Upgrade Tag - Tags"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = TableData Company = r,
                   TableData "Upgrade Tags" = rimd;
 
@@ -48,13 +50,13 @@ codeunit 9992 "Upgrade Tag - Tags"
         exit('MS-345417-UpgradeTagsInitialzied-20200303');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", OnGetPerCompanyUpgradeTags, '', false, false)]
     local procedure RegisterPerCompanyUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetUpgradeTagInitializedTag());
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", OnGetPerDatabaseUpgradeTags, '', false, false)]
     local procedure RegisterPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
     begin
         PerDatabaseUpgradeTags.Add(GetUpgradeTagInitializedTag());

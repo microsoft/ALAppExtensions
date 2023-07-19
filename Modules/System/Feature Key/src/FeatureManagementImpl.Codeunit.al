@@ -9,6 +9,8 @@
 codeunit 2610 "Feature Management Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Active Session" = r,
                   tabledata Company = r,
                   tabledata "Feature Key" = rimd,
@@ -119,8 +121,15 @@ codeunit 2610 "Feature Management Impl."
     local procedure EnableFeature(FeatureKey: Record "Feature Key");
     var
         FeatureDataUpdateStatus: Record "Feature Data Update Status";
+        FeatureManagementFacade: Codeunit "Feature Management Facade";
+        IsHandled: Boolean;
     begin
         FeatureDataUpdateStatus.SetRange("Feature Key", FeatureKey.ID);
+        FeatureManagementFacade.OnBeforeSetFeatureStatusForOtherCompanies(FeatureDataUpdateStatus, IsHandled);
+
+        if IsHandled then
+            exit;
+
         if FeatureKey."Data Update Required" then begin
             FeatureDataUpdateStatus.SetFilter("Company Name", '<>%1', CompanyName());
             FeatureDataUpdateStatus.ModifyAll("Feature Status", FeatureDataUpdateStatus."Feature Status"::Pending);
@@ -515,7 +524,7 @@ codeunit 2610 "Feature Management Impl."
             TelemetryCustomDimensions.Add('EvaluationCompany', Format(Company."Evaluation Company", 0, 9));
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Company", OnAfterDeleteEvent, '', false, false)]
     local procedure OnAfterCompanyDeleteRemoveReferences(var Rec: Record Company; RunTrigger: Boolean)
     var
         FeatureDataUpdateStatus: Record "Feature Data Update Status";
@@ -527,7 +536,7 @@ codeunit 2610 "Feature Management Impl."
         FeatureDataUpdateStatus.DeleteAll();
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterRenameEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Company", OnAfterRenameEvent, '', false, false)]
     local procedure OnAfterCompanyRenameMoveReferences(var Rec: Record Company; var xRec: Record Company)
     var
         FeatureDataUpdateStatus: Record "Feature Data Update Status";

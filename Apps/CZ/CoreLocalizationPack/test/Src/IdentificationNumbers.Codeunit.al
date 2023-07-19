@@ -293,7 +293,7 @@ codeunit 148092 "Identification Numbers CZL"
     local procedure CreateContact(var Contact: Record Contact; RegNo: Text[20]; TaxRegNo: Text[20])
     begin
         LibraryMarketing.CreateCompanyContact(Contact);
-        Contact."Registration No. CZL" := RegNo;
+        Contact."Registration Number" := RegNo;
         Contact."Tax Registration No. CZL" := TaxRegNo;
         Contact.Modify();
     end;
@@ -301,7 +301,7 @@ codeunit 148092 "Identification Numbers CZL"
     local procedure CreateCustomer(var Customer: Record Customer; RegNo: Text[20]; TaxRegNo: Text[20])
     begin
         LibrarySales.CreateCustomer(Customer);
-        Customer."Registration No. CZL" := RegNo;
+        Customer."Registration Number" := RegNo;
         Customer."Tax Registration No. CZL" := TaxRegNo;
         Customer.Modify();
     end;
@@ -309,7 +309,7 @@ codeunit 148092 "Identification Numbers CZL"
     local procedure CreateVendor(var Vendor: Record Vendor; RegNo: Text[20]; TaxRegNo: Text[20])
     begin
         LibraryPurchase.CreateVendor(Vendor);
-        Vendor."Registration No. CZL" := RegNo;
+        Vendor."Registration Number" := RegNo;
         Vendor."Tax Registration No. CZL" := TaxRegNo;
         Vendor.Modify();
     end;
@@ -325,19 +325,19 @@ codeunit 148092 "Identification Numbers CZL"
                 begin
                     if IsTax then
                         exit(Contact.FieldCaption("Tax Registration No. CZL"));
-                    exit(Contact.FieldCaption("Registration No. CZL"));
+                    exit(Contact.FieldCaption("Registration Number"));
                 end;
             Database::Customer:
                 begin
                     if IsTax then
                         exit(Customer.FieldCaption("Tax Registration No. CZL"));
-                    exit(Customer.FieldCaption("Registration No. CZL"));
+                    exit(Customer.FieldCaption("Registration Number"));
                 end;
             Database::Vendor:
                 begin
                     if IsTax then
                         exit(Vendor.FieldCaption("Tax Registration No. CZL"));
-                    exit(Vendor.FieldCaption("Registration No. CZL"));
+                    exit(Vendor.FieldCaption("Registration Number"));
                 end;
         end;
     end;

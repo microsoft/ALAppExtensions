@@ -14,6 +14,12 @@ codeunit 31008 "Sales-Post Handler CZZ"
             SalesAdvLetterManagement.CheckAdvancePayement("Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice", SalesHeader."No.");
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Handler CZP", 'OnBeforeCreateCashDocument', '', false, false)]
+    local procedure SalesPostOnBeforeCreateCashDocument(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    begin
+        SalesPostOnAfterFinalizePostingOnBeforeCommit(SalesHeader, SalesInvoiceHeader, GenJnlPostLine);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterFinalizePostingOnBeforeCommit', '', false, false)]
     local procedure SalesPostOnAfterFinalizePostingOnBeforeCommit(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
@@ -53,14 +59,12 @@ codeunit 31008 "Sales-Post Handler CZZ"
     begin
         IsHandled := true;
     end;
-#if CLEAN19
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeTestStatusRelease', '', false, false)]
     local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
     begin
         IsHandled := true;
     end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnRunOnBeforeMakeInventoryAdjustment', '', false, false)]
     local procedure SuppressInventoryAdjustmentOnRunOnBeforeMakeInventoryAdjustment(SalesInvHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header"; var SkipInventoryAdjustment: Boolean)

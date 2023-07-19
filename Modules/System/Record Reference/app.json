@@ -2,7 +2,7 @@
     "id":  "44012bcf-22c2-40d9-bb24-410b1dfc72dc",
     "name":  "Record Reference",
     "publisher":  "Microsoft",
-    "version":  "21.6.0.0",
+    "version":  "22.3.0.0",
     "brief":  "Provides an interface to delegate record operations.",
     "description":  "Provides an interface to delegate record operations. This can be used when indirect permissions are required but the code does not support them.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -16,7 +16,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "21.0.0.0",
+    "platform":  "22.0.0.0",
     "idRanges":  [
                      {
                          "from":  3917,
@@ -24,5 +24,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
 }

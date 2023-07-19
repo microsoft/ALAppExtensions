@@ -6,6 +6,8 @@
 codeunit 8890 "Send Email"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     TableNo = "Email Message";
 
     trigger OnRun()

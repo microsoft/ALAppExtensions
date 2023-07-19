@@ -1,9 +1,10 @@
 page 31275 "Compensation Lines CZC"
 {
+    ApplicationArea = Basic, Suite;
     Caption = 'Compensation Lines';
     PageType = List;
     SourceTable = "Compensation Line CZC";
-    UsageCategory = None;
+    UsageCategory = Lists;
 
     layout
     {
@@ -88,7 +89,7 @@ page 31275 "Compensation Lines CZC"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Dimensions';
                 Image = Dimensions;
-                ShortCutKey = 'Shift+Ctrl+D';
+                ShortCutKey = 'Alt+D';
                 ToolTip = 'Specifies compensation line dimensions.';
 
                 trigger OnAction()
@@ -104,11 +105,25 @@ page 31275 "Compensation Lines CZC"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Document';
                 ToolTip = 'Shows compensation card.';
-                Image = Document;
-                ShortcutKey = 'Shift+F5';
+                Image = View;
+                ShortCutKey = 'Shift+F7';
                 RunObject = page "Compensation Card CZC";
                 RunPageLink = "No." = field("Compensation No.");
                 RunPageMode = View;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref("Show Document_Promoted"; Document)
+                {
+                }
+                actionref(Dimensions_Promoted; Dimensions)
+                {
+                }
             }
         }
     }

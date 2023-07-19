@@ -6,6 +6,8 @@
 codeunit 9013 "User Login Time Tracker Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "User Login" = rim,
                   tabledata "User Environment Login" = ri;
 

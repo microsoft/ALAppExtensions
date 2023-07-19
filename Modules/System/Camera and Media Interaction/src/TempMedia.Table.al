@@ -7,6 +7,8 @@
 table 4152 "Temp Media"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 #pragma warning disable AS0034
     TableType = Temporary;
 #pragma warning restore AS0034

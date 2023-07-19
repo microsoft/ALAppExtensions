@@ -9,6 +9,8 @@
 codeunit 1445 "RSACryptoServiceProvider"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

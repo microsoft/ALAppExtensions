@@ -123,11 +123,8 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         else
             CurrencyCode := "Currency Code";
 
-        IssuedReminderLine.SETRANGE("Reminder No.", "No.");
-        IssuedReminderLine.SETFILTER(Type, '>%1', 0);
-        IssuedReminderLine.SETFILTER("No.", '<>%1', ' ');
-        if NOT IssuedReminderLine.FINDSET() then
-            EXIT;
+        if not ContainsValidLine(IssuedReminderLine, Rec."No.") then
+            exit;
 
         // Reminder
         XmlDocument.ReadFrom(OIOUBLCommonLogic.GetReminderHeader(), XMLdocOut);
@@ -230,6 +227,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         OIOUBLCommonLogic.InsertLegalMonetaryTotal(XMLCurrNode, TaxableAmount, TaxAmount, TotalAmount, 0, CurrencyCode);
 
         // Reminder->ReminderLine
+        IssuedReminderLine.FindSet();
         repeat
             if IssuedReminderLine.Amount <> 0 then begin
                 IssuedReminderLine.TESTFIELD(Description);
@@ -259,6 +257,21 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
     begin
         TaxableAmountParam := TaxableAmountParam + Amount;
         TaxAmountParam := TaxAmountParam + VATAmount
+    end;
+
+    procedure ContainsValidLine(var IssuedReminderLine: Record "Issued Reminder Line"; IssuedReminderHeaderNo: Code[20]) ReturnValue: Boolean;
+    begin
+        ReturnValue := false;
+        with IssuedReminderLine do begin
+            SetRange("Reminder No.", IssuedReminderHeaderNo);
+            SetFilter(Type, '>%1', Type::" ");
+            if FindSet() then
+                repeat
+                    ReturnValue := ((Type = Type::"Customer Ledger Entry") and ("Document No." <> '')) or
+                      ((Type = Type::"G/L Account") and ("No." <> ''));
+                until (Next() = 0) or ReturnValue;
+        end;
+        exit(ReturnValue)
     end;
 
     [IntegrationEvent(false, false)]

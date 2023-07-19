@@ -6,6 +6,8 @@
 codeunit 9109 "SharePoint Request Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         HttpClient: HttpClient;
@@ -38,6 +40,11 @@ codeunit 9109 "SharePoint Request Helper"
     procedure Patch(SharePointUriBuilder: Codeunit "SharePoint Uri Builder"; SharePointHttpContent: Codeunit "SharePoint Http Content") OperationResponse: Codeunit "SharePoint Operation Response"
     begin
         OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::PATCH, SharePointUriBuilder, SharePointHttpContent));
+    end;
+
+    procedure Delete(SharePointUriBuilder: Codeunit "SharePoint Uri Builder") OperationResponse: Codeunit "SharePoint Operation Response"
+    begin
+        OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::DELETE, SharePointUriBuilder));
     end;
 
     [NonDebuggable]

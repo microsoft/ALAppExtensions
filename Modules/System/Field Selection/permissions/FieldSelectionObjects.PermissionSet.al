@@ -8,7 +8,5 @@ permissionset 9807 "Field Selection - Objects"
     Access = Internal;
     Assignable = false;
 
-    Permissions = Codeunit "Field Selection Impl." = X,
-                  Codeunit "Field Selection" = X,
-                  Page "Fields Lookup" = X;
+    Permissions = Page "Fields Lookup" = X;
 }

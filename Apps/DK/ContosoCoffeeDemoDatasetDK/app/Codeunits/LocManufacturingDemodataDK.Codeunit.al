@@ -33,7 +33,24 @@ codeunit 13699 "Loc. Manufacturing Demodata-DK"
         Rec."Price Factor" := 10;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Whse Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyWhseDemoAccounts()
+    begin
+        WhseDemoAccount.ReturnAccountKey(true);
+
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '17100');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '16200');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '16200');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '25100');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '1030');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '2100');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesVAT(), '24010');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '24020');
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
+        WhseDemoAccount: Record "Whse. Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
+        WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
 }

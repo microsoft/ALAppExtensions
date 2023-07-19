@@ -9,6 +9,8 @@
 codeunit 6240 "Xml Validation"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         XmlValidationImpl: Codeunit "Xml Validation Impl.";

@@ -95,7 +95,7 @@ report 31196 "Service Contract CZL"
             column(VATRegistrationNo; Customer."VAT Registration No.")
             {
             }
-            column(RegistrationNo; Customer."Registration No. CZL")
+            column(RegistrationNo; Customer."Registration Number")
             {
             }
             column(ContractNo_ServiceContractHeader; "Contract No.")
@@ -409,7 +409,7 @@ report 31196 "Service Contract CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractTmplCode(23) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(23) <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

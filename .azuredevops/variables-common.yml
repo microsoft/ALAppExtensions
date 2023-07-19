@@ -1,0 +1,12 @@
+variables:
+- group: Infrastructure - AlAppExtensions
+- name: OutputPath
+  value: $(Pipeline.Workspace)\out
+- name: SourcePath  
+  value: $(Build.SourcesDirectory)
+  readonly: true
+- name: PackagesPath
+  value: $(Build.ArtifactStagingDirectory)\packages
+  readonly: true
+- name: runCodesignValidationInjection
+  value: false

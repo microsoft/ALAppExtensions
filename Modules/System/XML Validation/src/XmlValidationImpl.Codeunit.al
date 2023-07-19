@@ -6,6 +6,8 @@
 codeunit 6241 "Xml Validation Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ValidatedXmlDocument: DotNet XmlDocument;

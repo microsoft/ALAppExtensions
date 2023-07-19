@@ -9,6 +9,8 @@
 codeunit 3971 Image
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ImageImpl: Codeunit "Image Impl.";

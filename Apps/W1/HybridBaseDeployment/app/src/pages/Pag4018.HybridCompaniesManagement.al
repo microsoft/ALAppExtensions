@@ -7,6 +7,9 @@ page 4018 "Hybrid Companies Management"
     DeleteAllowed = false;
     ModifyAllowed = true;
     Caption = 'Select companies to migrate';
+#pragma warning disable AL0254
+    SourceTableView = sorting(Replicate) order(descending);
+#pragma warning restore AL0254
 
     layout
     {
@@ -15,7 +18,7 @@ page 4018 "Hybrid Companies Management"
             repeater(Companies)
             {
                 ShowCaption = false;
-                field("Replicate"; "Replicate")
+                field("Replicate"; Rec."Replicate")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Replicate';
@@ -24,14 +27,14 @@ page 4018 "Hybrid Companies Management"
                     Width = 5;
                     Editable = true;
                 }
-                field("Name"; "Name")
+                field("Name"; Rec."Name")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the name of the company.';
                     Visible = true;
                     Editable = false;
                 }
-                field("Display Name"; "Display Name")
+                field("Display Name"; Rec."Display Name")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the display name of the company.';
@@ -47,6 +50,14 @@ page 4018 "Hybrid Companies Management"
                     Editable = false;
                     ToolTip = 'Estimated size in GB of the company data to migrate.';
                 }
+
+                field(Replicated; Rec.Replicated)
+                {
+                    Caption = 'Replicated';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Indicates if the company was replicated already.';
+                }
             }
 
             field(SelectAll; ChooseAll)
@@ -54,9 +65,25 @@ page 4018 "Hybrid Companies Management"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Migrate all companies';
                 ToolTip = 'Selects all companies in the list.';
+                Visible = SelectAllVisible;
+
                 trigger OnValidate();
                 begin
-                    SetSelected(ChooseAll);
+                    Rec.SetSelected(ChooseAll);
+                    CurrPage.Update(false);
+                end;
+            }
+
+            field(DeselectAll; ChooseAll)
+            {
+                ApplicationArea = Basic, Suite;
+                Visible = DeselectAllVisible;
+                Caption = 'Deselect all companies';
+                ToolTip = 'Deselects all companies in the list.';
+
+                trigger OnValidate();
+                begin
+                    Rec.ModifyAll(Replicate, false);
                     CurrPage.Update(false);
                 end;
             }
@@ -91,10 +118,9 @@ page 4018 "Hybrid Companies Management"
 
                     Rec.FindSet();
                     repeat
-                        HybridCompany := Rec;
-#pragma warning disable AA0214
+                        HybridCompany.Get(Rec.Name);
+                        HybridCompany.TransferFields(Rec, false);
                         HybridCompany.Modify();
-#pragma warning restore
                     until Rec.Next() = 0;
                     CurrPage.Close();
 
@@ -124,17 +150,43 @@ page 4018 "Hybrid Companies Management"
     var
         HybridCompany: Record "Hybrid Company";
     begin
+        SelectAllVisible := HybridCompany.Count() < HybridCompany.GetRecommendedNumberOfCompaniesToReplicateInBatch();
+        UpdateDeselectAllVisible();
+
         if HybridCompany.FindSet() then
             repeat
                 Rec := HybridCompany;
                 DisplayDatabaseSize := DisplayDatabaseSize or (Rec."Estimated Size" > 0);
-                Insert();
+                Rec.Insert();
             until HybridCompany.Next() = 0;
+
+        if Rec.FindFirst() then;
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        UpdateDeselectAllVisible();
+    end;
+
+    local procedure UpdateDeselectAllVisible()
+    var
+        TempHybridCompany: Record "Hybrid Company" temporary;
+    begin
+        if SelectAllVisible then
+            DeselectAllVisible := SelectAllVisible
+        else begin
+            TempHybridCompany.Copy(Rec);
+            Rec.SetRange(Replicate, true);
+            DeselectAllVisible := not Rec.IsEmpty();
+            Rec.Copy(TempHybridCompany);
+        end;
     end;
 
     var
         ChooseAll: Boolean;
         DisplayDatabaseSize: Boolean;
+        SelectAllVisible: Boolean;
+        DeselectAllVisible: Boolean;
         NoCompaniesSelectedErr: Label 'You must select at least one company to migrate to continue.';
         UpdatedReplicationCompaniesMsg: Label 'Company selection changes will be reflected on your next migration.';
         CancelConfirmMsg: Label 'Exit without saving company selection changes?';
@@ -143,7 +195,7 @@ page 4018 "Hybrid Companies Management"
     var
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
-        Reset();
+        Rec.Reset();
         Rec.SetRange(Replicate, true);
 
         if not Rec.FindSet() then

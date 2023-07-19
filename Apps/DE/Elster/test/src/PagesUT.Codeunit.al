@@ -143,7 +143,7 @@ codeunit 148166 "Elster Pages UT"
     end;
 
     [Test]
-    [HandlerFunctions('NoSeriesListPageHandler')]
+    [HandlerFunctions('NoSeriesPageHandler')]
     procedure NoAssistEditSalesVATAdvNotifCard()
     var
         SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
@@ -154,7 +154,7 @@ codeunit 148166 "Elster Pages UT"
         SalesVATAdvanceNotif.DeleteAll();
         SalesVATAdvNotifCard.OpenEdit();
 
-        // Exercise: AssistEdit No. field of Sales - VAT Adv. Notif. Card. Opens handler NoSeriesListPageHandler.
+        // Exercise: AssistEdit No. field of Sales - VAT Adv. Notif. Card. Opens handler NoSeriesPageHandler.
         SalesVATAdvNotifCard."No.".AssistEdit();
 
         // Verify: Verify Number of Records in Sales VAT Advance Notification is equal to 1.
@@ -286,9 +286,9 @@ codeunit 148166 "Elster Pages UT"
     end;
 
     [ModalPageHandler]
-    procedure NoSeriesListPageHandler(var NoSeriesList: TestPage "No. Series");
+    procedure NoSeriesPageHandler(var NoSeriesPage: TestPage "No. Series");
     begin
-        NoSeriesList.OK().Invoke();
+        NoSeriesPage.OK().Invoke();
     end;
 
     [ConfirmHandler]

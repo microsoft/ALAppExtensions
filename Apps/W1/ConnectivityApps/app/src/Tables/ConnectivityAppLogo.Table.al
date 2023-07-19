@@ -14,22 +14,18 @@ table 20352 "Connectivity App Logo"
         field(1; "App Id"; Guid)
         {
             Caption = 'App Id';
-            DataClassification = SystemMetadata;
         }
         field(2; Logo; Media)
         {
             Caption = 'Logo';
-            DataClassification = SystemMetadata;
         }
         field(3; "AppSource URL"; Text[2048])
         {
             Caption = 'AppSource URL';
-            DataClassification = SystemMetadata;
         }
         field(4; "Expiry Date"; DateTime)
         {
             Caption = 'Expiry Date';
-            DataClassification = SystemMetadata;
         }
     }
 

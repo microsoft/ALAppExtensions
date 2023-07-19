@@ -44,8 +44,12 @@ table 11797 "User Setup Line CZL"
             else
             if (Type = Const("Job Journal")) "Job Journal Template"
             else
+#if not CLEAN22
+#pragma warning disable AL0432
             if (Type = Const("Intrastat Journal")) "Intrastat Jnl. Template"
             else
+#pragma warning restore AL0432
+#endif
             if (Type = Const("FA Journal")) "FA Journal Template"
             else
             if (Type = Const("Insurance Journal")) "Insurance Journal Template"

@@ -44,6 +44,6 @@ codeunit 148102 "Test Upgrade AT"
         // [THEN] The Source Table Mapping table is populated with the moved tables
         SourceTableMapping.SetRange("Country Code", CountryCodeTxt);
         SourceTableMapping.SetRange(Staged, false);
-        Assert.AreEqual(14, SourceTableMapping.Count(), 'Unexpected number of mapped, unstaged tables.');
+        Assert.AreEqual(0, SourceTableMapping.Count(), 'Unexpected number of mapped, unstaged tables.');
     end;
 }

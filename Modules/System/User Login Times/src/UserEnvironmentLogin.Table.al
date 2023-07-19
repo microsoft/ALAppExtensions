@@ -9,6 +9,8 @@
 table 9011 "User Environment Login"
 {
     Access = Internal;
+    InherentEntitlements = riX;
+    InherentPermissions = riX;
     ReplicateData = false;
     DataPerCompany = false;
 

@@ -3,11 +3,7 @@ codeunit 20601 "Basic Mgmt BF"
     Access = Internal;
 
     var
-        NotSupportedUserErr: Label 'The user who deploys the Basic Experience extension must have the Super User permission set.';
         AllProfileFilterTxt: Label 'MANUFACTURING|PROJECTS|SERVICES|WAREHOUSE|SHIPPING AND RECEIVING - WMS|SHIPPING AND RECEIVING|WAREHOUSE WORKER - WMS|PRODUCTION PLANNER|PROJECT MANAGER|DISPATCHER|SALES AND RELATIONSHIP MANAGER', Locked = true;
-        UserSecurityIdTxt: Label '{00000000-0000-0000-0000-000000000001}', Locked = true, Comment = 'System user';
-        NotSupportedSystemUserErr: Label 'The Basic Experience extension must be installed by a user who exists in the User table. The current user is the Microsoft System User.';
-        UnknowUserErr: Label 'The current user is not found in the User table.The Basic Experience extension must be installed by a user who exists in the User table.';
 
     internal procedure IsSupportedLicense(): Boolean // Microsoft requirements: The Basic Assisted Setup checks for the Basic license on the AAD tenant, at least one user has been assigned to this license.
     var
@@ -28,23 +24,6 @@ codeunit 20601 "Basic Mgmt BF"
         if Company.count() = 1 then
             exit(true);
         exit(false);
-    end;
-
-    internal procedure TestSupportedUser() // Microsoft requirements: The extension checks whether the Super User permission set is assigned to the user who is installing the extension.
-    var
-        User: Record User;
-        UserPermissions: Codeunit "User Permissions";
-    begin
-        if UserSecurityId() = UserSecurityIdTxt then
-            Error(NotSupportedSystemUserErr);
-
-        if User.Get(UserSecurityId()) then
-            Error(UnknowUserErr);
-
-        if UserPermissions.IsSuper(UserSecurityId()) then
-            exit;
-
-        Error(NotSupportedUserErr);
     end;
 
     internal procedure TryDisableRoleCenter() // Microsoft requirement: The extensions aligns the user experience with the license limitations by disabling certain Role Centers that are not assigned to groups or users.
@@ -68,15 +47,19 @@ codeunit 20601 "Basic Mgmt BF"
     internal procedure IsAssignedToGroupsOrUsers(AllProfile: Record "All Profile"): Boolean
     var
         UserPersonalization: Record "User Personalization";
+#if not CLEAN22
         UserGroup: Record "User Group";
+#endif
     begin
         if AllProfile."Default Role Center" then
             exit(true);
 
+#if not CLEAN22
         UserGroup.SetRange("Default Profile ID", AllProfile."Profile ID");
         UserGroup.SetRange("Default Profile App ID", AllProfile."App ID");
         if not UserGroup.IsEmpty() then
             exit(true);
+#endif
 
         UserPersonalization.SetRange("Profile ID", AllProfile."Profile ID");
         UserPersonalization.SetRange("App ID", AllProfile."App ID");

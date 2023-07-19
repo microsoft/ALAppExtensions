@@ -6,6 +6,8 @@
 codeunit 3904 "Apply Retention Policy Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     TableNo = "Retention Policy Setup";
     Permissions = tabledata AllObjWithCaption = r;
 

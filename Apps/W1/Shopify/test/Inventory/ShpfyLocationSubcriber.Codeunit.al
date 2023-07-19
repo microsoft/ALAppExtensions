@@ -9,35 +9,39 @@ codeunit 139587 "Shpfy Location Subcriber"
     var
         JLocations: JsonObject;
 
-    internal procedure InitShopiyLocations(Locations: JsonObject)
+    internal procedure InitShopifyLocations(Locations: JsonObject)
     begin
         JLocations := Locations;
     end;
 
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
-    local procedure OnClientSend(HttpRequestMsg: HttpRequestMessage; var HttpResponseMsg: HttpResponseMessage)
-    var
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+    local procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     begin
-        MakeReponse(CommunicationMgt.GetShopRecord(), CommunicationMgt.GetVersion(), HttpRequestMsg, HttpResponseMsg);
+        MakeResponse(HttpRequestMessage, HttpResponseMessage);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnGetContent', '', true, false)]
-    local procedure OnGetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
+    local procedure OnGetContent(HttpResponseMessage: HttpResponseMessage; var Response: Text)
     begin
-        HttpResponseMsg.Content.ReadAs(Response);
+        HttpResponseMessage.Content.ReadAs(Response);
     end;
 
-    local procedure MakeReponse(ShpfyShop: Record "Shpfy Shop"; Version: Text; HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+    local procedure MakeResponse(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     var
-        GetLocationUrlTxt: Label '%1/admin/api/%2/locations.json', Locked = true;
+        Uri: Text;
+        GraphQlQuery: Text;
+        GraphQLCmdMsg: Label '{"query":"{locations(first: 10) { edges {node {id isActive isPrimary name legacyResourceId}cursor} pageInfo {hasNextPage}}}"}', Locked = true;
+        GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
-            'GET':
-                case HttpRequestMessage.GetRequestUri() of
-                    StrSubstNo(GetLocationUrlTxt, ShpfyShop."Shopify URL".TrimEnd('/'), Version):
-                        HttpResponseMessage := GetLocationResult();
+            'POST':
+                begin
+                    Uri := HttpRequestMessage.GetRequestUri();
+                    if Uri.EndsWith(GraphQLCmdTxt) then
+                        if HttpRequestMessage.Content.ReadAs(GraphQlQuery) then
+                            if GraphQlQuery = GraphQLCmdMsg then
+                                HttpResponseMessage := GetLocationResult();
                 end;
         end;
     end;

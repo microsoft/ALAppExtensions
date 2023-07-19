@@ -34,7 +34,24 @@ codeunit 14099 "Loc. Manufacturing Demodata-MX"
         Rec."Base VAT Code" := 'NO IVA';
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Whse Demo Accounts", 'OnAfterCreateDemoAccounts', '', false, false)]
+    local procedure AddAndModifyWhseDemoAccounts()
+    begin
+        WhseDemoAccount.ReturnAccountKey(true);
+
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '6310');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '6110');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '6111');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '9410');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '1410');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '1410');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesVAT(), '9610');
+        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '9630');
+    end;
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
+        WhseDemoAccount: Record "Whse. Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";
+        WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
 }

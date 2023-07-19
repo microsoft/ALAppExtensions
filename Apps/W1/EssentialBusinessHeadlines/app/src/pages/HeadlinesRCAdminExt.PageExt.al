@@ -19,6 +19,7 @@ pageextension 1445 "Headlines RC Admin. Ext." extends "Headline RC Administrator
                 field(Headline1Text; Headline1Text)
                 {
                     ApplicationArea = Basic, Suite;
+                    ShowCaption = false;
                 }
             }
         }

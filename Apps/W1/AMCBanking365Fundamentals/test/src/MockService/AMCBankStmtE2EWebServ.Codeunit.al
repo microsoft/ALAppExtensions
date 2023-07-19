@@ -21,6 +21,7 @@ codeunit 135080 "AMC Bank Stmt E2E Web Serv"
         if IsInitialized then
             exit;
 
+        LibraryAMCWebService.SetHttpClientRequestallowed();
         LibraryAMCWebService.SetupDefaultService();
         LibraryAMCWebService.SetServiceUrlToTest();
         LibraryAMCWebService.SetServiceCredentialsToTest();

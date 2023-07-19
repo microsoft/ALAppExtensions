@@ -6,6 +6,8 @@
 codeunit 3909 "Retention Policy Log Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     TableNo = "Retention Policy Log Entry";
     Permissions = tabledata "Retention Policy Log Entry" = rimd;
 

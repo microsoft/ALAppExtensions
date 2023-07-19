@@ -14,9 +14,9 @@ codeunit 10851 IntrastatReportManagementFR
                             Locked = true; // will be replaced with file import when available  
         DataExchangeXMLP2Txt: Label '<DataExchFieldMapping ColumnNo="6" UseDefaultValue="true" DefaultValue="O" />  <DataExchFieldMapping ColumnNo="8" UseDefaultValue="true" DefaultValue="A" />  <DataExchFieldMapping ColumnNo="9" UseDefaultValue="true" DefaultValue="EUR" /></DataExchMapping>  </DataExchLineDef>  <DataExchLineDef LineType="1" Code="5-SHPTHEADER" ColumnCount="0" DataLineTag="/INSTAT/Envelope" ParentCode="1-HEADER"><DataExchColumnDef ColumnNo="1" Name="Declaration" Show="false" DataType="0" Path="/Declaration" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="2" Name="declarationId" Show="false" DataType="0" Path="/Declaration/declarationId" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="3" Name="referencePeriod" Show="false" DataType="0" Path="/Declaration/referencePeriod" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="4" Name="PSIId" Show="false" DataType="0" Path="/Declaration/PSIId" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="5" Name="Function" Show="false" DataType="0" Path="/Declaration/Function" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="6" Name="functionCode" Show="false" DataType="0" Path="/Declaration/Function/functionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="7" Name="declarationTypeCode" Show="false" DataType="0" Path="/Declaration/declarationTypeCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="8" Name="flowCode" Show="false" DataType="0" Path="/Declaration/flowCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="9" Name="currencyCode" Show="false" DataType="0" Path="/Declaration/currencyCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchMapping TableId="79" Name="" MappingCodeunit="1269">  <DataExchFieldMapping ColumnNo="6" UseDefaultValue="true" DefaultValue="O" />  <DataExchFieldMapping ColumnNo="8" UseDefaultValue="true" DefaultValue="D" />  <DataExchFieldMapping ColumnNo="9" UseDefaultValue="true" DefaultValue="EUR" /></DataExchMapping>  </DataExchLineDef>  <DataExchLineDef LineType="0" Code="6-RCPTDETAIL" ColumnCount="0" DataLineTag="/INSTAT/Envelope/Declaration[flowCode =&quot;A&quot;]" ParentCode="4-RCPTHEADER"><DataExchColumnDef ColumnNo="1" Name="IntrastatReportLineNo" Show="false" DataType="0" Path="/IntrastatReportLineNo" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="2" Name="Item" Show="false" DataType="0" Path="/Item" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="3" Name="itemNumber" Show="false" DataType="0" Path="/Item/itemNumber" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="4" Name="CN8" Show="false" DataType="0" Path="/Item/CN8" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="5" Name="CN8Code" Show="false" DataType="0" Path="/Item/CN8/CN8Code" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="6" Name="MSConsDestCode" Show="false" DataType="0" Path="/Item/MSConsDestCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="true" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="7" Name="countryOfOriginCode" Show="false" DataType="0" Path="/Item/countryOfOriginCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="8" Name="netMass" Show="false" DataType="2" Path="/Item/netMass" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="9" Name="quantityInSU" Show="false" DataType="2" Path="/Item/quantityInSU" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="10" Name="invoicedAmount" Show="false" DataType="2" Path="/Item/invoicedAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="11" Name="partnerId" Show="false" DataType="0" Path="/Item/partnerId" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="12" Name="statisticalProcedureCode" Show="false" DataType="0" Path="/Item/statisticalProcedureCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="13" Name="NatureOfTransaction" Show="false" DataType="0" Path="/Item/NatureOfTransaction" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="14" Name="natureOfTransactionACode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionACode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />',
                             Locked = true;
-        DataExchangeXMLP3Txt: Label '<DataExchColumnDef ColumnNo="15" Name="natureOfTransactionBCode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionBCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="16" Name="modeOfTransportCode" Show="false" DataType="0" Path="/Item/modeOfTransportCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="17" Name="regionCode" Show="false" DataType="0" Path="/Item/regionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchMapping TableId="4812" Name="" MappingCodeunit="1269" PreMappingCodeunit="10853">  <DataExchFieldMapping ColumnNo="1" FieldID="2" Optional="true" />  <DataExchFieldMapping ColumnNo="3" FieldID="23" Optional="true" />  <DataExchFieldMapping ColumnNo="5" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />  <DataExchFieldMapping ColumnNo="6" FieldID="25" Optional="true" />  <DataExchFieldMapping ColumnNo="7" FieldID="24" Optional="true" />  <DataExchFieldMapping ColumnNo="8" FieldID="21" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="9" FieldID="14" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="10" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="11" FieldID="29" Optional="true" />  <DataExchFieldMapping ColumnNo="12" FieldID="27" Optional="true" />  <DataExchFieldMapping ColumnNo="14" FieldID="8" Optional="true" TransformationRule="FIRST_CHARACTER"><TransformationRules>  <Code>FIRST_CHARACTER</Code>  <Description>Extracts the first character of the string</Description>  <TransformationType>4</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>1</StartPosition>  <Length>1</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="15" FieldID="8" Optional="true" TransformationRule="SECOND_CHARACTER"><TransformationRules>  <Code>SECOND_CHARACTER</Code>  <Description>Extract the second character of the string</Description>  <TransformationType>4</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>2</StartPosition>  <Length>1</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="16" FieldID="9" Optional="true" />  <DataExchFieldMapping ColumnNo="17" FieldID="26" Optional="true" /></DataExchMapping>',
+        DataExchangeXMLP3Txt: Label '<DataExchColumnDef ColumnNo="15" Name="natureOfTransactionBCode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionBCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="16" Name="modeOfTransportCode" Show="false" DataType="0" Path="/Item/modeOfTransportCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="17" Name="regionCode" Show="false" DataType="0" Path="/Item/regionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchMapping TableId="4812" Name="" MappingCodeunit="1269" PreMappingCodeunit="10853" PostMappingCodeunit="10855">  <DataExchFieldMapping ColumnNo="1" FieldID="2" Optional="true" />  <DataExchFieldMapping ColumnNo="3" FieldID="23" Optional="true" />  <DataExchFieldMapping ColumnNo="5" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />  <DataExchFieldMapping ColumnNo="6" FieldID="25" Optional="true" />  <DataExchFieldMapping ColumnNo="7" FieldID="24" Optional="true" />  <DataExchFieldMapping ColumnNo="8" FieldID="21" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="9" FieldID="14" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="10" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="11" FieldID="29" Optional="true" />  <DataExchFieldMapping ColumnNo="12" FieldID="27" Optional="true" />  <DataExchFieldMapping ColumnNo="14" FieldID="8" Optional="true" TransformationRule="FIRST_CHARACTER"><TransformationRules>  <Code>FIRST_CHARACTER</Code>  <Description>Extracts the first character of the string</Description>  <TransformationType>4</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>1</StartPosition>  <Length>1</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="15" FieldID="8" Optional="true" TransformationRule="SECOND_CHARACTER"><TransformationRules>  <Code>SECOND_CHARACTER</Code>  <Description>Extract the second character of the string</Description>  <TransformationType>4</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>2</StartPosition>  <Length>1</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="16" FieldID="9" Optional="true" />  <DataExchFieldMapping ColumnNo="17" FieldID="26" Optional="true" /></DataExchMapping>',
                             Locked = true;
-        DataExchangeXMLP4Txt: Label '</DataExchLineDef>  <DataExchLineDef LineType="0" Code="7-SHPTDETAIL" ColumnCount="0" DataLineTag="/INSTAT/Envelope/Declaration[flowCode =&quot;D&quot;]" ParentCode="5-SHPTHEADER"><DataExchColumnDef ColumnNo="1" Name="IntrastatReportLineNo" Show="false" DataType="0" Path="/IntrastatReportLineNo" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="2" Name="Item" Show="false" DataType="0" Path="/Item" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="3" Name="itemNumber" Show="false" DataType="0" Path="/Item/itemNumber" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="4" Name="CN8" Show="false" DataType="0" Path="/Item/CN8" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="5" Name="CN8Code" Show="false" DataType="0" Path="/Item/CN8/CN8Code" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="6" Name="MSConsDestCode" Show="false" DataType="0" Path="/Item/MSConsDestCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="7" Name="countryOfOriginCode" Show="false" DataType="0" Path="/Item/countryOfOriginCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="8" Name="netMass" Show="false" DataType="2" Path="/Item/netMass" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="9" Name="quantityInSU" Show="false" DataType="2" Path="/Item/quantityInSU" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="10" Name="invoicedAmount" Show="false" DataType="2" Path="/Item/invoicedAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="11" Name="partnerId" Show="false" DataType="0" Path="/Item/partnerId" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="12" Name="statisticalProcedureCode" Show="false" DataType="0" Path="/Item/statisticalProcedureCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="13" Name="NatureOfTransaction" Show="false" DataType="0" Path="/Item/NatureOfTransaction" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="14" Name="natureOfTransactionACode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionACode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="15" Name="natureOfTransactionBCode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionBCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="16" Name="modeOfTransportCode" Show="false" DataType="0" Path="/Item/modeOfTransportCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="17" Name="regionCode" Show="false" DataType="0" Path="/Item/regionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269" PreMappingCodeunit="10854">  <DataExchFieldMapping ColumnNo="1" FieldID="2" Optional="true" />  <DataExchFieldMapping ColumnNo="3" FieldID="23" Optional="true" />  <DataExchFieldMapping ColumnNo="5" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />  <DataExchFieldMapping ColumnNo="6" FieldID="25" Optional="true" />  <DataExchFieldMapping ColumnNo="7" FieldID="24" Optional="true" />  <DataExchFieldMapping ColumnNo="8" FieldID="21" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="9" FieldID="14" Optional="true" TransformationRule="ROUNDTOINT">',
+        DataExchangeXMLP4Txt: Label '</DataExchLineDef>  <DataExchLineDef LineType="0" Code="7-SHPTDETAIL" ColumnCount="0" DataLineTag="/INSTAT/Envelope/Declaration[flowCode =&quot;D&quot;]" ParentCode="5-SHPTHEADER"><DataExchColumnDef ColumnNo="1" Name="IntrastatReportLineNo" Show="false" DataType="0" Path="/IntrastatReportLineNo" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="2" Name="Item" Show="false" DataType="0" Path="/Item" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="3" Name="itemNumber" Show="false" DataType="0" Path="/Item/itemNumber" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="4" Name="CN8" Show="false" DataType="0" Path="/Item/CN8" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="5" Name="CN8Code" Show="false" DataType="0" Path="/Item/CN8/CN8Code" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="6" Name="MSConsDestCode" Show="false" DataType="0" Path="/Item/MSConsDestCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="7" Name="countryOfOriginCode" Show="false" DataType="0" Path="/Item/countryOfOriginCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="8" Name="netMass" Show="false" DataType="2" Path="/Item/netMass" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="9" Name="quantityInSU" Show="false" DataType="2" Path="/Item/quantityInSU" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="10" Name="invoicedAmount" Show="false" DataType="2" Path="/Item/invoicedAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="11" Name="partnerId" Show="false" DataType="0" Path="/Item/partnerId" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="12" Name="statisticalProcedureCode" Show="false" DataType="0" Path="/Item/statisticalProcedureCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="13" Name="NatureOfTransaction" Show="false" DataType="0" Path="/Item/NatureOfTransaction" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="14" Name="natureOfTransactionACode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionACode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="15" Name="natureOfTransactionBCode" Show="false" DataType="0" Path="/Item/NatureOfTransaction/natureOfTransactionBCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="16" Name="modeOfTransportCode" Show="false" DataType="0" Path="/Item/modeOfTransportCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchColumnDef ColumnNo="17" Name="regionCode" Show="false" DataType="0" Path="/Item/regionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" /><DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269" PreMappingCodeunit="10854" PostMappingCodeunit="10855">  <DataExchFieldMapping ColumnNo="1" FieldID="2" Optional="true" />  <DataExchFieldMapping ColumnNo="3" FieldID="23" Optional="true" />  <DataExchFieldMapping ColumnNo="5" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />  <DataExchFieldMapping ColumnNo="6" FieldID="25" Optional="true" />  <DataExchFieldMapping ColumnNo="7" FieldID="24" Optional="true" />  <DataExchFieldMapping ColumnNo="8" FieldID="21" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="9" FieldID="14" Optional="true" TransformationRule="ROUNDTOINT">',
                             Locked = true;
         DataExchangeXMLP5Txt: Label '<TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="10" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules>  <Code>ALPHANUMERIC_ONLY</Code>  <Description>Alphanumeric Text Only</Description>  <TransformationType>7</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules>  <Code>ROUNDTOINT</Code>  <Description>Round to integer</Description>  <TransformationType>14</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>0</StartPosition>  <Length>0</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>1.00</Precision>  <Direction>=</Direction>  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="11" FieldID="29" Optional="true" />  <DataExchFieldMapping ColumnNo="12" FieldID="27" Optional="true" />  <DataExchFieldMapping ColumnNo="14" FieldID="8" Optional="true" TransformationRule="FIRST_CHARACTER"><TransformationRules>  <Code>FIRST_CHARACTER</Code>  <Description>Extracts the first character of the string</Description>  <TransformationType>4</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>1</StartPosition>  <Length>1</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="15" FieldID="8" Optional="true" TransformationRule="SECOND_CHARACTER"><TransformationRules>  <Code>SECOND_CHARACTER</Code>  <Description>Extract the second character of the string</Description>  <TransformationType>4</TransformationType>  <FindValue />  <ReplaceValue />  <StartPosition>2</StartPosition>  <Length>1</Length>  <DataFormat />  <DataFormattingCulture />  <NextTransformationRule />  <TableID>0</TableID>  <SourceFieldID>0</SourceFieldID>  <TargetFieldID>0</TargetFieldID>  <FieldLookupRule>0</FieldLookupRule>  <Precision>0.00</Precision>  <Direction />  <ExportFromDateType>0</ExportFromDateType></TransformationRules>  </DataExchFieldMapping>  <DataExchFieldMapping ColumnNo="16" FieldID="9" Optional="true" />  <DataExchFieldMapping ColumnNo="17" FieldID="26" Optional="true" /></DataExchMapping>  </DataExchLineDef></DataExchDef></root>',
                             Locked = true;
@@ -140,6 +140,23 @@ codeunit 10851 IntrastatReportManagementFR
         exit(false);
     end;
 
+    local procedure IsIntrastatExport(DataExchDefCode: Code[20]): Boolean
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportMgt: Codeunit IntrastatReportManagement;
+    begin
+        if not IntrastatReportMgt.IsFeatureEnabled() then
+            exit(false);
+
+        if not IntrastatReportSetup.Get() then
+            exit(false);
+
+        if IntrastatReportSetup."Split Files" then
+            exit(DataExchDefCode in [IntrastatReportSetup."Data Exch. Def. Code - Receipt", IntrastatReportSetup."Data Exch. Def. Code - Shpt."])
+        else
+            exit(DataExchDefCode = IntrastatReportSetup."Data Exch. Def. Code");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeDefineFileNames', '', true, true)]
     local procedure OnBeforeDefineFileNames(var IntrastatReportHeader: Record "Intrastat Report Header"; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean)
     begin
@@ -158,79 +175,79 @@ codeunit 10851 IntrastatReportManagementFR
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLNodeWithoutAttributes', '', true, true)]
     local procedure OnBeforeCreateXMLNodeWithoutAttributes(var xmlNodeName: Text; var xmlNodeValue: Text; var DataExchColumnDef: Record "Data Exch. Column Def"; var DefaultNameSpace: Text; var IsHandled: Boolean)
     begin
-        case DataExchColumnDef.Path of
-            // 1-HEADER
-            '/INSTAT/Envelope/envelopeId':
-                xmlNodeValue := CompanyInformation.CISD;
-            '/INSTAT/Envelope/DateTime/date':
-                xmlNodeValue := Format(Today, 0, 9);
-            '/INSTAT/Envelope/DateTime/time':
-                xmlNodeValue := CopyStr(Format(Time, 0, 9), 1, 8);
+        if IsIntrastatExport(DataExchColumnDef."Data Exch. Def Code") then
+            case DataExchColumnDef.Path of
+                // 1-HEADER
+                '/INSTAT/Envelope/envelopeId':
+                    xmlNodeValue := CompanyInformation.CISD;
+                '/INSTAT/Envelope/DateTime/date':
+                    xmlNodeValue := Format(Today, 0, 9);
+                '/INSTAT/Envelope/DateTime/time':
+                    xmlNodeValue := CopyStr(Format(Time, 0, 9), 1, 8);
 
-            // 2-SENDER
-            '/Party/partyId':
-                xmlNodeValue := CompanyInformation.GetPartyID();
+                // 2-SENDER
+                '/Party/partyId':
+                    xmlNodeValue := CompanyInformation.GetPartyID();
 
-            // 4-RCPTHEADER, 5-SHPTHEADER
-            '/Declaration/declarationId':
-                xmlNodeValue := FormatExtendNumberToXML(GetDeclarationId(), 6);
-            '/Declaration/referencePeriod':
-                xmlNodeValue := StatisticsPeriodFormatted;
-            '/Declaration/PSIId':
-                xmlNodeValue := CompanyInformation.GetPartyID();
-            '/Declaration/functionCode':
-                xmlNodeValue := 'O';
-            '/Declaration/declarationTypeCode':
-                xmlNodeValue := Format(ObligationLevel);
+                // 4-RCPTHEADER, 5-SHPTHEADER
+                '/Declaration/declarationId':
+                    xmlNodeValue := FormatExtendNumberToXML(GetDeclarationId(), 6);
+                '/Declaration/referencePeriod':
+                    xmlNodeValue := StatisticsPeriodFormatted;
+                '/Declaration/PSIId':
+                    xmlNodeValue := CompanyInformation.GetPartyID();
+                '/Declaration/functionCode':
+                    xmlNodeValue := 'O';
+                '/Declaration/declarationTypeCode':
+                    xmlNodeValue := Format(ObligationLevel);
 
-            // 6-RCPTDETAIL, 7-SHPTDETAIL
-            '/IntrastatReportLineNo':
-                begin
-                    IntrastatReportLine.Get(IntrastatReportHeader."No.", xmlNodeValue);
-                    IsTransactionSimpleValue := IsTransactionSimple(IntrastatReportLine, xmlNodeValue);
+                // 6-RCPTDETAIL, 7-SHPTDETAIL
+                '/IntrastatReportLineNo':
+                    begin
+                        IntrastatReportLine.Get(IntrastatReportHeader."No.", xmlNodeValue);
+                        IsTransactionSimpleValue := IsTransactionSimple(IntrastatReportLine, xmlNodeValue);
+                        xmlNodeValue := '';
+                    end;
+                '/Item/CN8':
                     xmlNodeValue := '';
-                end;
-            '/Item/CN8':
-                xmlNodeValue := '';
-            '/Item/CN8/CN8Code',
-            '/Item/MSConsDestCode',
-            '/Item/countryOfOriginCode',
-            '/Item/netMass',
-            '/Item/quantityInSU',
-            '/Item/NatureOfTransaction',
-            '/Item/NatureOfTransaction/natureOfTransactionACode',
-            '/Item/NatureOfTransaction/natureOfTransactionBCode',
-            '/Item/modeOfTransportCode',
-            '/Item/regionCode':
-                if IsTransactionSimpleValue then
-                    xmlNodeValue := '';
-            '/Item/itemNumber':
-                begin
-                    ItemNumberXML += 1;
-                    xmlNodeValue := FormatExtendNumberToXML(ItemNumberXML, 6);
-                end;
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLAttribute', '', true, true)]
-    local procedure OnBeforeCreateXMLAttribute(var xmlAttributeName: Text; var xmlAttributeValue: Text; var DataExchColumnDef: Record "Data Exch. Column Def"; var DefaultNameSpace: Text; var IsHandled: Boolean)
-    begin
+                '/Item/CN8/CN8Code',
+                '/Item/MSConsDestCode',
+                '/Item/countryOfOriginCode',
+                '/Item/netMass',
+                '/Item/quantityInSU',
+                '/Item/NatureOfTransaction',
+                '/Item/NatureOfTransaction/natureOfTransactionACode',
+                '/Item/NatureOfTransaction/natureOfTransactionBCode',
+                '/Item/modeOfTransportCode',
+                '/Item/regionCode':
+                    if IsTransactionSimpleValue then
+                        xmlNodeValue := '';
+                '/Item/itemNumber':
+                    begin
+                        ItemNumberXML += 1;
+                        xmlNodeValue := FormatExtendNumberToXML(ItemNumberXML, 6);
+                    end;
+            end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLDeclaration', '', true, true)]
-    local procedure OnBeforeCreateXMLDeclaration(var xmlDec: XmlDeclaration; var IsHandled: Boolean)
+    local procedure OnBeforeCreateXMLDeclaration(DataExchDef: Record "Data Exch. Def"; var xmlDec: XmlDeclaration; var IsHandled: Boolean)
     begin
-        xmlDec := xmlDeclaration.Create('1.0', 'ISO-8859-1', 'yes');
-        IsHandled := true;
+        if IsIntrastatExport(DataExchDef.Code) then begin
+            xmlDec := xmlDeclaration.Create('1.0', 'ISO-8859-1', 'yes');
+            IsHandled := true;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateRootElement', '', true, true)]
-    local procedure OnBeforeCreateRootElement(var xmlElem: XmlElement; var nName: Text; var nVal: Text; DefaultNameSpace: Text; var xmlNamespaceManager: XmlNamespaceManager; var IsHandled: Boolean)
+    local procedure OnBeforeCreateRootElement(DataExchDef: Record "Data Exch. Def"; var xmlElem: XmlElement; var nName: Text; var nVal: Text; DefaultNameSpace: Text; var xmlNamespaceManager: XmlNamespaceManager; var IsHandled: Boolean)
     begin
-        xmlElem := xmlElement.Create(nName, DefaultNameSpace, nVal);
-        xmlElem.Add(XmlAttribute.CreateNamespaceDeclaration('xsi', LocalNamespaceURILbl));
-        xmlElem.Add(XmlAttribute.Create('noNamespaceSchemaLocation', LocalNamespaceURILbl, 'instat62.xsd'));
-        IsHandled := true;
+        if IsIntrastatExport(DataExchDef.Code) then begin
+            xmlElem := xmlElement.Create(nName, DefaultNameSpace, nVal);
+            xmlElem.Add(XmlAttribute.CreateNamespaceDeclaration('xsi', LocalNamespaceURILbl));
+            xmlElem.Add(XmlAttribute.Create('noNamespaceSchemaLocation', LocalNamespaceURILbl, 'instat62.xsd'));
+            IsHandled := true;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeExportHeader', '', true, true)]
@@ -240,22 +257,24 @@ codeunit 10851 IntrastatReportManagementFR
         InStreamFilters: InStream;
         FiltersText: Text;
     begin
-        DataExch.CalcFields("Table Filters");
-        DataExch."Table Filters".CreateInStream(InStreamFilters);
-        InStreamFilters.ReadText(FiltersText);
-        IntrastatReportLineRec.SetView(FiltersText);
+        if IsIntrastatExport(DataExch."Data Exch. Def Code") then begin
+            DataExch.CalcFields("Table Filters");
+            DataExch."Table Filters".CreateInStream(InStreamFilters);
+            InStreamFilters.ReadText(FiltersText);
+            IntrastatReportLineRec.SetView(FiltersText);
 
-        case true of
-            StrPos(DataExch."Data Exch. Line Def Code", 'RCPTHEADER') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Receipt);
-            StrPos(DataExch."Data Exch. Line Def Code", 'SHPTHEADER') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Shipment);
-            else
-                IntrastatReportLineRec.SetRange(Type);
+            case true of
+                StrPos(DataExch."Data Exch. Line Def Code", 'RCPTHEADER') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Receipt);
+                StrPos(DataExch."Data Exch. Line Def Code", 'SHPTHEADER') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLine.Type::Shipment);
+                else
+                    IntrastatReportLineRec.SetRange(Type);
+            end;
+
+            if IntrastatReportLineRec.IsEmpty() then
+                IsHandled := true;
         end;
-
-        if IntrastatReportLineRec.IsEmpty() then
-            IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeExportDetails', '', true, true)]
@@ -265,23 +284,25 @@ codeunit 10851 IntrastatReportManagementFR
         InStreamFilters: InStream;
         FiltersText: Text;
     begin
-        ItemNumberXML := 0;
-        DataExch.CalcFields("Table Filters");
-        DataExch."Table Filters".CreateInStream(InStreamFilters);
-        InStreamFilters.ReadText(FiltersText);
-        IntrastatReportLineRec.SetView(FiltersText);
+        if IsIntrastatExport(DataExch."Data Exch. Def Code") then begin
+            ItemNumberXML := 0;
+            DataExch.CalcFields("Table Filters");
+            DataExch."Table Filters".CreateInStream(InStreamFilters);
+            InStreamFilters.ReadText(FiltersText);
+            IntrastatReportLineRec.SetView(FiltersText);
 
-        case true of
-            StrPos(DataExch."Data Exch. Line Def Code", 'RCPTDETAIL') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Receipt);
-            StrPos(DataExch."Data Exch. Line Def Code", 'SHPTDETAIL') <> 0:
-                IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Shipment)
-            else
-                IntrastatReportLineRec.SetRange(Type);
+            case true of
+                StrPos(DataExch."Data Exch. Line Def Code", 'RCPTDETAIL') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Receipt);
+                StrPos(DataExch."Data Exch. Line Def Code", 'SHPTDETAIL') <> 0:
+                    IntrastatReportLineRec.SetRange(Type, IntrastatReportLineRec.Type::Shipment)
+                else
+                    IntrastatReportLineRec.SetRange(Type);
+            end;
+
+            if IntrastatReportLineRec.IsEmpty() then
+                IsHandled := true;
         end;
-
-        if IntrastatReportLineRec.IsEmpty() then
-            IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportIntrastatHeader', '', true, true)]

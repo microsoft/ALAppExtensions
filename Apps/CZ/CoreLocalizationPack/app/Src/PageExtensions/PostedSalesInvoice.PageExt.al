@@ -2,6 +2,12 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
 {
     layout
     {
+#if not CLEAN22
+        modify("VAT Reporting Date")
+        {
+            Visible = ReplaceVATDateEnabled and VATDateEnabled;
+        }
+#endif
 #if not CLEAN20
 #pragma warning disable AL0432
         movelast(General; "Posting Description")
@@ -28,15 +34,22 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
                 Visible = true;
             }
         }
+#if not CLEAN22
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'VAT Date (Obsolete)';
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
                 Editable = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by VAT Reporting Date.';
+                Visible = not ReplaceVATDateEnabled;
             }
         }
+#endif
         addbefore("Customer Posting Group")
         {
             field("VAT Bus. Posting Group CZL"; Rec."VAT Bus. Posting Group")
@@ -81,7 +94,13 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
                 var
                     ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL");
+#if not CLEAN22
+#pragma warning disable AL0432
+                    if not ReplaceVATDateEnabled then
+                        Rec."VAT Reporting Date" := Rec."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
+                    ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date");
                     ChangeExchangeRate.Editable(false);
                     ChangeExchangeRate.RunModal();
                 end;
@@ -204,4 +223,17 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
             }
         }
     }
+#if not CLEAN22
+    trigger OnOpenPage()
+    begin
+        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+    end;
+
+    var
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+        ReplaceVATDateEnabled: Boolean;
+        VATDateEnabled: Boolean;
+#endif
 }

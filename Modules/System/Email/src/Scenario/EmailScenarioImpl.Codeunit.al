@@ -6,6 +6,8 @@
 codeunit 8892 "Email Scenario Impl."
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = TableData "Email Scenario" = rimd;
 
     procedure GetEmailAccount(Scenario: Enum "Email Scenario"; var EmailAccount: Record "Email Account"): Boolean
@@ -206,7 +208,7 @@ codeunit 8892 "Email Scenario Impl."
         exit(true);
     end;
 
-    procedure GetAvailableScenariosForAccount(EmailAccount: Record "Email Account Scenario"; var EmailScenarios: Record "Email Account Scenario")
+    procedure GetAvailableScenariosForAccount(EmailAccount: Record "Email Account Scenario"; var EmailScenarios: Record "Email Account Scenario"; IncludeDefaultEmailScenario: Boolean)
     var
         Scenario: Record "Email Scenario";
         EmailScenario: Codeunit "Email Scenario";
@@ -223,8 +225,13 @@ codeunit 8892 "Email Scenario Impl."
             Scenario.SetRange(Connector, EmailAccount.Connector);
             Scenario.SetRange(Scenario, CurrentScenario);
 
-            // If the scenario isn't already connected to the email account, then it's available. Natually, we skip the default scenario
-            IsAvailable := Scenario.IsEmpty() and (not (CurrentScenario = Enum::"Email Scenario"::Default.AsInteger()));
+            // If the scenario isn't already connected to the email account, then it's available. We can choose to skip the default scenario.
+            // We skip the default scenario when assigning scenarios to account
+            // We include the default scenario when attaching attachments to scenarios
+            if IncludeDefaultEmailScenario then
+                IsAvailable := Scenario.IsEmpty()
+            else
+                IsAvailable := Scenario.IsEmpty() and (not (CurrentScenario = Enum::"Email Scenario"::Default.AsInteger()));
 
             // If the scenario is available, allow partner to determine if it should be shown
             if IsAvailable then

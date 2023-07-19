@@ -12,6 +12,10 @@
 /// </summary>
 codeunit 1439 Headlines
 {
+    Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     var
         HeadlinesImpl: Codeunit "Headlines Impl.";
 

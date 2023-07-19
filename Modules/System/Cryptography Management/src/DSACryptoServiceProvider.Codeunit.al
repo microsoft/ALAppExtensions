@@ -9,6 +9,8 @@
 codeunit 1447 "DSACryptoServiceProvider"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]

@@ -128,8 +128,8 @@ codeunit 134689 "Email Message Unit Test"
         PermissionsMock.Set('Email Edit');
 
         Recipients.Add('recipient@test.com');
-        Body := '<div style="font-family: &quot;segoe ui&quot;, &quot;segoe wp&quot;, segoe, device-segoe, tahoma, helvetica, arial, sans-serif; font-size: 10.5pt; color: rgba(33, 33, 33, 1)"><span style="background-color: rgba(255, 0, 0, 1)">a</span> <span style="background-color: rgba(0, 255, 255, 1)">te</span><span style="color: rgba(220, 190, 34, 1); background-color: rgba(0, 255, 255, 1)">st</span> <span style="color: rgba(12, 100, 192, 1)">email</span></div>';
-        Expected := '<div style="font-family: &quot;segoe ui&quot;, &quot;segoe wp&quot;, segoe, device-segoe, tahoma, helvetica, arial, sans-serif; font-size: 10.5pt; color: rgb(33, 33, 33)"><span style="background-color: rgb(255, 0, 0)">a</span> <span style="background-color: rgb(0, 255, 255)">te</span><span style="color: rgb(220, 190, 34); background-color: rgb(0, 255, 255)">st</span> <span style="color: rgb(12, 100, 192)">email</span></div>';
+        Body := '<div style="font-family: &quot;segoe ui&quot;, &quot;segoe wp&quot;, segoe, device-segoe, tahoma, helvetica, arial, sans-serif; font-size: 10.5pt; color: rgba(33, 33, 33, 1)"><span style="background-color: rgba(255, 0, 0, 1.00)">a</span> <span style="background-color: rgba(0,255,255,  1)">te</span><span style="color: rgba(220, 190, 34, 0); background-color: rgba(0,255,255,0.1)">st</span> <span style="color: rgba(0,255,255,.1)">email</span></div>';
+        Expected := '<div style="font-family: &quot;segoe ui&quot;, &quot;segoe wp&quot;, segoe, device-segoe, tahoma, helvetica, arial, sans-serif; font-size: 10.5pt; color: rgb(33, 33, 33)"><span style="background-color: rgb(255, 0, 0)">a</span> <span style="background-color: rgb(0, 255, 255)">te</span><span style="color: rgba(220, 190, 34, 0); background-color: rgba(0,255,255,0.1)">st</span> <span style="color: rgba(0,255,255,.1)">email</span></div>';
 
         // Exercise
         Message.Create(Recipients, 'Test subject', Body, true);

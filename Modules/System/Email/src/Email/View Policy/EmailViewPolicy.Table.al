@@ -9,6 +9,8 @@
 table 8930 "Email View Policy"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Extensible = false;
 
     fields

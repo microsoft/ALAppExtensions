@@ -1,9 +1,13 @@
+#if not CLEAN22
 page 31028 "Subst. Vend. Post. Groups CZL"
 {
     Caption = 'Subst. Vendor Posting Groups';
     DataCaptionFields = "Parent Vendor Posting Group";
     PageType = List;
     SourceTable = "Subst. Vend. Posting Group CZL";
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Replaced by Alt. Vendor Posting Groups page.';
 
     layout
     {
@@ -34,3 +38,4 @@ page 31028 "Subst. Vend. Post. Groups CZL"
         }
     }
 }
+#endif

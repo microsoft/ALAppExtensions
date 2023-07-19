@@ -125,25 +125,30 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies whether D365BC can update products when synchronizing to Shopify.';
                     Editable = Rec."Sync Item" = rec."Sync Item"::"To Shopify";
                 }
+#if not CLEAN22
                 field(ItemTemplateCode; Rec."Item Template Code")
+                {
+                    ApplicationArea = All;
+                    ShowMandatory = true;
+                    Caption = 'Item Template Code';
+                    ToolTip = 'Specifies which item template to use when creating unknown items.';
+                    Editable = Rec."Auto Create Unknown Items";
+                    Visible = not NewTemplatesEnabled;
+                    ObsoleteReason = 'Replaced by Item Templ. Code';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                }
+#endif
+                field(ItemTemplCode; Rec."Item Templ. Code")
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
                     ToolTip = 'Specifies which item template to use when creating unknown items.';
                     Editable = Rec."Auto Create Unknown Items";
+#if not CLEAN22
+                    Visible = NewTemplatesEnabled;
+#endif
                 }
-
-                field(CustomerPriceGroup; Rec."Customer Price Group")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies which price should be used for an item in Shopify. The sales price of this customer price group is taken. If no group is entered, the group of the "Customer Template Code" is used.';
-                }
-                field(CustomerDiscountGroup; Rec."Customer Discount Group")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies  which discount should be used for an item in Shopify. The sales discount of this customer discount group is taken. If no group is entered, the discount group from the "Customer Template Code" is used.';
-                }
-
                 field(SyncItemImages; Rec."Sync Item Images")
                 {
                     ApplicationArea = All;
@@ -153,6 +158,12 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether you want to synchronize extended texts to Shopify.';
+                }
+                field(SyncItemMarketingText; Rec."Sync Item Marketing Text")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether you want to synchronize marketing texts to Shopify.';
+                    Visible = EntityTextEnabled;
                 }
                 field(SyncItemAttributes; Rec."Sync Item Attributes")
                 {
@@ -209,6 +220,69 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies the status of a product in Shopify when an item is removed in Shopify via the sync.';
                 }
             }
+            group(PriceSynchronization)
+            {
+                Caption = 'Price Synchronization';
+                field(CustomerPriceGroup; Rec."Customer Price Group")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which Customer Price Group is used to calculate the prices in Shopify.';
+                }
+                field(CustomerDiscountGroup; Rec."Customer Discount Group")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which Customer Discount Group is used to calculate the prices in Shopify.';
+                }
+                field("Prices Including VAT"; Rec."Prices Including VAT")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if the prices calculate for Shopify are Including VAT.';
+                    Importance = Additional;
+                }
+                field("Allow Line Disc."; Rec."Allow Line Disc.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if line discount is allowed while calculating prices for Shopify.';
+                    Importance = Additional;
+                }
+                field("Gen. Bus. Posting Group"; Rec."Gen. Bus. Posting Group")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which Gen. Bus. Posting Group is used to calculate the prices in Shopify.';
+                    Importance = Additional;
+                }
+                field("VAT Bus. Posting Group"; Rec."VAT Bus. Posting Group")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which VAT. Bus. Posting Group is used to calculate the prices in Shopify.';
+                    Importance = Additional;
+                    Editable = Rec."Prices Including VAT";
+                }
+                field("Customer Posting Group"; Rec."Customer Posting Group")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which Customer Posting Group is used to calculate the prices in Shopify.';
+                    Visible = false;
+                }
+                field("VAT Country/Region Code"; Rec."VAT Country/Region Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which VAT Country/Region Code is used to calculate the prices in Shopify.';
+                    Visible = false;
+                }
+                field("Tax Area Code"; Rec."Tax Area Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which Tax Area Code is used to calculate the prices in Shopify.';
+                    Visible = false;
+                }
+                field("Tax Liable"; Rec."Tax Liable")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if Tax Liable is used to calculate the prices in Shopify.';
+                    Visible = false;
+                }
+            }
 #if not CLEAN21
             group(InventorySync)
             {
@@ -239,13 +313,28 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies if unknown customers are automatically created in D365BC when synchronizing from Shopify.';
                 }
+#if not CLEAN22
                 field(CustomerTemplateCode; Rec."Customer Template Code")
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
-                    ToolTip = 'Specifies which customer template to use when creating unknown customers and for calculating prices.';
+                    ToolTip = 'Specifies which customer template to use when creating unknown customers.';
+                    Visible = not NewTemplatesEnabled;
+                    ObsoleteReason = 'Generic Templates will be replaced with Customer Templates. Use Customer Templ. Code instead.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
                 }
-
+#endif
+                field(CustomerTemplCode; Rec."Customer Templ. Code")
+                {
+                    Caption = 'Customer Template Code';
+                    ToolTip = 'Specifies which customer template to use when creating unknown customers.';
+                    ShowMandatory = true;
+                    ApplicationArea = All;
+#if not CLEAN22
+                    Visible = NewTemplatesEnabled;
+#endif
+                }
                 field(DefaultCustomer; Rec."Default Customer No.")
                 {
                     ApplicationArea = All;
@@ -291,9 +380,23 @@ page 30101 "Shpfy Shop Card"
             }
             group(OrderProcessing)
             {
-                Caption = 'Order Processing';
+                Caption = 'Order Synchronization and Processing';
                 AboutTitle = 'Set up your order flow';
                 AboutText = 'Define how new orders in Shopify flow into Business Central. For example, you can require that Shopify orders are approved before they become a sales order or invoice in Business Central. You can also define how to post shipping revenue, and the address that determines where you pay taxes.';
+                field(AutoSyncOrders; Rec."Order Created Webhooks")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Auto Sync Orders';
+                    ToolTip = 'Specifies whether to automatically synchronize orders when they’re created in Shopify. Shopify will notify Business Central that orders are ready. Business Central will schedule the Sync Orders from Shopify job on the Job Queue Entries page. The user account of the person who turns on this toggle will be used to run the job. That user must have permission to create background tasks in the job queue.';
+                    Visible = false;
+                }
+                field(SyncOrderJobQueueUser; Rec."Order Created Webhook User")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Sync Order Job Queue User';
+                    ToolTip = 'Specifies the user who will run the Sync Orders from Shopify job on the Job Queue Entries page. This is the user who turned on the Auto Import Orders from Shopify toggle.';
+                    Visible = false;
+                }
                 field(ShippingCostAccount; Rec."Shipping Charges Account")
                 {
                     ApplicationArea = All;
@@ -317,14 +420,74 @@ page 30101 "Shpfy Shop Card"
                 }
                 field(AutoCreateOrders; Rec."Auto Create Orders")
                 {
-                    Caption = 'Auto-create Sales Orders';
+                    Caption = 'Auto Create Sales Orders';
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether orders may be created automatically.';
+                }
+                field(AutoReleaseSalesOrders; rec."Auto Release Sales Orders")
+                {
+                    Caption = 'Auto Release Sales Orders';
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if a Sales Order should be releases after creation';
                 }
                 field(TaxAreaSource; Rec."Tax Area Priority")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the tax area source and the sequence to be followed.';
+                }
+            }
+            group(ReturnsAndRefunds)
+            {
+                Caption = 'Return and Refund Processing';
+                AboutText = 'Define how Returns and Refunds in Shopify flow into Business Central.';
+
+                field("Return and Refund Process"; Rec."Return and Refund Process")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Process Type';
+                    ToolTip = 'Specifies how returns and refunds from Shopify are handles in Business Central. The import process is always done within the import of a Shopify order.';
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update(true);
+                    end;
+                }
+                group(HandlingOfReturns)
+                {
+                    ShowCaption = false;
+                    Visible = IsReturnRefundsVisible;
+
+                    field("Location Code of Returns"; Rec."Return Location")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies location code for returned goods.';
+
+                        trigger OnValidate()
+                        begin
+                            CurrPage.Update(true);
+                        end;
+                    }
+
+                    field("G/L Account Instead of Item"; Rec."Refund Acc. non-restock Items")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies a G/L Account No. for goods where you don''t want to have an inventory correction.';
+
+                        trigger OnValidate()
+                        begin
+                            CurrPage.Update(true);
+                        end;
+                    }
+                    field("G/L Account for Amt. diff."; Rec."Refund Account")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies a G/L Account No. for the difference in the total refunded amount and the total amount of the items.';
+
+                        trigger OnValidate()
+                        begin
+                            CurrPage.Update(true);
+                        end;
+                    }
                 }
             }
         }
@@ -419,6 +582,48 @@ page 30101 "Shpfy Shop Card"
                     Orders.Run();
                 end;
             }
+            action(Refunds)
+            {
+                ApplicationArea = All;
+                Caption = 'Refunds';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify refunds.';
+
+                trigger OnAction()
+                var
+                    RefundHeader: Record "Shpfy Refund Header";
+                    RefundHeaders: Page "Shpfy Refunds";
+                begin
+                    RefundHeader.SetRange("Shop Code", Rec.Code);
+                    RefundHeaders.SetTableView(RefundHeader);
+                    RefundHeaders.Run();
+                end;
+            }
+            action(Returns)
+            {
+                ApplicationArea = All;
+                Caption = 'Returns';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'View your Shopify returns.';
+
+                trigger OnAction()
+                var
+                    ReturnHeader: Record "Shpfy Return Header";
+                    ReturnHeaders: Page "Shpfy Returns";
+                begin
+                    ReturnHeader.SetRange("Shop Code", Rec.Code);
+                    ReturnHeaders.SetTableView(ReturnHeader);
+                    ReturnHeaders.Run();
+                end;
+            }
             action(CustomerTemplates)
             {
                 ApplicationArea = All;
@@ -469,8 +674,6 @@ page 30101 "Shpfy Shop Card"
                         Rec.RequestAccessToken();
                     end;
                 }
-
-
             }
             group(Sync)
             {
@@ -506,7 +709,24 @@ page 30101 "Shpfy Shop Card"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.ProductImagesSync(Rec.Code);
+                        BackgroundSyncs.ProductImagesSync(Rec.Code, '');
+                    end;
+                }
+                action(SyncProductPrices)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Sync Prices';
+                    Image = ImportExport;
+                    Promoted = true;
+                    PromotedCategory = Category5;
+                    PromotedOnly = true;
+                    ToolTip = 'Synchronize prices to Shopify. The standard price calculation is followed for determining the price.';
+
+                    trigger OnAction()
+                    var
+                        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
+                    begin
+                        BackgroundSyncs.ProductPricesSync(Rec.Code);
                     end;
                 }
                 action(SyncInventory)
@@ -573,11 +793,11 @@ page 30101 "Shpfy Shop Card"
 
                     trigger OnAction();
                     var
-                        ShpfyShop: Record "Shpfy Shop";
+                        Shop: Record "Shpfy Shop";
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        ShpfyShop.SetFilter(Code, Rec.Code);
-                        BackgroundSyncs.OrderSync(ShpfyShop);
+                        Shop.SetFilter(Code, Rec.Code);
+                        BackgroundSyncs.OrderSync(Shop);
                     end;
                 }
                 action(SyncShipments)
@@ -613,7 +833,8 @@ page 30101 "Shpfy Shop Card"
                         BackgroundSyncs.CustomerSync(Rec);
                         BackgroundSyncs.ProductsSync(Rec);
                         BackgroundSyncs.InventorySync(Rec);
-                        BackgroundSyncs.ProductImagesSync(Rec);
+                        BackgroundSyncs.ProductImagesSync(Rec, '');
+                        BackgroundSyncs.ProductPricesSync(Rec);
                     end;
                 }
             }
@@ -660,14 +881,48 @@ page 30101 "Shpfy Shop Card"
                     end;
                 }
             }
+            action(CreateFulfillmentService)
+            {
+                ApplicationArea = All;
+                Caption = 'Create Shopify Fulfillment Service';
+                Image = CreateInventoryPickup;
+                ToolTip = 'Create Shopify Fulfillment Service';
+
+                trigger OnAction()
+                var
+                    FullfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
+                begin
+                    FullfillmentOrdersAPI.RegisterFulfillmentService(Rec);
+                end;
+            }
         }
     }
+
+    var
+#if not CLEAN22
+        NewTemplatesEnabled: Boolean;
+#endif
+        EntityTextEnabled: Boolean;
+        IsReturnRefundsVisible: Boolean;
 
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
+#if not CLEAN22
+        ShpfyTemplates: Codeunit "Shpfy Templates";
+#endif
+        EntityText: Codeunit "Entity Text";
     begin
         FeatureTelemetry.LogUptake('0000HUU', 'Shopify', Enum::"Feature Uptake Status"::Discovered);
+#if not CLEAN22
+        NewTemplatesEnabled := ShpfyTemplates.NewTemplatesEnabled();
+#endif
+        EntityTextEnabled := EntityText.IsEnabled();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        CheckReturnRefundsVisible();
     end;
 
     local procedure GetResetSyncTo(InitDateTime: DateTime): DateTime
@@ -681,5 +936,10 @@ page 30101 "Shpfy Shop Card"
         if DateTimeDialog.RunModal() = Action::LookupOK then
             exit(DateTimeDialog.GetDateTime());
         exit(InitDateTime);
+    end;
+
+    local procedure CheckReturnRefundsVisible()
+    begin
+        IsReturnRefundsVisible := Rec."Return and Refund Process" <> "Shpfy ReturnRefund ProcessType"::" ";
     end;
 }

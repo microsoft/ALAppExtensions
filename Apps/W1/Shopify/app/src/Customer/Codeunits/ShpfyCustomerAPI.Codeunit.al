@@ -9,29 +9,29 @@ codeunit 30114 "Shpfy Customer API"
     var
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        JHelper: Codeunit "Shpfy Json Helper";
-        Events: Codeunit "Shpfy Customer Events";
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        CustomerEvents: Codeunit "Shpfy Customer Events";
 
     /// <summary> 
     /// Add Field To Graph Query.
     /// </summary>
     /// <param name="GraphQuery">Parameter of type TextBuilder.</param>
     /// <param name="FieldName">Parameter of type Text.</param>
-    /// <param name="Value">Parameter of type Variant.</param>
+    /// <param name="ValueAsVariant">Parameter of type Variant.</param>
     /// <returns>Return value of type Boolean.</returns>
-    local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant): Boolean
+    local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; ValueAsVariant: Variant): Boolean
     begin
-        exit(AddFieldToGraphQuery(GraphQuery, FieldName, Value, true));
+        exit(AddFieldToGraphQuery(GraphQuery, FieldName, ValueAsVariant, true));
     end;
 
-    local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant; ValueAsString: Boolean): Boolean
+    local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; ValueAsVariant: Variant; ValueAsString: Boolean): Boolean
     begin
         GraphQuery.Append(FieldName);
         if ValueAsString then
             GraphQuery.Append(': \"')
         else
             GraphQuery.Append(': ');
-        GraphQuery.Append(Format(Value));
+        GraphQuery.Append(Format(ValueAsVariant));
         if ValueAsString then
             GraphQuery.Append('\", ')
         else
@@ -90,20 +90,20 @@ codeunit 30114 "Shpfy Customer API"
         JResponse: JsonToken;
         GraphQuery: Text;
     begin
-        Events.OnBeforeSendCreateShopifyCustomer(Shop, ShopifyCustomer, ShopifyCustomerAddress);
+        CustomerEvents.OnBeforeSendCreateShopifyCustomer(Shop, ShopifyCustomer, ShopifyCustomerAddress);
         GraphQuery := CreateCustomerGraphQLQuery(ShopifyCustomer, ShopifyCustomerAddress);
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
         if JResponse.SelectToken('$.data.customerCreate.customer', JItem) then
             if JItem.IsObject then
-                ShopifyCustomer.Id := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'));
+                ShopifyCustomer.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id'));
         if (ShopifyCustomer.Id > 0) and JResponse.SelectToken('$.data.customerCreate.customer.addresses', JItem) then
             if JItem.IsArray and (JItem.AsArray().Count = 1) then begin
                 JItem.AsArray().Get(0, JItem);
-                ShopifyCustomerAddress.Id := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'));
+                ShopifyCustomerAddress.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id'));
                 ShopifyCustomerAddress."Customer Id" := ShopifyCustomer.Id;
 #pragma warning disable AA0139
-                ShopifyCustomerAddress."Country/Region Name" := JHelper.GetValueAsText(JItem, 'country');
-                ShopifyCustomerAddress."Province Name" := JHelper.GetValueAsText(JItem, 'province');
+                ShopifyCustomerAddress."Country/Region Name" := JsonHelper.GetValueAsText(JItem, 'country');
+                ShopifyCustomerAddress."Province Name" := JsonHelper.GetValueAsText(JItem, 'province');
 #pragma warning restore AA0139
             end;
         exit(ShopifyCustomer.Id > 0);
@@ -126,10 +126,10 @@ codeunit 30114 "Shpfy Customer API"
         if EMail <> '' then begin
             Parameters.Add('EMail', EMail.ToLower());
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::FindCustomerIdByEMail, Parameters);
-            if JHelper.GetJsonArray(JResponse, JCustomers, 'data.customers.edges') then
+            if JsonHelper.GetJsonArray(JResponse, JCustomers, 'data.customers.edges') then
                 foreach JItem in JCustomers do
-                    if JHelper.GetJsonObject(JItem.AsObject(), JCustomer, 'node') then
-                        exit(CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JCustomer, 'id')));
+                    if JsonHelper.GetJsonObject(JItem.AsObject(), JCustomer, 'node') then
+                        exit(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JCustomer, 'id')));
         end;
     end;
 
@@ -150,10 +150,10 @@ codeunit 30114 "Shpfy Customer API"
         if Phone <> '' then begin
             Parameters.Add('Phone', Phone);
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::FindCustomerIdByPhone, Parameters);
-            if JHelper.GetJsonArray(JResponse, JCustomers, 'data.customers.edges') then
+            if JsonHelper.GetJsonArray(JResponse, JCustomers, 'data.customers.edges') then
                 foreach JItem in JCustomers do
-                    if JHelper.GetJsonObject(JItem.AsObject(), JCustomer, 'node') then
-                        exit(CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JCustomer, 'id')));
+                    if JsonHelper.GetJsonObject(JItem.AsObject(), JCustomer, 'node') then
+                        exit(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JCustomer, 'id')));
         end;
     end;
 
@@ -174,7 +174,7 @@ codeunit 30114 "Shpfy Customer API"
 
         Parameters.Add('CustomerId', Format(ShopifyCustomer.Id));
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetCustomer, Parameters);
-        if JHelper.GetJsonObject(JResponse, JCustomer, 'data.customer') then
+        if JsonHelper.GetJsonObject(JResponse, JCustomer, 'data.customer') then
             exit(UpdateShopifyCustomerFields(ShopifyCustomer, JCustomer));
     end;
 
@@ -203,12 +203,12 @@ codeunit 30114 "Shpfy Customer API"
             Paramaters.Add('LastSync', '');
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Paramaters);
-            if JHelper.GetJsonArray(JResponse, JCustomers, 'data.customers.edges') then begin
+            if JsonHelper.GetJsonArray(JResponse, JCustomers, 'data.customers.edges') then begin
                 foreach JItem in JCustomers do begin
-                    Cursor := JHelper.GetValueAsText(JItem.AsObject(), 'cursor');
-                    if JHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
-                        Id := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JNode, 'id'));
-                        UpdatedAt := JHelper.GetValueAsDateTime(JNode, 'updatedAt');
+                    Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
+                    if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
+                        Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+                        UpdatedAt := JsonHelper.GetValueAsDateTime(JNode, 'updatedAt');
                         CustomerIds.Add(Id, UpdatedAt);
                     end;
                 end;
@@ -218,7 +218,7 @@ codeunit 30114 "Shpfy Customer API"
                     Paramaters.Add('After', Cursor);
                 GraphQLType := GraphQLType::GetNextCustomerIds;
             end;
-        until not JHelper.GetValueAsBoolean(JResponse, 'data.customers.pageInfo.hasNextPage');
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.customers.pageInfo.hasNextPage');
     end;
 
     /// <summary> 
@@ -261,26 +261,26 @@ codeunit 30114 "Shpfy Customer API"
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
             if JResponse.SelectToken('$.data.customerCreate.customer', JItem) then
                 if JItem.IsObject then begin
-                    if ShopifyCustomer.Id <> CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id')) then
+                    if ShopifyCustomer.Id <> CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id')) then
                         Error(UpdateCustIdErr);
-                    ShopifyCustomer."Accepts Marketing" := JHelper.GetValueAsBoolean(JItem, 'acceptsMarketing');
-                    ShopifyCustomer."Accepts Marketing Update At" := JHelper.GetValueAsDateTime(JItem, 'acceptsMArketingUpdatedAt');
-                    ShopifyCustomer."Tax Exempt" := JHelper.GetValueAsBoolean(JItem, 'taxExempt');
-                    ShopifyCustomer."Updated At" := JHelper.GetValueAsDateTime(JItem, 'updatedAt');
-                    ShopifyCustomer."Verified Email" := JHelper.GetValueAsBoolean(JItem, 'verifiedEmail');
+                    ShopifyCustomer."Accepts Marketing" := JsonHelper.GetValueAsBoolean(JItem, 'acceptsMarketing');
+                    ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JItem, 'acceptsMArketingUpdatedAt');
+                    ShopifyCustomer."Tax Exempt" := JsonHelper.GetValueAsBoolean(JItem, 'taxExempt');
+                    ShopifyCustomer."Updated At" := JsonHelper.GetValueAsDateTime(JItem, 'updatedAt');
+                    ShopifyCustomer."Verified Email" := JsonHelper.GetValueAsBoolean(JItem, 'verifiedEmail');
                 end;
             if JResponse.SelectToken('$.data.customerCreate.customer', JItem) then
                 if JItem.IsObject then
-                    ShopifyCustomer.Id := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'));
+                    ShopifyCustomer.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id'));
 
             if (ShopifyCustomer.Id > 0) and JResponse.SelectToken('$.data.customerCreate.customer.defaultAddress', JItem) then
                 if JItem.IsObject then begin
-                    if (ShopifyCustomerAddress.Id <> CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'))) then
+                    if (ShopifyCustomerAddress.Id <> CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id'))) then
                         Error(UpdateAddrIdErr);
                     ShopifyCustomerAddress."Customer Id" := ShopifyCustomer.Id;
 #pragma warning disable AA0139
-                    ShopifyCustomerAddress."Country/Region Name" := JHelper.GetValueAsText(JItem, 'country', MaxStrLen(ShopifyCustomerAddress."Country/Region Name"));
-                    ShopifyCustomerAddress."Province Name" := JHelper.GetValueAsText(JItem, 'province', MaxStrLen(ShopifyCustomerAddress."Province Name"));
+                    ShopifyCustomerAddress."Country/Region Name" := JsonHelper.GetValueAsText(JItem, 'country', MaxStrLen(ShopifyCustomerAddress."Country/Region Name"));
+                    ShopifyCustomerAddress."Province Name" := JsonHelper.GetValueAsText(JItem, 'province', MaxStrLen(ShopifyCustomerAddress."Province Name"));
 #pragma warning restore AA0139
                 end;
         end;
@@ -297,7 +297,7 @@ codeunit 30114 "Shpfy Customer API"
     begin
         xShopifyCustomer.Get(ShopifyCustomer.Id);
         xShopifyCustomerAddress.Get(ShopifyCustomerAddress.Id);
-        Events.OnBeforeSendUpdateShopifyCustomer(Shop, ShopifyCustomer, ShopifyCustomerAddress, xShopifyCustomer, xShopifyCustomerAddress);
+        CustomerEvents.OnBeforeSendUpdateShopifyCustomer(Shop, ShopifyCustomer, ShopifyCustomerAddress, xShopifyCustomer, xShopifyCustomerAddress);
         GraphQuery.Append('{"query":"mutation {customerUpdate(input: {');
         AddFieldToGraphQuery(GraphQuery, 'id', StrSubstNo(CustomerIdTxt, ShopifyCustomer.Id));
         if ShopifyCustomer.Email <> xShopifyCustomer.Email then
@@ -351,7 +351,7 @@ codeunit 30114 "Shpfy Customer API"
     /// <returns>Return variable "Result" of type Boolean.</returns>
     internal procedure UpdateShopifyCustomerFields(var ShopifyCustomer: Record "Shpfy Customer"; JCustomer: JsonObject) Result: Boolean
     var
-        ShopifyAddress: Record "Shpfy Customer Address";
+        CustomerAddress: Record "Shpfy Customer Address";
         NodeId: BigInteger;
         UpdatedAt: DateTime;
         JAddresses: JsonArray;
@@ -364,76 +364,76 @@ codeunit 30114 "Shpfy Customer API"
         FilterString: TextBuilder;
         PhoneNo: Text;
     begin
-        UpdatedAt := JHelper.GetValueAsDateTime(JCustomer, 'updatedAt');
+        UpdatedAt := JsonHelper.GetValueAsDateTime(JCustomer, 'updatedAt');
         if UpdatedAt <= ShopifyCustomer."Updated At" then
             exit(false);
         Result := true;
 
         ShopifyCustomer."Updated At" := UpdatedAt;
-        ShopifyCustomer."Created At" := JHelper.GetValueAsDateTime(JCustomer, 'createdAt');
+        ShopifyCustomer."Created At" := JsonHelper.GetValueAsDateTime(JCustomer, 'createdAt');
 #pragma warning disable AA0139
-        ShopifyCustomer."First Name" := JHelper.GetValueAsText(JCustomer, 'firstName', MaxStrLen(ShopifyCustomer."First Name"));
-        ShopifyCustomer."Last Name" := JHelper.GetValueAsText(JCustomer, 'lastName', MaxStrLen(ShopifyCustomer."Last Name"));
-        ShopifyCustomer.Email := JHelper.GetValueAsText(JCustomer, 'email', MaxStrLen(ShopifyCustomer.Email));
+        ShopifyCustomer."First Name" := JsonHelper.GetValueAsText(JCustomer, 'firstName', MaxStrLen(ShopifyCustomer."First Name"));
+        ShopifyCustomer."Last Name" := JsonHelper.GetValueAsText(JCustomer, 'lastName', MaxStrLen(ShopifyCustomer."Last Name"));
+        ShopifyCustomer.Email := JsonHelper.GetValueAsText(JCustomer, 'email', MaxStrLen(ShopifyCustomer.Email));
 #pragma warning restore AA0139
-        PhoneNo := JHelper.GetValueAsText(JCustomer, 'phone');
+        PhoneNo := JsonHelper.GetValueAsText(JCustomer, 'phone');
         PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
         ShopifyCustomer."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(ShopifyCustomer."Phone No."));
-        ShopifyCustomer."Accepts Marketing" := JHelper.GetValueAsBoolean(JCustomer, 'acceptsMarketing');
-        ShopifyCustomer."Accepts Marketing Update At" := JHelper.GetValueAsDateTime(JCustomer, 'acceptsMarketingUpdateAt');
-        ShopifyCustomer."Tax Exempt" := JHelper.GetValueAsBoolean(JCustomer, 'taxExempt');
-        ShopifyCustomer."Verified Email" := JHelper.GetValueAsBoolean(JCustomer, 'verifiedEmail');
-        StateString := JHelper.GetValueAsText(JCustomer, 'state').ToLower();
+        ShopifyCustomer."Accepts Marketing" := JsonHelper.GetValueAsBoolean(JCustomer, 'acceptsMarketing');
+        ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JCustomer, 'acceptsMarketingUpdateAt');
+        ShopifyCustomer."Tax Exempt" := JsonHelper.GetValueAsBoolean(JCustomer, 'taxExempt');
+        ShopifyCustomer."Verified Email" := JsonHelper.GetValueAsBoolean(JCustomer, 'verifiedEmail');
+        StateString := JsonHelper.GetValueAsText(JCustomer, 'state').ToLower();
         StateString := Format(StateString[1]).ToUpper() + CopyStr(StateString, 2);
         Evaluate(ShopifyCustomer.State, StateString);
-        if JHelper.GetValueAsText(JCustomer, 'note') <> '' then begin
+        if JsonHelper.GetValueAsText(JCustomer, 'note') <> '' then begin
             Clear(ShopifyCustomer.Note);
             ShopifyCustomer.Note.CreateOutStream(OutStream, TextEncoding::UTF8);
-            OutStream.WriteText(JHelper.GetValueAsText(JCustomer, 'note'));
+            OutStream.WriteText(JsonHelper.GetValueAsText(JCustomer, 'note'));
         end else
             Clear(ShopifyCustomer.Note);
-        ShopifyCustomer."Created At" := JHelper.GetValueAsDateTime(JCustomer, 'createdAt');
+        ShopifyCustomer."Created At" := JsonHelper.GetValueAsDateTime(JCustomer, 'createdAt');
         ShopifyCustomer.Modify(false);
 
 
-        if JHelper.GetJsonArray(JCustomer, JTags, 'tags') then
-            ShopifyCustomer.UpdateTags(JHelper.GetArrayAsText(JTags));
+        if JsonHelper.GetJsonArray(JCustomer, JTags, 'tags') then
+            ShopifyCustomer.UpdateTags(JsonHelper.GetArrayAsText(JTags));
 
-        if JHelper.GetJsonArray(JCustomer, JAddresses, 'addresses') then begin
+        if JsonHelper.GetJsonArray(JCustomer, JAddresses, 'addresses') then begin
             Clear(Ids);
             foreach JItem in JAddresses do begin
                 JAddress := JItem.AsObject();
-                NodeId := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JAddress, 'id'));
+                NodeId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JAddress, 'id'));
                 Ids.Add(NodeId);
-                Clear(ShopifyAddress);
-                ShopifyAddress.SetRange(Id, NodeId);
-                if not ShopifyAddress.FindFirst() then begin
-                    ShopifyAddress.Init();
-                    ShopifyAddress."Customer Id" := ShopifyCustomer.Id;
-                    ShopifyAddress.Id := NodeId;
-                    ShopifyAddress.Insert(false);
+                Clear(CustomerAddress);
+                CustomerAddress.SetRange(Id, NodeId);
+                if not CustomerAddress.FindFirst() then begin
+                    CustomerAddress.Init();
+                    CustomerAddress."Customer Id" := ShopifyCustomer.Id;
+                    CustomerAddress.Id := NodeId;
+                    CustomerAddress.Insert(false);
                 end;
 #pragma warning disable AA0139
-                ShopifyAddress.Company := JHelper.GetValueAsText(JAddress, 'company', MaxStrLen(ShopifyAddress.Company));
-                ShopifyAddress."First Name" := JHelper.GetValueAsText(JAddress, 'firstName', MaxStrLen(ShopifyAddress."First Name"));
-                ShopifyAddress."Last Name" := JHelper.GetValueAsText(JAddress, 'lastName', MaxStrLen(ShopifyAddress."Last Name"));
-                ShopifyAddress."Address 1" := JHelper.GetValueAsText(JAddress, 'address1', MaxStrLen(ShopifyAddress."Address 1"));
-                ShopifyAddress."Address 2" := JHelper.GetValueAsText(JAddress, 'address2', MaxStrLen(ShopifyAddress."Address 2"));
-                ShopifyAddress.Zip := JHelper.GetValueAsText(JAddress, 'zip', MaxStrLen(ShopifyAddress.Zip));
-                ShopifyAddress.City := JHelper.GetValueAsText(JAddress, 'city', MaxStrLen(ShopifyAddress.City));
-                ShopifyAddress."Country/Region Code" := JHelper.GetValueAsText(JAddress, 'countryCodeV2');
-                ShopifyAddress."Country/Region Name" := JHelper.GetValueAsText(JAddress, 'country');
-                ShopifyAddress."Province Code" := JHelper.GetValueAsText(JAddress, 'provinceCode', MaxStrLen(ShopifyAddress."Province Code"));
-                ShopifyAddress."Province Name" := JHelper.GetValueAsText(JAddress, 'province', MaxStrLen(ShopifyAddress."Province Name"));
+                CustomerAddress.Company := JsonHelper.GetValueAsText(JAddress, 'company', MaxStrLen(CustomerAddress.Company));
+                CustomerAddress."First Name" := JsonHelper.GetValueAsText(JAddress, 'firstName', MaxStrLen(CustomerAddress."First Name"));
+                CustomerAddress."Last Name" := JsonHelper.GetValueAsText(JAddress, 'lastName', MaxStrLen(CustomerAddress."Last Name"));
+                CustomerAddress."Address 1" := JsonHelper.GetValueAsText(JAddress, 'address1', MaxStrLen(CustomerAddress."Address 1"));
+                CustomerAddress."Address 2" := JsonHelper.GetValueAsText(JAddress, 'address2', MaxStrLen(CustomerAddress."Address 2"));
+                CustomerAddress.Zip := JsonHelper.GetValueAsText(JAddress, 'zip', MaxStrLen(CustomerAddress.Zip));
+                CustomerAddress.City := JsonHelper.GetValueAsText(JAddress, 'city', MaxStrLen(CustomerAddress.City));
+                CustomerAddress."Country/Region Code" := JsonHelper.GetValueAsText(JAddress, 'countryCodeV2');
+                CustomerAddress."Country/Region Name" := JsonHelper.GetValueAsText(JAddress, 'country');
+                CustomerAddress."Province Code" := JsonHelper.GetValueAsText(JAddress, 'provinceCode', MaxStrLen(CustomerAddress."Province Code"));
+                CustomerAddress."Province Name" := JsonHelper.GetValueAsText(JAddress, 'province', MaxStrLen(CustomerAddress."Province Name"));
 #pragma warning restore AA0139
-                PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
-                PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(ShopifyAddress.Phone));
-                ShopifyAddress.Phone := CopyStr(PhoneNo, 1, MaxStrLen(ShopifyAddress.Phone));
-                ShopifyAddress.Default := false;
-                ShopifyAddress.Modify(false);
+                PhoneNo := JsonHelper.GetValueAsText(JAddress, 'phone');
+                PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CustomerAddress.Phone));
+                CustomerAddress.Phone := CopyStr(PhoneNo, 1, MaxStrLen(CustomerAddress.Phone));
+                CustomerAddress.Default := false;
+                CustomerAddress.Modify(false);
             end;
-            Clear(ShopifyAddress);
-            ShopifyAddress.SetRange("Customer Id", ShopifyCustomer.Id);
+            Clear(CustomerAddress);
+            CustomerAddress.SetRange("Customer Id", ShopifyCustomer.Id);
             Clear(FilterString);
             foreach NodeId in Ids do begin
                 FilterString.Append('&<>');
@@ -441,20 +441,57 @@ codeunit 30114 "Shpfy Customer API"
             end;
             if FilterString.Length > 0 then begin
                 FilterString.Remove(1, 1);
-                ShopifyAddress.SetFilter(Id, FilterString.ToText());
-                if not ShopifyAddress.IsEmpty then
-                    ShopifyAddress.DeleteAll(false);
+                CustomerAddress.SetFilter(Id, FilterString.ToText());
+                if not CustomerAddress.IsEmpty then
+                    CustomerAddress.DeleteAll(false);
             end;
 
-            if JHelper.GetJsonObject(JCustomer, JAddress, 'defaultAddress') then begin
-                NodeId := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JAddress, 'id'));
-                Clear(ShopifyAddress);
-                ShopifyAddress.SetRange(Id, NodeId);
-                if ShopifyAddress.FindFirst() then begin
-                    ShopifyAddress.Default := true;
-                    ShopifyAddress.Modify(false);
+            if JsonHelper.GetJsonObject(JCustomer, JAddress, 'defaultAddress') then begin
+                NodeId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JAddress, 'id'));
+                Clear(CustomerAddress);
+                CustomerAddress.SetRange(Id, NodeId);
+                if CustomerAddress.FindFirst() then begin
+                    CustomerAddress.Default := true;
+                    CustomerAddress.Modify(false);
                 end;
             end;
         end;
+    end;
+
+    internal procedure FillInMissingShopIds()
+    var
+        ShopCounter: Record "Shpfy Shop";
+        ShopifyCustomer: Record "Shpfy Customer";
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+        JResult: JsonToken;
+        JArray: JsonArray;
+        FilterString: Text;
+    begin
+        ShopifyCustomer.SetRange("Shop Id", 0);
+        ShopifyCustomer.SetCurrentKey("Shop Id");
+        if ShopifyCustomer.IsEmpty then
+            exit;
+
+        if ShopCounter.Count = 1 then
+            ShopifyCustomer.ModifyAll("Shop Id", Shop."Shop Id", false)
+        else begin
+            GraphQLType := "Shpfy GraphQL Type"::GetAllCustomerIds;
+            repeat
+                JResult := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+                GraphQLType := "Shpfy GraphQL Type"::GetNextAllCustomerIds;
+                if JsonHelper.GetJsonArray(JResult, JArray, 'data.customers.nodes') then begin
+                    FilterString := Format(JArray).TrimStart('[').TrimEnd(']').Replace('{"legacyResourceId":"', '').Replace('"}', '').Replace(',', '|');
+                    ShopifyCustomer.SetFilter(Id, FilterString);
+                    if not ShopifyCustomer.IsEmpty() then
+                        ShopifyCustomer.ModifyAll("Shop Id", Shop."Shop Id", false);
+                end;
+                if Parameters.ContainsKey('After') then
+                    Parameters.Set('After', JsonHelper.GetValueAsText(JResult, 'data.customers.pageInfo.endCursor'))
+                else
+                    Parameters.Add('After', JsonHelper.GetValueAsText(JResult, 'data.customers.pageInfo.endCursor'));
+            until not JsonHelper.GetValueAsBoolean(JResult, 'data.customers.pageInfo.hasNextPage');
+        end;
+        Commit();
     end;
 }

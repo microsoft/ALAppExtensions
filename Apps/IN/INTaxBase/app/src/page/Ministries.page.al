@@ -48,12 +48,14 @@ page 18546 "Ministries"
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    MinistryCodeLbl: Label 'Code eq %1', Comment = '%1= Ministry Code';
+                    EditinExcelFilters: Codeunit "Edit in Excel Filters";
                 begin
+                    EditinExcelFilters.AddField('Code', Enum::"Edit in Excel Filter Type"::Equal, Rec.Code, Enum::"Edit in Excel Edm Type"::"Edm.String");
+
                     EditinExcel.EditPageInExcel(
                         'Ministries',
-                        CurrPage.ObjectId(false),
-                        StrSubstNo(MinistryCodeLbl, Rec.Code));
+                        Page::Ministries,
+                        EditinExcelFilters);
                 end;
             }
         }

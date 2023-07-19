@@ -10,6 +10,8 @@ codeunit 9701 "Cues And KPIs"
 {
     SingleInstance = true;
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CuesAndKPIsImpl: Codeunit "Cues And KPIs Impl.";

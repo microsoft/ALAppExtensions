@@ -6,6 +6,8 @@
 codeunit 9751 "Web Service Management Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata AllObj = r,
                   tabledata AllObjWithCaption = r,
                   tabledata Field = r,
@@ -536,7 +538,7 @@ codeunit 9751 "Web Service Management Impl."
         TenantWebService.Published := Published;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Tenant Web Service", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Tenant Web Service", OnAfterDeleteEvent, '', false, false)]
     local procedure DeleteODataOnDeleteTenantWebService(var Rec: Record "Tenant Web Service"; RunTrigger: Boolean)
     var
         TenantWebServiceColumns: Record "Tenant Web Service Columns";

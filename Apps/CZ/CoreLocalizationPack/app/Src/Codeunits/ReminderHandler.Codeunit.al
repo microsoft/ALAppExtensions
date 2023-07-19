@@ -14,7 +14,7 @@ codeunit 11749 "Reminder Handler CZL"
 
         if Rec."Customer No." <> '' then begin
             Customer.Get(Rec."Customer No.");
-            Rec."Registration No. CZL" := Customer."Registration No. CZL";
+            Rec."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
             Rec."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
         end;
     end;
@@ -22,7 +22,12 @@ codeunit 11749 "Reminder Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder-Issue", 'OnAfterInitGenJnlLine', '', false, false)]
     local procedure UpdateBankInfoOnAfterInitGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; ReminderHeader: Record "Reminder Header")
     begin
+#if not CLEAN22
+#pragma warning disable AL0432
         GenJournalLine."VAT Date CZL" := ReminderHeader."Posting Date";
+#pragma warning restore AL0432
+#endif
+        GenJournalLine."VAT Reporting Date" := ReminderHeader."Posting Date";
         if GenJournalLine."Account Type" <> GenJournalLine."Account Type"::Customer then
             exit;
 
@@ -30,13 +35,22 @@ codeunit 11749 "Reminder Handler CZL"
         if ReminderHeader."Variable Symbol CZL" <> '' then
             GenJournalLine."Variable Symbol CZL" := ReminderHeader."Variable Symbol CZL"
         else
-            GenJournalLine."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(ReminderHeader."No.");
+            GenJournalLine."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(GenJournalLine."Document No.");
         GenJournalLine."Constant Symbol CZL" := ReminderHeader."Constant Symbol CZL";
         GenJournalLine."Bank Account Code CZL" := ReminderHeader."Bank Account Code CZL";
         GenJournalLine."Bank Account No. CZL" := ReminderHeader."Bank Account No. CZL";
         GenJournalLine."Transit No. CZL" := ReminderHeader."Transit No. CZL";
         GenJournalLine."IBAN CZL" := ReminderHeader."IBAN CZL";
         GenJournalLine."SWIFT Code CZL" := ReminderHeader."SWIFT Code CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder-Issue", 'OnBeforeIssuedReminderHeaderInsert', '', false, false)]
+    local procedure UpdateVariableSymbolOnBeforeIssuedReminderHeaderInsert(var IssuedReminderHeader: Record "Issued Reminder Header"; ReminderHeader: Record "Reminder Header")
+    begin
+        if IssuedReminderHeader."Variable Symbol CZL" <> '' then
+            exit;
+
+        IssuedReminderHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(IssuedReminderHeader."No.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Issued Reminder Header", 'OnBeforeDeleteEvent', '', false, false)]

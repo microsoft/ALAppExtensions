@@ -80,9 +80,8 @@ page 18687 "Allowed Sections"
                 trigger OnAction()
                 var
                     EditinExcel: Codeunit "Edit in Excel";
-                    SectionCodeLbl: Label 'Code eq %1', Comment = '%1 = TDS Section Code';
                 begin
-                    EditinExcel.EditPageInExcel('Allowed Sections', CurrPage.ObjectId(false), StrSubstNo(SectionCodeLbl, Rec."TDS Section"));
+                    EditinExcel.EditPageInExcel('Allowed Sections', Page::"Allowed Sections");
                 end;
             }
         }

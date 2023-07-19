@@ -27,7 +27,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
-    [Scope('OnPrem')]
     procedure OnActionTestReportDeposits()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -59,7 +58,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [HandlerFunctions('DimensionSetEntriesPageHandler')]
-    [Scope('OnPrem')]
     procedure OnActionDimensionsPostedBankDepositList()
     var
         PostedBankDepositHeader: Record "Posted Bank Deposit Header";
@@ -86,7 +84,6 @@ codeunit 139768 "UT Page Bank Deposit"
     [Test]
     [HandlerFunctions('DimensionSetEntriesPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionDimensionsPostedBankDepositSubform()
     var
         PostedBankDepositHeader: Record "Posted Bank Deposit Header";
@@ -106,7 +103,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionAccountLedgerEntriesPostedBankDepositSubform()
     var
         PostedBankDepositHeader: Record "Posted Bank Deposit Header";
@@ -134,7 +130,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionAccountCardPostedBankDepositSubform()
     var
         PostedBankDepositHeader: Record "Posted Bank Deposit Header";
@@ -159,7 +154,6 @@ codeunit 139768 "UT Page Bank Deposit"
     [Test]
     [HandlerFunctions('DimensionSetEntriesPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionDimensionsPostedBankDeposit()
     var
         PostedBankDepositHeader: Record "Posted Bank Deposit Header";
@@ -182,7 +176,6 @@ codeunit 139768 "UT Page Bank Deposit"
     [Test]
     [HandlerFunctions('EditDimensionSetEntriesPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionDimensionsDepositSubform()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -208,7 +201,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionAccountCardDepositSubform()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -236,7 +228,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionAccountLedgerEntriesDepositSubform()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -268,7 +259,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [HandlerFunctions('ApplyCustomerEntriesPageHandler')]
-    [Scope('OnPrem')]
     procedure OnActionApplyEntriesDepositSubform()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -298,7 +288,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [HandlerFunctions('ConfirmHandlerTRUE')]
-    [Scope('OnPrem')]
     procedure OnActionPostDeposit()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -326,7 +315,6 @@ codeunit 139768 "UT Page Bank Deposit"
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionDepositTestReportDeposit()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -346,7 +334,6 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [HandlerFunctions('DepositReportHandler,ConfirmHandlerTRUE')]
-    [Scope('OnPrem')]
     procedure OnActionPostAndPrintDeposit()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -374,7 +361,6 @@ codeunit 139768 "UT Page Bank Deposit"
     [Test]
     [HandlerFunctions('EditDimensionSetEntriesPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
     procedure OnActionDimensionsDeposit()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -397,7 +383,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [Test]
-    [Scope('OnPrem')]
     procedure TotalDepositLinesControlIsUpdatedWhenCreateDepositLine()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -425,7 +410,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [Test]
-    [Scope('OnPrem')]
     procedure CloseDepositPageWithEmptyPostingDate()
     var
         BankDepositHeader: Record "Bank Deposit Header";
@@ -998,7 +982,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [ModalPageHandler]
-    [Scope('OnPrem')]
     procedure EditDimensionSetEntriesPageHandler(var EditDimensionSetEntries: TestPage "Edit Dimension Set Entries")
     var
         DimensionValue: Record "Dimension Value";
@@ -1011,7 +994,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [ModalPageHandler]
-    [Scope('OnPrem')]
     procedure DimensionSetEntriesPageHandler(var DimensionSetEntries: TestPage "Dimension Set Entries")
     var
         DimensionCode: Variant;
@@ -1022,7 +1004,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [RequestPageHandler]
-    [Scope('OnPrem')]
     procedure DepositRequestPageHandler(var BankDeposit: TestRequestPage "Bank Deposit")
     var
         No: Variant;
@@ -1033,7 +1014,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [RequestPageHandler]
-    [Scope('OnPrem')]
     procedure DepositTestReportRequestPageHandler(var BankDepositTestReport: TestRequestPage "Bank Deposit Test Report")
     var
         No: Variant;
@@ -1044,7 +1024,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [ModalPageHandler]
-    [Scope('OnPrem')]
     procedure ApplyCustomerEntriesPageHandler(var ApplyCustomerEntries: TestPage "Apply Customer Entries")
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
@@ -1060,7 +1039,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [ModalPageHandler]
-    [Scope('OnPrem')]
     procedure GeneralJournalTemplateListPageHandler(var GeneralJournalTemplateList: TestPage "General Journal Template List")
     begin
         GeneralJournalTemplateList.FILTER.SetFilter(Name, LibraryVariableStorage.DequeueText());
@@ -1068,7 +1046,6 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [ModalPageHandler]
-    [Scope('OnPrem')]
     procedure GeneralJournalBatchesMPH(var GeneralJournalBatches: TestPage "General Journal Batches")
     begin
         GeneralJournalBatches.FILTER.SetFilter(Name, LibraryVariableStorage.DequeueText());
@@ -1076,13 +1053,11 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     [ReportHandler]
-    [Scope('OnPrem')]
     procedure DepositReportHandler(var BankDeposit: Report "Bank Deposit")
     begin
     end;
 
     [ConfirmHandler]
-    [Scope('OnPrem')]
     procedure ConfirmHandlerTRUE(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := true;

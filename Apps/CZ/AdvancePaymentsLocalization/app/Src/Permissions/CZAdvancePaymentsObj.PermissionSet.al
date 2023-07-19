@@ -13,6 +13,7 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
 #pragma warning restore AL0432
 #endif            
                   Codeunit "Adv. Payments Approv. Mgt. CZZ" = X,
+                  Codeunit "Calc. And Post VAT Handler CZZ" = X,
                   Codeunit "Calculate Customer Stats. CZZ" = X,
                   Codeunit "Calculate Vendor Stats. CZZ" = X,
                   Codeunit "Cash Document Line Handler CZZ" = X,
@@ -56,9 +57,6 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Codeunit "Sales-Post Handler CZZ" = X,
                   Codeunit "Show Preview Handler CZZ" = X,
                   Codeunit "Sugg. Wksh. Lines Handler CZZ" = X,
-#if not CLEAN19
-                  Codeunit "Sync.Dep.Fld-IssPaymOrdLn CZZ" = X,
-#endif
                   Codeunit "Upgrade Application CZZ" = X,
                   Codeunit "Upgrade Tag Definitions CZZ" = X,
                   Codeunit "VAT Entry Handler CZZ" = X,
@@ -75,6 +73,7 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Page "Pur. Adv. Letter Ent.Prev. CZZ" = X,
                   Page "Purch. Advance Letter CZZ" = X,
                   Page "Purch. Advance Letter Line CZZ" = X,
+                  Page "Purch. Adv. Letter Lines CZZ" = X,
                   Page "Purch. Advance Letters CZZ" = X,
                   Page "Purch. Adv. Letter Entries CZZ" = X,
                   Page "Purch. Adv. Letter FactBox CZZ" = X,
@@ -82,6 +81,7 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Page "Sal. Adv. Letter Ent.Prev. CZZ" = X,
                   Page "Sales Advance Letter CZZ" = X,
                   Page "Sales Advance Letter Line CZZ" = X,
+                  Page "Sales Adv. Letter Lines CZZ" = X,
                   Page "Sales Advance Letters CZZ" = X,
                   Page "Sales Adv. Letter Entries CZZ" = X,
                   Page "Sales Adv. Letter FactBox CZZ" = X,

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="SERVDECLITP-2023" Name="Service declaration purchase" Type="5" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="12214" FileType="2" ReadingWritingCodeunit="1276">
+    <DataExchLineDef LineType="0" Code="DEFAULT" Name="DEFAULT" ColumnCount="15">
+      <DataExchColumnDef ColumnNo="1" Name="EUROX" Show="false" DataType="0" Length="5" TextPaddingRequired="false" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Company VAT" Show="false" DataType="0" Length="11" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="File No." Show="false" DataType="0" Length="6" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Type" Show="false" DataType="0" Length="1" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Line No." Show="false" DataType="0" Length="5" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="6" Name="Country/Region Code" Show="false" DataType="0" Length="2" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="7" Name="Partner VAT ID" Show="false" DataType="0" Length="12" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="8" Name="Amount" Show="false" DataType="0" Length="13" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="9" Name="Source Currency Amount" Show="false" DataType="0" Length="13" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="10" Name="Document No." Show="false" DataType="0" Length="15" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="11" Name="Document Date" Show="false" DataType="0" Length="6" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="12" Name="Service Tariff No." Show="false" DataType="0" Length="6" TextPaddingRequired="true" PadCharacter="0" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="13" Name="Transport Method" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="14" Name="Payment Method" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="15" Name="Country/Region of Payment Code" Show="false" DataType="0" Length="2" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="5024" Name="" KeyIndex="2" MappingCodeunit="1269" PostMappingCodeunit="12215">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" DefaultValue="EUROX" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="12214" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="12215" TransformationRule="NUMBERSONLY">
+          <TransformationRules>
+            <Code>NUMBERSONLY</Code>
+            <Description>Numbers Only</Description>
+            <TransformationType>6</TransformationType>
+            <FindValue>\D+</FindValue>
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="4" UseDefaultValue="true" DefaultValue="3" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="12216" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="6" />
+        <DataExchFieldMapping ColumnNo="7" FieldID="15" />
+        <DataExchFieldMapping ColumnNo="8" FieldID="12220" TransformationRule="ROUNDTOINT">
+          <TransformationRules>
+            <Code>ALPHANUMERIC_ONLY</Code>
+            <Description>Alphanumeric Text Only</Description>
+            <TransformationType>7</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+          <TransformationRules>
+            <Code>ROUNDTOINT</Code>
+            <Description>Round to Integer</Description>
+            <TransformationType>14</TransformationType>
+            <FindValue>&amp;#032;</FindValue>
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>1.00</Precision>
+            <Direction>=</Direction>
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="9" FieldID="12221" Optional="true" TransformationRule="ROUNDTOINT">
+          <TransformationRules>
+            <Code>ALPHANUMERIC_ONLY</Code>
+            <Description>Alphanumeric Text Only</Description>
+            <TransformationType>7</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+          <TransformationRules>
+            <Code>ROUNDTOINT</Code>
+            <Description>Round to Integer</Description>
+            <TransformationType>14</TransformationType>
+            <FindValue>&amp;#032;</FindValue>
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>1.00</Precision>
+            <Direction>=</Direction>
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="10" FieldID="12222" Optional="true" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="12218" />
+        <DataExchFieldMapping ColumnNo="12" FieldID="12224" TransformationRule="NUMBERSONLY">
+          <TransformationRules>
+            <Code>NUMBERSONLY</Code>
+            <Description>Numbers Only</Description>
+            <TransformationType>6</TransformationType>
+            <FindValue>\D+</FindValue>
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="13" FieldID="12225" TransformationRule="FIRSTCHAR">
+          <TransformationRules>
+            <Code>FIRSTCHAR</Code>
+            <Description>First Character</Description>
+            <TransformationType>4</TransformationType>
+            <FindValue>&amp;#032;</FindValue>
+            <ReplaceValue />
+            <StartPosition>1</StartPosition>
+            <Length>1</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="14" FieldID="12226" TransformationRule="LOOKUPPAYMENTMETHOD">
+          <TransformationRules>
+            <Code>LOOKUPPAYMENTMETHOD</Code>
+            <Description>Lookup Payment Method</Description>
+            <TransformationType>13</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>289</TableID>
+            <SourceFieldID>1</SourceFieldID>
+            <TargetFieldID>12173</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="15" FieldID="12227" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

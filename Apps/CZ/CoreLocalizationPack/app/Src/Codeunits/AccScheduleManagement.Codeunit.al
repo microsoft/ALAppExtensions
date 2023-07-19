@@ -23,7 +23,8 @@ codeunit 11700 "Acc. Schedule Management CZL"
                     ;
         end;
     end;
-
+#if not CLEAN21
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Name", 'OnBeforePrint', '', false, false)]
     local procedure AccScheduleNameOnBeforePrint(var AccScheduleName: Record "Acc. Schedule Name"; var IsHandled: Boolean)
     var
@@ -57,12 +58,41 @@ codeunit 11700 "Acc. Schedule Management CZL"
         end;
         IsHandled := true;
     end;
+#pragma warning restore AL0432
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Financial Report Mgt.", 'OnBeforePrint', '', false, false)]
+    local procedure PrintAccScheduleByType(var FinancialReport: Record "Financial Report"; var IsHandled: Boolean)
+    var
+        AccScheduleName: Record "Acc. Schedule Name";
+        BalanceSheetCZL: Report "Balance Sheet CZL";
+        IncomeStatementCZL: Report "Income Statement CZL";
+    begin
+        OnBeforePrintAccScheduleByType(FinancialReport, IsHandled);
+        if IsHandled then
+            exit;
+
+        AccScheduleName.Get(FinancialReport."Financial Report Row Group");
+        case AccScheduleName."Acc. Schedule Type CZL" of
+            AccScheduleName."Acc. Schedule Type CZL"::"Balance Sheet":
+                begin
+                    BalanceSheetCZL.SetFinancialReportName(FinancialReport.Name);
+                    BalanceSheetCZL.Run();
+                    IsHandled := true;
+                end;
+            AccScheduleName."Acc. Schedule Type CZL"::"Income Statement":
+                begin
+                    IncomeStatementCZL.SetFinancialReportName(FinancialReport.Name);
+                    IncomeStatementCZL.Run();
+                    IsHandled := true;
+                end;
+        end;
+    end;
 
     [EventSubscriber(ObjectType::Page, Page::"Acc. Schedule Overview", 'OnBeforePrint', '', false, false)]
     local procedure AccScheduleOverviewOnBeforePrint(var AccScheduleLine: Record "Acc. Schedule Line"; ColumnLayoutName: Code[10]; var IsHandled: Boolean)
     var
         AccScheduleName: Record "Acc. Schedule Name";
-        AccountSchedule: Report "Account Schedule";
         BalanceSheetCZL: Report "Balance Sheet CZL";
         IncomeStatementCZL: Report "Income Statement CZL";
         DateFilter2, GLBudgetFilter2, BusUnitFilter, CostBudgetFilter2, Dim1Filter, Dim2Filter, Dim3Filter, Dim4Filter : Text;
@@ -82,19 +112,13 @@ codeunit 11700 "Acc. Schedule Management CZL"
 
         AccScheduleName.Get(AccScheduleLine."Schedule Name");
         case AccScheduleName."Acc. Schedule Type CZL" of
-            AccScheduleName."Acc. Schedule Type CZL"::Standard:
-                begin
-                    AccountSchedule.SetAccSchedName(AccScheduleName.Name);
-                    AccountSchedule.SetColumnLayoutName(ColumnLayoutName);
-                    AccountSchedule.SetFilters(DateFilter2, GLBudgetFilter2, CostBudgetFilter2, BusUnitFilter, Dim1Filter, Dim2Filter, Dim3Filter, Dim4Filter);
-                    AccountSchedule.Run();
-                end;
             AccScheduleName."Acc. Schedule Type CZL"::"Balance Sheet":
                 begin
                     BalanceSheetCZL.SetAccSchedName(AccScheduleName.Name);
                     BalanceSheetCZL.SetColumnLayoutName(ColumnLayoutName);
                     BalanceSheetCZL.SetFilters(DateFilter2, GLBudgetFilter2, CostBudgetFilter2, BusUnitFilter, Dim1Filter, Dim2Filter, Dim3Filter, Dim4Filter);
                     BalanceSheetCZL.Run();
+                    IsHandled := true;
                 end;
             AccScheduleName."Acc. Schedule Type CZL"::"Income Statement":
                 begin
@@ -102,9 +126,9 @@ codeunit 11700 "Acc. Schedule Management CZL"
                     IncomeStatementCZL.SetColumnLayoutName(ColumnLayoutName);
                     IncomeStatementCZL.SetFilters(DateFilter2, GLBudgetFilter2, CostBudgetFilter2, BusUnitFilter, Dim1Filter, Dim2Filter, Dim3Filter, Dim4Filter);
                     IncomeStatementCZL.Run();
+                    IsHandled := true;
                 end;
         end;
-        IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::AccSchedManagement, 'OnAfterCalcCellValue', '', false, false)]
@@ -113,14 +137,11 @@ codeunit 11700 "Acc. Schedule Management CZL"
         StartDate: Date;
         EndDate: Date;
     begin
-        case AccSchedLine."Totaling Type" of
-            AccSchedLine."Totaling Type"::"Custom CZL":
-                begin
-                    AccSchedLine.CopyFilters(SourceAccScheduleLine);
-                    StartDate := SourceAccScheduleLine.GetRangeMin("Date Filter");
-                    EndDate := SourceAccScheduleLine.GetRangeMax("Date Filter");
-                    Result := AccSChedExtensionMgtCZL.CalcCustomFunc(AccSchedLine, ColumnLayout, StartDate, EndDate);
-                end;
+        if AccSchedLine."Totaling Type" = AccSchedLine."Totaling Type"::"Custom CZL" then begin
+            AccSchedLine.CopyFilters(SourceAccScheduleLine);
+            StartDate := SourceAccScheduleLine.GetRangeMin("Date Filter");
+            EndDate := SourceAccScheduleLine.GetRangeMax("Date Filter");
+            Result := AccSChedExtensionMgtCZL.CalcCustomFunc(AccSchedLine, ColumnLayout, StartDate, EndDate);
         end;
     end;
 
@@ -241,9 +262,16 @@ codeunit 11700 "Acc. Schedule Management CZL"
             until (ColumnLayout.Next() = 0) or NonZero;
         exit(not NonZero);
     end;
-
+#if not CLEAN22
+    [Obsolete('The event will be replaced by OnBeforePrintAccScheduleByType.', '22.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAccScheduleNameOnBeforePrint(var AccScheduleName: Record "Acc. Schedule Name"; var IsHandled: Boolean)
+    begin
+    end;
+#endif
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePrintAccScheduleByType(var FinancialReport: Record "Financial Report"; var IsHandled: Boolean)
     begin
     end;
 

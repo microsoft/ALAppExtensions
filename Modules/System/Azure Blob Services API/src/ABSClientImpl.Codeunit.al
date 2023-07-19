@@ -7,6 +7,8 @@
 codeunit 9051 "ABS Client Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         ABSOperationPayload: Codeunit "ABS Operation Payload";
@@ -106,10 +108,10 @@ codeunit 9051 "ABS Client Impl."
     [NonDebuggable]
     procedure ListBlobs(var ABSContainerContent: Record "ABS Container Content"; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        ABSOperationResponse: Codeunit "ABS Operation Response";
         ABSHelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        ResponseText: Text;
+        NextMarker, ResponseText : Text;
         NodeList: XmlNodeList;
     begin
         ABSOperationPayload.SetOperation(Operation::ListBlobs);
@@ -117,8 +119,33 @@ codeunit 9051 "ABS Client Impl."
 
         ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(ListBlobsContainercOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
 
-        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText);
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText, NextMarker);
+        ABSOperationResponse.SetNextMarker(NextMarker);
+
         ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
+
+        exit(ABSOperationResponse);
+    end;
+
+    [NonDebuggable]
+    procedure ListBlobs(var BlobList: Dictionary of [Text, XmlNode]; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    var
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        Operation: Enum "ABS Operation";
+        NextMarker, ResponseText : Text;
+        NodeList: XmlNodeList;
+    begin
+        Clear(BlobList);
+        ABSOperationPayload.SetOperation(Operation::ListBlobs);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(ListBlobsContainercOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
+
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText, NextMarker);
+        ABSOperationResponse.SetNextMarker(NextMarker);
+
+        ABSHelperLibrary.BlobNodeListToBlobList(NodeList, BlobList);
 
         exit(ABSOperationResponse);
     end;
@@ -177,32 +204,32 @@ codeunit 9051 "ABS Client Impl."
         SourceInStream: InStream;
     begin
         if UploadIntoStream('', '', '', FileName, SourceInStream) then
-            ABSOperationResponse := PutBlobBlockBlobStream(Filename, SourceInStream, ABSOptionalParameters);
+            ABSOperationResponse := PutBlobBlockBlobStream(Filename, SourceInStream, '', ABSOptionalParameters);
 
         exit(ABSOperationResponse);
     end;
 
-    procedure PutBlobBlockBlobStream(BlobName: Text; var SourceInStream: InStream; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobStream(BlobName: Text; var SourceInStream: InStream; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
         SourceContentVariant: Variant;
     begin
         SourceContentVariant := SourceInStream;
-        ABSOperationResponse := PutBlobBlockBlob(BlobName, ABSOptionalParameters, SourceContentVariant);
+        ABSOperationResponse := PutBlobBlockBlob(BlobName, ContentType, ABSOptionalParameters, SourceContentVariant);
         exit(ABSOperationResponse);
     end;
 
-    procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
         SourceContentVariant: Variant;
     begin
         SourceContentVariant := SourceText;
-        ABSOperationResponse := PutBlobBlockBlob(BlobName, ABSOptionalParameters, SourceContentVariant);
+        ABSOperationResponse := PutBlobBlockBlob(BlobName, ContentType, ABSOptionalParameters, SourceContentVariant);
         exit(ABSOperationResponse);
     end;
 
-    local procedure PutBlobBlockBlob(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var SourceContentVariant: Variant): Codeunit "ABS Operation Response"
+    local procedure PutBlobBlockBlob(BlobName: Text; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var SourceContentVariant: Variant): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
@@ -218,12 +245,12 @@ codeunit 9051 "ABS Client Impl."
             SourceContentVariant.IsInStream():
                 begin
                     SourceInStream := SourceContentVariant;
-                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream);
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream, ContentType);
                 end;
             SourceContentVariant.IsText():
                 begin
                     SourceText := SourceContentVariant;
-                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText);
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText, ContentType);
                 end;
         end;
 
@@ -308,12 +335,12 @@ codeunit 9051 "ABS Client Impl."
             SourceContentVariant.IsInStream():
                 begin
                     SourceInStream := SourceContentVariant;
-                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream);
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream, ContentType);
                 end;
             SourceContentVariant.IsText():
                 begin
                     SourceText := SourceContentVariant;
-                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText);
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText, ContentType);
                 end;
         end;
 
@@ -613,12 +640,12 @@ codeunit 9051 "ABS Client Impl."
             SourceContentVariant.IsInStream():
                 begin
                     SourceInStream := SourceContentVariant;
-                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream);
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream, '');
                 end;
             SourceContentVariant.IsText():
                 begin
                     SourceText := SourceContentVariant;
-                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText);
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText, '');
                 end;
         end;
 

@@ -258,43 +258,43 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         // Credit Memo->AccountingSupplierParty
         OIOUBLXMLGenerator.InsertAccountingSupplierParty(XMLCurrNode, ServiceCrMemoHeader."Salesperson Code");
 
-        with ServiceCrMemoHeader do begin
-            // Credit Memo->AccountingCustomerParty
-            BillToAddress.Address := "Bill-to Address";
-            BillToAddress."Address 2" := "Bill-to Address 2";
-            BillToAddress.City := "Bill-to City";
-            BillToAddress."Post Code" := "Bill-to Post Code";
-            BillToAddress."Country/Region Code" := "Bill-to Country/Region Code";
-            PartyContact.Name := "Contact Name";
-            PartyContact."Phone No." := "Phone No.";
-            PartyContact."Fax No." := "Fax No.";
-            PartyContact."E-Mail" := "E-Mail";
-            OIOUBLXMLGenerator.InsertAccountingCustomerParty(XMLCurrNode,
-              "OIOUBL-GLN",
-              "VAT Registration No.",
-              "Bill-to Name",
-              BillToAddress,
-              PartyContact);
+        // Credit Memo->AccountingCustomerParty
+        BillToAddress.Address := ServiceCrMemoHeader."Bill-to Address";
+        BillToAddress."Address 2" := ServiceCrMemoHeader."Bill-to Address 2";
+        BillToAddress.City := ServiceCrMemoHeader."Bill-to City";
+        BillToAddress."Post Code" := ServiceCrMemoHeader."Bill-to Post Code";
+        BillToAddress."Country/Region Code" := ServiceCrMemoHeader."Bill-to Country/Region Code";
+        PartyContact.Name := ServiceCrMemoHeader."Contact Name";
+        PartyContact."Phone No." := ServiceCrMemoHeader."Phone No.";
+        PartyContact."Fax No." := ServiceCrMemoHeader."Fax No.";
+        PartyContact."E-Mail" := ServiceCrMemoHeader."E-Mail";
+        OIOUBLXMLGenerator.InsertAccountingCustomerParty(XMLCurrNode,
+          ServiceCrMemoHeader."OIOUBL-GLN",
+          ServiceCrMemoHeader."VAT Registration No.",
+          ServiceCrMemoHeader."Bill-to Name",
+          BillToAddress,
+          PartyContact);
+        OnCreateXMLOnAfterInsertAccountingCustomerParty(XMLCurrNode, ServiceCrMemoHeader);
 
-            // CreditMemo->Allowance Charge
-            ServiceCrMemoLine2.RESET();
-            ServiceCrMemoLine2.COPY(ServiceCrMemoLine);
-            ServiceCrMemoLine2.SETRANGE(Type);
-            ServiceCrMemoLine2.SETRANGE("No.");
-            ServiceCrMemoLine2.CALCSUMS(Amount, "Amount Including VAT", "Inv. Discount Amount");
+        // CreditMemo->Allowance Charge
+        ServiceCrMemoLine2.RESET();
+        ServiceCrMemoLine2.COPY(ServiceCrMemoLine);
+        ServiceCrMemoLine2.SETRANGE(Type);
+        ServiceCrMemoLine2.SETRANGE("No.");
+        ServiceCrMemoLine2.CALCSUMS(Amount, "Amount Including VAT", "Inv. Discount Amount");
 
-            TotalInvDiscountAmount := 0;
-            if ServiceCrMemoLine2.FINDSET() then
-                repeat
-                    ExcludeVAT(ServiceCrMemoLine2, ServiceCrMemoHeader."Prices Including VAT");
-                    TotalInvDiscountAmount += ServiceCrMemoLine2."Inv. Discount Amount";
-                until ServiceCrMemoLine2.NEXT() = 0;
+        TotalInvDiscountAmount := 0;
+        if ServiceCrMemoLine2.FINDSET() then
+            repeat
+                ExcludeVAT(ServiceCrMemoLine2, ServiceCrMemoHeader."Prices Including VAT");
+                TotalInvDiscountAmount += ServiceCrMemoLine2."Inv. Discount Amount";
+            until ServiceCrMemoLine2.NEXT() = 0;
 
-            if TotalInvDiscountAmount > 0 then
-                OIOUBLXMLGenerator.InsertAllowanceCharge(XMLCurrNode, 1, 'Rabat',
-                  OIOUBLXMLGenerator.GetTaxCategoryID(ServiceCrMemoLine2."VAT Calculation Type".AsInteger(), ServiceCrMemoLine2."VAT %"),
-                  TotalInvDiscountAmount, CurrencyCode, ServiceCrMemoLine2."VAT %");
-        end;
+        if TotalInvDiscountAmount > 0 then
+            OIOUBLXMLGenerator.InsertAllowanceCharge(XMLCurrNode, 1, 'Rabat',
+              OIOUBLXMLGenerator.GetTaxCategoryID(ServiceCrMemoLine2."VAT Calculation Type".AsInteger(), ServiceCrMemoLine2."VAT %"),
+              TotalInvDiscountAmount, CurrencyCode, ServiceCrMemoLine2."VAT %");
+
 
         ServiceCrMemoLine2.RESET();
         ServiceCrMemoLine2.COPY(ServiceCrMemoLine);
@@ -381,6 +381,11 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(var XMLdocOut: XmlDocument; ServiceCrMemoHeader: Record "Service Cr.Memo Header"; DocNameSpace: Text[250]; DocNameSpace2: Text[250])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnAfterInsertAccountingCustomerParty(var XMLCurrNode: XmlElement; ServiceCrMemoHeader: Record "Service Cr.Memo Header")
     begin
     end;
 }

@@ -255,7 +255,7 @@ page 130451 "AL Test Tool"
                     begin
                         BindSubscription(TestRunnerProgessDialog);
                         TestSuiteMgt.RunTestSuiteSelection(Rec);
-                        CurrPage.Update(true);
+                        CurrPage.Update(false);
                     end;
                 }
                 action(RunSelectedTests)

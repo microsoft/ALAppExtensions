@@ -9,13 +9,15 @@
 table 9222 "Application User Settings"
 {
     Access = Public;
+    InherentEntitlements = rimX;
+    InherentPermissions = rimX;
     DataPerCompany = false;
     ReplicateData = false;
 
     fields
     {
         /// <summary>
-        /// The user security ID of the user for whom the settings are applied.
+        /// The user security ID of the user to whom the settings apply.
         /// </summary>
         field(1; "User Security ID"; Guid)
         {

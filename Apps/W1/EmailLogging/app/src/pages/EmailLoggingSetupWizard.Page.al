@@ -36,15 +36,22 @@ page 1681 "Email Logging Setup Wizard"
                     ShowCaption = false;
                 }
             }
+#if not CLEAN22
             group(FeatureNotEnabled)
             {
                 Caption = '';
-                Visible = not FeatureEnabled;
+                Visible = false;
+                ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
 
                 group(FeatureHeader)
                 {
                     ShowCaption = false;
                     InstructionalText = 'The Email Logging Using the Microsoft Graph API feature is not enabled. To continue, open the Feature Management page and enable the feature.';
+                    ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
                 }
                 field(EnableFeature; OpenFeatureManagementTxt)
                 {
@@ -53,15 +60,18 @@ page 1681 "Email Logging Setup Wizard"
                     ShowCaption = false;
                     ToolTip = 'Open the Feature Management page.';
                     Style = StandardAccent;
+                    ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
 
                     trigger OnDrillDown()
                     begin
                         Commit();
                         Page.RunModal(Page::"Feature Management");
-                        FeatureEnabled := EmailLoggingManagement.IsEmailLoggingUsingGraphApiFeatureEnabled();
                     end;
                 }
             }
+#endif
             group(Step1)
             {
                 Caption = '';
@@ -517,7 +527,6 @@ page 1681 "Email Logging Setup Wizard"
     begin
         Session.LogMessage('0000HAF', StrSubstNo(ContextCompanyTxt, CompanyName()), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
         LoadTopBanners();
-        FeatureEnabled := EmailLoggingManagement.IsEmailLoggingUsingGraphApiFeatureEnabled();
         EmailBatchSize := EmailLoggingSetup.GetDefaultEmailBatchSize();
 
         if not EmailLoggingSetup.Get() then begin
@@ -548,8 +557,7 @@ page 1681 "Email Logging Setup Wizard"
 
     trigger OnOpenPage()
     begin
-        if FeatureEnabled then
-            ShowIntroStep();
+        ShowIntroStep();
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -577,7 +585,6 @@ page 1681 "Email Logging Setup Wizard"
         [NonDebuggable]
         ClientSecret: Text[250];
         RedirectUrl: Text[2048];
-        FeatureEnabled: Boolean;
         BackEnabled: Boolean;
         NextEnabled: Boolean;
         FinishEnabled: Boolean;
@@ -602,7 +609,9 @@ page 1681 "Email Logging Setup Wizard"
         ValidInteractionTemplateSetup: Boolean;
         ErrorText: Text;
         CategoryTok: Label 'Email Logging', Locked = true;
+#if not CLEAN22
         OpenFeatureManagementTxt: Label 'Open Feature Management';
+#endif
         NotSetUpQst: Label 'Email logging is not set up. \\Are you sure that you want to exit?';
         CreateEmailLoggingJobQueue: Boolean;
         UpdateSetupTxt: Label 'Update email logging setup record.', Locked = true;

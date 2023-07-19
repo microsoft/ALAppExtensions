@@ -6,6 +6,8 @@
 codeunit 1925 "Sampling Perf. Profiler Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TempBlob: Codeunit "Temp Blob";

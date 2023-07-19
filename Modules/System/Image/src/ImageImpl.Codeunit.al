@@ -6,6 +6,8 @@
 codeunit 3970 "Image Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         TempBlob: Codeunit "Temp Blob";
@@ -283,8 +285,10 @@ codeunit 3970 "Image Impl."
     var
         Image: DotNet Image;
         Size, Width, Height : Integer;
+        MaxSize: Integer;
     begin
-        if TempBlob.Length() > 5000000 then begin
+        MaxSize := 5242880; // 5MB
+        if TempBlob.Length() > MaxSize then begin
             Session.LogMessage('0000FMA', StrSubstNo(ImageTooLargeTxt, TempBlob.Length()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
             System.Clear(TempBlob);
             Error(ImageTooLargeErr);

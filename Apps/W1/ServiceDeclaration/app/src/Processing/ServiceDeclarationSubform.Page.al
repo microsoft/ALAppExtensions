@@ -50,7 +50,7 @@ page 5024 "Service Declaration Subform"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the VAT registration No. of the customer or vendor associated with a source entry.';
-                    ObsoleteReason = 'This relation is now stored in the field Financial Report Column Group of the table Financial Reports';
+                    ObsoleteReason = 'Replaced with VAT Reg. No.';
                     ObsoleteState = Pending;
                     ObsoleteTag = '22.0';
                     Visible = false;

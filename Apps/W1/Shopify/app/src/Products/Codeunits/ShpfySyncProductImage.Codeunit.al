@@ -19,7 +19,8 @@ codeunit 30184 "Shpfy Sync Product Image"
 
     var
         Shop: Record "Shpfy Shop";
-        ImageExport: Codeunit "Shpfy Product Image Export";
+        ProductImageExport: Codeunit "Shpfy Product Image Export";
+        ProductFilter: Text;
 
     /// <summary> 
     /// Export Images.
@@ -29,10 +30,12 @@ codeunit 30184 "Shpfy Sync Product Image"
         ShopifyProduct: Record "Shpfy Product";
     begin
         ShopifyProduct.SetRange("Shop Code", Shop.Code);
+        if ProductFilter <> '' then
+            ShopifyProduct.SetFilter(Id, ProductFilter);
         if ShopifyProduct.FindSet() then
             repeat
                 Commit();
-                if ImageExport.Run(ShopifyProduct) then;
+                if ProductImageExport.Run(ShopifyProduct) then;
             until ShopifyProduct.Next() = 0;
     end;
 
@@ -87,7 +90,7 @@ codeunit 30184 "Shpfy Sync Product Image"
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         Shop := ShopifyShop;
-        ImageExport.SetShop(Shop);
+        ProductImageExport.SetShop(Shop);
     end;
 
     /// <summary> 
@@ -98,15 +101,20 @@ codeunit 30184 "Shpfy Sync Product Image"
     /// <returns>Return value of type Boolean.</returns>
     local procedure UpdateItemImage(Item: Record Item; ImageUrl: Text): Boolean
     var
-        Client: HttpClient;
-        Response: HttpResponseMessage;
-        Stream: InStream;
+        HttpClient: HttpClient;
+        HttpResponseMessage: HttpResponseMessage;
+        InStream: InStream;
     begin
-        if Client.Get(ImageUrl, Response) then begin
-            Response.Content.ReadAs(Stream);
+        if HttpClient.Get(ImageUrl, HttpResponseMessage) then begin
+            HttpResponseMessage.Content.ReadAs(InStream);
             Clear(Item.Picture);
-            Item.Picture.ImportStream(Stream, Item.Description);
+            Item.Picture.ImportStream(InStream, Item.Description);
             Item.Modify();
         end;
+    end;
+
+    internal procedure SetProductFilter(FilterText: Text)
+    begin
+        ProductFilter := FilterText;
     end;
 }

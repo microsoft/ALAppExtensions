@@ -154,37 +154,19 @@ codeunit 31277 "Workflow Handler CZC"
         WorkflowManagement.HandleEvent(RunWorkflowOnAfterReleaseCompensationCode(), CompensationHeaderCZC);
     end;
 
-#if not CLEAN19
-#pragma warning disable AL0432
-#endif
     [EventSubscriber(ObjectType::Table, Database::"Compensation Header CZC", 'OnCheckCompensationReleaseRestrictions', '', false, false)]
-#if not CLEAN19
-#pragma warning restore AL0432
-#endif
     local procedure CheckCompensationReleaseRestrictions(var Sender: Record "Compensation Header CZC")
     begin
         CheckRecordHasUsageRestrictions(Sender);
     end;
 
-#if not CLEAN19
-#pragma warning disable AL0432
-#endif
     [EventSubscriber(ObjectType::Table, Database::"Compensation Header CZC", 'OnCheckCompensationPostRestrictions', '', false, false)]
-#if not CLEAN19
-#pragma warning restore AL0432
-#endif
     local procedure CheckCompensationPostRestrictions(var Sender: Record "Compensation Header CZC")
     begin
         CheckRecordHasUsageRestrictions(Sender);
     end;
 
-#if not CLEAN19
-#pragma warning disable AL0432
-#endif
     [EventSubscriber(ObjectType::Table, Database::"Compensation Header CZC", 'OnCheckCompensationPrintRestrictions', '', false, false)]
-#if not CLEAN19
-#pragma warning restore AL0432
-#endif
     local procedure CheckCompensationPrintRestrictions(var Sender: Record "Compensation Header CZC")
     begin
         CheckRecordHasUsageRestrictions(Sender);

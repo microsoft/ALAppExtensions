@@ -6,6 +6,8 @@
 codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata "Retention Policy Log Entry" = r; // read through RecRef
 
     var
@@ -13,6 +15,7 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         FutureExpirationDateWarningLbl: Label 'The expiration date %1 for table %2, %3, must be at least two days before the current date.', Comment = '%1 = a date, %2 = a id of a table (integer),%3 = the caption of the table.';
         AllRecordsFilterInfoLbl: Label 'Applying filters: Table ID: %1, All Records, Expiration Date: %2.', Comment = '%1 = a id of a table (integer), %2 = a date';
         NoRecordsToDeleteLbl: Label 'There are no records to delete for table ID %1, %2.', Comment = '%1 = a id of a table (integer), %2 = the caption of the table.';
+        OldestRecordYoungerThanExpirationLbl: Label 'The oldest record in table ID %1, %2 is younger than the earliest expiration date. There are no records to delete.', Comment = '%1 = a id of a table (integer), %2 = the caption of the table.';
         MinExpirationDateErr: Label 'The expiration date for table %1, %2 must be at least %3 days before the current date. Please update the retention policy.', Comment = '%1 = table number, %2 = table caption, %3 = integer';
         RecordReferenceIndirectPermission: Interface "Record Reference";
 
@@ -85,8 +88,13 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         OldestRecordDate := GetOldestRecordDate(RetentionPolicySetup);
         NumberOfDays := YoungestExpirationDate - OldestRecordDate;
 
+        if NumberOfDays <= 0 then begin
+            RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(OldestRecordYoungerThanExpirationLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
+            exit(false);
+        end;
+
         CurrDate := OldestRecordDate;
-        For i := 1 to NumberOfDays do begin
+        for i := 1 to NumberOfDays do begin
             CurrDate := CalcDate('<+1D>', CurrDate);
             RecordRef.MarkedOnly(false);
 
@@ -120,7 +128,7 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
     begin
         RetentionPolicySetupLine.SetRange("Table ID", RetentionPolicySetup."Table Id");
         RetentionPolicySetupLine.SetRange(Enabled, true);
-        if RetentionPolicySetupLine.FindSet(false, false) then
+        if RetentionPolicySetupLine.FindSet(false) then
             repeat
                 if RetentionPeriod.Get(RetentionPolicySetupLine."Retention Period") then
                     ExpirationDate := CalculateExpirationDate(RetentionPeriod);
@@ -142,7 +150,7 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         RetentionPolicySetupLine.SetCurrentKey("Date Field No.");
         RetentionPolicySetupLine.SetRange("Table ID", RetentionPolicySetup."Table ID");
         RetentionPolicySetupLine.SetRange(Enabled, true);
-        if RetentionPolicySetupLine.FindSet(false, false) then
+        if RetentionPolicySetupLine.FindSet(false) then
             repeat
                 if RetentionPolicySetupLine."Date Field No." <> PrevDateFieldNo then begin
                     RecordRef.SetView(StrSubstNo(ViewStringTxt, RetentionPolicySetupLine."Date Field No."));
@@ -207,7 +215,7 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
     begin
         RetentionPolicySetupLine.SetRange("Table ID", RetentionPolicySetup."Table ID");
         RetentionPolicySetupLine.SetRange(Enabled, true);
-        if RetentionPolicySetupLine.FindSet(false, false) then
+        if RetentionPolicySetupLine.FindSet(false) then
             repeat
                 if not RetentionPeriod.Get(RetentionPolicySetupLine."Retention Period") then
                     exit;
@@ -267,6 +275,6 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
 
     local procedure Yesterday(): Date
     begin
-        Exit(CalcDate('<-1D>', Today()))
+        exit(CalcDate('<-1D>', Today()))
     end;
 }

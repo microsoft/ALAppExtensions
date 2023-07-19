@@ -16,7 +16,7 @@ page 20353 "Banking Apps"
     DeleteAllowed = false;
     Extensible = false;
     AboutTitle = 'Connect to banks';
-    AboutText = 'This page lists apps that you can use to connect with banks and easily import bank transactions and transfer funds. You can filter the list to find apps that offer connections in specific countries.';
+    AboutText = 'The banking apps in this list let you easily import bank transactions and transfer funds. Filter the list to find out which apps are supported in which countries.';
 
     layout
     {
@@ -48,7 +48,7 @@ page 20353 "Banking Apps"
                     Caption = 'Logo';
                     ToolTip = 'Specifies the logo of the app.';
                 }
-                field(SupportedCountry; Rec.Country)
+                field(SupportedCountry; Rec."Country/Region")
                 {
                     ApplicationArea = All;
                     Caption = 'Supported Country';
@@ -112,7 +112,7 @@ page 20353 "Banking Apps"
         ConnectivityApps.LoadImages(Rec);
 
         CompanyInformation.Get();
-        Rec.SetRange(Country, CompanyInformation."Country/Region Code");
+        Rec.SetRange("Country/Region", CompanyInformation."Country/Region Code");
 
         FeatureTelemetry.LogUptake('0000I4N', 'Connectivity Apps', Enum::"Feature Uptake Status"::Discovered);
     end;

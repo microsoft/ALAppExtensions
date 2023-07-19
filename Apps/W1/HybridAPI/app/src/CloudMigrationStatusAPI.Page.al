@@ -149,6 +149,17 @@ page 40021 "Cloud Migration Status API"
 
     [ServiceEnabled]
     [Scope('Cloud')]
+    procedure CompleteCloudMigration(var ActionContext: WebServiceActionContext)
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        HybridCloudManagement.CompleteCloudMigration();
+        FeatureTelemetry.LogUsage('0000JV6', HybridCloudManagement.GetFeatureTelemetryName(), 'Cloud migration API Completed');
+    end;
+
+    [ServiceEnabled]
+    [Scope('Cloud')]
     procedure DisableReplication(var ActionContext: WebServiceActionContext)
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";

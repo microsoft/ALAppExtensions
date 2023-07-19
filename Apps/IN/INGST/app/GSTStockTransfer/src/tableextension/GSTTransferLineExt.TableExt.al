@@ -29,7 +29,6 @@ tableextension 18392 "GST Transfer Line Ext" extends "Transfer Line"
             DataClassification = CustomerContent;
             Caption = 'GST Group Code';
             TableRelation = "GST Group";
-
             trigger OnValidate()
             begin
                 Rec."HSN/SAC Code" := '';

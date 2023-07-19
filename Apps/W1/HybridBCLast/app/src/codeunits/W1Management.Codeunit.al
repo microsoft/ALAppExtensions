@@ -56,6 +56,14 @@ codeunit 4026 "W1 Management"
         HybridReplicationSummary.Modify();
 
         HybridCloudManagement.SetUpgradePendingOnReplicationRunCompleted(RunId, SubscriptionId, NotificationText);
+
+        if HybridCloudManagement.CheckFixDataOnReplicationCompleted(NotificationText) then begin
+            HybridReplicationSummary.Get(RunId);
+            HybridReplicationSummary."Data Repair Status" := HybridReplicationSummary."Data Repair Status"::Pending;
+            HybridReplicationSummary.Modify();
+            Commit();
+            HybridCloudManagement.ScheduleDataFixOnReplicationCompleted(HybridReplicationSummary."Run ID", SubscriptionId, NotificationText);
+        end;
     end;
 
     procedure IsCompanyReadyForUpgrade(HybridCompany: Record "Hybrid Company"): Boolean
@@ -88,12 +96,14 @@ codeunit 4026 "W1 Management"
         if not HybridCompanyStatus.IsEmpty() then
             Error(CannotStartUpgradeCompanyUpgradeCompletedErr);
 
+        if HybridReplicationSummary."Data Repair Status" <> HybridReplicationSummary."Data Repair Status"::Completed then begin
+            HybridCloudManagement.RepairCompanionTableRecordConsistency();
+            HybridReplicationSummary.Find();
+        end;
+
         HybridCloudManagement.VerifyCanStartUpgrade(HybridReplicationSummary);
 
-        if IntelligentCloudSetup.Get() then
-            UseLegacyUpgrade := IntelligentCloudSetup."Use Legacy Upgrade Engine";
-
-        OnUseLegacyUpgrade(UseLegacyUpgrade);
+        UseLegacyUpgrade := GetLegacyUpgradeSupported();
 
         if GuiAllowed() then
             if UseLegacyUpgrade then begin
@@ -129,8 +139,31 @@ codeunit 4026 "W1 Management"
         end;
     end;
 
+    procedure GetLegacyUpgradeSupported(): Boolean
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        UseLegacyUpgrade: Boolean;
+    begin
+        if IntelligentCloudSetup.Get() then
+            UseLegacyUpgrade := IntelligentCloudSetup."Use Legacy Upgrade Engine";
+
+        OnUseLegacyUpgrade(UseLegacyUpgrade);
+        exit(UseLegacyUpgrade);
+    end;
+
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'OnOpenPageEvent', '', false, false)]
     local procedure RaiseNotificationForUpgrade()
+    begin
+        RaiseNotificationForUpgradeIfNeeded();
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Migration Management", 'OnOpenPageEvent', '', false, false)]
+    local procedure RaiseNotificationForUpgradeNewUI()
+    begin
+        RaiseNotificationForUpgradeIfNeeded();
+    end;
+
+    local procedure RaiseNotificationForUpgradeIfNeeded()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
@@ -161,6 +194,24 @@ codeunit 4026 "W1 Management"
         CheckUpgradeStatusNotification.Scope := NotificationScope::LocalScope;
         CheckUpgradeStatusNotification.Message := StrSubstNo(CheckUpgradeStatusInTenantAdminCenterMsg, HybridReplicationSummary."Upgrade Started DateTime");
         if CheckUpgradeStatusNotification.Send() then;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnIsUpgradeSupported', '', false, false)]
+    local procedure OnIsUpgradeSupported(var UpgradeSupported: Boolean)
+    var
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
+    begin
+        if HybridBCLastWizard.IsBCLastMigration() then
+            UpgradeSupported := true;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'OnOpenNewUI', '', false, false)]
+    local procedure HandleOnOpenNewUI(var OpenNewUI: Boolean)
+    var
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
+    begin
+        if HybridBCLastWizard.IsBCLastMigration() then
+            OpenNewUI := true;
     end;
 
     local procedure GetUpgradeWaitTimeInMinutes(): Integer
@@ -235,9 +286,13 @@ codeunit 4026 "W1 Management"
         SourceTableMapping: Record "Source Table Mapping";
         IncomingDocument: Record "Incoming Document";
         StgIncomingDocument: Record "Stg Incoming Document";
+        W1Management: Codeunit "W1 Management";
         ExtensionInfo: ModuleInfo;
     begin
         if TargetVersion <> 15.0 then
+            exit;
+
+        if not W1Management.GetLegacyUpgradeSupported() then
             exit;
 
         NavApp.GetCurrentModuleInfo(ExtensionInfo);

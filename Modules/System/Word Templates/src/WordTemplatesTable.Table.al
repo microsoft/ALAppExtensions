@@ -10,6 +10,8 @@ table 9987 "Word Templates Table"
 {
     Access = Internal;
     Extensible = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

@@ -10,6 +10,8 @@
 codeunit 425 "Data Compression"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DataCompressionImpl: Codeunit "Data Compression Impl.";
@@ -100,6 +102,17 @@ codeunit 425 "Data Compression"
     end;
 
     /// <summary>
+    /// Extracts an entry from the ZipArchive.
+    /// </summary>
+    /// <param name="EntryName">The name of the ZipArchive entry to be extracted.</param>
+    /// <param name="OutputOutStream">The OutStream to which binary content of the extracted entry is saved.</param>
+    /// <returns>The length of the extracted entry.</returns>
+    procedure ExtractEntry(EntryName: Text; OutputOutStream: OutStream) EntryLength: Integer
+    begin
+        DataCompressionImpl.ExtractEntry(EntryName, OutputOutStream, EntryLength);
+    end;
+
+    /// <summary>
     /// Adds an entry to the ZipArchive.
     /// </summary>
     /// <param name="InStreamToAdd">The InStream that contains the binary content that should be added as an entry in the ZipArchive.</param>
@@ -107,6 +120,15 @@ codeunit 425 "Data Compression"
     procedure AddEntry(InStreamToAdd: InStream; PathInArchive: Text)
     begin
         DataCompressionImpl.AddEntry(InStreamToAdd, PathInArchive);
+    end;
+
+    /// <summary>
+    /// Removes an entry from the ZipArchive.
+    /// </summary>
+    /// <param name="PathInArchive">The path that the removed entry should have within the ZipArchive.</param>
+    procedure RemoveEntry(PathInArchive: Text)
+    begin
+        DataCompressionImpl.RemoveEntry(PathInArchive);
     end;
 
 

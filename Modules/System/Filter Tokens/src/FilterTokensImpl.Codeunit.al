@@ -7,6 +7,8 @@ codeunit 58 "Filter Tokens Impl."
 {
     Access = Internal;
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         FilterTokens: Codeunit "Filter Tokens";
@@ -212,9 +214,9 @@ codeunit 58 "Filter Tokens Impl."
                     exit(true);
                 end;
             else begin
-                    FilterTokens.OnResolveDateTokenFromDateTimeFilter(DateText, DateFilter, Handled);
-                    exit(Handled);
-                end;
+                FilterTokens.OnResolveDateTokenFromDateTimeFilter(DateText, DateFilter, Handled);
+                exit(Handled);
+            end;
         end;
     end;
 
@@ -445,31 +447,31 @@ codeunit 58 "Filter Tokens Impl."
             Position := Position + 1;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeDateTimeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", MakeDateTimeFilter, '', false, false)]
     local procedure DoMakeDateTimeFilter(var DateTimeFilterText: Text)
     begin
         MakeDateTimeFilter(DateTimeFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeDateFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", MakeDateFilter, '', false, false)]
     local procedure DoMakeDateFilter(var DateFilterText: Text)
     begin
         MakeDateFilter(DateFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeTextFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", MakeTextFilter, '', false, false)]
     local procedure DoMakeTextFilter(var TextFilterText: Text)
     begin
         MakeTextFilter(TextFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeCodeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", MakeCodeFilter, '', false, false)]
     local procedure DoMakeCodeFilter(var TextFilterText: Text)
     begin
         MakeTextFilter(TextFilterText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", 'MakeTimeFilter', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Helper Triggers", MakeTimeFilter, '', false, false)]
     local procedure DoMakeTimeFilter(var TimeFilterText: Text)
     begin
         MakeTimeFilter(TimeFilterText);

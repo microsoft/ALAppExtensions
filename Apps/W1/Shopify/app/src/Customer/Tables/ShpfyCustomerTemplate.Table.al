@@ -29,12 +29,27 @@ table 30107 "Shpfy Customer Template"
             Caption = 'Customer Template code';
             TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
             ValidateTableRelation = true;
+            ObsoleteReason = 'Replaced by "Customer Templ. Code"';
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
         }
         field(4; "Default Customer No."; code[20])
         {
             DataClassification = CustomerContent;
             Caption = 'Default Customer No.';
             TableRelation = Customer."No.";
+            ValidateTableRelation = true;
+        }
+        field(5; "Customer Templ. Code"; Code[20])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Customer Template Code';
+            TableRelation = "Customer Templ.".Code;
             ValidateTableRelation = true;
         }
     }

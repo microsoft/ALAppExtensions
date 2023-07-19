@@ -10,7 +10,13 @@ report 31123 "VAT Exceptions CZL"
     {
         dataitem("VAT Entry"; "VAT Entry")
         {
+#if not CLEAN22
+#pragma warning disable AL0432
             RequestFilterFields = "VAT Date CZL";
+#pragma warning restore AL0432
+#else
+            RequestFilterFields = "VAT Reporting Date";
+#endif
             column(CompanyName; CompanyProperty.DisplayName())
             {
             }
@@ -28,7 +34,7 @@ report 31123 "VAT Exceptions CZL"
             column(AddCurrAmt_VatEntry; AddCurrAmtTxt)
             {
             }
-            column(PostingDate_VatEntry; Format("VAT Date CZL"))
+            column(PostingDate_VatEntry; Format("VAT Reporting Date"))
             {
             }
             column(DocumentType_VatEntry; "Document Type")
@@ -119,6 +125,12 @@ report 31123 "VAT Exceptions CZL"
                     Amount := "Additional-Currency Amount";
                     "VAT Difference" := "Add.-Curr. VAT Difference";
                 end;
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not IsReplaceVATDateEnabled() then
+                    "VAT Reporting Date" := "VAT Date CZL";
+#pragma warning restore AL0432
+#endif
             end;
 
             trigger OnPreDataItem()
@@ -180,6 +192,14 @@ report 31123 "VAT Exceptions CZL"
         if UseAmtsInAddCurr then
             AddCurrAmtTxt := StrSubstNo(AmountsShownLbl, GeneralLedgerSetup."Additional Reporting Currency");
         MinVATDiffText := StrSubstNo(ShowEqualOrGreaterLbl, "VAT Entry".FieldCaption("VAT Difference"));
+#if not CLEAN22
+#pragma warning disable AL0432
+        if "VAT Entry".IsReplaceVATDateEnabled() then begin
+            "VAT Entry".CopyFilter("VAT Date CZL", "VAT Entry"."VAT Reporting Date");
+            "VAT Entry".SetRange("VAT Date CZL");
+        end;
+#pragma warning restore AL0432
+#endif
     end;
 
     var

@@ -7,6 +7,7 @@ codeunit 10891 "Local Export Serv. Decl."
         ServiceDeclarationSetup: Record "Service Declaration Setup";
         ServiceDeclarationHeader: Record "Service Declaration Header";
         ServiceDeclarationLine: Record "Service Declaration Line";
+        CompanyInformation: Record "Company Information";
         DataExch: Record "Data Exch.";
         DataExchDef: Record "Data Exch. Def";
         DataExchMapping: Record "Data Exch. Mapping";
@@ -22,20 +23,29 @@ codeunit 10891 "Local Export Serv. Decl."
         DataExchMapping.SetRange("Table ID", DATABASE::"Service Declaration Line");
         DataExchMapping.FindFirst();
 
-        DataExch.Init();
         DataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
         DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
         DataExch."Table Filters".CreateOutStream(OutStr);
         ServiceDeclarationLine.SetRange("Service Declaration No.", Rec."No.");
-        OutStr.WriteText(ServiceDeclarationLine.GetView());
+        OutStr.WriteText(ServiceDeclarationLine.GetView(false));
         DataExch.Insert(true);
 
+        DataExchTableFilter.Init();
         DataExchTableFilter."Data Exch. No." := DataExch."Entry No.";
         DataExchTableFilter."Table ID" := Database::"Service Declaration Header";
         DataExchTableFilter."Table Filters".CreateOutStream(OutStr);
         ServiceDeclarationHeader := Rec;
         ServiceDeclarationHeader.SetRecFilter();
-        OutStr.WriteText(ServiceDeclarationHeader.GetView());
+        OutStr.WriteText(ServiceDeclarationHeader.GetView(false));
+        DataExchTableFilter.Insert();
+
+        DataExchTableFilter.Init();
+        DataExchTableFilter."Data Exch. No." := DataExch."Entry No.";
+        DataExchTableFilter."Table ID" := Database::"Company Information";
+        DataExchTableFilter."Table Filters".CreateOutStream(OutStr);
+        CompanyInformation.FindFirst();
+        CompanyInformation.SetRecFilter();
+        OutStr.WriteText(CompanyInformation.GetView(false));
         DataExchTableFilter.Insert();
 
         DataExch.ExportFromDataExch(DataExchMapping);

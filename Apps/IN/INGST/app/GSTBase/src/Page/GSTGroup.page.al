@@ -76,8 +76,7 @@ page 18001 "GST Group"
                     EditinExcel: Codeunit "Edit in Excel";
                 begin
                     EditinExcel.EditPageInExcel('GST Group',
-                    CurrPage.ObjectId(false),
-                    Rec.GetFilter(Code));
+                    Page::"GST Group");
                 end;
             }
         }

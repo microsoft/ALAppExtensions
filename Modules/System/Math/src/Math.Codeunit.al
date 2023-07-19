@@ -9,6 +9,8 @@
 codeunit 710 Math
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetMath: DotNet Math;

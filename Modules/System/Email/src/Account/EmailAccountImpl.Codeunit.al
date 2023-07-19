@@ -6,6 +6,8 @@
 codeunit 8889 "Email Account Impl."
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email Connector Logo" = rimd,
                   tabledata "Email Scenario" = imd,
                   tabledata "Email Rate Limit" = rd;
@@ -244,10 +246,6 @@ codeunit 8889 "Email Account Impl."
         if EmailAddress <> '' then begin
             ValidatedEmailAddress := EmailAddress;
             if not ConvertEmailAddress(ValidatedEmailAddress) then
-                Error(InvalidEmailAddressErr, EmailAddress);
-
-            // do not allow passing email address together with display name (e. g. "Tom Smith <tsmith@contoso.com>")
-            if not (ValidatedEmailAddress = EmailAddress) then
                 Error(InvalidEmailAddressErr, EmailAddress);
         end;
 

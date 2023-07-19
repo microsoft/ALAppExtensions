@@ -12,7 +12,7 @@ permissionset 20351 "Connectivity Apps - Read"
     IncludedPermissionSets = "Connectivity Apps - Objects";
 
     Permissions = tabledata "Connectivity App" = r,
-                tabledata "Connectivity App Country" = r,
+                tabledata "Conn. App Country/Region" = r,
                 tabledata "Connectivity App Description" = r,
                 tabledata "Connectivity App Logo" = r;
 }

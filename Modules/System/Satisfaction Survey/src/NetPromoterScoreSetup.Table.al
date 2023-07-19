@@ -6,6 +6,8 @@
 table 1432 "Net Promoter Score Setup"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     DataPerCompany = false;
     ReplicateData = false;
 

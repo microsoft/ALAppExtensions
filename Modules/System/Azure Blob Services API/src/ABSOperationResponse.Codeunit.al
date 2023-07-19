@@ -9,6 +9,8 @@
 codeunit 9050 "ABS Operation Response"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Checks whether the operation was successful.
@@ -31,6 +33,20 @@ codeunit 9050 "ABS Operation Response"
     internal procedure SetError(Error: Text)
     begin
         ResponseError := Error;
+    end;
+
+    /// <summary>
+    /// Gets the NextMarker (if any) of the response.
+    /// </summary>
+    /// <returns>Text representation of the NextMarker that is returned during the operation.</returns>
+    procedure GetNextMarker(): Text
+    begin
+        exit(ResponseNextMarker);
+    end;
+
+    internal procedure SetNextMarker(NextMarker: Text)
+    begin
+        ResponseNextMarker := NextMarker;
     end;
 
     /// <summary>
@@ -68,6 +84,8 @@ codeunit 9050 "ABS Operation Response"
         Values: array[100] of Text;
     begin
         Headers := HttpResponseMessage.Headers;
+        if not Headers.Contains(HeaderName) then
+            exit('');
         if not Headers.GetValues(HeaderName, Values) then
             exit('');
         exit(Values[1]);
@@ -76,5 +94,5 @@ codeunit 9050 "ABS Operation Response"
     var
         [NonDebuggable]
         HttpResponseMessage: HttpResponseMessage;
-        ResponseError: Text;
+        ResponseError, ResponseNextMarker : Text;
 }

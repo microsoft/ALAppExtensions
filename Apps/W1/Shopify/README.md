@@ -17,8 +17,7 @@ Availability date: starting with version 22.0
 
 Exposes the following integration events:
 
-- OnAfterModifyShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header"; var OldShopifyOrderHeader: Record "Shpfy Order Header")
-- OnAfterNewShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header")
+- OnAfterImportShopifyOrderHeader(var ShopifyOrderHeader: Record "Shpfy Order Header"; IsNew: Boolean)
 - OnAfterMapCustomer(var ShopifyOrderHeader: Record "Shpfy Order Header")
 - OnBeforeMapShipmentMethod(var ShopifyOrderHeader: Record "Shpfy Order Header"; var Handled: Boolean)
 - OnAfterMapShipmentMethod(var ShopifyOrderHeader: Record "Shpfy Order Header")
@@ -91,6 +90,11 @@ Exposes the following integration events:
 
 - OnAfterCalculationStock(Item: Record Item; ShopifyShop: Record "Shpfy Shop"; LocationFilter: Text; var StockResult: Decimal)
 
+### table 30124 "Shpfy Payment Transaction"
+Availability date: starting with version 22.4
+
+### table 30125 "Shpfy Payout"
+Availability date: starting with version 22.4
 
 ### table 30118 "Shpfy Order Header"
 Availability date: starting with version 22.0
@@ -207,7 +211,7 @@ Availability date: starting with version 22.0
 
 Extensible = false;
 
-### Enum 30135 "Shpfy Stock Calculation"
+### Enum "Shpfy Stock Calculation"
 Availability date: starting with version 21.3
 
 Extensible = true;

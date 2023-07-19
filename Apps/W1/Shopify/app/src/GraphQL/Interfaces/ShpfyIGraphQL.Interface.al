@@ -9,11 +9,11 @@ interface "Shpfy IGraphQL"
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    internal procedure GetGraphQL(): Text;
+    procedure GetGraphQL(): Text;
 
     /// <summary>
     /// GetExpectedCost.
     /// </summary>
     /// <returns>Return value of type Integer.</returns>
-    internal procedure GetExpectedCost(): Integer;
+    procedure GetExpectedCost(): Integer;
 }

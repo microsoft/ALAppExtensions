@@ -1,9 +1,11 @@
 page 31268 "Iss. Payment Order Lines CZB"
 {
+    ApplicationArea = Basic, Suite;
     Caption = 'Issued Payment Order Lines';
     Editable = false;
     PageType = List;
     SourceTable = "Iss. Payment Order Line CZB";
+    UsageCategory = History;
 
     layout
     {
@@ -145,6 +147,20 @@ page 31268 "Iss. Payment Order Lines CZB"
                         IssPaymentOrderHeaderCZB."No." := Rec."Payment Order No.";
                         Page.Run(Page::"Iss. Payment Order CZB", IssPaymentOrderHeaderCZB);
                     end;
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(Cancel_Promoted; Cancel)
+                {
+                }
+                actionref("Show Document_Promoted"; ShowDocument)
+                {
                 }
             }
         }

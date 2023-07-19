@@ -25,4 +25,13 @@ tableextension 31239 "Transfer Header CZA" extends "Transfer Header"
             end;
         }
     }
+
+    var
+        GenBusPostGroupErr: Label 'The Gen. Business Posting Groups for receive and ship must be the same.';
+
+    internal procedure CheckGenBusPostGroupEqualityCZA()
+    begin
+        if "Gen.Bus.Post.Group Receive CZA" <> "Gen.Bus.Post.Group Ship CZA" then
+            Error(GenBusPostGroupErr);
+    end;
 }

@@ -9,6 +9,8 @@
 codeunit 7804 "Azure Functions"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         AzureFunctionsImpl: Codeunit "Azure Functions Impl";

@@ -10,9 +10,9 @@ codeunit 139570 "Shpfy Gift Cards Test"
     [Test]
     procedure UnitTestAddSoldGiftCards()
     var
-        ShpfyGiftCard: Record "Shpfy Gift Card";
-        ShpfyOrderLine: Record "Shpfy Order Line";
-        ShpfyGiftCards: Codeunit "Shpfy Gift Cards";
+        GiftCard: Record "Shpfy Gift Card";
+        OrderLine: Record "Shpfy Order Line";
+        GiftCards: Codeunit "Shpfy Gift Cards";
         GiftCardId: BigInteger;
         LineItemId: BigInteger;
         Amount: Decimal;
@@ -26,24 +26,24 @@ codeunit 139570 "Shpfy Gift Cards Test"
         LastChars := Format(Any.IntegerInRange(1000, 9999));
         Amount := Any.IntegerInRange(100000, 999999) / 100.0;
         JArray.ReadFrom(StrSubstNo(GiftCardsJsonTxt, GiftCardId, LineItemId, LastChars));
-        ShpfyOrderLine.Init();
-        ShpfyOrderLine."Shopify Order Id" := Any.IntegerInRange(100000, 999999);
-        ShpfyOrderLine."Line Id" := LineItemId;
-        ShpfyOrderLine."Unit Price" := Amount;
-        ShpfyOrderLine.Insert();
+        OrderLine.Init();
+        OrderLine."Shopify Order Id" := Any.IntegerInRange(100000, 999999);
+        OrderLine."Line Id" := LineItemId;
+        OrderLine."Unit Price" := Amount;
+        OrderLine.Insert();
 
         // [SCENARIO] The function receive a JsonAray with Gift Card information. This will be parsed in the Gift Card record.
         //            For getting the amount of the give card, a Shopify order line must exist with the same line_item_id.
 
         // [GIVEN] Jarray = GiftCard json structure.
         // [WHEN] Invoke the function AddSoldGiftCards(JArray).
-        ShpfyGiftCards.AddSoldGiftCards(JArray);
+        GiftCards.AddSoldGiftCards(JArray);
 
         // [THEN] We must find the GiveCard record.
-        LibraryAssert.IsTrue(ShpfyGiftCard.Get(GiftCardId), 'Getting GiftCard record');
+        LibraryAssert.IsTrue(GiftCard.Get(GiftCardId), 'Getting GiftCard record');
 
         // [THEN] GiftCard.LastCharacters = LastChars and GiftCard.Amount = Amount
-        LibraryAssert.AreEqual(LastChars, ShpfyGiftCard."Last Characters", 'GiftCard.LastCharacters');
-        LibraryAssert.AreEqual(Amount, ShpfyGiftCard.Amount, 'GiftCard.Amount');
+        LibraryAssert.AreEqual(LastChars, GiftCard."Last Characters", 'GiftCard.LastCharacters');
+        LibraryAssert.AreEqual(Amount, GiftCard.Amount, 'GiftCard.Amount');
     end;
 }

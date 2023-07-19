@@ -6,6 +6,8 @@
 codeunit 1461 "SignedXml Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm;
@@ -68,6 +70,16 @@ codeunit 1461 "SignedXml Impl."
     begin
         DotNetXmlDsigEnvelopedSignatureTransform := DotNetXmlDsigEnvelopedSignatureTransform.XmlDsigEnvelopedSignatureTransform();
         DotNetReference.AddTransform(DotNetXmlDsigEnvelopedSignatureTransform);
+    end;
+
+    procedure AddReferenceToSignedXML()
+    begin
+        if IsNull(DotNetReference) then
+            exit;
+
+        DotNetSignedXml.AddReference(DotNetReference);
+
+        Clear(DotNetReference);
     end;
     #endregion
 

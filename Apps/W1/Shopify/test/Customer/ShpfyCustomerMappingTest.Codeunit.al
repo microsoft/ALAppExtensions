@@ -9,15 +9,15 @@ codeunit 139569 "Shpfy Customer Mapping Test"
     var
 
         LibraryAssert: Codeunit "Library Assert";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        ShpfyCustomerInitTest: Codeunit "Shpfy Customer Init Test";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        CustomerInitTest: Codeunit "Shpfy Customer Init Test";
 
     [Test]
     procedure TestCustomerMapping()
     var
         Customer: Record Customer;
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyCustomer: Record "Shpfy Customer";
+        Shop: Record "Shpfy Shop";
+        ShopifyCustomer: Record "Shpfy Customer";
         CustomerId: BigInteger;
         ResultCode: Code[20];
         ShopCode: Code[20];
@@ -28,11 +28,11 @@ codeunit 139569 "Shpfy Customer Mapping Test"
 
         // Creating Test data.
         JCustomerInfo := CreateJsonCustomerInfo();
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-        ShopCode := ShpfyShop.Code;
+        Shop := CommunicationMgt.GetShopRecord();
+        ShopCode := Shop.Code;
 
-        CustomerId := CreateShopifyCustomer(Customer, ShpfyCustomer);
-        CreateShopifyCustomerAddress(Customer, ShpfyCustomer);
+        CustomerId := CreateShopifyCustomer(Customer, ShopifyCustomer);
+        CreateShopifyCustomerAddress(Customer, ShopifyCustomer);
 
         // [SCENARIO] Map the received customer data to an existing customer.
 
@@ -44,7 +44,7 @@ codeunit 139569 "Shpfy Customer Mapping Test"
         ICustomerMapping := "Shpfy Customer Mapping"::DefaultCustomer;
         // [THEN] Shop."Default Customer" = ResultCode
         ResultCode := ICustomerMapping.DoMapping(CustomerId, JCustomerInfo, ShopCode);
-        LibraryAssert.AreEqual(ShpfyShop."Default Customer No.", ResultCode, 'Mapping to Default Customer');
+        LibraryAssert.AreEqual(Shop."Default Customer No.", ResultCode, 'Mapping to Default Customer');
 
         // [WHEN] ICustomerMapping = "Shpfy Customer Mapping"::"By EMail/Phone"
         ICustomerMapping := "Shpfy Customer Mapping"::"By EMail/Phone";
@@ -59,17 +59,17 @@ codeunit 139569 "Shpfy Customer Mapping Test"
         LibraryAssert.AreEqual(Customer."No.", ResultCode, 'Mapping By Bill-to Info');
     end;
 
-    local procedure CreateShopifyCustomerAddress(var Customer: Record Customer; var ShpfyCustomer: Record "Shpfy Customer")
+    local procedure CreateShopifyCustomerAddress(var Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer")
     var
-        ShpfyCustomerAddress: Record "Shpfy Customer Address";
+        CustomerAddress: Record "Shpfy Customer Address";
     begin
-        ShpfyCustomerAddress := ShpfyCustomerInitTest.CreateShopifyCustomerAddress(ShpfyCustomer);
+        CustomerAddress := CustomerInitTest.CreateShopifyCustomerAddress(ShopifyCustomer);
 
-        ShpfyCustomerAddress.CustomerSystemId := Customer.SystemId;
-        ShpfyCustomerAddress.Modify();
+        CustomerAddress.CustomerSystemId := Customer.SystemId;
+        CustomerAddress.Modify();
     end;
 
-    local procedure CreateShopifyCustomer(var Customer: Record Customer; var ShpfyCustomer: Record "Shpfy Customer"): BigInteger
+    local procedure CreateShopifyCustomer(var Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer"): BigInteger
     var
         CustomerId: BigInteger;
     begin
@@ -77,38 +77,38 @@ codeunit 139569 "Shpfy Customer Mapping Test"
         Customer."No." := 'YYYY';
         Customer.Insert(false);
 
-        CustomerId := ShpfyCustomerInitTest.CreateShopifyCustomer(ShpfyCustomer);
-        ShpfyCustomer."Customer SystemId" := Customer.SystemId;
-        ShpfyCustomer.Modify();
-        ShpfyCustomer.CalcFields("Customer No.");
+        CustomerId := CustomerInitTest.CreateShopifyCustomer(ShopifyCustomer);
+        ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+        ShopifyCustomer.Modify();
+        ShopifyCustomer.CalcFields("Customer No.");
         exit(CustomerId);
     end;
 
     local procedure CreateJsonCustomerInfo(): JsonObject
     var
-        ShpfyShop: Record "Shpfy Shop";
+        Shop: Record "Shpfy Shop";
     begin
 
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-        exit(ShpfyCustomerInitTest.CreateJsonCustomerInfo(ShpfyShop."Name Source", ShpfyShop."Name 2 Source"));
+        Shop := CommunicationMgt.GetShopRecord();
+        exit(CustomerInitTest.CreateJsonCustomerInfo(Shop."Name Source", Shop."Name 2 Source"));
     end;
 
     local procedure Init(var Customer: Record Customer)
     var
-        ShpfyShop: Record "Shpfy Shop";
+        Shop: Record "Shpfy Shop";
     begin
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
-        if ShpfyShop."Default Customer No." = '' then begin
+        Shop := CommunicationMgt.GetShopRecord();
+        if Shop."Default Customer No." = '' then begin
             if Customer.FindFirst() then
-                ShpfyShop."Default Customer No." := Customer."No."
+                Shop."Default Customer No." := Customer."No."
             else
-                ShpfyShop."Default Customer No." := 'XXXX';
-            ShpfyShop."Name Source" := "Shpfy Name Source"::CompanyName;
-            ShpfyShop."Name 2 Source" := "Shpfy Name Source"::FirstAndLastName;
-            if not ShpfyShop.Modify(false) then
-                ShpfyShop.Insert();
-            ShpfyCommunicationMgt.SetShop(ShpfyShop);
+                Shop."Default Customer No." := 'XXXX';
+            Shop."Name Source" := "Shpfy Name Source"::CompanyName;
+            Shop."Name 2 Source" := "Shpfy Name Source"::FirstAndLastName;
+            if not Shop.Modify(false) then
+                Shop.Insert();
+            CommunicationMgt.SetShop(Shop);
         end;
     end;
 }

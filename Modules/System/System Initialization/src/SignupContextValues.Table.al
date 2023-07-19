@@ -11,6 +11,8 @@ table 150 "Signup Context Values"
     DataClassification = SystemMetadata;
     DataPerCompany = false;
     ReplicateData = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {

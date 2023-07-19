@@ -12,6 +12,8 @@ table 9005 "User Plan"
     DataPerCompany = false;
     ReplicateData = false;
     Access = Internal;
+    InherentEntitlements = rX;
+    InherentPermissions = rX;
 
     fields
     {
@@ -28,19 +30,19 @@ table 9005 "User Plan"
         }
         field(10; "User Name"; Code[50])
         {
-            CalcFormula = Lookup (User."User Name" WHERE("User Security ID" = FIELD("User Security ID")));
+            CalcFormula = Lookup(User."User Name" WHERE("User Security ID" = FIELD("User Security ID")));
             Caption = 'User Name';
             FieldClass = FlowField;
         }
         field(11; "User Full Name"; Text[80])
         {
-            CalcFormula = Lookup (User."Full Name" WHERE("User Security ID" = FIELD("User Security ID")));
+            CalcFormula = Lookup(User."Full Name" WHERE("User Security ID" = FIELD("User Security ID")));
             Caption = 'Full Name';
             FieldClass = FlowField;
         }
         field(12; "Plan Name"; Text[50])
         {
-            CalcFormula = Lookup (Plan.Name WHERE("Plan ID" = FIELD("Plan ID")));
+            CalcFormula = Lookup(Plan.Name WHERE("Plan ID" = FIELD("Plan ID")));
             Caption = 'Plan Name';
             FieldClass = FlowField;
         }

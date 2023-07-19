@@ -6,6 +6,8 @@
 codeunit 8930 "Email View Policy"
 {
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
     Permissions = tabledata "Email View Policy" = ri,
                   tabledata "Email Outbox" = ri,
                   tabledata "Email Related Record" = r,

@@ -7,6 +7,8 @@ table 8905 "Email Connector"
 {
     TableType = Temporary;
     Access = Internal;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     fields
     {

@@ -6,6 +6,8 @@
 codeunit 1464 "CertificateRequest Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         DotNetRSACryptoServiceProvider: DotNet RSACryptoServiceProvider;

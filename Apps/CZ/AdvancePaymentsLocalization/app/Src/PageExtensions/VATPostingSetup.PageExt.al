@@ -2,34 +2,6 @@ pageextension 31025 "VAT Posting Setup CZZ" extends "VAT POsting Setup"
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        modify("Sales Advance VAT Account")
-        {
-            Visible = false;
-        }
-        modify("Sales Advance Offset VAT Acc.")
-        {
-            Visible = false;
-        }
-        modify("Sales Ded. VAT Base Adj. Acc.")
-        {
-            Visible = false;
-        }
-        modify("Purch. Advance VAT Account")
-        {
-            Visible = false;
-        }
-        modify("Purch. Advance Offset VAT Acc.")
-        {
-            Visible = false;
-        }
-        modify("Purch. Ded. VAT Base Adj. Acc.")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter("Sales VAT Account")
         {
             field("Sales Adv. Letter Account CZZ"; Rec."Sales Adv. Letter Account CZZ")

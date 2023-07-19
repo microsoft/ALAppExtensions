@@ -2,19 +2,18 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
 {
     layout
     {
-#if not CLEAN19
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-        addlast(General)
+#if not CLEAN20
+        modify("Customer Posting Group")
         {
-            field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the type of credit memo (corrective tax document, internal correction, insolvency tax document).';
-            }
+            Visible = AllowMultiplePostingGroupsEnabled;
         }
-#pragma warning restore AL0432
-#else
+#endif
+#if not CLEAN22
+        modify("VAT Reporting Date")
+        {
+            Visible = ReplaceVATDateEnabled and VATDateEnabled;
+        }
+#endif
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -29,7 +28,6 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ToolTip = 'Specifies the type of credit memo (corrective tax document, internal correction, insolvency tax document).';
             }
         }
-#endif
         addbefore("Location Code")
         {
             field("Reason Code CZL"; Rec."Reason Code")
@@ -38,14 +36,40 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ToolTip = 'Specifies the reason code on the entry.';
             }
         }
+#if not CLEAN22
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'VAT Date (Obsolete)';
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by VAT Reporting Date.';
+                Visible = not ReplaceVATDateEnabled;
             }
         }
+        addafter("Customer Posting Group")
+        {
+            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
+            {
+                ApplicationArea = Basic, Suite;
+#if not CLEAN20
+                Editable = IsPostingGroupEditableCZL;
+                Visible = not AllowMultiplePostingGroupsEnabled;
+#else
+                Editable = false;
+                Visible = false;
+#endif
+                Importance = Additional;
+                ToolTip = 'Specifies the customer''s market type to link business transactions to.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Replaced by Customer Posting Group field.';
+            }
+        }
+#endif
         addlast(Invoicing)
         {
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
@@ -77,8 +101,14 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 var
                     ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    if Rec."VAT Date CZL" <> 0D then
-                        ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
+#if not CLEAN22
+#pragma warning disable AL0432
+                    if not ReplaceVATDateEnabled then
+                        Rec."VAT Reporting Date" := Rec."VAT Date CZL";
+#pragma warning restore AL0432
+#endif
+                    if Rec."VAT Reporting Date" <> 0D then
+                        ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date")
                     else
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", WorkDate());
                     if ChangeExchangeRate.RunModal() = Action::OK then begin
@@ -196,4 +226,38 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
             }
         }
     }
+#if not CLEAN22
+    trigger OnOpenPage()
+    begin
+#if not CLEAN20
+        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
+        if not AllowMultiplePostingGroupsEnabled then begin
+            ServiceMgtSetup.GetRecordOnce();
+#pragma warning disable AL0432
+            IsPostingGroupEditableCZL := ServiceMgtSetup."Allow Alter Posting Groups CZL";
+#pragma warning restore AL0432
+        end;
+#endif
+        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+    end;
+
+    var
+#if not CLEAN20
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+#pragma warning disable AL0432
+        PostingGroupManagement: Codeunit "Posting Group Management CZL";
+#pragma warning restore AL0432
+#endif
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+#pragma warning disable AL0432
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
+        ReplaceVATDateEnabled: Boolean;
+        VATDateEnabled: Boolean;
+#if not CLEAN20
+        AllowMultiplePostingGroupsEnabled: Boolean;
+        IsPostingGroupEditableCZL: Boolean;
+#endif
+#endif
 }
