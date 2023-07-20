@@ -1,4 +1,4 @@
-page 60100 "APIV2 - FA Locations"
+page 30097 "APIV2 - FA Locations"
 {
     DelayedInsert = true;
     APIVersion = 'v2.0';
@@ -10,8 +10,6 @@ page 60100 "APIV2 - FA Locations"
     EntitySetName = 'falocations';
     SourceTable = "FA Location";
     Extensible = false;
-    APIPublisher = 'Temp';
-    APIGroup = 'Temp';
 
     layout
     {

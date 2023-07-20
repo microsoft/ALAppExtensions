@@ -1,4 +1,4 @@
-page 60101 "APIV2 - Fixed Assets"
+page 30098 "APIV2 - Fixed Assets"
 {
     APIVersion = 'v2.0';
     EntityCaption = 'Fixed Asset';
@@ -11,8 +11,6 @@ page 60101 "APIV2 - Fixed Assets"
     PageType = API;
     SourceTable = "Fixed Asset";
     Extensible = false;
-    APIPublisher = 'Temp';
-    APIGroup = 'Temp';
 
     layout
     {
