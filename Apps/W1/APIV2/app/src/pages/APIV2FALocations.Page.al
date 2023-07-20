@@ -6,8 +6,8 @@ page 30097 "APIV2 - FA Locations"
     EntitySetCaption = 'FALocations';
     PageType = API;
     ODataKeyFields = SystemId;
-    EntityName = 'falocation';
-    EntitySetName = 'falocations';
+    EntityName = 'faLocation';
+    EntitySetName = 'faLocations';
     SourceTable = "FA Location";
     Extensible = false;
 
