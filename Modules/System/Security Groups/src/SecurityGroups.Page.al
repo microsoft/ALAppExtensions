@@ -54,6 +54,7 @@ page 9871 "Security Groups"
             {
                 ApplicationArea = All;
                 SubPageLink = "Security Group Code" = field(Code);
+                Visible = CanManageUsersOnTenant;
             }
             systempart(Notes; Notes)
             {
@@ -265,7 +266,9 @@ page 9871 "Security Groups"
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        UserPermissions: Codeunit "User Permissions";
     begin
+        CanManageUsersOnTenant := UserPermissions.CanManageUsersOnTenant(UserSecurityId());
         FeatureTelemetry.LogUptake('0000JGR', 'Security Groups', Enum::"Feature Uptake Status"::Discovered);
         RefreshData(false);
         IsWindowsAuthentication := SecurityGroup.IsWindowsAuthentication();
@@ -278,11 +281,17 @@ page 9871 "Security Groups"
     end;
 
     local procedure RefreshData(ShouldRefreshMembers: Boolean)
+    var
+        NumberOfGroupsBeforeRefresh: Integer;
     begin
+        NumberOfGroupsBeforeRefresh := Rec.Count();
+
         SecurityGroup.GetGroups(Rec);
-        if ShouldRefreshMembers then
-            CurrPage."Security Group Members Part".Page.Refresh();
         AreRecordsPresent := not Rec.IsEmpty();
+
+        if ShouldRefreshMembers then
+            if Rec.Count() > NumberOfGroupsBeforeRefresh then
+                CurrPage."Security Group Members Part".Page.Refresh();
     end;
 
     local procedure GetSelectedGroupCodes(): List of [Code[20]];
@@ -306,6 +315,7 @@ page 9871 "Security Groups"
         ConfirmDeleteGroupQst: Label 'Security group members will lose the permissions associated with the deleted groups. Do you want to continue?';
         SecurityGroupsExportFileNameTxt: Label 'SecurityGroups_%1.xml', Locked = true;
         IsWindowsAuthentication: Boolean;
+        CanManageUsersOnTenant: Boolean;
 
     protected var
         AreRecordsPresent: Boolean;

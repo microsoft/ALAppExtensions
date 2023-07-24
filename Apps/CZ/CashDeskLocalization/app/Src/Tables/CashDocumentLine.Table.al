@@ -72,6 +72,7 @@ table 11733 "Cash Document Line CZP"
                 Vendor: Record Vendor;
                 CashDeskCZP: Record "Bank Account";
                 Employee: Record Employee;
+                IsHandled: Boolean;
             begin
                 GetCashDeskEventCZP();
                 if CashDeskEventCZP."Account No." <> '' then
@@ -93,6 +94,8 @@ table 11733 "Cash Document Line CZP"
                         CashDocumentHeaderCZP.Get("Cash Desk No.", "Cash Document No.");
                     end;
 
+                OnValidateAccountNoOnBeforeInitRec(Rec, xRec, CurrFieldNo);
+
                 TempCashDocumentLineCZP := Rec;
                 Init();
                 "Document Type" := CashDocumentHeaderCZP."Document Type";
@@ -101,8 +104,12 @@ table 11733 "Cash Document Line CZP"
                 "Account Type" := TempCashDocumentLineCZP."Account Type";
                 "Account No." := TempCashDocumentLineCZP."Account No.";
                 "Gen. Document Type" := TempCashDocumentLineCZP."Gen. Document Type";
-                if "Account No." = '' then
-                    exit;
+
+                IsHandled := false;
+                OnValidateAccountNoOnAfterInitRec(Rec, xRec, TempCashDocumentLineCZP, IsHandled);
+                if not IsHandled then
+                    if "Account No." = '' then
+                        exit;
 
                 "Currency Code" := CashDocumentHeaderCZP."Currency Code";
                 "Responsibility Center" := CashDocumentHeaderCZP."Responsibility Center";
@@ -110,76 +117,82 @@ table 11733 "Cash Document Line CZP"
                     "External Document No." := CashDocumentHeaderCZP."External Document No.";
                 "Reason Code" := CashDocumentHeaderCZP."Reason Code";
 
-                case "Account Type" of
-                    "Account Type"::" ":
-                        begin
-                            StandardText.Get("Account No.");
-                            Description := StandardText.Description;
-                        end;
-                    "Account Type"::"G/L Account":
-                        begin
-                            GLAccount.Get("Account No.");
-                            GLAccount.CheckGLAcc();
-                            Description := GLAccount.Name;
-                            if not "System-Created Entry" then
-                                GLAccount.TestField("Direct Posting", true);
-                            if (GLAccount."VAT Bus. Posting Group" <> '') or
-                               (GLAccount."VAT Prod. Posting Group" <> '')
-                            then
-                                GLAccount.TestField("Gen. Posting Type");
-                            Description := GLAccount.Name;
-                            "Gen. Posting Type" := GLAccount."Gen. Posting Type";
-                            "VAT Bus. Posting Group" := GLAccount."VAT Bus. Posting Group";
-                            "VAT Prod. Posting Group" := GLAccount."VAT Prod. Posting Group";
-                        end;
-                    "Account Type"::Customer:
-                        begin
-                            Customer.Get("Account No.");
-                            Description := Customer.Name;
-                            "Posting Group" := Customer."Customer Posting Group";
-                            "Gen. Posting Type" := "Gen. Posting Type"::" ";
-                            "VAT Bus. Posting Group" := '';
-                            "VAT Prod. Posting Group" := '';
-                        end;
-                    "Account Type"::Vendor:
-                        begin
-                            Vendor.Get("Account No.");
-                            Description := Vendor.Name;
-                            "Posting Group" := Vendor."Vendor Posting Group";
-                            "Gen. Posting Type" := "Gen. Posting Type"::" ";
-                            "VAT Bus. Posting Group" := '';
-                            "VAT Prod. Posting Group" := '';
-                        end;
-                    "Account Type"::"Bank Account":
-                        begin
-                            CashDeskCZP.Get("Account No.");
-                            CashDeskCZP.TestField(Blocked, false);
-                            Description := CashDeskCZP.Name;
-                            "Gen. Posting Type" := "Gen. Posting Type"::" ";
-                            "VAT Bus. Posting Group" := '';
-                            "VAT Prod. Posting Group" := '';
-                        end;
-                    "Account Type"::"Fixed Asset":
-                        begin
-                            FixedAsset.Get("Account No.");
-                            FixedAsset.TestField(Blocked, false);
-                            FixedAsset.TestField(Inactive, false);
-                            FixedAsset.TestField("Budgeted Asset", false);
-                            GetFAPostingGroup();
-                            Description := FixedAsset.Description;
-                        end;
-                    "Account Type"::Employee:
-                        begin
-                            CashDocumentHeaderCZP.TestField("Currency Code", '');
-                            Employee.Get("Account No.");
-                            Description := CopyStr(Employee.FullName(), 1, MaxStrLen(Description));
-                        end;
-                end;
+                IsHandled := false;
+                OnValidateAccountNoOnBeforeProcessingAccountType(Rec, xRec, TempCashDocumentLineCZP, IsHandled);
+                if not IsHandled then
+                    case "Account Type" of
+                        "Account Type"::" ":
+                            begin
+                                StandardText.Get("Account No.");
+                                Description := StandardText.Description;
+                            end;
+                        "Account Type"::"G/L Account":
+                            begin
+                                GLAccount.Get("Account No.");
+                                GLAccount.CheckGLAcc();
+                                Description := GLAccount.Name;
+                                if not "System-Created Entry" then
+                                    GLAccount.TestField("Direct Posting", true);
+                                if (GLAccount."VAT Bus. Posting Group" <> '') or
+                                   (GLAccount."VAT Prod. Posting Group" <> '')
+                                then
+                                    GLAccount.TestField("Gen. Posting Type");
+                                Description := GLAccount.Name;
+                                "Gen. Posting Type" := GLAccount."Gen. Posting Type";
+                                "VAT Bus. Posting Group" := GLAccount."VAT Bus. Posting Group";
+                                "VAT Prod. Posting Group" := GLAccount."VAT Prod. Posting Group";
+                            end;
+                        "Account Type"::Customer:
+                            begin
+                                Customer.Get("Account No.");
+                                Description := Customer.Name;
+                                "Posting Group" := Customer."Customer Posting Group";
+                                "Gen. Posting Type" := "Gen. Posting Type"::" ";
+                                "VAT Bus. Posting Group" := '';
+                                "VAT Prod. Posting Group" := '';
+                            end;
+                        "Account Type"::Vendor:
+                            begin
+                                Vendor.Get("Account No.");
+                                Description := Vendor.Name;
+                                "Posting Group" := Vendor."Vendor Posting Group";
+                                "Gen. Posting Type" := "Gen. Posting Type"::" ";
+                                "VAT Bus. Posting Group" := '';
+                                "VAT Prod. Posting Group" := '';
+                            end;
+                        "Account Type"::"Bank Account":
+                            begin
+                                CashDeskCZP.Get("Account No.");
+                                CashDeskCZP.TestField(Blocked, false);
+                                Description := CashDeskCZP.Name;
+                                "Gen. Posting Type" := "Gen. Posting Type"::" ";
+                                "VAT Bus. Posting Group" := '';
+                                "VAT Prod. Posting Group" := '';
+                            end;
+                        "Account Type"::"Fixed Asset":
+                            begin
+                                FixedAsset.Get("Account No.");
+                                FixedAsset.TestField(Blocked, false);
+                                FixedAsset.TestField(Inactive, false);
+                                FixedAsset.TestField("Budgeted Asset", false);
+                                GetFAPostingGroup();
+                                Description := FixedAsset.Description;
+                            end;
+                        "Account Type"::Employee:
+                            begin
+                                CashDocumentHeaderCZP.TestField("Currency Code", '');
+                                Employee.Get("Account No.");
+                                Description := CopyStr(Employee.FullName(), 1, MaxStrLen(Description));
+                            end;
+                    end;
 
                 if not ("Account Type" in ["Account Type"::" ", "Account Type"::"Fixed Asset"]) then
                     Validate("VAT Prod. Posting Group");
 
-                CreateDimFromDefaultDim(Rec.FieldNo("Account No."));
+                IsHandled := false;
+                OnValidateAccountNoOnBeforeCreateDim(Rec, xRec, TempCashDocumentLineCZP, IsHandled);
+                if not IsHandled then
+                    CreateDimFromDefaultDim(Rec.FieldNo("Account No."));
             end;
         }
         field(7; "External Document No."; Code[35])
@@ -1729,6 +1742,26 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(true, false)]
     local procedure OnLookupAppliesToDocNoOnAfterFillAppliesToDocNo(var CashDocumentLineCZP: Record "Cash Document Line CZP"; GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnValidateAccountNoOnBeforeInitRec(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; CurrFieldNo: Integer);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnValidateAccountNoOnAfterInitRec(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnValidateAccountNoOnBeforeProcessingAccountType(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnValidateAccountNoOnBeforeCreateDim(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary; var IsHandled: Boolean);
     begin
     end;
 }

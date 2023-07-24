@@ -10,19 +10,22 @@ codeunit 9044 "ABS Format Helper"
     InherentPermissions = X;
 
     [NonDebuggable]
-    procedure AppendToUri(var Uri: Text; ParameterIdentifier: Text; ParameterValue: Text)
+    procedure AppendToUri(var UriText: Text; ParameterIdentifier: Text; ParameterValue: Text)
     var
+        Uri: Codeunit Uri;
         ConcatChar: Text;
         AppendType1Lbl: Label '%1%2=%3', Comment = '%1 = Concatenation character, %2 = Parameter Identifer, %3 = Parameter Value', Locked = true;
         AppendType2Lbl: Label '%1%2', Comment = '%1 = Concatenation character, %2 = Parameter Value', Locked = true;
+        EscapedParameterValue: Text;
     begin
         ConcatChar := '?';
-        if Uri.Contains('?') then
+        if UriText.Contains('?') then
             ConcatChar := '&';
+        EscapedParameterValue := Uri.EscapeDataString(ParameterValue);
         if ParameterIdentifier <> '' then
-            Uri += StrSubstNo(AppendType1Lbl, ConcatChar, ParameterIdentifier, ParameterValue)
+            UriText += StrSubstNo(AppendType1Lbl, ConcatChar, ParameterIdentifier, EscapedParameterValue)
         else
-            Uri += StrSubstNo(AppendType2Lbl, ConcatChar, ParameterValue)
+            UriText += StrSubstNo(AppendType2Lbl, ConcatChar, EscapedParameterValue)
     end;
 
     [NonDebuggable]

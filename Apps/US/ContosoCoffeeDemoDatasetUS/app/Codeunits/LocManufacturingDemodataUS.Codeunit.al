@@ -34,12 +34,12 @@ codeunit 10499 "Loc. Manufacturing Demodata-US"
 
         WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '10400');
         WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '10700');
-        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '');
+        WhseDemoAccounts.RemoveAccount(WhseDemoAccount.ResaleInterim());
         WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '20100');
         WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '40200');
         WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '10700');
-        WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesVAT(), '');
-        WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchaseVAT(), '');
+        WhseDemoAccounts.RemoveAccount(WhseDemoAccount.SalesVAT());
+        WhseDemoAccounts.RemoveAccount(WhseDemoAccount.PurchaseVAT());
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Manufacturing Demo Data Setup", 'OnBeforeInsertEvent', '', false, false)]

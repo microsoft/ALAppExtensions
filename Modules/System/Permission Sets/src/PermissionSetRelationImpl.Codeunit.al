@@ -287,6 +287,7 @@ codeunit 9856 "Permission Set Relation Impl."
 
         // Including or excluding a permission set is both a set up and usage action
         FeatureTelemetry.LogUptake('0000HZR', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::"Set up");
+        FeatureTelemetry.LogUptake('0000KR3', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::Used);
 
         if PermissionType = PermissionType::Include then
             FeatureTelemetry.LogUsage('0000HZS', ComposablePermissionSetsTok, 'Permission set included.', GetCustomDimensions(CurrRoleID, CurrAppId, RelatedRoleId, RelatedAppId, RelatedScope))

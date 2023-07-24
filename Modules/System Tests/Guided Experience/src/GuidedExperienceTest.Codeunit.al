@@ -928,6 +928,34 @@ codeunit 132594 "Guided Experience Test"
         Assert.AreEqual(1, TempGuidedExperienceItem.Count, GuidedExperienceRecordCountErr);
     end;
 
+    [Test]
+    procedure TestCleanUpOldGuidedExperienceItems()
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        GuidedExperience: Codeunit "Guided Experience";
+        Limit, Counter : Integer;
+    begin
+        // [SCENARIO] Clean up old Guided Experience Items with too many versions
+        PermissionsMock.Set('Guided Exp Edit');
+
+        GuidedExperienceItem.DeleteAll();
+
+        Assert.AreEqual(0, GuidedExperienceItem.Count(), 'No records should exists in the Guided Experience Item table before the test starts.');
+
+        // [GIVEN] lots of Guided Experience Items with too many versions
+        Limit := 1000;
+        for Counter := 1 to Limit do
+            GuidedExperience.InsertManualSetup('Title', Format(Counter), '', 0, ObjectType::Page, Page::"Assisted Setup Wizard", Enum::"Manual Setup Category"::Uncategorized, '');
+
+        Assert.AreEqual(Limit, GuidedExperienceItem.Count(), 'The Guided Experience Item table should contain exactly inserted record.');
+
+        // [WHEN] Clean up old Guided Experience Items
+        GuidedExperience.CleanupOldGuidedExperienceItems(true, 100);
+
+        // [Then] Only 1 Guided Experience Items should be left
+        Assert.AreEqual(1, GuidedExperienceItem.Count(), 'The Guided Experience Item table should contain exactly 1 record.');
+    end;
+
     local procedure VerifyGuidedExperienceItemFields(GuidedExperienceItem: Record "Guided Experience Item"; Code: Code[300]; Version: Integer; ObjectTypeToRun: Enum "Guided Experience Object Type"; ObjectID: Integer; Link: Text[250]; Title: Text[2048]; ShortTitle: Text[2048]; Description: Text[1024]; ExpectedDuration: Integer; Completed: Boolean; GuidedExperienceType: Enum "Guided Experience Type"; AssistedSetupGroup: Enum "Assisted Setup Group"; HelpUrl: Text[250]; VideoUrl: Text[250]; VideoCategory: Enum "Video Category"; ManualSetupCategory: Enum "Manual Setup Category"; Keywords: Text[250]; SpotlightTourType: Enum "Spotlight Tour Type"; SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text])
     begin
         Assert.AreEqual(Code, GuidedExperienceItem.Code, 'The Code field of the Guided Experience Item is incorrect.');

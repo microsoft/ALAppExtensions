@@ -152,18 +152,28 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
                     Editable = false;
                     ToolTip = 'Specifies whether the invoice was part of an EU 3-party trade transaction.';
                 }
+#if not CLEAN22
                 field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
                 {
                     ApplicationArea = Basic, Suite;
+                    Caption = 'Intrastat Exclude (Obsolete)';
                     Editable = false;
                     ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
                 }
                 field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
                 {
                     ApplicationArea = SalesReturnOrder;
-                    Editable = false;
+                    Caption = 'Physical Transfer (Obsolete)';
                     ToolTip = 'Specifies if there is physical transfer of the item.';
+                    Editable = false;
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
                 }
+#endif
                 field("Transaction Type CZL"; Rec."Transaction Type")
                 {
                     ApplicationArea = BasicEU;

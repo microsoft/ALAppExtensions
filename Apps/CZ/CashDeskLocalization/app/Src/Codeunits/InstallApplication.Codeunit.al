@@ -489,118 +489,100 @@ codeunit 31054 "Install Application CZP"
     local procedure CopySalesHeader();
     var
         SalesHeader: Record "Sales Header";
+        SalesHeaderDataTransfer: DataTransfer;
     begin
-        SalesHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if SalesHeader.FindSet(true) then
-            repeat
-                SalesHeader."Cash Desk Code CZP" := SalesHeader."Cash Desk Code";
-                SalesHeader."Cash Document Action CZP" := SalesHeader."Cash Document Status";
-                SalesHeader.Modify(false);
-            until SalesHeader.Next() = 0;
+        SalesHeaderDataTransfer.SetTables(Database::"Sales Header", Database::"Sales Header");
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Cash Desk Code"), SalesHeader.FieldNo("Cash Desk Code CZP"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Cash Document Status"), SalesHeader.FieldNo("Cash Document Action CZP"));
+        SalesHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesInvoiceHeader();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceHeaderDataTransfer: DataTransfer;
     begin
-        SalesInvoiceHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if SalesInvoiceHeader.FindSet(true) then
-            repeat
-                SalesInvoiceHeader."Cash Desk Code CZP" := SalesInvoiceHeader."Cash Desk Code";
-                SalesInvoiceHeader."Cash Document Action CZP" := SalesInvoiceHeader."Cash Document Status";
-                SalesInvoiceHeader.Modify(false);
-            until SalesInvoiceHeader.Next() = 0;
+        SalesInvoiceHeaderDataTransfer.SetTables(Database::"Sales Invoice Header", Database::"Sales Invoice Header");
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Cash Desk Code"), SalesInvoiceHeader.FieldNo("Cash Desk Code CZP"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Cash Document Status"), SalesInvoiceHeader.FieldNo("Cash Document Action CZP"));
+        SalesInvoiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesCrMemoHeader();
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesCrMemoHeaderDataTransfer: DataTransfer;
     begin
-        SalesCrMemoHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if SalesCrMemoHeader.FindSet(true) then
-            repeat
-                SalesCrMemoHeader."Cash Desk Code CZP" := SalesCrMemoHeader."Cash Desk Code";
-                SalesCrMemoHeader."Cash Document Action CZP" := SalesCrMemoHeader."Cash Document Status";
-                SalesCrMemoHeader.Modify(false);
-            until SalesCrMemoHeader.Next() = 0;
+        SalesCrMemoHeaderDataTransfer.SetTables(Database::"Sales Cr.Memo Header", Database::"Sales Cr.Memo Header");
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Cash Desk Code"), SalesCrMemoHeader.FieldNo("Cash Desk Code CZP"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Cash Document Status"), SalesCrMemoHeader.FieldNo("Cash Document Action CZP"));
+        SalesCrMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseHeader();
     var
         PurchaseHeader: Record "Purchase Header";
+        PurchaseHeaderDataTransfer: DataTransfer;
     begin
-        PurchaseHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if PurchaseHeader.FindSet(true) then
-            repeat
-                PurchaseHeader."Cash Desk Code CZP" := PurchaseHeader."Cash Desk Code";
-                PurchaseHeader."Cash Document Action CZP" := PurchaseHeader."Cash Document Status";
-                PurchaseHeader.Modify(false);
-            until PurchaseHeader.Next() = 0;
+        PurchaseHeaderDataTransfer.SetTables(Database::"Purchase Header", Database::"Purchase Header");
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Cash Desk Code"), PurchaseHeader.FieldNo("Cash Desk Code CZP"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Cash Document Status"), PurchaseHeader.FieldNo("Cash Document Action CZP"));
+        PurchaseHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseInvoiceHeader();
     var
         PurchInvHeader: Record "Purch. Inv. Header";
+        PurchInvHeaderDataTransfer: DataTransfer;
     begin
-        PurchInvHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if PurchInvHeader.FindSet(true) then
-            repeat
-                PurchInvHeader."Cash Desk Code CZP" := PurchInvHeader."Cash Desk Code";
-                PurchInvHeader."Cash Document Action CZP" := PurchInvHeader."Cash Document Status";
-                PurchInvHeader.Modify(false);
-            until PurchInvHeader.Next() = 0;
+        PurchInvHeaderDataTransfer.SetTables(Database::"Purch. Inv. Header", Database::"Purch. Inv. Header");
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Cash Desk Code"), PurchInvHeader.FieldNo("Cash Desk Code CZP"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Cash Document Status"), PurchInvHeader.FieldNo("Cash Document Action CZP"));
+        PurchInvHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseCrMemoHeader();
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchCrMemoHdrDataTransfer: DataTransfer;
     begin
-        PurchCrMemoHdr.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if PurchCrMemoHdr.FindSet(true) then
-            repeat
-                PurchCrMemoHdr."Cash Desk Code CZP" := PurchCrMemoHdr."Cash Desk Code";
-                PurchCrMemoHdr."Cash Document Action CZP" := PurchCrMemoHdr."Cash Document Status";
-                PurchCrMemoHdr.Modify(false);
-            until PurchCrMemoHdr.Next() = 0;
+        PurchCrMemoHdrDataTransfer.SetTables(Database::"Purch. Cr. Memo Hdr.", Database::"Purch. Cr. Memo Hdr.");
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Cash Desk Code"), PurchCrMemoHdr.FieldNo("Cash Desk Code CZP"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Cash Document Status"), PurchCrMemoHdr.FieldNo("Cash Document Action CZP"));
+        PurchCrMemoHdrDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceHeader();
     var
         ServiceHeader: Record "Service Header";
+        ServiceHeaderDataTransfer: DataTransfer;
     begin
-        ServiceHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if ServiceHeader.FindSet(true) then
-            repeat
-                ServiceHeader."Cash Desk Code CZP" := ServiceHeader."Cash Desk Code";
-                ServiceHeader."Cash Document Action CZP" := ServiceHeader."Cash Document Status";
-                ServiceHeader.Modify(false);
-            until ServiceHeader.Next() = 0;
+        ServiceHeaderDataTransfer.SetTables(Database::"Service Header", Database::"Service Header");
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Cash Desk Code"), ServiceHeader.FieldNo("Cash Desk Code CZP"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Cash Document Status"), ServiceHeader.FieldNo("Cash Document Action CZP"));
+        ServiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceInvoiceHeader();
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
+        ServiceInvoiceHeaderDataTransfer: DataTransfer;
     begin
-        ServiceInvoiceHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if ServiceInvoiceHeader.FindSet(true) then
-            repeat
-                ServiceInvoiceHeader."Cash Desk Code CZP" := ServiceInvoiceHeader."Cash Desk Code";
-                ServiceInvoiceHeader."Cash Document Action CZP" := ServiceInvoiceHeader."Cash Document Status";
-                ServiceInvoiceHeader.Modify(false);
-            until ServiceInvoiceHeader.Next() = 0;
+        ServiceInvoiceHeaderDataTransfer.SetTables(Database::"Service Invoice Header", Database::"Service Invoice Header");
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Cash Desk Code"), ServiceInvoiceHeader.FieldNo("Cash Desk Code CZP"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Cash Document Status"), ServiceInvoiceHeader.FieldNo("Cash Document Action CZP"));
+        ServiceInvoiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceCrMemoHeader();
     var
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        ServiceCrMemoHeaderDataTransfer: DataTransfer;
     begin
-        ServiceCrMemoHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
-        if ServiceCrMemoHeader.FindSet(true) then
-            repeat
-                ServiceCrMemoHeader."Cash Desk Code CZP" := ServiceCrMemoHeader."Cash Desk Code";
-                ServiceCrMemoHeader."Cash Document Action CZP" := ServiceCrMemoHeader."Cash Document Status";
-                ServiceCrMemoHeader.Modify(false);
-            until ServiceCrMemoHeader.Next() = 0;
+        ServiceCrMemoHeaderDataTransfer.SetTables(Database::"Service Cr.Memo Header", Database::"Service Cr.Memo Header");
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Cash Desk Code"), ServiceCrMemoHeader.FieldNo("Cash Desk Code CZP"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Cash Document Status"), ServiceCrMemoHeader.FieldNo("Cash Document Action CZP"));
+        ServiceCrMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopySourceCodeSetup();
@@ -617,15 +599,13 @@ codeunit 31054 "Install Application CZP"
     local procedure CopyUserSetup();
     var
         UserSetup: Record "User Setup";
+        UserSetupDataTransfer: DataTransfer;
     begin
-        UserSetup.SetLoadFields("Cash Resp. Ctr. Filter", "Cash Desk Amt. Approval Limit", "Unlimited Cash Desk Approval");
-        if UserSetup.FindSet(true) then
-            repeat
-                UserSetup."Cash Resp. Ctr. Filter CZP" := UserSetup."Cash Resp. Ctr. Filter";
-                UserSetup."Cash Desk Amt. Appr. Limit CZP" := UserSetup."Cash Desk Amt. Approval Limit";
-                UserSetup."Unlimited Cash Desk Appr. CZP" := UserSetup."Unlimited Cash Desk Approval";
-                UserSetup.Modify(false);
-            until UserSetup.Next() = 0;
+        UserSetupDataTransfer.SetTables(Database::"User Setup", Database::"User Setup");
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Cash Resp. Ctr. Filter"), UserSetup.FieldNo("Cash Resp. Ctr. Filter CZP"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Cash Desk Amt. Approval Limit"), UserSetup.FieldNo("Cash Desk Amt. Appr. Limit CZP"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Unlimited Cash Desk Approval"), UserSetup.FieldNo("Unlimited Cash Desk Appr. CZP"));
+        UserSetupDataTransfer.CopyFields();
     end;
 
     local procedure CopyGeneralLedgerSetup();

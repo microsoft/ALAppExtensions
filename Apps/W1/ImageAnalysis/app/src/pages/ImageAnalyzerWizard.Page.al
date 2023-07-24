@@ -75,6 +75,18 @@ page 2029 "Image Analyzer Wizard"
                                 end;
                             }
 
+                            field(PrivacyStatementLink; PrivacyStatementLinkTxt)
+                            {
+                                ApplicationArea = Basic, Suite;
+                                ShowCaption = false;
+                                Editable = false;
+
+                                trigger OnDrillDown()
+                                begin
+                                    Hyperlink(PrivacyStatementLinkLinkTxt);
+                                end;
+                            }
+
                         }
                     }
                 }
@@ -295,17 +307,11 @@ page 2029 "Image Analyzer Wizard"
         ItemToFill: Record Item;
         ContactToFill: Record Contact;
         Step: Option Start,Second,Finish;
-        [InDataSet]
         TopBannerVisible: Boolean;
-        [InDataSet]
         FirstStepVisible: Boolean;
-        [InDataSet]
         SecondStepVisible: Boolean;
-        [InDataSet]
         FinalStepVisible: Boolean;
-        [InDataSet]
         BackActionEnabled: Boolean;
-        [InDataSet]
         NextActionEnabled: Boolean;
         LearnMoreStatementLinkTxt: Label 'Computer Vision API documentation';
         LearnMoreLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=848400';
@@ -313,6 +319,8 @@ page 2029 "Image Analyzer Wizard"
         ConsentTxt: Label 'By enabling the Image Analyzer extension you consent to sharing your data with an external system. For more information, see the documentation.';
         ImageAnalyzerDocumentationTxt: Label 'Image Analyzer technical documentation';
         ImageAnalyzerDocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=850308';
+        PrivacyStatementLinkTxt: Label 'Privacy Statement';
+        PrivacyStatementLinkLinkTxt: Label 'https://go.microsoft.com/fwlink/?LinkId=724009';
         ChooseFinishTxt: Label 'Choose ''Finish'' to enable Image Analyzer.';
         HowToPart1Txt: Label 'Image Analyzer automatically detects attributes when you add an image to an item or contact person.';
         HowToPart2Txt: Label 'To analyze images you''ve already uploaded, go to the item or contact person card, and choose the ''Analyze Picture'' action.';

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides an interface for managing and cleaning up data data in the database.",
     "description":  "Provides the ability to manage data in the database.",
-    "version":  "22.3.0.0",
+    "version":  "22.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -19,7 +19,7 @@
                              "id":  "fd3d0b8e-61fa-4f87-b2fc-c4a1f3e53a63",
                              "name":  "Math",
                              "publisher":  "Microsoft",
-                             "version":  "22.3.0.0"
+                             "version":  "22.4.0.0"
                          }
                      ],
     "idRanges":  [

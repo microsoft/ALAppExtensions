@@ -232,8 +232,9 @@ report 31012 "Create Sales Adv. Letter CZZ"
         AdvanceLetterApplicationCZZ."Advance Letter No." := SalesAdvLetterHeaderCZZ."No.";
         AdvanceLetterApplicationCZZ."Document Type" := AdvanceLetterApplicationCZZ."Document Type"::"Sales Order";
         AdvanceLetterApplicationCZZ."Document No." := SalesHeader."No.";
-        SalesAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        SalesAdvLetterHeaderCZZ.CalcFields("Amount Including VAT", "Amount Including VAT (LCY)");
         AdvanceLetterApplicationCZZ.Amount := SalesAdvLetterHeaderCZZ."Amount Including VAT";
+        AdvanceLetterApplicationCZZ."Amount (LCY)" := SalesAdvLetterHeaderCZZ."Amount Including VAT (LCY)";
         AdvanceLetterApplicationCZZ.Insert();
     end;
 

@@ -21,6 +21,14 @@ codeunit 1999 "Guided Experience Upgrade"
         InsertSpotlightTour();
         UpdateTourDescriptions();
         UpdateTranslations();
+        CleanUpGuidedExperienceItems();
+    end;
+
+    local procedure CleanUpGuidedExperienceItems()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+    begin
+        GuidedExperience.CleanupOldGuidedExperienceItems(true, 100);
     end;
 
     local procedure UpdateTourDescriptions()

@@ -1221,6 +1221,30 @@ codeunit 1991 "Guided Experience Impl."
             TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 
+    procedure CleanupOldGuidedExperienceItems(OnlyFirstParty: Boolean; Threshold: Integer)
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        GuidedExperienceItem2: Record "Guided Experience Item";
+        ItemsToCleanUp: List of [Code[300]];
+        ItemCode: Code[300];
+    begin
+        if OnlyFirstParty then
+            GuidedExperienceItem.SetRange("Extension Publisher", 'Microsoft');
+
+        if GuidedExperienceItem.FindSet() then
+            repeat
+                GuidedExperienceItem2.SetRange(Code, GuidedExperienceItem.Code);
+                if GuidedExperienceItem2.Count() > Threshold then
+                    ItemsToCleanUp.Add(GuidedExperienceItem.Code);
+            until GuidedExperienceItem.Next() = 0;
+
+        foreach ItemCode in ItemsToCleanUp do begin
+            GuidedExperienceItem.SetRange(Code, ItemCode);
+            GuidedExperienceItem.SetRange(Version, 0, GuidedExperienceItem.Count() - 2);
+            GuidedExperienceItem.DeleteAll();
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", OnAfterDeleteEvent, '', true, true)]
     local procedure OnAfterGuidedExperienceItemDelete(var Rec: Record "Guided Experience Item")
     begin

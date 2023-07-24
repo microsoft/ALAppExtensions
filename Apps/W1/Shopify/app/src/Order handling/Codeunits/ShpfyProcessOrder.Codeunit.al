@@ -312,5 +312,16 @@ codeunit 30166 "Shpfy Process Order"
     begin
         SalesShptHeader."Shpfy Order No." := SalesHeader."Shpfy Order No.";
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeSalesLineInsert', '', false, false)]
+    local procedure TransferShopifyValuesOnBeforeSalesLineInsert(var SalesLine: Record "Sales Line"; var TempSalesLine: Record "Sales Line" temporary; SalesHeader: Record "Sales Header")
+    begin
+        SalesLine."Shpfy Order No." := TempSalesLine."Shpfy Order No.";
+        SalesLine."Shpfy Order Line Id" := TempSalesLine."Shpfy Order Line Id";
+        SalesLine."Shpfy Refund Id" := TempSalesLine."Shpfy Refund Id";
+        SalesLine."Shpfy Refund Line Id" := TempSalesLine."Shpfy Refund Line Id";
+    end;
 }
+
+
 

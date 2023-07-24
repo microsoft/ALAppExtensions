@@ -63,7 +63,7 @@ page 2680 "Data Search"
         NoOfParallelTasks: Integer;
         NoTablesDefinedErr: Label 'No tables defined for search.';
         StatusLbl: Label 'Searching ...';
-        TelemetryLbl: Label 'Data Search started. No. of search words: %1. No. of tables to search: %2.', Comment = '%1 and %2 are integer numbers equal to or greater than 1';
+        DataSearchStartedTelemetryLbl: Label 'Data Search started', Locked = true;
         TelemetryCategoryLbl: Label 'Data Search', Locked = true;
 
     trigger OnInit()
@@ -93,6 +93,7 @@ page 2680 "Data Search"
         DataSearchInTable: Codeunit "Data Search in Table";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         SearchStrings: List of [Text];
+        Dimensions: Dictionary of [Text, Text];
         RoleCenterID: Integer;
         NoOfTablesToSearch: Integer;
     begin
@@ -118,7 +119,10 @@ page 2680 "Data Search"
         until DataSearchSetupTable.Next() = 0;
 
         DataSearchInTable.SplitSearchString(SearchString, SearchStrings);
-        FeatureTelemetry.LogUsage('0000I9B', TelemetryCategoryLbl, StrSubstNo(TelemetryLbl, SearchStrings.Count(), NoOfTablesToSearch));
+
+        Dimensions.Add('NumberOfSearchWords', Format(SearchStrings.Count()));
+        Dimensions.Add('NumberOfTablesToSearch', Format(NoOfTablesToSearch));
+        FeatureTelemetry.LogUsage('0000I9B', TelemetryCategoryLbl, DataSearchStartedTelemetryLbl, Dimensions);
     end;
 
     local procedure QueueSearchInBackground(TableTypeID: Integer)

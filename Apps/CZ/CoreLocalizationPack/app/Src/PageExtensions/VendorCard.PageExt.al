@@ -74,21 +74,35 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
 #endif
         addlast(Invoicing)
         {
+#if not CLEAN22
             field("Transaction Type CZL"; Rec."Transaction Type CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Transaction Type (Obsolete)';
                 ToolTip = 'Specifies the default Transaction type for Intrastat reporting purposes.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
             field("Transaction Specification CZL"; Rec."Transaction Specification CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Transaction Specification (Obsolete)';
                 ToolTip = 'Specifies the default Transaction specification for Intrastat reporting purposes.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field will not be used anymore.';
             }
             field("Transport Method CZL"; Rec."Transport Method CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Transport Method (Obsolete)';
                 ToolTip = 'Specifies the default Transport Method for Intrastat reporting purposes.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
+#endif
             field("Last Unreliab. Check Date CZL"; Rec."Last Unreliab. Check Date CZL")
             {
                 ApplicationArea = Basic, Suite;

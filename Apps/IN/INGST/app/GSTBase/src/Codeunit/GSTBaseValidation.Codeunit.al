@@ -399,12 +399,6 @@ codeunit 18001 "GST Base Validation"
         Rec.TestField("Reverse Charge", false);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Gst Group", 'OnAfterValidateEvent', 'Reverse Charge', False, False)]
-    local procedure ValidateReverseChargeOnafterValidateEvent(var Rec: Record "GST Group")
-    begin
-        Rec.TestField("GST Group Type", Rec."GST Group Type"::Service);
-    end;
-
     //GST Registration Nos. - Subscribers
     [EventSubscriber(ObjectType::Table, Database::"GST Registration Nos.", 'OnAfterValidateEvent', 'Code', false, false)]
     local procedure ValidateRegistrationCodeonAfterValidateEvent(var Rec: Record "GST Registration Nos."; var xRec: Record "GST Registration Nos.")

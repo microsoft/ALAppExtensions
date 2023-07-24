@@ -134,6 +134,20 @@ pageextension 18098 "GST Blanket Purch Ord Subform" extends "Blanket Purchase Or
                 end;
             }
         }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
+                end;
+            }
+        }
     }
 
     local procedure SaveRecords()

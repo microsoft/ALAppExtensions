@@ -6,6 +6,14 @@ tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
     }
 
@@ -27,9 +35,12 @@ tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
         CountryRegion: Record "Country/Region";
         CompanyInformation: Record "Company Information";
     begin
+#if not CLEAN22
+#pragma warning disable AL0432
         if "Intrastat Exclude CZL" then
             exit(false);
-
+#pragma warning restore AL0432
+#endif
         if "Trsf.-from Country/Region Code" = "Trsf.-to Country/Region Code" then
             exit(false);
 

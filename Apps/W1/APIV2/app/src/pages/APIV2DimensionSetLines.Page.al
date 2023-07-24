@@ -321,6 +321,8 @@ page 30022 "APIV2 - Dimension Set Lines"
                             SalesInvoiceHeader.SetRange("Draft Invoice SystemId", ParentIdFilter);
                             if SalesInvoiceHeader.FindFirst() then
                                 exit(SalesInvoiceHeader."Dimension Set ID");
+                            if SalesInvoiceHeader.GetBySystemId(ParentIdFilter) then
+                                exit(SalesInvoiceHeader."Dimension Set ID");
                         end;
                 end;
             DimensionSetEntryBufferParentType::"Purchase Invoice":
@@ -333,6 +335,8 @@ page 30022 "APIV2 - Dimension Set Lines"
                         end else begin
                             PurchInvHeader.SetRange("Draft Invoice SystemId", ParentIdFilter);
                             if PurchInvHeader.FindFirst() then
+                                exit(PurchInvHeader."Dimension Set ID");
+                            if PurchInvHeader.GetBySystemId(ParentIdFilter) then
                                 exit(PurchInvHeader."Dimension Set ID");
                         end;
                 end;
@@ -506,6 +510,13 @@ page 30022 "APIV2 - Dimension Set Lines"
                                 SalesInvoiceHeader.Modify(true);
                                 exit;
                             end;
+                            if SalesInvoiceHeader.GetBySystemId(ParentIdFilter) then begin
+                                SalesInvoiceHeader."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+                                DimensionManagement.UpdateGlobalDimFromDimSetID(
+                                    SalesInvoiceHeader."Dimension Set ID", SalesInvoiceHeader."Shortcut Dimension 1 Code", SalesInvoiceHeader."Shortcut Dimension 2 Code");
+                                SalesInvoiceHeader.Modify(true);
+                                exit;
+                            end;
                         end;
                 end;
             DimensionSetEntryBufferParentType::"Purchase Invoice":
@@ -523,6 +534,13 @@ page 30022 "APIV2 - Dimension Set Lines"
                         end else begin
                             PurchInvHeader.SetRange("Draft Invoice SystemId", ParentIdFilter);
                             if PurchInvHeader.FindFirst() then begin
+                                PurchInvHeader."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+                                DimensionManagement.UpdateGlobalDimFromDimSetID(
+                                    PurchInvHeader."Dimension Set ID", PurchInvHeader."Shortcut Dimension 1 Code", PurchInvHeader."Shortcut Dimension 2 Code");
+                                PurchInvHeader.Modify(true);
+                                exit;
+                            end;
+                            if PurchInvHeader.GetBySystemId(ParentIdFilter) then begin
                                 PurchInvHeader."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
                                 DimensionManagement.UpdateGlobalDimFromDimSetID(
                                     PurchInvHeader."Dimension Set ID", PurchInvHeader."Shortcut Dimension 1 Code", PurchInvHeader."Shortcut Dimension 2 Code");

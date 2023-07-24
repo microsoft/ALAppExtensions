@@ -16,13 +16,15 @@ Codeunit 38502 "AR External Events"
         SalesCreditMemoApiUrlTok: Label 'v2.0/companies(%1)/salesCreditMemos(%2)', Locked = true;
         SalesShipmentApiUrlTok: Label 'v2.0/companies(%1)/salesShipments(%2)', Locked = true;
     begin
+        if PreviewMode then
+            exit;
         if SalesInvoiceHeader."No." <> '' then begin
-            Url := ExternalEventsHelper.CreateLink(CopyStr(SalesInvoiceApiUrlTok, 1, 250), SalesInvoiceHeader.SystemId);
-            SalesInvoicePosted(SalesInvoiceHeader.SystemId, Url);
+            Url := ExternalEventsHelper.CreateLink(CopyStr(SalesInvoiceApiUrlTok, 1, 250), SalesInvoiceHeader."Draft Invoice SystemId");
+            SalesInvoicePosted(SalesInvoiceHeader."Draft Invoice SystemId", Url);
         end;
         if SalesCrMemoHeader."No." <> '' then begin
-            Url := ExternalEventsHelper.CreateLink(CopyStr(SalesCreditMemoApiUrlTok, 1, 250), SalesCrMemoHeader.SystemId);
-            SalesCreditMemoPosted(SalesCrMemoHeader.SystemId, Url);
+            Url := ExternalEventsHelper.CreateLink(CopyStr(SalesCreditMemoApiUrlTok, 1, 250), SalesCrMemoHeader."Draft Cr. Memo SystemId");
+            SalesCreditMemoPosted(SalesCrMemoHeader."Draft Cr. Memo SystemId", Url);
         end;
         if SalesShipmentHeader."No." <> '' then begin
             Url := ExternalEventsHelper.CreateLink(CopyStr(SalesShipmentApiUrlTok, 1, 250), SalesShipmentHeader.SystemId);

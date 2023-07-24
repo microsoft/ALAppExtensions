@@ -1,3 +1,4 @@
+#if not CLEAN23
 pageextension 10676 "SAF-T VAT Code" extends "VAT Codes"
 {
     layout
@@ -13,3 +14,4 @@ pageextension 10676 "SAF-T VAT Code" extends "VAT Codes"
         }
     }
 }
+#endif

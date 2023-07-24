@@ -361,23 +361,25 @@ codeunit 9871 "Security Group Impl."
     var
         UserProperty: Record "User Property";
         AzureAdGraph: Codeunit "Azure AD Graph";
-        GroupMembers: DotNet IEnumerable;
+        GraphUserInfoPage: Dotnet UserInfoPage;
         GraphUserInfo: DotNet UserInfo;
     begin
-        AzureADGraph.GetMembersForGroupId(AadGroupId, GroupMembers);
+        AzureADGraph.GetMembersPageForGroupId(AadGroupId, 50, GraphUserInfoPage);
 
-        if IsNull(GroupMembers) then
+        if IsNull(GraphUserInfoPage) then
             exit;
 
-        foreach GraphUserInfo in GroupMembers do begin
-            UserProperty.SetRange("Authentication Object ID", GraphUserInfo.ObjectId);
-            if UserProperty.FindFirst() then begin
-                SecurityGroupMemberBuffer."Security Group Code" := SecurityGroupCode;
-                SecurityGroupMemberBuffer."User Security ID" := UserProperty."User Security ID";
-                GetName(SecurityGroupCode, SecurityGroupMemberBuffer."Security Group Name");
-                SecurityGroupMemberBuffer.Insert();
+        repeat
+            foreach GraphUserInfo in GraphUserInfoPage.CurrentPage() do begin
+                UserProperty.SetRange("Authentication Object ID", GraphUserInfo.ObjectId);
+                if UserProperty.FindFirst() then begin
+                    SecurityGroupMemberBuffer."Security Group Code" := SecurityGroupCode;
+                    SecurityGroupMemberBuffer."User Security ID" := UserProperty."User Security ID";
+                    GetName(SecurityGroupCode, SecurityGroupMemberBuffer."Security Group Name");
+                    SecurityGroupMemberBuffer.Insert();
+                end;
             end;
-        end;
+        until (not GraphUserInfoPage.GetNextMembersPageForGroupId(AadGroupId));
     end;
 
     local procedure ValidateWindowsGroup(WindowsGroupId: Text)
@@ -514,20 +516,6 @@ codeunit 9871 "Security Group Impl."
             exit(CopyStr(GroupDomainAndNameList.Get(GroupDomainAndNameList.Count()), 1, 20));
         end else
             exit(CopyStr(GroupName, 1, 20));
-    end;
-
-    procedure LookupPermissionSet(AllowMultiselect: Boolean; var AccessControl: Record "Access Control"; var PermissionSetLookupRecord: Record "Aggregate Permission Set"): Boolean
-    var
-        PermissionSetRelation: Codeunit "Permission Set Relation";
-    begin
-        if PermissionSetRelation.LookupPermissionSet(AllowMultiselect, PermissionSetLookupRecord) then begin
-            AccessControl."Role ID" := PermissionSetLookupRecord."Role ID";
-            AccessControl.Scope := PermissionSetLookupRecord.Scope;
-            AccessControl."App ID" := PermissionSetLookupRecord."App ID";
-            AccessControl.CalcFields("Role Name");
-            exit(true);
-        end;
-        exit(false);
     end;
 
     [InternalEvent(false)]

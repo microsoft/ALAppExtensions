@@ -62,8 +62,8 @@ codeunit 4810 IntrastatReportManagement
                 if ReturnRcptHeader.Get(ItemLedgEntry."Document No.") then
                     case IntrastatReportSetup."Shipments Based On" of
                         IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
-                            if ReturnRcptHeader."Rcvd-from Country/Region Code" <> '' then
-                                CountryCode := ReturnRcptHeader."Rcvd-from Country/Region Code"
+                            if ReturnRcptHeader."Rcvd.-from Count./Region Code" <> '' then
+                                CountryCode := ReturnRcptHeader."Rcvd.-from Count./Region Code"
                             else
                                 CountryCode := ReturnRcptHeader."Sell-to Country/Region Code";
                         IntrastatReportSetup."Shipments Based On"::"Sell-to Country":

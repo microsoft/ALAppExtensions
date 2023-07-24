@@ -348,7 +348,7 @@ codeunit 2012 "Entity Text Impl."
             Completion := CopyStr(Completion, 9).Trim();
         end;
 
-        MinParagraphWords := 100;
+        MinParagraphWords := 50;
 
         FormatValid := true;
         case TextFormat of

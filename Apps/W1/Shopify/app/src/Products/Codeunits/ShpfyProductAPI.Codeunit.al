@@ -23,6 +23,7 @@ codeunit 30176 "Shpfy Product API"
         NewShopifyProduct: Record "Shpfy Product";
         ShopLocation: Record "Shpfy Shop Location";
         NewShopifyVariant: Record "Shpfy Variant";
+        IStockAvailable: Interface "Shpfy IStock Available";
         JArray: JsonArray;
         JResponse: JsonToken;
         JToken: JsonToken;
@@ -119,9 +120,11 @@ codeunit 30176 "Shpfy Product API"
         end;
         ShopLocation.SetRange("Shop Code", ShopifyProduct."Shop Code");
         ShopLocation.SetRange(Active, true);
+        ShopLocation.SetRange("Default Product Location", true);
         if ShopLocation.FindSet(false) then begin
             GraphQuery.Append(', inventoryQuantities: [');
             repeat
+                IStockAvailable := ShopLocation."Stock Calculation";
                 GraphQuery.Append('{availableQuantity: 0, locationId: \"gid://shopify/Location/');
                 GraphQuery.Append(Format(ShopLocation.Id));
                 GraphQuery.Append('\"}, ');

@@ -21,6 +21,7 @@ codeunit 1851 "Sales Forecast Upgrade"
                 NavApp.DeleteArchiveData(Database::Item);
             end;
             UpgradeSecretsToIsolatedStorage();
+            SetConsentIfForecastAlreadyScheduled();
         end;
 
     end;
@@ -78,6 +79,31 @@ codeunit 1851 "Sales Forecast Upgrade"
         UpgradeTag.SetUpgradeTag(GetSalesForecastSecretsToISValidationTag());
     end;
 
+    local procedure SetConsentIfForecastAlreadyScheduled()
+    var
+        SalesForecastSetup: Record "MS - Sales Forecast Setup";
+        JobQueueEntry: Record "Job Queue Entry";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetForecastCustomerConsentTag(), '') then
+            exit;
+
+        if UpgradeTag.HasUpgradeTag(GetForecastCustomerConsentTag()) then
+            exit;
+
+        if SalesForecastSetup.Get() then
+            if not SalesForecastSetup.Enabled then begin
+                JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
+                JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Sales Forecast Update");
+                if not JobQueueEntry.IsEmpty() then begin
+                    SalesForecastSetup.Enabled := true;
+                    SalesForecastSetup.Modify();
+                end;
+            end;
+
+        UpgradeTag.SetUpgradeTag(GetForecastCustomerConsentTag());
+    end;
+
     internal procedure GetSalesForecastSecretsToISUpgradeTag(): Code[250]
     begin
         exit('MS-328257-SalesForecastSecretsToIS-20190925');
@@ -86,6 +112,11 @@ codeunit 1851 "Sales Forecast Upgrade"
     internal procedure GetSalesForecastSecretsToISValidationTag(): Code[250]
     begin
         exit('MS-328257-SalesForecastSecretsToIS-Validate-20190925');
+    end;
+
+    internal procedure GetForecastCustomerConsentTag(): Code[250]
+    begin
+        exit('MS-474737-SalesForecastCustomerConsent-20230607');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]

@@ -32,7 +32,7 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
                 if ("VAT Reporting Date Usage" = "VAT Reporting Date Usage"::Disabled) and
                    ("VAT Reporting Date Usage" <> xRec."VAT Reporting Date Usage")
                 then begin
-                    GLEntry.SetFilter("VAT Reporting Date", '>0D');
+                    GLEntry.SetFilter("VAT Reporting Date", '>%1', 0D);
                     if not GLEntry.IsEmpty() then
                         Error(CannotChangeFieldErr, FieldCaption("VAT Reporting Date Usage"));
                     if ConfirmManagement.GetResponseOrDefault(DisableVATDateQst, false) then begin
@@ -97,7 +97,7 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
                     else
                         "Use VAT Date CZL" := xRec."Use VAT Date CZL";
                 end else begin
-                    GLEntry.SetFilter("VAT Date CZL", '>0D');
+                    GLEntry.SetFilter("VAT Date CZL", '>%1', 0D);
                     if not GLEntry.IsEmpty() then
                         Error(CannotChangeFieldErr, FieldCaption("Use VAT Date CZL"));
                     if ConfirmManagement.GetResponseOrDefault(DisableVATDateQst, false) then begin

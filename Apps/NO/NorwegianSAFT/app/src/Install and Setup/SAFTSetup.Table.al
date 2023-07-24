@@ -28,6 +28,14 @@ table 10670 "SAF-T Setup"
             Caption = 'Not Applicable VAT Code';
             DataClassification = CustomerContent;
             TableRelation = "VAT Code";
+            ObsoleteReason = 'Use the field "Not Applic. VAT Code" instead';
+#if CLEAN23
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
+#endif
         }
         field(5; "Dimension No."; Integer)
         {
@@ -37,6 +45,11 @@ table 10670 "SAF-T Setup"
         field(6; "Default Post Code"; Code[20])
         {
             Caption = 'Default Post Code';
+        }
+        field(7; "Not Applic. VAT Code"; Code[20])
+        {
+            Caption = 'Not Applicable VAT Code';
+            TableRelation = "VAT Reporting Code".Code;
         }
         field(20; "Check Company Information"; Boolean)
         {

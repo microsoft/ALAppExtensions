@@ -203,6 +203,7 @@ codeunit 31362 "Match Bank Payment CZB"
         CustLedgerEntry.Reset();
         CustLedgerEntry.SetCurrentKey("Customer No.", Open);
         CustLedgerEntry.SetRange(Prepayment, false);
+        CustLedgerEntry.SetRange(Positive, GenJournalLine.Amount < 0);
         if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) and
            (GenJournalLine."Account No." <> '')
         then
@@ -267,6 +268,7 @@ codeunit 31362 "Match Bank Payment CZB"
         VendorLedgerEntry.Reset();
         VendorLedgerEntry.SetCurrentKey("Vendor No.", Open);
         VendorLedgerEntry.SetRange(Prepayment, false);
+        VendorLedgerEntry.SetRange(Positive, GenJournalLine.Amount < 0);
         if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and
             (GenJournalLine."Account No." <> '')
         then
@@ -329,6 +331,7 @@ codeunit 31362 "Match Bank Payment CZB"
     begin
         EmployeeLedgerEntry.Reset();
         EmployeeLedgerEntry.SetCurrentKey("Employee No.", Open);
+        EmployeeLedgerEntry.SetRange(Positive, GenJournalLine.Amount < 0);
 
         if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Employee) and
             (GenJournalLine."Account No." <> '')

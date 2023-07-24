@@ -236,6 +236,15 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
@@ -244,11 +253,20 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
                         FieldError("Document Type");
                 UpdateSalesLinesByFieldNo(FieldNo("Physical Transfer CZL"), false);
             end;
+#endif
         }
         field(31069; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
@@ -287,7 +305,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         if "Currency Code" = '' then
             exit;
         if not CurrencyExchangeRate.CurrencyExchangeRateExist("Currency Code", CurrencyDate) then
-            Error(CurrExchRateNotExistsErr)
+            Error(CurrExchRateNotExistsErr, CurrencyExchangeRate.TableCaption, "Currency Code", CurrencyDate);
     end;
 
     procedure UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
@@ -380,7 +398,9 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         "SWIFT Code CZL" := SWIFTCode;
         OnAfterUpdateBankInfoCZL(Rec);
     end;
+#if not CLEAN22
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
     procedure CheckIntrastatMandatoryFieldsCZL()
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
@@ -399,6 +419,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
                 TestField("Shipment Method Code");
         end;
     end;
+#endif
 
     procedure IsIntrastatTransactionCZL(): Boolean
     begin
@@ -437,8 +458,12 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
 
         if "EU 3-Party Intermed. Role CZL" then
             exit(false);
+#if not CLEAN22
+#pragma warning disable AL0432
         if "Intrastat Exclude CZL" then
             exit(false);
+#pragma warning restore AL0432
+#endif
         exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
     end;
 

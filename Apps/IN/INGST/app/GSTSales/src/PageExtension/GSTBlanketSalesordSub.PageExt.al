@@ -113,6 +113,20 @@ pageextension 18160 "GST Blanket Sales ord Sub" extends "Blanket Sales Order Sub
                 end;
             }
         }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
+                end;
+            }
+        }
     }
 
     local procedure SaveRecords()

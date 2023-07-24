@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "This extension is used to prevent tests from changing specific System tables or doing any changes to metadata that may affect the test run stabilty.",
     "description":  "Update to specific system tables would invalidate object metadata which may lead to the test failures with messages like - Page has expired or Administrator has updated one or more extensions, restart your activity. If a test needs do change the data in this way it needs to be isolated from other tests.",
-    "version":  "22.3.0.0",
+    "version":  "22.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",

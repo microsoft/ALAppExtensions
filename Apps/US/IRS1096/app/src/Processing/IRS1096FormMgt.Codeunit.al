@@ -215,7 +215,6 @@ codeunit 10016 "IRS 1096 Form Mgt."
         ConfirmMgt: Codeunit "Confirm Management";
         General1099Code: Code[20];
         LineNo: Integer;
-        AddToTotalNumberOfForms: Boolean;
         CalculatedAmount: Decimal;
     begin
         If (VendLedgEntry."IRS 1099 Code" = '') or (VendLedgEntry."IRS 1099 Amount" = 0) then
@@ -264,15 +263,11 @@ codeunit 10016 "IRS 1096 Form Mgt."
         if TempIRS1096FormLine.FindLast() then begin
             TempIRS1096FormLine."Calculated Amount" += CalculatedAmount;
             TempIRS1096FormLine.Modify();
-            IRS1096FormHeader."Calc. Amount" += CalculatedAmount;
-            IRS1096FormHeader."Total Amount To Report" += CalculatedAmount;
-            IRS1096FormHeader.Modify();
             InsertLineRelation(TempIRS1096FormLine, VendLedgEntry);
             exit;
         end;
 
         TempIRS1096FormLine.SetRange("IRS Code");
-        AddToTotalNumberOfForms := TempIRS1096FormLine.IsEmpty();
         TempIRS1096FormLine.SetRange("Vendor No.");
         if TempIRS1096FormLine.FindLast() then
             LineNo := TempIRS1096FormLine."Line No.";
@@ -291,15 +286,6 @@ codeunit 10016 "IRS 1096 Form Mgt."
         TempIRS1096FormLine."Calculated Adjustment Amount" := IRS1099Adjustment.Amount;
         TempIRS1096FormLine.Insert();
         InsertLineRelation(TempIRS1096FormLine, VendLedgEntry);
-
-        if AddToTotalNumberOfForms then begin
-            IRS1096FormHeader."Calc. Total Number Of Forms" += 1;
-            IRS1096FormHeader."Total Number Of Forms" += 1;
-        end;
-        IRS1096FormHeader."Calc. Amount" += TempIRS1096FormLine."Calculated Amount";
-        IRS1096FormHeader."Calc. Adjustment Amount" += TempIRS1096FormLine."Calculated Adjustment Amount";
-        IRS1096FormHeader."Total Amount To Report" += TempIRS1096FormLine."Calculated Amount" + TempIRS1096FormLine."Calculated Adjustment Amount";
-        IRS1096FormHeader.Modify();
     end;
 
     local procedure GetGeneral1099CodeFromVendLedgEntry(VendLedgEntry: Record "Vendor Ledger Entry") IRSCode: Code[20]
@@ -335,6 +321,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         IRS1096FormHeader: Record "IRS 1096 Form Header";
         IRS1096FormLine: Record "IRS 1096 Form Line";
         IRS1099FormBox: Record "IRS 1099 Form-Box";
+        IRS1096FormLineRelation: Record "IRS 1096 Form Line Relation";
         IncludeLine: Boolean;
         TotalAmount: Decimal;
     begin
@@ -351,6 +338,14 @@ codeunit 10016 "IRS 1096 Form Mgt."
                 IRS1096FormLine := TempIRS1096FormLine;
                 IRS1096FormLine."Total Amount" := TotalAmount;
                 IRS1096FormLine.Insert();
+                TempCreatedIRS1096FormHeader."Calc. Amount" += IRS1096FormLine."Calculated Amount";
+                TempCreatedIRS1096FormHeader."Calc. Adjustment Amount" += IRS1096FormLine."Calculated Adjustment Amount";
+                TempCreatedIRS1096FormHeader."Total Amount To Report" += IRS1096FormLine."Calculated Amount" + IRS1096FormLine."Calculated Adjustment Amount";
+                TempCreatedIRS1096FormHeader.Modify();
+            end else begin
+                IRS1096FormLineRelation.SetRange("Form No.", TempIRS1096FormLine."Form No.");
+                IRS1096FormLineRelation.SetRange("Line No.", TempIRS1096FormLine."Line No.");
+                IRS1096FormLineRelation.DeleteAll(true);
             end;
         until TempIRS1096FormLine.Next() = 0;
         TempCreatedIRS1096FormHeader.FindSet();
@@ -360,6 +355,14 @@ codeunit 10016 "IRS 1096 Form Mgt."
                 TempCreatedIRS1096FormHeader.Delete();
                 if IRS1096FormHeader.Get(TempCreatedIRS1096FormHeader."No.") then
                     IRS1096FormHeader.Delete(true);
+            end else begin
+                IRS1096FormHeader.Get(TempCreatedIRS1096FormHeader."No.");
+                IRS1096FormHeader."Calc. Amount" := TempCreatedIRS1096FormHeader."Calc. Amount";
+                IRS1096FormHeader."Calc. Adjustment Amount" := TempCreatedIRS1096FormHeader."Calc. Adjustment Amount";
+                IRS1096FormHeader."Total Amount To Report" := TempCreatedIRS1096FormHeader."Total Amount To Report";
+                IRS1096FormHeader."Calc. Total Number Of Forms" := IRS1096FormLine.Count();
+                IRS1096FormHeader."Total Number Of Forms" := IRS1096FormLine.Count();
+                IRS1096FormHeader.Modify();
             end;
         until TempCreatedIRS1096FormHeader.Next() = 0;
     end;

@@ -2,7 +2,7 @@
     "id":  "4c315253-b024-4fdc-9c3d-794036768af5",
     "name":  "Date and Time",
     "publisher":  "Microsoft",
-    "version":  "22.3.0.0",
+    "version":  "22.4.0.0",
     "brief":  "Provides date and time helper functions",
     "description":  "Provides helper functions for date and time, such as getting a time zone offset or giving information on daylight saving time.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "22.3.0.0"
+                             "version":  "22.4.0.0"
                          }
                      ],
     "screenshots":  [

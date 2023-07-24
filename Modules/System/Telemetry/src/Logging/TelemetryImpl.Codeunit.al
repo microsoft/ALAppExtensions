@@ -55,7 +55,7 @@ codeunit 8712 "Telemetry Impl."
         CustomDimensions.Add('ClientType', Format(CurrentClientType()));
         CustomDimensions.Add('Company', CompanyName());
         if Company.Get(CompanyName()) then
-            CustomDimensions.Add('IsEvaluationCompany', Format(Company."Evaluation Company"));
+            CustomDimensions.Add('IsEvaluationCompany', Language.ToDefaultLanguage(Company."Evaluation Company"));
         if UserPersonalization.Get(UserSecurityId()) then
             if not IsNullGuid(UserPersonalization."App ID") then
                 CustomDimensions.Add('UserRole', UserPersonalization."Profile ID");

@@ -263,8 +263,10 @@ codeunit 18243 "GST Journal Line Subscribers"
             if PurchHeader."Payment Method Code" <> '' then
                 if PaymentMethod.Get(PurchHeader."Payment Method Code") then
                     if PaymentMethod."Bal. Account No." <> '' then begin
+                        GLEntry.LoadFields("External Document No.", "Document No.", "G/L Account No.", "Document Type", "Credit Amount", "Debit Amount", Amount);
                         GLEntry.SetRange("External Document No.", GenJnlLine."External Document No.");
                         GLEntry.SetRange("Document No.", GenJnlLine."Document No.");
+                        GLEntry.SetRange("G/L Account No.", GetVendorAccount(PurchHeader."Buy-from Vendor No."));
                         if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment) then begin
                             GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::Invoice);
                             GLEntry.SetFilter("Credit Amount", '<>%1', 0);
@@ -291,8 +293,10 @@ codeunit 18243 "GST Journal Line Subscribers"
             if PurchHeader."Payment Method Code" <> '' then
                 if PaymentMethod.Get(PurchHeader."Payment Method Code") then
                     if PaymentMethod."Bal. Account No." <> '' then begin
+                        GLEntry.LoadFields("External Document No.", "Document No.", "G/L Account No.", "Document Type", "Credit Amount", "Debit Amount", Amount);
                         GLEntry.SetRange("External Document No.", GenJnlLine."External Document No.");
                         GLEntry.SetRange("Document No.", GenJnlLine."Document No.");
+                        GLEntry.SetRange("G/L Account No.", GetVendorAccount(PurchHeader."Buy-from Vendor No."));
                         if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment) then begin
                             GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::Invoice);
                             GLEntry.SetFilter("Credit Amount", '<>%1', 0);
@@ -349,8 +353,10 @@ codeunit 18243 "GST Journal Line Subscribers"
             if SalesHeader."Payment Method Code" <> '' then
                 if PaymentMethod.Get(SalesHeader."Payment Method Code") then
                     if PaymentMethod."Bal. Account No." <> '' then begin
+                        GLEntry.LoadFields("External Document No.", "Document No.", "G/L Account No.", "Document Type", "Credit Amount", "Debit Amount", Amount);
                         GLEntry.SetRange("External Document No.", GenJnlLine."External Document No.");
                         GLEntry.SetRange("Document No.", GenJnlLine."Document No.");
+                        GLEntry.SetRange("G/L Account No.", GetCustomerAccount(SalesHeader."Bill-to Customer No."));
                         if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment) then begin
                             GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::Invoice);
                             GLEntry.SetFilter("Debit Amount", '<>%1', 0);
@@ -394,6 +400,16 @@ codeunit 18243 "GST Journal Line Subscribers"
         if Customer.Get(CustomerNo) then
             if CustomerPotingGroup.Get(Customer."Customer Posting Group") then
                 exit(CustomerPotingGroup."Receivables Account");
+    end;
+
+    local procedure GetVendorAccount(VendorNo: Code[20]): Code[20]
+    var
+        Vendor: Record Vendor;
+        VendorPostingGroup: Record "Vendor Posting Group";
+    begin
+        if Vendor.Get(VendorNo) then
+            if VendorPostingGroup.Get(Vendor."Vendor Posting Group") then
+                exit(VendorPostingGroup."Payables Account");
     end;
 
     local procedure TaxEngineCallingHandler(var GenJnlLine: Record "Gen. Journal Line"; var xGenJnlLine: Record "Gen. Journal Line")

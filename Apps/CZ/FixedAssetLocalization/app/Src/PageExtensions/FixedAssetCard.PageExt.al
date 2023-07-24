@@ -9,11 +9,6 @@ pageextension 31248 "Fixed Asset Card CZF" extends "Fixed Asset Card"
                 if FADepreciationBook."FA Posting Group" <> FADepreciationBookOld."FA Posting Group" then
                     FADepreciationBook.CheckDefaultFAPostingGroupCZF();
             end;
-
-            trigger OnAfterValidate()
-            begin
-                UpdateFAPostingGroup(FADepreciationBook."FA Posting Group");
-            end;
         }
         addafter("Responsible Employee")
         {
@@ -96,25 +91,4 @@ pageextension 31248 "Fixed Asset Card CZF" extends "Fixed Asset Card"
             }
         }
     }
-
-    trigger OnAfterGetRecord()
-    begin
-        if FADepreciationBook.Count() > 1 then begin
-            FASetup.Get();
-            if not FADepreciationBook.Get(Rec."No.", FASetup."Default Depr. Book") then
-                FADepreciationBook.Init();
-        end;
-        UpdateFAPostingGroup(FADepreciationBook."FA Posting Group");
-    end;
-
-    var
-        FASetup: Record "FA Setup";
-
-    local procedure UpdateFAPostingGroup(FAPostingGroup: Code[20])
-    begin
-        if FAPostingGroup = Rec."FA Posting Group" then
-            exit;
-        Rec.Validate("FA Posting Group", FAPostingGroup);
-        CurrPage.Update();
-    end;
 }

@@ -21,13 +21,13 @@ codeunit 30197 "Shpfy Sync Inventory"
             ShopLocation.SetRange("Shop Code", ShopFilter);
             ShopInventory.SetRange("Shop Code", ShopFilter);
         end;
-        if ShopLocation.FindSet(false, false) then begin
+        if ShopLocation.FindSet(false) then begin
             InventoryApi.SetShop(ShopLocation."Shop Code");
             repeat
                 InventoryApi.ImportStock(ShopLocation);
             until ShopLocation.Next() = 0;
         end;
-
+        InventoryApi.RemoveUnusedInventoryIds();
 
         if ShopInventory.FindSet() then
             repeat

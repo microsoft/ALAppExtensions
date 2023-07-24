@@ -134,7 +134,7 @@ page 9856 "Metadata Permission Subform"
         PermissionImpl: Codeunit "Permission Impl.";
     begin
         IsTableData := Rec."Object Type" = Rec."Object Type"::"Table Data";
-        PermissionImpl.GetObjectionCaptionAndName(Rec, ObjectCaption, ObjectName);
+        PermissionImpl.GetObjectCaptionAndName(Rec, ObjectCaption, ObjectName);
         if not IsNewRecord then begin
             MetadataPermission := Rec;
             PermissionRecExists := not MetadataPermission.IsEmpty();
@@ -147,7 +147,7 @@ page 9856 "Metadata Permission Subform"
     var
         PermissionImpl: Codeunit "Permission Impl.";
     begin
-        PermissionImpl.GetObjectionCaptionAndName(Rec, ObjectCaption, ObjectName);
+        PermissionImpl.GetObjectCaptionAndName(Rec, ObjectCaption, ObjectName);
         ZeroObjStyleExpr := Rec."Object ID" = 0;
         IsNewRecord := false;
     end;

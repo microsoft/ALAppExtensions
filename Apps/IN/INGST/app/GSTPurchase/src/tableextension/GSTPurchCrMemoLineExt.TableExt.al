@@ -113,5 +113,11 @@ tableextension 18086 "GST Purch. Cr. Memo Line Ext." extends "Purch. Cr. Memo Li
             Caption = 'Subcon. Order Line No.';
             DataClassification = CustomerContent;
         }
+        field(18137; "GST Vendor Type"; Enum "GST Vendor Type")
+        {
+            Caption = 'GST Vendor Type';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
     }
 }

@@ -219,6 +219,15 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
@@ -227,11 +236,20 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
                         FieldError("Document Type");
                 UpdateServLinesByFieldNo(FieldNo("Physical Transfer CZL"), false);
             end;
+#endif
         }
         field(31069; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
@@ -320,8 +338,12 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
     begin
         if "EU 3-Party Trade" then
             exit(false);
+#if not CLEAN22
+#pragma warning disable AL0432
         if "Intrastat Exclude CZL" then
             exit(false);
+#pragma warning restore AL0432
+#endif
         exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
     end;
 
