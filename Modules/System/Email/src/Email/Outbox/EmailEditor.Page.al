@@ -213,18 +213,8 @@ page 13 "Email Editor"
                 Image = SendMail;
 
                 trigger OnAction()
-                var
-                    IsEmailDataValid: Boolean;
                 begin
-                    IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessageImpl);
-
-                    if IsEmailDataValid then begin
-                        IsNewOutbox := false;
-                        EmailEditor.SendOutbox(Rec);
-                        EmailAction := Enum::"Email Action"::Sent;
-
-                        CurrPage.Close();
-                    end;
+                    SendAction();
                 end;
             }
             action(Discard)
@@ -423,6 +413,21 @@ page 13 "Email Editor"
         end;
 
         exit(true);
+    end;
+
+    protected procedure SendAction()
+    var
+        IsEmailDataValid: Boolean;
+    begin
+        IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessageImpl);
+
+        if IsEmailDataValid then begin
+            IsNewOutbox := false;
+            EmailEditor.SendOutbox(Rec);
+            EmailAction := Enum::"Email Action"::Sent;
+
+            CurrPage.Close();
+        end;
     end;
 
     internal procedure LookupRecipients(var Text: Text): Boolean
