@@ -615,29 +615,29 @@ codeunit 132928 "Azure AD User Sync Test"
 
         // [THEN] The list of changes is visible and shows expected results
         // Verify first row:
-        AzureADUserUpdateWizard.First();
-        LibraryAssert.AreEqual('ESSENTIAL USER', AzureADUserUpdateWizard."Display Name".Value, 'Unexpected user display name.');
-        LibraryAssert.AreEqual(Format(Enum::"Azure AD Update Type"::New), AzureADUserUpdateWizard."Update Type".Value, 'Unexpected update type.');
-        LibraryAssert.AreEqual(Format(Enum::"Azure AD User Update Entity"::"Authentication Email"), AzureADUserUpdateWizard."Information".Value, 'Unexpected update entity.');
-        LibraryAssert.AreEqual('', AzureADUserUpdateWizard."Current Value".Value, 'Unexpected current value.');
-        LibraryAssert.AreEqual(EssentialEmailTxt, AzureADUserUpdateWizard."New Value".Value, 'Unexpected new value.');
+        AzureADUserUpdateWizard.Changes.First();
+        LibraryAssert.AreEqual('ESSENTIAL USER', AzureADUserUpdateWizard.Changes."Display Name".Value, 'Unexpected user display name.');
+        LibraryAssert.AreEqual(Format(Enum::"Azure AD Update Type"::New), AzureADUserUpdateWizard.Changes."Update Type".Value, 'Unexpected update type.');
+        LibraryAssert.AreEqual(Format(Enum::"Azure AD User Update Entity"::"Authentication Email"), AzureADUserUpdateWizard.Changes."Information".Value, 'Unexpected update entity.');
+        LibraryAssert.AreEqual('', AzureADUserUpdateWizard.Changes."Current Value".Value, 'Unexpected current value.');
+        LibraryAssert.AreEqual(EssentialEmailTxt, AzureADUserUpdateWizard.Changes."New Value".Value, 'Unexpected new value.');
 
         // Verify second row:
-        AzureADUserUpdateWizard.Next();
-        LibraryAssert.AreEqual(Format(Enum::"Azure AD User Update Entity"::"Contact Email"), AzureADUserUpdateWizard."Information".Value, 'Unexpected update entity.');
-        LibraryAssert.AreEqual(EssentialEmailTxt, AzureADUserUpdateWizard."New Value".Value, 'Unexpected new value.');
+        AzureADUserUpdateWizard.Changes.Next();
+        LibraryAssert.AreEqual(Format(Enum::"Azure AD User Update Entity"::"Contact Email"), AzureADUserUpdateWizard.Changes."Information".Value, 'Unexpected update entity.');
+        LibraryAssert.AreEqual(EssentialEmailTxt, AzureADUserUpdateWizard.Changes."New Value".Value, 'Unexpected new value.');
 
         // Verify third row:
-        AzureADUserUpdateWizard.Next();
-        LibraryAssert.AreEqual(Format(Enum::"Azure AD User Update Entity"::"Full Name"), AzureADUserUpdateWizard."Information".Value, 'Unexpected update entity.');
-        LibraryAssert.AreEqual('Essential User', AzureADUserUpdateWizard."New Value".Value, 'Unexpected new value.');
+        AzureADUserUpdateWizard.Changes.Next();
+        LibraryAssert.AreEqual(Format(Enum::"Azure AD User Update Entity"::"Full Name"), AzureADUserUpdateWizard.Changes."Information".Value, 'Unexpected update entity.');
+        LibraryAssert.AreEqual('Essential User', AzureADUserUpdateWizard.Changes."New Value".Value, 'Unexpected new value.');
 
         // Verify fourth row:
-        AzureADUserUpdateWizard.Next();
-        LibraryAssert.AreEqual(Format(Enum::"Azure AD User Update Entity"::Plan), AzureADUserUpdateWizard."Information".Value, 'Unexpected update entity.');
-        LibraryAssert.AreEqual('Dynamics 365 Business Central Essential', AzureADUserUpdateWizard."New Value".Value, 'Unexpected new value.');
+        AzureADUserUpdateWizard.Changes.Next();
+        LibraryAssert.AreEqual(Format(Enum::"Azure AD User Update Entity"::Plan), AzureADUserUpdateWizard.Changes."Information".Value, 'Unexpected update entity.');
+        LibraryAssert.AreEqual('Dynamics 365 Business Central Essential', AzureADUserUpdateWizard.Changes."New Value".Value, 'Unexpected new value.');
 
-        LibraryAssert.IsFalse(AzureADUserUpdateWizard.Next(), 'Expected to have only 4 rows in the list of changes.');
+        LibraryAssert.IsFalse(AzureADUserUpdateWizard.Changes.Next(), 'Expected to have only 4 rows in the list of changes.');
 
         // [WHEN] Finish and close are clicked
         AzureADUserUpdateWizard.ApplyUpdates.Invoke();

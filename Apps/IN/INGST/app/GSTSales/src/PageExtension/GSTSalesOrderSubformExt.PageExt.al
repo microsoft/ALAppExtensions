@@ -54,6 +54,20 @@ pageextension 18151 "GST Sales Order Subform Ext" extends "Sales Order Subform"
                 CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
             end;
         }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
+                end;
+            }
+        }
         addafter("Line Amount")
         {
             field("GST Group Code"; Rec."GST Group Code")

@@ -330,51 +330,149 @@ table 31105 "Statutory Reporting Setup CZL"
         {
             Caption = 'Transaction Type Mandatory';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(161; "Transaction Spec. Mandatory"; Boolean)
         {
             Caption = 'Transaction Specification Mandatory';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(162; "Transport Method Mandatory"; Boolean)
         {
             Caption = 'Transport Method Mandatory';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(163; "Shipment Method Mandatory"; Boolean)
         {
             Caption = 'Shipment Method Mandatory';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(164; "Tariff No. Mandatory"; Boolean)
         {
             Caption = 'Tariff No. Mandatory';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(165; "Net Weight Mandatory"; Boolean)
         {
             Caption = 'Net Weight Mandatory';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(166; "Country/Region of Origin Mand."; Boolean)
         {
             Caption = 'Country/Region of Origin Mandatory';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
+#if not CLEAN22
+#pragma warning disable AL0432
+#endif
         field(167; "Get Tariff No. From"; Enum "Intrastat Detail Source CZL")
+#if not CLEAN22
+#pragma warning restore AL0432
+#endif
         {
             Caption = 'Get Tariff No. From';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#if not CLEAN22
+#pragma warning disable AL0432
+#endif
         field(168; "Get Net Weight From"; Enum "Intrastat Detail Source CZL")
+#if not CLEAN22
+#pragma warning restore AL0432
+#endif
         {
             Caption = 'Get Net Weight From';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#if not CLEAN22
+#pragma warning disable AL0432
+#endif
         field(169; "Get Country/Region of Origin"; Enum "Intrastat Detail Source CZL")
+#if not CLEAN22
+#pragma warning restore AL0432
+#endif
         {
             Caption = 'Get Country/Region of Origin';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(170; "Intrastat Rounding Type"; Option)
         {
@@ -382,11 +480,28 @@ table 31105 "Statutory Reporting Setup CZL"
             OptionCaption = 'Nearest,Up,Down';
             OptionMembers = Nearest,Up,Down;
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(171; "No Item Charges in Intrastat"; Boolean)
         {
             Caption = 'No Item Charges in Intrastat';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             var
@@ -406,12 +521,21 @@ table 31105 "Statutory Reporting Setup CZL"
                       Rec.FieldCaption("No Item Charges in Intrastat"),
                       ItemCharge.TableCaption(), ItemCharge.FieldCaption("Incl. in Intrastat S.Value CZL"));
             end;
+#endif
         }
         field(173; "Intrastat Declaration Nos."; Code[20])
         {
             Caption = 'Intrastat Declaration Nos.';
             TableRelation = "No. Series";
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(175; "Stat. Value Reporting"; Option)
         {
@@ -419,29 +543,57 @@ table 31105 "Statutory Reporting Setup CZL"
             OptionCaption = 'None,Percentage,Shipment Method';
             OptionMembers = "None",Percentage,"Shipment Method";
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
                 if Rec."Stat. Value Reporting" <> xRec."Stat. Value Reporting" then
                     Clear(Rec."Cost Regulation %");
             end;
+#endif
         }
         field(176; "Cost Regulation %"; Decimal)
         {
             Caption = 'Cost Regulation %';
             MinValue = 0;
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
                 if Rec."Cost Regulation %" <> 0 then
                     Rec.TestField("Stat. Value Reporting", Rec."Stat. Value Reporting"::Percentage);
             end;
+#endif
         }
         field(177; "Include other Period add.Costs"; Boolean)
         {
             Caption = 'Include other Period add.Costs';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
     }
 
@@ -452,13 +604,17 @@ table 31105 "Statutory Reporting Setup CZL"
             Clustered = true;
         }
     }
-
+#if not CLEAN22
     var
         ItemChargeIncludedErr: Label 'You cannot uncheck %1 until you have %2 with checked field %3.', Comment = '%1 = Fieldcaption, %2 = ItemCharge.TableCaption; %3 = Fieldcaption';
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
     procedure CheckItemChargesInIntrastatCZL()
     begin
         Get();
+#pragma warning disable AL0432
         TestField("No Item Charges in Intrastat", false);
+#pragma warning restore AL0432
     end;
+#endif
 }

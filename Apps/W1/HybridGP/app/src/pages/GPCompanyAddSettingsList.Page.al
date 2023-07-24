@@ -3,7 +3,7 @@ page 4051 "GP Company Add. Settings List"
     Caption = 'GP Company Additional Settings List';
     PageType = ListPart;
     SourceTable = "GP Company Additional Settings";
-    SourceTableView = sorting(Name) where("Name" = filter(<> ''));
+    SourceTableView = sorting(Name) where("Name" = filter(<> ''), "Migration Completed" = const(false));
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = true;

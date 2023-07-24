@@ -531,11 +531,14 @@ codeunit 9018 "Azure AD Plan Impl."
     var
         PlanIds: Codeunit "Plan IDs";
         DirectoryRole: DotNet RoleInfo;
+        RoleId: Guid;
     begin
         if not IsNull(GraphUserInfo.Roles()) then
-            foreach DirectoryRole in GraphUserInfo.Roles() do
+            foreach DirectoryRole in GraphUserInfo.Roles() do begin
+                RoleId := DirectoryRole.RoleTemplateId();
                 if DirectoryRole.RoleTemplateId() = PlanIds.GetInternalAdminPlanId() then
                     exit(true);
+            end;
 
         exit(false);
     end;

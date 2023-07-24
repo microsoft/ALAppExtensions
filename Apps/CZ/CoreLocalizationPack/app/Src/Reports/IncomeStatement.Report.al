@@ -6,6 +6,7 @@ report 11795 "Income Statement CZL"
     ApplicationArea = Basic, Suite;
     Caption = 'Income Statement';
     UsageCategory = ReportsAndAnalysis;
+    AllowScheduling = false;
 
     dataset
     {

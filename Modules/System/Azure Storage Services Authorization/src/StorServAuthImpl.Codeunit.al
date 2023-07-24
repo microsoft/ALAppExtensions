@@ -50,6 +50,16 @@ codeunit 9063 "Stor. Serv. Auth. Impl."
         exit(StorServAuthSharedKey);
     end;
 
+    [NonDebuggable]
+    procedure ReadySAS(SASToken: Text): Interface "Storage Service Authorization"
+    var
+        StorServAuthReadySAS: Codeunit "Stor. Serv. Auth. Ready SAS";
+    begin
+        StorServAuthReadySAS.SetSharedAccessSignature(SASToken);
+
+        exit(StorServAuthReadySAS);
+    end;
+
     procedure GetDefaultAPIVersion(): Enum "Storage Service API Version"
     begin
         exit(Enum::"Storage Service API Version"::"2020-10-02");

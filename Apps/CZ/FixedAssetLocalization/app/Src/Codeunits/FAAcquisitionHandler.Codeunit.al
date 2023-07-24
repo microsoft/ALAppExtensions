@@ -216,7 +216,7 @@ codeunit 31236 "FA Acquisition Handler CZF"
                 exit;
         end;
 
-        if PurchaseLine."FA Posting Type" = PurchaseLine."FA Posting Type"::"Acquisition Cost" then
+        if PurchaseLine."FA Posting Type" in [PurchaseLine."FA Posting Type"::" ", PurchaseLine."FA Posting Type"::"Acquisition Cost"] then
             if FASetup."FA Acquisition As Custom 2 CZF" then
                 PurchaseLine."FA Posting Type" := PurchaseLine."FA Posting Type"::"Custom 2 CZF";
 

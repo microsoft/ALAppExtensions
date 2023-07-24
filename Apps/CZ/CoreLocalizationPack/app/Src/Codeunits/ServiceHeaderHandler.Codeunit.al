@@ -56,10 +56,14 @@ codeunit 11745 "Service Header Handler CZL"
     begin
         ServiceHeader."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
         ServiceHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
         if Customer."Transaction Type CZL" <> '' then
             ServiceHeader."Transaction Type" := Customer."Transaction Type CZL";
         ServiceHeader."Transaction Specification" := Customer."Transaction Specification CZL";
         ServiceHeader."Transport Method" := Customer."Transport Method CZL";
+#pragma warning restore AL0432
+#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyBillToCustomerFields', '', false, false)]
@@ -127,17 +131,22 @@ codeunit 11745 "Service Header Handler CZL"
 #pragma warning restore AL0432
 #endif
 
+#if not CLEAN22
+
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnUpdateServLineByChangedFieldName', '', false, false)]
     local procedure UpdateServLineByChangedFieldName(ServiceHeader: Record "Service Header"; var ServiceLine: Record "Service Line"; ChangedFieldName: Text[100])
     begin
         case ChangedFieldName of
+#pragma warning disable AL0432
             ServiceHeader.FieldCaption("Physical Transfer CZL"):
                 if (ServiceLine.Type = ServiceLine.Type::Item) and (ServiceLine."No." <> '') then begin
                     ServiceLine."Physical Transfer CZL" := ServiceHeader."Physical Transfer CZL";
+#pragma warning disable AL0432
                     ServiceLine.Modify(true);
                 end;
         end;
     end;
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterValidateEvent', 'VAT Country/Region Code', false, false)]
     local procedure UpdateVATRegistrationNoCodeOnAfterVATCountryRegionCodeValidate(var Rec: Record "Service Header")

@@ -22,6 +22,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         MoveTemplatesData();
 #endif
         PriceCalculationUpgrade();
+        LocationUpgrade();
     end;
 
 #if CLEAN22
@@ -103,7 +104,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
                         if Evaluate(DateFormulaDefaultValue, ConfigTemplateLine."Default Value") then
                             FieldRef.Value := DateFormulaDefaultValue;
                     Field.Type::Time:
-                        if Evaluate(TimeDefaultValue, ConfigTemplateLine."Default Value") then 
+                        if Evaluate(TimeDefaultValue, ConfigTemplateLine."Default Value") then
                             FieldRef.Value := TimeDefaultValue;
                     else
                         FieldRef.Value := ConfigTemplateLine."Default Value";
@@ -252,7 +253,9 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         if UpgradeTag.HasUpgradeTag(GetPriceCalculationUpgradeTag()) then
             exit;
 
-        if Shop.FindSet(true, false) then
+        Shop.SetFilter("Customer Template Code", '<>%1', '');
+        Shop.SetRange("Customer Posting Group", '');
+        if Shop.FindSet(true) then
             repeat
 #if not CLEAN22
                 Shop.CopyPriceCalculationFieldsFromCustomerTemplate(Shop."Customer Template Code");
@@ -263,6 +266,23 @@ codeunit 30106 "Shpfy Upgrade Mgt."
             until Shop.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetPriceCalculationUpgradeTag());
+    end;
+
+    local procedure LocationUpgrade()
+    var
+        ShopLocation: Record "Shpfy Shop Location";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetLocationUpgradeTag()) then
+            exit;
+
+        if ShopLocation.FindSet(true) then
+            repeat
+                ShopLocation."Default Product Location" := true;
+                ShopLocation.Modify();
+            until ShopLocation.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(GetLocationUpgradeTag());
     end;
 
     internal procedure SetShpfyStockCalculation()
@@ -315,6 +335,11 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     internal procedure GetPriceCalculationUpgradeTag(): Code[250]
     begin
         exit('MS-460298-PriceCalculationUpgradeTag-20221201');
+    end;
+
+    internal procedure GetLocationUpgradeTag(): Code[250]
+    begin
+        exit('MS-472953-LocationUpgradeTag-20230525');
     end;
 
     local procedure GetDateBeforeFeature(): DateTime

@@ -23,7 +23,7 @@ codeunit 30179 "Shpfy Product Image Export"
         if (Hash <> Rec."Image Hash") or (Rec."Image Id" = 0) then begin
             NewImageId := ProductApi.CreateShopifyProductImage(Rec, Item);
             if NewImageId <> Rec."Image Id" then
-                Rec."Image Id" := Rec."Image Id";
+                Rec."Image Id" := NewImageId;
             Rec."Image Hash" := Hash;
             Rec.Modify();
         end;

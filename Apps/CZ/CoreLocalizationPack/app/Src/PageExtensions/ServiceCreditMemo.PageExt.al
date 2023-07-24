@@ -123,14 +123,20 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 end;
             }
         }
+#if not CLEAN22
         addlast(Shipping)
         {
             field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Physical Transfer (Obsolete)';
                 ToolTip = 'Specifies if there is physical transfer of the item.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
         }
+#endif
         addlast("Foreign Trade")
         {
             field("Language Code CZL"; Rec."Language Code")
@@ -155,11 +161,17 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
+#if not CLEAN22
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
+#endif
         }
         addafter("Foreign Trade")
         {

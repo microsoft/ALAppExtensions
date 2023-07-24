@@ -34,6 +34,7 @@ codeunit 31088 "Upgrade Application CZZ"
             if AdvanceLetterTemplateCZZ.IsEmpty() then // feature AdvancePaymentsLocalizationForCzech was disabled
                 InstallApplicationCZZ.CopyData();
         UpgradeCustomerNoInSalesAdvLetterEntries();
+        UpgradeAdvanceLetterApplicationAmountLCY();
     end;
 
     local procedure UpgradeAdvancePaymentsReportReportSelections();
@@ -85,6 +86,47 @@ codeunit 31088 "Upgrade Application CZZ"
             until SalesAdvLetterEntry.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetSalesAdvLetterEntryCustomerNoUpgradeTag());
+    end;
+
+    local procedure UpgradeAdvanceLetterApplicationAmountLCY()
+    var
+        AdvanceLetterApplication: Record "Advance Letter Application CZZ";
+        CurrencyFactor: Decimal;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetAdvanceLetterApplicationAmountLCYUpgradeTag()) then
+            exit;
+
+        AdvanceLetterApplication.SetLoadFields(Amount);
+        AdvanceLetterApplication.SetRange("Amount (LCY)", 0);
+        if AdvanceLetterApplication.FindSet() then
+            repeat
+                CurrencyFactor := GetCurrencyFactor(AdvanceLetterApplication."Advance Letter Type", AdvanceLetterApplication."Advance Letter No.");
+                if CurrencyFactor <> 0 then begin
+                    AdvanceLetterApplication."Amount (LCY)" := AdvanceLetterApplication.Amount / CurrencyFactor;
+                    AdvanceLetterApplication.Modify();
+                end;
+            until AdvanceLetterApplication.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetAdvanceLetterApplicationAmountLCYUpgradeTag());
+    end;
+
+    local procedure GetCurrencyFactor(AdvanceLetterType: Enum "Advance Letter Type CZZ"; AdvanceLetterNo: Code[20]): Decimal
+    var
+        PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header";
+        SalesAdvanceLetterHeader: Record "Sales Advance Letter Header";
+    begin
+        case AdvanceLetterType of
+            AdvanceLetterType::Purchase:
+                begin
+                    PurchAdvanceLetterHeader.Get(AdvanceLetterNo);
+                    exit(PurchAdvanceLetterHeader."Currency Factor");
+                end;
+            AdvanceLetterType::Sales:
+                begin
+                    SalesAdvanceLetterHeader.Get(AdvanceLetterNo);
+                    exit(SalesAdvanceLetterHeader."Currency Factor");
+                end;
+        end;
     end;
 
     local procedure SetDatabaseUpgradeTags();

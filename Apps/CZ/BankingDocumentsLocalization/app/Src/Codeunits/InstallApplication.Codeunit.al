@@ -120,13 +120,11 @@ codeunit 31330 "Install Application CZB"
     local procedure CopyBankAccReconciliation();
     var
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
+        BankAccReconciliationDataTransfer: DataTransfer;
     begin
-        BankAccReconciliation.SetLoadFields("Created From Iss. Bank Stat.");
-        if BankAccReconciliation.FindSet() then
-            repeat
-                BankAccReconciliation."Created From Bank Stat. CZB" := BankAccReconciliation."Created From Iss. Bank Stat.";
-                BankAccReconciliation.Modify(false);
-            until BankAccReconciliation.Next() = 0;
+        BankAccReconciliationDataTransfer.SetTables(Database::"Bank Acc. Reconciliation", Database::"Bank Acc. Reconciliation");
+        BankAccReconciliationDataTransfer.AddFieldValue(BankAccReconciliation.FieldNo("Created From Iss. Bank Stat."), BankAccReconciliation.FieldNo("Created From Bank Stat. CZB"));
+        BankAccReconciliationDataTransfer.CopyFields();
     end;
 
     local procedure CopyBankStatementHeader();
@@ -448,44 +446,37 @@ codeunit 31330 "Install Application CZB"
     local procedure CopyUserSetup();
     var
         UserSetup: Record "User Setup";
+        UserSetupDataTransfer: DataTransfer;
     begin
-        UserSetup.SetLoadFields("Check Payment Orders", "Check Bank Statements", "Bank Amount Approval Limit", "Unlimited Bank Approval");
-        if UserSetup.FindSet(true) then
-            repeat
-                UserSetup."Check Payment Orders CZB" := UserSetup."Check Payment Orders";
-                UserSetup."Check Bank Statements CZB" := UserSetup."Check Bank Statements";
-                UserSetup."Bank Amount Approval Limit CZB" := UserSetup."Bank Amount Approval Limit";
-                UserSetup."Unlimited Bank Approval CZB" := UserSetup."Unlimited Bank Approval";
-                UserSetup.Modify(false);
-            until UserSetup.Next() = 0;
+        UserSetupDataTransfer.SetTables(Database::"User Setup", Database::"User Setup");
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Payment Orders"), UserSetup.FieldNo("Check Payment Orders CZB"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Bank Statements"), UserSetup.FieldNo("Check Bank Statements CZB"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Bank Amount Approval Limit"), UserSetup.FieldNo("Bank Amount Approval Limit CZB"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Unlimited Bank Approval"), UserSetup.FieldNo("Unlimited Bank Approval CZB"));
+        UserSetupDataTransfer.CopyFields();
     end;
 
     local procedure CopyBankExportImportSetup();
     var
         BankExportImportSetup: Record "Bank Export/Import Setup";
+        BankExportImportSetupDataTransfer: DataTransfer;
     begin
-        BankExportImportSetup.SetLoadFields("Processing Report ID", "Default File Type");
-        if BankExportImportSetup.FindSet(true) then
-            repeat
-                BankExportImportSetup."Processing Report ID CZB" := BankExportImportSetup."Processing Report ID";
-                BankExportImportSetup."Default File Type CZB" := BankExportImportSetup."Default File Type";
-                BankExportImportSetup.Modify(false);
-            until BankExportImportSetup.Next() = 0;
+        BankExportImportSetupDataTransfer.SetTables(Database::"Bank Export/Import Setup", Database::"Bank Export/Import Setup");
+        BankExportImportSetupDataTransfer.AddFieldValue(BankExportImportSetup.FieldNo("Processing Report ID"), BankExportImportSetup.FieldNo("Processing Report ID CZB"));
+        BankExportImportSetupDataTransfer.AddFieldValue(BankExportImportSetup.FieldNo("Default File Type"), BankExportImportSetup.FieldNo("Default File Type CZB"));
+        BankExportImportSetupDataTransfer.CopyFields();
     end;
 
     local procedure CopyPaymentExportData();
     var
         PaymentExportData: Record "Payment Export Data";
+        PaymentExportDataDataTransfer: DataTransfer;
     begin
-        PaymentExportData.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol");
-        if PaymentExportData.FindSet(true) then
-            repeat
-                PaymentExportData."Specific Symbol CZB" := PaymentExportData."Specific Symbol";
-                PaymentExportData."Variable Symbol CZB" := PaymentExportData."Variable Symbol";
-                PaymentExportData."Constant Symbol CZB" := PaymentExportData."Constant Symbol";
-                PaymentExportData.Modify(false);
-            until PaymentExportData.Next() = 0;
-
+        PaymentExportDataDataTransfer.SetTables(Database::"Payment Export Data", Database::"Payment Export Data");
+        PaymentExportDataDataTransfer.AddFieldValue(PaymentExportData.FieldNo("Specific Symbol"), PaymentExportData.FieldNo("Specific Symbol CZB"));
+        PaymentExportDataDataTransfer.AddFieldValue(PaymentExportData.FieldNo("Variable Symbol"), PaymentExportData.FieldNo("Variable Symbol CZB"));
+        PaymentExportDataDataTransfer.AddFieldValue(PaymentExportData.FieldNo("Constant Symbol"), PaymentExportData.FieldNo("Constant Symbol CZB"));
+        PaymentExportDataDataTransfer.CopyFields();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

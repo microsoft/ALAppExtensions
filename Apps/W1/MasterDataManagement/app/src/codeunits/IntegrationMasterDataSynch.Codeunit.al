@@ -29,6 +29,8 @@ codeunit 7231 "Integration Master Data Synch."
             Rec.UpdateTableMappingModifiedOn(LatestModifiedOn);
             Rec.SetOriginalJobQueueEntryStatus(OriginalJobQueueEntry, PrevStatus);
         end;
+
+	OnAfterRun(Rec);
     end;
 
     var
@@ -499,6 +501,11 @@ codeunit 7231 "Integration Master Data Synch."
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeRun(IntegrationTableMapping: Record "Integration Table Mapping"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterRun(IntegrationTableMapping: Record "Integration Table Mapping")
     begin
     end;
 

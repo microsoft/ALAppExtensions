@@ -19,6 +19,11 @@ pageextension 31250 "Inventory Setup CZA" extends "Inventory Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies that a storno transaction cannot be posted unless the Applies-from Entry field on the item journal line specifies an entry.';
             }
+            field("Def.G.Bus.P.Gr.-Dir.Trans. CZA"; Rec."Def.G.Bus.P.Gr.-Dir.Trans. CZA")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the default general business posting group for direct transfer.';
+            }
         }
     }
 }

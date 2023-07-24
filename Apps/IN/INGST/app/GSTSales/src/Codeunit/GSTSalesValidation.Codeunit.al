@@ -619,6 +619,15 @@ codeunit 18143 "GST Sales Validation"
         OnQuantityChangeValidation(Rec);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Quote to Invoice", 'OnAfterOnRun', '', false, false)]
+    local procedure OnAfterOnRun(SalesHeader: Record "Sales Header")
+    begin
+        if (SalesHeader."Location GST Reg. No." = '') and (SalesHeader."Location State Code" = '') then
+            exit;
+
+        CallTaxEngineOnSalesHeader(SalesHeader);
+    end;
+
     local procedure OnQuantityChangeValidation(var SalesLine: Record "Sales Line")
     var
         SalesHeader: Record "Sales Header";
@@ -1269,6 +1278,7 @@ codeunit 18143 "GST Sales Validation"
     begin
         Salesheader.Get(SalesLine."Document Type", SalesLine."Document No.");
         SalesLine."Invoice Type" := SalesHeader."Invoice Type";
+        SalesLine."GST Customer Type" := SalesHeader."GST Customer Type";
         UpdateGSTPlaceOfSupply(GLAccount."HSN/SAC Code", GLAccount."GST Group Code", GLAccount.Exempted, GLAccount."GST Credit", SalesLine);
     end;
 
@@ -1282,6 +1292,8 @@ codeunit 18143 "GST Sales Validation"
         SalesLine."Invoice Type" := SalesHeader."Invoice Type";
         if SalesLine."Location Code" = '' then
             SalesLine."Location Code" := SalesHeader."Location Code";
+
+        SalesLine."GST Customer Type" := SalesHeader."GST Customer Type";
         UpdateGSTPlaceOfSupply(Item."HSN/SAC Code", Item."GST Group Code", Item.Exempted, Item."GST Credit", SalesLine);
     end;
 
@@ -1291,6 +1303,7 @@ codeunit 18143 "GST Sales Validation"
     begin
         Salesheader.Get(SalesLine."Document Type", SalesLine."Document No.");
         SalesLine."Invoice Type" := SalesHeader."Invoice Type";
+        SalesLine."GST Customer Type" := SalesHeader."GST Customer Type";
         UpdateGSTPlaceOfSupply(Resource."HSN/SAC Code", Resource."GST Group Code", Resource.Exempted, Resource."GST Credit", SalesLine);
     end;
 
@@ -1300,6 +1313,7 @@ codeunit 18143 "GST Sales Validation"
     begin
         Salesheader.Get(SalesLine."Document Type", SalesLine."Document No.");
         SalesLine."Invoice Type" := SalesHeader."Invoice Type";
+        SalesLine."GST Customer Type" := SalesHeader."GST Customer Type";
         UpdateGSTPlaceOfSupply(FixedAsset."HSN/SAC Code", FixedAsset."GST Group Code", FixedAsset.Exempted, FixedAsset."GST Credit", SalesLine);
     end;
 
@@ -1647,6 +1661,7 @@ codeunit 18143 "GST Sales Validation"
         SalesLine: Record "Sales Line";
         CalculateTax: Codeunit "Calculate Tax";
     begin
+        SalesLine.LoadFields("Document Type", "Document No.");
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         if SalesLine.FindSet() then

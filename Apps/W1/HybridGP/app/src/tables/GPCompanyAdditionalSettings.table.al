@@ -320,6 +320,11 @@ table 40105 "GP Company Additional Settings"
             DataClassification = SystemMetadata;
             InitValue = true;
         }
+        field(35; "Migration Completed"; Boolean)
+        {
+            FieldClass = FlowField;
+            CalcFormula = exist("Hybrid Company Status" where("Name" = field(Name), "Upgrade Status" = const("Completed")));
+        }
     }
 
     keys

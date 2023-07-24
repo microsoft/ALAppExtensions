@@ -19,6 +19,7 @@ codeunit 1853 "Sales Forecast Update"
         SalesForecastScheduler.RemoveScheduledTaskIfUserInactive();
 
         MSSalesForecastSetup.GetSingleInstance();
+        MSSalesForecastSetup.CheckEnabled();
         if MSSalesForecastSetup.URIOrKeyEmpty() then
             exit;
 

@@ -7,36 +7,79 @@ tableextension 11710 "Job Journal Line CZL" extends "Job Journal Line"
             Caption = 'Tariff No.';
             TableRelation = "Tariff Number";
             DataClassification = CustomerContent;
-
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
+#if not CLEAN22
+#pragma warning disable AL0432
             trigger OnValidate()
             begin
                 if "Tariff No. CZL" <> xRec."Tariff No. CZL" then
                     "Statistic Indication CZL" := '';
             end;
+#pragma warning restore AL0432
+#endif
         }
         field(31054; "Net Weight CZL"; Decimal)
         {
             Caption = 'Net Weight';
             DecimalPlaces = 0 : 5;
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31057; "Country/Reg. of Orig. Code CZL"; Code[10])
         {
             Caption = 'Country/Region of Origin Code';
             TableRelation = "Country/Region";
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31058; "Statistic Indication CZL"; Code[10])
         {
             Caption = 'Statistic Indication';
-            TableRelation = "Statistic Indication CZL".Code where("Tariff No." = field("Tariff No. CZL"));
             DataClassification = CustomerContent;
+#if not CLEAN22
+            TableRelation = "Statistic Indication CZL".Code where("Tariff No." = field("Tariff No. CZL"));
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31059; "Intrastat Transaction CZL"; Boolean)
         {
             Caption = 'Intrastat Transaction';
             Editable = false;
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31079; "Invt. Movement Template CZL"; Code[10])
         {
@@ -60,7 +103,9 @@ tableextension 11710 "Job Journal Line CZL" extends "Job Journal Line"
             DataClassification = CustomerContent;
         }
     }
+#if not CLEAN22
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
     procedure CheckIntrastatCZL()
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
@@ -85,10 +130,12 @@ tableextension 11710 "Job Journal Line CZL" extends "Job Journal Line"
         end;
     end;
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
     procedure IsIntrastatTransactionCZL() IsIntrastat: Boolean
     var
         CountryRegion: Record "Country/Region";
     begin
         exit(CountryRegion.IsIntrastatCZL("Country/Region Code", false));
     end;
+#endif
 }

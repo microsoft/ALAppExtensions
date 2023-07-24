@@ -35,6 +35,15 @@ tableextension 11753 "Tariff Number CZL" extends "Tariff Number"
             Caption = 'Supplementary Unit of Measure Code';
             TableRelation = "Unit of Measure";
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             var
@@ -45,12 +54,18 @@ tableextension 11753 "Tariff Number CZL" extends "Tariff Number"
                 else
                     "Supplementary Units" := UnitofMeasure.Get("Suppl. Unit of Meas. Code CZL");
             end;
+#endif
         }
     }
+#if not CLEAN22
     keys
     {
         key(Key11700; "Suppl. Unit of Meas. Code CZL")
         {
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
     }
+#endif
 }

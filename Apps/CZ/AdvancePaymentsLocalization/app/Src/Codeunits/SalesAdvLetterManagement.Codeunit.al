@@ -526,6 +526,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                         AdvanceLetterApplicationCZZ."Document Type", AdvanceLetterApplicationCZZ."Document No.") then begin
                         if TempAdvanceLetterApplicationCZZ.Amount <> AdvanceLetterApplicationCZZ.Amount then begin
                             AdvanceLetterApplicationCZZ.Amount := TempAdvanceLetterApplicationCZZ.Amount;
+                            AdvanceLetterApplicationCZZ."Amount (LCY)" := TempAdvanceLetterApplicationCZZ."Amount (LCY)";
                             ModifyRecord := true;
                         end;
                         OnLinkAdvanceLetterOnBeforeModifyAdvanceLetterApplication(AdvanceLetterApplicationCZZ, TempAdvanceLetterApplicationCZZ, ModifyRecord);
@@ -545,6 +546,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                     AdvanceLetterApplicationCZZ."Document Type" := AdvLetterUsageDocTypeCZZ;
                     AdvanceLetterApplicationCZZ."Document No." := DocumentNo;
                     AdvanceLetterApplicationCZZ.Amount := TempAdvanceLetterApplicationCZZ.Amount;
+                    AdvanceLetterApplicationCZZ."Amount (LCY)" := TempAdvanceLetterApplicationCZZ."Amount (LCY)";
                     OnLinkAdvanceLetterOnBeforeInsertAdvanceLetterApplication(AdvanceLetterApplicationCZZ, TempAdvanceLetterApplicationCZZ);
                     AdvanceLetterApplicationCZZ.Insert();
                 until TempAdvanceLetterApplicationCZZ.Next() = 0;
@@ -768,6 +770,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             TempAdvanceLetterApplicationCZZ.Init();
             TempAdvanceLetterApplicationCZZ."Advance Letter No." := AdvanceLetterApplicationCZZ."Advance Letter No.";
             TempAdvanceLetterApplicationCZZ.Amount := AdvanceLetterApplicationCZZ.Amount;
+            TempAdvanceLetterApplicationCZZ."Amount (LCY)" := AdvanceLetterApplicationCZZ."Amount (LCY)";
             TempAdvanceLetterApplicationCZZ.Insert();
         until AdvanceLetterApplicationCZZ.Next() = 0;
 
@@ -791,6 +794,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                     ReverseAdvancePayment(SalesAdvLetterEntryCZZ, UseAmount, UseAmountLCY, SalesInvoiceHeader."No.", CustLedgerEntry, GenJnlPostLine, Preview);
                     AmountToUse -= UseAmount;
                     TempAdvanceLetterApplicationCZZ.Amount -= UseAmount;
+                    TempAdvanceLetterApplicationCZZ."Amount (LCY)" -= UseAmountLCY;
                     TempAdvanceLetterApplicationCZZ.Modify();
 
                     if not Preview then
@@ -861,7 +865,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         VATEntry.CalcSums(Base, Amount);
         VATBaseCorr := VATEntry.Base;
         VATAmountCorr := VATEntry.Amount;
-        if (VATBaseCorr <> -VATAmountCorr) or (VATBaseCorr = 0) then
+        if (VATBaseCorr <> -VATAmountCorr) or (VATBaseCorr = 0) or (Abs(VATBaseCorr) > 1) then
             exit;
 
 #pragma warning disable AA0210
@@ -1155,7 +1159,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 if Preview then begin
                     SalesLine.SetFilter("Document Type", '%1|%2', SalesLine."Document Type"::Order, SalesLine."Document Type"::Invoice);
                     SalesLine.SetRange("Document No.", InvoiceNo);
-                    Continue := SalesInvoiceLine.FindSet();
+                    Continue := SalesLine.FindSet();
                 end else begin
                     SalesInvoiceLine.SetRange("Document No.", InvoiceNo);
                     Continue := SalesInvoiceLine.FindSet();
@@ -1216,11 +1220,12 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                                     TempAdvancePostingBufferCZZ2.SetRange("VAT %", TempAdvancePostingBufferCZZ1."VAT %");
                                 end;
                         end;
+                        TempAdvancePostingBufferCZZ2.SetFilter(Amount, '<>%1', 0);
                         if TempAdvancePostingBufferCZZ2.FindSet() then
                             repeat
                                 UseAmount := TempAdvancePostingBufferCZZ1.Amount;
                                 UseBaseAmount := TempAdvancePostingBufferCZZ1."VAT Base Amount";
-                                if TempAdvancePostingBufferCZZ2.Amount > UseAmount then begin
+                                if Abs(TempAdvancePostingBufferCZZ2.Amount) < Abs(UseAmount) then begin
                                     UseAmount := TempAdvancePostingBufferCZZ2.Amount;
                                     UseBaseAmount := TempAdvancePostingBufferCZZ2."VAT Base Amount";
                                 end;

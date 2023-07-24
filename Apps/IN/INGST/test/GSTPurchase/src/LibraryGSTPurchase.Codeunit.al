@@ -1167,6 +1167,33 @@ codeunit 18140 "Library - GST Purchase"
         Vendor.Modify(true);
     end;
 
+    procedure GetVendorSetupWithGovtGST(VendorNo: Code[20]; GSTVendorType: Enum "GST Vendor Type"; AssociateEnterprise: boolean; GovtUndertaking: Boolean; StateCode: Code[10]; PANNo: Code[20]): Boolean
+    var
+        Vendor: Record Vendor;
+        State: Record State;
+        Currency: Record Currency;
+    begin
+        Vendor.Get(VendorNo);
+        if (GSTVendorType <> GSTVendorType::Import) then begin
+            State.Get(StateCode);
+            Vendor.Validate("State Code", StateCode);
+            Vendor.Validate("P.A.N. No.", PANNo);
+            Vendor.Validate("Govt. Undertaking", GovtUndertaking);
+            if not ((GSTVendorType = GSTVendorType::" ") or (GSTVendorType = GSTVendorType::Unregistered)) then
+                Vendor.Validate("GST Registration No.", LibraryGST.GenerateGSTRegistrationNo(State."State Code (GST Reg. No.)", PANNo));
+        end;
+
+        Vendor.Validate("GST Vendor Type", GSTVendorType);
+        if Vendor."GST Vendor Type" = vendor."GST Vendor Type"::Import then begin
+            LibraryERM.CreateCurrency(Currency);
+            LibraryERM.CreateRandomExchangeRate(Currency.Code);
+            Vendor.Validate("Currency Code", Currency.Code);
+            vendor.Validate("Associated Enterprises", AssociateEnterprise);
+        end;
+
+        exit(Vendor.Modify(true));
+    end;
+
     procedure UpdateReferenceInvoiceNoAndVerify(var PurchaseHeader: Record "Purchase Header"; PostedDocumentNo: Code[20])
     var
         ReferenceInvoiceNo: Record "Reference Invoice No.";

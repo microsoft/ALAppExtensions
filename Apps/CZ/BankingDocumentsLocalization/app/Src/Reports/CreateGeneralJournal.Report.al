@@ -223,6 +223,7 @@ report 31287 "Create General Journal CZB"
         GenJournalLine."Bank Account Code CZL" := IssBankStatementLineCZB."Cust./Vendor Bank Account Code";
         GenJournalLine."IBAN CZL" := IssBankStatementLineCZB.IBAN;
         GenJournalLine.Description := IssBankStatementLineCZB.Description;
+        GenJournalLine."Keep Description" := true;
         GenJournalLine.SetVariableSymbolCZB(
             IssBankStatementLineCZB."Variable Symbol", VariableSymbolToDescription, VariableSymbolToVariableSymbol, VariableSymbolToExtDocNo);
         GenJournalLine."Specific Symbol CZL" := IssBankStatementLineCZB."Specific Symbol";

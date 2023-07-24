@@ -2,7 +2,7 @@
     "id":  "44012bcf-22c2-40d9-bb24-410b1dfc72dc",
     "name":  "Record Reference",
     "publisher":  "Microsoft",
-    "version":  "22.3.0.0",
+    "version":  "22.4.0.0",
     "brief":  "Provides an interface to delegate record operations.",
     "description":  "Provides an interface to delegate record operations. This can be used when indirect permissions are required but the code does not support them.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",

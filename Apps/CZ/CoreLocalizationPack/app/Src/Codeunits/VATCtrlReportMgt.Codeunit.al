@@ -179,16 +179,8 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                     TempActualVATEntry := TempVATEntry;
                     if TempDropShptPostBuffer.FindSet() then
                         repeat
-                            // VAT Entry Amount Set
-                            if TempDropShptPostBuffer.Count() > 1 then
-                                if (TempActualVATEntry.Base + TempActualVATEntry.Amount) < 0 then begin
-                                    TempVATEntry.Base := -Abs(TempDropShptPostBuffer.Quantity);
-                                    TempVATEntry.Amount := -Abs(TempDropShptPostBuffer."Quantity (Base)");
-                                end else begin
-                                    TempVATEntry.Base := Abs(TempDropShptPostBuffer.Quantity);
-                                    TempVATEntry.Amount := Abs(TempDropShptPostBuffer."Quantity (Base)");
-                                end;
-
+                            TempVATEntry.Base := TempDropShptPostBuffer.Quantity;
+                            TempVATEntry.Amount := TempDropShptPostBuffer."Quantity (Base)";
                             InsertVATCtrlReportBuffer(TempVATEntry, VATCtrlReportSectionCZL, VATPostingSetup, TempDropShptPostBuffer."Order No.", Temp1VATCtrlReportEntLinkCZL, TempVATCtrlReportBufferCZL);
                         until TempDropShptPostBuffer.Next() = 0;
                 end;

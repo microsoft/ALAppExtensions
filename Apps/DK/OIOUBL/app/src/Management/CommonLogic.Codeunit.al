@@ -191,6 +191,7 @@ codeunit 13648 "OIOUBL-Common Logic"
     Local procedure InsertCustomerParty(var AccountingCustomerParty: XmlElement; GLN: Code[13]; VATRegNo: Text[20]; PartyName: Text[100]; PostalAddress: Record "Standard Address"; PartyContact: Record Contact);
     var
         PartyElement: XmlElement;
+        IsHandled: Boolean;
     begin
         PartyElement := XmlElement.Create('Party', DocNameSpaceCAC);
 
@@ -198,7 +199,10 @@ codeunit 13648 "OIOUBL-Common Logic"
           XmlAttribute.Create('schemeAgencyID', '9'),
           XmlAttribute.Create('schemeID', 'GLN'),
           GLN));
-        InsertPartyIdentification(PartyElement, OIOUBLDocumentEncode.GetCustomerVATRegNoIncCustomerCountryCode(VATRegNo, PostalAddress."Country/Region Code"));
+        IsHandled := false;
+        OnInsertCustomerPartyOnBeforeInsertPartyIdentification(PartyElement, VATRegNo, PostalAddress."Country/Region Code", GLN, DocNameSpaceCAC, DocNameSpaceCBC, IsHandled);
+        if not IsHandled then
+            InsertPartyIdentification(PartyElement, OIOUBLDocumentEncode.GetCustomerVATRegNoIncCustomerCountryCode(VATRegNo, PostalAddress."Country/Region Code"));
         InsertPartyName(PartyElement, PartyName);
         InsertAddress(PartyElement,
           'PostalAddress',
@@ -610,4 +614,8 @@ codeunit 13648 "OIOUBL-Common Logic"
         XmlNameSpaceCAC := DocNameSpaceCAC;
     end;
 
+    [IntegrationEvent(true, false)]
+    local procedure OnInsertCustomerPartyOnBeforeInsertPartyIdentification(var PartyElement: XmlElement; VATRegNo: Text[20]; CountryRegionCode: Code[10]; GLN: Code[13]; DocNameSpaceCAC: Text[250]; DocNameSpaceCBC: Text[250]; var IsHandled: Boolean)
+    begin
+    end;
 }

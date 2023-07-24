@@ -19,6 +19,7 @@ codeunit 31356 "Payment Order Management CZB"
         if IsHandled then
             exit;
 
+        BankAccount.SetRange(Blocked, false);
         SelectedBankAccountForPaymentOrder := SelectBankAccount(BankAccount);
         if SelectedBankAccountForPaymentOrder then begin
             CheckBankAccessAllowed(BankAccount."No.");

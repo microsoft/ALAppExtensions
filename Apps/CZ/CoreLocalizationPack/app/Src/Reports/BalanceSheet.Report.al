@@ -6,6 +6,7 @@ report 11794 "Balance Sheet CZL"
     ApplicationArea = Basic, Suite;
     Caption = 'Balance Sheet';
     UsageCategory = ReportsAndAnalysis;
+    AllowScheduling = false;
 
     dataset
     {

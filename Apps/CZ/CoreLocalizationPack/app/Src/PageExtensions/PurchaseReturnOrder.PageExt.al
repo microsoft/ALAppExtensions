@@ -142,11 +142,17 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the code that represents the shipment method for this purchase.';
             }
+#if not CLEAN22
             field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Physical Transfer (Obsolete)';
                 ToolTip = 'Specifies if there is physical transfer of the item.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
+#endif
         }
         addlast("Foreign Trade")
         {
@@ -177,11 +183,17 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
+#if not CLEAN22
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = BasicEU;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
+#endif
         }
         addafter("Foreign Trade")
         {

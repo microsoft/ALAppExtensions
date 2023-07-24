@@ -112,5 +112,16 @@ tableextension 18089 "GST Purch. Inv. Line Ext." extends "Purch. Inv. Line"
             Caption = 'Subcon. Order Line No.';
             DataClassification = CustomerContent;
         }
+        field(18136; FOC; Boolean)
+        {
+            Caption = 'FOC';
+            DataClassification = CustomerContent;
+        }
+        field(18137; "GST Vendor Type"; Enum "GST Vendor Type")
+        {
+            Caption = 'GST Vendor Type';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
     }
 }

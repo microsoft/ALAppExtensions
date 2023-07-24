@@ -2742,12 +2742,50 @@ codeunit 18134 "GST Purchase Registered"
         VerifyGSTEntries(DocumentNo, Database::"Purch. Inv. Header");
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostPurchInvoiceWithInvRoundingTypeAsNearest()
+    var
+        PaymentMethod: Record "Payment Method";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LibraryERM: Codeunit "Library - ERM";
+        DocumentNo: Code[20];
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type enum";
+        GLDocType: Enum "Gen. Journal Document Type";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] [475368] [Post Purchase Invoice having Payment Method with Balancing account and rounding as negative amount is posting only negative amount during payment.]
+        // [FEATURE] [Goods, Purchase Invoice] [ITC, Registered Vendor, Intra-State]
+
+        // [GIVEN] Created General Ledger Setup with Invoice Rounding precision as 1 and Inv. Rounding Type as Nearest, GST Setup, Payment Method Code tax rates for Registered Vendor and GST Credit adjustment is Non Available with GST group type as Goods 
+        CreateGeneralLedgerSetup();
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Goods, true, false);
+        InitializeShareStep(true, false, false);
+        LibraryERM.CreatePaymentMethodWithBalAccount(PaymentMethod);
+        WithPaymentMethodCode := true;
+        PaymentMethodCode := PaymentMethod.Code;
+        SetStorageLibraryPurchaseText(NoOfLineLbl, Format(1));
+
+        // [WHEN] Create and Post Purchase Order with GST and Line Type as Item for Intrastate Transactions.
+        DocumentNo := CreateAndPostPurchaseDocumentForInvRoundingType(PurchaseHeader, PurchaseLine, LineType::Item, DocumentType::Invoice);
+
+        // [THEN] GST ledger entries are created and Verified
+        LibraryGST.VerifyGLEntries(GLDocType::Payment, DocumentNo, 2);
+        LibraryGST.VerifyGLEntryAmount(GLDocType::Payment, DocumentNo, PaymentMethod."Bal. Account No.", -1 * Round((PurchaseLine.Amount + GetGSTAmount(DocumentNo)), 1, '='));
+        WithPaymentMethodCode := false;
+    end;
+
     local procedure CreateGeneralLedgerSetup()
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
+        GeneralLedgerSetup.Get();
         GeneralLedgerSetup."Inv. Rounding Precision (LCY)" := 1;
         GeneralLedgerSetup."Inv. Rounding Type (LCY)" := GeneralLedgerSetup."Inv. Rounding Type (LCY)"::Nearest;
+        GeneralLedgerSetup.Modify();
     end;
 
     local procedure CreateGSTSetup(GSTVendorType: Enum "GST Vendor Type"; GSTGroupType: Enum "GST Group Type"; IntraState: Boolean; ReverseCharge: Boolean)
@@ -2820,6 +2858,17 @@ codeunit 18134 "GST Purchase Registered"
         SetStorageBooleanLibraryPurchaseText(LineDiscountLbl, LineDiscount);
     end;
 
+    local procedure GetGSTAmount(DocumentNo: Code[20]) GSTAmount: Decimal
+    var
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+    begin
+        DetailedGSTLedgerEntry.SetCurrentKey("Document No.", "HSN/SAC Code");
+        DetailedGSTLedgerEntry.SetRange("Document No.", DocumentNo);
+        DetailedGSTLedgerEntry.CalcSums("GST Amount");
+        GSTAmount := DetailedGSTLedgerEntry."GST Amount";
+        exit(GSTAmount);
+    end;
+
     local procedure CreateAndPostPurchaseDocument(
         var PurchaseHeader: Record "Purchase Header";
         var PurchaseLine: Record "Purchase Line";
@@ -2875,6 +2924,42 @@ codeunit 18134 "GST Purchase Registered"
             StorageBoolean.Get(LineDiscountLbl),
             NoOfLine);
         exit(PurchaseHeader."No.");
+    end;
+
+    local procedure CreateAndPostPurchaseDocumentForInvRoundingType(
+        var PurchaseHeader: Record "Purchase Header";
+        var PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        DocumentType: Enum "Purchase Document Type"): Code[20];
+    var
+        VendorPostingGroup: Record "Vendor Posting Group";
+        GLAccount: Record "G/L Account";
+        VendorNo: Code[20];
+        LocationCode: Code[10];
+        DocumentNo: Code[20];
+        PurchaseInvoiceType: Enum "GST Invoice Type";
+        NoOfLine: Integer;
+    begin
+        Evaluate(VendorNo, Storage.Get(VendorNoLbl));
+        Evaluate(LocationCode, Storage.Get(LocationCodeLbl));
+        Evaluate(NoOfLine, Storage.Get(NoOfLineLbl));
+        CreatePurchaseHeaderWithGST(PurchaseHeader, VendorNo, DocumentType, LocationCode, PurchaseInvoiceType::" ");
+        CreatePurchaseLineWithGST(
+            PurchaseHeader,
+            PurchaseLine,
+            LineType,
+            StorageBoolean.Get(InputCreditAvailmentLbl),
+            StorageBoolean.Get(ExemptedLbl),
+            StorageBoolean.Get(LineDiscountLbl),
+            NoOfLine);
+        VendorPostingGroup.Get(PurchaseHeader."Vendor Posting Group");
+        GLAccount.Get(VendorPostingGroup."Invoice Rounding Account");
+        LibraryGST.CreateGeneralPostingSetup(PurchaseHeader."Gen. Bus. Posting Group", GLAccount."Gen. Prod. Posting Group");
+        if not (PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Quote) then begin
+            DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+            SetStorageLibraryPurchaseText(PostedDocumentNoLbl, DocumentNo);
+            exit(DocumentNo);
+        end;
     end;
 
     local procedure UpdateInputServiceDistributer(InputServiceDistribute: Boolean)

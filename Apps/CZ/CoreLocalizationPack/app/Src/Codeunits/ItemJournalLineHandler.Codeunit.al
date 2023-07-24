@@ -117,6 +117,8 @@ codeunit 31078 "Item Journal Line Handler CZL"
         end;
 
     end;
+#if not CLEAN22
+#pragma warning disable AL0432
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnValidateItemNoOnAfterGetItem', '', false, false)]
     local procedure CopyFromItemOnValidateItemNoOnAfterGetItem(var ItemJournalLine: Record "Item Journal Line"; Item: Record Item)
@@ -138,14 +140,14 @@ codeunit 31078 "Item Journal Line Handler CZL"
     local procedure CopyFieldsOnAfterCopyItemJnlLineFromSalesLine(var ItemJnlLine: Record "Item Journal Line"; SalesLine: Record "Sales Line")
     begin
         ItemJnlLine."Tariff No. CZL" := SalesLine."Tariff No. CZL";
-        ItemJnlLine."Statistic Indication CZL" := SalesLine."Statistic Indication CZL";
         ItemJnlLine."Net Weight CZL" := SalesLine."Net Weight";
         // recalc to base UOM
         if ItemJnlLine."Net Weight CZL" <> 0 then
             if SalesLine."Qty. per Unit of Measure" <> 0 then
                 ItemJnlLine."Net Weight CZL" := Round(ItemJnlLine."Net Weight CZL" / SalesLine."Qty. per Unit of Measure", 0.00001);
-        ItemJnlLine."Physical Transfer CZL" := SalesLine."Physical Transfer CZL";
         ItemJnlLine."Country/Reg. of Orig. Code CZL" := SalesLine."Country/Reg. of Orig. Code CZL";
+        ItemJnlLine."Statistic Indication CZL" := SalesLine."Statistic Indication CZL";
+        ItemJnlLine."Physical Transfer CZL" := SalesLine."Physical Transfer CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromPurchHeader', '', false, false)]
@@ -159,14 +161,14 @@ codeunit 31078 "Item Journal Line Handler CZL"
     local procedure CopyFieldsOnAfterCopyItemJnlLineFromPurchLine(var ItemJnlLine: Record "Item Journal Line"; PurchLine: Record "Purchase Line")
     begin
         ItemJnlLine."Tariff No. CZL" := PurchLine."Tariff No. CZL";
-        ItemJnlLine."Statistic Indication CZL" := PurchLine."Statistic Indication CZL";
         ItemJnlLine."Net Weight CZL" := PurchLine."Net Weight";
         // recalc to base UOM
         if ItemJnlLine."Net Weight CZL" <> 0 then
             if PurchLine."Qty. per Unit of Measure" <> 0 then
                 ItemJnlLine."Net Weight CZL" := Round(ItemJnlLine."Net Weight CZL" / PurchLine."Qty. per Unit of Measure", 0.00001);
-        ItemJnlLine."Physical Transfer CZL" := PurchLine."Physical Transfer CZL";
         ItemJnlLine."Country/Reg. of Orig. Code CZL" := PurchLine."Country/Reg. of Orig. Code CZL";
+        ItemJnlLine."Statistic Indication CZL" := PurchLine."Statistic Indication CZL";
+        ItemJnlLine."Physical Transfer CZL" := PurchLine."Physical Transfer CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServHeader', '', false, false)]
@@ -180,14 +182,14 @@ codeunit 31078 "Item Journal Line Handler CZL"
     local procedure CopyFieldsOnAfterCopyItemJnlLineFromServLine(var ItemJnlLine: Record "Item Journal Line"; ServLine: Record "Service Line")
     begin
         ItemJnlLine."Tariff No. CZL" := ServLine."Tariff No. CZL";
-        ItemJnlLine."Statistic Indication CZL" := ServLine."Statistic Indication CZL";
         ItemJnlLine."Net Weight CZL" := ServLine."Net Weight";
         // recalc to base UOM
         if ItemJnlLine."Net Weight CZL" <> 0 then
             if ServLine."Qty. per Unit of Measure" <> 0 then
                 ItemJnlLine."Net Weight CZL" := Round(ItemJnlLine."Net Weight CZL" / ServLine."Qty. per Unit of Measure", 0.00001);
-        ItemJnlLine."Physical Transfer CZL" := ServLine."Physical Transfer CZL";
         ItemJnlLine."Country/Reg. of Orig. Code CZL" := ServLine."Country/Reg. of Orig. Code CZL";
+        ItemJnlLine."Statistic Indication CZL" := ServLine."Statistic Indication CZL";
+        ItemJnlLine."Physical Transfer CZL" := ServLine."Physical Transfer CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServShptLine', '', false, false)]
@@ -201,6 +203,8 @@ codeunit 31078 "Item Journal Line Handler CZL"
     begin
         ItemJnlLine.CopyFromServiceShipmentLineCZL(ServShptLine);
     end;
+#pragma warning restore AL0432
+#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::ItemJnlManagement, 'OnBeforeOpenJnl', '', false, false)]
     local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var ItemJnlLine: Record "Item Journal Line")

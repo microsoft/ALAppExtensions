@@ -50,6 +50,20 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
                 CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
             end;
         }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
+                end;
+            }
+        }
         modify("Line Discount Amount")
         {
             Trigger OnAfterValidate()

@@ -348,45 +348,7 @@ page 9995 "Word Template Creation Wizard"
 
                 trigger OnAction()
                 begin
-                    case Step of
-                        Step::Select:
-                            begin
-                                CurrPage.WordTemplateTables.Page.GetRecord(Rec);
-                                if Rec."Table ID" = 0 then
-                                    Error(MissingEntityErr);
-
-                                TableSetSkipped := false;
-                                WordTemplate."Table ID" := Rec."Table ID";
-                                CurrPage.RelatedTables.Page.SetTableNo(WordTemplate."Table ID");
-                                Step := Step::SelectRelated;
-                            end;
-                        Step::SelectRelated:
-                            begin
-                                CurrPage.RelatedTables.Page.VerifyNoSelectedFields();
-                                Step := Step::Download;
-                            end;
-                        Step::Download:
-                            begin
-                                WordTemplate.CalcFields("Table Caption");
-                                Step := Step::Upload;
-                            end;
-                        Step::Upload:
-                            begin
-                                if not TemplateUploaded then
-                                    Error(TemplateNotUploadedErr);
-
-                                SetDefaultWordTemplateLanguageCode();
-                                Step := Step::Details;
-                            end;
-                        Step::Details:
-                            begin
-                                if (WordTemplate.Code = '') or (WordTemplate.Name = '') or (WordTemplate."Language Code" = '') then
-                                    Error(MissingDetailsErr);
-
-                                Step := Step::Overview;
-                            end;
-                    end;
-                    UpdateEnabledStatus();
+                    NextAction();
                 end;
             }
 
@@ -461,7 +423,54 @@ page 9995 "Word Template Creation Wizard"
             Rec.SetFilter("Table ID", TableFilterExpression);
             Rec.Get(WordTemplate."Table ID");
             CurrPage.Update(false);
+            if OpenWithTableId then begin
+                CurrPage.WordTemplateTables.Page.SetRecord(Rec);
+                NextAction();
+            end;
         end;
+    end;
+
+    local procedure NextAction()
+    begin
+        case Step of
+            Step::Select:
+                begin
+                    CurrPage.WordTemplateTables.Page.GetRecord(Rec);
+                    if Rec."Table ID" = 0 then
+                        Error(MissingEntityErr);
+
+                    TableSetSkipped := false;
+                    WordTemplate."Table ID" := Rec."Table ID";
+                    CurrPage.RelatedTables.Page.SetTableNo(WordTemplate."Table ID");
+                    Step := Step::SelectRelated;
+                end;
+            Step::SelectRelated:
+                begin
+                    CurrPage.RelatedTables.Page.VerifyNoSelectedFields();
+                    Step := Step::Download;
+                end;
+            Step::Download:
+                begin
+                    WordTemplate.CalcFields("Table Caption");
+                    Step := Step::Upload;
+                end;
+            Step::Upload:
+                begin
+                    if not TemplateUploaded then
+                        Error(TemplateNotUploadedErr);
+
+                    SetDefaultWordTemplateLanguageCode();
+                    Step := Step::Details;
+                end;
+            Step::Details:
+                begin
+                    if (WordTemplate.Code = '') or (WordTemplate.Name = '') or (WordTemplate."Language Code" = '') then
+                        Error(MissingDetailsErr);
+
+                    Step := Step::Overview;
+                end;
+        end;
+        UpdateEnabledStatus();
     end;
 
     local procedure UpdateEnabledStatus()
@@ -498,6 +507,7 @@ page 9995 "Word Template Creation Wizard"
     var
         TableNos: List of [Integer];
     begin
+        OpenWithTableId := true;
         CurrPage.RelatedTables.Page.SetTableNo(Value);
         TableNos.Add(Value);
         SetMultipleTableNo(TableNos, Value);
@@ -538,6 +548,7 @@ page 9995 "Word Template Creation Wizard"
 
     var
         WordTemplate: Record "Word Template";
+        OpenWithTableId: Boolean;
         UploadedFileName, TableFilterExpression : Text;
         TableSetExternally, TableSetSkipped : Boolean;
         TemplateUploaded: Boolean;

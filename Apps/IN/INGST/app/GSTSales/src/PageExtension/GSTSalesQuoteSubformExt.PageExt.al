@@ -132,6 +132,20 @@ pageextension 18154 "GST Sales Quote Subform Ext" extends "Sales Quote Subform"
                 ToolTip = 'Specifies if the GST group is assigned for goods or service.';
             }
         }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
+                end;
+            }
+        }
     }
     trigger OnAfterGetCurrRecord()
     begin

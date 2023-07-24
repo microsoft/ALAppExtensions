@@ -71,6 +71,50 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
                 SetRange("Advance Letter No. CZZ", '');
             end;
         }
+        modify("Sales Line")
+        {
+            trigger OnAfterAfterGetRecord()
+            var
+                TempAdvanceLetterApplication: Record "Advance Letter Application CZZ" temporary;
+            begin
+                if not IsSalesAdvanceLettersConsideredCZZ then
+                    exit;
+                if not TempCFWorksheetLine.Find() then
+                    exit;
+                if "Document Type" = "Document Type"::Order then
+                    AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Sales Order", "Document No.", TempAdvanceLetterApplication)
+                else
+                    AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice", "Document No.", TempAdvanceLetterApplication);
+                TempAdvanceLetterApplication.CalcSums("Amount (LCY)");
+                TempCFWorksheetLine."Amount (LCY)" -= TempAdvanceLetterApplication."Amount (LCY)";
+                if TempCFWorksheetLine."Amount (LCY)" = 0 then
+                    TempCFWorksheetLine.Delete()
+                else
+                    TempCFWorksheetLine.Modify();
+            end;
+        }
+        modify("Purchase Line")
+        {
+            trigger OnAfterAfterGetRecord()
+            var
+                TempAdvanceLetterApplication: Record "Advance Letter Application CZZ" temporary;
+            begin
+                if not IsPurchaseAdvanceLettersConsideredCZZ then
+                    exit;
+                if not TempCFWorksheetLine.Find() then
+                    exit;
+                if "Document Type" = "Document Type"::Order then
+                    AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Purchase Order", "Document No.", TempAdvanceLetterApplication)
+                else
+                    AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", "Document No.", TempAdvanceLetterApplication);
+                TempAdvanceLetterApplication.CalcSums("Amount (LCY)");
+                TempCFWorksheetLine."Amount (LCY)" += TempAdvanceLetterApplication."Amount (LCY)";
+                if TempCFWorksheetLine."Amount (LCY)" = 0 then
+                    TempCFWorksheetLine.Delete()
+                else
+                    TempCFWorksheetLine.Modify();
+            end;
+        }
     }
 
     requestpage
@@ -109,6 +153,7 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
     end;
 
     var
+        AdvanceLetterApplication: Record "Advance Letter Application CZZ";
         CustomerCZZ: Record Customer;
         CashFlowSetup: Record "Cash Flow Setup";
         VendorCZZ: Record Vendor;

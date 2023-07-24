@@ -207,10 +207,18 @@ table 7231 "Master Data Mgt. Coupling"
 
     internal procedure InsertRecord(IntegrationSysID: Guid; SysId: Guid; TableId: Integer)
     var
+        LocalRecordRef: RecordRef;
         EmptyGuid: Guid;
     begin
         if IntegrationSysID = EmptyGuid then
             Error('Empty Integration Record System ID');
+
+        if IntegrationSysID <> SysId then begin
+            LocalRecordRef.Open(TableId);
+            LocalRecordRef.ReadIsolation := LocalRecordRef.ReadIsolation::ReadUncommitted;
+            if not LocalRecordRef.GetBySystemId(SysId) then
+                exit;
+        end;
 
         Reset();
         Init();

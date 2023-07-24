@@ -7,6 +7,7 @@ codeunit 4797 "Whse. Demo Accounts"
         AddAccount(AccountKey, AccountValue, '');
     end;
 
+
     procedure AddAccount(AccountKey: Code[20]; AccountValue: Code[20]; AccountDescription: Text[50])
     begin
         if WhseDemoAccount.Get(AccountKey) then begin
@@ -23,9 +24,20 @@ codeunit 4797 "Whse. Demo Accounts"
         end;
     end;
 
+    /// <summary>
+    /// Remove the account with the given AccountKey, the procedure is used to hide the corresponding GL Account in localizations
+    /// </summary>
+    /// <param name="AccountKey"> Primary Key for "Whse. Demo Account" table </param>
+    procedure RemoveAccount(AccountKey: Code[20])
+    begin
+        if WhseDemoAccount.Get(AccountKey) then
+            WhseDemoAccount.Delete();
+    end;
+
     procedure GetDemoAccount(AccountNo: Code[20]): Record "Whse. Demo Account"
     begin
-        WhseDemoAccount.Get(AccountNo);
+        if WhseDemoAccount.Get(AccountNo) then;
+
         exit(WhseDemoAccount);
     end;
 

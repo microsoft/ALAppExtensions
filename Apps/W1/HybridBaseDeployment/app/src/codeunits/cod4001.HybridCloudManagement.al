@@ -32,7 +32,6 @@ codeunit 4001 "Hybrid Cloud Management"
         GrantApprovalPermissionErr: Label 'You do not have permission to grant approval to run the cloud migration setup. You must be a licensed user, and your user account must have the SUPER permission set.';
         DoYouWantToDisableQst: Label 'If you revoke consent, the cloud migration stops.\\Are you sure that you want to continue?';
         RemovingTheTablesWillRemoveHistoryQst: Label 'If you exclude tables in this way, already migrated data may be deleted. This way, if the same tables are included in the cloud migration later, data from the on-premises database will replace the existing data in the target environment. If you do not want this to happen, do not include the table to the cloud migration again.\\Are you sure that you want to continue?';
-        CompletedCloudMigrationSetupMsg: Label 'Completed Cloud Migration Setup.';
         CompanyWasNotCreatedErr: Label 'Company creation failed. Errors could be found on the assisted setup page. Company name is: %1.', Comment = '%1 - Company name';
         CompanySetupIsNotcompleteErr: Label 'The company %1 was not setup correctly. Current setup status: %2', Comment = '%1 - Company name, %2 - Company Status';
         MigraitonAlreadyInProgressErr: Label 'A migration is already in progress.';
@@ -589,7 +588,7 @@ codeunit 4001 "Hybrid Cloud Management"
         TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
         TelemetryDimensions.Add('TotalOnPremSize', Format(HybridCompany.GetTotalOnPremSize(), 0, 9));
         TelemetryDimensions.Add('Product', IntelligentCloudSetup."Product ID");
-        FeatureTelemetry.LogUsage('0000EUR', GetFeatureTelemetryName(), CompletedCloudMigrationSetupMsg, TelemetryDimensions);
+        FeatureTelemetry.LogUsage('0000EUR', GetFeatureTelemetryName(), 'Completed Cloud Migration Setup.', TelemetryDimensions);
     end;
 
     local procedure SendTelemetryDisableCloudMigration(Reason: Text)
@@ -1786,6 +1785,11 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridCompanyStatusExist: Boolean;
     begin
         HybridCompanyStatusExist := HybridCompanyStatus.Get(HybridCompanyName);
+
+        if HybridCompanyStatusExist then
+            if (HybridCompanyStatus."Upgrade Status" = HybridCompanyStatus."Upgrade Status"::Completed) then
+                exit;
+
         HybridCompanyStatus.Replicated := true;
         HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Pending;
         if HybridCompanyStatusExist then

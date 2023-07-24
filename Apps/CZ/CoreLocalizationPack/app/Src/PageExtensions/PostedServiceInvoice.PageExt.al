@@ -131,12 +131,18 @@ pageextension 11751 "Posted Service Invoice CZL" extends "Posted Service Invoice
                 Editable = false;
                 ToolTip = 'Specifies whether the invoice was part of an EU 3-party trade transaction.';
             }
+#if not CLEAN22
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 Editable = false;
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
+#endif
             field("Transaction Type CZL"; Rec."Transaction Type")
             {
                 ApplicationArea = BasicEU;

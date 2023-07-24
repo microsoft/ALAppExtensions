@@ -110,6 +110,18 @@ codeunit 43 Language
     end;
 
     /// <summary>
+    /// Formats the provided value in default language.
+    /// </summary>
+    /// <param name="ValueVariant">The provided value to be returned in default language.</param>
+    /// <returns>The value in default language.</returns>
+    procedure ToDefaultLanguage(ValueVariant: Variant): Text
+    var
+        LanguageImpl: Codeunit "Language Impl.";
+    begin
+        exit(LanguageImpl.ToDefaultLanguage(ValueVariant));
+    end;
+
+    /// <summary>
     /// Checks whether the provided language is a valid application language.
     /// If it isn't, the function displays an error.
     /// </summary>
