@@ -1,7 +1,7 @@
 table 1950 "LP Machine Learning Setup"
 {
     ReplicateData = false;
-
+    Permissions = TableData "LP Machine Learning Setup" = I;
     fields
     {
         field(1; "Primary Key"; Code[10])

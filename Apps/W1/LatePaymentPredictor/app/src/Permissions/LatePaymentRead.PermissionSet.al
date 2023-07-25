@@ -6,6 +6,6 @@ permissionset 8312 "LatePayment - Read"
 
     IncludedPermissionSets = "LatePayment - Objects";
 
-    Permissions = tabledata "LP Machine Learning Setup" = R,
-                    tabledata "LP ML Input Data" = R;
+    Permissions = tabledata "LP Machine Learning Setup" = Rim,
+                    tabledata "LP ML Input Data" = Rim;
 }

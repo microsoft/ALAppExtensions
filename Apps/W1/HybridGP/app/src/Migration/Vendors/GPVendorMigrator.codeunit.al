@@ -8,6 +8,7 @@ codeunit 4022 "GP Vendor Migrator"
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
+        VendorEmailTypeCodeLbl: Label 'VEN', Locked = true;
 
 #if not CLEAN22
 #pragma warning disable AA0207
@@ -41,6 +42,7 @@ codeunit 4022 "GP Vendor Migrator"
 #endif
     var
         HelperFunctions: Codeunit "Helper Functions";
+        PostingGroupNo: Code[20];
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -54,10 +56,9 @@ codeunit 4022 "GP Vendor Migrator"
             HelperFunctions.GetPostingAccountNumber('PayablesAccount')
         );
 
-        Sender.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
+        PostingGroupNo := CreateVendorPostingGroupIfNeeded(RecordIdToMigrate);
+        Sender.SetVendorPostingGroup(PostingGroupNo);
         Sender.ModifyVendor(true);
-
-        CreateVendorPostingGroupIfNeeded(Sender, RecordIdToMigrate);
     end;
 
 #if not CLEAN22
@@ -176,7 +177,7 @@ codeunit 4022 "GP Vendor Migrator"
     end;
 #pragma warning restore AA0207
 
-    local procedure CreateVendorPostingGroupIfNeeded(var VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure CreateVendorPostingGroupIfNeeded(RecordIdToMigrate: RecordId): Code[20]
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPPM00200: Record "GP PM00200";
@@ -188,26 +189,26 @@ codeunit 4022 "GP Vendor Migrator"
         AccountNumber: Code[20];
     begin
         if not GPCompanyAdditionalSettings.GetMigrateVendorClasses() then
-            exit;
+            exit(PostingGroupCodeTxt);
 
         if not GPVendor.Get(RecordIdToMigrate) then
-            exit;
+            exit(PostingGroupCodeTxt);
 
         if not GPPM00200.Get(GPVendor.VENDORID) then
-            exit;
+            exit(PostingGroupCodeTxt);
 
 #pragma warning disable AA0139
         ClassId := GPPM00200.VNDCLSID.Trim();
 #pragma warning restore AA0139
 
         if ClassId = '' then
-            exit;
-
-        if VendorPostingGroup.Get(ClassId) then
-            exit;
+            exit(PostingGroupCodeTxt);
 
         if not GPPM00100.Get(ClassId) then
-            exit;
+            exit(PostingGroupCodeTxt);
+
+        if VendorPostingGroup.Get(ClassId) then
+            exit(ClassId);
 
         VendorPostingGroup.Validate("Code", ClassId);
         VendorPostingGroup.Validate("Description", GPPM00100.VNDCLDSC);
@@ -251,8 +252,7 @@ codeunit 4022 "GP Vendor Migrator"
 
         VendorPostingGroup.Insert();
 
-        VendorDataMigrationFacade.SetVendorPostingGroup(ClassId);
-        VendorDataMigrationFacade.ModifyVendor(true);
+        exit(ClassId);
     end;
 
     local procedure MigrateVendorDetails(GPVendor: Record "GP Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
@@ -370,7 +370,10 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure CreateOrUpdateOrderAddress(Vendor: Record Vendor; GPVendorAddress: Record "GP Vendor Address"; AddressCode: Code[10])
     var
         OrderAddress: Record "Order Address";
+        GPSY01200: Record "GP SY01200";
         HelperFunctions: Codeunit "Helper Functions";
+        MailManagement: Codeunit "Mail Management";
+        EmailAddress: Text[80];
     begin
         if not OrderAddress.Get(Vendor."No.", AddressCode) then begin
             OrderAddress."Vendor No." := Vendor."No.";
@@ -387,13 +390,25 @@ codeunit 4022 "GP Vendor Migrator"
         OrderAddress."Fax No." := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR);
         OrderAddress."Post Code" := GPVendorAddress.ZIPCODE;
         OrderAddress.County := GPVendorAddress.STATE;
+
+        if GPSY01200.Get(VendorEmailTypeCodeLbl, Vendor."No.", AddressCode) then
+            EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(OrderAddress."E-Mail"));
+
+#pragma warning disable AA0139
+        if MailManagement.ValidateEmailAddressField(EmailAddress) then
+            OrderAddress."E-Mail" := EmailAddress;
+#pragma warning restore AA0139
+
         OrderAddress.Modify();
     end;
 
     local procedure CreateOrUpdateRemitAddress(Vendor: Record Vendor; GPVendorAddress: Record "GP Vendor Address"; AddressCode: Code[10])
     var
         RemitAddress: Record "Remit Address";
+        GPSY01200: Record "GP SY01200";
         HelperFunctions: Codeunit "Helper Functions";
+        MailManagement: Codeunit "Mail Management";
+        EmailAddress: Text[80];
     begin
         if not RemitAddress.Get(AddressCode, Vendor."No.") then begin
             RemitAddress."Vendor No." := Vendor."No.";
@@ -410,6 +425,15 @@ codeunit 4022 "GP Vendor Migrator"
         RemitAddress."Fax No." := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR);
         RemitAddress."Post Code" := GPVendorAddress.ZIPCODE;
         RemitAddress.County := GPVendorAddress.STATE;
+
+        if GPSY01200.Get(VendorEmailTypeCodeLbl, Vendor."No.", AddressCode) then
+            EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(RemitAddress."E-Mail"));
+
+#pragma warning disable AA0139
+        if MailManagement.ValidateEmailAddressField(EmailAddress) then
+            RemitAddress."E-Mail" := EmailAddress;
+#pragma warning restore AA0139
+
         RemitAddress.Modify();
     end;
 

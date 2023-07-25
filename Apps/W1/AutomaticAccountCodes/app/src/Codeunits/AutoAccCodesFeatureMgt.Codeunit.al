@@ -48,29 +48,6 @@ codeunit 4853 "Auto. Acc. Codes Feature Mgt."
     begin
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnInitializeFeatureDataUpdateStatus', '', false, false)]
-    local procedure HandleOnInitializeFeatureDataUpdateStatus(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; var InitializeHandled: Boolean)
-    var
-        FeatureKey: Record "Feature Key";
-    begin
-        if InitializeHandled then
-            exit;
-
-        if FeatureDataUpdateStatus."Feature Key" <> GetFeatureKeyId() then
-            exit;
-
-        if FeatureDataUpdateStatus."Company Name" <> CopyStr(CompanyName(), 1, MaxStrLen(FeatureDataUpdateStatus."Company Name")) then
-            exit;
-
-        FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Disabled;
-        if FeatureKey.WritePermission() then begin
-            FeatureKey.Get(FeatureDataUpdateStatus."Feature Key");
-            FeatureKey.Enabled := FeatureKey.Enabled::None;
-            FeatureKey.Modify();
-        end;
-        InitializeHandled := true;
-    end;
-
     var
         FeatureKeyIdTok: Label 'AutomaticAccountCodes', Locked = true;
 }

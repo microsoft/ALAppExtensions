@@ -65,6 +65,11 @@ table 7230 "Master Data Management Setup"
                 MasterDataMgtCoupling.DeleteAll();
             end;
         }
+        field(152; "Delay Job Scheduling"; Boolean)
+        {
+            Caption = 'Delay Synchronization Job Scheduling';
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

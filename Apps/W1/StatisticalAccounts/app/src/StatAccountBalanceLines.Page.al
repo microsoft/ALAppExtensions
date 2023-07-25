@@ -95,11 +95,6 @@ page 2624 "Stat. Account Balance Lines"
         Rec := VariantRec;
     end;
 
-    trigger OnOpenPage()
-    begin
-        Rec.Reset();
-    end;
-
     var
         AccountingPeriod: Record "Accounting Period";
         DateRec: Record Date;
@@ -185,5 +180,10 @@ page 2624 "Stat. Account Balance Lines"
                     Rec.Amount := StatisticalAccount.Balance;
                 end;
         end;
+    end;
+
+    trigger OnOpenPage()
+    begin
+        Rec.Reset();
     end;
 }

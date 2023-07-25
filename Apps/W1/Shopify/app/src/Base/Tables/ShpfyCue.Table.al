@@ -34,7 +34,7 @@ table 30100 "Shpfy Cue"
         }
         field(5; "Unprocessed Shipments"; Integer)
         {
-            CalcFormula = count("Sales Shipment Header" where("Shpfy Order Id" = filter(<> 0), "Shpfy Fulfillment Id" = filter(0 | -1)));
+            CalcFormula = count("Sales Shipment Header" where("Shpfy Order Id" = filter(<> 0), "Shpfy Fulfillment Id" = filter(= 0)));
             Caption = 'Unprocessed Shipments';
             FieldClass = FlowField;
         }
@@ -52,7 +52,12 @@ table 30100 "Shpfy Cue"
             Caption = 'Synchronization Errors';
             FieldClass = FlowField;
         }
-
+        field(7; "Shipment Errors"; Integer)
+        {
+            CalcFormula = count("Sales Shipment Header" where("Shpfy Order Id" = filter(<> 0), "Shpfy Fulfillment Id" = filter(= -1)));
+            Caption = 'Shipments Errors';
+            FieldClass = FlowField;
+        }
     }
 
     keys

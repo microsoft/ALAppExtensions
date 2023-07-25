@@ -24,7 +24,7 @@ codeunit 11752 "Customer Handler CZL"
     local procedure CheckChangeOnBeforeIsContactUpdateNeeded(Customer: Record Customer; xCustomer: Record Customer; var UpdateNeeded: Boolean)
     begin
         UpdateNeeded := UpdateNeeded or
-            (Customer."Registration No. CZL" <> xCustomer."Registration No. CZL") or
+            (Customer."Registration Number" <> xCustomer."Registration Number") or
             (Customer."Tax Registration No. CZL" <> xCustomer."Tax Registration No. CZL");
     end;
 #if not CLEAN20

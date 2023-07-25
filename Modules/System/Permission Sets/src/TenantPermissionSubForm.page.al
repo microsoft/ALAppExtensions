@@ -91,6 +91,14 @@ page 9859 "Tenant Permission Subform"
                     Caption = 'Object Name';
                     ToolTip = 'Specifies the name of the object to which the permissions apply.';
                 }
+                field("Object Caption"; ObjectCaption)
+                {
+                    ApplicationArea = All;
+                    Style = Strong;
+                    StyleExpr = ZeroObjStyleExpr;
+                    Caption = 'Object Caption';
+                    ToolTip = 'Specifies the caption of the object that the permissions apply to.';
+                }
                 field("Read Permission"; ReadPermissionAsTxt)
                 {
                     ApplicationArea = All;
@@ -294,6 +302,7 @@ page 9859 "Tenant Permission Subform"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         PermissionSetRelation: Codeunit "Permission Set Relation";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         PermissionSetRelation.VerifyUserCanEditPermissionSet(CurrentAppID);
 
@@ -309,12 +318,17 @@ page 9859 "Tenant Permission Subform"
 
         Rec.Insert(true); // Record needs to be inserted before refreshing tree
         RefreshTreeView();
+
+        if Rec.Type = Rec.Type::Exclude then
+            FeatureTelemetry.LogUptake('0000KR4', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::Used);
+
         exit(false);
     end;
 
     trigger OnModifyRecord(): Boolean
     var
         PermissionSetRelation: Codeunit "Permission Set Relation";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         PermissionSetRelation.VerifyUserCanEditPermissionSet(CurrentAppID);
 
@@ -323,6 +337,10 @@ page 9859 "Tenant Permission Subform"
 
         Rec.Modify(true); // Record needs to be modified before refreshing tree
         RefreshTreeView();
+
+        if Rec.Type = Rec.Type::Exclude then
+            FeatureTelemetry.LogUptake('0000KR5', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::Used);
+
         exit(false);
     end;
 
@@ -395,5 +413,6 @@ page 9859 "Tenant Permission Subform"
         DeletePermissionAsTxt: Text[50];
         ExecutePermissionAsTxt: Text[50];
         ZeroObjStyleExpr: Boolean;
+        ComposablePermissionSetsTok: Label 'Composable Permission Sets', Locked = true;
         AddRelatedTablesQst: Label 'Do you want to add the read permissions to all related tables?';
 }

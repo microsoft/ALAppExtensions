@@ -13,6 +13,7 @@ codeunit 1690 "Bank Deposit-Post"
     var
         GLEntry: Record "G/L Entry";
         GenJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
@@ -169,13 +170,15 @@ codeunit 1690 "Bank Deposit-Post"
         GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
         OnRunOnBeforeGenJournalLineDeleteAll(Rec, PostedBankDepositLine, GenJournalLine);
         GenJournalLine.DeleteAll();
+        GenJournalTemplate.Get("Journal Template Name");
         GenJournalBatch.Get("Journal Template Name", "Journal Batch Name");
-        if IncStr("Journal Batch Name") <> '' then begin
-            GenJournalBatch.Get("Journal Template Name", "Journal Batch Name");
-            GenJournalBatch.Delete();
-            GenJournalBatch.Name := IncStr("Journal Batch Name");
-            if GenJournalBatch.Insert() then;
-        end;
+        if GenJournalTemplate."Increment Batch Name" then
+            if IncStr("Journal Batch Name") <> '' then begin
+                GenJournalBatch.Get("Journal Template Name", "Journal Batch Name");
+                GenJournalBatch.Delete();
+                GenJournalBatch.Name := IncStr("Journal Batch Name");
+                if GenJournalBatch.Insert() then;
+            end;
 
         Delete();
         Commit();

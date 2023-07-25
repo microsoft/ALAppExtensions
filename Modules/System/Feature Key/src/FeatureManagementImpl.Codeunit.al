@@ -121,8 +121,15 @@ codeunit 2610 "Feature Management Impl."
     local procedure EnableFeature(FeatureKey: Record "Feature Key");
     var
         FeatureDataUpdateStatus: Record "Feature Data Update Status";
+        FeatureManagementFacade: Codeunit "Feature Management Facade";
+        IsHandled: Boolean;
     begin
         FeatureDataUpdateStatus.SetRange("Feature Key", FeatureKey.ID);
+        FeatureManagementFacade.OnBeforeSetFeatureStatusForOtherCompanies(FeatureDataUpdateStatus, IsHandled);
+
+        if IsHandled then
+            exit;
+
         if FeatureKey."Data Update Required" then begin
             FeatureDataUpdateStatus.SetFilter("Company Name", '<>%1', CompanyName());
             FeatureDataUpdateStatus.ModifyAll("Feature Status", FeatureDataUpdateStatus."Feature Status"::Pending);

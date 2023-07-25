@@ -82,5 +82,16 @@ tableextension 18149 "GST Sales Invoice Line Ext" extends "Sales Invoice Line"
             Caption = 'Total UPIT Amount';
             DataClassification = CustomerContent;
         }
+        field(18157; FOC; Boolean)
+        {
+            Caption = 'FOC';
+            DataClassification = CustomerContent;
+        }
+        field(18158; "GST Customer Type"; Enum "GST Customer Type")
+        {
+            Caption = 'GST Customer Type';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
     }
 }

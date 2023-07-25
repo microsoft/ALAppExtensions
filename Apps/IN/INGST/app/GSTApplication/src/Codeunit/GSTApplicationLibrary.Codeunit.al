@@ -1188,7 +1188,6 @@ codeunit 18433 "GST Application Library"
         DetailedGSTLedgerEntry.SetRange("Source No.", CVNo);
         DetailedGSTLedgerEntry.SetRange("Document Type", DetailedGSTLedgerEntry."Document Type"::Invoice);
         DetailedGSTLedgerEntry.SetRange("Document No.", DocumentNo);
-        DetailedGSTLedgerEntry.SetRange("GST Group Type", "GST Group Type"::Service);
         DetailedGSTLedgerEntry.SetRange("Associated Enterprises", false);
         exit(not DetailedGSTLedgerEntry.IsEmpty());
     end;

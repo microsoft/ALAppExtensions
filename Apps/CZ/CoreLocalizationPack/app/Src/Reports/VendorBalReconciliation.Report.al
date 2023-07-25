@@ -69,7 +69,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             column(CompanyInfoTaxRegistrationNo; CompanyInformation."Tax Registration No. CZL")
             {
             }
-            column(VendorRegistrationNo; "Registration No. CZL")
+            column(VendorRegistrationNo; "Registration Number")
             {
             }
             column(VendorTaxRegistrationNo; "Tax Registration No. CZL")
@@ -117,7 +117,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             column(CompanyInfoTaxRegistrationNoCaption; CompanyInfoTaxRegistrationNoCaptionLbl)
             {
             }
-            column(VendorRegistrationNoCaption; FieldCaption("Registration No. CZL"))
+            column(VendorRegistrationNoCaption; FieldCaption("Registration Number"))
             {
             }
             column(VendorTaxRegistrationNoCaption; FieldCaption("Tax Registration No. CZL"))

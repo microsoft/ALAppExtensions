@@ -113,6 +113,39 @@ table 30113 "Shpfy Shop Location"
             InitValue = Disabled;
             Description = 'Select the stock calculation used for this location.';
         }
+        field(11; "Is Fulfillment Service"; Boolean)
+        {
+            Caption = 'Is Fulfillment Service';
+            DataClassification = SystemMetadata;
+            Editable = false;
+            Description = 'Check if this a fulfillment service location.';
+        }
+        field(12; "Default Product Location"; Boolean)
+        {
+            Caption = 'Default Product Location';
+            DataClassification = SystemMetadata;
+            Description = 'The default product locations will be added to new products in Shopify.';
+
+            trigger OnValidate()
+            var
+                ShopLocation: Record "Shpfy Shop Location";
+                ErrorInfo: ErrorInfo;
+                MixLocationTypeErr: Label 'You can not use standard Shopify Locations with FulFillment Service Locations.';
+            begin
+                if Rec."Default Product Location" then begin
+                    ShopLocation.SetRange("Is Fulfillment Service", not Rec."Is Fulfillment Service");
+                    ShopLocation.SetRange("Default Product Location", true);
+                    if not ShopLocation.IsEmpty then begin
+                        ErrorInfo.Message(MixLocationTypeErr);
+                        ErrorInfo.ErrorType := ErrorType::Client;
+                        ErrorInfo.FieldNo := CurrFieldNo;
+                        ErrorInfo.RecordId := Rec.RecordId;
+                        ErrorInfo.SystemId := Rec.SystemId;
+                        Error(ErrorInfo);
+                    end;
+                end;
+            end;
+        }
     }
 
     keys

@@ -142,6 +142,12 @@ table 2632 "Statistical Account"
         end;
     end;
 
+
+    procedure GetFeatureTelemetryName(): Text
+    begin
+        exit('Statistical Accounts');
+    end;
+
     var
         DeleteStatAccQst: Label 'There are ledger entries connected with this account. Deleting the account will permanently delete the ledger entries.\\Do you want to continue?';
         DeleteStatAccSecondQst: Label 'You will not be able to restore the ledger entries.\\Do you want to cancel the operation?';

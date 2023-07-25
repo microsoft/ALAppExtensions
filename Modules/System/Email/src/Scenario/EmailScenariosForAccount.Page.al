@@ -51,13 +51,19 @@ page 8894 "Email Scenarios for Account"
         until Rec.Next() = 0;
     end;
 
+    internal procedure SetIncludeDefaultEmailScenario(NewIncludeDefaultEmailScenario: Boolean)
+    begin
+        IncludeDefaultEmailScenario := NewIncludeDefaultEmailScenario;
+    end;
+
     trigger OnOpenPage()
     begin
-        EmailScenarioImpl.GetAvailableScenariosForAccount(Rec, Rec);
+        EmailScenarioImpl.GetAvailableScenariosForAccount(Rec, Rec, IncludeDefaultEmailScenario);
         Rec.SetCurrentKey("Display Name");
         if Rec.FindFirst() then; // set the selection to the first record
     end;
 
     var
         EmailScenarioImpl: Codeunit "Email Scenario Impl.";
+        IncludeDefaultEmailScenario: Boolean;
 }

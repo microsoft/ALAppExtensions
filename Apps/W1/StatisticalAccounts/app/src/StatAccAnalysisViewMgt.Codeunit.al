@@ -2,10 +2,13 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
 {
     [EventSubscriber(ObjectType::Table, Database::"Analysis View", 'OnValidateAccountFilter', '', false, false)]
     local procedure HandleOnValidateAccountFilter(var AnalysisView: Record "Analysis View"; var xRecAnalysisView: Record "Analysis View")
+    var
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
         if not VerifyCanHandle(AnalysisView) then
             exit;
 
+        StatAccTelemetry.LogAnalysisViewsUsage();
         AnalysisView."Statistical Account Filter" := AnalysisView."Account Filter";
         AnalysisView.UpdateStatisticalAccountFilter(xRecAnalysisView."Account Filter", AnalysisView."Account Filter");
     end;
@@ -13,6 +16,7 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
     [EventSubscriber(ObjectType::Table, Database::"Analysis View", 'OnLookupAccountFilter', '', false, false)]
     local procedure HandleOnLookupAccountFilter(var Handled: Boolean; var AccountFilter: Text; var AnalysisView: Record "Analysis View")
     var
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
         StatisticalAccountList: Page "Statistical Account List";
     begin
         if Handled then
@@ -20,6 +24,8 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
 
         if not VerifyCanHandle(AnalysisView) then
             exit;
+
+        StatAccTelemetry.LogAnalysisViewsUsage();
 
         StatisticalAccountList.LookupMode(true);
         if StatisticalAccountList.RunModal() = ACTION::LookupOK then
@@ -33,11 +39,13 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
     local procedure HandleOnLookupAccountNo(var AnalysisViewEntry: Record "Analysis View Entry"; var IsHandled: Boolean)
     var
         StatisticalAccount: Record "Statistical Account";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
         StatisticalAccountList: Page "Statistical Account List";
     begin
         if IsHandled then
             exit;
 
+        StatAccTelemetry.LogAnalysisViewsUsage();
         if not (AnalysisViewEntry."Account Source" <> AnalysisViewEntry."Account Source"::"Statistical Account") then
             exit;
 
@@ -54,6 +62,7 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
     local procedure HandleOnGetAnalysisByDimensionsCaptions(var AnalysisView: Record "Analysis View"; var LineDimCode: Text[30]; var AccountCaption: Text[30]; var UnitCaption: Text[30]; OpenPage: Boolean)
     var
         DummyStatisticalAccount: Record "Statistical Account";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
         if not VerifyCanHandle(AnalysisView) then
             exit;
@@ -61,6 +70,7 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
         if OpenPage then
             LineDimCode := CopyStr(DummyStatisticalAccount.TableCaption(), 1, MaxStrLen(LineDimCode));
 
+        StatAccTelemetry.LogAnalysisViewsUsage();
         AccountCaption := CopyStr(DummyStatisticalAccount.TableCaption(), 1, MaxStrLen(AccountCaption));
         UnitCaption := '';
     end;
@@ -98,6 +108,7 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
     local procedure HandleOnInitRecordOnCaseElse(DimOption: Enum "Analysis Dimension Option"; var TheDimCodeBuf: Record "Dimension Code Buffer"; var AnalysisView: Record "Analysis View"; var AnalysisByDimParameters: Record "Analysis by Dim. Parameters")
     var
         StatisticalAccount: Record "Statistical Account";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
         if not VerifyCanHandle(AnalysisView) then
             exit;
@@ -108,6 +119,7 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
         if DimOption <> DimOption::"Statistical Account" then
             exit;
 
+        StatAccTelemetry.LogAnalysisViewsUsage();
         if StatisticalAccount.FindSet() then
             repeat
                 Clear(TheDimCodeBuf);
@@ -136,12 +148,10 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Analysis by Dimensions", 'OnAfterFindRecord', '', false, false)]
-    local procedure HandleOnAfterFindRecord(sender: Page "Analysis by Dimensions";
-
-    var
-        DimOption: Enum "Analysis Dimension Option"; var DimCodeBuf: Record "Dimension Code Buffer"; var AnalysisView: Record "Analysis View"; Which: Text[250]; var Found: Boolean; var AnalysisByDimParameters: Record "Analysis by Dim. Parameters")
+    local procedure HandleOnAfterFindRecord(sender: Page "Analysis by Dimensions"; var DimOption: Enum "Analysis Dimension Option"; var DimCodeBuf: Record "Dimension Code Buffer"; var AnalysisView: Record "Analysis View"; Which: Text[250]; var Found: Boolean; var AnalysisByDimParameters: Record "Analysis by Dim. Parameters")
     var
         StatisticalAccount: Record "Statistical Account";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
         if not VerifyCanHandle(AnalysisView) then
             exit;
@@ -149,6 +159,7 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
         if not (DimOption = DimOption::"Statistical Account") then
             exit;
 
+        StatAccTelemetry.LogAnalysisViewsUsage();
         if AnalysisByDimParameters."Account Filter" <> '' then
             StatisticalAccount.SetFilter("No.", AnalysisByDimParameters."Account Filter");
 
@@ -171,8 +182,10 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
         GeneralLedgerSetup: Record "General Ledger Setup";
         StatisticalLedgerEntry: Record "Statistical Ledger Entry";
         UpdateAnalysisView: Codeunit "Update Analysis View";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
         NextKey: Integer;
     begin
+        StatAccTelemetry.LogAnalysisViewsUsage();
         AnalysisViewEntry.SetRange("Analysis View Code", AnalysisView.Code);
         AnalysisViewEntry.SetRange("Account Source", AnalysisViewEntry."Account Source"::"Statistical Account");
         AnalysisViewEntry.DeleteAll();

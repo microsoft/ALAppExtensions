@@ -1,5 +1,11 @@
+#if not CLEAN22
+#pragma warning disable AL0432
 codeunit 31027 "Tariff Number Handler CZL"
 {
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+
     [EventSubscriber(ObjectType::Table, Database::"Tariff Number", 'OnAfterDeleteEvent', '', false, false)]
     local procedure DeleteStatisticIndicationCZLOnAfterDeleteTariffNumber(var Rec: Record "Tariff Number")
     var
@@ -24,3 +30,5 @@ codeunit 31027 "Tariff Number Handler CZL"
         TariffNumber.ModifyAll("Suppl. Unit of Meas. Code CZL", '');
     end;
 }
+#pragma warning restore AL0432
+#endif

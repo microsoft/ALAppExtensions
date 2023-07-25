@@ -40,6 +40,14 @@ page 9862 "Expanded Permissions"
                     Style = Strong;
                     StyleExpr = ZeroObjStyleExpr;
                 }
+                field("Object Caption"; ObjectCaption)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Object Caption';
+                    ToolTip = 'Specifies the caption of the object that the permissions apply to.';
+                    Style = Strong;
+                    StyleExpr = ZeroObjStyleExpr;
+                }
                 field("Read Permission"; Rec."Read Permission")
                 {
                     ApplicationArea = All;
@@ -88,12 +96,13 @@ page 9862 "Expanded Permissions"
 
     trigger OnAfterGetRecord()
     begin
-        PermissionImpl.GetObjectName(Rec, ObjectName);
+        PermissionImpl.GetObjectCaptionAndName(Rec, ObjectCaption, ObjectName);
         ZeroObjStyleExpr := Rec."Object ID" = 0;
     end;
 
     var
         PermissionImpl: Codeunit "Permission Impl.";
+        ObjectCaption: Text;
         ObjectName: Text;
         ZeroObjStyleExpr: Boolean;
 }

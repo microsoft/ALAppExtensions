@@ -254,8 +254,11 @@ page 7233 "Master Data Synch. Tables"
                 trigger OnAction()
                 var
                     MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+                    MasterDataManagement: Codeunit "Master Data Management";
                     IntegrationSynchJobList: Page "Integration Synch. Job List";
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     if Rec.IsEmpty() then
                         exit;
 
@@ -279,8 +282,11 @@ page 7233 "Master Data Synch. Tables"
 
                 trigger OnAction()
                 var
+                    MasterDataManagement: Codeunit "Master Data Management";
                     IntegrationSynchJobList: Page "Integration Synch. Job List";
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     if Rec.IsEmpty() then
                         exit;
 
@@ -345,6 +351,8 @@ page 7233 "Master Data Synch. Tables"
                     ConfirmMsg: Text;
                     ResultMsg: Text;
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     CurrPage.SetSelectionFilter(IntegrationTableMapping);
                     if not IntegrationTableMapping.FindSet() then
                         exit;
@@ -393,6 +401,8 @@ page 7233 "Master Data Synch. Tables"
                     ConfirmMsg: Text;
                     ResultMsg: Text;
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     CurrPage.SetSelectionFilter(IntegrationTableMapping);
                     if not IntegrationTableMapping.FindFirst() then
                         exit;
@@ -529,10 +539,12 @@ page 7233 "Master Data Synch. Tables"
 
     local procedure AddTable(var IntegrationTableMapping: Record "Integration Table Mapping"; TableName: Text; TableNo: Integer)
     var
+        MasterDataManagementSetup: Record "Master Data Management Setup";
         MasterDataManagementSetupDefaults: Codeunit "Master Data Mgt. Setup Default";
         AllFieldsDisabledList: List of [Integer];
         IntegrationTableMappingName: Code[20];
         I: Integer;
+        ShouldEnqueueJob: Boolean;
     begin
         IntegrationTableMappingName := CopyStr('MDM_' + DelChr(Uppercase(TableName), '=', DelChr(Uppercase(TableName), '=', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')), 1, MaxStrLen(IntegrationTableMappingName));
         IntegrationTableMapping.Reset();
@@ -544,7 +556,10 @@ page 7233 "Master Data Synch. Tables"
             I += 1;
         end;
 
-        MasterDataManagementSetupDefaults.GenerateIntegrationTableMapping(IntegrationTableMapping, AllFieldsDisabledList, IntegrationTableMappingName, TableNo, '', false, true);
+        ShouldEnqueueJob := true;
+        if MasterDataManagementSetup.Get() then
+            ShouldEnqueueJob := (not MasterDataManagementSetup."Delay Job Scheduling");
+        MasterDataManagementSetupDefaults.GenerateIntegrationTableMapping(IntegrationTableMapping, AllFieldsDisabledList, IntegrationTableMappingName, TableNo, '', false, ShouldEnqueueJob);
     end;
 
     trigger OnAfterGetRecord()

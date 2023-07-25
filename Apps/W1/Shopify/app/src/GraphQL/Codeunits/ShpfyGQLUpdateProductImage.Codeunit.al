@@ -8,7 +8,7 @@ codeunit 30221 "Shpfy GQL UpdateProductImage" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "mutation { productUpdate(input: {id: \"gid://shopify/Product/{{ProductId}}\", images: {id: \"gid://shopify/ProductImage/{{ImageId}}\", src: \"{{ResourceUrl}}\"}})}"}');
+        exit('{"query": "mutation { productImageUpdate(productId: \"gid://shopify/Product/{{ProductId}}\", image: {id: \"gid://shopify/ProductImage/{{ImageId}}\", src: \"{{ResourceUrl}}\"}) { image { id }}}"}');
     end;
 
     /// <summary>

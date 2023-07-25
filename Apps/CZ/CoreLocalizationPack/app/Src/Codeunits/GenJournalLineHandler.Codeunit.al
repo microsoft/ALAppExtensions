@@ -84,13 +84,13 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
             (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) or (GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::Customer):
                 begin
                     Customer.Get(BillPaySellBuyNo);
-                    GenJournalLine."Registration No. CZL" := Customer."Registration No. CZL";
+                    GenJournalLine."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
                     GenJournalLine."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
                 end;
             (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) or (GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::Vendor):
                 begin
                     Vendor.Get(BillPaySellBuyNo);
-                    GenJournalLine."Registration No. CZL" := Vendor."Registration No. CZL";
+                    GenJournalLine."Registration No. CZL" := Vendor.GetRegistrationNoTrimmedCZL();
                     GenJournalLine."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
                 end;
         end;

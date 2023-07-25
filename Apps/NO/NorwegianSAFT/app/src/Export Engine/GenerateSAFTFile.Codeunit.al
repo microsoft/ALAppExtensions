@@ -455,6 +455,49 @@ codeunit 10673 "Generate SAF-T File"
         SAFTXMLHelper.FinalizeXMLNode();
     end;
 
+#if CLEAN23
+    local procedure ExportTaxCodeDetails()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        VATReportingCode: Record "VAT Reporting Code";
+        SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
+        NotApplicableVATCode: Code[20];
+        SalesCompensation: Boolean;
+        PurchaseCompensation: Boolean;
+    begin
+        if not VATPostingSetup.FindSet() then
+            exit;
+
+        NotApplicableVATCode := SAFTExportMgt.GetNotApplicableVATCode();
+        repeat
+            if not VATPostingSetup."Calc. Prop. Deduction VAT" then
+                VATPostingSetup."Proportional Deduction VAT %" := 0;
+            if VATPostingSetup."Sale VAT Reporting Code" = '' then
+                VATPostingSetup."Sale VAT Reporting Code" := NotApplicableVATCode
+            else begin
+                VATReportingCode.Get(VATPostingSetup."Sale VAT Reporting Code");
+                SalesCompensation := VATReportingCode.Compensation;
+            end;
+            if VATPostingSetup."Purch. VAT Reporting Code" = '' then
+                VATPostingSetup."Purch. VAT Reporting Code" := NotApplicableVATCode
+            else begin
+                VATReportingCode.Get(VATPostingSetup."Purch. VAT Reporting Code");
+                PurchaseCompensation := VATReportingCode.Compensation;
+            end;
+
+            if VATPostingSetup."Sales VAT Account" <> '' then
+                ExportTaxCodeDetail(
+                    VATPostingSetup."Sales SAF-T Tax Code", CopyStr(VATPostingSetup."Sale VAT Reporting Code", 1, 9),
+                    VATPostingSetup.Description, VATPostingSetup."VAT %",
+                    SalesCompensation, VATPostingSetup."Proportional Deduction VAT %");
+            If VATPostingSetup."Purchase VAT Account" <> '' then
+                ExportTaxCodeDetail(
+                    VATPostingSetup."Purchase SAF-T Tax Code", CopyStr(VATPostingSetup."Purch. VAT Reporting Code", 1, 9),
+                    VATPostingSetup.Description, VATPostingSetup."VAT %",
+                    PurchaseCompensation, VATPostingSetup."Proportional Deduction VAT %");
+        until VATPostingSetup.Next() = 0;
+    end;
+#else
     local procedure ExportTaxCodeDetails()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -496,6 +539,7 @@ codeunit 10673 "Generate SAF-T File"
                     PurchaseCompensation, VATPostingSetup."Proportional Deduction VAT %");
         until VATPostingSetup.Next() = 0;
     end;
+#endif
 
     local procedure ExportTaxCodeDetail(SAFTTaxCode: Integer; StandardTaxCode: Code[10]; Description: Text; VATRate: Decimal; Compensation: Boolean; VATDeductionRate: Decimal)
     var

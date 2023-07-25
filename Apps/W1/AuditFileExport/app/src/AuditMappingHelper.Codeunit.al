@@ -20,6 +20,7 @@ codeunit 5260 "Audit Mapping Helper"
         StandardAccountsNotExistErr: label 'Standard accounts of type %1 do not exist.', Comment = '%1 - Standard Account Type';
         DefaultLbl: label 'DEFAULT';
         TwoStringsTxt: label '%1/%2', Comment = '%1, %2 - strings to concatenate';
+        TwoStringsWithSpaceTxt: label '%1 %2', Comment = '%1, %2 - strings to concatenate';
 
     trigger OnRun()
     begin
@@ -31,6 +32,17 @@ codeunit 5260 "Audit Mapping Helper"
         if not GLAccountMappingHeader.FindLast() then begin
             GLAccountMappingHeader.Init();
             GLAccountMappingHeader.Code := DefaultLbl;
+            GLAccountMappingHeader.Insert(true);
+        end;
+    end;
+
+    procedure GetDefaultGLAccountMappingHeader(var GLAccountMappingHeader: Record "G/L Account Mapping Header"; AuditFileExportFormat: Enum "Audit File Export Format")
+    begin
+        GLAccountMappingHeader.SetRange("Audit File Export Format", AuditFileExportFormat);
+        if not GLAccountMappingHeader.FindLast() then begin
+            GLAccountMappingHeader.Init();
+            GLAccountMappingHeader.Code :=
+                CopyStr(StrSubstNo(TwoStringsWithSpaceTxt, DefaultLbl, AuditFileExportFormat), 1, MaxStrLen(GLAccountMappingHeader.Code));
             GLAccountMappingHeader.Insert(true);
         end;
     end;

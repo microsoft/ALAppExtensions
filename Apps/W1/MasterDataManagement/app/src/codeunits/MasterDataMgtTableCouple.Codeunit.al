@@ -85,8 +85,6 @@ codeunit 7235 "Master Data Mgt. Table Couple"
         FilterList: List of [Text];
         MatchPriorityList: List of [Integer];
         MatchPriority: Integer;
-        LocalRecordRefCount: Integer;
-        IntegrationRecordRefCount: Integer;
     begin
         // collect the matching criteria fields in a temporary record
         IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
@@ -116,7 +114,6 @@ codeunit 7235 "Master Data Mgt. Table Couple"
         MasterDataManagementSetup.Get();
         IntegrationRecordRef.Open(IntegrationTableMapping."Integration Table ID");
         IntegrationRecordRef.ChangeCompany(MasterDataManagementSetup."Company Name");
-        IntegrationRecordRefCount := IntegrationRecordRef.Count();
         IntegrationMasterDataSynch.SplitIntegrationTableFilter(IntegrationTableMapping, FilterList);
         foreach TableFilter in FilterList do begin
             if TableFilter <> '' then
@@ -135,7 +132,6 @@ codeunit 7235 "Master Data Mgt. Table Couple"
                     end else begin
                         Clear(LocalRecordRef);
                         LocalRecordRef.Open(IntegrationTableMapping."Table ID");
-                        LocalRecordRefCount := LocalRecordRef.Count();
                         IntegrationTableMapping.SetRecordRefFilter(LocalRecordRef);
                         // this inner loop is looping through a temporary record set with a handful of user-chosen matching fields - not a performance concern as such
                         foreach MatchPriority in MatchPriorityList do
@@ -158,13 +154,23 @@ codeunit 7235 "Master Data Mgt. Table Couple"
                                     // and that is: set the filter on the integration table field with the value of the local field (case sensitive if specified by user)
                                     if not SetMatchingFieldFilterHandled then
                                         case MatchingIntegrationRecordFieldRef.Type of
-                                            FieldType::Code,
-                                            FieldType::Text:
-                                                if (Format(MatchingIntegrationRecordFieldRef.Value()) <> '') or (LocalRecordRefCount * IntegrationRecordRefCount = 1) then begin
-                                                    if (not TempMatchingIntegrationFieldMapping."Case-Sensitive Matching") and (Format(MatchingLocalFieldRef.Value()) <> '') then
-                                                        MatchingLocalFieldRef.SetFilter('''@' + Format(MatchingIntegrationRecordFieldRef.Value()).Replace('''', '''''') + '''')
+                                            FieldType::Code:
+                                                begin
+                                                    if Format(MatchingIntegrationRecordFieldRef.Value()) <> '' then
+                                                        MatchingLocalFieldRef.SetRange(MatchingIntegrationRecordFieldRef.Value())
                                                     else
-                                                        MatchingLocalFieldRef.SetRange(MatchingIntegrationRecordFieldRef.Value());
+                                                        MatchingLocalFieldRef.SetFilter('=''''');
+                                                    MatchingFieldCount += 1;
+                                                end;
+                                            FieldType::Text:
+                                                begin
+                                                    if Format(MatchingIntegrationRecordFieldRef.Value()) <> '' then
+                                                        if not TempMatchingIntegrationFieldMapping."Case-Sensitive Matching" then
+                                                            MatchingLocalFieldRef.SetFilter('''@' + Format(MatchingIntegrationRecordFieldRef.Value()).Replace('''', '''''') + '''')
+                                                        else
+                                                            MatchingLocalFieldRef.SetRange(MatchingIntegrationRecordFieldRef.Value())
+                                                    else
+                                                        MatchingLocalFieldRef.SetFilter('=''''');
                                                     MatchingFieldCount += 1;
                                                 end;
                                             else begin

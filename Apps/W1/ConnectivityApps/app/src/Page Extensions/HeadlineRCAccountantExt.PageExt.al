@@ -43,7 +43,6 @@ pageextension 20354 "Headline RC Accountant Ext." extends "Headline RC Accountan
     var
         ConnectivityApps: Codeunit "Connectivity Apps";
         ConnectivityAppsCategory: Enum "Connectivity Apps Category";
-        [InDataSet]
         IsConnectivityAppsAvailable: Boolean;
         IsEvaluationCompany: Boolean;
         BankingAppsTxt: Label 'Connect to banks to import bank feeds.';

@@ -37,6 +37,15 @@ codeunit 7805 "Azure Functions Response"
             exit(ResponseMessage.ReasonPhrase);
     end;
 
+    /// <summary>
+    /// Gets the error content
+    /// </summary>
+    /// <returns>Text representation of the detailed error message.</returns>
+    procedure GetError(var ErrorContent: Text)
+    begin
+        ResponseMessage.Content.ReadAs(ErrorContent);
+    end;
+
     internal procedure SetError(Error: Text)
     begin
         ResponseError := Error;

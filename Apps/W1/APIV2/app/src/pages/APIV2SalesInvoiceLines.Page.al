@@ -134,6 +134,15 @@ page 30043 "APIV2 - Sales Invoice Lines"
                         RegisterFieldSet(FieldNo(Description));
                     end;
                 }
+                field(description2; Rec."Description 2")
+                {
+                    Caption = 'Description 2';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Description 2"));
+                    end;
+                }
                 field(unitOfMeasureId; "Unit of Measure Id")
                 {
                     Caption = 'Unit Of Measure Id';
@@ -152,15 +161,6 @@ page 30043 "APIV2 - Sales Invoice Lines"
                         RegisterFieldSet(FieldNo("Unit of Measure Code"));
                     end;
                 }
-                field(unitPrice; "Unit Price")
-                {
-                    Caption = 'Unit Price';
-
-                    trigger OnValidate()
-                    begin
-                        RegisterFieldSet(FieldNo("Unit Price"));
-                    end;
-                }
                 field(quantity; Quantity)
                 {
                     Caption = 'Quantity';
@@ -168,6 +168,15 @@ page 30043 "APIV2 - Sales Invoice Lines"
                     trigger OnValidate()
                     begin
                         RegisterFieldSet(FieldNo(Quantity));
+                    end;
+                }
+                field(unitPrice; "Unit Price")
+                {
+                    Caption = 'Unit Price';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Unit Price"));
                     end;
                 }
                 field(discountAmount; "Line Discount Amount")

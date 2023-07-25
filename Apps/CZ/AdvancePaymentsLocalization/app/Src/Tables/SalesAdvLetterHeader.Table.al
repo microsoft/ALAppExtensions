@@ -1075,7 +1075,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         "Currency Code" := BillToCustomer."Currency Code";
         "Language Code" := BillToCustomer."Language Code";
         SetSalespersonCode(BillToCustomer."Salesperson Code", "Salesperson Code");
-        "Registration No." := BillToCustomer."Registration No. CZL";
+        "Registration No." := BillToCustomer.GetRegistrationNoTrimmedCZL();
         "Tax Registration No." := BillToCustomer."Tax Registration No. CZL";
         "Responsibility Center" := UserSetupManagement.GetRespCenter(0, BillToCustomer."Responsibility Center");
 

@@ -468,7 +468,7 @@ codeunit 1991 "Guided Experience Impl."
     begin
         GuidedExperienceItem.CopyFilters(GuidedExperienceItemTemp);
         GuidedExperienceItemTemp.Reset();
-        GuidedExperienceItem.SetCurrentKey("Guided Experience Type", "Object Type to Run", "Object ID to Run", Link, Version);
+        GuidedExperienceItem.SetCurrentKey("Guided Experience Type", "Object Type to Run", "Object ID to Run", "Manual Setup Category", Link, Version);
         GuidedExperienceItem.SetRange("Guided Experience Type", GuidedExperienceItem."Guided Experience Type"::"Assisted Setup");
         GuidedExperienceItem.SetAscending(Version, false);
 
@@ -519,7 +519,7 @@ codeunit 1991 "Guided Experience Impl."
     var
         GuidedExperienceItem: Record "Guided Experience Item";
     begin
-        GuidedExperienceItem.SetCurrentKey("Guided Experience Type", "Object Type to Run", "Object ID to Run", Link, Version);
+        GuidedExperienceItem.SetCurrentKey("Guided Experience Type", "Object Type to Run", "Object ID to Run", "Manual Setup Category", Link, Version);
         GuidedExperienceItem.SetAscending(Version, false);
 
         GuidedExperienceItem.SetRange("Guided Experience Type", GuidedExperienceType);
@@ -533,7 +533,6 @@ codeunit 1991 "Guided Experience Impl."
         InsertItem: Boolean;
     begin
         repeat
-            InsertItem := false;
             if (GuidedExperienceItem."Object Type to Run" <> PrevGuidedExperienceItem."Object Type to Run")
                 or (GuidedExperienceItem."Object ID to Run" <> PrevGuidedExperienceItem."Object ID to Run")
                 or (GuidedExperienceItem.Link <> PrevGuidedExperienceItem.Link)
@@ -546,11 +545,16 @@ codeunit 1991 "Guided Experience Impl."
                 (GuidedExperienceItem."Guided Experience Type" = PrevGuidedExperienceItem."Guided Experience Type")
             then
                 if (GuidedExperienceItem."Title" <> PrevGuidedExperienceItem."Title")
-                or (GuidedExperienceItem.Description <> PrevGuidedExperienceItem.Description)
-                or (GuidedExperienceItem."Video Url" <> PrevGuidedExperienceItem."Video Url")
-                or (GuidedExperienceItem."Video Category" <> PrevGuidedExperienceItem."Video Category")
-            then
+                        or (GuidedExperienceItem.Description <> PrevGuidedExperienceItem.Description)
+                    or (GuidedExperienceItem."Video Url" <> PrevGuidedExperienceItem."Video Url")
+                    or (GuidedExperienceItem."Video Category" <> PrevGuidedExperienceItem."Video Category")
+                then
                     InsertItem := true;
+
+            if (GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::"Manual Setup") and
+                (GuidedExperienceItem."Manual Setup Category" <> PrevGuidedExperienceItem."Manual Setup Category")
+            then
+                InsertItem := true;
 
             if InsertItem then begin
                 InsertGuidedExperienceItemIfValid(GuidedExperienceItemTemp, GuidedExperienceItem);
@@ -1215,6 +1219,30 @@ codeunit 1991 "Guided Experience Impl."
 
         Telemetry.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
             TelemetryScope::ExtensionPublisher, Dimensions);
+    end;
+
+    procedure CleanupOldGuidedExperienceItems(OnlyFirstParty: Boolean; Threshold: Integer)
+    var
+        GuidedExperienceItem: Record "Guided Experience Item";
+        GuidedExperienceItem2: Record "Guided Experience Item";
+        ItemsToCleanUp: List of [Code[300]];
+        ItemCode: Code[300];
+    begin
+        if OnlyFirstParty then
+            GuidedExperienceItem.SetRange("Extension Publisher", 'Microsoft');
+
+        if GuidedExperienceItem.FindSet() then
+            repeat
+                GuidedExperienceItem2.SetRange(Code, GuidedExperienceItem.Code);
+                if GuidedExperienceItem2.Count() > Threshold then
+                    ItemsToCleanUp.Add(GuidedExperienceItem.Code);
+            until GuidedExperienceItem.Next() = 0;
+
+        foreach ItemCode in ItemsToCleanUp do begin
+            GuidedExperienceItem.SetRange(Code, ItemCode);
+            GuidedExperienceItem.SetRange(Version, 0, GuidedExperienceItem.Count() - 2);
+            GuidedExperienceItem.DeleteAll();
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", OnAfterDeleteEvent, '', true, true)]

@@ -125,6 +125,20 @@ codeunit 9987 "Word Template"
     end;
 
     /// <summary>
+    /// Loads the template to be used for merging from the stream and additional related fields from the WordTemplateCode which is used as the base.
+    /// </summary>
+    /// <param name="WordTemplateStream">InStream of the Word template to use.</param>
+    /// <param name="WordTemplateCode">The Word template which contains the related tables and fields.</param>
+    /// <error>The document format is not recognized or not supported.</error>
+    /// <error>The document appears to be corrupted and cannot be loaded.</error> 
+    /// <error>There is an input/output exception.</error>
+    /// <error>The document is encrypted.</error>
+    procedure Load(WordTemplateStream: InStream; WordTemplateCode: Code[30])
+    begin
+        WordTemplateImpl.Load(WordTemplateStream, WordTemplateCode);
+    end;
+
+    /// <summary>
     /// Performs mail merge on set template and given data. Output document is of type .docx.
     /// </summary>
     /// <param name="Data">Input data to be merged into the document. The key is the merge field name and value is the replacement value.</param>
@@ -148,11 +162,24 @@ codeunit 9987 "Word Template"
     /// </summary>
     /// <param name="Data">Input data to be merged into the document. The key is the merge field name and value is the replacement value.</param>
     /// <param name="SaveFormat">Format of the document to generate.</param>
-    /// <param name="EditDoc">Edit document in Word after merging. Only available if OneDrive has been enabled.</param>
+    /// <param name="EditDoc">Edit document in Word after merging. Only available if OneDrive has been enabled. If true, the default value for conflict behaviors is to replace the existing file in OneDrive.</param>
     procedure Merge(Data: Dictionary of [Text, Text]; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean)
     begin
-        WordTemplateImpl.Merge(Data, false, SaveFormat, EditDoc);
+        WordTemplateImpl.Merge(Data, false, SaveFormat, EditDoc, Enum::"Doc. Sharing Conflict Behavior"::Ask);
     end;
+
+    /// <summary>
+    /// Performs mail merge on set template and given data. Output document type is of specified save format.
+    /// </summary>
+    /// <param name="Data">Input data to be merged into the document. The key is the merge field name and value is the replacement value.</param>
+    /// <param name="SaveFormat">Format of the document to generate.</param>
+    /// <param name="EditDoc">Edit document in Word after merging. Only available if OneDrive has been enabled.</param>
+    /// <param name="DocSharingConflictBehavior">The behavior when the file being uploaded has a conflict. Only used if EditDoc is true.</param>
+    procedure Merge(Data: Dictionary of [Text, Text]; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean; DocSharingConflictBehavior: Enum "Doc. Sharing Conflict Behavior")
+    begin
+        WordTemplateImpl.Merge(Data, false, SaveFormat, EditDoc, DocSharingConflictBehavior);
+    end;
+
 
     /// <summary>
     /// Performs mail merge on set template and data taken from the Record associated with the Document. Output document is of type .docx.
@@ -204,6 +231,19 @@ codeunit 9987 "Word Template"
     procedure Merge(RecordVariant: Variant; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean)
     begin
         WordTemplateImpl.Merge(RecordVariant, SplitDocument, SaveFormat, EditDoc);
+    end;
+
+    /// <summary>
+    /// Performs mail merge on set template and data taken from the given Record. Output document type is of specified save format.
+    /// </summary>
+    /// <param name="RecordVariant">The Record to take data from, any filters on the Record will be respected.</param>
+    /// <param name="SplitDocument">Specifies whether a separate document per record should be created.</param>
+    /// <param name="SaveFormat">Format of the document to generate.</param>
+    /// <param name="EditDoc">Edit document in Word after merging. Only available if OneDrive has been enabled.</param>
+    /// <param name="DocSharingConflictBehavior">The behavior when the file being uploaded has a conflict. Only used if EditDoc is true.</param>
+    procedure Merge(RecordVariant: Variant; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean; DocSharingConflictBehavior: Enum "Doc. Sharing Conflict Behavior")
+    begin
+        WordTemplateImpl.Merge(RecordVariant, SplitDocument, SaveFormat, EditDoc, DocSharingConflictBehavior);
     end;
 
     /// <summary>

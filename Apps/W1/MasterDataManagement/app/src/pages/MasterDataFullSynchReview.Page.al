@@ -118,8 +118,11 @@ page 7234 "Master Data Full Synch. Review"
 
                 trigger OnAction()
                 var
+                    MasterDataManagement: Codeunit "Master Data Management";
                     QuestionTxt: Text;
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
+                    MasterDataManagement.CheckTaskSchedulePermissions();
                     QuestionTxt := StartInitialSynchTeamOwnershipModelQst;
                     if Confirm(QuestionTxt) then
                         Rec.Start();
@@ -132,8 +135,12 @@ page 7234 "Master Data Full Synch. Review"
                 Enabled = ActionRestartEnabled;
                 Image = Refresh;
                 ToolTip = 'Restart the synchronization for the selected table.';
+
                 trigger OnAction()
+                var
+                    MasterDataManagement: Codeunit "Master Data Management";
                 begin
+                    MasterDataManagement.CheckUsagePermissions();
                     Rec.Delete();
                     Rec.Generate(InitialSynchRecommendations, true, DeletedLines);
                     Rec.Start();
@@ -167,7 +174,6 @@ page 7234 "Master Data Full Synch. Review"
                     if InitialSynchRecommendations.ContainsKey(Rec.Name) then
                         InitialSynchRecommendations.Remove(Rec.Name);
                     InitialSynchRecommendations.Add(Rec.Name, Rec."Initial Synch Recommendation"::"Full Synchronization");
-                    //Rec.Delete();
                     Rec.Generate(InitialSynchRecommendations, true, DeletedLines);
                 end;
             }
@@ -184,7 +190,6 @@ page 7234 "Master Data Full Synch. Review"
                     if InitialSynchRecommendations.ContainsKey(Rec.Name) then
                         InitialSynchRecommendations.Remove(Rec.Name);
                     InitialSynchRecommendations.Add(Rec.Name, "Initial Synch Recommendation"::"Couple Records");
-                    //Rec.Delete();
                     Rec.Generate(InitialSynchRecommendations, true, DeletedLines);
                 end;
             }

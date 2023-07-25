@@ -267,6 +267,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
           SalesCrMemoHeader."Bill-to Name",
           BillToAddress,
           SellToContact);
+        OnCreateXMLOnAfterInsertAccountingCustomerParty(XMLCurrNode, SalesCrMemoHeader);
 
         // CreditMemo->Allowance Charge
         SalesCrMemoLine2.RESET();
@@ -372,6 +373,11 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnBeforeInsertAccountingSupplierParty(var XMLCurrNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnAfterInsertAccountingCustomerParty(var XMLCurrNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
     begin
     end;
 }

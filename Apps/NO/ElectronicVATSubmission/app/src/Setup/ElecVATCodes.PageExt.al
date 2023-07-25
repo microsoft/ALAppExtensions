@@ -1,3 +1,4 @@
+#if not CLEAN23
 pageextension 10699 "Elec. VAT Codes" extends "VAT Codes"
 {
     layout
@@ -17,3 +18,4 @@ pageextension 10699 "Elec. VAT Codes" extends "VAT Codes"
         }
     }
 }
+#endif

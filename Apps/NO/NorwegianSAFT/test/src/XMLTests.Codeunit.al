@@ -1714,14 +1714,14 @@ codeunit 148103 "SAF-T XML Tests"
     var
         VATPostingSetup: Record "VAT Posting Setup";
         SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
-        NotApplicationVATCode: Code[10];
+        NotApplicationVATCode: Code[20];
     begin
         VATPostingSetup.FindSet();
         SAFTTestHelper.AssertElementName(TempXMLBuffer, 'n1:TaxTable');
         SAFTTestHelper.AssertElementName(TempXMLBuffer, 'n1:TaxTableEntry');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TaxType', 'MVA');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:Description', 'Merverdiavgift');
-        NotApplicationVATCode := SAFTExportMgt.GetNotApplicationVATCode();
+        NotApplicationVATCode := SAFTExportMgt.GetNotApplicableVATCode();
         // Verify first VAT Posting Setup with no standard tax codes
         VerifySingleVATPostingSetup(
             TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
@@ -1733,10 +1733,10 @@ codeunit 148103 "SAF-T XML Tests"
         repeat
             VerifySingleVATPostingSetup(
                 TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
-                VATPostingSetup."VAT %", VATPostingSetup."Sales SAF-T Standard Tax Code", false, 100);
+                VATPostingSetup."VAT %", VATPostingSetup."Sale VAT Reporting Code", false, 100);
             VerifySingleVATPostingSetup(
                 TempXMLBuffer, VATPostingSetup."Purchase SAF-T Tax Code", VATPostingSetup.Description,
-                VATPostingSetup."VAT %", VATPostingSetup."Purch. SAF-T Standard Tax Code", false, 100);
+                VATPostingSetup."VAT %", VATPostingSetup."Purch. VAT Reporting Code", false, 100);
         until VATPostingSetup.Next() = 0;
     end;
 
@@ -1757,7 +1757,7 @@ codeunit 148103 "SAF-T XML Tests"
         until DimensionValue.Next() = 0;
     end;
 
-    local procedure VerifySingleVATPostingSetup(var TempXMLBuffer: Record "XML Buffer" temporary; TaxCode: Integer; Description: Text; VATRate: Decimal; StandardTaxCode: Code[10]; Compensation: Boolean; DeductionRate: Decimal)
+    local procedure VerifySingleVATPostingSetup(var TempXMLBuffer: Record "XML Buffer" temporary; TaxCode: Integer; Description: Text; VATRate: Decimal; StandardTaxCode: Code[20]; Compensation: Boolean; DeductionRate: Decimal)
     var
         CompanyInformation: record "Company Information";
     begin

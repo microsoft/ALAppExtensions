@@ -33,6 +33,13 @@ page 8889 "Email Attachments"
                         CurrPage.Update(false);
                     end;
                 }
+                field(FileSize; AttachmentFileSize)
+                {
+                    ApplicationArea = All;
+                    Width = 10;
+                    Caption = 'File Size';
+                    ToolTip = 'Specifies the size of the attachment';
+                }
             }
         }
     }
@@ -197,6 +204,11 @@ page 8889 "Email Attachments"
         }
     }
 
+    trigger OnAfterGetRecord()
+    begin
+        AttachmentFileSize := EmailMessageImpl.FormatFileSize(Rec.Length);
+    end;
+
     trigger OnAfterGetCurrRecord()
     var
         DocumentSharing: Codeunit "Document Sharing";
@@ -245,6 +257,7 @@ page 8889 "Email Attachments"
         DeleteActionEnabled: Boolean;
         IsEmailEditable: Boolean;
         EditOptionVisible: Boolean;
+        AttachmentFileSize: Text;
         EmailMessageId: Guid;
         EmailScenario: Enum "Email Scenario";
         DeleteQst: Label 'Go ahead and delete?';

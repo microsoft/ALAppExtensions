@@ -40,8 +40,8 @@ codeunit 151 "System Initialization Impl."
         if Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop, ClientType::Tablet, ClientType::Phone] then begin
             // Check to set signup context and commits if it updates
             SetSignupContext();
-            // UserLogin commits if it updates.
-            UserLoginTimeTracker.CreateOrUpdateLoginInfo();
+            // Environment Login commits if it updates.
+            UserLoginTimeTracker.CreateEnvironmentLoginInfo();
         end;
 
 #if not CLEAN20
@@ -165,6 +165,15 @@ codeunit 151 "System Initialization Impl."
     local procedure SetCallerModuleOnBeforeInsertSignupContext()
     begin
         NavApp.GetCallerModuleInfo(SignupContextCallerModuleInfo);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", OnAfterLogin, '', false, false)]
+    local procedure CreateOrUpdateLoginInfoOnAfterLogin()
+    var
+        UserLoginTimeTracker: Codeunit "User Login Time Tracker";
+    begin
+        if Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop, ClientType::Tablet, ClientType::Phone] then
+            UserLoginTimeTracker.CreateOrUpdateLoginInfo();
     end;
 }
 

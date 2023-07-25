@@ -234,31 +234,33 @@ codeunit 11346 IntrastatReportManagementBE
         CompanyInformation: Record "Company Information";
         VATLogicalTests: Codeunit VATLogicalTests;
     begin
-        case DataExchColumnDef.Path of
-            '/DeclarationReport/Administration/From':
-                if ThirdPartyVatRegNo <> '' then
-                    xmlNodeValue := DelChr(ThirdPartyVatRegNo, '=', DelChr(ThirdPartyVatRegNo, '=', '0123456789'))
-                else begin
-                    CompanyInformation.Get();
-                    if not VATLogicalTests.MOD97Check(CompanyInformation."Enterprise No.") then
-                        Error(EnterpriseNoNotValidErr);
-                    xmlNodeValue := DelChr(CompanyInformation."Enterprise No.", '=', DelChr(CompanyInformation."Enterprise No.", '=', '0123456789'));
-                end;
-        end;
+        if IsIntrastatExport(DataExchColumnDef."Data Exch. Def Code") then
+            case DataExchColumnDef.Path of
+                '/DeclarationReport/Administration/From':
+                    if ThirdPartyVatRegNo <> '' then
+                        xmlNodeValue := DelChr(ThirdPartyVatRegNo, '=', DelChr(ThirdPartyVatRegNo, '=', '0123456789'))
+                    else begin
+                        CompanyInformation.Get();
+                        if not VATLogicalTests.MOD97Check(CompanyInformation."Enterprise No.") then
+                            Error(EnterpriseNoNotValidErr);
+                        xmlNodeValue := DelChr(CompanyInformation."Enterprise No.", '=', DelChr(CompanyInformation."Enterprise No.", '=', '0123456789'));
+                    end;
+            end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLAttribute', '', true, true)]
     local procedure OnBeforeCreateXMLAttribute(var xmlAttributeName: Text; var xmlAttributeValue: Text; var DataExchColumnDef: Record "Data Exch. Column Def"; var DefaultNameSpace: Text; var IsHandled: Boolean)
     begin
-        case DataExchColumnDef.Path of
-            '/DeclarationReport/Report[@action]':
-                if Nihil then
-                    xmlAttributeValue := 'nihil'
-                else
-                    xmlAttributeValue := 'replace';
-            '/DeclarationReport/Report[@date]':
-                xmlAttributeValue := Format(ConvertPeriodToDate(StatisticPeriod), 0, '<Year4>-<Month,2>');
-        end;
+        if IsIntrastatExport(DataExchColumnDef."Data Exch. Def Code") then
+            case DataExchColumnDef.Path of
+                '/DeclarationReport/Report[@action]':
+                    if Nihil then
+                        xmlAttributeValue := 'nihil'
+                    else
+                        xmlAttributeValue := 'replace';
+                '/DeclarationReport/Report[@date]':
+                    xmlAttributeValue := Format(ConvertPeriodToDate(StatisticPeriod), 0, '<Year4>-<Month,2>');
+            end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeCreateXMLNodeWithAttributes', '', true, true)]
@@ -266,22 +268,24 @@ codeunit 11346 IntrastatReportManagementBE
     var
         IntrastatReportLine: Record "Intrastat Report Line";
     begin
-        case DataExchColumnDef.Path of
-            '/Item/Dim[@prop="EXTRF"]':
-                begin
-                    if xmlNodeValue = Format(IntrastatReportLine.Type::Receipt) then
-                        xmlNodeValue := '19';
-                    if xmlNodeValue = Format(IntrastatReportLine.Type::Shipment) then
-                        xmlNodeValue := '29';
-                end;
-        end;
+        if IsIntrastatExport(DataExchColumnDef."Data Exch. Def Code") then
+            case DataExchColumnDef.Path of
+                '/Item/Dim[@prop="EXTRF"]':
+                    begin
+                        if xmlNodeValue = Format(IntrastatReportLine.Type::Receipt) then
+                            xmlNodeValue := '19';
+                        if xmlNodeValue = Format(IntrastatReportLine.Type::Shipment) then
+                            xmlNodeValue := '29';
+                    end;
+            end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Generic XML", 'OnBeforeExportDetails', '', true, true)]
     local procedure OnBeforeExportDetails(var DataExch: Record "Data Exch."; var xmlDoc: XmlDocument; var IsHandled: Boolean)
     begin
-        if Nihil then
-            IsHandled := true;
+        if IsIntrastatExport(DataExch."Data Exch. Def Code") then
+            if Nihil then
+                IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Intrastat Report Setup Wizard", 'OnBeforeFinishAction', '', true, true)]
@@ -364,6 +368,23 @@ codeunit 11346 IntrastatReportManagementBE
         Year := Year + Century * 100;
         Evaluate(Month, CopyStr(Period, 3, 2));
         exit(DMY2Date(1, Month, Year));
+    end;
+
+    local procedure IsIntrastatExport(DataExchDefCode: Code[20]): Boolean
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportMgt: Codeunit IntrastatReportManagement;
+    begin
+        if not IntrastatReportMgt.IsFeatureEnabled() then
+            exit(false);
+
+        if not IntrastatReportSetup.Get() then
+            exit(false);
+
+        if IntrastatReportSetup."Split Files" then
+            exit(DataExchDefCode in [IntrastatReportSetup."Data Exch. Def. Code - Receipt", IntrastatReportSetup."Data Exch. Def. Code - Shpt."])
+        else
+            exit(DataExchDefCode = IntrastatReportSetup."Data Exch. Def. Code");
     end;
 
     [IntegrationEvent(false, false)]

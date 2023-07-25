@@ -24,6 +24,7 @@ codeunit 139683 "Statistical Account Test"
         OfficeSpaceExpectedAmount: Integer;
         TotalNumberOfOfficeSpaceLedgerEntries: Integer;
         TotalNumberOfEmployeeLedgerEntries: Integer;
+        BalanceMustBeEqualErr: Label 'Balance must be equal to %1.', Comment = '%1 = Field Value';
 
     local procedure Initialize()
     var
@@ -331,6 +332,71 @@ codeunit 139683 "Statistical Account Test"
         // Verified in DimOvervMatrixVerifyCountPageHandler
     end;
 
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure VerifyBalanceIfThereIsADimensionFilterInStatisticalAccount()
+    var
+        ColumnLayout: Record "Column Layout";
+        DimensionValue: Record "Dimension Value";
+        ColumnLayoutName: Record "Column Layout Name";
+        AccScheduleName: Record "Acc. Schedule Name";
+        AccScheduleLine: Record "Acc. Schedule Line";
+        FinancialReport: Record "Financial Report";
+        FinancialReports: TestPage "Financial Reports";
+        AccScheduleOverview: TestPage "Acc. Schedule Overview";
+        ExpectedAmount: Decimal;
+        DateFilter: Text;
+    begin
+        // [SCENARIO 476816] Verify Balance should be shown correctly filtered by Global Dim 1 Department = ADM in the Financial Reports.
+        Initialize();
+
+        // [GIVEN] Find the Global Dimension 1.
+        LibraryDimension.GetGlobalDimCodeValue(1, DimensionValue);
+
+        // [GIVEN] Setup Demo Data.
+        SetupFinancialReport();
+
+        // [GIVEN] Create a Column Name and Column Layout.
+        LibraryERM.CreateColumnLayoutName(ColumnLayoutName);
+
+        LibraryERM.CreateColumnLayout(ColumnLayout, ColumnLayoutName.Name);
+        ColumnLayout.Validate("Column Type", "Column Layout Type"::"Balance at Date");
+        ColumnLayout.Modify();
+
+        // [GIVEN] Create a Account Schedule Name and Line with "Statistical Account" and Dimension.
+        LibraryERM.CreateAccScheduleName(AccScheduleName);
+
+        LibraryERM.CreateAccScheduleLine(AccScheduleLine, AccScheduleName.Name);
+        AccScheduleLine.Validate("Dimension 1 Totaling", DimensionValue.Code);
+        AccScheduleLine.Validate("Totaling Type", "Acc. Schedule Line Totaling Type"::"Statistical Account");
+        AccScheduleLine.Validate(Totaling, OFFICESPACELbl);
+        AccScheduleLine.Modify();
+
+        // [GIVEN] Update "Financial Report Column Group" in Financial report.
+        FinancialReport.Get(AccScheduleLine."Schedule Name");
+        FinancialReport.Validate("Financial Report Column Group", ColumnLayout."Column Layout Name");
+        FinancialReport.Modify();
+
+        // [WHEN] Run Account Schedule Overview with "Period Type" as year.
+        FinancialReports.OpenEdit();
+        FinancialReports.Filter.SetFilter(Name, AccScheduleName.Name);
+        AccScheduleOverview.Trap();
+        FinancialReports.Overview.Invoke();
+        AccScheduleOverview.PeriodType.SetValue("Analysis Period Type"::Year);
+
+        // [GIVEN] Save the Date Filter.
+        DateFilter := Format(AccScheduleOverview.DateFilter);
+        ExpectedAmount := GetExpectedStatisticalLedgerEntryValue(
+                            AccScheduleLine,
+                            CopyStr(DateFilter, StrPos(DateFilter, '.')), DimensionValue.Code);
+
+        // [VERIFY] Verify Balance should be shown correctly filtered by Global Dim 1 Department = ADM in the Financial Reports.
+        Assert.AreEqual(
+            ExpectedAmount,
+            AccScheduleOverview.ColumnValues1.AsDecimal(),
+            StrSubstNo(BalanceMustBeEqualErr, ExpectedAmount));
+    end;
+
     local procedure SetupFinancialReport()
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -556,5 +622,20 @@ codeunit 139683 "Statistical Account Test"
         ColumnLayout.Validate("Column Header", ColumnHeader);
         ColumnLayout.Validate("Comparison Period Formula", ComparisonPeriodFormula);
         ColumnLayout.Insert();
+    end;
+
+    local procedure GetExpectedStatisticalLedgerEntryValue(
+        AccScheduleLine: Record "Acc. Schedule Line";
+        DateFilter: Text;
+        DimensionCode: Code[20]): Decimal
+    var
+        StatisticalLedgerEntry: Record "Statistical Ledger Entry";
+    begin
+        StatisticalLedgerEntry.SetFilter("Statistical Account No.", AccScheduleLine.Totaling);
+        StatisticalLedgerEntry.SetFilter("Posting Date", DateFilter);
+        StatisticalLedgerEntry.SetRange("Global Dimension 1 Code", DimensionCode);
+        StatisticalLedgerEntry.CalcSums(Amount);
+
+        exit(StatisticalLedgerEntry.Amount);
     end;
 }

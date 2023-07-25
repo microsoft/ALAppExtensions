@@ -72,7 +72,8 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertCorrValueEntry', '', false, false)]
     local procedure SetGLCorrectionOnBeforeInsertCorrValueEntry(var NewValueEntry: Record "Value Entry"; OldValueEntry: Record "Value Entry"; var ItemJournalLine: Record "Item Journal Line"; Sign: Integer; CalledFromAdjustment: Boolean; var ItemLedgerEntry: Record "Item Ledger Entry"; var ValueEntryNo: Integer; var InventoryPostingToGL: Codeunit "Inventory Posting To G/L")
     begin
-        NewValueEntry."G/L Correction CZL" := not OldValueEntry."G/L Correction CZL";
+        if Sign < 0 then
+            NewValueEntry."G/L Correction CZL" := not OldValueEntry."G/L Correction CZL";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertCapValueEntry', '', false, false)]

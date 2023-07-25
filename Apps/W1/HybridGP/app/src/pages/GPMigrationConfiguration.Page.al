@@ -603,6 +603,7 @@ page 4050 "GP Migration Configuration"
     local procedure PrepSettingsForFieldUpdate(): Boolean
     begin
         GPCompanyAdditionalSettings.SetFilter("Name", '<>%1', '');
+        GPCompanyAdditionalSettings.SetRange("Migration Completed", false);
         exit(GPCompanyAdditionalSettings.FindSet());
     end;
 
@@ -610,6 +611,7 @@ page 4050 "GP Migration Configuration"
     var
         GPCompanyAdditionalSettingsInit: Record "GP Company Additional Settings";
     begin
+        GPCompanyAdditionalSettingsInit.SetRange("Migration Completed", false);
         GPCompanyAdditionalSettingsInit.DeleteAll();
 
         Rec.Init();
@@ -678,6 +680,7 @@ page 4050 "GP Migration Configuration"
         GPCompanyAdditionalSettingsCompanies: Record "GP Company Additional Settings";
     begin
         GPCompanyAdditionalSettingsCompanies.SetFilter("Name", '<>%1', '');
+        GPCompanyAdditionalSettingsCompanies.SetRange("Migration Completed", false);
         if GPCompanyAdditionalSettingsCompanies.FindSet() then
             repeat
                 if (GPCompanyAdditionalSettingsCompanies."Global Dimension 1" = '') then
@@ -696,6 +699,7 @@ page 4050 "GP Migration Configuration"
         GPCompanyAdditionalSettingsCompanies: Record "GP Company Additional Settings";
     begin
         GPCompanyAdditionalSettingsCompanies.SetFilter("Name", '<>%1', '');
+        GPCompanyAdditionalSettingsCompanies.SetRange("Migration Completed", false);
         if GPCompanyAdditionalSettingsCompanies.FindSet() then
             repeat
                 if (DimensionLabel = '') or CompanyHasSegment(GPCompanyAdditionalSettingsCompanies.Name, DimensionLabel) then begin

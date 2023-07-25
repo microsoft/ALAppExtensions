@@ -451,6 +451,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             GenJournalLine."VAT Registration No." := PurchAdvLetterHeaderCZZ."VAT Registration No.";
             GenJournalLine."Registration No. CZL" := PurchAdvLetterHeaderCZZ."Registration No.";
             GenJournalLine."Tax Registration No. CZL" := PurchAdvLetterHeaderCZZ."Tax Registration No.";
+            OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, GenJournalLine);
 
             BindSubscription(VATPostingSetupHandlerCZZ);
             GenJnlPostLine.RunWithCheck(GenJournalLine);
@@ -601,6 +602,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                         AdvanceLetterApplicationCZZ."Document Type", AdvanceLetterApplicationCZZ."Document No.") then begin
                         if TempAdvanceLetterApplicationCZZ.Amount <> AdvanceLetterApplicationCZZ.Amount then begin
                             AdvanceLetterApplicationCZZ.Amount := TempAdvanceLetterApplicationCZZ.Amount;
+                            AdvanceLetterApplicationCZZ."Amount (LCY)" := TempAdvanceLetterApplicationCZZ."Amount (LCY)";
                             ModifyRecord := true;
                         end;
                         OnLinkAdvanceLetterOnBeforeModifyAdvanceLetterApplication(AdvanceLetterApplicationCZZ, TempAdvanceLetterApplicationCZZ, ModifyRecord);
@@ -620,6 +622,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                     AdvanceLetterApplicationCZZ."Document Type" := AdvLetterUsageDocTypeCZZ;
                     AdvanceLetterApplicationCZZ."Document No." := DocumentNo;
                     AdvanceLetterApplicationCZZ.Amount := TempAdvanceLetterApplicationCZZ.Amount;
+                    AdvanceLetterApplicationCZZ."Amount (LCY)" := TempAdvanceLetterApplicationCZZ."Amount (LCY)";
                     OnLinkAdvanceLetterOnBeforeInsertAdvanceLetterApplication(AdvanceLetterApplicationCZZ, TempAdvanceLetterApplicationCZZ);
                     AdvanceLetterApplicationCZZ.Insert();
                 until TempAdvanceLetterApplicationCZZ.Next() = 0;
@@ -844,6 +847,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             TempAdvanceLetterApplicationCZZ.Init();
             TempAdvanceLetterApplicationCZZ."Advance Letter No." := AdvanceLetterApplicationCZZ."Advance Letter No.";
             TempAdvanceLetterApplicationCZZ.Amount := AdvanceLetterApplicationCZZ.Amount;
+            TempAdvanceLetterApplicationCZZ."Amount (LCY)" := AdvanceLetterApplicationCZZ."Amount (LCY)";
             TempAdvanceLetterApplicationCZZ.Insert();
         until AdvanceLetterApplicationCZZ.Next() = 0;
 
@@ -867,6 +871,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                     ReverseAdvancePayment(PurchAdvLetterEntryCZZ, PurchInvHeader, UseAmount, UseAmountLCY, VendorLedgerEntry, GenJnlPostLine, Preview);
                     AmountToUse -= UseAmount;
                     TempAdvanceLetterApplicationCZZ.Amount -= UseAmount;
+                    TempAdvanceLetterApplicationCZZ."Amount (LCY)" -= UseAmountLCY;
                     TempAdvanceLetterApplicationCZZ.Modify();
 
                     if not Preview then
@@ -1238,11 +1243,12 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                                     TempAdvancePostingBufferCZZ2.SetRange("VAT %", TempAdvancePostingBufferCZZ1."VAT %");
                                 end;
                         end;
+                        TempAdvancePostingBufferCZZ2.SetFilter(Amount, '<>%1', 0);
                         if TempAdvancePostingBufferCZZ2.FindSet() then
                             repeat
                                 UseAmount := TempAdvancePostingBufferCZZ1.Amount;
                                 UseBaseAmount := TempAdvancePostingBufferCZZ1."VAT Base Amount";
-                                if TempAdvancePostingBufferCZZ2.Amount < UseAmount then begin
+                                if Abs(TempAdvancePostingBufferCZZ2.Amount) < Abs(UseAmount) then begin
                                     UseAmount := TempAdvancePostingBufferCZZ2.Amount;
                                     UseBaseAmount := TempAdvancePostingBufferCZZ2."VAT Base Amount";
                                 end;
@@ -2708,6 +2714,11 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforePostAdvancePaymentUsage(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentNo: Code[20]; var PurchInvHeader: Record "Purch. Inv. Header"; var VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; Preview: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 }

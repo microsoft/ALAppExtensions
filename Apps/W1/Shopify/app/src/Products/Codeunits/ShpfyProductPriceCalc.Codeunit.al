@@ -36,10 +36,12 @@ codeunit 30182 "Shpfy Product Price Calc."
     var
         ItemUnitofMeasure: Record "Item Unit of Measure";
         TempSalesLine: Record "Sales Line" temporary;
+        ShpfyUpdatePriceSouce: codeunit "Shpfy Update Price Source";
         IsHandled: Boolean;
     begin
         ProductEvents.OnBeforeCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, UnitCost, Price, ComparePrice, IsHandled);
         if not IsHandled then begin
+            BindSubscription(ShpfyUpdatePriceSouce);
             if TempSalesHeader.FindFirst() then begin
                 Clear(TempSalesLine);
                 TempSalesLine."Document Type" := TempSalesHeader."Document Type";
@@ -64,6 +66,7 @@ codeunit 30182 "Shpfy Product Price Calc."
                 end;
                 ComparePrice := Price;
             end;
+            UnbindSubscription(ShpfyUpdatePriceSouce);
             if ComparePrice <= Price then
                 ComparePrice := 0;
         end;
@@ -127,6 +130,15 @@ codeunit 30182 "Shpfy Product Price Calc."
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         SetShop(ShopifyShop.Code);
+    end;
+
+    /// <summary> 
+    /// Set Shop.
+    /// </summary>
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
+    internal procedure GetShop(Var ShopifyShopCode: Code[20])
+    begin
+        ShopifyShopCode := Shop.Code;
     end;
 
 

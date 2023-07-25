@@ -167,16 +167,26 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
+#if not CLEAN22 
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
             field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
             {
                 ApplicationArea = SalesReturnOrder;
+                Caption = 'Physical Transfer (Obsolete)';
                 ToolTip = 'Specifies if there is physical transfer of the item.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
+#endif
         }
         addafter("Foreign Trade")
         {

@@ -7,13 +7,15 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
     var
         // https://shopify.dev/api/usage/access-scopes
-        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping,read_shopify_payments_payouts', Locked = true;
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_files,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping,read_shopify_payments_disputes,read_shopify_payments_payouts,write_returns,write_translations,write_third_party_fulfillment_orders,write_order_edits', Locked = true;
         ShopifyAPIKeyAKVSecretNameLbl: Label 'ShopifyApiKey', Locked = true;
         ShopifyAPISecretAKVSecretNameLbl: Label 'ShopifyApiSecret', Locked = true;
         MissingAPIKeyTelemetryTxt: Label 'The api key has not been initialized.', Locked = true;
         MissingAPISecretTelemetryTxt: Label 'The api secret has not been initialized.', Locked = true;
         CategoryTok: Label 'Shopify Integration', Locked = true;
         NoCallbackErr: Label 'No callback was received from Shopify. Make sure that you haven''t closed the page that says "Waiting for a response - do not close this page", and then try again.';
+        HttpRequestBlockedErr: Label 'Shopify connector is not allowed to make HTTP requests when running in a non-production environment.';
+        EnableHttpRequestActionLbl: Label 'Allow HTTP requests';
 
     [NonDebuggable]
     [Scope('OnPrem')]
@@ -88,6 +90,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
         JObject: JsonObject;
         RequestBody: JsonObject;
         AccessTokenURLTxt: Label 'https://%1/admin/oauth/access_token', Comment = '%1 = Store', Locked = true;
+        HttpRequestBlockedErrorInfo: ErrorInfo;
     begin
         RequestBody.Add('client_id', GetApiKey());
         RequestBody.Add('client_secret', GetApiSecret());
@@ -102,7 +105,15 @@ codeunit 30199 "Shpfy Authentication Mgt."
         RequestHeaders.Add('Content-Type', 'application/json');
 
         if not HttpClient.Post(Url, RequestHttpContent, HttpResponseMessage) then
-            exit;
+            if HttpResponseMessage.IsBlockedByEnvironment() then begin
+                HttpRequestBlockedErrorInfo.DataClassification := HttpRequestBlockedErrorInfo.DataClassification::SystemMetadata;
+                HttpRequestBlockedErrorInfo.ErrorType := HttpRequestBlockedErrorInfo.ErrorType::Client;
+                HttpRequestBlockedErrorInfo.Verbosity := HttpRequestBlockedErrorInfo.Verbosity::Error;
+                HttpRequestBlockedErrorInfo.Message := HttpRequestBlockedErr;
+                HttpRequestBlockedErrorInfo.AddAction(EnableHttpRequestActionLbl, Codeunit::"Shpfy Authentication Mgt.", 'EnableHttpRequestForShopifyConnector');
+                Error(HttpRequestBlockedErrorInfo);
+            end else
+                exit;
 
         Clear(Body);
         HttpResponseMessage.Content().ReadAs(Body);
@@ -175,5 +186,14 @@ codeunit 30199 "Shpfy Authentication Mgt."
         PatternLbl: Label '^[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com$', Locked = true;
     begin
         exit(Regex.IsMatch(Hostname, PatternLbl))
+    end;
+
+    internal procedure EnableHttpRequestForShopifyConnector(ErrorInfo: ErrorInfo)
+    var
+        ExtensionManagement: Codeunit "Extension Management";
+        CallerModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(CallerModuleInfo);
+        ExtensionManagement.ConfigureExtensionHttpClientRequestsAllowance(CallerModuleInfo.PackageId(), true);
     end;
 }

@@ -17,5 +17,11 @@ tableextension 31250 "Inventory Setup CZA" extends "Inventory Setup"
             Caption = 'Exact Cost Reversing Mandatory';
             DataClassification = CustomerContent;
         }
+        field(31069; "Def.G.Bus.P.Gr.-Dir.Trans. CZA"; Code[20])
+        {
+            Caption = 'Default Gen. Bus. Posting Group for Direct Transfer';
+            TableRelation = "Gen. Business Posting Group";
+            DataClassification = CustomerContent;
+        }
     }
 }

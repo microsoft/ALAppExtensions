@@ -691,6 +691,7 @@ codeunit 40125 "GP Populate Combined Tables"
         GPPopulateItemTransactions: Query "GP Populate Item Transactions";
     begin
         GPPopulateItemTransactions.SetRange(RCPTSOLD, false);
+        GPPopulateItemTransactions.SetRange(QTYTYPE, 1);
         GPPopulateItemTransactions.Open();
         while GPPopulateItemTransactions.Read() do begin
             Clear(GPItemTransactions);

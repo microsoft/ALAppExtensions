@@ -86,14 +86,20 @@ codeunit 11737 "Purchase Handler CZP"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterFinalizePostingOnBeforeCommit', '', false, false)]
-    local procedure CreateCashDocumentOnAfterFinalizePostingOnBeforeCommit(var PurchHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.")
+    local procedure CreateCashDocumentOnAfterFinalizePostingOnBeforeCommit(var PurchHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     begin
         if (PurchHeader."Cash Desk Code CZP" = '') or not PurchHeader.Invoice then
             exit;
 
+        OnBeforeCreateCashDocument(PurchHeader, PurchInvHeader, PurchCrMemoHdr, GenJnlPostLine);
         if PurchHeader."Document Type" in [PurchHeader."Document Type"::Order, PurchHeader."Document Type"::Invoice] then
             CashDeskManagementCZP.CreateCashDocumentFromPurchaseInvoice(PurchInvHeader)
         else
             CashDeskManagementCZP.CreateCashDocumentFromPurchaseCrMemo(PurchCrMemoHdr);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateCashDocument(var PurchHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    begin
     end;
 }

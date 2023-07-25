@@ -14,9 +14,12 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
     internal procedure PostLine(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line")
     var
         LastStatisticalLedgerEntry: Record "Statistical Ledger Entry";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
         LastEntryNo: Integer;
         TransactionNumber: Integer;
     begin
+        StatAccTelemetry.LogPostingUsage();
+
         LastStatisticalLedgerEntry.LockTable();
         if LastStatisticalLedgerEntry.FindLast() then;
         LastEntryNo := LastStatisticalLedgerEntry."Entry No.";

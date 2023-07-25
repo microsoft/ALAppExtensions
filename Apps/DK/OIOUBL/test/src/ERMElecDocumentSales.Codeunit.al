@@ -40,6 +40,11 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.', Comment = '%1 = Sales Invoice';
         WrongFileNameErr: Label 'File name should be: %1', Comment = '%1 - Client File Name';
         isInitialized: Boolean;
+        CountryRegionCodeLbl: Label 'DK';
+        VATRegNoLbl: Label 'DK12345678';
+        GLNLbl: Label '4701234560006';
+        ErrorMustMatchErr: Label 'Error must match.';
+        CountryRegionErr: Label 'Country/Region Code must have a value in Country/Region: Code=DK.';
 
     [Test]
     procedure GLEntryAfterPostSalesInvoice();
@@ -1482,6 +1487,67 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
         // [THEN] Client File Name should be CompanyName - Invoice Document No.xml
         Assert.AreEqual(ExpectedFileName, ActualFileName, StrSubstNo(WrongFileNameErr, ExpectedFileName));
+    end;
+
+    [Test]
+    procedure ShipSOwithCountryRegionCodeBlankInDKCountriesRegions()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        Customer: Record Customer;
+        Item: Record Item;
+        CountriesRegions: Record "Country/Region";
+        SalesPost: Codeunit "Sales-Post";
+    begin
+        // [SCENARIO 472494] Error message appears regards a missing OIOUBL Country/Region Code in "Post / Ship" scenario in the Danish version.
+        Initialize();
+
+        // [GIVEN] Create a Document Sending Profile Code.
+        SetDefaultDocumentSendingProfile(DocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+
+        // [GIVEN] Find DK Code in Countries/Regions.
+        CountriesRegions.Setfilter(Code, CountryRegionCodeLbl);
+        CountriesRegions.FindFirst();
+
+        // [GIVEN] Set OIOUBL-Country/Region Code to Blank for DK Code of Countries/Regions.
+        CountriesRegions.validate("OIOUBL-Country/Region Code", '');
+        CountriesRegions.Modify(true);
+
+        // [GIVEN] Create a Customer with Address.
+        LibrarySales.CreateCustomerWithAddress(Customer);
+
+        // [GIVEN] Update Document Sending Profile, VAT Registration, GLN, GLN in Electronic Document, OIOUBL-Account Code,
+        // OIOUBL-Profile Code, Registration Number in the Customer record.
+        Customer.Validate("Document Sending Profile", '');
+        Customer."VAT Registration No." := VATRegNoLbl;
+        Customer.Validate(GLN, GLNLbl);
+        Customer.Validate("Use GLN in Electronic Document", true);
+        Customer.Validate("OIOUBL-Account Code", LibraryRandom.RandText(5));
+        Customer.Validate("OIOUBL-Profile Code", CreateOIOUBLProfile());
+        Customer.Validate("Registration Number", LibraryRandom.RandText(5));
+        Customer.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create a SalesOrder with a SalesLine of an Item.
+        CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, Item."No.", LibraryRandom.RandInt(1));
+
+        // [GIVEN] Update VAT Registration No,  OIOUBL-GLN, OIOUBL-Account Code, OIOUBL-Profile Code from Customer to Sales Header & Ship equals to True.
+        SalesHeader."VAT Registration No." := Customer."VAT Registration No.";
+        SalesHeader.Validate("OIOUBL-GLN", Customer.GLN);
+        SalesHeader.Validate("OIOUBL-Account Code", Customer."OIOUBL-Account Code");
+        SalesHeader.Validate("OIOUBL-Profile Code", Customer."OIOUBL-Profile Code");
+        SalesHeader.Validate(Ship, true);
+        SalesHeader.Modify();
+
+        // [WHEN] Run "Post" for Sales Order.
+        SalesPost.Run(SalesHeader);
+
+        // [VERIFY] Verify No error is thrown while posting.
+        assert.AreNotEqual(CountryRegionErr, GetLastErrorText, ErrorMustMatchErr);
     end;
 
     local procedure Initialize();

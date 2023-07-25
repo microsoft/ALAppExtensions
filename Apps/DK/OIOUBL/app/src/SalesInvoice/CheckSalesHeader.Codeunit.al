@@ -46,9 +46,10 @@ codeunit 13629 "OIOUBL-Check Sales Header"
         TESTFIELD("Sell-to Contact");
         TESTFIELD("VAT Registration No.");
         OIOUBLDocumentEncode.IsValidCountryCode("Sell-to Country/Region Code");
-        OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode("Bill-to Country/Region Code");
-        OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode(CompanyInfo."Country/Region Code");
-
+        if Invoice = true then begin
+            OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode("Bill-to Country/Region Code");
+            OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode(CompanyInfo."Country/Region Code");
+        end;
         OIOUBLDocumentEncode.GetOIOUBLCurrencyCode("Currency Code");
         CheckSalesLines(Rec);
     end;

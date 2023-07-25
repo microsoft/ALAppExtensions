@@ -53,6 +53,8 @@ codeunit 1852 "Sales Forecast Scheduler"
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
     begin
         MSSalesForecastSetup.GetSingleInstance();
+        MSSalesForecastSetup.CheckEnabled();
+
         if MSSalesForecastSetup.URIOrKeyEmpty() then
             Error(SpecifyApiKeyErr);
 

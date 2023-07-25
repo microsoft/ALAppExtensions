@@ -35,7 +35,6 @@ query 40100 "GP Populate Item Transactions"
             {
             }
 
-
             column(QTYRECVD; QTYRECVD)
             {
             }
@@ -44,6 +43,10 @@ query 40100 "GP Populate Item Transactions"
             {
             }
 
+            column(QTYTYPE; QTYTYPE)
+            {
+            }
+            
             dataitem(GPIV00101; "GP IV00101")
             {
                 SqlJoinType = InnerJoin;

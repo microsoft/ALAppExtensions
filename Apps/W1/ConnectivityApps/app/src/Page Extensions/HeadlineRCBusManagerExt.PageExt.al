@@ -43,7 +43,6 @@ pageextension 20353 "Headline RC Bus. Manager Ext." extends "Headline RC Busines
     var
         ConnectivityApps: Codeunit "Connectivity Apps";
         ConnectivityAppsCategory: Enum "Connectivity Apps Category";
-        [InDataSet]
         IsConnectivityAppsAvailable: Boolean;
         IsEvaluationCompany: Boolean;
         BankingAppsTxt: Label 'Connect to banks to import bank feeds.';

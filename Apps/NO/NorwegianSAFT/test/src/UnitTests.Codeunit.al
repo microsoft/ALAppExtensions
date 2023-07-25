@@ -14,7 +14,6 @@ codeunit 148102 "SAF-T Unit Tests"
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryRandom: Codeunit "Library - Random";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
-        LibraryUtility: Codeunit "Library - Utility";
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
@@ -23,7 +22,6 @@ codeunit 148102 "SAF-T Unit Tests"
         StandardAccountsMatchedMsg: Label '%1 of %2 standard accounts have been automatically matched to the chart of accounts.', Comment = '%1,%2 = both integer values';
         OverwriteMappingQst: Label 'Do you want to change the already defined G/L account mapping to the new mapping?';
         GenerateSAFTFileImmediatelyQst: Label 'Since you did not schedule the SAF-T file generation, it will be generated immediately which can take a while. Do you want to continue?';
-        CopyReportingCodesToSAFTCodesQst: Label 'Do you want to copy sales and purchase reporting codes to sales/purchase SAF-T standard tax codes?';
 
     [Test]
     procedure VATPostingSetupHasTaxCodesOnInsert()
@@ -484,52 +482,6 @@ codeunit 148102 "SAF-T Unit Tests"
 
         SAFTGLAccountMapping.Get(SAFTMappingRange.Code, GLAccount."No.");
         SAFTGLAccountMapping.TestField("G/L Entries Exists", false);
-    end;
-
-    [Test]
-    [HandlerFunctions('ConfirmYesHandler')]
-    procedure CopySalesAndPurchReportingCodesToSAFTCodes()
-    var
-        VATPostingSetup: Record "VAT Posting Setup";
-        TempVATPostingSetup: Record "VAT Posting Setup" temporary;
-        VATCode: array[2] of Record "VAT Code";
-        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
-        i: Integer;
-    begin
-        // [SCENARIO 422655] Stan can copy "Sales VAT Reporting Code"/"Purchase VAT Reporting Code" to "Sales SAF-T Standard Tax Code"/"Purch. SAF-T Standard Tax Code"
-
-        Initialize();
-        VATPostingSetup.FindSet();
-        repeat
-            TempVATPostingSetup := VATPostingSetup;
-            TempVATPostingSetup.Insert();
-        until VATPostingSetup.Next() = 0;
-        VATPostingSetup.DeleteAll();
-
-        for i := 1 to ArrayLen(VATCode) do begin
-            VATCode[i].Code := LibraryUtility.GenerateGUID();
-            VATCode[i].Insert();
-        end;
-        VATPostingSetup."Sales VAT Reporting Code" := VATCode[1].Code;
-        VATPostingSetup."Purchase VAT Reporting Code" := VATCode[2].Code;
-        VATPostingSetup.Insert();
-        LibraryVariableStorage.Enqueue(CopyReportingCodesToSAFTCodesQst);
-
-        SAFTMappingHelper.CopyReportingCodesToSAFTCodes();
-
-        VATPostingSetup.Find();
-        VATPostingSetup.TestField("Sales SAF-T Standard Tax Code", VATCode[1].Code);
-        VATPostingSetup.TestField("Purch. SAF-T Standard Tax Code", VATCode[2].Code);
-
-        LibraryVariableStorage.AssertEmpty();
-
-        // Tear down
-        VATPostingSetup.Delete();
-        TempVATPostingSetup.FindSet();
-        repeat
-            VATPostingSetup := TempVATPostingSetup;
-            VATPostingSetup.Insert();
-        until TempVATPostingSetup.Next() = 0;
     end;
 
     local procedure Initialize()

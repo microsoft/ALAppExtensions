@@ -93,6 +93,16 @@ XmlPort 31106 "Import Tariff Numbers CZL"
                         ValidFromDate: Date;
                         ValidToDate: Date;
                     begin
+                        Clear(LineDataDictionary);
+                        LineDataDictionary.Add(GetNumberToken(), kn);
+                        LineDataDictionary.Add(GetValidFromToken(), platnost_od);
+                        LineDataDictionary.Add(GetValidToToken(), platnost_do);
+                        LineDataDictionary.Add(GetUoMToken(), mj_i);
+                        LineDataDictionary.Add(GetClassToken(), trida);
+                        LineDataDictionary.Add(GetClassRomanToken(), tridarim);
+                        LineDataDictionary.Add(GetDescriptionToken(), popis);
+                        LineDataDictionary.Add(GetDescriptionENToken(), popisan);
+
                         TempTariffNumber."No." := CopyStr(kn, 1, MaxStrlen(TempTariffNumber."No."));
                         if TempTariffNumber."No." = '' then
                             currXMLport.Skip();
@@ -108,7 +118,12 @@ XmlPort 31106 "Import Tariff Numbers CZL"
 
                         TempTariffNumber.Description := CopyStr(popis, 1, MaxStrlen(TempTariffNumber.Description));
                         TempTariffNumber."Description EN CZL" := CopyStr(popisan, 1, MaxStrlen(TempTariffNumber."Description EN CZL"));
+#if not CLEAN22
+#pragma warning disable AL0432
                         TempTariffNumber."Suppl. Unit of Meas. Code CZL" := CopyStr(mj_i, 1, MaxStrlen(TempTariffNumber."Suppl. Unit of Meas. Code CZL"));
+#pragma warning restore AL0432
+#endif
+                        OnBeforeInsertTariffNumber(TempTariffNumber, LineDataDictionary);
 
                         if GuiAllowed then begin
                             ValidDataRowCount += 1;
@@ -187,6 +202,7 @@ XmlPort 31106 "Import Tariff Numbers CZL"
 
     var
         ConfirmManagement: Codeunit "Confirm Management";
+        LineDataDictionary: Dictionary of [Text, Text];
         WindowDialog: Dialog;
         ThresholdDate: Date;
         ValidDataRowCount: Integer;
@@ -202,6 +218,14 @@ XmlPort 31106 "Import Tariff Numbers CZL"
         UpdatedTxt: Label 'updated';
         InsertedTxt: Label 'inserted';
         DummyUoMTok: Label 'ZZZ';
+        NumberTok: Label 'kn', Locked = true;
+        ValidFromTok: Label 'platnost_od', Locked = true;
+        ValidToTok: Label 'platnost_do', Locked = true;
+        UoMTok: Label 'mj_i', Locked = true;
+        ClassTok: Label 'trida', Locked = true;
+        ClassRomanTok: Label 'tridarim', Locked = true;
+        DescriptionTok: Label 'popis', Locked = true;
+        DescriptionENTok: Label 'popisan', Locked = true;
 
     procedure SetThresholdDate(NewDate: Date)
     begin
@@ -229,16 +253,23 @@ XmlPort 31106 "Import Tariff Numbers CZL"
     end;
 
     local procedure CopyFromTemp(var TariffNumber: Record "Tariff Number"; UoMMappingDictionary: Dictionary of [Code[10], Code[10]])
+#if not CLEAN22
     var
         UnitofMeasureCode: Code[10];
+#endif
     begin
         TariffNumber.Description := TempTariffNumber.Description;
         TariffNumber."Description EN CZL" := TempTariffNumber."Description EN CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
         if (TempTariffNumber."Suppl. Unit of Meas. Code CZL" <> '') and (TempTariffNumber."Suppl. Unit of Meas. Code CZL" <> DummyUoMTok) then
             if UoMMappingDictionary.Get(TempTariffNumber."Suppl. Unit of Meas. Code CZL", UnitofMeasureCode) then begin
                 TariffNumber."Suppl. Unit of Meas. Code CZL" := UnitofMeasureCode;
                 TariffNumber."Supplementary Units" := true;
             end;
+#pragma warning restore AL0432
+#endif
+        OnAfterCopyFromTemp(TariffNumber, TempTariffNumber, UoMMappingDictionary);
     end;
 
     local procedure AddResultCount(var ImportResultMsg: Text; RecCount: Integer; ChangeTypeText: Text)
@@ -250,5 +281,60 @@ XmlPort 31106 "Import Tariff Numbers CZL"
     procedure SetHideDialog(NewHideDialog: Boolean)
     begin
         HideDialog := NewHideDialog;
+    end;
+
+    procedure GetDummyUoMToken(): Text
+    begin
+        exit(DummyUoMTok);
+    end;
+
+    procedure GetNumberToken(): Text
+    begin
+        exit(NumberTok);
+    end;
+
+    procedure GetValidFromToken(): Text
+    begin
+        exit(ValidFromTok);
+    end;
+
+    procedure GetValidToToken(): Text
+    begin
+        exit(ValidToTok);
+    end;
+
+    procedure GetUoMToken(): Text
+    begin
+        exit(UoMTok);
+    end;
+
+    procedure GetClassToken(): Text
+    begin
+        exit(ClassTok);
+    end;
+
+    procedure GetClassRomanToken(): Text
+    begin
+        exit(ClassRomanTok);
+    end;
+
+    procedure GetDescriptionToken(): Text
+    begin
+        exit(DescriptionTok);
+    end;
+
+    procedure GetDescriptionENToken(): Text
+    begin
+        exit(DescriptionENTok);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromTemp(var TariffNumber: Record "Tariff Number"; TempTariffNumber: Record "Tariff Number" temporary; UoMMappingDictionary: Dictionary of [Code[10], Code[10]])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertTariffNumber(var TariffNumber: Record "Tariff Number"; LineDataDictionary: Dictionary of [Text, Text]);
+    begin
     end;
 }

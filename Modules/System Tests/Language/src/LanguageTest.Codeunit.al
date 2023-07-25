@@ -323,6 +323,34 @@ codeunit 130043 "Language Test"
     end;
 
     [Test]
+    [Scope('OnPrem')]
+    procedure TestToDefaultLanguageBoolean()
+    var
+        CurrentLanguage: Integer;
+        SpanishLanguageId: Integer;
+        DummyBoolean: Boolean;
+    begin
+        PermissionsMock.Set('Language Edit');
+        CurrentLanguage := GlobalLanguage();
+
+        // [GIVEN] The global language is Spanish
+        SpanishLanguageId := 1034;
+        GlobalLanguage(SpanishLanguageId);
+
+        DummyBoolean := true;
+
+        // Ensure prerequisites: the default formatting returns the expected result 
+        Assert.AreEqual('Sí', Format(DummyBoolean), 'Expected the boolean to be formatted in Spanish.');
+
+        // [WHEN] The ToDefaultLanguage method is used on a boolean
+        // [THEN] The value is returned in English, regardless of global language
+        Assert.AreEqual('Yes', Language.ToDefaultLanguage(DummyBoolean), 'Expected the boolean to be formatted in English.');
+
+        // Cleanup
+        GlobalLanguage(CurrentLanguage);
+    end;
+
+    [Test]
     procedure ValidateApplicationLanguageIdInvalidId()
     begin
         PermissionsMock.Set('Language Edit');

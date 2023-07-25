@@ -24,6 +24,11 @@ table 30110 "Shpfy Gift Card"
             Caption = 'Amount';
             DataClassification = SystemMetadata;
         }
+        field(4; "Order Line Id"; BigInteger)
+        {
+            Caption = 'Order Line Id';
+            DataClassification = SystemMetadata;
+        }
         field(101; "Known Used Amount"; Decimal)
         {
             CalcFormula = sum("Shpfy Order Transaction".Amount where("Gift Card Id" = field(Id)));

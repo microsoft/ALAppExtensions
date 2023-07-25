@@ -128,49 +128,41 @@ codeunit 31250 "Install Application CZA"
     local procedure CopyAssemblyHeader();
     var
         AssemblyHeader: Record "Assembly Header";
+        AssemblyHeaderDataTransfer: DataTransfer;
     begin
-        AssemblyHeader.SetLoadFields("Gen. Bus. Posting Group");
-        if AssemblyHeader.FindSet(true) then
-            repeat
-                AssemblyHeader."Gen. Bus. Posting Group CZA" := AssemblyHeader."Gen. Bus. Posting Group";
-                AssemblyHeader.Modify(false);
-            until AssemblyHeader.Next() = 0;
+        AssemblyHeaderDataTransfer.SetTables(Database::"Assembly Header", Database::"Assembly Header");
+        AssemblyHeaderDataTransfer.AddFieldValue(AssemblyHeader.FieldNo("Gen. Bus. Posting Group"), AssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"));
+        AssemblyHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyAssemblyLine();
     var
         AssemblyLine: Record "Assembly Line";
+        AssemblyLineDataTransfer: DataTransfer;
     begin
-        AssemblyLine.SetLoadFields("Gen. Bus. Posting Group");
-        if AssemblyLine.FindSet(true) then
-            repeat
-                AssemblyLine."Gen. Bus. Posting Group CZA" := AssemblyLine."Gen. Bus. Posting Group";
-                AssemblyLine.Modify(false);
-            until AssemblyLine.Next() = 0;
+        AssemblyLineDataTransfer.SetTables(Database::"Assembly Line", Database::"Assembly Line");
+        AssemblyLineDataTransfer.AddFieldValue(AssemblyLine.FieldNo("Gen. Bus. Posting Group"), AssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"));
+        AssemblyLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyPostedAssemblyHeader();
     var
         PostedAssemblyHeader: Record "Posted Assembly Header";
+        PostedAssemblyHeaderDataTransfer: DataTransfer;
     begin
-        PostedAssemblyHeader.SetLoadFields("Gen. Bus. Posting Group");
-        if PostedAssemblyHeader.FindSet(true) then
-            repeat
-                PostedAssemblyHeader."Gen. Bus. Posting Group CZA" := PostedAssemblyHeader."Gen. Bus. Posting Group";
-                PostedAssemblyHeader.Modify(false);
-            until PostedAssemblyHeader.Next() = 0;
+        PostedAssemblyHeaderDataTransfer.SetTables(Database::"Posted Assembly Header", Database::"Posted Assembly Header");
+        PostedAssemblyHeaderDataTransfer.AddFieldValue(PostedAssemblyHeader.FieldNo("Gen. Bus. Posting Group"), PostedAssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"));
+        PostedAssemblyHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyPostedAssemblyLine();
     var
         PostedAssemblyLine: Record "Posted Assembly Line";
+        PostedAssemblyLineDataTransfer: DataTransfer;
     begin
-        PostedAssemblyLine.SetLoadFields("Gen. Bus. Posting Group");
-        if PostedAssemblyLine.FindSet(true) then
-            repeat
-                PostedAssemblyLine."Gen. Bus. Posting Group CZA" := PostedAssemblyLine."Gen. Bus. Posting Group";
-                PostedAssemblyLine.Modify(false);
-            until PostedAssemblyLine.Next() = 0;
+        PostedAssemblyLineDataTransfer.SetTables(Database::"Posted Assembly Line", Database::"Posted Assembly Line");
+        PostedAssemblyLineDataTransfer.AddFieldValue(PostedAssemblyLine.FieldNo("Gen. Bus. Posting Group"), PostedAssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"));
+        PostedAssemblyLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyNonstockItemSetup();
@@ -187,152 +179,130 @@ codeunit 31250 "Install Application CZA"
     local procedure CopyItemLedgerEntry();
     var
         ItemLedgerEntry: Record "Item Ledger Entry";
+        ItemLedgerEntryDataTransfer: DataTransfer;
     begin
-        ItemLedgerEntry.SetLoadFields("Source No. 2", "Source No. 3", "Source Code", "Reason Code", "Currency Code", "Currency Factor");
-        if ItemLedgerEntry.FindSet(true) then
-            repeat
-                ItemLedgerEntry."Invoice-to Source No. CZA" := ItemLedgerEntry."Source No. 2";
-                ItemLedgerEntry."Delivery-to Source No. CZA" := ItemLedgerEntry."Source No. 3";
-                ItemLedgerEntry."Source Code CZA" := ItemLedgerEntry."Source Code";
-                ItemLedgerEntry."Reason Code CZA" := ItemLedgerEntry."Reason Code";
-                ItemLedgerEntry."Currency Code CZA" := ItemLedgerEntry."Currency Code";
-                ItemLedgerEntry."Currency Factor CZA" := ItemLedgerEntry."Currency Factor";
-                ItemLedgerEntry.Modify(false);
-            until ItemLedgerEntry.Next() = 0;
+        ItemLedgerEntryDataTransfer.SetTables(Database::"Item Ledger Entry", Database::"Item Ledger Entry");
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Source No. 2"), ItemLedgerEntry.FieldNo("Invoice-to Source No. CZA"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Source No. 3"), ItemLedgerEntry.FieldNo("Delivery-to Source No. CZA"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Source Code"), ItemLedgerEntry.FieldNo("Source Code CZA"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Reason Code"), ItemLedgerEntry.FieldNo("Reason Code CZA"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Currency Code"), ItemLedgerEntry.FieldNo("Currency Code CZA"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Currency Factor"), ItemLedgerEntry.FieldNo("Currency Factor CZA"));
+        ItemLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyValueEntry();
     var
         ValueEntry: Record "Value Entry";
+        ValueEntryDataTransfer: DataTransfer;
     begin
-        ValueEntry.SetLoadFields("Source No. 2", "Source No. 3", "Currency Code", "Currency Factor");
-        if ValueEntry.FindSet(true) then
-            repeat
-                ValueEntry."Invoice-to Source No. CZA" := ValueEntry."Source No. 2";
-                ValueEntry."Delivery-to Source No. CZA" := ValueEntry."Source No. 3";
-                ValueEntry."Currency Code CZA" := ValueEntry."Currency Code";
-                ValueEntry."Currency Factor CZA" := ValueEntry."Currency Factor";
-                ValueEntry.Modify(false);
-            until ValueEntry.Next() = 0;
+        ValueEntryDataTransfer.SetTables(Database::"Value Entry", Database::"Value Entry");
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("Source No. 2"), ValueEntry.FieldNo("Invoice-to Source No. CZA"));
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("Source No. 3"), ValueEntry.FieldNo("Delivery-to Source No. CZA"));
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("Currency Code"), ValueEntry.FieldNo("Currency Code CZA"));
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("Currency Factor"), ValueEntry.FieldNo("Currency Factor CZA"));
+        ValueEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyCapacityLedgerEntry();
     var
         CapacityLedgerEntry: Record "Capacity Ledger Entry";
+        CapacityLedgerEntryDataTransfer: DataTransfer;
     begin
-        CapacityLedgerEntry.SetLoadFields("User ID");
-        if CapacityLedgerEntry.FindSet(true) then
-            repeat
-                CapacityLedgerEntry."User ID CZA" := CapacityLedgerEntry."User ID";
-                CapacityLedgerEntry.Modify(false);
-            until CapacityLedgerEntry.Next() = 0;
+        CapacityLedgerEntryDataTransfer.SetTables(Database::"Capacity Ledger Entry", Database::"Capacity Ledger Entry");
+        CapacityLedgerEntryDataTransfer.AddFieldValue(CapacityLedgerEntry.FieldNo("User ID"), CapacityLedgerEntry.FieldNo("User ID CZA"));
+        CapacityLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyItemJournalLine();
     var
         ItemJournalLine: Record "Item Journal Line";
+        ItemJournalLineDataTransfer: DataTransfer;
     begin
-        ItemJournalLine.SetLoadFields("Source No. 3", "Currency Code", "Currency Factor");
-        if ItemJournalLine.FindSet(true) then
-            repeat
-                ItemJournalLine."Delivery-to Source No. CZA" := ItemJournalLine."Source No. 3";
-                ItemJournalLine."Currency Code CZA" := ItemJournalLine."Currency Code";
-                ItemJournalLine."Currency Factor CZA" := ItemJournalLine."Currency Factor";
-                ItemJournalLine.Modify(false);
-            until ItemJournalLine.Next() = 0;
+        ItemJournalLineDataTransfer.SetTables(Database::"Item Journal Line", Database::"Item Journal Line");
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Source No. 3"), ItemJournalLine.FieldNo("Delivery-to Source No. CZA"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Currency Code"), ItemJournalLine.FieldNo("Currency Code CZA"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Currency Factor"), ItemJournalLine.FieldNo("Currency Factor CZA"));
+        ItemJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferRoute();
     var
         TransferRoute: Record "Transfer Route";
+        TransferRouteDataTransfer: DataTransfer;
     begin
-        TransferRoute.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
-        if TransferRoute.FindSet(true) then
-            repeat
-                TransferRoute."Gen.Bus.Post.Group Ship CZA" := TransferRoute."Gen. Bus. Post. Group Ship";
-                TransferRoute."Gen.Bus.Post.Group Receive CZA" := TransferRoute."Gen. Bus. Post. Group Receive";
-                TransferRoute.Modify(false);
-            until TransferRoute.Next() = 0;
+        TransferRouteDataTransfer.SetTables(Database::"Transfer Route", Database::"Item Journal Line");
+        TransferRouteDataTransfer.AddFieldValue(TransferRoute.FieldNo("Gen. Bus. Post. Group Ship"), TransferRoute.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        TransferRouteDataTransfer.AddFieldValue(TransferRoute.FieldNo("Gen. Bus. Post. Group Receive"), TransferRoute.FieldNo("Gen.Bus.Post.Group Receive CZA"));
+        TransferRouteDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferHeader();
     var
         TransferHeader: Record "Transfer Header";
+        TransferHeaderDataTransfer: DataTransfer;
     begin
-        TransferHeader.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
-        if TransferHeader.FindSet(true) then
-            repeat
-                TransferHeader."Gen.Bus.Post.Group Ship CZA" := TransferHeader."Gen. Bus. Post. Group Ship";
-                TransferHeader."Gen.Bus.Post.Group Receive CZA" := TransferHeader."Gen. Bus. Post. Group Receive";
-                TransferHeader.Modify(false);
-            until TransferHeader.Next() = 0;
+        TransferHeaderDataTransfer.SetTables(Database::"Transfer Header", Database::"Transfer Header");
+        TransferHeaderDataTransfer.AddFieldValue(TransferHeader.FieldNo("Gen. Bus. Post. Group Ship"), TransferHeader.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        TransferHeaderDataTransfer.AddFieldValue(TransferHeader.FieldNo("Gen. Bus. Post. Group Receive"), TransferHeader.FieldNo("Gen.Bus.Post.Group Receive CZA"));
+        TransferHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferLine();
     var
         TransferLine: Record "Transfer Line";
+        TransferLineDataTransfer: DataTransfer;
     begin
-        TransferLine.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
-        if TransferLine.FindSet(true) then
-            repeat
-                TransferLine."Gen.Bus.Post.Group Ship CZA" := TransferLine."Gen. Bus. Post. Group Ship";
-                TransferLine."Gen.Bus.Post.Group Receive CZA" := TransferLine."Gen. Bus. Post. Group Receive";
-                TransferLine.Modify(false);
-            until TransferLine.Next() = 0;
+        TransferLineDataTransfer.SetTables(Database::"Transfer Line", Database::"Transfer Line");
+        TransferLineDataTransfer.AddFieldValue(TransferLine.FieldNo("Gen. Bus. Post. Group Ship"), TransferLine.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        TransferLineDataTransfer.AddFieldValue(TransferLine.FieldNo("Gen. Bus. Post. Group Receive"), TransferLine.FieldNo("Gen.Bus.Post.Group Receive CZA"));
+        TransferLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferShipmentHeader();
     var
         TransferShipmentHeader: Record "Transfer Shipment Header";
+        TransferShipmentHeaderDataTransfer: DataTransfer;
     begin
-        TransferShipmentHeader.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
-        if TransferShipmentHeader.FindSet(true) then
-            repeat
-                TransferShipmentHeader."Gen.Bus.Post.Group Ship CZA" := TransferShipmentHeader."Gen. Bus. Post. Group Ship";
-                TransferShipmentHeader."Gen.Bus.Post.Group Receive CZA" := TransferShipmentHeader."Gen. Bus. Post. Group Receive";
-                TransferShipmentHeader.Modify(false);
-            until TransferShipmentHeader.Next() = 0;
+        TransferShipmentHeaderDataTransfer.SetTables(Database::"Transfer Shipment Header", Database::"Transfer Shipment Header");
+        TransferShipmentHeaderDataTransfer.AddFieldValue(TransferShipmentHeader.FieldNo("Gen. Bus. Post. Group Ship"), TransferShipmentHeader.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        TransferShipmentHeaderDataTransfer.AddFieldValue(TransferShipmentHeader.FieldNo("Gen. Bus. Post. Group Receive"), TransferShipmentHeader.FieldNo("Gen.Bus.Post.Group Receive CZA"));
+        TransferShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferShipmentLine();
     var
         TransferShipmentLine: Record "Transfer Shipment Line";
+        TransferShipmentLineDataTransfer: DataTransfer;
     begin
-        TransferShipmentLine.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive", Correction, "Transfer Order Line No.");
-        if TransferShipmentLine.FindSet(true) then
-            repeat
-                TransferShipmentLine."Gen.Bus.Post.Group Ship CZA" := TransferShipmentLine."Gen. Bus. Post. Group Ship";
-                TransferShipmentLine."Gen.Bus.Post.Group Receive CZA" := TransferShipmentLine."Gen. Bus. Post. Group Receive";
-                TransferShipmentLine."Correction CZA" := TransferShipmentLine.Correction;
-                TransferShipmentLine."Transfer Order Line No. CZA" := TransferShipmentLine."Transfer Order Line No.";
-                TransferShipmentLine.Modify(false);
-            until TransferShipmentLine.Next() = 0;
+        TransferShipmentLineDataTransfer.SetTables(Database::"Transfer Shipment Line", Database::"Transfer Shipment Line");
+        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo("Gen. Bus. Post. Group Ship"), TransferShipmentLine.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo("Gen. Bus. Post. Group Receive"), TransferShipmentLine.FieldNo("Gen.Bus.Post.Group Receive CZA"));
+        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo(Correction), TransferShipmentLine.FieldNo("Correction CZA"));
+        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo("Transfer Order Line No."), TransferShipmentLine.FieldNo("Transfer Order Line No. CZA"));
+        TransferShipmentLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferReceiptHeader();
     var
         TransferReceiptHeader: Record "Transfer Receipt Header";
+        TransferReceiptHeaderDataTransfer: DataTransfer;
     begin
-        TransferReceiptHeader.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
-        if TransferReceiptHeader.FindSet(true) then
-            repeat
-                TransferReceiptHeader."Gen.Bus.Post.Group Ship CZA" := TransferReceiptHeader."Gen. Bus. Post. Group Ship";
-                TransferReceiptHeader."Gen.Bus.Post.Group Receive CZA" := TransferReceiptHeader."Gen. Bus. Post. Group Receive";
-                TransferReceiptHeader.Modify(false);
-            until TransferReceiptHeader.Next() = 0;
+        TransferReceiptHeaderDataTransfer.SetTables(Database::"Transfer Receipt Header", Database::"Transfer Receipt Header");
+        TransferReceiptHeaderDataTransfer.AddFieldValue(TransferReceiptHeader.FieldNo("Gen. Bus. Post. Group Ship"), TransferReceiptHeader.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        TransferReceiptHeaderDataTransfer.AddFieldValue(TransferReceiptHeader.FieldNo("Gen. Bus. Post. Group Receive"), TransferReceiptHeader.FieldNo("Gen.Bus.Post.Group Receive CZA"));
+        TransferReceiptHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferReceiptLine();
     var
         TransferReceiptLine: Record "Transfer Receipt Line";
+        TransferReceiptLineDataTransfer: DataTransfer;
     begin
-        TransferReceiptLine.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
-        if TransferReceiptLine.FindSet(true) then
-            repeat
-                TransferReceiptLine."Gen.Bus.Post.Group Ship CZA" := TransferReceiptLine."Gen. Bus. Post. Group Ship";
-                TransferReceiptLine."Gen.Bus.Post.Group Receive CZA" := TransferReceiptLine."Gen. Bus. Post. Group Receive";
-                TransferReceiptLine.Modify(false);
-            until TransferReceiptLine.Next() = 0;
+        TransferReceiptLineDataTransfer.SetTables(Database::"Transfer Receipt Line", Database::"Transfer Receipt Line");
+        TransferReceiptLineDataTransfer.AddFieldValue(TransferReceiptLine.FieldNo("Gen. Bus. Post. Group Ship"), TransferReceiptLine.FieldNo("Gen.Bus.Post.Group Ship CZA"));
+        TransferReceiptLineDataTransfer.AddFieldValue(TransferReceiptLine.FieldNo("Gen. Bus. Post. Group Receive"), TransferReceiptLine.FieldNo("Gen.Bus.Post.Group Receive CZA"));
+        TransferReceiptLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyDetailedGLEntry()
@@ -365,28 +335,24 @@ codeunit 31250 "Install Application CZA"
     local procedure CopyGLEntry();
     var
         GLEntry: Record "G/L Entry";
+        GLEntryDataTransfer: DataTransfer;
     begin
-        GLEntry.SetLoadFields(Closed, "Closed at Date", "Amount to Apply", "Applies-to ID");
-        if GLEntry.FindSet(true) then
-            repeat
-                GLEntry."Closed CZA" := GLEntry.Closed;
-                GLEntry."Closed at Date CZA" := GLEntry."Closed at Date";
-                GLEntry."Amount to Apply CZA" := GLEntry."Amount to Apply";
-                GLEntry."Applies-to ID CZA" := GLEntry."Applies-to ID";
-                GLEntry.Modify(false);
-            until GLEntry.Next() = 0;
+        GLEntryDataTransfer.SetTables(Database::"G/L Entry", Database::"G/L Entry");
+        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo(Closed), GLEntry.FieldNo("Closed CZA"));
+        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("Closed at Date"), GLEntry.FieldNo("Closed at Date CZA"));
+        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("Amount to Apply"), GLEntry.FieldNo("Amount to Apply CZA"));
+        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("Applies-to ID"), GLEntry.FieldNo("Applies-to ID CZA"));
+        GLEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyItemEntryRelation();
     var
         ItemEntryRelation: Record "Item Entry Relation";
+        ItemEntryRelationDataTransfer: DataTransfer;
     begin
-        ItemEntryRelation.SetLoadFields(Undo);
-        if ItemEntryRelation.FindSet(true) then
-            repeat
-                ItemEntryRelation."Undo CZA" := ItemEntryRelation.Undo;
-                ItemEntryRelation.Modify(false);
-            until ItemEntryRelation.Next() = 0;
+        ItemEntryRelationDataTransfer.SetTables(Database::"Item Entry Relation", Database::"Item Entry Relation");
+        ItemEntryRelationDataTransfer.AddFieldValue(ItemEntryRelation.FieldNo(Undo), ItemEntryRelation.FieldNo("Undo CZA"));
+        ItemEntryRelationDataTransfer.CopyFields();
     end;
 
     local procedure CopyDefaultDimension();
@@ -424,13 +390,11 @@ codeunit 31250 "Install Application CZA"
     local procedure CopyStandardItemJournalLine();
     var
         StandardItemJournalLine: Record "Standard Item Journal Line";
+        StandardItemJournalLineDataTransfer: DataTransfer;
     begin
-        StandardItemJournalLine.SetLoadFields("New Location Code");
-        if StandardItemJournalLine.FindSet(true) then
-            repeat
-                StandardItemJournalLine."New Location Code CZA" := StandardItemJournalLine."New Location Code";
-                StandardItemJournalLine.Modify(false);
-            until StandardItemJournalLine.Next() = 0;
+        StandardItemJournalLineDataTransfer.SetTables(Database::"Standard Item Journal Line", Database::"Standard Item Journal Line");
+        StandardItemJournalLineDataTransfer.AddFieldValue(StandardItemJournalLine.FieldNo("New Location Code"), StandardItemJournalLine.FieldNo("New Location Code CZA"));
+        StandardItemJournalLineDataTransfer.CopyFields();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

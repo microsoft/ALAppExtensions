@@ -393,73 +393,72 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyResponsibilityCenter();
     var
         ResponsibilityCenter: Record "Responsibility Center";
+        ResponsibilityCenterDataTransfer: DataTransfer;
     begin
-        ResponsibilityCenter.SetLoadFields("Bank Account Code");
-        if ResponsibilityCenter.FindSet(true) then
-            repeat
-                ResponsibilityCenter."Default Bank Account Code CZL" := ResponsibilityCenter."Bank Account Code";
-                ResponsibilityCenter.Modify(false);
-            until ResponsibilityCenter.Next() = 0;
+        ResponsibilityCenterDataTransfer.SetTables(Database::"Responsibility Center", Database::"Responsibility Center");
+        ResponsibilityCenterDataTransfer.AddFieldValue(ResponsibilityCenter.FieldNo("Bank Account No."), ResponsibilityCenter.FieldNo("Default Bank Account Code CZL"));
+        ResponsibilityCenterDataTransfer.CopyFields();
     end;
 
     local procedure CopyCustomer();
     var
         Customer: Record Customer;
+        CustomerDataTransfer: DataTransfer;
     begin
-        Customer.SetLoadFields("Registration No.", "Tax Registration No.", "Transaction Type", "Transaction Specification", "Transport Method");
-        if Customer.FindSet() then
-            repeat
-                Customer."Registration No. CZL" := Customer."Registration No.";
-                Customer."Tax Registration No. CZL" := Customer."Tax Registration No.";
-                Customer."Transaction Type CZL" := Customer."Transaction Type";
-                Customer."Transaction Specification CZL" := Customer."Transaction Specification";
-                Customer."Transport Method CZL" := Customer."Transport Method";
-                Customer."Allow Multiple Posting Groups" := true;
-                Customer.Modify(false);
-            until Customer.Next() = 0;
+        CustomerDataTransfer.SetTables(Database::Customer, Database::Customer);
+#if not CLEAN23
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Registration No."), Customer.FieldNo("Registration No. CZL"));
+#endif
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Registration No."), Customer.FieldNo("Registration Number"));
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Tax Registration No."), Customer.FieldNo("Tax Registration No. CZL"));
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Transaction Type"), Customer.FieldNo("Transaction Type CZL"));
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Transaction Specification"), Customer.FieldNo("Transaction Specification CZL"));
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Transport Method"), Customer.FieldNo("Transport Method CZL"));
+        CustomerDataTransfer.AddConstantValue(true, Customer.FieldNo("Allow Multiple Posting Groups"));
+        CustomerDataTransfer.CopyFields();
     end;
 
     local procedure CopyVendor();
     var
         Vendor: Record Vendor;
+        VendorDataTransfer: DataTransfer;
     begin
-        Vendor.SetLoadFields("Registration No.", "Tax Registration No.", "Disable Uncertainty Check", "Transaction Type", "Transaction Specification", "Transport Method");
-        if Vendor.FindSet() then
-            repeat
-                Vendor."Registration No. CZL" := Vendor."Registration No.";
-                Vendor."Tax Registration No. CZL" := Vendor."Tax Registration No.";
-                Vendor."Disable Unreliab. Check CZL" := Vendor."Disable Uncertainty Check";
-                Vendor."Transaction Type CZL" := Vendor."Transaction Type";
-                Vendor."Transaction Specification CZL" := Vendor."Transaction Specification";
-                Vendor."Transport Method CZL" := Vendor."Transport Method";
-                Vendor."Allow Multiple Posting Groups" := true;
-                Vendor.Modify(false);
-            until Vendor.Next() = 0;
+        VendorDataTransfer.SetTables(Database::Vendor, Database::Vendor);
+#if not CLEAN23
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Registration No."), Vendor.FieldNo("Registration No. CZL"));
+#endif
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Registration No."), Vendor.FieldNo("Registration Number"));
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Tax Registration No."), Vendor.FieldNo("Tax Registration No. CZL"));
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Disable Uncertainty Check"), Vendor.FieldNo("Disable Unreliab. Check CZL"));
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Transaction Type"), Vendor.FieldNo("Transaction Type CZL"));
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Transaction Specification"), Vendor.FieldNo("Transaction Specification CZL"));
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Transport Method"), Vendor.FieldNo("Transport Method CZL"));
+        VendorDataTransfer.AddConstantValue(true, Vendor.FieldNo("Allow Multiple Posting Groups"));
+        VendorDataTransfer.CopyFields();
     end;
 
     local procedure CopyVendorBankAccount();
     var
         VendorBankAccount: Record "Vendor Bank Account";
+        VendorBankAccountDataTransfer: DataTransfer;
     begin
-        VendorBankAccount.SetLoadFields("Third Party Bank Account");
-        if VendorBankAccount.FindSet() then
-            repeat
-                VendorBankAccount."Third Party Bank Account CZL" := VendorBankAccount."Third Party Bank Account";
-                VendorBankAccount.Modify(false);
-            until VendorBankAccount.Next() = 0;
+        VendorBankAccountDataTransfer.SetTables(Database::"Vendor Bank Account", Database::"Vendor Bank Account");
+        VendorBankAccountDataTransfer.AddFieldValue(VendorBankAccount.FieldNo("Third Party Bank Account"), VendorBankAccount.FieldNo("Third Party Bank Account CZL"));
+        VendorBankAccountDataTransfer.CopyFields();
     end;
 
     local procedure CopyContact();
     var
         Contact: Record Contact;
+        ContactDataTransfer: DataTransfer;
     begin
-        Contact.SetLoadFields("Registration No.", "Tax Registration No.");
-        if Contact.FindSet() then
-            repeat
-                Contact."Registration No. CZL" := Contact."Registration No.";
-                Contact."Tax Registration No. CZL" := Contact."Tax Registration No.";
-                Contact.Modify(false);
-            until Contact.Next() = 0;
+        ContactDataTransfer.SetTables(Database::Contact, Database::Contact);
+#if not CLEAN23
+        ContactDataTransfer.AddFieldValue(Contact.FieldNo("Registration No."), Contact.FieldNo("Registration No. CZL"));
+#endif
+        ContactDataTransfer.AddFieldValue(Contact.FieldNo("Registration No."), Contact.FieldNo("Registration Number"));
+        ContactDataTransfer.AddFieldValue(Contact.FieldNo("Tax Registration No."), Contact.FieldNo("Tax Registration No. CZL"));
+        ContactDataTransfer.CopyFields();
     end;
 
     local procedure CopyUncertaintyPayerEntry();
@@ -541,54 +540,46 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyItemJournalLine();
     var
         ItemJournalLine: Record "Item Journal Line";
+        ItemJournalLineDataTransfer: DataTransfer;
     begin
-        ItemJournalLine.SetLoadFields("Tariff No.", "Physical Transfer", "Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value", "Net Weight",
-                                      "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction", "Whse. Net Change Template", "G/L Correction");
-        if ItemJournalLine.FindSet() then
-            repeat
-                ItemJournalLine."Tariff No. CZL" := ItemJournalLine."Tariff No.";
-                ItemJournalLine."Physical Transfer CZL" := ItemJournalLine."Physical Transfer";
-                ItemJournalLine."Incl. in Intrastat Amount CZL" := ItemJournalLine."Incl. in Intrastat Amount";
-                ItemJournalLine."Incl. in Intrastat S.Value CZL" := ItemJournalLine."Incl. in Intrastat Stat. Value";
-                ItemJournalLine."Net Weight CZL" := ItemJournalLine."Net Weight";
-                ItemJournalLine."Country/Reg. of Orig. Code CZL" := ItemJournalLine."Country/Region of Origin Code";
-                ItemJournalLine."Statistic Indication CZL" := ItemJournalLine."Statistic Indication";
-                ItemJournalLine."Intrastat Transaction CZL" := ItemJournalLine."Intrastat Transaction";
-                ItemJournalLine."Invt. Movement Template CZL" := ItemJournalLine."Whse. Net Change Template";
-                ItemJournalLine."G/L Correction CZL" := ItemJournalLine."G/L Correction";
-                ItemJournalLine.Modify(false);
-            until ItemJournalLine.Next() = 0;
+        ItemJournalLineDataTransfer.SetTables(Database::"Item Journal Line", Database::"Item Journal Line");
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Tariff No."), ItemJournalLine.FieldNo("Tariff No. CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Physical Transfer"), ItemJournalLine.FieldNo("Physical Transfer CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Incl. in Intrastat Amount"), ItemJournalLine.FieldNo("Incl. in Intrastat Amount CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Incl. in Intrastat Stat. Value"), ItemJournalLine.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Net Weight"), ItemJournalLine.FieldNo("Net Weight CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Country/Region of Origin Code"), ItemJournalLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Statistic Indication"), ItemJournalLine.FieldNo("Statistic Indication CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Intrastat Transaction"), ItemJournalLine.FieldNo("Intrastat Transaction CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("Whse. Net Change Template"), ItemJournalLine.FieldNo("Invt. Movement Template CZL"));
+        ItemJournalLineDataTransfer.AddFieldValue(ItemJournalLine.FieldNo("G/L Correction"), ItemJournalLine.FieldNo("G/L Correction CZL"));
+        ItemJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyJobJournalLine();
     var
         JobJournalLine: Record "Job Journal Line";
+        JobJournalLineDataTransfer: DataTransfer;
     begin
-        JobJournalLine.SetLoadFields("Whse. Net Change Template", Correction, "Tariff No.", "Net Weight", "Country/Region of Origin Code",
-                                     "Statistic Indication", "Intrastat Transaction");
-        if JobJournalLine.FindSet() then
-            repeat
-                JobJournalLine."Invt. Movement Template CZL" := JobJournalLine."Whse. Net Change Template";
-                JobJournalLine."Correction CZL" := JobJournalLine.Correction;
-                JobJournalLine."Tariff No. CZL" := JobJournalLine."Tariff No.";
-                JobJournalLine."Net Weight CZL" := JobJournalLine."Net Weight";
-                JobJournalLine."Country/Reg. of Orig. Code CZL" := JobJournalLine."Country/Region of Origin Code";
-                JobJournalLine."Statistic Indication CZL" := JobJournalLine."Statistic Indication";
-                JobJournalLine."Intrastat Transaction CZL" := JobJournalLine."Intrastat Transaction";
-                JobJournalLine.Modify(false);
-            until JobJournalLine.Next() = 0;
+        JobJournalLineDataTransfer.SetTables(Database::"Job Journal Line", Database::"Job Journal Line");
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Whse. Net Change Template"), JobJournalLine.FieldNo("Invt. Movement Template CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Correction"), JobJournalLine.FieldNo("Correction CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Tariff No."), JobJournalLine.FieldNo("Tariff No. CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Net Weight"), JobJournalLine.FieldNo("Net Weight CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Country/Region of Origin Code"), JobJournalLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Statistic Indication"), JobJournalLine.FieldNo("Statistic Indication CZL"));
+        JobJournalLineDataTransfer.AddFieldValue(JobJournalLine.FieldNo("Intrastat Transaction"), JobJournalLine.FieldNo("Intrastat Transaction CZL"));
+        JobJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyPhysInvtOrderLine();
     var
         PhysInvtOrderLine: Record "Phys. Invt. Order Line";
+        PhysInvtOrderLineDataTransfer: DataTransfer;
     begin
-        PhysInvtOrderLine.SetLoadFields("Whse. Net Change Template");
-        if PhysInvtOrderLine.FindSet() then
-            repeat
-                PhysInvtOrderLine."Invt. Movement Template CZL" := PhysInvtOrderLine."Whse. Net Change Template";
-                PhysInvtOrderLine.Modify(false);
-            until PhysInvtOrderLine.Next() = 0;
+        PhysInvtOrderLineDataTransfer.SetTables(Database::"Phys. Invt. Order Line", Database::"Phys. Invt. Order Line");
+        PhysInvtOrderLineDataTransfer.AddFieldValue(PhysInvtOrderLine.FieldNo("Whse. Net Change Template"), PhysInvtOrderLine.FieldNo("Invt. Movement Template CZL"));
+        PhysInvtOrderLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyInventorySetup();
@@ -704,31 +695,27 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyUserSetup();
     var
         UserSetup: Record "User Setup";
+        UserSetupDataTransfer: DataTransfer;
     begin
-        UserSetup.SetLoadFields("Allow VAT Posting From", "Allow VAT Posting To", "Check Document Date(work date)", "Check Document Date(sys. date)", "Check Posting Date (work date)", "Check Posting Date (sys. date)",
-                                "Check Bank Accounts", "Check Journal Templates", "Check Dimension Values", "Allow Posting to Closed Period", "Allow Complete Job", "Employee No.", "User Name", "Allow Item Unapply",
-                                "Check Location Code", "Check Release Location Code", "Check Whse. Net Change Temp.");
-        if UserSetup.FindSet(true) then
-            repeat
-                UserSetup."Allow VAT Posting From CZL" := UserSetup."Allow VAT Posting From";
-                UserSetup."Allow VAT Posting To CZL" := UserSetup."Allow VAT Posting To";
-                UserSetup."Check Doc. Date(work date) CZL" := UserSetup."Check Document Date(work date)";
-                UserSetup."Check Doc. Date(sys. date) CZL" := UserSetup."Check Document Date(sys. date)";
-                UserSetup."Check Post.Date(work date) CZL" := UserSetup."Check Posting Date (work date)";
-                UserSetup."Check Post.Date(sys. date) CZL" := UserSetup."Check Posting Date (sys. date)";
-                UserSetup."Check Bank Accounts CZL" := UserSetup."Check Bank Accounts";
-                UserSetup."Check Journal Templates CZL" := UserSetup."Check Journal Templates";
-                UserSetup."Check Dimension Values CZL" := UserSetup."Check Dimension Values";
-                UserSetup."Allow Post.toClosed Period CZL" := UserSetup."Allow Posting to Closed Period";
-                UserSetup."Allow Complete Job CZL" := UserSetup."Allow Complete Job";
-                UserSetup."Employee No. CZL" := UserSetup."Employee No.";
-                UserSetup."User Name CZL" := UserSetup."User Name";
-                UserSetup."Allow Item Unapply CZL" := UserSetup."Allow Item Unapply";
-                UserSetup."Check Location Code CZL" := UserSetup."Check Location Code";
-                UserSetup."Check Release LocationCode CZL" := UserSetup."Check Release Location Code";
-                UserSetup."Check Invt. Movement Temp. CZL" := UserSetup."Check Whse. Net Change Temp.";
-                UserSetup.Modify(false);
-            until UserSetup.Next() = 0;
+        UserSetupDataTransfer.SetTables(Database::"User Setup", Database::"User Setup");
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow VAT Posting From"), UserSetup.FieldNo("Allow VAT Posting From CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow VAT Posting To"), UserSetup.FieldNo("Allow VAT Posting To CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Document Date(work date)"), UserSetup.FieldNo("Check Doc. Date(work date) CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Document Date(sys. date)"), UserSetup.FieldNo("Check Doc. Date(sys. date) CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Posting Date (work date)"), UserSetup.FieldNo("Check Post.Date(work date) CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Posting Date (sys. date)"), UserSetup.FieldNo("Check Post.Date(sys. date) CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Bank Accounts"), UserSetup.FieldNo("Check Bank Accounts CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Journal Templates"), UserSetup.FieldNo("Check Journal Templates CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Dimension Values"), UserSetup.FieldNo("Check Dimension Values CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow Posting to Closed Period"), UserSetup.FieldNo("Allow Post.toClosed Period CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow Complete Job"), UserSetup.FieldNo("Allow Complete Job CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Employee No."), UserSetup.FieldNo("Employee No. CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("User Name"), UserSetup.FieldNo("User Name CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow Item Unapply"), UserSetup.FieldNo("Allow Item Unapply CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Location Code"), UserSetup.FieldNo("Check Location Code CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Release Location Code"), UserSetup.FieldNo("Check Release LocationCode CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Whse. Net Change Temp."), UserSetup.FieldNo("Check Invt. Movement Temp. CZL"));
+        UserSetupDataTransfer.CopyFields();
     end;
 
     local procedure CopyVATPeriod();
@@ -754,40 +741,51 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyGLEntry();
     var
         GLEntry: Record "G/L Entry";
+        GLEntryDataTransfer: DataTransfer;
+        TotalRows: Integer;
+        FromNo, ToNo : Integer;
     begin
-        GLEntry.SetLoadFields("VAT Date");
-        GLEntry.SetFilter(GLEntry."VAT Date", '<>0D');
-        if GLEntry.FindSet(true) then
-            repeat
-#if not CLEAN22
-                GLEntry."VAT Date CZL" := GLEntry."VAT Date";
-#endif
-                GLEntry."VAT Reporting Date" := GLEntry."VAT Date";
-                GLEntry.Modify(false);
-            until GLEntry.Next() = 0;
 
+        GLEntry.Reset();
+        TotalRows := GLEntry.Count();
+        ToNo := 0;
+
+        while ToNo < TotalRows do begin
+            // Batch size 5 million
+            FromNo := ToNo + 1;
+            ToNo := FromNo + 5000000;
+
+            if ToNo > TotalRows then
+                ToNo := TotalRows;
+
+            GLEntryDataTransfer.SetTables(Database::"G/L Entry", Database::"G/L Entry");
+            GLEntryDataTransfer.AddSourceFilter(GLEntry.FieldNo("Entry No."), '%1..%2', FromNo, ToNo);
+            GLEntryDataTransfer.AddSourceFilter(GLEntry.FieldNo("VAT Date"), '<>%1', 0D);
+#if not CLEAN22
+            GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("VAT Date"), GLEntry.FieldNo("VAT Date CZL"));
+#endif
+            GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("VAT Date"), GLEntry.FieldNo("VAT Reporting Date"));
+            GLEntryDataTransfer.CopyFields();
+            Clear(GLEntryDataTransfer);
+        end;
     end;
 
     local procedure CopyCustLedgerEntry();
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
+        CustLedgerEntryDataTransfer: DataTransfer;
     begin
-        CustLedgerEntry.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.",
-                                      IBAN, "SWIFT Code", "VAT Date");
-        if CustLedgerEntry.FindSet(true) then
-            repeat
-                CustLedgerEntry."Specific Symbol CZL" := CustLedgerEntry."Specific Symbol";
-                CustLedgerEntry."Variable Symbol CZL" := CustLedgerEntry."Variable Symbol";
-                CustLedgerEntry."Constant Symbol CZL" := CustLedgerEntry."Constant Symbol";
-                CustLedgerEntry."Bank Account Code CZL" := CustLedgerEntry."Bank Account Code";
-                CustLedgerEntry."Bank Account No. CZL" := CustLedgerEntry."Bank Account No.";
-                CustLedgerEntry."Transit No. CZL" := CustLedgerEntry."Transit No.";
-                CustLedgerEntry."IBAN CZL" := CustLedgerEntry.IBAN;
-                CustLedgerEntry."SWIFT Code CZL" := CustLedgerEntry."SWIFT Code";
-                CustLedgerEntry."VAT Date CZL" := CustLedgerEntry."VAT Date";
-                CustLedgerEntry.Modify(false);
-            until CustLedgerEntry.Next() = 0;
-
+        CustLedgerEntryDataTransfer.SetTables(Database::"Cust. Ledger Entry", Database::"Cust. Ledger Entry");
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Specific Symbol"), CustLedgerEntry.FieldNo("Specific Symbol CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Variable Symbol"), CustLedgerEntry.FieldNo("Variable Symbol CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Constant Symbol"), CustLedgerEntry.FieldNo("Constant Symbol CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Bank Account Code"), CustLedgerEntry.FieldNo("Bank Account Code CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Bank Account No."), CustLedgerEntry.FieldNo("Bank Account No. CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("Transit No."), CustLedgerEntry.FieldNo("Transit No. CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo(IBAN), CustLedgerEntry.FieldNo("IBAN CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("SWIFT Code"), CustLedgerEntry.FieldNo("SWIFT Code CZL"));
+        CustLedgerEntryDataTransfer.AddFieldValue(CustLedgerEntry.FieldNo("VAT Date"), CustLedgerEntry.FieldNo("VAT Date CZL"));
+        CustLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyDetailedCustLedgEntry();
@@ -841,22 +839,19 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyVendLedgerEntry();
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        VendorLedgerEntryDataTransfer: DataTransfer;
     begin
-        VendorLedgerEntry.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code", "VAT Date");
-        if VendorLedgerEntry.FindSet(true) then
-            repeat
-                VendorLedgerEntry."Specific Symbol CZL" := VendorLedgerEntry."Specific Symbol";
-                VendorLedgerEntry."Variable Symbol CZL" := VendorLedgerEntry."Variable Symbol";
-                VendorLedgerEntry."Constant Symbol CZL" := VendorLedgerEntry."Constant Symbol";
-                VendorLedgerEntry."Bank Account Code CZL" := VendorLedgerEntry."Bank Account Code";
-                VendorLedgerEntry."Bank Account No. CZL" := VendorLedgerEntry."Bank Account No.";
-                VendorLedgerEntry."Transit No. CZL" := VendorLedgerEntry."Transit No.";
-                VendorLedgerEntry."IBAN CZL" := VendorLedgerEntry.IBAN;
-                VendorLedgerEntry."SWIFT Code CZL" := VendorLedgerEntry."SWIFT Code";
-                VendorLedgerEntry."VAT Date CZL" := VendorLedgerEntry."VAT Date";
-                VendorLedgerEntry.Modify(false);
-            until VendorLedgerEntry.Next() = 0;
-
+        VendorLedgerEntryDataTransfer.SetTables(Database::"Vendor Ledger Entry", Database::"Vendor Ledger Entry");
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Specific Symbol"), VendorLedgerEntry.FieldNo("Specific Symbol CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Variable Symbol"), VendorLedgerEntry.FieldNo("Variable Symbol CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Constant Symbol"), VendorLedgerEntry.FieldNo("Constant Symbol CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Bank Account Code"), VendorLedgerEntry.FieldNo("Bank Account Code CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Bank Account No."), VendorLedgerEntry.FieldNo("Bank Account No. CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("Transit No."), VendorLedgerEntry.FieldNo("Transit No. CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo(IBAN), VendorLedgerEntry.FieldNo("IBAN CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("SWIFT Code"), VendorLedgerEntry.FieldNo("SWIFT Code CZL"));
+        VendorLedgerEntryDataTransfer.AddFieldValue(VendorLedgerEntry.FieldNo("VAT Date"), VendorLedgerEntry.FieldNo("VAT Date CZL"));
+        VendorLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyDetailedVendorLedgEntry();
@@ -910,608 +905,537 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyVATEntry();
     var
         VATEntry: Record "VAT Entry";
+        VATEntryDataTransfer: DataTransfer;
     begin
-        VATEntry.SetLoadFields("VAT Date", "Registration No.", "VAT Settlement No.", "Original Document VAT Date", "EU 3-Party Intermediate Role", "VAT Delay", "VAT Identifier");
-        if VATEntry.FindSet(true) then
-            repeat
+        VATEntryDataTransfer.SetTables(Database::"VAT Entry", Database::"VAT Entry");
 #if not CLEAN22
-                VATEntry."VAT Date CZL" := VATEntry."VAT Date";
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Date"), VATEntry.FieldNo("VAT Date CZL"));
 #endif
-                VATEntry."VAT Reporting Date" := VATEntry."VAT Date";
-                VATEntry."Registration No. CZL" := VATEntry."Registration No.";
-                VATEntry."VAT Settlement No. CZL" := VATEntry."VAT Settlement No.";
-                VATEntry."Original Doc. VAT Date CZL" := VATEntry."Original Document VAT Date";
-                VATEntry."EU 3-Party Intermed. Role CZL" := VATEntry."EU 3-Party Intermediate Role";
-                VATEntry."VAT Delay CZL" := VATEntry."VAT Delay";
-                VATEntry."VAT Identifier CZL" := VATEntry."VAT Identifier";
-                VATEntry.Modify(false);
-            until VATEntry.Next() = 0;
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Date"), VATEntry.FieldNo("VAT Reporting Date"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("Registration No."), VATEntry.FieldNo("Registration No. CZL"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Settlement No."), VATEntry.FieldNo("VAT Settlement No. CZL"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("Original Document VAT Date"), VATEntry.FieldNo("Original Doc. VAT Date CZL"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("EU 3-Party Intermediate Role"), VATEntry.FieldNo("EU 3-Party Intermed. Role CZL"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Delay"), VATEntry.FieldNo("VAT Delay CZL"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Identifier"), VATEntry.FieldNo("VAT Identifier CZL"));
+        VATEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyGenJournalLine();
     var
         GenJournalLine: Record "Gen. Journal Line";
+        GenJournalLineDataTransfer: DataTransfer;
     begin
-        GenJournalLine.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code",
-                                     "VAT Date", "Registration No.", "Tax Registration No.", "EU 3-Party Intermediate Role", "Original Document VAT Date", "Original Document Partner Type",
-                                     "Original Document Partner No.", "Currency Factor VAT", "Currency Code VAT", "VAT Delay");
-        if GenJournalLine.FindSet(true) then
-            repeat
-                GenJournalLine."Specific Symbol CZL" := GenJournalLine."Specific Symbol";
-                GenJournalLine."Variable Symbol CZL" := GenJournalLine."Variable Symbol";
-                GenJournalLine."Constant Symbol CZL" := GenJournalLine."Constant Symbol";
-                GenJournalLine."Bank Account Code CZL" := GenJournalLine."Bank Account Code";
-                GenJournalLine."Bank Account No. CZL" := GenJournalLine."Bank Account No.";
-                GenJournalLine."Transit No. CZL" := GenJournalLine."Transit No.";
-                GenJournalLine."IBAN CZL" := GenJournalLine.IBAN;
-                GenJournalLine."SWIFT Code CZL" := GenJournalLine."SWIFT Code";
+        GenJournalLineDataTransfer.SetTables(Database::"Gen. Journal Line", Database::"Gen. Journal Line");
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Specific Symbol"), GenJournalLine.FieldNo("Specific Symbol CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Variable Symbol"), GenJournalLine.FieldNo("Variable Symbol CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Constant Symbol"), GenJournalLine.FieldNo("Constant Symbol CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Bank Account Code"), GenJournalLine.FieldNo("Bank Account Code CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Bank Account No."), GenJournalLine.FieldNo("Bank Account No. CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Transit No."), GenJournalLine.FieldNo("Transit No. CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo(IBAN), GenJournalLine.FieldNo("IBAN CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("SWIFT Code"), GenJournalLine.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                GenJournalLine."VAT Date CZL" := GenJournalLine."VAT Date";
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("VAT Date"), GenJournalLine.FieldNo("VAT Date CZL"));
 #endif
-                GenJournalLine."VAT Reporting Date" := GenJournalLine."VAT Date";
-                GenJournalLine."Registration No. CZL" := GenJournalLine."Registration No.";
-                GenJournalLine."Tax Registration No. CZL" := GenJournalLine."Tax Registration No.";
-                GenJournalLine."EU 3-Party Intermed. Role CZL" := GenJournalLine."EU 3-Party Intermediate Role";
-                GenJournalLine."Original Doc. VAT Date CZL" := GenJournalLine."Original Document VAT Date";
-                GenJournalLine."Original Doc. Partner Type CZL" := GenJournalLine."Original Document Partner Type";
-                GenJournalLine."Original Doc. Partner No. CZL" := GenJournalLine."Original Document Partner No.";
-                GenJournalLine."VAT Currency Factor CZL" := GenJournalLine."Currency Factor VAT";
-                GenJournalLine."VAT Currency Code CZL" := GenJournalLine."Currency Code VAT";
-                GenJournalLine."VAT Delay CZL" := GenJournalLine."VAT Delay";
-                GenJournalLine.Modify(false);
-            until GenJournalLine.Next() = 0;
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("VAT Date"), GenJournalLine.FieldNo("VAT Reporting Date"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Registration No."), GenJournalLine.FieldNo("Registration No. CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Tax Registration No."), GenJournalLine.FieldNo("Tax Registration No. CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("EU 3-Party Intermediate Role"), GenJournalLine.FieldNo("EU 3-Party Intermed. Role CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Original Document VAT Date"), GenJournalLine.FieldNo("Original Doc. VAT Date CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Original Document Partner Type"), GenJournalLine.FieldNo("Original Doc. Partner Type CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Original Document Partner No."), GenJournalLine.FieldNo("Original Doc. Partner No. CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Currency Factor VAT"), GenJournalLine.FieldNo("VAT Currency Factor CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Currency Code VAT"), GenJournalLine.FieldNo("VAT Currency Code CZL"));
+        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("VAT Delay"), GenJournalLine.FieldNo("VAT Delay CZL"));
+        GenJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesHeader();
     var
         SalesHeader: Record "Sales Header";
+        SalesHeaderDataTransfer: DataTransfer;
     begin
-        SalesHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                  "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Credit Memo Type",
-                                  "Physical Transfer", "Intrastat Exclude", "EU 3-Party Intermediate Role", "Original Document VAT Date", "VAT Currency Factor", "Currency Code");
-        if SalesHeader.FindSet(true) then
-            repeat
-                SalesHeader."Specific Symbol CZL" := SalesHeader."Specific Symbol";
-                SalesHeader."Variable Symbol CZL" := SalesHeader."Variable Symbol";
-                SalesHeader."Constant Symbol CZL" := SalesHeader."Constant Symbol";
-                SalesHeader."Bank Account Code CZL" := SalesHeader."Bank Account Code";
-                SalesHeader."Bank Account No. CZL" := SalesHeader."Bank Account No.";
-                SalesHeader."Bank Branch No. CZL" := SalesHeader."Bank Branch No.";
-                SalesHeader."Bank Name CZL" := SalesHeader."Bank Name";
-                SalesHeader."Transit No. CZL" := SalesHeader."Transit No.";
-                SalesHeader."IBAN CZL" := SalesHeader.IBAN;
-                SalesHeader."SWIFT Code CZL" := SalesHeader."SWIFT Code";
+        SalesHeaderDataTransfer.SetTables(Database::"Sales Header", Database::"Sales Header");
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Specific Symbol"), SalesHeader.FieldNo("Specific Symbol CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Variable Symbol"), SalesHeader.FieldNo("Variable Symbol CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Constant Symbol"), SalesHeader.FieldNo("Constant Symbol CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Bank Account Code"), SalesHeader.FieldNo("Bank Account Code CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Bank Account No."), SalesHeader.FieldNo("Bank Account No. CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Bank Branch No."), SalesHeader.FieldNo("Bank Branch No. CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Bank Name"), SalesHeader.FieldNo("Bank Name CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Transit No."), SalesHeader.FieldNo("Transit No. CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo(IBAN), SalesHeader.FieldNo("IBAN CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("SWIFT Code"), SalesHeader.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                SalesHeader."VAT Date CZL" := SalesHeader."VAT Date";
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("VAT Date"), SalesHeader.FieldNo("VAT Date CZL"));
 #endif
-                SalesHeader."VAT Reporting Date" := SalesHeader."VAT Date";
-                SalesHeader."Registration No. CZL" := SalesHeader."Registration No.";
-                SalesHeader."Tax Registration No. CZL" := SalesHeader."Tax Registration No.";
-                SalesHeader."Credit Memo Type CZL" := SalesHeader."Credit Memo Type";
-                SalesHeader."Physical Transfer CZL" := SalesHeader."Physical Transfer";
-                SalesHeader."Intrastat Exclude CZL" := SalesHeader."Intrastat Exclude";
-                SalesHeader."EU 3-Party Intermed. Role CZL" := SalesHeader."EU 3-Party Intermediate Role";
-                SalesHeader."Original Doc. VAT Date CZL" := SalesHeader."Original Document VAT Date";
-                SalesHeader."VAT Currency Factor CZL" := SalesHeader."VAT Currency Factor";
-                SalesHeader."VAT Currency Code CZL" := SalesHeader."Currency Code";
-                SalesHeader.Modify(false);
-            until SalesHeader.Next() = 0;
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("VAT Date"), SalesHeader.FieldNo("VAT Reporting Date"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Registration No."), SalesHeader.FieldNo("Registration No. CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Tax Registration No."), SalesHeader.FieldNo("Tax Registration No. CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Credit Memo Type"), SalesHeader.FieldNo("Credit Memo Type CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Physical Transfer"), SalesHeader.FieldNo("Physical Transfer CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Intrastat Exclude"), SalesHeader.FieldNo("Intrastat Exclude CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("EU 3-Party Intermediate Role"), SalesHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Original Document VAT Date"), SalesHeader.FieldNo("Original Doc. VAT Date CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("VAT Currency Factor"), SalesHeader.FieldNo("VAT Currency Factor CZL"));
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Currency Code"), SalesHeader.FieldNo("VAT Currency Code CZL"));
+        SalesHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesShipmentHeader();
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
+        SalesShipmentHeaderDataTransfer: DataTransfer;
     begin
-        SalesShipmentHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude", "EU 3-Party Intermediate Role");
-        if SalesShipmentHeader.FindSet(true) then
-            repeat
-                SalesShipmentHeader."Registration No. CZL" := SalesShipmentHeader."Registration No.";
-                SalesShipmentHeader."Tax Registration No. CZL" := SalesShipmentHeader."Tax Registration No.";
-                SalesShipmentHeader."Physical Transfer CZL" := SalesShipmentHeader."Physical Transfer";
-                SalesShipmentHeader."Intrastat Exclude CZL" := SalesShipmentHeader."Intrastat Exclude";
-                SalesShipmentHeader."EU 3-Party Intermed. Role CZL" := SalesShipmentHeader."EU 3-Party Intermediate Role";
-                SalesShipmentHeader.Modify(false);
-            until SalesShipmentHeader.Next() = 0;
+        SalesShipmentHeaderDataTransfer.SetTables(Database::"Sales Shipment Header", Database::"Sales Shipment Header");
+        SalesShipmentHeaderDataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("Registration No."), SalesShipmentHeader.FieldNo("Registration No. CZL"));
+        SalesShipmentHeaderDataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("Tax Registration No."), SalesShipmentHeader.FieldNo("Tax Registration No. CZL"));
+        SalesShipmentHeaderDataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("Physical Transfer"), SalesShipmentHeader.FieldNo("Physical Transfer CZL"));
+        SalesShipmentHeaderDataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("Intrastat Exclude"), SalesShipmentHeader.FieldNo("Intrastat Exclude CZL"));
+        SalesShipmentHeaderDataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("EU 3-Party Intermediate Role"), SalesShipmentHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        SalesShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesInvoiceHeader();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceHeaderDataTransfer: DataTransfer;
     begin
-        SalesInvoiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                         "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
-                                         "Intrastat Exclude", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
-        if SalesInvoiceHeader.FindSet(true) then
-            repeat
-                SalesInvoiceHeader."Specific Symbol CZL" := SalesInvoiceHeader."Specific Symbol";
-                SalesInvoiceHeader."Variable Symbol CZL" := SalesInvoiceHeader."Variable Symbol";
-                SalesInvoiceHeader."Constant Symbol CZL" := SalesInvoiceHeader."Constant Symbol";
-                SalesInvoiceHeader."Bank Account Code CZL" := SalesInvoiceHeader."Bank Account Code";
-                SalesInvoiceHeader."Bank Account No. CZL" := SalesInvoiceHeader."Bank Account No.";
-                SalesInvoiceHeader."Bank Branch No. CZL" := SalesInvoiceHeader."Bank Branch No.";
-                SalesInvoiceHeader."Bank Name CZL" := SalesInvoiceHeader."Bank Name";
-                SalesInvoiceHeader."Transit No. CZL" := SalesInvoiceHeader."Transit No.";
-                SalesInvoiceHeader."IBAN CZL" := SalesInvoiceHeader.IBAN;
-                SalesInvoiceHeader."SWIFT Code CZL" := SalesInvoiceHeader."SWIFT Code";
+        SalesInvoiceHeaderDataTransfer.SetTables(Database::"Sales Invoice Header", Database::"Sales Invoice Header");
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Specific Symbol"), SalesInvoiceHeader.FieldNo("Specific Symbol CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Variable Symbol"), SalesInvoiceHeader.FieldNo("Variable Symbol CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Constant Symbol"), SalesInvoiceHeader.FieldNo("Constant Symbol CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Bank Account Code"), SalesInvoiceHeader.FieldNo("Bank Account Code CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Bank Account No."), SalesInvoiceHeader.FieldNo("Bank Account No. CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Bank Branch No."), SalesInvoiceHeader.FieldNo("Bank Branch No. CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Bank Name"), SalesInvoiceHeader.FieldNo("Bank Name CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Transit No."), SalesInvoiceHeader.FieldNo("Transit No. CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo(IBAN), SalesInvoiceHeader.FieldNo("IBAN CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("SWIFT Code"), SalesInvoiceHeader.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                SalesInvoiceHeader."VAT Date CZL" := SalesInvoiceHeader."VAT Date";
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("VAT Date"), SalesInvoiceHeader.FieldNo("VAT Date CZL"));
 #endif
-                SalesInvoiceHeader."VAT Reporting Date" := SalesInvoiceHeader."VAT Date";
-                SalesInvoiceHeader."Registration No. CZL" := SalesInvoiceHeader."Registration No.";
-                SalesInvoiceHeader."Tax Registration No. CZL" := SalesInvoiceHeader."Tax Registration No.";
-                SalesInvoiceHeader."Physical Transfer CZL" := SalesInvoiceHeader."Physical Transfer";
-                SalesInvoiceHeader."Intrastat Exclude CZL" := SalesInvoiceHeader."Intrastat Exclude";
-                SalesInvoiceHeader."EU 3-Party Intermed. Role CZL" := SalesInvoiceHeader."EU 3-Party Intermediate Role";
-                SalesInvoiceHeader."VAT Currency Factor CZL" := SalesInvoiceHeader."VAT Currency Factor";
-                SalesInvoiceHeader."VAT Currency Code CZL" := SalesInvoiceHeader."Currency Code";
-                SalesInvoiceHeader.Modify(false);
-            until SalesInvoiceHeader.Next() = 0;
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("VAT Date"), SalesInvoiceHeader.FieldNo("VAT Reporting Date"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Registration No."), SalesInvoiceHeader.FieldNo("Registration No. CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Tax Registration No."), SalesInvoiceHeader.FieldNo("Tax Registration No. CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Physical Transfer"), SalesInvoiceHeader.FieldNo("Physical Transfer CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Intrastat Exclude"), SalesInvoiceHeader.FieldNo("Intrastat Exclude CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("EU 3-Party Intermediate Role"), SalesInvoiceHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("VAT Currency Factor"), SalesInvoiceHeader.FieldNo("VAT Currency Factor CZL"));
+        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Currency Code"), SalesInvoiceHeader.FieldNo("VAT Currency Code CZL"));
+        SalesInvoiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesCrMemoHeader();
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesCrMemoHeaderDataTransfer: DataTransfer;
     begin
-        SalesCrMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                        "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
-                                        "Credit Memo Type", "Intrastat Exclude", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
-        if SalesCrMemoHeader.FindSet(true) then
-            repeat
-                SalesCrMemoHeader."Specific Symbol CZL" := SalesCrMemoHeader."Specific Symbol";
-                SalesCrMemoHeader."Variable Symbol CZL" := SalesCrMemoHeader."Variable Symbol";
-                SalesCrMemoHeader."Constant Symbol CZL" := SalesCrMemoHeader."Constant Symbol";
-                SalesCrMemoHeader."Bank Account Code CZL" := SalesCrMemoHeader."Bank Account Code";
-                SalesCrMemoHeader."Bank Account No. CZL" := SalesCrMemoHeader."Bank Account No.";
-                SalesCrMemoHeader."Bank Branch No. CZL" := SalesCrMemoHeader."Bank Branch No.";
-                SalesCrMemoHeader."Bank Name CZL" := SalesCrMemoHeader."Bank Name";
-                SalesCrMemoHeader."Transit No. CZL" := SalesCrMemoHeader."Transit No.";
-                SalesCrMemoHeader."IBAN CZL" := SalesCrMemoHeader.IBAN;
-                SalesCrMemoHeader."SWIFT Code CZL" := SalesCrMemoHeader."SWIFT Code";
+        SalesCrMemoHeaderDataTransfer.SetTables(Database::"Sales Cr.Memo Header", Database::"Sales Cr.Memo Header");
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Specific Symbol"), SalesCrMemoHeader.FieldNo("Specific Symbol CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Variable Symbol"), SalesCrMemoHeader.FieldNo("Variable Symbol CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Constant Symbol"), SalesCrMemoHeader.FieldNo("Constant Symbol CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Bank Account Code"), SalesCrMemoHeader.FieldNo("Bank Account Code CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Bank Account No."), SalesCrMemoHeader.FieldNo("Bank Account No. CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Bank Branch No."), SalesCrMemoHeader.FieldNo("Bank Branch No. CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Bank Name"), SalesCrMemoHeader.FieldNo("Bank Name CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Transit No."), SalesCrMemoHeader.FieldNo("Transit No. CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo(IBAN), SalesCrMemoHeader.FieldNo("IBAN CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("SWIFT Code"), SalesCrMemoHeader.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                SalesCrMemoHeader."VAT Date CZL" := SalesCrMemoHeader."VAT Date";
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("VAT Date"), SalesCrMemoHeader.FieldNo("VAT Date CZL"));
 #endif
-                SalesCrMemoHeader."VAT Reporting Date" := SalesCrMemoHeader."VAT Date";
-                SalesCrMemoHeader."Registration No. CZL" := SalesCrMemoHeader."Registration No.";
-                SalesCrMemoHeader."Tax Registration No. CZL" := SalesCrMemoHeader."Tax Registration No.";
-                SalesCrMemoHeader."Physical Transfer CZL" := SalesCrMemoHeader."Physical Transfer";
-                SalesCrMemoHeader."Intrastat Exclude CZL" := SalesCrMemoHeader."Intrastat Exclude";
-                SalesCrMemoHeader."Credit Memo Type CZL" := SalesCrMemoHeader."Credit Memo Type";
-                SalesCrMemoHeader."EU 3-Party Intermed. Role CZL" := SalesCrMemoHeader."EU 3-Party Intermediate Role";
-                SalesCrMemoHeader."VAT Currency Factor CZL" := SalesCrMemoHeader."VAT Currency Factor";
-                SalesCrMemoHeader."VAT Currency Code CZL" := SalesCrMemoHeader."Currency Code";
-                SalesCrMemoHeader.Modify(false);
-            until SalesCrMemoHeader.Next() = 0;
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("VAT Date"), SalesCrMemoHeader.FieldNo("VAT Reporting Date"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Registration No."), SalesCrMemoHeader.FieldNo("Registration No. CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Tax Registration No."), SalesCrMemoHeader.FieldNo("Tax Registration No. CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Physical Transfer"), SalesCrMemoHeader.FieldNo("Physical Transfer CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Intrastat Exclude"), SalesCrMemoHeader.FieldNo("Intrastat Exclude CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Credit Memo Type"), SalesCrMemoHeader.FieldNo("Credit Memo Type CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("EU 3-Party Intermediate Role"), SalesCrMemoHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("VAT Currency Factor"), SalesCrMemoHeader.FieldNo("VAT Currency Factor CZL"));
+        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Currency Code"), SalesCrMemoHeader.FieldNo("VAT Currency Code CZL"));
+        SalesCrMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyReturnReceiptHeader();
     var
         ReturnReceiptHeader: Record "Return Receipt Header";
+        ReturnReceiptHeaderDataTransfer: DataTransfer;
     begin
-        ReturnReceiptHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude");
-        if ReturnReceiptHeader.FindSet(true) then
-            repeat
-                ReturnReceiptHeader."Registration No. CZL" := ReturnReceiptHeader."Registration No.";
-                ReturnReceiptHeader."Tax Registration No. CZL" := ReturnReceiptHeader."Tax Registration No.";
-                ReturnReceiptHeader."Physical Transfer CZL" := ReturnReceiptHeader."Physical Transfer";
-                ReturnReceiptHeader."Intrastat Exclude CZL" := ReturnReceiptHeader."Intrastat Exclude";
-                ReturnReceiptHeader.Modify(false);
-            until ReturnReceiptHeader.Next() = 0;
+        ReturnReceiptHeaderDataTransfer.SetTables(Database::"Return Receipt Header", Database::"Return Receipt Header");
+        ReturnReceiptHeaderDataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("Registration No."), ReturnReceiptHeader.FieldNo("Registration No. CZL"));
+        ReturnReceiptHeaderDataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("Tax Registration No."), ReturnReceiptHeader.FieldNo("Tax Registration No. CZL"));
+        ReturnReceiptHeaderDataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("Physical Transfer"), ReturnReceiptHeader.FieldNo("Physical Transfer CZL"));
+        ReturnReceiptHeaderDataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("Intrastat Exclude"), ReturnReceiptHeader.FieldNo("Intrastat Exclude CZL"));
+        ReturnReceiptHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesHeaderArchive();
     var
         SalesHeaderArchive: Record "Sales Header Archive";
+        SalesHeaderArchiveDataTransfer: DataTransfer;
     begin
-        SalesHeaderArchive.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
-                                         "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
-                                         "Intrastat Exclude", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
-        if SalesHeaderArchive.FindSet(true) then
-            repeat
-                SalesHeaderArchive."Specific Symbol CZL" := SalesHeaderArchive."Specific Symbol";
-                SalesHeaderArchive."Variable Symbol CZL" := SalesHeaderArchive."Variable Symbol";
-                SalesHeaderArchive."Constant Symbol CZL" := SalesHeaderArchive."Constant Symbol";
-                SalesHeaderArchive."Bank Account Code CZL" := SalesHeaderArchive."Bank Account Code";
-                SalesHeaderArchive."Bank Account No. CZL" := SalesHeaderArchive."Bank Account No.";
-                SalesHeaderArchive."Transit No. CZL" := SalesHeaderArchive."Transit No.";
-                SalesHeaderArchive."IBAN CZL" := SalesHeaderArchive.IBAN;
-                SalesHeaderArchive."SWIFT Code CZL" := SalesHeaderArchive."SWIFT Code";
+        SalesHeaderArchiveDataTransfer.SetTables(Database::"Sales Header Archive", Database::"Sales Header Archive");
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Specific Symbol"), SalesHeaderArchive.FieldNo("Specific Symbol CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Variable Symbol"), SalesHeaderArchive.FieldNo("Variable Symbol CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Constant Symbol"), SalesHeaderArchive.FieldNo("Constant Symbol CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Bank Account Code"), SalesHeaderArchive.FieldNo("Bank Account Code CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Bank Account No."), SalesHeaderArchive.FieldNo("Bank Account No. CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Transit No."), SalesHeaderArchive.FieldNo("Transit No. CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo(IBAN), SalesHeaderArchive.FieldNo("IBAN CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("SWIFT Code"), SalesHeaderArchive.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                SalesHeaderArchive."VAT Date CZL" := SalesHeaderArchive."VAT Date";
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("VAT Date"), SalesHeaderArchive.FieldNo("VAT Date CZL"));
 #endif
-                SalesHeaderArchive."VAT Reporting Date" := SalesHeaderArchive."VAT Date";
-                SalesHeaderArchive."Registration No. CZL" := SalesHeaderArchive."Registration No.";
-                SalesHeaderArchive."Tax Registration No. CZL" := SalesHeaderArchive."Tax Registration No.";
-                SalesHeaderArchive."Intrastat Exclude CZL" := SalesHeaderArchive."Intrastat Exclude";
-                SalesHeaderArchive."Physical Transfer CZL" := SalesHeaderArchive."Physical Transfer";
-                SalesHeaderArchive."EU 3-Party Intermed. Role CZL" := SalesHeaderArchive."EU 3-Party Intermediate Role";
-                SalesHeaderArchive."VAT Currency Factor CZL" := SalesHeaderArchive."VAT Currency Factor";
-                SalesHeaderArchive."VAT Currency Code CZL" := SalesHeaderArchive."Currency Code";
-                SalesHeaderArchive.Modify(false);
-            until SalesHeaderArchive.Next() = 0;
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("VAT Date"), SalesHeaderArchive.FieldNo("VAT Reporting Date"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Registration No."), SalesHeaderArchive.FieldNo("Registration No. CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Tax Registration No."), SalesHeaderArchive.FieldNo("Tax Registration No. CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Physical Transfer"), SalesHeaderArchive.FieldNo("Physical Transfer CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Intrastat Exclude"), SalesHeaderArchive.FieldNo("Intrastat Exclude CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("EU 3-Party Intermediate Role"), SalesHeaderArchive.FieldNo("EU 3-Party Intermed. Role CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("VAT Currency Factor"), SalesHeaderArchive.FieldNo("VAT Currency Factor CZL"));
+        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Currency Code"), SalesHeaderArchive.FieldNo("VAT Currency Code CZL"));
+        SalesHeaderArchiveDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseHeader();
     var
         PurchaseHeader: Record "Purchase Header";
+        PurchaseHeaderDataTransfer: DataTransfer;
     begin
-        PurchaseHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                     "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
-                                     "Intrastat Exclude", "EU 3-Party Intermediate Role", "EU 3-Party Trade", "Original Document VAT Date", "VAT Currency Factor", "Currency Code");
-        if PurchaseHeader.FindSet(true) then
-            repeat
-                PurchaseHeader."Specific Symbol CZL" := PurchaseHeader."Specific Symbol";
-                PurchaseHeader."Variable Symbol CZL" := PurchaseHeader."Variable Symbol";
-                PurchaseHeader."Constant Symbol CZL" := PurchaseHeader."Constant Symbol";
-                PurchaseHeader."Bank Account Code CZL" := PurchaseHeader."Bank Account Code";
-                PurchaseHeader."Bank Account No. CZL" := PurchaseHeader."Bank Account No.";
-                PurchaseHeader."Bank Branch No. CZL" := PurchaseHeader."Bank Branch No.";
-                PurchaseHeader."Bank Name CZL" := PurchaseHeader."Bank Name";
-                PurchaseHeader."Transit No. CZL" := PurchaseHeader."Transit No.";
-                PurchaseHeader."IBAN CZL" := PurchaseHeader.IBAN;
-                PurchaseHeader."SWIFT Code CZL" := PurchaseHeader."SWIFT Code";
+        PurchaseHeaderDataTransfer.SetTables(Database::"Purchase Header", Database::"Purchase Header");
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Specific Symbol"), PurchaseHeader.FieldNo("Specific Symbol CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Variable Symbol"), PurchaseHeader.FieldNo("Variable Symbol CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Constant Symbol"), PurchaseHeader.FieldNo("Constant Symbol CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Bank Account Code"), PurchaseHeader.FieldNo("Bank Account Code CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Bank Account No."), PurchaseHeader.FieldNo("Bank Account No. CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Bank Branch No."), PurchaseHeader.FieldNo("Bank Branch No. CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Bank Name"), PurchaseHeader.FieldNo("Bank Name CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Transit No."), PurchaseHeader.FieldNo("Transit No. CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo(IBAN), PurchaseHeader.FieldNo("IBAN CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("SWIFT Code"), PurchaseHeader.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                PurchaseHeader."VAT Date CZL" := PurchaseHeader."VAT Date";
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("VAT Date"), PurchaseHeader.FieldNo("VAT Date CZL"));
 #endif
-                PurchaseHeader."VAT Reporting Date" := PurchaseHeader."VAT Date";
-                PurchaseHeader."Registration No. CZL" := PurchaseHeader."Registration No.";
-                PurchaseHeader."Tax Registration No. CZL" := PurchaseHeader."Tax Registration No.";
-                PurchaseHeader."Physical Transfer CZL" := PurchaseHeader."Physical Transfer";
-                PurchaseHeader."Intrastat Exclude CZL" := PurchaseHeader."Intrastat Exclude";
-                PurchaseHeader."EU 3-Party Intermed. Role CZL" := PurchaseHeader."EU 3-Party Intermediate Role";
-                PurchaseHeader."EU 3-Party Trade CZL" := PurchaseHeader."EU 3-Party Trade";
-                PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."Original Document VAT Date";
-                PurchaseHeader."VAT Currency Factor CZL" := PurchaseHeader."VAT Currency Factor";
-                PurchaseHeader."VAT Currency Code CZL" := PurchaseHeader."Currency Code";
-                PurchaseHeader.Modify(false);
-            until PurchaseHeader.Next() = 0;
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("VAT Date"), PurchaseHeader.FieldNo("VAT Reporting Date"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Registration No."), PurchaseHeader.FieldNo("Registration No. CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Tax Registration No."), PurchaseHeader.FieldNo("Tax Registration No. CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Physical Transfer"), PurchaseHeader.FieldNo("Physical Transfer CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Intrastat Exclude"), PurchaseHeader.FieldNo("Intrastat Exclude CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Intermediate Role"), PurchaseHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Trade"), PurchaseHeader.FieldNo("EU 3-Party Trade CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Original Document VAT Date"), PurchaseHeader.FieldNo("Original Doc. VAT Date CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("VAT Currency Factor"), PurchaseHeader.FieldNo("VAT Currency Factor CZL"));
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Currency Code"), PurchaseHeader.FieldNo("VAT Currency Code CZL"));
+        PurchaseHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseReceiptHeader();
     var
         PurchRcptHeader: Record "Purch. Rcpt. Header";
+        PurchRcptHeaderDataTransfer: DataTransfer;
     begin
-        PurchRcptHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude", "EU 3-Party Intermediate Role", "EU 3-Party Trade");
-        if PurchRcptHeader.FindSet(true) then
-            repeat
-                PurchRcptHeader."Registration No. CZL" := PurchRcptHeader."Registration No.";
-                PurchRcptHeader."Tax Registration No. CZL" := PurchRcptHeader."Tax Registration No.";
-                PurchRcptHeader."Physical Transfer CZL" := PurchRcptHeader."Physical Transfer";
-                PurchRcptHeader."Intrastat Exclude CZL" := PurchRcptHeader."Intrastat Exclude";
-                PurchRcptHeader."EU 3-Party Intermed. Role CZL" := PurchRcptHeader."EU 3-Party Intermediate Role";
-                PurchRcptHeader."EU 3-Party Trade CZL" := PurchRcptHeader."EU 3-Party Trade";
-                PurchRcptHeader.Modify(false);
-            until PurchRcptHeader.Next() = 0;
+        PurchRcptHeaderDataTransfer.SetTables(Database::"Purch. Rcpt. Header", Database::"Purch. Rcpt. Header");
+        PurchRcptHeaderDataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("Registration No."), PurchRcptHeader.FieldNo("Registration No. CZL"));
+        PurchRcptHeaderDataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("Tax Registration No."), PurchRcptHeader.FieldNo("Tax Registration No. CZL"));
+        PurchRcptHeaderDataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("Physical Transfer"), PurchRcptHeader.FieldNo("Physical Transfer CZL"));
+        PurchRcptHeaderDataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("Intrastat Exclude"), PurchRcptHeader.FieldNo("Intrastat Exclude CZL"));
+        PurchRcptHeaderDataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("EU 3-Party Intermediate Role"), PurchRcptHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        PurchRcptHeaderDataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("EU 3-Party Trade"), PurchRcptHeader.FieldNo("EU 3-Party Trade CZL"));
+        PurchRcptHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseInvoiceHeader();
     var
         PurchInvHeader: Record "Purch. Inv. Header";
+        PurchInvHeaderDataTransfer: DataTransfer;
     begin
-        PurchInvHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.",
-                                     IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude",
-                                     "EU 3-Party Intermediate Role", "EU 3-Party Trade", "Original Document VAT Date", "VAT Currency Factor", "Currency Code");
-        if PurchInvHeader.FindSet(true) then
-            repeat
-                PurchInvHeader."Specific Symbol CZL" := PurchInvHeader."Specific Symbol";
-                PurchInvHeader."Variable Symbol CZL" := PurchInvHeader."Variable Symbol";
-                PurchInvHeader."Constant Symbol CZL" := PurchInvHeader."Constant Symbol";
-                PurchInvHeader."Bank Account Code CZL" := PurchInvHeader."Bank Account Code";
-                PurchInvHeader."Bank Account No. CZL" := PurchInvHeader."Bank Account No.";
-                PurchInvHeader."Transit No. CZL" := PurchInvHeader."Transit No.";
-                PurchInvHeader."IBAN CZL" := PurchInvHeader.IBAN;
-                PurchInvHeader."SWIFT Code CZL" := PurchInvHeader."SWIFT Code";
+        PurchInvHeaderDataTransfer.SetTables(Database::"Purch. Inv. Header", Database::"Purch. Inv. Header");
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Specific Symbol"), PurchInvHeader.FieldNo("Specific Symbol CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Variable Symbol"), PurchInvHeader.FieldNo("Variable Symbol CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Constant Symbol"), PurchInvHeader.FieldNo("Constant Symbol CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Bank Account Code"), PurchInvHeader.FieldNo("Bank Account Code CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Bank Account No."), PurchInvHeader.FieldNo("Bank Account No. CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Transit No."), PurchInvHeader.FieldNo("Transit No. CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo(IBAN), PurchInvHeader.FieldNo("IBAN CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("SWIFT Code"), PurchInvHeader.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                PurchInvHeader."VAT Date CZL" := PurchInvHeader."VAT Date";
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Date"), PurchInvHeader.FieldNo("VAT Date CZL"));
 #endif
-                PurchInvHeader."VAT Reporting Date" := PurchInvHeader."VAT Date";
-                PurchInvHeader."Registration No. CZL" := PurchInvHeader."Registration No.";
-                PurchInvHeader."Tax Registration No. CZL" := PurchInvHeader."Tax Registration No.";
-                PurchInvHeader."Physical Transfer CZL" := PurchInvHeader."Physical Transfer";
-                PurchInvHeader."Intrastat Exclude CZL" := PurchInvHeader."Intrastat Exclude";
-                PurchInvHeader."EU 3-Party Intermed. Role CZL" := PurchInvHeader."EU 3-Party Intermediate Role";
-                PurchInvHeader."EU 3-Party Trade CZL" := PurchInvHeader."EU 3-Party Trade";
-                PurchInvHeader."Original Doc. VAT Date CZL" := PurchInvHeader."Original Document VAT Date";
-                PurchInvHeader."VAT Currency Factor CZL" := PurchInvHeader."VAT Currency Factor";
-                PurchInvHeader."VAT Currency Code CZL" := PurchInvHeader."Currency Code";
-                PurchInvHeader.Modify(false);
-            until PurchInvHeader.Next() = 0;
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Date"), PurchInvHeader.FieldNo("VAT Reporting Date"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Registration No."), PurchInvHeader.FieldNo("Registration No. CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Tax Registration No."), PurchInvHeader.FieldNo("Tax Registration No. CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Physical Transfer"), PurchInvHeader.FieldNo("Physical Transfer CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Intrastat Exclude"), PurchInvHeader.FieldNo("Intrastat Exclude CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Intermediate Role"), PurchInvHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Trade"), PurchInvHeader.FieldNo("EU 3-Party Trade CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Original Document VAT Date"), PurchInvHeader.FieldNo("Original Doc. VAT Date CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Currency Factor"), PurchInvHeader.FieldNo("VAT Currency Factor CZL"));
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Currency Code"), PurchInvHeader.FieldNo("VAT Currency Code CZL"));
+        PurchInvHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseCrMemoHeader();
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchCrMemoHdrDataTransfer: DataTransfer;
     begin
-        PurchCrMemoHdr.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.",
-                                     IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude",
-                                     "EU 3-Party Intermediate Role", "EU 3-Party Trade", "Original Document VAT Date", "VAT Currency Factor", "Currency Code");
-        if PurchCrMemoHdr.FindSet(true) then
-            repeat
-                PurchCrMemoHdr."Specific Symbol CZL" := PurchCrMemoHdr."Specific Symbol";
-                PurchCrMemoHdr."Variable Symbol CZL" := PurchCrMemoHdr."Variable Symbol";
-                PurchCrMemoHdr."Constant Symbol CZL" := PurchCrMemoHdr."Constant Symbol";
-                PurchCrMemoHdr."Bank Account Code CZL" := PurchCrMemoHdr."Bank Account Code";
-                PurchCrMemoHdr."Bank Account No. CZL" := PurchCrMemoHdr."Bank Account No.";
-                PurchCrMemoHdr."Transit No. CZL" := PurchCrMemoHdr."Transit No.";
-                PurchCrMemoHdr."IBAN CZL" := PurchCrMemoHdr.IBAN;
-                PurchCrMemoHdr."SWIFT Code CZL" := PurchCrMemoHdr."SWIFT Code";
+        PurchCrMemoHdrDataTransfer.SetTables(Database::"Purch. Cr. Memo Hdr.", Database::"Purch. Cr. Memo Hdr.");
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Specific Symbol"), PurchCrMemoHdr.FieldNo("Specific Symbol CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Variable Symbol"), PurchCrMemoHdr.FieldNo("Variable Symbol CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Constant Symbol"), PurchCrMemoHdr.FieldNo("Constant Symbol CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Bank Account Code"), PurchCrMemoHdr.FieldNo("Bank Account Code CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Bank Account No."), PurchCrMemoHdr.FieldNo("Bank Account No. CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Transit No."), PurchCrMemoHdr.FieldNo("Transit No. CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo(IBAN), PurchCrMemoHdr.FieldNo("IBAN CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("SWIFT Code"), PurchCrMemoHdr.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                PurchCrMemoHdr."VAT Date CZL" := PurchCrMemoHdr."VAT Date";
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("VAT Date"), PurchCrMemoHdr.FieldNo("VAT Date CZL"));
 #endif
-                PurchCrMemoHdr."VAT Reporting Date" := PurchCrMemoHdr."VAT Date";
-                PurchCrMemoHdr."Registration No. CZL" := PurchCrMemoHdr."Registration No.";
-                PurchCrMemoHdr."Tax Registration No. CZL" := PurchCrMemoHdr."Tax Registration No.";
-                PurchCrMemoHdr."Physical Transfer CZL" := PurchCrMemoHdr."Physical Transfer";
-                PurchCrMemoHdr."Intrastat Exclude CZL" := PurchCrMemoHdr."Intrastat Exclude";
-                PurchCrMemoHdr."EU 3-Party Intermed. Role CZL" := PurchCrMemoHdr."EU 3-Party Intermediate Role";
-                PurchCrMemoHdr."EU 3-Party Trade CZL" := PurchCrMemoHdr."EU 3-Party Trade";
-                PurchCrMemoHdr."Original Doc. VAT Date CZL" := PurchCrMemoHdr."Original Document VAT Date";
-                PurchCrMemoHdr."VAT Currency Factor CZL" := PurchCrMemoHdr."VAT Currency Factor";
-                PurchCrMemoHdr."VAT Currency Code CZL" := PurchCrMemoHdr."Currency Code";
-                PurchCrMemoHdr.Modify(false);
-            until PurchCrMemoHdr.Next() = 0;
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("VAT Date"), PurchCrMemoHdr.FieldNo("VAT Reporting Date"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Registration No."), PurchCrMemoHdr.FieldNo("Registration No. CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Tax Registration No."), PurchCrMemoHdr.FieldNo("Tax Registration No. CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Physical Transfer"), PurchCrMemoHdr.FieldNo("Physical Transfer CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Intrastat Exclude"), PurchCrMemoHdr.FieldNo("Intrastat Exclude CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Intermediate Role"), PurchCrMemoHdr.FieldNo("EU 3-Party Intermed. Role CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Trade"), PurchCrMemoHdr.FieldNo("EU 3-Party Trade CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Original Document VAT Date"), PurchCrMemoHdr.FieldNo("Original Doc. VAT Date CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("VAT Currency Factor"), PurchCrMemoHdr.FieldNo("VAT Currency Factor CZL"));
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Currency Code"), PurchCrMemoHdr.FieldNo("VAT Currency Code CZL"));
+        PurchCrMemoHdrDataTransfer.CopyFields();
     end;
 
     local procedure CopyReturnShipmentHeader();
     var
         ReturnShipmentHeader: Record "Return Shipment Header";
+        ReturnShipmentHeaderDataTransfer: DataTransfer;
     begin
-        ReturnShipmentHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude", "EU 3-Party Trade");
-        if ReturnShipmentHeader.FindSet(true) then
-            repeat
-                ReturnShipmentHeader."Registration No. CZL" := ReturnShipmentHeader."Registration No.";
-                ReturnShipmentHeader."Tax Registration No. CZL" := ReturnShipmentHeader."Tax Registration No.";
-                ReturnShipmentHeader."Physical Transfer CZL" := ReturnShipmentHeader."Physical Transfer";
-                ReturnShipmentHeader."Intrastat Exclude CZL" := ReturnShipmentHeader."Intrastat Exclude";
-                ReturnShipmentHeader."EU 3-Party Trade CZL" := ReturnShipmentHeader."EU 3-Party Trade";
-                ReturnShipmentHeader.Modify(false);
-            until ReturnShipmentHeader.Next() = 0;
+        ReturnShipmentHeaderDataTransfer.SetTables(Database::"Return Shipment Header", Database::"Return Shipment Header");
+        ReturnShipmentHeaderDataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("Registration No."), ReturnShipmentHeader.FieldNo("Registration No. CZL"));
+        ReturnShipmentHeaderDataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("Tax Registration No."), ReturnShipmentHeader.FieldNo("Tax Registration No. CZL"));
+        ReturnShipmentHeaderDataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("Physical Transfer"), ReturnShipmentHeader.FieldNo("Physical Transfer CZL"));
+        ReturnShipmentHeaderDataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("Intrastat Exclude"), ReturnShipmentHeader.FieldNo("Intrastat Exclude CZL"));
+        ReturnShipmentHeaderDataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("EU 3-Party Trade"), ReturnShipmentHeader.FieldNo("EU 3-Party Trade CZL"));
+        ReturnShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseHeaderArchive();
     var
         PurchaseHeaderArchive: Record "Purchase Header Archive";
+        PurchaseHeaderArchiveDataTransfer: DataTransfer;
     begin
-        PurchaseHeaderArchive.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
-                                            "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
-                                            "Intrastat Exclude", "EU 3-Party Trade", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
-        if PurchaseHeaderArchive.FindSet(true) then
-            repeat
-                PurchaseHeaderArchive."Specific Symbol CZL" := PurchaseHeaderArchive."Specific Symbol";
-                PurchaseHeaderArchive."Variable Symbol CZL" := PurchaseHeaderArchive."Variable Symbol";
-                PurchaseHeaderArchive."Constant Symbol CZL" := PurchaseHeaderArchive."Constant Symbol";
-                PurchaseHeaderArchive."Bank Account Code CZL" := PurchaseHeaderArchive."Bank Account Code";
-                PurchaseHeaderArchive."Bank Account No. CZL" := PurchaseHeaderArchive."Bank Account No.";
-                PurchaseHeaderArchive."Transit No. CZL" := PurchaseHeaderArchive."Transit No.";
-                PurchaseHeaderArchive."IBAN CZL" := PurchaseHeaderArchive.IBAN;
-                PurchaseHeaderArchive."SWIFT Code CZL" := PurchaseHeaderArchive."SWIFT Code";
+        PurchaseHeaderArchiveDataTransfer.SetTables(Database::"Purchase Header Archive", Database::"Purchase Header Archive");
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Specific Symbol"), PurchaseHeaderArchive.FieldNo("Specific Symbol CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Variable Symbol"), PurchaseHeaderArchive.FieldNo("Variable Symbol CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Constant Symbol"), PurchaseHeaderArchive.FieldNo("Constant Symbol CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Bank Account Code"), PurchaseHeaderArchive.FieldNo("Bank Account Code CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Bank Account No."), PurchaseHeaderArchive.FieldNo("Bank Account No. CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Transit No."), PurchaseHeaderArchive.FieldNo("Transit No. CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo(IBAN), PurchaseHeaderArchive.FieldNo("IBAN CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("SWIFT Code"), PurchaseHeaderArchive.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                PurchaseHeaderArchive."VAT Date CZL" := PurchaseHeaderArchive."VAT Date";
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("VAT Date"), PurchaseHeaderArchive.FieldNo("VAT Date CZL"));
 #endif
-                PurchaseHeaderArchive."VAT Reporting Date" := PurchaseHeaderArchive."VAT Date";
-                PurchaseHeaderArchive."Registration No. CZL" := PurchaseHeaderArchive."Registration No.";
-                PurchaseHeaderArchive."Tax Registration No. CZL" := PurchaseHeaderArchive."Tax Registration No.";
-                PurchaseHeaderArchive."EU 3-Party Intermed. Role CZL" := PurchaseHeaderArchive."EU 3-Party Intermediate Role";
-                PurchaseHeaderArchive."EU 3-Party Trade CZL" := PurchaseHeaderArchive."EU 3-Party Trade";
-                PurchaseHeaderArchive."VAT Currency Factor CZL" := PurchaseHeaderArchive."VAT Currency Factor";
-                PurchaseHeaderArchive."VAT Currency Code CZL" := PurchaseHeaderArchive."Currency Code";
-                PurchaseHeaderArchive.Modify(false);
-            until PurchaseHeaderArchive.Next() = 0;
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("VAT Date"), PurchaseHeaderArchive.FieldNo("VAT Reporting Date"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Registration No."), PurchaseHeaderArchive.FieldNo("Registration No. CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Tax Registration No."), PurchaseHeaderArchive.FieldNo("Tax Registration No. CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Physical Transfer"), PurchaseHeaderArchive.FieldNo("Physical Transfer CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Intrastat Exclude"), PurchaseHeaderArchive.FieldNo("Intrastat Exclude CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("EU 3-Party Intermediate Role"), PurchaseHeaderArchive.FieldNo("EU 3-Party Intermed. Role CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("VAT Currency Factor"), PurchaseHeaderArchive.FieldNo("VAT Currency Factor CZL"));
+        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Currency Code"), PurchaseHeaderArchive.FieldNo("VAT Currency Code CZL"));
+        PurchaseHeaderArchiveDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceHeader();
     var
         ServiceHeader: Record "Service Header";
+        ServiceHeaderDataTransfer: DataTransfer;
     begin
-        ServiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                    "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
-                                    "Intrastat Exclude", "Credit Memo Type", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
-        if ServiceHeader.FindSet(true) then
-            repeat
-                ServiceHeader."Specific Symbol CZL" := ServiceHeader."Specific Symbol";
-                ServiceHeader."Variable Symbol CZL" := ServiceHeader."Variable Symbol";
-                ServiceHeader."Constant Symbol CZL" := ServiceHeader."Constant Symbol";
-                ServiceHeader."Bank Account Code CZL" := ServiceHeader."Bank Account Code";
-                ServiceHeader."Bank Account No. CZL" := ServiceHeader."Bank Account No.";
-                ServiceHeader."Bank Branch No. CZL" := ServiceHeader."Bank Branch No.";
-                ServiceHeader."Bank Name CZL" := ServiceHeader."Bank Name";
-                ServiceHeader."Transit No. CZL" := ServiceHeader."Transit No.";
-                ServiceHeader."IBAN CZL" := ServiceHeader.IBAN;
-                ServiceHeader."SWIFT Code CZL" := ServiceHeader."SWIFT Code";
+        ServiceHeaderDataTransfer.SetTables(Database::"Service Header", Database::"Service Header");
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Specific Symbol"), ServiceHeader.FieldNo("Specific Symbol CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Variable Symbol"), ServiceHeader.FieldNo("Variable Symbol CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Constant Symbol"), ServiceHeader.FieldNo("Constant Symbol CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Bank Account Code"), ServiceHeader.FieldNo("Bank Account Code CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Bank Account No."), ServiceHeader.FieldNo("Bank Account No. CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Bank Branch No."), ServiceHeader.FieldNo("Bank Branch No. CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Bank Name"), ServiceHeader.FieldNo("Bank Name CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Transit No."), ServiceHeader.FieldNo("Transit No. CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo(IBAN), ServiceHeader.FieldNo("IBAN CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("SWIFT Code"), ServiceHeader.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                ServiceHeader."VAT Date CZL" := ServiceHeader."VAT Date";
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("VAT Date"), ServiceHeader.FieldNo("VAT Date CZL"));
 #endif
-                ServiceHeader."VAT Reporting Date" := ServiceHeader."VAT Date";
-                ServiceHeader."Registration No. CZL" := ServiceHeader."Registration No.";
-                ServiceHeader."Tax Registration No. CZL" := ServiceHeader."Tax Registration No.";
-                ServiceHeader."Physical Transfer CZL" := ServiceHeader."Physical Transfer";
-                ServiceHeader."Intrastat Exclude CZL" := ServiceHeader."Intrastat Exclude";
-                ServiceHeader."Credit Memo Type CZL" := ServiceHeader."Credit Memo Type";
-                ServiceHeader."EU 3-Party Intermed. Role CZL" := ServiceHeader."EU 3-Party Intermediate Role";
-                ServiceHeader."VAT Currency Factor CZL" := ServiceHeader."VAT Currency Factor";
-                ServiceHeader."VAT Currency Code CZL" := ServiceHeader."Currency Code";
-                ServiceHeader.Modify(false);
-            until ServiceHeader.Next() = 0;
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("VAT Date"), ServiceHeader.FieldNo("VAT Reporting Date"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Registration No."), ServiceHeader.FieldNo("Registration No. CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Tax Registration No."), ServiceHeader.FieldNo("Tax Registration No. CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Physical Transfer"), ServiceHeader.FieldNo("Physical Transfer CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Intrastat Exclude"), ServiceHeader.FieldNo("Intrastat Exclude CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Credit Memo Type"), ServiceHeader.FieldNo("Credit Memo Type CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("EU 3-Party Intermediate Role"), ServiceHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("VAT Currency Factor"), ServiceHeader.FieldNo("VAT Currency Factor CZL"));
+        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Currency Code"), ServiceHeader.FieldNo("VAT Currency Code CZL"));
+        ServiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceShipmentHeader();
     var
         ServiceShipmentHeader: Record "Service Shipment Header";
+        ServiceShipmentHeaderDataTransfer: DataTransfer;
     begin
-        ServiceShipmentHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude", "EU 3-Party Intermediate Role");
-        if ServiceShipmentHeader.FindSet(true) then
-            repeat
-                ServiceShipmentHeader."Registration No. CZL" := ServiceShipmentHeader."Registration No.";
-                ServiceShipmentHeader."Tax Registration No. CZL" := ServiceShipmentHeader."Tax Registration No.";
-                ServiceShipmentHeader."Physical Transfer CZL" := ServiceShipmentHeader."Physical Transfer";
-                ServiceShipmentHeader."Intrastat Exclude CZL" := ServiceShipmentHeader."Intrastat Exclude";
-                ServiceShipmentHeader."EU 3-Party Intermed. Role CZL" := ServiceShipmentHeader."EU 3-Party Intermediate Role";
-                ServiceShipmentHeader.Modify(false);
-            until ServiceShipmentHeader.Next() = 0;
+        ServiceShipmentHeaderDataTransfer.SetTables(Database::"Service Shipment Header", Database::"Service Shipment Header");
+        ServiceShipmentHeaderDataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("Registration No."), ServiceShipmentHeader.FieldNo("Registration No. CZL"));
+        ServiceShipmentHeaderDataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("Tax Registration No."), ServiceShipmentHeader.FieldNo("Tax Registration No. CZL"));
+        ServiceShipmentHeaderDataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("Physical Transfer"), ServiceShipmentHeader.FieldNo("Physical Transfer CZL"));
+        ServiceShipmentHeaderDataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("Intrastat Exclude"), ServiceShipmentHeader.FieldNo("Intrastat Exclude CZL"));
+        ServiceShipmentHeaderDataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("EU 3-Party Intermediate Role"), ServiceShipmentHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        ServiceShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceInvoiceHeader();
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
+        ServiceInvoiceHeaderDataTransfer: DataTransfer;
     begin
-        ServiceInvoiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                           "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
-                                           "Intrastat Exclude", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
-        if ServiceInvoiceHeader.FindSet(true) then
-            repeat
-                ServiceInvoiceHeader."Specific Symbol CZL" := ServiceInvoiceHeader."Specific Symbol";
-                ServiceInvoiceHeader."Variable Symbol CZL" := ServiceInvoiceHeader."Variable Symbol";
-                ServiceInvoiceHeader."Constant Symbol CZL" := ServiceInvoiceHeader."Constant Symbol";
-                ServiceInvoiceHeader."Bank Account Code CZL" := ServiceInvoiceHeader."Bank Account Code";
-                ServiceInvoiceHeader."Bank Account No. CZL" := ServiceInvoiceHeader."Bank Account No.";
-                ServiceInvoiceHeader."Bank Branch No. CZL" := ServiceInvoiceHeader."Bank Branch No.";
-                ServiceInvoiceHeader."Bank Name CZL" := ServiceInvoiceHeader."Bank Name";
-                ServiceInvoiceHeader."Transit No. CZL" := ServiceInvoiceHeader."Transit No.";
-                ServiceInvoiceHeader."IBAN CZL" := ServiceInvoiceHeader.IBAN;
-                ServiceInvoiceHeader."SWIFT Code CZL" := ServiceInvoiceHeader."SWIFT Code";
+        ServiceInvoiceHeaderDataTransfer.SetTables(Database::"Service Invoice Header", Database::"Service Invoice Header");
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Specific Symbol"), ServiceInvoiceHeader.FieldNo("Specific Symbol CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Variable Symbol"), ServiceInvoiceHeader.FieldNo("Variable Symbol CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Constant Symbol"), ServiceInvoiceHeader.FieldNo("Constant Symbol CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Bank Account Code"), ServiceInvoiceHeader.FieldNo("Bank Account Code CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Bank Account No."), ServiceInvoiceHeader.FieldNo("Bank Account No. CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Bank Branch No."), ServiceInvoiceHeader.FieldNo("Bank Branch No. CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Bank Name"), ServiceInvoiceHeader.FieldNo("Bank Name CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Transit No."), ServiceInvoiceHeader.FieldNo("Transit No. CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo(IBAN), ServiceInvoiceHeader.FieldNo("IBAN CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("SWIFT Code"), ServiceInvoiceHeader.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                ServiceInvoiceHeader."VAT Date CZL" := ServiceInvoiceHeader."VAT Date";
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("VAT Date"), ServiceInvoiceHeader.FieldNo("VAT Date CZL"));
 #endif
-                ServiceInvoiceHeader."VAT Reporting Date" := ServiceInvoiceHeader."VAT Date";
-                ServiceInvoiceHeader."Registration No. CZL" := ServiceInvoiceHeader."Registration No.";
-                ServiceInvoiceHeader."Tax Registration No. CZL" := ServiceInvoiceHeader."Tax Registration No.";
-                ServiceInvoiceHeader."Physical Transfer CZL" := ServiceInvoiceHeader."Physical Transfer";
-                ServiceInvoiceHeader."Intrastat Exclude CZL" := ServiceInvoiceHeader."Intrastat Exclude";
-                ServiceInvoiceHeader."EU 3-Party Intermed. Role CZL" := ServiceInvoiceHeader."EU 3-Party Intermediate Role";
-                ServiceInvoiceHeader."VAT Currency Factor CZL" := ServiceInvoiceHeader."VAT Currency Factor";
-                ServiceInvoiceHeader."VAT Currency Code CZL" := ServiceInvoiceHeader."Currency Code";
-                ServiceInvoiceHeader.Modify(false);
-            until ServiceInvoiceHeader.Next() = 0;
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("VAT Date"), ServiceInvoiceHeader.FieldNo("VAT Reporting Date"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Registration No."), ServiceInvoiceHeader.FieldNo("Registration No. CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Tax Registration No."), ServiceInvoiceHeader.FieldNo("Tax Registration No. CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Physical Transfer"), ServiceInvoiceHeader.FieldNo("Physical Transfer CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Intrastat Exclude"), ServiceInvoiceHeader.FieldNo("Intrastat Exclude CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("EU 3-Party Intermediate Role"), ServiceInvoiceHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("VAT Currency Factor"), ServiceInvoiceHeader.FieldNo("VAT Currency Factor CZL"));
+        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Currency Code"), ServiceInvoiceHeader.FieldNo("VAT Currency Code CZL"));
+        ServiceInvoiceHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceCrMemoHeader();
     var
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        ServiceCrMemoHeaderDataTransfer: DataTransfer;
     begin
-        ServiceCrMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
-                                          "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
-                                          "Intrastat Exclude", "Credit Memo Type", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
-        if ServiceCrMemoHeader.FindSet(true) then
-            repeat
-                ServiceCrMemoHeader."Specific Symbol CZL" := ServiceCrMemoHeader."Specific Symbol";
-                ServiceCrMemoHeader."Variable Symbol CZL" := ServiceCrMemoHeader."Variable Symbol";
-                ServiceCrMemoHeader."Constant Symbol CZL" := ServiceCrMemoHeader."Constant Symbol";
-                ServiceCrMemoHeader."Bank Account Code CZL" := ServiceCrMemoHeader."Bank Account Code";
-                ServiceCrMemoHeader."Bank Account No. CZL" := ServiceCrMemoHeader."Bank Account No.";
-                ServiceCrMemoHeader."Bank Branch No. CZL" := ServiceCrMemoHeader."Bank Branch No.";
-                ServiceCrMemoHeader."Bank Name CZL" := ServiceCrMemoHeader."Bank Name";
-                ServiceCrMemoHeader."Transit No. CZL" := ServiceCrMemoHeader."Transit No.";
-                ServiceCrMemoHeader."IBAN CZL" := ServiceCrMemoHeader.IBAN;
-                ServiceCrMemoHeader."SWIFT Code CZL" := ServiceCrMemoHeader."SWIFT Code";
+        ServiceCrMemoHeaderDataTransfer.SetTables(Database::"Service Cr.Memo Header", Database::"Service Cr.Memo Header");
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Specific Symbol"), ServiceCrMemoHeader.FieldNo("Specific Symbol CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Variable Symbol"), ServiceCrMemoHeader.FieldNo("Variable Symbol CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Constant Symbol"), ServiceCrMemoHeader.FieldNo("Constant Symbol CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Bank Account Code"), ServiceCrMemoHeader.FieldNo("Bank Account Code CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Bank Account No."), ServiceCrMemoHeader.FieldNo("Bank Account No. CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Bank Branch No."), ServiceCrMemoHeader.FieldNo("Bank Branch No. CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Bank Name"), ServiceCrMemoHeader.FieldNo("Bank Name CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Transit No."), ServiceCrMemoHeader.FieldNo("Transit No. CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo(IBAN), ServiceCrMemoHeader.FieldNo("IBAN CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("SWIFT Code"), ServiceCrMemoHeader.FieldNo("SWIFT Code CZL"));
 #if not CLEAN22
-                ServiceCrMemoHeader."VAT Date CZL" := ServiceCrMemoHeader."VAT Date";
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("VAT Date"), ServiceCrMemoHeader.FieldNo("VAT Date CZL"));
 #endif
-                ServiceCrMemoHeader."VAT Reporting Date" := ServiceCrMemoHeader."VAT Date";
-                ServiceCrMemoHeader."Registration No. CZL" := ServiceCrMemoHeader."Registration No.";
-                ServiceCrMemoHeader."Tax Registration No. CZL" := ServiceCrMemoHeader."Tax Registration No.";
-                ServiceCrMemoHeader."Physical Transfer CZL" := ServiceCrMemoHeader."Physical Transfer";
-                ServiceCrMemoHeader."Intrastat Exclude CZL" := ServiceCrMemoHeader."Intrastat Exclude";
-                ServiceCrMemoHeader."Credit Memo Type CZL" := ServiceCrMemoHeader."Credit Memo Type";
-                ServiceCrMemoHeader."EU 3-Party Intermed. Role CZL" := ServiceCrMemoHeader."EU 3-Party Intermediate Role";
-                ServiceCrMemoHeader."VAT Currency Factor CZL" := ServiceCrMemoHeader."VAT Currency Factor";
-                ServiceCrMemoHeader."VAT Currency Code CZL" := ServiceCrMemoHeader."Currency Code";
-                ServiceCrMemoHeader.Modify(false);
-            until ServiceCrMemoHeader.Next() = 0;
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("VAT Date"), ServiceCrMemoHeader.FieldNo("VAT Reporting Date"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Registration No."), ServiceCrMemoHeader.FieldNo("Registration No. CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Tax Registration No."), ServiceCrMemoHeader.FieldNo("Tax Registration No. CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Physical Transfer"), ServiceCrMemoHeader.FieldNo("Physical Transfer CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Intrastat Exclude"), ServiceCrMemoHeader.FieldNo("Intrastat Exclude CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Credit Memo Type"), ServiceCrMemoHeader.FieldNo("Credit Memo Type CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("EU 3-Party Intermediate Role"), ServiceCrMemoHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("VAT Currency Factor"), ServiceCrMemoHeader.FieldNo("VAT Currency Factor CZL"));
+        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Currency Code"), ServiceCrMemoHeader.FieldNo("VAT Currency Code CZL"));
+        ServiceCrMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyReminderHeader();
     var
         ReminderHeader: Record "Reminder Header";
+        ReminderHeaderDataTransfer: DataTransfer;
     begin
-        ReminderHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
-                                     "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Registration No.", "Tax Registration No.");
-        if ReminderHeader.FindSet(true) then
-            repeat
-                ReminderHeader."Specific Symbol CZL" := ReminderHeader."Specific Symbol";
-                ReminderHeader."Variable Symbol CZL" := ReminderHeader."Variable Symbol";
-                ReminderHeader."Constant Symbol CZL" := ReminderHeader."Constant Symbol";
-                ReminderHeader."Bank Account Code CZL" := ReminderHeader."Bank No.";
-                ReminderHeader."Bank Account No. CZL" := ReminderHeader."Bank Account No.";
-                ReminderHeader."Bank Branch No. CZL" := ReminderHeader."Bank Branch No.";
-                ReminderHeader."Bank Name CZL" := ReminderHeader."Bank Name";
-                ReminderHeader."Transit No. CZL" := ReminderHeader."Transit No.";
-                ReminderHeader."IBAN CZL" := ReminderHeader.IBAN;
-                ReminderHeader."SWIFT Code CZL" := ReminderHeader."SWIFT Code";
-                ReminderHeader."Registration No. CZL" := ReminderHeader."Registration No.";
-                ReminderHeader."Tax Registration No. CZL" := ReminderHeader."Tax Registration No.";
-                ReminderHeader.Modify(false);
-            until ReminderHeader.Next() = 0;
+        ReminderHeaderDataTransfer.SetTables(Database::"Reminder Header", Database::"Reminder Header");
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Specific Symbol"), ReminderHeader.FieldNo("Specific Symbol CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Variable Symbol"), ReminderHeader.FieldNo("Variable Symbol CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Constant Symbol"), ReminderHeader.FieldNo("Constant Symbol CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Bank No."), ReminderHeader.FieldNo("Bank Account Code CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Bank Account No."), ReminderHeader.FieldNo("Bank Account No. CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Bank Branch No."), ReminderHeader.FieldNo("Bank Branch No. CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Bank Name"), ReminderHeader.FieldNo("Bank Name CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Transit No."), ReminderHeader.FieldNo("Transit No. CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo(IBAN), ReminderHeader.FieldNo("IBAN CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("SWIFT Code"), ReminderHeader.FieldNo("SWIFT Code CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Registration No."), ReminderHeader.FieldNo("Registration No. CZL"));
+        ReminderHeaderDataTransfer.AddFieldValue(ReminderHeader.FieldNo("Tax Registration No."), ReminderHeader.FieldNo("Tax Registration No. CZL"));
+        ReminderHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyIssuedReminderHeader();
     var
         IssuedReminderHeader: Record "Issued Reminder Header";
+        IssuedReminderHeaderDataTransfer: DataTransfer;
     begin
-        IssuedReminderHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
-                                           "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Registration No.", "Tax Registration No.");
-        if IssuedReminderHeader.FindSet(true) then
-            repeat
-                IssuedReminderHeader."Specific Symbol CZL" := IssuedReminderHeader."Specific Symbol";
-                IssuedReminderHeader."Variable Symbol CZL" := IssuedReminderHeader."Variable Symbol";
-                IssuedReminderHeader."Constant Symbol CZL" := IssuedReminderHeader."Constant Symbol";
-                IssuedReminderHeader."Bank Account Code CZL" := IssuedReminderHeader."Bank No.";
-                IssuedReminderHeader."Bank Account No. CZL" := IssuedReminderHeader."Bank Account No.";
-                IssuedReminderHeader."Bank Branch No. CZL" := IssuedReminderHeader."Bank Branch No.";
-                IssuedReminderHeader."Bank Name CZL" := IssuedReminderHeader."Bank Name";
-                IssuedReminderHeader."Transit No. CZL" := IssuedReminderHeader."Transit No.";
-                IssuedReminderHeader."IBAN CZL" := IssuedReminderHeader.IBAN;
-                IssuedReminderHeader."SWIFT Code CZL" := IssuedReminderHeader."SWIFT Code";
-                IssuedReminderHeader."Registration No. CZL" := IssuedReminderHeader."Registration No.";
-                IssuedReminderHeader."Tax Registration No. CZL" := IssuedReminderHeader."Tax Registration No.";
-                IssuedReminderHeader.Modify(false);
-            until IssuedReminderHeader.Next() = 0;
+        IssuedReminderHeaderDataTransfer.SetTables(Database::"Issued Reminder Header", Database::"Issued Reminder Header");
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Specific Symbol"), IssuedReminderHeader.FieldNo("Specific Symbol CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Variable Symbol"), IssuedReminderHeader.FieldNo("Variable Symbol CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Constant Symbol"), IssuedReminderHeader.FieldNo("Constant Symbol CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank No."), IssuedReminderHeader.FieldNo("Bank Account Code CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Account No."), IssuedReminderHeader.FieldNo("Bank Account No. CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Branch No."), IssuedReminderHeader.FieldNo("Bank Branch No. CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Name"), IssuedReminderHeader.FieldNo("Bank Name CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Transit No."), IssuedReminderHeader.FieldNo("Transit No. CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo(IBAN), IssuedReminderHeader.FieldNo("IBAN CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("SWIFT Code"), IssuedReminderHeader.FieldNo("SWIFT Code CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Registration No."), IssuedReminderHeader.FieldNo("Registration No. CZL"));
+        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Tax Registration No."), IssuedReminderHeader.FieldNo("Tax Registration No. CZL"));
+        IssuedReminderHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyFinanceChargeMemoHeader();
     var
         FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
+        FinanceChargeMemoHeaderDataTransfer: DataTransfer;
     begin
-        FinanceChargeMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
-                                              "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Registration No.", "Tax Registration No.");
-        if FinanceChargeMemoHeader.FindSet(true) then
-            repeat
-                FinanceChargeMemoHeader."Specific Symbol CZL" := FinanceChargeMemoHeader."Specific Symbol";
-                FinanceChargeMemoHeader."Variable Symbol CZL" := FinanceChargeMemoHeader."Variable Symbol";
-                FinanceChargeMemoHeader."Constant Symbol CZL" := FinanceChargeMemoHeader."Constant Symbol";
-                FinanceChargeMemoHeader."Bank Account Code CZL" := FinanceChargeMemoHeader."Bank No.";
-                FinanceChargeMemoHeader."Bank Account No. CZL" := FinanceChargeMemoHeader."Bank Account No.";
-                FinanceChargeMemoHeader."Bank Branch No. CZL" := FinanceChargeMemoHeader."Bank Branch No.";
-                FinanceChargeMemoHeader."Bank Name CZL" := FinanceChargeMemoHeader."Bank Name";
-                FinanceChargeMemoHeader."Transit No. CZL" := FinanceChargeMemoHeader."Transit No.";
-                FinanceChargeMemoHeader."IBAN CZL" := FinanceChargeMemoHeader.IBAN;
-                FinanceChargeMemoHeader."SWIFT Code CZL" := FinanceChargeMemoHeader."SWIFT Code";
-                FinanceChargeMemoHeader."Registration No. CZL" := FinanceChargeMemoHeader."Registration No.";
-                FinanceChargeMemoHeader."Tax Registration No. CZL" := FinanceChargeMemoHeader."Tax Registration No.";
-                FinanceChargeMemoHeader.Modify(false);
-            until FinanceChargeMemoHeader.Next() = 0;
+        FinanceChargeMemoHeaderDataTransfer.SetTables(Database::"Finance Charge Memo Header", Database::"Finance Charge Memo Header");
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Specific Symbol"), FinanceChargeMemoHeader.FieldNo("Specific Symbol CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Variable Symbol"), FinanceChargeMemoHeader.FieldNo("Variable Symbol CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Constant Symbol"), FinanceChargeMemoHeader.FieldNo("Constant Symbol CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Bank No."), FinanceChargeMemoHeader.FieldNo("Bank Account Code CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Bank Account No."), FinanceChargeMemoHeader.FieldNo("Bank Account No. CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Bank Branch No."), FinanceChargeMemoHeader.FieldNo("Bank Branch No. CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Bank Name"), FinanceChargeMemoHeader.FieldNo("Bank Name CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Transit No."), FinanceChargeMemoHeader.FieldNo("Transit No. CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo(IBAN), FinanceChargeMemoHeader.FieldNo("IBAN CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("SWIFT Code"), FinanceChargeMemoHeader.FieldNo("SWIFT Code CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Registration No."), FinanceChargeMemoHeader.FieldNo("Registration No. CZL"));
+        FinanceChargeMemoHeaderDataTransfer.AddFieldValue(FinanceChargeMemoHeader.FieldNo("Tax Registration No."), FinanceChargeMemoHeader.FieldNo("Tax Registration No. CZL"));
+        FinanceChargeMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyIssuedFinanceChargeMemoHeader();
     var
         IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header";
+        IssuedFinChargeMemoHeaderDataTransfer: DataTransfer;
     begin
-        IssuedFinChargeMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
-                                                "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Registration No.", "Tax Registration No.");
-        if IssuedFinChargeMemoHeader.FindSet(true) then
-            repeat
-                IssuedFinChargeMemoHeader."Specific Symbol CZL" := IssuedFinChargeMemoHeader."Specific Symbol";
-                IssuedFinChargeMemoHeader."Variable Symbol CZL" := IssuedFinChargeMemoHeader."Variable Symbol";
-                IssuedFinChargeMemoHeader."Constant Symbol CZL" := IssuedFinChargeMemoHeader."Constant Symbol";
-                IssuedFinChargeMemoHeader."Bank Account Code CZL" := IssuedFinChargeMemoHeader."Bank No.";
-                IssuedFinChargeMemoHeader."Bank Account No. CZL" := IssuedFinChargeMemoHeader."Bank Account No.";
-                IssuedFinChargeMemoHeader."Bank Branch No. CZL" := IssuedFinChargeMemoHeader."Bank Branch No.";
-                IssuedFinChargeMemoHeader."Bank Name CZL" := IssuedFinChargeMemoHeader."Bank Name";
-                IssuedFinChargeMemoHeader."Transit No. CZL" := IssuedFinChargeMemoHeader."Transit No.";
-                IssuedFinChargeMemoHeader."IBAN CZL" := IssuedFinChargeMemoHeader.IBAN;
-                IssuedFinChargeMemoHeader."SWIFT Code CZL" := IssuedFinChargeMemoHeader."SWIFT Code";
-                IssuedFinChargeMemoHeader."Registration No. CZL" := IssuedFinChargeMemoHeader."Registration No.";
-                IssuedFinChargeMemoHeader."Tax Registration No. CZL" := IssuedFinChargeMemoHeader."Tax Registration No.";
-                IssuedFinChargeMemoHeader.Modify(false);
-            until IssuedFinChargeMemoHeader.Next() = 0;
+        IssuedFinChargeMemoHeaderDataTransfer.SetTables(Database::"Issued Fin. Charge Memo Header", Database::"Issued Fin. Charge Memo Header");
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Specific Symbol"), IssuedFinChargeMemoHeader.FieldNo("Specific Symbol CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Variable Symbol"), IssuedFinChargeMemoHeader.FieldNo("Variable Symbol CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Constant Symbol"), IssuedFinChargeMemoHeader.FieldNo("Constant Symbol CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Bank No."), IssuedFinChargeMemoHeader.FieldNo("Bank Account Code CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Bank Account No."), IssuedFinChargeMemoHeader.FieldNo("Bank Account No. CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Bank Branch No."), IssuedFinChargeMemoHeader.FieldNo("Bank Branch No. CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Bank Name"), IssuedFinChargeMemoHeader.FieldNo("Bank Name CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Transit No."), IssuedFinChargeMemoHeader.FieldNo("Transit No. CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo(IBAN), IssuedFinChargeMemoHeader.FieldNo("IBAN CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("SWIFT Code"), IssuedFinChargeMemoHeader.FieldNo("SWIFT Code CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Registration No."), IssuedFinChargeMemoHeader.FieldNo("Registration No. CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.AddFieldValue(IssuedFinChargeMemoHeader.FieldNo("Tax Registration No."), IssuedFinChargeMemoHeader.FieldNo("Tax Registration No. CZL"));
+        IssuedFinChargeMemoHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyStatutoryReportingSetup();
@@ -1702,23 +1626,20 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyVATPostingSetup();
     var
         VATPostingSetup: Record "VAT Posting Setup";
+        VATPostingSetupDataTransfer: DataTransfer;
     begin
-        VATPostingSetup.SetLoadFields("VAT Rate", "Supplies Mode Code", "Ratio Coefficient", "Corrections for Bad Receivable", "Reverse Charge Check", "Sales VAT Delay Account",
-                                      "Purchase VAT Delay Account", "VIES Purchases", "VIES Sales", "Intrastat Service");
-        if VATPostingSetup.FindSet() then
-            repeat
-                VATPostingSetup."VAT Rate CZL" := VATPostingSetup."VAT Rate";
-                VATPostingSetup."Supplies Mode Code CZL" := VATPostingSetup."Supplies Mode Code";
-                VATPostingSetup."Ratio Coefficient CZL" := VATPostingSetup."Ratio Coefficient";
-                VATPostingSetup."Corrections Bad Receivable CZL" := VATPostingSetup."Corrections for Bad Receivable";
-                VATPostingSetup."Reverse Charge Check CZL" := VATPostingSetup."Reverse Charge Check";
-                VATPostingSetup."Sales VAT Curr. Exch. Acc CZL" := VATPostingSetup."Sales VAT Delay Account";
-                VATPostingSetup."Purch. VAT Curr. Exch. Acc CZL" := VATPostingSetup."Purchase VAT Delay Account";
-                VATPostingSetup."VIES Purchase CZL" := VATPostingSetup."VIES Purchases";
-                VATPostingSetup."VIES Sales CZL" := VATPostingSetup."VIES Sales";
-                VATPostingSetup."Intrastat Service CZL" := VATPostingSetup."Intrastat Service";
-                VATPostingSetup.Modify(false);
-            until VATPostingSetup.Next() = 0;
+        VATPostingSetupDataTransfer.SetTables(Database::"VAT Posting Setup", Database::"VAT Posting Setup");
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("VAT Rate"), VATPostingSetup.FieldNo("VAT Rate CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("Supplies Mode Code"), VATPostingSetup.FieldNo("Supplies Mode Code CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("Ratio Coefficient"), VATPostingSetup.FieldNo("Ratio Coefficient CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("Corrections for Bad Receivable"), VATPostingSetup.FieldNo("Corrections Bad Receivable CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("Reverse Charge Check"), VATPostingSetup.FieldNo("Reverse Charge Check CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("Sales VAT Delay Account"), VATPostingSetup.FieldNo("Sales VAT Curr. Exch. Acc CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("Purchase VAT Delay Account"), VATPostingSetup.FieldNo("Purch. VAT Curr. Exch. Acc CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("VIES Purchases"), VATPostingSetup.FieldNo("VIES Purchase CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("VIES Sales"), VATPostingSetup.FieldNo("VIES Sales CZL"));
+        VATPostingSetupDataTransfer.AddFieldValue(VATPostingSetup.FieldNo("Intrastat Service"), VATPostingSetup.FieldNo("Intrastat Service CZL"));
+        VATPostingSetupDataTransfer.CopyFields();
     end;
 
     local procedure CopyVATStatementTemplate();
@@ -1908,13 +1829,11 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyGLAccount();
     var
         GLAccount: Record "G/L Account";
+        GLAccountDataTransfer: DataTransfer;
     begin
-        GLAccount.SetLoadFields("G/L Account Group");
-        if GLAccount.FindSet() then
-            repeat
-                GLAccount."G/L Account Group CZL" := GLAccount."G/L Account Group";
-                GLAccount.Modify(false);
-            until GLAccount.Next() = 0;
+        GLAccountDataTransfer.SetTables(Database::"G/L Account", Database::"G/L Account");
+        GLAccountDataTransfer.AddFieldValue(GLAccount.FieldNo("G/L Account Group"), GLAccount.FieldNo("G/L Account Group CZL"));
+        GLAccountDataTransfer.CopyFields();
     end;
 
     local procedure CopyVATAttributeCode();
@@ -1985,13 +1904,11 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyAccScheduleName();
     var
         AccScheduleName: Record "Acc. Schedule Name";
+        AccScheduleNameDataTransfer: DataTransfer;
     begin
-        AccScheduleName.SetLoadFields("Acc. Schedule Type");
-        if AccScheduleName.FindSet() then
-            repeat
-                AccScheduleName."Acc. Schedule Type CZL" := AccScheduleName."Acc. Schedule Type";
-                AccScheduleName.Modify(false);
-            until AccScheduleName.Next() = 0;
+        AccScheduleNameDataTransfer.SetTables(Database::"Acc. Schedule Name", Database::"Acc. Schedule Name");
+        AccScheduleNameDataTransfer.AddFieldValue(AccScheduleName.FieldNo("Acc. Schedule Type"), AccScheduleName.FieldNo("Acc. Schedule Type CZL"));
+        AccScheduleNameDataTransfer.CopyFields();
     end;
 
     local procedure CopyAccScheduleLine();
@@ -2074,118 +1991,102 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyPurchaseLine();
     var
         PurchaseLine: Record "Purchase Line";
+        PurchaseLineDataTransfer: DataTransfer;
     begin
-        PurchaseLine.SetLoadFields(Negative, "Ext. Amount (LCY)", "Ext.Amount Including VAT (LCY)", "Physical Transfer", "Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if PurchaseLine.FindSet() then
-            repeat
-                PurchaseLine."Negative CZL" := PurchaseLine.Negative;
-                PurchaseLine."Ext. Amount CZL" := PurchaseLine."Ext. Amount (LCY)";
-                PurchaseLine."Ext. Amount Incl. VAT CZL" := PurchaseLine."Ext.Amount Including VAT (LCY)";
-                PurchaseLine."Physical Transfer CZL" := PurchaseLine."Physical Transfer";
-                PurchaseLine."Tariff No. CZL" := PurchaseLine."Tariff No.";
-                PurchaseLine."Statistic Indication CZL" := PurchaseLine."Statistic Indication";
-                PurchaseLine."Country/Reg. of Orig. Code CZL" := PurchaseLine."Country/Region of Origin Code";
-                PurchaseLine.Modify(false);
-            until PurchaseLine.Next() = 0;
+        PurchaseLineDataTransfer.SetTables(Database::"Purchase Line", Database::"Purchase Line");
+        PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Negative"), PurchaseLine.FieldNo("Negative CZL"));
+        PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Ext. Amount (LCY)"), PurchaseLine.FieldNo("Ext. Amount CZL"));
+        PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Ext.Amount Including VAT (LCY)"), PurchaseLine.FieldNo("Ext. Amount Incl. VAT CZL"));
+        PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Physical Transfer"), PurchaseLine.FieldNo("Physical Transfer CZL"));
+        PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Tariff No."), PurchaseLine.FieldNo("Tariff No. CZL"));
+        PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Statistic Indication"), PurchaseLine.FieldNo("Statistic Indication CZL"));
+        PurchaseLineDataTransfer.AddFieldValue(PurchaseLine.FieldNo("Country/Region of Origin Code"), PurchaseLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        PurchaseLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchCrMemoLine();
     var
         PurchCrMemoLine: Record "Purch. Cr. Memo Line";
+        PurchCrMemoLineDataTransfer: DataTransfer;
     begin
-        PurchCrMemoLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if PurchCrMemoLine.FindSet() then
-            repeat
-                PurchCrMemoLine."Tariff No. CZL" := PurchCrMemoLine."Tariff No.";
-                PurchCrMemoLine."Statistic Indication CZL" := PurchCrMemoLine."Statistic Indication";
-                PurchCrMemoLine."Country/Reg. of Orig. Code CZL" := PurchCrMemoLine."Country/Region of Origin Code";
-                PurchCrMemoLine.Modify(false);
-            until PurchCrMemoLine.Next() = 0;
+        PurchCrMemoLineDataTransfer.SetTables(Database::"Purch. Cr. Memo Line", Database::"Purch. Cr. Memo Line");
+        PurchCrMemoLineDataTransfer.AddFieldValue(PurchCrMemoLine.FieldNo("Tariff No."), PurchCrMemoLine.FieldNo("Tariff No. CZL"));
+        PurchCrMemoLineDataTransfer.AddFieldValue(PurchCrMemoLine.FieldNo("Statistic Indication"), PurchCrMemoLine.FieldNo("Statistic Indication CZL"));
+        PurchCrMemoLineDataTransfer.AddFieldValue(PurchCrMemoLine.FieldNo("Country/Region of Origin Code"), PurchCrMemoLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        PurchCrMemoLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchInvLine();
     var
         PurchInvLine: Record "Purch. Inv. Line";
+        PurchInvLineDataTransfer: DataTransfer;
     begin
-        PurchInvLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if PurchInvLine.FindSet() then
-            repeat
-                PurchInvLine."Tariff No. CZL" := PurchInvLine."Tariff No.";
-                PurchInvLine."Statistic Indication CZL" := PurchInvLine."Statistic Indication";
-                PurchInvLine."Country/Reg. of Orig. Code CZL" := PurchInvLine."Country/Region of Origin Code";
-                PurchInvLine.Modify(false);
-            until PurchInvLine.Next() = 0;
+        PurchInvLineDataTransfer.SetTables(Database::"Purch. Inv. Line", Database::"Purch. Inv. Line");
+        PurchInvLineDataTransfer.AddFieldValue(PurchInvLine.FieldNo("Tariff No."), PurchInvLine.FieldNo("Tariff No. CZL"));
+        PurchInvLineDataTransfer.AddFieldValue(PurchInvLine.FieldNo("Statistic Indication"), PurchInvLine.FieldNo("Statistic Indication CZL"));
+        PurchInvLineDataTransfer.AddFieldValue(PurchInvLine.FieldNo("Country/Region of Origin Code"), PurchInvLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        PurchInvLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchRcptLine();
     var
         PurchRcptLine: Record "Purch. Rcpt. Line";
+        PurchRcptLineDataTransfer: DataTransfer;
     begin
-        PurchRcptLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if PurchRcptLine.FindSet() then
-            repeat
-                PurchRcptLine."Tariff No. CZL" := PurchRcptLine."Tariff No.";
-                PurchRcptLine."Statistic Indication CZL" := PurchRcptLine."Statistic Indication";
-                PurchRcptLine."Country/Reg. of Orig. Code CZL" := PurchRcptLine."Country/Region of Origin Code";
-                PurchRcptLine.Modify(false);
-            until PurchRcptLine.Next() = 0;
+        PurchRcptLineDataTransfer.SetTables(Database::"Purch. Rcpt. Line", Database::"Purch. Rcpt. Line");
+        PurchRcptLineDataTransfer.AddFieldValue(PurchRcptLine.FieldNo("Tariff No."), PurchRcptLine.FieldNo("Tariff No. CZL"));
+        PurchRcptLineDataTransfer.AddFieldValue(PurchRcptLine.FieldNo("Statistic Indication"), PurchRcptLine.FieldNo("Statistic Indication CZL"));
+        PurchRcptLineDataTransfer.AddFieldValue(PurchRcptLine.FieldNo("Country/Region of Origin Code"), PurchRcptLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        PurchRcptLineDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesCrMemoLine();
     var
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        SalesCrMemoLineDataTransfer: DataTransfer;
     begin
-        SalesCrMemoLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if SalesCrMemoLine.FindSet() then
-            repeat
-                SalesCrMemoLine."Tariff No. CZL" := SalesCrMemoLine."Tariff No.";
-                SalesCrMemoLine."Statistic Indication CZL" := SalesCrMemoLine."Statistic Indication";
-                SalesCrMemoLine."Country/Reg. of Orig. Code CZL" := SalesCrMemoLine."Country/Region of Origin Code";
-                SalesCrMemoLine.Modify(false);
-            until SalesCrMemoLine.Next() = 0;
+        SalesCrMemoLineDataTransfer.SetTables(Database::"Sales Cr.Memo Line", Database::"Sales Cr.Memo Line");
+        SalesCrMemoLineDataTransfer.AddFieldValue(SalesCrMemoLine.FieldNo("Tariff No."), SalesCrMemoLine.FieldNo("Tariff No. CZL"));
+        SalesCrMemoLineDataTransfer.AddFieldValue(SalesCrMemoLine.FieldNo("Statistic Indication"), SalesCrMemoLine.FieldNo("Statistic Indication CZL"));
+        SalesCrMemoLineDataTransfer.AddFieldValue(SalesCrMemoLine.FieldNo("Country/Region of Origin Code"), SalesCrMemoLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        SalesCrMemoLineDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesInvoiceLine();
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesInvoicelineDataTransfer: DataTransfer;
     begin
-        SalesInvoiceLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if SalesInvoiceLine.FindSet() then
-            repeat
-                SalesInvoiceLine."Tariff No. CZL" := SalesInvoiceLine."Tariff No.";
-                SalesInvoiceLine."Statistic Indication CZL" := SalesInvoiceLine."Statistic Indication";
-                SalesInvoiceLine."Country/Reg. of Orig. Code CZL" := SalesInvoiceLine."Country/Region of Origin Code";
-                SalesInvoiceLine.Modify(false);
-            until SalesInvoiceLine.Next() = 0;
+        SalesInvoicelineDataTransfer.SetTables(Database::"Sales Invoice Line", Database::"Sales Invoice Line");
+        SalesInvoicelineDataTransfer.AddFieldValue(SalesInvoiceLine.FieldNo("Tariff No."), SalesInvoiceLine.FieldNo("Tariff No. CZL"));
+        SalesInvoicelineDataTransfer.AddFieldValue(SalesInvoiceLine.FieldNo("Statistic Indication"), SalesInvoiceLine.FieldNo("Statistic Indication CZL"));
+        SalesInvoicelineDataTransfer.AddFieldValue(SalesInvoiceLine.FieldNo("Country/Region of Origin Code"), SalesInvoiceLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        SalesInvoicelineDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesLine();
     var
         SalesLine: Record "Sales Line";
+        SalesLineDataTransfer: DataTransfer;
     begin
-        SalesLine.SetLoadFields(Negative, "Tariff No.", "Physical Transfer", "Statistic Indication", "Country/Region of Origin Code");
-        if SalesLine.FindSet() then
-            repeat
-                SalesLine."Negative CZL" := SalesLine.Negative;
-                SalesLine."Physical Transfer CZL" := SalesLine."Physical Transfer";
-                SalesLine."Tariff No. CZL" := SalesLine."Tariff No.";
-                SalesLine."Statistic Indication CZL" := SalesLine."Statistic Indication";
-                SalesLine."Country/Reg. of Orig. Code CZL" := SalesLine."Country/Region of Origin Code";
-                SalesLine.Modify(false);
-            until SalesLine.Next() = 0;
+        SalesLineDataTransfer.SetTables(Database::"Sales Line", Database::"Sales Line");
+        SalesLineDataTransfer.AddFieldValue(SalesLine.FieldNo("Negative"), SalesLine.FieldNo("Negative CZL"));
+        SalesLineDataTransfer.AddFieldValue(SalesLine.FieldNo("Physical Transfer"), SalesLine.FieldNo("Physical Transfer CZL"));
+        SalesLineDataTransfer.AddFieldValue(SalesLine.FieldNo("Tariff No."), SalesLine.FieldNo("Tariff No. CZL"));
+        SalesLineDataTransfer.AddFieldValue(SalesLine.FieldNo("Statistic Indication"), SalesLine.FieldNo("Statistic Indication CZL"));
+        SalesLineDataTransfer.AddFieldValue(SalesLine.FieldNo("Country/Region of Origin Code"), SalesLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        SalesLineDataTransfer.CopyFields();
     end;
 
     local procedure CopySalesShipmentLine();
     var
         SalesShipmentLine: Record "Sales Shipment Line";
+        SalesShipmentLineDataTransfer: DataTransfer;
     begin
-        SalesShipmentLine.SetLoadFields("Tariff No.", "Statistic Indication");
-        if SalesShipmentLine.FindSet() then
-            repeat
-                SalesShipmentLine."Tariff No. CZL" := SalesShipmentLine."Tariff No.";
-                SalesShipmentLine."Statistic Indication CZL" := SalesShipmentLine."Statistic Indication";
-                SalesShipmentLine.Modify(false);
-            until SalesShipmentLine.Next() = 0;
+        SalesShipmentLineDataTransfer.SetTables(Database::"Sales Shipment Line", Database::"Sales Shipment Line");
+        SalesShipmentLineDataTransfer.AddFieldValue(SalesShipmentLine.FieldNo("Tariff No."), SalesShipmentLine.FieldNo("Tariff No. CZL"));
+        SalesShipmentLineDataTransfer.AddFieldValue(SalesShipmentLine.FieldNo("Statistic Indication"), SalesShipmentLine.FieldNo("Statistic Indication CZL"));
+        SalesShipmentLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyTariffNumber();
@@ -2374,95 +2275,81 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyStockkeepingUnit();
     var
         StockkeepingUnit: Record "Stockkeeping Unit";
+        StockkeepingUnitDataTransfer: DataTransfer;
     begin
-        StockkeepingUnit.SetLoadFields("Gen. Prod. Posting Group");
-        if StockkeepingUnit.FindSet() then
-            repeat
-                StockkeepingUnit."Gen. Prod. Posting Group CZL" := StockkeepingUnit."Gen. Prod. Posting Group";
-                StockkeepingUnit.Modify(false);
-            until StockkeepingUnit.Next() = 0;
+        StockkeepingUnitDataTransfer.SetTables(Database::"Stockkeeping Unit", Database::"Stockkeeping Unit");
+        StockkeepingUnitDataTransfer.AddFieldValue(StockkeepingUnit.FieldNo("Gen. Prod. Posting Group"), StockkeepingUnit.FieldNo("Gen. Prod. Posting Group CZL"));
+        StockkeepingUnitDataTransfer.CopyFields();
     end;
 
     local procedure CopyItem();
     var
         Item: Record Item;
+        ItemDataTransfer: DataTransfer;
     begin
-        Item.SetLoadFields("Statistic Indication", "Specific Movement");
-        if Item.FindSet() then
-            repeat
-                Item."Statistic Indication CZL" := Item."Statistic Indication";
-                Item."Specific Movement CZL" := Item."Specific Movement";
-                Item.Modify(false);
-            until Item.Next() = 0;
+        ItemDataTransfer.SetTables(Database::Item, Database::Item);
+        ItemDataTransfer.AddFieldValue(Item.FieldNo("Statistic Indication"), Item.FieldNo("Statistic Indication CZL"));
+        ItemDataTransfer.AddFieldValue(Item.FieldNo("Specific Movement"), Item.FieldNo("Specific Movement CZL"));
+        ItemDataTransfer.CopyFields();
     end;
 
     local procedure CopyResource();
     var
         Resource: Record Resource;
+        ResourceDataTransfer: DataTransfer;
     begin
-        Resource.SetLoadFields("Tariff No.");
-        if Resource.FindSet() then
-            repeat
-                Resource."Tariff No. CZL" := Resource."Tariff No.";
-                Resource.Modify(false);
-            until Resource.Next() = 0;
+        ResourceDataTransfer.SetTables(Database::Resource, Database::Resource);
+        ResourceDataTransfer.AddFieldValue(Resource.FieldNo("Tariff No."), Resource.FieldNo("Tariff No. CZL"));
+        ResourceDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceLine();
     var
         ServiceLine: Record "Service Line";
+        ServiceLineDataTransfer: DataTransfer;
     begin
-        ServiceLine.SetLoadFields(Negative, "Physical Transfer", "Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if ServiceLine.FindSet() then
-            repeat
-                ServiceLine."Negative CZL" := ServiceLine.Negative;
-                ServiceLine."Physical Transfer CZL" := ServiceLine."Physical Transfer";
-                ServiceLine."Tariff No. CZL" := ServiceLine."Tariff No.";
-                ServiceLine."Statistic Indication CZL" := ServiceLine."Statistic Indication";
-                ServiceLine."Country/Reg. of Orig. Code CZL" := ServiceLine."Country/Region of Origin Code";
-                ServiceLine.Modify(false);
-            until ServiceLine.Next() = 0;
+        ServiceLineDataTransfer.SetTables(Database::"Service Line", Database::"Service Line");
+        ServiceLineDataTransfer.AddFieldValue(ServiceLine.FieldNo("Negative"), ServiceLine.FieldNo("Negative CZL"));
+        ServiceLineDataTransfer.AddFieldValue(ServiceLine.FieldNo("Physical Transfer"), ServiceLine.FieldNo("Physical Transfer CZL"));
+        ServiceLineDataTransfer.AddFieldValue(ServiceLine.FieldNo("Tariff No."), ServiceLine.FieldNo("Tariff No. CZL"));
+        ServiceLineDataTransfer.AddFieldValue(ServiceLine.FieldNo("Statistic Indication"), ServiceLine.FieldNo("Statistic Indication CZL"));
+        ServiceLineDataTransfer.AddFieldValue(ServiceLine.FieldNo("Country/Region of Origin Code"), ServiceLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ServiceLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceInvoiceLine();
     var
         ServiceInvoiceLine: Record "Service Invoice Line";
+        ServiceInvoiceLineDataTransfer: DataTransfer;
     begin
-        ServiceInvoiceLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if ServiceInvoiceLine.FindSet() then
-            repeat
-                ServiceInvoiceLine."Tariff No. CZL" := ServiceInvoiceLine."Tariff No.";
-                ServiceInvoiceLine."Statistic Indication CZL" := ServiceInvoiceLine."Statistic Indication";
-                ServiceInvoiceLine."Country/Reg. of Orig. Code CZL" := ServiceInvoiceLine."Country/Region of Origin Code";
-                ServiceInvoiceLine.Modify(false);
-            until ServiceInvoiceLine.Next() = 0;
+        ServiceInvoiceLineDataTransfer.SetTables(Database::"Service Invoice Line", Database::"Service Invoice Line");
+        ServiceInvoiceLineDataTransfer.AddFieldValue(ServiceInvoiceLine.FieldNo("Tariff No."), ServiceInvoiceLine.FieldNo("Tariff No. CZL"));
+        ServiceInvoiceLineDataTransfer.AddFieldValue(ServiceInvoiceLine.FieldNo("Statistic Indication"), ServiceInvoiceLine.FieldNo("Statistic Indication CZL"));
+        ServiceInvoiceLineDataTransfer.AddFieldValue(ServiceInvoiceLine.FieldNo("Country/Region of Origin Code"), ServiceInvoiceLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ServiceInvoiceLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceCrMemoLine();
     var
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
+        ServiceCrMemoLineDataTransfer: DataTransfer;
     begin
-        ServiceCrMemoLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if ServiceCrMemoLine.FindSet() then
-            repeat
-                ServiceCrMemoLine."Tariff No. CZL" := ServiceCrMemoLine."Tariff No.";
-                ServiceCrMemoLine."Statistic Indication CZL" := ServiceCrMemoLine."Statistic Indication";
-                ServiceCrMemoLine."Country/Reg. of Orig. Code CZL" := ServiceCrMemoLine."Country/Region of Origin Code";
-                ServiceCrMemoLine.Modify(false);
-            until ServiceCrMemoLine.Next() = 0;
+        ServiceCrMemoLineDataTransfer.SetTables(Database::"Service Cr.Memo Line", Database::"Service Cr.Memo Line");
+        ServiceCrMemoLineDataTransfer.AddFieldValue(ServiceCrMemoLine.FieldNo("Tariff No."), ServiceCrMemoLine.FieldNo("Tariff No. CZL"));
+        ServiceCrMemoLineDataTransfer.AddFieldValue(ServiceCrMemoLine.FieldNo("Statistic Indication"), ServiceCrMemoLine.FieldNo("Statistic Indication CZL"));
+        ServiceCrMemoLineDataTransfer.AddFieldValue(ServiceCrMemoLine.FieldNo("Country/Region of Origin Code"), ServiceCrMemoLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ServiceCrMemoLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyServiceShipmentLine();
     var
         ServiceShipmentLine: Record "Service Shipment Line";
+        ServiceShipmentLineDataTransfer: DataTransfer;
     begin
-        ServiceShipmentLine.SetLoadFields("Tariff No.", "Statistic Indication");
-        if ServiceShipmentLine.FindSet() then
-            repeat
-                ServiceShipmentLine."Tariff No. CZL" := ServiceShipmentLine."Tariff No.";
-                ServiceShipmentLine."Statistic Indication CZL" := ServiceShipmentLine."Statistic Indication";
-                ServiceShipmentLine.Modify(false);
-            until ServiceShipmentLine.Next() = 0;
+        ServiceShipmentLineDataTransfer.SetTables(Database::"Service Shipment Line", Database::"Service Shipment Line");
+        ServiceShipmentLineDataTransfer.AddFieldValue(ServiceShipmentLine.FieldNo("Tariff No."), ServiceShipmentLine.FieldNo("Tariff No. CZL"));
+        ServiceShipmentLineDataTransfer.AddFieldValue(ServiceShipmentLine.FieldNo("Statistic Indication"), ServiceShipmentLine.FieldNo("Statistic Indication CZL"));
+        ServiceShipmentLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyCertificateCZCode()
@@ -2486,13 +2373,11 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyIsolatedCertificate()
     var
         IsolatedCertificate: Record "Isolated Certificate";
+        IsolatedCertificateDataTransfer: DataTransfer;
     begin
-        IsolatedCertificate.SetLoadFields("Certificate Code");
-        if IsolatedCertificate.FindSet() then
-            repeat
-                IsolatedCertificate."Certificate Code CZL" := IsolatedCertificate."Certificate Code";
-                IsolatedCertificate.Modify(false);
-            until IsolatedCertificate.Next() = 0;
+        IsolatedCertificateDataTransfer.SetTables(Database::"Isolated Certificate", Database::"Isolated Certificate");
+        IsolatedCertificateDataTransfer.AddFieldValue(IsolatedCertificate.FieldNo("Certificate Code"), IsolatedCertificate.FieldNo("Certificate Code CZL"));
+        IsolatedCertificateDataTransfer.CopyFields();
     end;
 
     local procedure CopyEETServiceSetup()
@@ -2638,13 +2523,11 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyBankAccount();
     var
         BankAccount: Record "Bank Account";
+        BankAccountDataTransfer: DataTransfer;
     begin
-        BankAccount.SetLoadFields("Exclude from Exch. Rate Adj.");
-        if BankAccount.FindSet() then
-            repeat
-                BankAccount."Excl. from Exch. Rate Adj. CZL" := BankAccount."Exclude from Exch. Rate Adj.";
-                BankAccount.Modify(false);
-            until BankAccount.Next() = 0;
+        BankAccountDataTransfer.SetTables(Database::"Bank Account", Database::"Bank Account");
+        BankAccountDataTransfer.AddFieldValue(BankAccount.FieldNo("Exclude from Exch. Rate Adj."), BankAccount.FieldNo("Excl. from Exch. Rate Adj. CZL"));
+        BankAccountDataTransfer.CopyFields();
     end;
 
     local procedure CopyConstantSymbol();
@@ -2668,27 +2551,23 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyDepreciationBook();
     var
         DepreciationBook: Record "Depreciation Book";
+        DepreciationBookDataTransfer: DataTransfer;
     begin
-        DepreciationBook.SetLoadFields("Mark Reclass. as Corrections");
-        if DepreciationBook.FindSet() then
-            repeat
-                DepreciationBook."Mark Reclass. as Correct. CZL" := DepreciationBook."Mark Reclass. as Corrections";
-                DepreciationBook.Modify(false);
-            until DepreciationBook.Next() = 0;
+        DepreciationBookDataTransfer.SetTables(Database::"Depreciation Book", Database::"Depreciation Book");
+        DepreciationBookDataTransfer.AddFieldValue(DepreciationBook.FieldNo("Mark Reclass. as Corrections"), DepreciationBook.FieldNo("Mark Reclass. as Correct. CZL"));
+        DepreciationBookDataTransfer.CopyFields();
     end;
 
     local procedure CopyValueEntry();
     var
         ValueEntry: Record "Value Entry";
+        ValueEntryDataTransfer: DataTransfer;
     begin
-        ValueEntry.SetLoadFields("G/L Correction", "Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
-        if ValueEntry.FindSet(true) then
-            repeat
-                ValueEntry."G/L Correction CZL" := ValueEntry."G/L Correction";
-                ValueEntry."Incl. in Intrastat Amount CZL" := ValueEntry."Incl. in Intrastat Amount";
-                ValueEntry."Incl. in Intrastat S.Value CZL" := ValueEntry."Incl. in Intrastat Stat. Value";
-                ValueEntry.Modify(false);
-            until ValueEntry.Next() = 0;
+        ValueEntryDataTransfer.SetTables(Database::"Value Entry", Database::"Value Entry");
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("G/L Correction"), ValueEntry.FieldNo("G/L Correction CZL"));
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("Incl. in Intrastat Amount"), ValueEntry.FieldNo("Incl. in Intrastat Amount CZL"));
+        ValueEntryDataTransfer.AddFieldValue(ValueEntry.FieldNo("Incl. in Intrastat Stat. Value"), ValueEntry.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ValueEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopySubstCustomerPostingGroup();
@@ -2752,16 +2631,14 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyShipmentMethod();
     var
         ShipmentMethod: Record "Shipment Method";
+        ShipmentMethodDataTransfer: DataTransfer;
     begin
-        ShipmentMethod.SetLoadFields("Include Item Charges (Amount)", "Intrastat Delivery Group Code", "Incl. Item Charges (Stat.Val.)", "Adjustment %");
-        if ShipmentMethod.FindSet() then
-            repeat
-                ShipmentMethod."Incl. Item Charges (Amt.) CZL" := ShipmentMethod."Include Item Charges (Amount)";
-                ShipmentMethod."Intrastat Deliv. Grp. Code CZL" := ShipmentMethod."Intrastat Delivery Group Code";
-                ShipmentMethod."Incl. Item Charges (S.Val) CZL" := ShipmentMethod."Incl. Item Charges (Stat.Val.)";
-                ShipmentMethod."Adjustment % CZL" := ShipmentMethod."Adjustment %";
-                ShipmentMethod.Modify(false);
-            until ShipmentMethod.Next() = 0;
+        ShipmentMethodDataTransfer.SetTables(Database::"Shipment Method", Database::"Shipment Method");
+        ShipmentMethodDataTransfer.AddFieldValue(ShipmentMethod.FieldNo("Include Item Charges (Amount)"), ShipmentMethod.FieldNo("Incl. Item Charges (Amt.) CZL"));
+        ShipmentMethodDataTransfer.AddFieldValue(ShipmentMethod.FieldNo("Intrastat Delivery Group Code"), ShipmentMethod.FieldNo("Intrastat Deliv. Grp. Code CZL"));
+        ShipmentMethodDataTransfer.AddFieldValue(ShipmentMethod.FieldNo("Incl. Item Charges (Stat.Val.)"), ShipmentMethod.FieldNo("Incl. Item Charges (S.Val) CZL"));
+        ShipmentMethodDataTransfer.AddFieldValue(ShipmentMethod.FieldNo("Adjustment %"), ShipmentMethod.FieldNo("Adjustment % CZL"));
+        ShipmentMethodDataTransfer.CopyFields();
     end;
 
     local procedure CopySpecificMovement()
@@ -2815,166 +2692,142 @@ codeunit 11748 "Install Application CZL"
     local procedure CopySalesLineArchive();
     var
         SalesLineArchive: Record "Sales Line Archive";
+        SalesLineArchiveDataTransfer: DataTransfer;
     begin
-        SalesLineArchive.SetLoadFields("Physical Transfer");
-        if SalesLineArchive.FindSet() then
-            repeat
-                SalesLineArchive."Physical Transfer CZL" := SalesLineArchive."Physical Transfer";
-                SalesLineArchive.Modify(false);
-            until SalesLineArchive.Next() = 0;
+        SalesLineArchiveDataTransfer.SetTables(Database::"Sales Line Archive", Database::"Sales Line Archive");
+        SalesLineArchiveDataTransfer.AddFieldValue(SalesLineArchive.FieldNo("Physical Transfer"), SalesLineArchive.FieldNo("Physical Transfer CZL"));
+        SalesLineArchiveDataTransfer.CopyFields();
     end;
 
     local procedure CopyPurchaseLineArchive();
     var
         PurchaseLineArchive: Record "Purchase Line Archive";
+        PurchaseLineArchiveDataTransfer: DataTransfer;
     begin
-        PurchaseLineArchive.SetLoadFields("Physical Transfer");
-        if PurchaseLineArchive.FindSet() then
-            repeat
-                PurchaseLineArchive."Physical Transfer CZL" := PurchaseLineArchive."Physical Transfer";
-                PurchaseLineArchive.Modify(false);
-            until PurchaseLineArchive.Next() = 0;
+        PurchaseLineArchiveDataTransfer.SetTables(Database::"Purchase Line Archive", Database::"Purchase Line Archive");
+        PurchaseLineArchiveDataTransfer.AddFieldValue(PurchaseLineArchive.FieldNo("Physical Transfer"), PurchaseLineArchive.FieldNo("Physical Transfer CZL"));
+        PurchaseLineArchiveDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferHeader();
     var
         TransferHeader: Record "Transfer Header";
+        TransferHeaderDataTransfer: DataTransfer;
     begin
-        TransferHeader.SetLoadFields("Intrastat Exclude");
-        if TransferHeader.FindSet() then
-            repeat
-                TransferHeader."Intrastat Exclude CZL" := TransferHeader."Intrastat Exclude";
-                TransferHeader.Modify(false);
-            until TransferHeader.Next() = 0;
+        TransferHeaderDataTransfer.SetTables(Database::"Transfer Header", Database::"Transfer Header");
+        TransferHeaderDataTransfer.AddFieldValue(TransferHeader.FieldNo("Intrastat Exclude"), TransferHeader.FieldNo("Intrastat Exclude CZL"));
+        TransferHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferLine();
     var
         TransferLine: Record "Transfer Line";
+        TransferLineDataTransfer: DataTransfer;
     begin
-        TransferLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
-        if TransferLine.FindSet() then
-            repeat
-                TransferLine."Tariff No. CZL" := TransferLine."Tariff No.";
-                TransferLine."Statistic Indication CZL" := TransferLine."Statistic Indication";
-                TransferLine."Country/Reg. of Orig. Code CZL" := TransferLine."Country/Region of Origin Code";
-                TransferLine.Modify(false);
-            until TransferLine.Next() = 0;
+        TransferLineDataTransfer.SetTables(Database::"Transfer Line", Database::"Transfer Line");
+        TransferLineDataTransfer.AddFieldValue(TransferLine.FieldNo("Tariff No."), TransferLine.FieldNo("Tariff No. CZL"));
+        TransferLineDataTransfer.AddFieldValue(TransferLine.FieldNo("Statistic Indication"), TransferLine.FieldNo("Statistic Indication CZL"));
+        TransferLineDataTransfer.AddFieldValue(TransferLine.FieldNo("Country/Region of Origin Code"), TransferLine.FieldNo("Country/Reg. of Orig. Code CZL"));
+        TransferLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferReceiptHeader();
     var
         TransferReceiptHeader: Record "Transfer Receipt Header";
+        TransferReceiptHeaderDataTransfer: DataTransfer;
     begin
-        TransferReceiptHeader.SetLoadFields("Intrastat Exclude");
-        if TransferReceiptHeader.FindSet() then
-            repeat
-                TransferReceiptHeader."Intrastat Exclude CZL" := TransferReceiptHeader."Intrastat Exclude";
-                TransferReceiptHeader.Modify(false);
-            until TransferReceiptHeader.Next() = 0;
+        TransferReceiptHeaderDataTransfer.SetTables(Database::"Transfer Receipt Header", Database::"Transfer Receipt Header");
+        TransferReceiptHeaderDataTransfer.AddFieldValue(TransferReceiptHeader.FieldNo("Intrastat Exclude"), TransferReceiptHeader.FieldNo("Intrastat Exclude CZL"));
+        TransferReceiptHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyTransferShipmentHeader();
     var
         TransferShipmentHeader: Record "Transfer Shipment Header";
+        TransferShipmentHeaderDataTransfer: DataTransfer;
     begin
-        TransferShipmentHeader.SetLoadFields("Intrastat Exclude");
-        if TransferShipmentHeader.FindSet() then
-            repeat
-                TransferShipmentHeader."Intrastat Exclude CZL" := TransferShipmentHeader."Intrastat Exclude";
-                TransferShipmentHeader.Modify(false);
-            until TransferShipmentHeader.Next() = 0;
+        TransferShipmentHeaderDataTransfer.SetTables(Database::"Transfer Shipment Header", Database::"Transfer Shipment Header");
+        TransferShipmentHeaderDataTransfer.AddFieldValue(TransferShipmentHeader.FieldNo("Intrastat Exclude"), TransferShipmentHeader.FieldNo("Intrastat Exclude CZL"));
+        TransferShipmentHeaderDataTransfer.CopyFields();
     end;
 
     local procedure CopyItemLedgerEntry();
     var
         ItemLedgerEntry: Record "Item Ledger Entry";
+        ItemLedgerEntryDataTransfer: DataTransfer;
     begin
-        ItemLedgerEntry.SetLoadFields("Tariff No.", "Physical Transfer", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
-        if ItemLedgerEntry.FindSet(true) then
-            repeat
-                ItemLedgerEntry."Tariff No. CZL" := ItemLedgerEntry."Tariff No.";
-                ItemLedgerEntry."Physical Transfer CZL" := ItemLedgerEntry."Physical Transfer";
-                ItemLedgerEntry."Net Weight CZL" := ItemLedgerEntry."Net Weight";
-                ItemLedgerEntry."Country/Reg. of Orig. Code CZL" := ItemLedgerEntry."Country/Region of Origin Code";
-                ItemLedgerEntry."Statistic Indication CZL" := ItemLedgerEntry."Statistic Indication";
-                ItemLedgerEntry."Intrastat Transaction CZL" := ItemLedgerEntry."Intrastat Transaction";
-                ItemLedgerEntry.Modify(false);
-            until ItemLedgerEntry.Next() = 0;
+        ItemLedgerEntryDataTransfer.SetTables(Database::"Item Ledger Entry", Database::"Item Ledger Entry");
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Tariff No."), ItemLedgerEntry.FieldNo("Tariff No. CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Physical Transfer"), ItemLedgerEntry.FieldNo("Physical Transfer CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Net Weight"), ItemLedgerEntry.FieldNo("Net Weight CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Country/Region of Origin Code"), ItemLedgerEntry.FieldNo("Country/Reg. of Orig. Code CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Statistic Indication"), ItemLedgerEntry.FieldNo("Statistic Indication CZL"));
+        ItemLedgerEntryDataTransfer.AddFieldValue(ItemLedgerEntry.FieldNo("Intrastat Transaction"), ItemLedgerEntry.FieldNo("Intrastat Transaction CZL"));
+        ItemLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyJobLedgerEntry();
     var
         JobLedgerEntry: Record "Job Ledger Entry";
+        JobLedgerEntryDataTransfer: DataTransfer;
     begin
-        JobLedgerEntry.SetLoadFields("Tariff No.", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
-        if JobLedgerEntry.FindSet(true) then
-            repeat
-                JobLedgerEntry."Tariff No. CZL" := JobLedgerEntry."Tariff No.";
-                JobLedgerEntry."Net Weight CZL" := JobLedgerEntry."Net Weight";
-                JobLedgerEntry."Country/Reg. of Orig. Code CZL" := JobLedgerEntry."Country/Region of Origin Code";
-                JobLedgerEntry."Statistic Indication CZL" := JobLedgerEntry."Statistic Indication";
-                JobLedgerEntry."Intrastat Transaction CZL" := JobLedgerEntry."Intrastat Transaction";
-                JobLedgerEntry.Modify(false);
-            until JobLedgerEntry.Next() = 0;
+        JobLedgerEntryDataTransfer.SetTables(Database::"Job Ledger Entry", Database::"Job Ledger Entry");
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Tariff No."), JobLedgerEntry.FieldNo("Tariff No. CZL"));
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Net Weight"), JobLedgerEntry.FieldNo("Net Weight CZL"));
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Country/Region of Origin Code"), JobLedgerEntry.FieldNo("Country/Reg. of Orig. Code CZL"));
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Statistic Indication"), JobLedgerEntry.FieldNo("Statistic Indication CZL"));
+        JobLedgerEntryDataTransfer.AddFieldValue(JobLedgerEntry.FieldNo("Intrastat Transaction"), JobLedgerEntry.FieldNo("Intrastat Transaction CZL"));
+        JobLedgerEntryDataTransfer.CopyFields();
     end;
 
     local procedure CopyItemCharge();
     var
         ItemCharge: Record "Item Charge";
+        ItemChargeDataTransfer: DataTransfer;
     begin
-        ItemCharge.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
-        if ItemCharge.FindSet(true) then
-            repeat
-                ItemCharge."Incl. in Intrastat Amount CZL" := ItemCharge."Incl. in Intrastat Amount";
-                ItemCharge."Incl. in Intrastat S.Value CZL" := ItemCharge."Incl. in Intrastat Stat. Value";
-                ItemCharge.Modify(false);
-            until ItemCharge.Next() = 0;
+        ItemChargeDataTransfer.SetTables(Database::"Item Charge", Database::"Item Charge");
+        ItemChargeDataTransfer.AddFieldValue(ItemCharge.FieldNo("Incl. in Intrastat Amount"), ItemCharge.FieldNo("Incl. in Intrastat Amount CZL"));
+        ItemChargeDataTransfer.AddFieldValue(ItemCharge.FieldNo("Incl. in Intrastat Stat. Value"), ItemCharge.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ItemChargeDataTransfer.CopyFields();
     end;
 
     local procedure CopyItemChargeAssignmentPurch();
     var
         ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
+        ItemChargeAssignmentPurchDataTransfer: DataTransfer;
     begin
-        ItemChargeAssignmentPurch.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
-        if ItemChargeAssignmentPurch.FindSet(true) then
-            repeat
-                ItemChargeAssignmentPurch."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentPurch."Incl. in Intrastat Amount";
-                ItemChargeAssignmentPurch."Incl. in Intrastat S.Value CZL" := ItemChargeAssignmentPurch."Incl. in Intrastat Stat. Value";
-                ItemChargeAssignmentPurch.Modify(false);
-            until ItemChargeAssignmentPurch.Next() = 0;
+        ItemChargeAssignmentPurchDataTransfer.SetTables(Database::"Item Charge Assignment (Purch)", Database::"Item Charge Assignment (Purch)");
+        ItemChargeAssignmentPurchDataTransfer.AddFieldValue(ItemChargeAssignmentPurch.FieldNo("Incl. in Intrastat Amount"), ItemChargeAssignmentPurch.FieldNo("Incl. in Intrastat Amount CZL"));
+        ItemChargeAssignmentPurchDataTransfer.AddFieldValue(ItemChargeAssignmentPurch.FieldNo("Incl. in Intrastat Stat. Value"), ItemChargeAssignmentPurch.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ItemChargeAssignmentPurchDataTransfer.CopyFields();
     end;
 
     local procedure CopyItemChargeAssignmentSales();
     var
         ItemChargeAssignmentSales: Record "Item Charge Assignment (Sales)";
+        ItemChargeAssignmentSalesDataTransfer: DataTransfer;
     begin
-        ItemChargeAssignmentSales.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
-        if ItemChargeAssignmentSales.FindSet(true) then
-            repeat
-                ItemChargeAssignmentSales."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentSales."Incl. in Intrastat Amount";
-                ItemChargeAssignmentSales."Incl. in Intrastat S.Value CZL" := ItemChargeAssignmentSales."Incl. in Intrastat Stat. Value";
-                ItemChargeAssignmentSales.Modify(false);
-            until ItemChargeAssignmentSales.Next() = 0;
+        ItemChargeAssignmentSalesDataTransfer.SetTables(Database::"Item Charge Assignment (Sales)", Database::"Item Charge Assignment (Sales)");
+        ItemChargeAssignmentSalesDataTransfer.AddFieldValue(ItemChargeAssignmentSales.FieldNo("Incl. in Intrastat Amount"), ItemChargeAssignmentSales.FieldNo("Incl. in Intrastat Amount CZL"));
+        ItemChargeAssignmentSalesDataTransfer.AddFieldValue(ItemChargeAssignmentSales.FieldNo("Incl. in Intrastat Stat. Value"), ItemChargeAssignmentSales.FieldNo("Incl. in Intrastat S.Value CZL"));
+        ItemChargeAssignmentSalesDataTransfer.CopyFields();
     end;
 
     local procedure CopyPostedGenJournalLine();
     var
         PostedGenJournalLine: Record "Posted Gen. Journal Line";
+        PostedGenJournalLineDataTransfer: DataTransfer;
     begin
-        PostedGenJournalLine.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
-        if PostedGenJournalLine.FindSet(true) then
-            repeat
-                PostedGenJournalLine."Specific Symbol CZL" := PostedGenJournalLine."Specific Symbol";
-                PostedGenJournalLine."Variable Symbol CZL" := PostedGenJournalLine."Variable Symbol";
-                PostedGenJournalLine."Constant Symbol CZL" := PostedGenJournalLine."Constant Symbol";
-                PostedGenJournalLine."Bank Account Code CZL" := PostedGenJournalLine."Bank Account Code";
-                PostedGenJournalLine."Bank Account No. CZL" := PostedGenJournalLine."Bank Account No.";
-                PostedGenJournalLine."Transit No. CZL" := PostedGenJournalLine."Transit No.";
-                PostedGenJournalLine."IBAN CZL" := PostedGenJournalLine.IBAN;
-                PostedGenJournalLine."SWIFT Code CZL" := PostedGenJournalLine."SWIFT Code";
-                PostedGenJournalLine.Modify(false);
-            until PostedGenJournalLine.Next() = 0;
+        PostedGenJournalLineDataTransfer.SetTables(Database::"Posted Gen. Journal Line", Database::"Posted Gen. Journal Line");
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Specific Symbol"), PostedGenJournalLine.FieldNo("Specific Symbol CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Variable Symbol"), PostedGenJournalLine.FieldNo("Variable Symbol CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Constant Symbol"), PostedGenJournalLine.FieldNo("Constant Symbol CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Bank Account Code"), PostedGenJournalLine.FieldNo("Bank Account Code CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Bank Account No."), PostedGenJournalLine.FieldNo("Bank Account No. CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("Transit No."), PostedGenJournalLine.FieldNo("Transit No. CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo(IBAN), PostedGenJournalLine.FieldNo("IBAN CZL"));
+        PostedGenJournalLineDataTransfer.AddFieldValue(PostedGenJournalLine.FieldNo("SWIFT Code"), PostedGenJournalLine.FieldNo("SWIFT Code CZL"));
+        PostedGenJournalLineDataTransfer.CopyFields();
     end;
 
     local procedure CopyIntrastatJournalBatch();
@@ -3018,27 +2871,23 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyInventoryPostingSetup();
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";
+        InventoryPostingSetupDataTransfer: DataTransfer;
     begin
-        InventoryPostingSetup.SetLoadFields("Change In Inv.Of Product Acc.", "Change In Inv.Of WIP Acc.", "Consumption Account");
-        if InventoryPostingSetup.FindSet() then
-            repeat
-                InventoryPostingSetup."Change In Inv.OfProd. Acc. CZL" := InventoryPostingSetup."Change In Inv.Of Product Acc.";
-                InventoryPostingSetup."Change In Inv.Of WIP Acc. CZL" := InventoryPostingSetup."Change In Inv.Of WIP Acc.";
-                InventoryPostingSetup."Consumption Account CZL" := InventoryPostingSetup."Consumption Account";
-                InventoryPostingSetup.Modify(false);
-            until InventoryPostingSetup.Next() = 0;
+        InventoryPostingSetupDataTransfer.SetTables(Database::"Inventory Posting Setup", Database::"Inventory Posting Setup");
+        InventoryPostingSetupDataTransfer.AddFieldValue(InventoryPostingSetup.FieldNo("Change In Inv.Of Product Acc."), InventoryPostingSetup.FieldNo("Change In Inv.OfProd. Acc. CZL"));
+        InventoryPostingSetupDataTransfer.AddFieldValue(InventoryPostingSetup.FieldNo("Change In Inv.Of WIP Acc."), InventoryPostingSetup.FieldNo("Change In Inv.Of WIP Acc. CZL"));
+        InventoryPostingSetupDataTransfer.AddFieldValue(InventoryPostingSetup.FieldNo("Consumption Account"), InventoryPostingSetup.FieldNo("Consumption Account CZL"));
+        InventoryPostingSetupDataTransfer.CopyFields();
     end;
 
     local procedure CopyGeneralPostingSetup();
     var
         GeneralPostingSetup: Record "General Posting Setup";
+        GeneralPostingSetupDataTransfer: DataTransfer;
     begin
-        GeneralPostingSetup.SetLoadFields("Invt. Rounding Adj. Account");
-        if GeneralPostingSetup.FindSet() then
-            repeat
-                GeneralPostingSetup."Invt. Rounding Adj. Acc. CZL" := GeneralPostingSetup."Invt. Rounding Adj. Account";
-                GeneralPostingSetup.Modify(false);
-            until GeneralPostingSetup.Next() = 0;
+        GeneralPostingSetupDataTransfer.SetTables(Database::"General Posting Setup", Database::"General Posting Setup");
+        GeneralPostingSetupDataTransfer.AddFieldValue(GeneralPostingSetup.FieldNo("Invt. Rounding Adj. Account"), GeneralPostingSetup.FieldNo("Invt. Rounding Adj. Acc. CZL"));
+        GeneralPostingSetupDataTransfer.CopyFields();
     end;
 
     local procedure CopyUserSetupLine();

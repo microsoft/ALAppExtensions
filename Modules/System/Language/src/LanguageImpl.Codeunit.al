@@ -109,6 +109,36 @@ codeunit 54 "Language Impl."
         exit(1033); // en-US
     end;
 
+    procedure ToDefaultLanguage(ValueVariant: Variant): Text
+    var
+        Result: Text;
+        CurrentLanguage: Integer;
+        DummyBoolean: Boolean;
+    begin
+        case true of
+            // Handle specific data types in case the function is being called within a report that uses local language.
+            // In that case the current local language takes priority and the default case logic won't work.
+            ValueVariant.IsBoolean:
+                begin
+                    DummyBoolean := ValueVariant;
+                    if DummyBoolean then
+                        Result := 'Yes'
+                    else
+                        Result := 'No';
+                end;
+            else begin
+                CurrentLanguage := GlobalLanguage();
+                GlobalLanguage(GetDefaultApplicationLanguageId());
+
+                Result := Format(ValueVariant);
+
+                GlobalLanguage(CurrentLanguage);
+            end;
+        end;
+
+        exit(Result);
+    end;
+
     procedure ValidateApplicationLanguageId(LanguageId: Integer)
     var
         TempWindowsLanguage: Record "Windows Language" temporary;

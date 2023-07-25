@@ -100,6 +100,18 @@ pageextension 31287 "Bank Account Card CZB" extends "Bank Account Card"
             group(PaymentOrdersCZB)
             {
                 Caption = 'Payment Orders';
+                field("Pmt.Jnl. Templ. Name Order CZB"; Rec."Pmt.Jnl. Templ. Name Order CZB")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the name of payment journal template.';
+                    ShowMandatory = MandatoryFieldCZB;
+                }
+                field("Pmt. Jnl. Batch Name Order CZB"; Rec."Pmt. Jnl. Batch Name Order CZB")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the name of payment journal batch.';
+                    ShowMandatory = MandatoryFieldCZB;
+                }
                 field("Domestic Payment Order ID CZB"; Rec."Domestic Payment Order ID CZB")
                 {
                     ApplicationArea = Basic, Suite;

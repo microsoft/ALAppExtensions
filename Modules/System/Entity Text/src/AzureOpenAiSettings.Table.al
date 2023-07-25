@@ -100,21 +100,21 @@ table 2010 "Azure OpenAi Settings"
     procedure SetSecret(Secret: Text)
     begin
         if EncryptionEnabled() then
-            IsolatedStorage.SetEncrypted(SecretKeyTok, Secret, DataScope::Module)
+            IsolatedStorage.SetEncrypted(SecretTok, Secret, DataScope::Module)
         else
-            IsolatedStorage.Set(SecretKeyTok, Secret, DataScope::Module);
+            IsolatedStorage.Set(SecretTok, Secret, DataScope::Module);
         Session.LogMessage('0000JY6', TelemetrySecretSetTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
     end;
 
     procedure ClearSecret()
     begin
-        if IsolatedStorage.Delete(SecretKeyTok, DataScope::Module) then;
+        if IsolatedStorage.Delete(SecretTok, DataScope::Module) then;
         Session.LogMessage('0000JY7', TelemetrySecretClearedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
     end;
 
     procedure HasSecret(): Boolean
     begin
-        exit(IsolatedStorage.Contains(SecretKeyTok, DataScope::Module));
+        exit(IsolatedStorage.Contains(SecretTok, DataScope::Module));
     end;
 
     [NonDebuggable]
@@ -145,10 +145,10 @@ table 2010 "Azure OpenAi Settings"
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
             NavApp.GetCurrentModuleInfo(EntityTextModuleInfo);
             if (not IsNullGuid(CallerModuleInfo.Id())) and (CallerModuleInfo.Publisher() = EntityTextModuleInfo.Publisher()) then begin
-                KvEndpoint := GetConfigurationValue(EndpointKeyTok);
+                KvEndpoint := GetConfigurationValue(EndpointTok);
                 if KvEndpoint <> '' then begin
                     Session.LogMessage('0000JVU', TelemetryKvEndpointTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
-                    exit(StrSubstNo(KvEndpoint, ApiVersionKeyTok, ApiVersionTok));
+                    exit(StrSubstNo(KvEndpoint, ApiVersionKeyTok, ApiVersionTok, Format(GetIslandIndex()).PadLeft(2, '0')));
                 end;
             end;
         end;
@@ -181,16 +181,16 @@ table 2010 "Azure OpenAi Settings"
         Secret: Text;
     begin
         if not EnvironmentInformation.IsSaaSInfrastructure() then begin
-            if IsolatedStorage.Get(SecretKeyTok, DataScope::Module, Secret) then;
+            if IsolatedStorage.Get(SecretTok, DataScope::Module, Secret) then;
             exit(Secret <> '');
         end;
 
         NavApp.GetCurrentModuleInfo(EntityTextModuleInfo);
         if (not IsNullGuid(CallerModuleInfo.Id())) and (CallerModuleInfo.Publisher() = EntityTextModuleInfo.Publisher()) then
-            if AzureKeyVault.GetAzureKeyVaultCertificate(SecretKeyTok, Secret) then
+            if AzureKeyVault.GetAzureKeyVaultCertificate(SecretTok, Secret) then
                 exit(Secret <> '');
 
-        if IsolatedStorage.Get(SecretKeyTok, DataScope::Module, Secret) then;
+        if IsolatedStorage.Get(SecretTok, DataScope::Module, Secret) then;
         exit(Secret <> '');
     end;
 
@@ -203,20 +203,20 @@ table 2010 "Azure OpenAi Settings"
         Secret: Text;
     begin
         if not EnvironmentInformation.IsSaaSInfrastructure() then begin
-            IsolatedStorage.Get(SecretKeyTok, DataScope::Module, Secret);
+            IsolatedStorage.Get(SecretTok, DataScope::Module, Secret);
             Session.LogMessage('0000JVX', TelemetrySecretIsolatedStorageTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
             exit(Secret);
         end;
 
         NavApp.GetCurrentModuleInfo(EntityTextModuleInfo);
         if (not IsNullGuid(CallerModuleInfo.Id())) and (CallerModuleInfo.Publisher() = EntityTextModuleInfo.Publisher()) then
-            if AzureKeyVault.GetAzureKeyVaultCertificate(SecretKeyTok, Secret) then
+            if AzureKeyVault.GetAzureKeyVaultCertificate(SecretTok, Secret) then
                 if Secret <> '' then begin
                     Session.LogMessage('0000JVY', TelemetrySecretKeyVaultTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
                     exit(GetOauthSecret(Secret));
                 end;
 
-        IsolatedStorage.Get(SecretKeyTok, DataScope::Module, Secret);
+        IsolatedStorage.Get(SecretTok, DataScope::Module, Secret);
         Session.LogMessage('0000JVZ', TelemetrySecretIsolatedStorageTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
         exit(Secret);
     end;
@@ -232,9 +232,9 @@ table 2010 "Azure OpenAi Settings"
         Token: Text;
         IdToken: Text;
     begin
-        ClientId := GetConfigurationValue(ClientKeyTok);
-        Authority := GetConfigurationValue(AuthorityKeyTok);
-        Resource := GetConfigurationValue(ResourceKeyTok);
+        ClientId := GetConfigurationValue(ClientTok);
+        Authority := GetConfigurationValue(AuthorityTok);
+        Resource := GetConfigurationValue(ResourceTok);
 
         if Authority = '' then
             Error('');
@@ -247,7 +247,6 @@ table 2010 "Azure OpenAi Settings"
         OAuth2.AcquireTokensWithCertificate(ClientId, Secret, '', Authority, Scopes, Token, IdToken);
         exit(Token);
     end;
-
 
     [NonDebuggable]
     internal procedure IncludeSource(CallerModuleInfo: ModuleInfo): Boolean
@@ -262,7 +261,35 @@ table 2010 "Azure OpenAi Settings"
         if IsNullGuid(CallerModuleInfo.Id()) or (CallerModuleInfo.Publisher() <> EntityTextModuleInfo.Publisher()) then
             exit(false);
 
-        exit(GetConfigurationValue(IncludeSourceKeyTok) = 'true');
+        exit(GetConfigurationValue(IncludeSourceTok) = 'true');
+    end;
+
+    local procedure GetIslandIndex(): Integer
+    var
+        AzureAdTenant: Codeunit "Azure AD Tenant";
+        TotalIslands: Integer;
+        Island: Integer;
+        Int32: DotNet Int32;
+        NumberStyles: DotNet NumberStyles;
+        TenantGuid: Guid;
+    begin
+        if not Evaluate(TotalIslands, GetConfigurationValue(TotalIslandsTok)) then
+            Session.LogMessage('0000KE6', TelemetryTotalIslandsInvalidTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+        if TotalIslands <= 1 then begin
+            Session.LogMessage('0000KE5', StrSubstNo(TelemetrySelectedIslandTxt, 1, TotalIslands), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+            exit(1);
+        end;
+
+        if not Evaluate(TenantGuid, AzureAdTenant.GetAadTenantId()) then begin
+            Session.LogMessage('0000KE4', TelemetryTenantIdInvalidTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+            TenantGuid := CreateGuid();
+        end;
+
+        Island := Int32.Parse(Format(TenantGuid, 4, 3), NumberStyles::HexNumber); // take the first 4 chars of the guid = 32 bits
+        Island := (Island mod TotalIslands) + 1; // use this number to pick a random island for the tenant
+
+        Session.LogMessage('0000KE5', StrSubstNo(TelemetrySelectedIslandTxt, Island, TotalIslands), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+        exit(Island);
     end;
 
     [NonDebuggable]
@@ -277,7 +304,7 @@ table 2010 "Azure OpenAi Settings"
         if not EnvironmentInformation.IsSaaSInfrastructure() then
             exit('');
 
-        AzureKeyVault.GetAzureKeyVaultSecret(ConfigurationKeyTok, ConfigurationText);
+        AzureKeyVault.GetAzureKeyVaultSecret(ConfigurationTok, ConfigurationText);
 
         if ConfigurationText = '' then
             exit('');
@@ -294,13 +321,14 @@ table 2010 "Azure OpenAi Settings"
     var
         PrivateCompletionsEndpointTxt: Label '/openai/deployments/%1/completions', Locked = true;
         AoaiSuffixTxt: Label '.openai.azure.com/', Locked = true;
-        SecretKeyTok: Label 'AOAI-Cert', Locked = true;
-        ConfigurationKeyTok: Label 'AOAI-Configuration', Locked = true;
-        EndpointKeyTok: Label 'Endpoint', Locked = true;
-        ClientKeyTok: Label 'Client', Locked = true;
-        AuthorityKeyTok: Label 'Authority', Locked = true;
-        ResourceKeyTok: Label 'Resource', Locked = true;
-        IncludeSourceKeyTok: Label 'IncludeSource', Locked = true;
+        SecretTok: Label 'AOAI-Cert', Locked = true;
+        ConfigurationTok: Label 'AOAI-Configuration', Locked = true;
+        EndpointTok: Label 'Endpoint', Locked = true;
+        TotalIslandsTok: Label 'TotalIslands', Locked = true;
+        ClientTok: Label 'Client', Locked = true;
+        AuthorityTok: Label 'Authority', Locked = true;
+        ResourceTok: Label 'Resource', Locked = true;
+        IncludeSourceTok: Label 'IncludeSource', Locked = true;
         ApiVersionKeyTok: Label 'api-version', Locked = true;
         ApiVersionTok: Label '2022-12-01', Locked = true;
         UriNotValidErr: Label 'The specified endpoint is not valid.';
@@ -317,4 +345,7 @@ table 2010 "Azure OpenAi Settings"
         TelemetrySecretSetTxt: Label 'The secret was set.', Locked = true;
         TelemetryEndpointClearedTxt: Label 'The endpoint was cleared.', Locked = true;
         TelemetryEndpointSetTxt: Label 'The endpoint was set.', Locked = true;
+        TelemetryTenantIdInvalidTxt: Label 'The AAD tenant id is not a valid guid, generating a random one.', Locked = true;
+        TelemetrySelectedIslandTxt: Label 'Island %1 of %2 was selected.', Locked = true;
+        TelemetryTotalIslandsInvalidTxt: Label 'The total islands config key is not set or is not a number.', Locked = true;
 }

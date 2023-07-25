@@ -29,7 +29,7 @@ codeunit 5261 "Audit File Export Mgt."
         NotPossibleToScheduleTxt: label 'It is not possible to schedule the task for line %1 because the Max. No. of Jobs is %2.', Comment = '%1,%2 = numbers';
         ScheduleTaskForLineTxt: label 'Schedule a task for the line %1.', Comment = '%1 = number';
         AuditFileAlreadyExistsQst: label 'The audit file already exists and is ready for downloading. Do you want to recreate the audit file?';
-        TwoStringsTxt: label '%1%2', Comment = '%1, %2 - two strings to concatenate';
+        TwoStringsTxt: label '%1%2', Comment = '%1, %2 - two strings to concatenate', Locked = true;
 
     procedure StartExport(var AuditFileExportHeader: Record "Audit File Export Header")
     var
@@ -505,10 +505,10 @@ codeunit 5261 "Audit File Export Mgt."
     begin
         SizeInMbytes := Round(AuditFile."File Content".Length / (1024 * 1024));
         if SizeInMbytes <= 1024 then
-            exit(StrSubstNo(TwoStringsTxt, Format(SizeInMbytes), ' Mb'));
+            exit(StrSubstNo(TwoStringsTxt, Format(SizeInMbytes), ' MB'));
 
         SizeInGbytes := Round(SizeInMbytes / 1024);
-        exit(StrSubstNo(TwoStringsTxt, Format(SizeInGbytes), ' Gb'));
+        exit(StrSubstNo(TwoStringsTxt, Format(SizeInGbytes), ' GB'));
     end;
 
     procedure DownloadFileFromExportHeader(AuditFileExportHeader: Record "Audit File Export Header")
@@ -644,6 +644,13 @@ codeunit 5261 "Audit File Export Mgt."
 
         AuditFileExportHeader.Get(AuditFileExportHeader.Id);
         NotifyAuditFileExportLineCompleted(AuditFileExportHeader);
+    end;
+
+    procedure UpdateProgressBarOnAuditFileExportLine(var AuditFileExportLine: Record "Audit File Export Line"; ProgressFraction: Integer)
+    begin
+        AuditFileExportLine.Get(AuditFileExportLine.ID, AuditFileExportLine."Line No.");
+        AuditFileExportLine.Validate(Progress, ProgressFraction * 10000);
+        AuditFileExportLine.Modify(true);
     end;
 
     local procedure IsExportSessionActive(AuditFileExportLine: Record "Audit File Export Line"): Boolean

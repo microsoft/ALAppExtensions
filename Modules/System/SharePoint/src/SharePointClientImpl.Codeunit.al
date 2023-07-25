@@ -704,5 +704,4 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
     #endregion
-
 }

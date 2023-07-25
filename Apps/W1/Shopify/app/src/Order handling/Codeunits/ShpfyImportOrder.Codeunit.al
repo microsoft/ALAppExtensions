@@ -68,9 +68,12 @@ codeunit 30161 "Shpfy Import Order"
         OrderTransaction: Record "Shpfy Order Transaction";
         ShippingCharges: Codeunit "Shpfy Shipping Charges";
         Transactions: Codeunit "Shpfy Transactions";
+        ReturnsAPI: Codeunit "Shpfy Returns API";
+        RefundsAPI: Codeunit "Shpfy Refunds API";
         FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
         OrderHeaderRecordRef: RecordRef;
         ICountyFromJson: Interface "Shpfy ICounty From Json";
+        IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
         OrderId: BigInteger;
         IsNew: Boolean;
         CompanyName: Text;
@@ -114,6 +117,7 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrder, 'currencyCode', OrderHeaderRecordRef, OrderHeader.FieldNo("Currency Code"));
             JsonHelper.GetValueIntoField(JOrder, 'presentmentCurrencyCode', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Currency Code"));
             JsonHelper.GetValueIntoField(JOrder, 'test', OrderHeaderRecordRef, OrderHeader.FieldNo(Test));
+            JsonHelper.GetValueIntoField(JOrder, 'edited', OrderHeaderRecordRef, OrderHeader.FieldNo(Edited));
             #region Sell-to Address info
             CompanyName := JsonHelper.GetValueAsText(JOrder, 'displayAddress.company');
             FirstName := JsonHelper.GetValueAsText(JOrder, 'displayAddress.firstName');
@@ -246,8 +250,14 @@ codeunit 30161 "Shpfy Import Order"
             if OrderTransaction.FindFirst() then
                 OrderHeader.Gateway := OrderTransaction.Gateway;
         end;
+        IReturnRefundProcess := Shop."Return and Refund Process";
+        if IReturnRefundProcess.IsImportNeededFor("Shpfy Source Document Type"::Return) then
+            ReturnsAPI.GetReturns(OrderId, JsonHelper.GetJsonObject(JOrder, 'returns'));
+        if IReturnRefundProcess.IsImportNeededFor("Shpfy Source Document Type"::Refund) then
+            RefundsAPI.GetRefunds(JsonHelper.GetJsonArray(JOrder, 'refunds'));
         OrderHeader.Modify();
         OrderEvents.OnAfterImportShopifyOrderHeader(OrderHeader, IsNew);
+
     end;
 
     [NonDebuggable]
@@ -329,14 +339,27 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrderLine, 'taxable', OrderLineRecordRef, OrderLine.FieldNo(Taxable));
             JsonHelper.GetValueIntoField(JOrderLine, 'originalUnitPriceSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Unit Price"));
             JsonHelper.GetValueIntoField(JOrderLine, 'originalUnitPriceSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Unit Price"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Discount Amount"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Discount Amount"));
             OrderLineRecordRef.SetTable(OrderLine);
+            OrderLine."Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'shopMoney');
+            OrderLine."Presentment Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'presentmentMoney');
             UpdateLocationIdOnOrderLine(OrderLine);
             OrderLine.Modify();
             OrderLineRecordRef.Close();
             AddTaxLines(OrderLine."Line Id", JsonHelper.GetJsonArray(JOrderLine, 'taxLines'));
         end;
+    end;
+    /// <summary> 
+    /// Description for GetTotalLineDiscountAmount.
+    /// </summary>
+    /// <param name="JDiscountSets">Parameter of type JsonArray.</param>
+    /// <param name="MoneyType">Parameter of type Text.</param>
+    /// <returns>Return variable "Decimal".</returns>
+    local procedure GetTotalLineDiscountAmount(JDiscountSets: JsonArray; MoneyType: Text) Result: Decimal
+    var
+        JDiscountSet: JsonToken;
+    begin
+        foreach JDiscountSet in JDiscountSets do
+            Result += JsonHelper.GetValueAsDecimal(JDiscountSet, 'allocatedAmountSet.' + MoneyType + '.amount');
     end;
 
     /// <summary> 

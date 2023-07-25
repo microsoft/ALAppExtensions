@@ -24,7 +24,10 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 
         QueryText := DelChr(QueryText, '<', '?'); // remove ? from the query
 
-        QueryText += '&' + GetSharedAccessSignature();
+        if QueryText <> '' then
+            QueryText += '&';
+        QueryText += GetSharedAccessSignature();
+        
         UriBuilder.SetQuery(QueryText);
 
         UriBuilder.GetUri(Uri);
@@ -171,7 +174,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
     var
         Uri: Codeunit Uri;
         Builder: TextBuilder;
-        KeyValueLbl: Label '%1=%2', Comment = '%1 = Key; %2 = Value';
+        KeyValueLbl: Label '%1=%2', Comment = '%1 = Key; %2 = Value', Locked = true;
     begin
         Builder.Append(StrSubstNo(KeyValueLbl, 'sv', VersionToString(StorageServiceApiVersion)));
         Builder.Append('&');

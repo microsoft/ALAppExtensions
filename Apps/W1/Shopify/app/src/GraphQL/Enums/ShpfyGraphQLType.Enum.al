@@ -260,4 +260,39 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Next Fulfillment Orders From Order';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextFFOrdersFromOrd";
     }
+    value(50; NextOrderReturns)
+    {
+        Caption = 'Next Order Returns';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOrderReturns";
+    }
+    value(51; GetReturnHeader)
+    {
+        Caption = 'Get Return Header';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ReturnHeader";
+    }
+    value(52; GetReturnLines)
+    {
+        Caption = 'Get Return Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ReturnLines";
+    }
+    value(53; GetNextReturnLines)
+    {
+        Caption = 'Get Next Return Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextReturnLines";
+    }
+    value(54; GetRefundHeader)
+    {
+        Caption = 'Get Refund Header';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RefundHeader";
+    }
+    value(55; GetRefundLines)
+    {
+        Caption = 'Get Refund Lineser';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RefundLines";
+    }
+    value(56; GetNextRefundLines)
+    {
+        Caption = 'Get Next Refund Lineser';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRefundLines";
+    }
 }

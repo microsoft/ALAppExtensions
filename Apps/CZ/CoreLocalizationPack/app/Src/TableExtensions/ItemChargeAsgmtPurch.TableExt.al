@@ -6,27 +6,52 @@ tableextension 31019 "Item Charge Asgmt. (Purch) CZL" extends "Item Charge Assig
         {
             Caption = 'Incl. in Intrastat Amount';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
+#pragma warning disable AL0432
                 StatutoryReportingSetupCZL.CheckItemChargesInIntrastatCZL();
+#pragma warning restore AL0432
             end;
+#endif
         }
         field(31053; "Incl. in Intrastat S.Value CZL"; Boolean)
         {
             Caption = 'Incl. in Intrastat Stat. Value';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
+#pragma warning disable AL0432
                 StatutoryReportingSetupCZL.CheckItemChargesInIntrastatCZL();
+#pragma warning restore AL0432
             end;
+#endif
         }
     }
-
+#if not CLEAN22
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
     procedure SetIncludeAmountCZL(): Boolean
     var
         PurchaseHeader: Record "Purchase Header";
@@ -73,4 +98,5 @@ tableextension 31019 "Item Charge Asgmt. (Purch) CZL" extends "Item Charge Assig
 
         exit(VendorNo);
     end;
+#endif
 }

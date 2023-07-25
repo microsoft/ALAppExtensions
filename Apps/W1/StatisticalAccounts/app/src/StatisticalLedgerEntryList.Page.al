@@ -248,7 +248,11 @@ page 2634 "Statistical Ledger Entry List"
     }
 
     trigger OnOpenPage()
+    var
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
+        StatAccTelemetry.LogDiscovered();
+
         SetDimVisibility();
         if (Rec.GetFilters() <> '') then
             if (not Rec.Find()) then

@@ -53,6 +53,11 @@ tableextension 18092 "GST Vendor Ext" extends Vendor
             DataClassification = CustomerContent;
             Caption = 'Commissioners Permission No.';
         }
+        field(18090; "Govt. Undertaking"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Govt. Undertaking';
+        }
 
     }
 }

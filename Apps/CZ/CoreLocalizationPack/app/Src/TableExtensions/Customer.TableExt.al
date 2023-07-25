@@ -2,10 +2,43 @@ tableextension 11701 "Customer CZL" extends Customer
 {
     fields
     {
+        modify("Registration Number")
+        {
+            trigger OnAfterValidate()
+            var
+                RegistrationLogCZL: Record "Registration Log CZL";
+                RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
+                ResultRecordRef: RecordRef;
+                LogNotVerified: Boolean;
+            begin
+                if not RegistrationNoMgtCZL.CheckRegistrationNo(GetRegistrationNoTrimmedCZL(), "No.", Database::Customer) then
+                    exit;
+
+                LogNotVerified := true;
+                if "Registration Number" <> xRec."Registration Number" then
+                    if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
+                        LogNotVerified := false;
+                        RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Customer);
+                        ResultRecordRef.SetTable(Rec);
+                    end;
+
+                if LogNotVerified then
+                    RegistrationLogMgtCZL.LogCustomer(Rec);
+            end;
+        }
         field(11770; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';
             DataClassification = CustomerContent;
+#if not CLEAN23
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#endif
+            ObsoleteReason = 'Replaced by standard "Registration Number" field.';
+#if not CLEAN23
 
             trigger OnValidate()
             var
@@ -28,6 +61,7 @@ tableextension 11701 "Customer CZL" extends Customer
                 if LogNotVerified then
                     RegistrationLogMgtCZL.LogCustomer(Rec);
             end;
+#endif
         }
         field(11771; "Tax Registration No. CZL"; Text[20])
         {
@@ -49,26 +83,55 @@ tableextension 11701 "Customer CZL" extends Customer
             Caption = 'Transaction Type';
             TableRelation = "Transaction Type";
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31071; "Transaction Specification CZL"; Code[10])
         {
             Caption = 'Transaction Specification';
             TableRelation = "Transaction Specification";
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field will not be used anymore.';
         }
         field(31072; "Transport Method CZL"; Code[10])
         {
             Caption = 'Transport Method';
             TableRelation = "Transport Method";
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
     }
+#if not CLEAN23
     keys
     {
         key(Key11700; "Registration No. CZL")
         {
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
+            ObsoleteReason = 'Replaced by standard "Registration Number" field.';
         }
     }
+#endif
 
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
@@ -105,11 +168,16 @@ tableextension 11701 "Customer CZL" extends Customer
 
     internal procedure SaveRegistrationNoCZL()
     begin
-        RegistrationNo := "Registration No. CZL"
+        RegistrationNo := GetRegistrationNoTrimmedCZL();
     end;
 
     internal procedure GetSavedRegistrationNoCZL(): Text[20]
     begin
         exit(RegistrationNo);
+    end;
+
+    procedure GetRegistrationNoTrimmedCZL(): Text[20]
+    begin
+        exit(CopyStr("Registration Number", 1, 20));
     end;
 }

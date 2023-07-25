@@ -1102,13 +1102,11 @@ codeunit 31087 "Install Application CZZ"
     local procedure CopyAccScheduleExtension()
     var
         AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL";
+        AccScheduleExtensionCZLDataTransfer: DataTransfer;
     begin
-        AccScheduleExtensionCZL.SetLoadFields(Prepayment);
-        if AccScheduleExtensionCZL.FindSet() then
-            repeat
-                AccScheduleExtensionCZL."Advance Payments CZZ" := AccScheduleExtensionCZL.Prepayment;
-                AccScheduleExtensionCZL.Modify(false);
-            until AccScheduleExtensionCZL.Next() = 0;
+        AccScheduleExtensionCZLDataTransfer.SetTables(Database::"Acc. Schedule Extension CZL", Database::"Acc. Schedule Extension CZL");
+        AccScheduleExtensionCZLDataTransfer.AddFieldValue(AccScheduleExtensionCZL.FieldNo(Prepayment), AccScheduleExtensionCZL.FieldNo("Advance Payments CZZ"));
+        AccScheduleExtensionCZLDataTransfer.CopyFields();
     end;
 
     local procedure MoveIncomingDocument()

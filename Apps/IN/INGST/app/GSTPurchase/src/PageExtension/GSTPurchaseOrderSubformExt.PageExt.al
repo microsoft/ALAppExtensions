@@ -133,6 +133,20 @@ pageextension 18085 "GST Purchase Order Subform Ext" extends "Purchase Order Sub
                 ToolTip = 'Specifies if the GST Credit has to be availed or not.';
             }
         }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
+                end;
+            }
+        }
     }
 
     local procedure SaveRecords()

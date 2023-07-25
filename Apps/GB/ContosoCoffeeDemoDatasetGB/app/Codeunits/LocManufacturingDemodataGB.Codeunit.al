@@ -41,7 +41,7 @@ codeunit 10506 "Loc. Manufacturing Demodata-GB"
 
         WhseDemoAccounts.AddAccount(WhseDemoAccount.CustDomestic(), '40400');
         WhseDemoAccounts.AddAccount(WhseDemoAccount.Resale(), '40700');
-        WhseDemoAccounts.AddAccount(WhseDemoAccount.ResaleInterim(), '');
+        WhseDemoAccounts.RemoveAccount(WhseDemoAccount.ResaleInterim());
         WhseDemoAccounts.AddAccount(WhseDemoAccount.VendDomestic(), '50100');
         WhseDemoAccounts.AddAccount(WhseDemoAccount.SalesDomestic(), '10200');
         WhseDemoAccounts.AddAccount(WhseDemoAccount.PurchDomestic(), '40700');

@@ -47,8 +47,9 @@ codeunit 148104 "Test Initialize Handler CZL"
                 TryBindReplaceVATDateHandlerCZL();
 #endif
             134008, // ERM VAT Settlement with Apply
-            134992, // ERM Financial Reports IV
-            134045: // ERM VAT Sales/Purchase
+            134045, // ERM VAT Sales/Purchase
+            134088, // ERM Pmt Disc for Cust/Vendor
+            134992: // ERM Financial Reports IV
 #if not CLEAN22
                 begin
                     TryBindReplaceVATDateHandlerCZL();

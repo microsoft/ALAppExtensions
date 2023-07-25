@@ -61,6 +61,9 @@ codeunit 7233 "Master Data Management"
         FeatureNameTxt: Label 'Master Data Management', Locked = true;
         CachedIsSynchronizationRecord: Dictionary of [Text, Boolean];
         CachedDisableEventDrivenSynchJobReschedule: Dictionary of [Text, Boolean];
+        NoPermissionToSetUpErr: Label 'Your license does not allow you to set up Master Data Management. To view details about your permissions, see the Effective Permissions page.';
+        NoPermissionToUseErr: Label 'Your license does not allow you to use Master Data Management. To view details about your permissions, see the Effective Permissions page.';
+        NoPermissionToScheduleJobErr: Label 'Your license does not allow you to schedule a background task. To view details about your permissions, see the Effective Permissions page.';
 
     internal procedure GetFeatureName(): Text
     begin
@@ -900,7 +903,7 @@ codeunit 7233 "Master Data Management"
         IsHandled: Boolean;
     begin
         if MasterDataManagementSetup.Get() then
-            EnqueueJobQueEntries := MasterDataManagementSetup."Is Enabled";
+            EnqueueJobQueEntries := (MasterDataManagementSetup."Is Enabled") and (not MasterDataManagementSetup."Delay Job Scheduling");
 
         if IntegrationTableMapping.FindSet() then
             repeat
@@ -1783,8 +1786,8 @@ codeunit 7233 "Master Data Management"
         if not IsEnabled() then
             exit;
 
+        IsHandled := true;
         Removed := MasterDataMgtCoupling.RemoveCouplingToRecord(RecordId);
-
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Record Management", 'OnFindIntegrationTableUIdByRecordRef', '', false, false)]
@@ -1866,6 +1869,29 @@ codeunit 7233 "Master Data Management"
             MasterDataMgtCoupling.Delete(true);
             Removed := true;
             IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Int. Rec. Uncouple Invoke", 'OnRemoveIntegrationTableCoupling', '', false, false)]
+    local procedure HandleOnRemoveIntegrationTableCoupling(var IntegrationTableMapping: Record "Integration Table Mapping"; var LocalRecordRef: RecordRef; var IntegrationRecordRef: RecordRef; var IntegrationTableConnectionType: TableConnectionType; var IsHandled: Boolean; var Removed: Boolean)
+    var
+        MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+        SysId: Guid;
+    begin
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
+        if not IsEnabled() then
+            exit;
+
+        if not MasterDataMgtCoupling.FindSystemIdByRecordRef(SysId, LocalRecordRef) then
+            Error(IntegrationRecordNotFoundErr, LocalRecordRef.Field(LocalRecordRef.SystemIdNo()).Value());
+
+        IsHandled := true;
+
+        if MasterDataMgtCoupling.FindRowFromLocalSystemID(SysId, MasterDataMgtCoupling) then begin
+            MasterDataMgtCoupling.Delete(true);
+            Removed := true;
         end;
     end;
 
@@ -2157,6 +2183,53 @@ codeunit 7233 "Master Data Management"
                     exit(true);
             until IntegrationTableMapping.Next() = 0;
         exit(false);
+    end;
+
+    internal procedure CheckSetupPermissions()
+    var
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+        IntegrationTableMapping: Record "Integration Table Mapping";
+    begin
+        if not MasterDataManagementSetup.WritePermission() then
+            Error(NoPermissionToSetUpErr);
+
+        if not IntegrationTableMapping.WritePermission() then
+            Error(NoPermissionToSetUpErr);
+    end;
+
+    internal procedure CheckUsagePermissions()
+    var
+        MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+    begin
+        if not MasterDataMgtCoupling.WritePermission() then
+            Error(NoPermissionToUseErr);
+    end;
+
+    internal procedure CheckTaskSchedulePermissions()
+    begin
+        if not CanScheduleJob() then
+            Error(NoPermissionToScheduleJobErr);
+    end;
+
+    local procedure CanScheduleJob(): Boolean
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        User: Record User;
+        EmptyGuid: Guid;
+        UserId: Guid;
+    begin
+        if not (JobQueueEntry.WritePermission() and JobQueueEntry.ReadPermission()) then
+            exit(false);
+        UserId := UserSecurityId();
+        if User.IsEmpty() then
+            exit(true);
+        if Format(UserId) = Format(EmptyGuid) then
+            exit(true);
+        if not User.Get(UserId) then
+            exit(false);
+        if User."License Type" = User."License Type"::"Limited User" then
+            exit(false);
+        exit(true);
     end;
 
     [IntegrationEvent(false, false)]

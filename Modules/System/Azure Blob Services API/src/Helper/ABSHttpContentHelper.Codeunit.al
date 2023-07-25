@@ -13,19 +13,19 @@ codeunit 9049 "ABS HttpContent Helper"
         ContentLengthLbl: Label '%1', Comment = '%1 = Length', Locked = true;
 
     [NonDebuggable]
-    procedure AddBlobPutBlockBlobContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; var SourceInStream: InStream)
+    procedure AddBlobPutBlockBlobContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; var SourceInStream: InStream; ContentType: Text)
     var
         BlobType: Enum "ABS Blob Type";
     begin
-        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, SourceInStream, BlobType::BlockBlob)
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, SourceInStream, BlobType::BlockBlob, ContentType)
     end;
 
     [NonDebuggable]
-    procedure AddBlobPutBlockBlobContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; SourceText: Text)
+    procedure AddBlobPutBlockBlobContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; SourceText: Text; ContentType: Text)
     var
         BlobType: Enum "ABS Blob Type";
     begin
-        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, SourceText, BlobType::BlockBlob)
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, SourceText, BlobType::BlockBlob, ContentType)
     end;
 
     [NonDebuggable]
@@ -49,7 +49,7 @@ codeunit 9049 "ABS HttpContent Helper"
     end;
 
     [NonDebuggable]
-    local procedure AddBlobPutContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; var SourceInStream: InStream; BlobType: Enum "ABS Blob Type")
+    local procedure AddBlobPutContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; var SourceInStream: InStream; BlobType: Enum "ABS Blob Type"; ContentType: Text)
     var
         Length: Integer;
     begin
@@ -58,11 +58,14 @@ codeunit 9049 "ABS HttpContent Helper"
 
         Length := GetContentLength(SourceInStream);
 
-        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, BlobType, Length, 'application/octet-stream');
+        if ContentType = '' then
+            ContentType := 'application/octet-stream';
+
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, BlobType, Length, ContentType);
     end;
 
     [NonDebuggable]
-    local procedure AddBlobPutContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; SourceText: Text; BlobType: Enum "ABS Blob Type")
+    local procedure AddBlobPutContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; SourceText: Text; BlobType: Enum "ABS Blob Type"; ContentType: Text)
     var
         Length: Integer;
     begin
@@ -70,7 +73,10 @@ codeunit 9049 "ABS HttpContent Helper"
 
         Length := GetContentLength(SourceText);
 
-        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, BlobType, Length, 'text/plain; charset=UTF-8');
+        if ContentType = '' then
+            ContentType := 'text/plain; charset=UTF-8';
+
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, BlobType, Length, ContentType);
     end;
 
     [NonDebuggable]

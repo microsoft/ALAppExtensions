@@ -22,13 +22,6 @@ codeunit 137700 "Json Exchange and Exec. Tests"
         TaxTypeLbl: Label 'VAT';
 
     [Test]
-    [HandlerFunctions('TaxTypePageHandler,RateSetupPageHandler,TaxAttributesPageHandler,TaxComponentsPageHandler,TaxEntitiesPageHandler,TaxTypePageHandler,TaxRatePageHandler,UseCasePageHandler,UseCaseConditionHandler,UseCaseConditionLookup,UseCaseConditionTableFilter,ComputationScriptHandler,ScriptVariablesHandler,InsertRecordHandler,TaxPostingSetupHandler,AttributeMappingSwitchStatementHandler,FieldLookupHandler,ArchivalLogsHandler,ScriptSymbolHandler,UseCaseRestoreCnfrmHandler,LoopThruRecordHandler,UseCaseCardPageHandler,ActionStringExprHandler,ActionRoundNumberHandler,ActionReplaceSubstringDlgHandler,ActionNumberExpressionHandler,ActionNumberCalculationHandler,ActionMessageHandler,ActionLengthOfStringHandler,ActionFindSubStringInStringHandler,ActionFindIntervalBetDateHandler,ActionExtractSubStringFrmPosHandler,ActionExtractSubStringFrmIndexHandler,ActionExtractDatePartHandler,ActionDateToDateTimeHandler,DateCalculationHandler,ConvertCaseHandler,ComponentExpreHandler,ComponentFormulaExpHandler,TaxComponentsModalPageHandler,TaxAttributeValuesHandler,TaxAttributeValuesModalHandler,TaxEntitiesHandler')]
-    procedure TestCreateTaxConfigFromUI()
-    begin
-        Page.Run(Page::"Tax Types");
-    end;
-
-    [Test]
     [HandlerFunctions('UseCaseMsgHandler')]
     procedure TestImportTaxTypes()
     var

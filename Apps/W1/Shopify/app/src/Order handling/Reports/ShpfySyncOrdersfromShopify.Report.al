@@ -31,11 +31,9 @@ report 30104 "Shpfy Sync Orders from Shopify"
                     OrdersToImport2.ModifyAll("Shop Code", Shop.Code);
                     Commit();
 
-                    OrdersToImport.SetRange("Shop Code", Shop.Code);
-
                     if GuiAllowed then begin
                         ToProcess := OrdersToImport.Count;
-                        Dialog.Open(ProcessMsg, ToProcess);
+                        Dialog.Open(OrderTypeTxt + ProcessMsg, ToProcess);
                         Dialog.Update();
                     end;
                 end;
@@ -62,8 +60,9 @@ report 30104 "Shpfy Sync Orders from Shopify"
                         if OrderHeader.Get(OrdersToImport.Id) then begin
                             OrdersToImport.Delete();
                             Commit();
-                            if OrderMapping.DoMapping(OrderHeader) and (OrdersToImport."Import Action" = OrdersToImport."Import Action"::New) and Shop."Auto Create Orders" then
-                                CreateSalesDocument(OrderHeader);
+                            if OrderMapping.DoMapping(OrderHeader) and (OrdersToImport."Import Action" = OrdersToImport."Import Action"::New) then
+                                if Shop."Auto Create Orders" then
+                                    CreateSalesDocumentForOrders(OrderHeader);
                         end;
 
                     if GuiAllowed then begin
@@ -76,6 +75,8 @@ report 30104 "Shpfy Sync Orders from Shopify"
                 begin
                     if GuiAllowed then
                         Dialog.Close();
+                    if Shop."Auto Create Orders" then
+                        ProcessShopifyRefunds();
                 end;
             }
 
@@ -92,7 +93,8 @@ report 30104 "Shpfy Sync Orders from Shopify"
         Dialog: Dialog;
         ToImportView: Text;
         ToProcess: Integer;
-        ProcessMsg: Label 'To Process: #1###########', Comment = '#1 = ToPrgress';
+        OrderTypeTxt: Label 'Shopify Order';
+        ProcessMsg: Label ' To Process: #1###########', Comment = '#1 = ToPrgress';
 
     trigger OnPreReport()
     begin
@@ -100,10 +102,10 @@ report 30104 "Shpfy Sync Orders from Shopify"
     end;
 
     /// <summary> 
-    /// Description for CreateSalesDocument.
+    /// Description for CreateSalesDocumentForOrders.
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    local procedure CreateSalesDocument(ShopifyOrderHeader: Record "Shpfy Order Header")
+    local procedure CreateSalesDocumentForOrders(ShopifyOrderHeader: Record "Shpfy Order Header")
     var
         ProcessOrder: Codeunit "Shpfy Process Order";
     begin
@@ -127,6 +129,36 @@ report 30104 "Shpfy Sync Orders from Shopify"
             end;
             ShopifyOrderHeader.Modify(true);
             Commit();
+        end;
+    end;
+
+    local procedure ProcessShopifyRefunds()
+    var
+        RefundHeader: Record "Shpfy Refund Header";
+        IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
+        RefundTypeTxt: Label 'Shopify Refund';
+    begin
+        if Shop."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then begin
+            IReturnRefundProcess := Shop."Return and Refund Process";
+            RefundHeader.SetRange("Is Processed", false);
+            RefundHeader.SetLoadFields("Refund Id");
+            if RefundHeader.FindSet(false, false) then begin
+                if GuiAllowed then begin
+                    ToProcess := RefundHeader.Count;
+                    Dialog.Open(RefundTypeTxt + ProcessMsg, ToProcess);
+                    Dialog.Update();
+                end;
+                repeat
+                    IReturnRefundProcess.CreateSalesDocument("Shpfy Source Document Type"::Refund, RefundHeader."Refund Id");
+                    Commit();
+                    if GuiAllowed then begin
+                        ToProcess -= 1;
+                        Dialog.Update();
+                    end;
+                until RefundHeader.Next() = 0;
+                if GuiAllowed then
+                    Dialog.Close();
+            end;
         end;
     end;
 }
