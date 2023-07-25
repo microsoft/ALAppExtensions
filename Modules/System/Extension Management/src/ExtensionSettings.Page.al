@@ -22,7 +22,7 @@ page 2511 "Extension Settings"
         {
             group(Group)
             {
-                ShowCaption = false;
+
                 field(AppId; AppIdValue)
                 {
                     ApplicationArea = All;
