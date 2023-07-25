@@ -8,6 +8,10 @@
       "method": "*"
     },
     {
+      "codeunitName": "AFS File Client Test",
+      "method": "*"
+    },
+    {
       "codeunitName": "Azure AD Graph Test",
       "method": "*"
     },

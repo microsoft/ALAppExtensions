@@ -132,7 +132,7 @@ codeunit 8951 "AFS Client Impl."
         AFSOperationPayload.SetOptionalParameters(AFSOptionalParameters);
         AFSOperationPayload.SetPath(DestinationFilePath);
 
-        AFSOperationResponse := AFSWebRequestHelper.PutOperation(AFSOperationPayload, StrSubstNo(RenameFileOperationNotSuccessfulErr, AFSOperationPayload.GetPath(), DestinationFilePath, AFSOperationPayload.GetFileShareName()));
+        AFSOperationResponse := AFSWebRequestHelper.PutOperation(AFSOperationPayload, StrSubstNo(RenameFileOperationNotSuccessfulErr, SourceFilePath, AFSOperationPayload.GetPath(), AFSOperationPayload.GetFileShareName()));
         exit(AFSOperationResponse);
     end;
 
