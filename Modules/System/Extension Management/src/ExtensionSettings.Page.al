@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ page 2511 "Extension Settings"
     var
         PublishedApplication: Record "Published Application";
     begin
-        PublishedApplication.SetRange(ID, "App ID");
+        PublishedApplication.SetRange(ID, Rec."App ID");
         PublishedApplication.SetRange("Tenant Visible", true);
 
         if PublishedApplication.FindFirst() then begin
@@ -77,13 +77,13 @@ page 2511 "Extension Settings"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
     begin
-        if GetFilter("App ID") = '' then
+        if Rec.GetFilter("App ID") = '' then
             exit;
 
-        "App ID" := GetRangeMin("App ID");
-        if not FindFirst() then begin
-            Init();
-            Insert();
+        Rec."App ID" := Rec.GetRangeMin("App ID");
+        if not Rec.FindFirst() then begin
+            Rec.Init();
+            Rec.Insert();
         end;
 
         CanManageExtensions := ExtensionInstallationImpl.CanManageExtensions();
@@ -95,4 +95,3 @@ page 2511 "Extension Settings"
         AppIdValue: Text;
         CanManageExtensions: Boolean;
 }
-
