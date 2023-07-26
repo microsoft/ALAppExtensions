@@ -59,6 +59,10 @@ page 30098 "APIV2 - Fixed Assets"
                 {
                     Caption = 'Under Maintenance';
                 }
+                field(lastModifiedDateTime; SystemModifiedAt)
+                {
+                    Caption = 'Last Modified Date';
+                }
             }
         }
     }
