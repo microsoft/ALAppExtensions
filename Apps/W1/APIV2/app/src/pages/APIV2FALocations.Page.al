@@ -2,12 +2,12 @@ page 30097 "APIV2 - FA Locations"
 {
     DelayedInsert = true;
     APIVersion = 'v2.0';
-    EntityCaption = 'FALocation';
-    EntitySetCaption = 'FALocations';
+    EntityCaption = 'Fixed Asset Location';
+    EntitySetCaption = 'Fixed Asset Locations';
     PageType = API;
     ODataKeyFields = SystemId;
-    EntityName = 'faLocation';
-    EntitySetName = 'faLocations';
+    EntityName = 'fixedAssetLocation';
+    EntitySetName = 'fixedAssetLocations';
     SourceTable = "FA Location";
     Extensible = false;
 
@@ -29,6 +29,10 @@ page 30097 "APIV2 - FA Locations"
                 field(name; Rec.Name)
                 {
                     Caption = 'Name';
+                }
+                field(lastModifiedDateTime; SystemModifiedAt)
+                {
+                    Caption = 'Last Modified Date';
                 }
             }
         }
