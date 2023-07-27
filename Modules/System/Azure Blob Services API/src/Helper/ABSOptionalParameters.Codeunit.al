@@ -229,6 +229,15 @@ codeunit 9047 "ABS Optional Parameters"
     end;
 
     /// <summary>
+    /// Sets the value for 'x-ms-blob-content-type' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Text value specifying the HttpHeader value</param>
+    procedure BlobContentType("Value": Text)
+    begin
+        SetRequestHeader('x-ms-blob-content-type', "Value");
+    end;
+
+    /// <summary>
     /// Sets the value for 'x-ms-lease-action' HttpHeader for a request.
     /// </summary>
     /// <param name="Value">Enum "ABS Lease Action" value specifying the HttpHeader value</param>    
