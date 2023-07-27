@@ -136,59 +136,50 @@ codeunit 31240 "Install Application CZF"
     local procedure CopyFixedAsset();
     var
         FixedAsset: Record "Fixed Asset";
+        FixedAssetDataTransfer: DataTransfer;
     begin
-        FixedAsset.SetLoadFields("Tax Depreciation Group Code", "Clasification Code");
-        if FixedAsset.FindSet(true) then
-            repeat
-                FixedAsset."Tax Deprec. Group Code CZF" := FixedAsset."Tax Depreciation Group Code";
-                FixedAsset."Classification Code CZF" := FixedAsset."Clasification Code";
-                FixedAsset.Modify(false);
-            until FixedAsset.Next() = 0;
+        FixedAssetDataTransfer.SetTables(Database::"Fixed Asset", Database::"Fixed Asset");
+        FixedAssetDataTransfer.AddFieldValue(FixedAsset.FieldNo("Tax Depreciation Group Code"), FixedAsset.FieldNo("Tax Deprec. Group Code CZF"));
+        FixedAssetDataTransfer.AddFieldValue(FixedAsset.FieldNo("Clasification Code"), FixedAsset.FieldNo("Classification Code CZF"));
+        FixedAssetDataTransfer.CopyFields();
     end;
 
     local procedure CopyDepreciationBook();
     var
         DepreciationBook: Record "Depreciation Book";
+        DepreciationBookDataTransfer: DataTransfer;
     begin
-        DepreciationBook.SetLoadFields("Acqui.,Appr.before Depr. Check", "All Acquil. in same Year", "Check Deprication on Disposal", "Deprication from 1st Year Day", "Deprication from 1st Month Day");
-        if DepreciationBook.FindSet(true) then
-            repeat
-                DepreciationBook."Check Acq. Appr. bef. Dep. CZF" := DepreciationBook."Acqui.,Appr.before Depr. Check";
-                DepreciationBook."All Acquisit. in same Year CZF" := DepreciationBook."All Acquil. in same Year";
-                DepreciationBook."Check Deprec. on Disposal CZF" := DepreciationBook."Check Deprication on Disposal";
-                DepreciationBook."Deprec. from 1st Year Day CZF" := DepreciationBook."Deprication from 1st Year Day";
-                DepreciationBook."Deprec. from 1st Month Day CZF" := DepreciationBook."Deprication from 1st Month Day";
-                DepreciationBook.Modify(false);
-            until DepreciationBook.Next() = 0;
+        DepreciationBookDataTransfer.SetTables(Database::"Depreciation Book", Database::"Depreciation Book");
+        DepreciationBookDataTransfer.AddFieldValue(DepreciationBook.FieldNo("Acqui.,Appr.before Depr. Check"), DepreciationBook.FieldNo("Check Acq. Appr. bef. Dep. CZF"));
+        DepreciationBookDataTransfer.AddFieldValue(DepreciationBook.FieldNo("All Acquil. in same Year"), DepreciationBook.FieldNo("All Acquisit. in same Year CZF"));
+        DepreciationBookDataTransfer.AddFieldValue(DepreciationBook.FieldNo("Check Deprication on Disposal"), DepreciationBook.FieldNo("Check Deprec. on Disposal CZF"));
+        DepreciationBookDataTransfer.AddFieldValue(DepreciationBook.FieldNo("Deprication from 1st Year Day"), DepreciationBook.FieldNo("Deprec. from 1st Year Day CZF"));
+        DepreciationBookDataTransfer.AddFieldValue(DepreciationBook.FieldNo("Deprication from 1st Month Day"), DepreciationBook.FieldNo("Deprec. from 1st Month Day CZF"));
+        DepreciationBookDataTransfer.CopyFields();
     end;
 
     local procedure CopyFADepreciationBook();
     var
         FADepreciationBook: Record "FA Depreciation Book";
+        FADepreciationBookDataTransfer: DataTransfer;
     begin
-        FADepreciationBook.SetLoadFields("Depreciation Interupt up to", "Depreciation Group Code", "Keep Depr. Ending Date", "Summarize Depr. Entries From", Prorated);
-        if FADepreciationBook.FindSet(true) then
-            repeat
-                FADepreciationBook."Deprec. Interrupted up to CZF" := FADepreciationBook."Depreciation Interupt up to";
-                FADepreciationBook."Tax Deprec. Group Code CZF" := FADepreciationBook."Depreciation Group Code";
-                FADepreciationBook."Keep Deprec. Ending Date CZF" := FADepreciationBook."Keep Depr. Ending Date";
-                FADepreciationBook."Sum. Deprec. Entries From CZF" := FADepreciationBook."Summarize Depr. Entries From";
-                FADepreciationBook."Prorated CZF" := FADepreciationBook.Prorated;
-                FADepreciationBook.Modify(false);
-            until FADepreciationBook.Next() = 0;
+        FADepreciationBookDataTransfer.SetTables(Database::"FA Depreciation Book", Database::"FA Depreciation Book");
+        FADepreciationBookDataTransfer.AddFieldValue(FADepreciationBook.FieldNo("Depreciation Interupt up to"), FADepreciationBook.FieldNo("Deprec. Interrupted up to CZF"));
+        FADepreciationBookDataTransfer.AddFieldValue(FADepreciationBook.FieldNo("Depreciation Group Code"), FADepreciationBook.FieldNo("Tax Deprec. Group Code CZF"));
+        FADepreciationBookDataTransfer.AddFieldValue(FADepreciationBook.FieldNo("Keep Depr. Ending Date"), FADepreciationBook.FieldNo("Keep Deprec. Ending Date CZF"));
+        FADepreciationBookDataTransfer.AddFieldValue(FADepreciationBook.FieldNo("Summarize Depr. Entries From"), FADepreciationBook.FieldNo("Sum. Deprec. Entries From CZF"));
+        FADepreciationBookDataTransfer.CopyFields();
     end;
 
     local procedure CopyFAPostingGroup();
     var
         FAPostingGroup: Record "FA Posting Group";
+        FAPostingGroupDataTransfer: DataTransfer;
     begin
-        FAPostingGroup.SetLoadFields("Acq. Cost Bal. Acc. on Disp.", "Book Value Bal. Acc. on Disp.");
-        if FAPostingGroup.FindSet(true) then
-            repeat
-                FAPostingGroup."Acq. Cost Bal. Acc. Disp. CZF" := FAPostingGroup."Acq. Cost Bal. Acc. on Disp.";
-                FAPostingGroup."Book Value Bal. Acc. Disp. CZF" := FAPostingGroup."Book Value Bal. Acc. on Disp.";
-                FAPostingGroup.Modify(false);
-            until FAPostingGroup.Next() = 0;
+        FAPostingGroupDataTransfer.SetTables(Database::"FA Posting Group", Database::"FA Posting Group");
+        FAPostingGroupDataTransfer.AddFieldValue(FAPostingGroup.FieldNo("Acq. Cost Bal. Acc. on Disp."), FAPostingGroup.FieldNo("Acq. Cost Bal. Acc. Disp. CZF"));
+        FAPostingGroupDataTransfer.AddFieldValue(FAPostingGroup.FieldNo("Book Value Bal. Acc. on Disp."), FAPostingGroup.FieldNo("Book Value Bal. Acc. Disp. CZF"));
+        FAPostingGroupDataTransfer.CopyFields();
     end;
 
     local procedure CopyFAExtendedPostingGroup();
@@ -219,13 +210,11 @@ codeunit 31240 "Install Application CZF"
     local procedure CopyFAAllocation();
     var
         FAAllocation: Record "FA Allocation";
+        FAAllocationDataTransfer: DataTransfer;
     begin
-        FAAllocation.SetLoadFields("Reason/Maintenance Code");
-        if FAAllocation.FindSet(true) then
-            repeat
-                FAAllocation."Reason/Maintenance Code CZF" := FAAllocation."Reason/Maintenance Code";
-                FAAllocation.Modify(false);
-            until FAAllocation.Next() = 0;
+        FAAllocationDataTransfer.SetTables(Database::"FA Allocation", Database::"FA Allocation");
+        FAAllocationDataTransfer.AddFieldValue(FAAllocation.FieldNo("Reason/Maintenance Code"), FAAllocation.FieldNo("Reason/Maintenance Code CZF"));
+        FAAllocationDataTransfer.CopyFields();
     end;
 
     local procedure CopyFAHistoryEntry();

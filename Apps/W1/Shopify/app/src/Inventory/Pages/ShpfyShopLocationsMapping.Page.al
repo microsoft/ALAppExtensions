@@ -26,6 +26,11 @@ page 30117 "Shpfy Shop Locations Mapping"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the location.';
                 }
+                field("Is Fulfillment Service"; Rec."Is Fulfillment Service")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if this is a fulfillment service location.';
+                }
                 field(DefaultLocationCode; Rec."Default Location Code")
                 {
                     ApplicationArea = All;
@@ -48,7 +53,11 @@ page 30117 "Shpfy Shop Locations Mapping"
                         Text := OldText + LocationList.GetSelectionFilter();
                         exit(true);
                     end;
-
+                }
+                field("Default Product Location"; Rec."Default Product Location")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'The default product locations will be added to new products in Shopify.';
                 }
 #if not CLEAN22
                 field(Disabled; Rec.Disabled)

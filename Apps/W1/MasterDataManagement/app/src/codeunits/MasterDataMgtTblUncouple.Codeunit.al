@@ -115,9 +115,11 @@ codeunit 7236 "Master Data Mgt. Tbl. Uncouple"
                         IntegrationRecordRef.Open(IntegrationTableMapping."Integration Table ID");
                         IntegrationRecordFound := MasterDataManagement.GetIntegrationRecordRef(IntegrationTableMapping, TempMasterDataMgtCoupling."Integration System ID", IntegrationRecordRef);
                     end;
-                    if LocalRecordFound or IntegrationRecordFound then
-                        IntegrationTableSynch.Uncouple(LocalRecordRef, IntegrationRecordRef)
-                    else
+                    if LocalRecordFound or IntegrationRecordFound then begin
+                        IntegrationTableSynch.Uncouple(LocalRecordRef, IntegrationRecordRef);
+                        if MasterDataMgtCoupling.Get(TempMasterDataMgtCoupling."Integration System ID", TempMasterDataMgtCoupling."Local System ID") then
+                            MasterDataMgtCoupling.Delete();
+                    end else
                         if MasterDataMgtCoupling.Get(TempMasterDataMgtCoupling."Local System ID", TempMasterDataMgtCoupling."Integration System ID") then
                             MasterDataMgtCoupling.Delete();
                 end;

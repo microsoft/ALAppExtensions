@@ -14,6 +14,7 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
                 SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
                 PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
             begin
+                "Adv. Letter Template Code CZZ" := '';
                 if "Advance Letter No. CZZ" <> '' then begin
                     TestField("Document Type", "Document Type"::Payment);
                     case "Account Type" of

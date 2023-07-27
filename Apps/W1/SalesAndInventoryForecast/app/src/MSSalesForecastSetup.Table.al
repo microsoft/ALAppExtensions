@@ -135,6 +135,18 @@ table 1853 "MS - Sales Forecast Setup"
             OptionMembers = ARIMA,ETS,STL,"ETS+ARIMA","ETS+STL",ALL,TBATS;
             DataClassification = CustomerContent;
         }
+        field(20; Enabled; Boolean)
+        {
+            DataClassification = CustomerContent;
+
+            trigger OnValidate();
+            var
+                CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+            begin
+                if not xRec.Enabled and Rec.Enabled then
+                    Rec.Enabled := CustomerConsentMgt.ConfirmUserConsentToMicrosoftService();
+            end;
+        }
     }
 
     keys
@@ -146,12 +158,14 @@ table 1853 "MS - Sales Forecast Setup"
 
     var
         SpecifyApiKeyErr: Label 'You must specify an API key and an API URI in the Sales and Inventory Forecast Setup page.';
+        NoPermissionToEnableErr: Label 'You do not have permission to enable this feature. Please contact your administrator.';
 
     procedure GetSingleInstance()
     begin
         if not Get() then begin
             Init();
             Insert();
+            Commit();
         end;
     end;
 
@@ -260,10 +274,25 @@ table 1853 "MS - Sales Forecast Setup"
         Modify();
 
         // Delete the stored API Key from Isolated Storage table
-        IF NOT IsolatedStorage.Contains(KeyId, Datascope::Company) THEN
+        if not IsolatedStorage.Contains(KeyId, Datascope::Company) THEN
             exit;
 
         IsolatedStorage.Delete(KeyId, Datascope::Company);
+    end;
+
+    internal procedure CheckEnabled()
+    var
+        CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+    begin
+        if not Rec.Enabled then begin
+            if not Rec.WritePermission() then
+                Error(NoPermissionToEnableErr);
+            if CustomerConsentMgt.ConfirmUserConsentToMicrosoftService() then begin
+                Rec.Enabled := true;
+                Rec.Modify(true);
+            end else
+                Error('');
+        end;
     end;
 }
 

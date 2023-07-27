@@ -649,6 +649,11 @@ page 8850 "Bank Statement File Wizard"
         IsDemoCompany := CompanyInformationMgt.IsDemoCompany();
     end;
 
+    trigger OnOpenPage()
+    begin
+        FeatureTelemetry.LogUptake('0000KPN', 'Simplified Bank Statement Import', Enum::"Feature Uptake Status"::Discovered);
+    end;
+
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     begin
         if CloseAction = Action::OK then
@@ -663,6 +668,7 @@ page 8850 "Bank Statement File Wizard"
         MediaResourcesDone: Record "Media Resources";
         MediaResourcesStandard: Record "Media Resources";
         TempBlob: Codeunit "Temp Blob";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TopBannerVisible: Boolean;
         BackActionEnabled: Boolean;
         FinishActionEnabled: Boolean;
@@ -881,6 +887,9 @@ page 8850 "Bank Statement File Wizard"
         SetupFinished := true;
         Commit();
         CurrPage.Close();
+        FeatureTelemetry.LogUptake('0000KPR', 'Simplified Bank Statement Import', Enum::"Feature Uptake Status"::"Set up");
+        FeatureTelemetry.LogUptake('0000KPO', 'Simplified Bank Statement Import', Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000KPP', 'Simplified Bank Statement Import', 'A bank statement file is set up.');
     end;
 
     local procedure StoreRecords()

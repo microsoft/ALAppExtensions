@@ -51,10 +51,10 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         if not EnvironmentInformation.IsSaaS() then
             exit;
 
-        if not UserProperty.Get(ForUserSecurityId) then
+        if UserLoginTimeTracker.UserLoggedInEnvironment(ForUserSecurityId) then // In case the user has logged in (which is almost always the case), this won't take any locks
             exit;
 
-        if UserLoginTimeTracker.UserLoggedInEnvironment(ForUserSecurityId) then
+        if not UserProperty.Get(ForUserSecurityId) then
             exit;
 
         // Licenses are assigned to users in Office 365 and synchronized to Business Central from the Users page.
@@ -303,6 +303,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Telemetry Custom Dimensions", OnAddCommonCustomDimensions, '', true, true)]
     local procedure OnAddCommonCustomDimensions(var Sender: Codeunit "Telemetry Custom Dimensions")
     var
+        Language: Codeunit Language;
         PlanIds: Codeunit "Plan Ids";
         UserAccountHelper: DotNet NavUserAccountHelper;
         TenantInfo: DotNet TenantInfo;
@@ -313,7 +314,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
 
         // Add IsAdmin
         IsAdmin := AzureADGraphUser.IsUserDelegatedAdmin() or AzureADPlan.IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId());
-        Sender.AddCommonCustomDimension('IsAdmin', Format(IsAdmin));
+        Sender.AddCommonCustomDimension('IsAdmin', Language.ToDefaultLanguage(IsAdmin));
 
         // Add CountryCode
         AzureADGraph.GetTenantDetail(TenantInfo);

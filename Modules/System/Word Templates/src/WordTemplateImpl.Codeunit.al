@@ -275,6 +275,15 @@ codeunit 9988 "Word Template Impl."
         GetMergeFieldsForDocument();
     end;
 
+    procedure Load(TemplateInStream: InStream; WordTemplateCode: Code[30])
+    begin
+        if not WordTemplate.Get(WordTemplateCode) then
+            Error(NotAValidTemplateCodeErr);
+
+        LoadDocument(TemplateInStream);
+        GetMergeFieldsForRecordAndRelated(WordTemplate, MergeFields);
+    end;
+
     local procedure LoadDocument(TemplateInStream: InStream)
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -391,10 +400,10 @@ codeunit 9988 "Word Template Impl."
 
     procedure Merge(Data: Dictionary of [Text, Text]; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
     begin
-        Merge(Data, SplitDocument, SaveFormat, false);
+        Merge(Data, SplitDocument, SaveFormat, false, Enum::"Doc. Sharing Conflict Behavior"::Ask);
     end;
 
-    procedure Merge(Data: Dictionary of [Text, Text]; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean)
+    procedure Merge(Data: Dictionary of [Text, Text]; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean; DocSharingConflictBehavior: Enum "Doc. Sharing Conflict Behavior")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         CustomDimensions: Dictionary of [Text, Text];
@@ -409,7 +418,7 @@ codeunit 9988 "Word Template Impl."
         Success := TryMailMergeExecute(Data, SaveFormat, Output);
 
         if Success and EditDoc then
-            EditDocumentAfterMerge();
+            EditDocumentAfterMerge(DocSharingConflictBehavior);
 
         CustomDimensions.Add('TemplateSystemID', WordTemplate.SystemId);
         CustomDimensions.Add('TemplateTableID', Format(WordTemplate."Table ID"));
@@ -442,23 +451,28 @@ codeunit 9988 "Word Template Impl."
             RecordRef.SetView(FilterView);
         end;
 
-        Merge(RecordRef, SplitDocument, SaveFormat, false);
+        Merge(RecordRef, SplitDocument, SaveFormat, false, Enum::"Doc. Sharing Conflict Behavior"::Ask);
         RecordRef.Close();
     end;
 
     procedure Merge(RecordVariant: Variant; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean)
     begin
+        Merge(RecordVariant, SplitDocument, SaveFormat, EditDoc, Enum::"Doc. Sharing Conflict Behavior"::Ask);
+    end;
+
+    procedure Merge(RecordVariant: Variant; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean; ConflictBehavior: Enum "Doc. Sharing Conflict Behavior")
+    begin
         if not RecordVariant.IsRecord() and not RecordVariant.IsRecordRef() then
             Error(NotARecordErr);
         MultipleDocuments := SplitDocument;
         if SplitDocument then
-            MergeSplitDocument(RecordVariant, SaveFormat, EditDoc)
+            MergeSplitDocument(RecordVariant, SaveFormat, EditDoc, ConflictBehavior)
         else
-            MergeOneDocument(RecordVariant, SaveFormat, EditDoc);
+            MergeOneDocument(RecordVariant, SaveFormat, EditDoc, ConflictBehavior);
     end;
 
     // Merges each record separately into individual documents and puts them into a zip.
-    local procedure MergeSplitDocument(RecordVariant: Variant; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean)
+    local procedure MergeSplitDocument(RecordVariant: Variant; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean; ConflictBehavior: Enum "Doc. Sharing Conflict Behavior")
     var
         TempWordTemplateCustomField: Record "Word Template Custom Field" temporary;
         DataCompression: Codeunit "Data Compression";
@@ -480,7 +494,7 @@ codeunit 9988 "Word Template Impl."
                 GetCustomTableColumns(RecordRef.Number, TempWordTemplateCustomField);
                 FillDataTable(RecordRef, true, DataTable, TempWordTemplateCustomField); // Adding columns
                 FillDataTable(RecordRef, false, DataTable, TempWordTemplateCustomField); // Adding rows
-                ExecuteMerge(DataTable, true, SaveFormat, EditDoc);
+                ExecuteMerge(DataTable, true, SaveFormat, EditDoc, ConflictBehavior);
                 GetDocument(InStream);
                 EntryName := RecordRef.Name();
                 PrimaryKey := RecordRef.KeyIndex(1);
@@ -497,7 +511,7 @@ codeunit 9988 "Word Template Impl."
         DataCompression.SaveZipArchive(OutStream);
     end;
 
-    local procedure MergeOneDocument(RecordVariant: Variant; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean)
+    local procedure MergeOneDocument(RecordVariant: Variant; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean; ConflictBehavior: Enum "Doc. Sharing Conflict Behavior")
     var
         TempWordTemplateCustomField: Record "Word Template Custom Field" temporary;
         RecordRef: RecordRef;
@@ -513,10 +527,10 @@ codeunit 9988 "Word Template Impl."
                 FillDataTable(RecordRef, false, DataTable, TempWordTemplateCustomField); // Adding rows
             until RecordRef.Next() = 0;
 
-        ExecuteMerge(DataTable, false, SaveFormat, EditDoc);
+        ExecuteMerge(DataTable, false, SaveFormat, EditDoc, ConflictBehavior);
     end;
 
-    local procedure ExecuteMerge(var Data: DotNet DataTable; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean)
+    local procedure ExecuteMerge(var Data: DotNet DataTable; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format"; EditDoc: Boolean; ConflictBehavior: Enum "Doc. Sharing Conflict Behavior")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         CustomDimensions: Dictionary of [Text, Text];
@@ -531,7 +545,7 @@ codeunit 9988 "Word Template Impl."
         Success := TryMailMergeExecute(Data, SaveFormat, Output);
 
         if Success and EditDoc then
-            EditDocumentAfterMerge();
+            EditDocumentAfterMerge(ConflictBehavior);
 
         CustomDimensions.Add('TemplateSystemID', WordTemplate.SystemId);
         CustomDimensions.Add('TemplateTableID', Format(WordTemplate."Table ID"));
@@ -565,7 +579,7 @@ codeunit 9988 "Word Template Impl."
         MailMerge.Execute(GenericDictionary, SaveFormat.AsInteger(), Output);
     end;
 
-    local procedure EditDocumentAfterMerge(): Boolean
+    local procedure EditDocumentAfterMerge(DocShareConflictBehavior: Enum "Doc. Sharing Conflict Behavior"): Boolean
     var
         TempDocumentSharing: Record "Document Sharing" temporary;
         DocumentSharing: Codeunit "Document Sharing";
@@ -578,6 +592,7 @@ codeunit 9988 "Word Template Impl."
         TempDocumentSharing.Extension := CopyStr('.docx', 1, MaxStrLen(TempDocumentSharing.Extension));
         TempDocumentSharing.Source := Enum::"Document Sharing Source"::System;
         TempDocumentSharing."Document Sharing Intent" := Enum::"Document Sharing Intent"::Edit;
+        TempDocumentSharing."Conflict Behavior" := DocShareConflictBehavior;
 
         ResultTempBlob.CreateInStream(InStream, TextEncoding::UTF8);
         TempDocumentSharing.Data.CreateOutStream(OutStream, TextEncoding::UTF8);

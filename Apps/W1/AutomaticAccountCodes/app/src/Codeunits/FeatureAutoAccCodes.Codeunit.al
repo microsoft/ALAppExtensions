@@ -52,11 +52,7 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
         OnAfterGetListOfTables(Result);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', false, false)]
-    local procedure HandleOnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
-    begin
 
-    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterUpdateData', '', false, false)]
     local procedure HandleOnOnAfterUpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
@@ -99,6 +95,10 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
             repeat
                 TransferRecords(AutomaticAccHeaderTableId, Database::"Automatic Account Header", Company);
                 TransferRecords(AutomaticAccLineTableId, Database::"Automatic Account Line", Company);
+                TransferFields(Company, Database::"G/L Account", 11200, 4850); // 4850 - the new field "Automatic Account Group", 11200;  the existing field  "Auto. Acc. Group"; 
+                TransferFields(Company, Database::"Gen. Journal Line", 11201, 4852);// 4852 - the new field "Automatic Account Group", 11201;  the existing field  "Auto. Acc. Group"; 
+                TransferFields(Company, Database::"Sales Line", 11200, 4850);   // 4850 - the new field "Automatic Account Group", 11200;  the existing field  "Auto. Acc. Group"; 
+                TransferFields(Company, Database::"Purchase Line", 11200, 4850);// 4850 - the new field "Automatic Account Group", 11200;  the existing field  "Auto. Acc. Group"; 
 
                 RemoveAutomaticAccountCodes(AutomaticAccHeaderTableId, Company);
                 RemoveAutomaticAccountCodes(AutomaticAccLineTableId, Company);
@@ -116,6 +116,7 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
         AutomaticAccHeaderTableId: Integer;
         AutomaticAccLineTableId: Integer;
         HeaderCount, LineCount : Integer;
+        SalesLineCount, PurchaseLineCount, GLAccountCount, GenJournalLineCount : Integer;
     begin
         TempDocumentEntry.Reset();
         TempDocumentEntry.DeleteAll();
@@ -134,11 +135,33 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
                 AutomaticAccHeaderRecRef.Close();
                 AutomaticAccLineRecRef.Close();
 
+                // Sales Line, Purchase Line, G/L Account, General Journal Line
+                CountOtherRecords(Company.Name, Database::"G/L Account", 11200, GLAccountCount);
+                CountOtherRecords(Company.Name, Database::"Gen. Journal Line", 11201, GenJournalLineCount);
+                CountOtherRecords(Company.Name, Database::"Sales Line", 11200, SalesLineCount);
+                CountOtherRecords(Company.Name, Database::"Purchase Line", 11200, PurchaseLineCount);
+
             until Company.Next() = 0;
 
         InsertDocumentEntry(AutomaticAccHeaderTableId, 'Automatic Acc. Header', HeaderCount);
         InsertDocumentEntry(AutomaticAccHeaderTableId, 'Automatic Acc. Line', LineCount);
 
+        InsertDocumentEntry(AutomaticAccHeaderTableId, 'G/L Account', GLAccountCount);
+        InsertDocumentEntry(AutomaticAccHeaderTableId, 'Gen. Journal Line', GenJournalLineCount);
+        InsertDocumentEntry(AutomaticAccHeaderTableId, 'Sales Line', SalesLineCount);
+        InsertDocumentEntry(AutomaticAccHeaderTableId, 'Purchase Line', PurchaseLineCount);
+    end;
+
+    local procedure CountOtherRecords(CompanyName: Text; TableId: Integer; FieldId: Integer; var RecCount: Integer)
+    var
+        RecRef: RecordRef;
+        FieldRef: FieldRef;
+    begin
+        RecRef.Open(TableId, false, CompanyName);
+        FieldRef := RecRef.Field(FieldId);
+        FieldRef.SetFilter('<>%1', '');
+
+        RecCount := RecRef.Count;
     end;
 
     procedure SetSetupKey(Company: Record Company)
@@ -232,6 +255,24 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
         TargetRecRef.Close();
     end;
 
+    local procedure TransferFields(Company: Record Company; TableId: Integer; SourceFieldNo: Integer; TargetFieldNo: Integer)
+    var
+        RecRef: RecordRef;
+        TargetFieldRef: FieldRef;
+        SourceFieldRef: FieldRef;
+    begin
+        RecRef.Open(TableId, false, Company.Name);
+        SourceFieldRef := RecRef.Field(SourceFieldNo);
+        SourceFieldRef.SetFilter('<>%1', '');
+
+        if RecRef.FindSet() then
+            repeat
+                TargetFieldRef := RecRef.Field(TargetFieldNo);
+                TargetFieldRef.VALUE := SourceFieldRef.VALUE;
+                RecRef.Modify(false);
+            until RecRef.Next() = 0;
+    end;
+
     local procedure SyncFeatureStatusState(FeatureDataUpdateStatus: Record "Feature Data Update Status")
     var
         AutoAccCodesFeatureMgt: Codeunit "Auto. Acc. Codes Feature Mgt.";
@@ -244,13 +285,21 @@ codeunit 4851 "Feature Auto. Acc. Codes" implements "Feature Data Update"
 
     [EventSubscriber(ObjectType::Table, Database::"Feature Data Update Status", 'OnAfterModifyEvent', '', false, false)]
     local procedure OnAfterFeatureDataUpdateStatusModify(var Rec: Record "Feature Data Update Status")
+    var
+        AutoAccCodesFeatureMgt: Codeunit "Auto. Acc. Codes Feature Mgt.";
     begin
+        if Rec.GetFilter("Feature Key") <> AutoAccCodesFeatureMgt.GetFeatureKeyId() then
+            exit;
         SyncFeatureStatusState(Rec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Feature Data Update Status", 'OnAfterInsertEvent', '', false, false)]
     local procedure OnAfterFeatureDataUpdateStatusInsert(var Rec: Record "Feature Data Update Status")
+    var
+        AutoAccCodesFeatureMgt: Codeunit "Auto. Acc. Codes Feature Mgt.";
     begin
+        if Rec.GetFilter("Feature Key") <> AutoAccCodesFeatureMgt.GetFeatureKeyId() then
+            exit;
         SyncFeatureStatusState(Rec);
     end;
 

@@ -36,13 +36,21 @@ permissionset 11730 "CZ Core Pack - Read CZL"
                   tabledata "Enhanced Currency Buffer CZL" = R,
                   tabledata "Excel Template CZL" = R,
                   tabledata "G/L Account Adjust. Buffer CZL" = R,
+#if not CLEAN22
+#pragma warning disable AL0432
                   tabledata "Intrastat Delivery Group CZL" = R,
+#pragma warning restore AL0432
+#endif
                   tabledata "Invt. Movement Template CZL" = R,
                   tabledata "Reg. No. Service Config CZL" = R,
                   tabledata "Registration Log CZL" = R,
                   tabledata "Registration Log Detail CZL" = R,
+#if not CLEAN22
+#pragma warning disable AL0432
                   tabledata "Specific Movement CZL" = R,
                   tabledata "Statistic Indication CZL" = R,
+#pragma warning restore AL0432
+#endif
                   tabledata "Statutory Reporting Setup CZL" = R,
                   tabledata "Stockkeeping Unit Template CZL" = R,
 #if not CLEAN22

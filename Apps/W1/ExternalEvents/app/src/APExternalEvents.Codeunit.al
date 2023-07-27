@@ -37,13 +37,15 @@ Codeunit 38503 "AP External Events"
         PurchaseMemoApiUrlTok: Label 'v2.0/companies(%1)/purchaseCreditMemos(%2)', Locked = true;
         PurchaseReceiptsApiUrlTok: Label 'v2.0/companies(%1)/purchaseReceipts(%2)', Locked = true;
     begin
+        if PreviewMode then
+            exit;
         if PurchInvHeader."No." <> '' then begin
-            Url := ExternalEventsHelper.CreateLink(CopyStr(PurchaseInvoiceApiUrlTok, 1, 250), PurchInvHeader.SystemId);
-            MyBusinessEventPurchaseInvoicePosted(PurchInvHeader.SystemId, Url);
+            Url := ExternalEventsHelper.CreateLink(CopyStr(PurchaseInvoiceApiUrlTok, 1, 250), PurchInvHeader."Draft Invoice SystemId");
+            MyBusinessEventPurchaseInvoicePosted(PurchInvHeader."Draft Invoice SystemId", Url);
         end;
         if PurchCrMemoHdr."No." <> '' then begin
-            Url := ExternalEventsHelper.CreateLink(CopyStr(PurchaseMemoApiUrlTok, 1, 250), PurchCrMemoHdr.SystemId);
-            EventCreditMemoInvoicePosted(PurchCrMemoHdr.SystemId, Url);
+            Url := ExternalEventsHelper.CreateLink(CopyStr(PurchaseMemoApiUrlTok, 1, 250), PurchCrMemoHdr."Draft Cr. Memo SystemId");
+            EventCreditMemoInvoicePosted(PurchCrMemoHdr."Draft Cr. Memo SystemId", Url);
         end;
         if PurchRcptHeader."No." <> '' then begin
             Url := ExternalEventsHelper.CreateLink(CopyStr(PurchaseReceiptsApiUrlTok, 1, 250), PurchRcptHeader.SystemId);

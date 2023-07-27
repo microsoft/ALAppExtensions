@@ -147,6 +147,20 @@ pageextension 18091 "GST Purch. Return Order Subfm" extends "Purchase Return Ord
                 end;
             }
         }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
+                end;
+            }
+        }
     }
     local Procedure SaveRecords()
     begin

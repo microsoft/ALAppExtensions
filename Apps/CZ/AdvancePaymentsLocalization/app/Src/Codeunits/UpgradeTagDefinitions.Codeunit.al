@@ -15,6 +15,7 @@ codeunit 31089 "Upgrade Tag Definitions CZZ"
         PerCompanyUpgradeTags.Add(GetDataVersion200PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion210PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetSalesAdvLetterEntryCustomerNoUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetAdvanceLetterApplicationAmountLCYUpgradeTag());
     end;
 
     procedure GetDataVersion190PerDatabaseUpgradeTag(): Code[250]
@@ -50,5 +51,10 @@ codeunit 31089 "Upgrade Tag Definitions CZZ"
     procedure GetSalesAdvLetterEntryCustomerNoUpgradeTag(): Code[250]
     begin
         exit('CZZ-470101-SalesAdvLetterEntryCustomerNoUpgradeTag-20230420');
+    end;
+
+    procedure GetAdvanceLetterApplicationAmountLCYUpgradeTag(): Code[250]
+    begin
+        exit('CZZ-478403-AdvanceLetterApplicationAmountLCYUpgradeTag-20230717');
     end;
 }

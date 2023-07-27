@@ -35,9 +35,6 @@ codeunit 9863 "Permission Set Copy Impl."
 #pragma warning restore
         SourceExpandedPermission: Record "Expanded Permission";
     begin
-        // Copying by flatten is for legacy support, so no uptake logging for composable permission sets. 
-        FeatureTelemetry.LogUsage('0000HZO', ComposablePermissionSetsTok, 'Permission set copied by flatten.', GetCustomDimensions(NewRoleID, NewName, SourceRoleId, SourceAppId, SourceScope));
-
         case SourceScope of
             SourceScope::System:
                 begin
@@ -57,6 +54,9 @@ codeunit 9863 "Permission Set Copy Impl."
                         until SourceExpandedPermission.Next() = 0;
                 end;
         end;
+
+        // Copying by flatten is for legacy support, so no uptake logging for composable permission sets. 
+        FeatureTelemetry.LogUsage('0000HZO', ComposablePermissionSetsTok, 'Permission set copied by flatten.', GetCustomDimensions(NewRoleID, NewName, SourceRoleId, SourceAppId, SourceScope));
     end;
 
     local procedure CopyPermissionSetByClone(NewRoleId: Code[30]; NewName: Text; SourceRoleId: Code[30]; SourceAppId: Guid; SourceScope: Option System,Tenant)
@@ -69,7 +69,7 @@ codeunit 9863 "Permission Set Copy Impl."
         // Copying a permission set both discover, set up and uses the feature.
         FeatureTelemetry.LogUptake('0000HZK', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::Discovered);
         FeatureTelemetry.LogUptake('0000HZL', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::"Set up");
-        FeatureTelemetry.LogUsage('0000HZP', ComposablePermissionSetsTok, 'Permission set copied by clone.', GetCustomDimensions(NewRoleID, NewName, SourceRoleId, SourceAppId, SourceScope));
+        FeatureTelemetry.LogUptake('0000KR1', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::Used);
 
         case SourceScope of
             SourceScope::System:
@@ -104,6 +104,8 @@ codeunit 9863 "Permission Set Copy Impl."
                         until TenantPermissionSetRel.Next() = 0;
                 end;
         end;
+
+        FeatureTelemetry.LogUsage('0000HZP', ComposablePermissionSetsTok, 'Permission set copied by clone.', GetCustomDimensions(NewRoleID, NewName, SourceRoleId, SourceAppId, SourceScope));
     end;
 
     local procedure CopyPermissionSetByReference(NewRoleId: Code[30]; NewName: Text; SourceRoleId: Code[30]; SourceAppId: Guid; SourceScope: Option System,Tenant)
@@ -113,9 +115,11 @@ codeunit 9863 "Permission Set Copy Impl."
         // Copying a permission set both discover, set up and uses the feature.
         FeatureTelemetry.LogUptake('0000HZM', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::Discovered);
         FeatureTelemetry.LogUptake('0000HZN', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::"Set up");
-        FeatureTelemetry.LogUsage('0000HZQ', ComposablePermissionSetsTok, 'Permission set copied by reference.', GetCustomDimensions(NewRoleID, NewName, SourceRoleId, SourceAppId, SourceScope));
+        FeatureTelemetry.LogUptake('0000KR2', ComposablePermissionSetsTok, Enum::"Feature Uptake Status"::Used);
 
         CreateTenantPermissionSetRelation(NewRoleId, SourceRoleId, SourceAppId, SourceScope, TenantPermissionSetRel.Type::Include);
+
+        FeatureTelemetry.LogUsage('0000HZQ', ComposablePermissionSetsTok, 'Permission set copied by reference.', GetCustomDimensions(NewRoleID, NewName, SourceRoleId, SourceAppId, SourceScope));
     end;
 
     local procedure CreateNewTenantPermissionSet(NewRoleID: Code[30]; NewName: Text)

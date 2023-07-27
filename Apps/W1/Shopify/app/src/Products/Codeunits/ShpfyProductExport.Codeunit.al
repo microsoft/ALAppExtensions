@@ -71,8 +71,8 @@ codeunit 30178 "Shpfy Product Export"
                 ExtendedTextHeader.SetRange("Table Name", ExtendedTextHeader."Table Name"::Item);
                 ExtendedTextHeader.SetRange("No.", ItemNo);
                 ExtendedTextHeader.SetFilter("Language Code", '%1|%2', '', Shop."Language Code");
-                ExtendedTextHeader.SetFilter("Starting Date", '%1|>=%2', 0D, Today());
-                ExtendedTextHeader.SetFilter("Ending Date", '%1|<=%2', 0D, Today());
+                ExtendedTextHeader.SetRange("Starting Date", 0D, Today());
+                ExtendedTextHeader.SetFilter("Ending Date", '%1|%2..', 0D, Today());
                 if ExtendedTextHeader.FindSet() then begin
                     result.Append('<div class="productDescription">');
                     repeat
@@ -193,6 +193,8 @@ codeunit 30178 "Shpfy Product Export"
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
     begin
+        if OnlyUpdatePrice then
+            exit;
         Clear(TempShopifyVariant);
         TempShopifyVariant."Product Id" := ProductId;
         FillInProductVariantData(TempShopifyVariant, Item, ItemVariant);

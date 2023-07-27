@@ -850,6 +850,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
     requestpage
     {
+        SaveValues = true;
         layout
         {
             area(content)

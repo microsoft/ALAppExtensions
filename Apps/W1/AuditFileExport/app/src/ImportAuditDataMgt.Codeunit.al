@@ -19,9 +19,9 @@ codeunit 5262 "Import Audit Data Mgt."
         StandardAccount: Record "Standard Account";
         StandardAccNo: Code[20];
     begin
+        if not TempXMLBuffer.HasChildNodes() then
+            Error(NotPossibleToParseMappingXMLFileErr, StandardAccountsTxt);
         repeat
-            if not TempXMLBuffer.HasChildNodes() then
-                Error(NotPossibleToParseMappingXMLFileErr, StandardAccountsTxt);
             TempXMLBuffer.FindChildElements(TempChildXMLBuffer);
             StandardAccNo := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(StandardAccount."No."));
             StandardAccount.Init();

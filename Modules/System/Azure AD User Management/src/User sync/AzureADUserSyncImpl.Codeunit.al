@@ -100,27 +100,30 @@ codeunit 9029 "Azure AD User Sync Impl."
     [NonDebuggable]
     local procedure FetchUpdatesFromEnvironmentDirectoryGroup(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; OfficeUsersInBC: List of [Guid])
     var
-        GroupMembers: DotNet IEnumerable;
+        GraphUserInfoPage: Dotnet UserInfoPage;
         GraphUserInfo: DotNet UserInfo;
         CurrUserPlanIDs: List of [Guid];
     begin
         // Get all the group members of the environment group and fetch updates for those that have a BC plan
-        AzureADGraph.GetMembersForGroupId(AzureADGraph.GetEnvironmentSecurityGroupId(), GroupMembers);
+        AzureADGraph.GetMembersPageForGroupId(AzureADGraph.GetEnvironmentSecurityGroupId(), 50, GraphUserInfoPage);
 
-        if IsNull(GroupMembers) then
+        if IsNull(GraphUserInfoPage) then
             exit;
 
-        foreach GraphUserInfo in GroupMembers do begin
-            AzureADPlan.GetPlanIDs(GraphUserInfo, CurrUserPlanIDs);
-            if CurrUserPlanIDs.Count() > 0 then
-                GetUpdatesFromGraphUserInfo(GraphUserInfo, AzureADUserUpdate, OfficeUsersInBC)
-        end;
+        repeat
+            foreach GraphUserInfo in GraphUserInfoPage.CurrentPage() do begin
+                AzureADPlan.GetPlanIDs(GraphUserInfo, CurrUserPlanIDs);
+                if CurrUserPlanIDs.Count() > 0 then
+                    GetUpdatesFromGraphUserInfo(GraphUserInfo, AzureADUserUpdate, OfficeUsersInBC)
+            end;
+        until (not GraphUserInfoPage.GetNextMembersPageForGroupId(AzureADGraph.GetEnvironmentSecurityGroupId()));
     end;
 
     [NonDebuggable]
     local procedure FetchUpdatesForSkippedUsers(var AzureADUserUpdate: Record "Azure AD User Update Buffer"; OfficeUsersInBC: List of [Guid])
     var
         User: Record User;
+        UserSelection: Codeunit "User Selection";
         PlanIds: Codeunit "Plan Ids";
         UserPlanIds: List of [Guid];
         GraphUserInfo: DotNet UserInfo;
@@ -128,6 +131,7 @@ codeunit 9029 "Azure AD User Sync Impl."
         // If the environment is not defined, update internal admins and Teams users, as they are not pulled in automatically
         // If the environment is defined, only update the internal admins, as they are still allowed to access the environment
 
+        UserSelection.FilterSystemUserAndAADGroupUsers(User); // do not sync the daemon user and AAD groups
         if not User.FindSet() then
             exit;
 

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Looks up records.",
     "description":  "Provides a page where you can look up and select one or more records from a table. For example, this is useful when you want to select a record from table that the user specifies.",
-    "version":  "22.3.0.0",
+    "version":  "22.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,13 +15,13 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "22.3.0.0"
+                             "version":  "22.4.0.0"
                          },
                          {
                              "id":  "dd4b9f8a-b018-4f69-a614-efdb744c5330",
                              "name":  "Page Summary Provider",
                              "publisher":  "Microsoft",
-                             "version":  "22.3.0.0"
+                             "version":  "22.4.0.0"
                          }
                      ],
     "screenshots":  [

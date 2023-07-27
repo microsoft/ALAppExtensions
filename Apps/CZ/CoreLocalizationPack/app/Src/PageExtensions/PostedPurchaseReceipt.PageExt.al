@@ -52,14 +52,20 @@ pageextension 31111 "Posted Purchase Receipt CZL" extends "Posted Purchase Recei
                 Importance = Additional;
             }
         }
+#if not CLEAN22
         addlast(Shipping)
         {
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 Editable = false;
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
         }
+#endif
     }
 }

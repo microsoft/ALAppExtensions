@@ -14,9 +14,6 @@ codeunit 1850 "Sales Forecast Handler"
         Status: Option " ","Missing API","Not enough historical data","Out of limit","Failed Time Series initialization";
         OutOfLimitErr: Label 'Each calculation uses Azure Machine Learning credits, and you have reached your limit for this month.';
         FailedTimeSeriesInitializationErr: Label 'Failed to initialize the forecast method. Please, contact your system administrator.';
-        SalesForecastNameTxt: Label 'Sales and Inventory Forecast';
-        SalesForecastBusinessSetupDescriptionTxt: Label 'Set up and enable the Sales and Inventory Forecast service.';
-        SalesForecastBusinessSetupKeywordsTxt: Label 'Sales,Inventory,Forecast';
         UpdateDialogTxt: Label 'We''re updating the inventory forecast for item #1', comment = '#1 = an Item No.';
         SalesForecastSetupTitleTxt: Label 'Set up Sales & Inventory Forecast';
         SalesForecastSetupShortTitleTxt: Label 'Sales & Inventory Forecast';
@@ -250,6 +247,8 @@ codeunit 1850 "Sales Forecast Handler"
     begin
         Clear(Status);
         MSSalesForecastSetup.GetSingleInstance();
+        MSSalesForecastSetup.CheckEnabled();
+
         if MSSalesForecastSetup.URIOrKeyEmpty() then begin
             Status := Status::"Missing API";
             exit(false);
@@ -289,16 +288,6 @@ codeunit 1850 "Sales Forecast Handler"
         end;
 
         exit(true);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', false, false)]
-    local procedure HandleRegisterBusinessSetup(var Sender: Codeunit "Guided Experience")
-    var
-        ManualSetupCategory: Enum "Manual Setup Category";
-    begin
-        Sender.InsertManualSetup(
-          SalesForecastNameTxt, SalesForecastNameTxt, SalesForecastBusinessSetupDescriptionTxt, 5,
-          ObjectType::Page, Page::"Sales Forecast Setup Card", ManualSetupCategory::Service, SalesForecastBusinessSetupKeywordsTxt);
     end;
 
     [IntegrationEvent(false, false)]

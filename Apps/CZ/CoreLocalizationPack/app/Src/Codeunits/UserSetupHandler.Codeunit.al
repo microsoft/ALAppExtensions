@@ -10,7 +10,7 @@ codeunit 31325 "User Setup Handler CZL"
         UserSetupLineCZL.DeleteAll();
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Error Messages", 'OnDrillDownSource', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Error Message", 'OnDrillDownSource', '', false, false)]
     local procedure OnErrorMessageDrillDown(ErrorMessage: Record "Error Message"; SourceFieldNo: Integer; var IsHandled: Boolean)
     var
         CheckDimensions: Codeunit "Check Dimensions";

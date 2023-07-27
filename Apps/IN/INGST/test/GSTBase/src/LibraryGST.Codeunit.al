@@ -12,6 +12,7 @@ codeunit 18077 "Library GST"
         CGSTLbl: Label 'CGST';
         SGSTLbl: Label 'SGST';
         IGSTLbl: Label 'IGST';
+        AmountLEVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
 
     procedure CreateInitialSetup(): Code[10]
     var
@@ -217,6 +218,17 @@ codeunit 18077 "Library GST"
     begin
         PANNo := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(5, 0), 1, 5);
         PANNo := PANNo + Format(LibraryRandom.RandIntInRange(1000, 9999));
+        Evaluate(PANNo, (PANNo + CopyStr(LibraryUtility.GenerateRandomAlphabeticText(1, 0), 1, 1)));
+
+        exit(PANNo);
+    end;
+
+    procedure CreateGovtPANNos(): Code[20]
+    var
+        PANNo: Code[20];
+    begin
+        PANNo := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(4, 0), 1, 5);
+        PANNo := PANNo + Format(LibraryRandom.RandIntInRange(10000, 99999));
         Evaluate(PANNo, (PANNo + CopyStr(LibraryUtility.GenerateRandomAlphabeticText(1, 0), 1, 1)));
 
         exit(PANNo);
@@ -1253,5 +1265,24 @@ codeunit 18077 "Library GST"
         OrderAddress.Validate("Post Code", PostCode.Code);
         OrderAddress.Insert(true);
         exit(OrderAddress.Code);
+    end;
+
+    procedure VerifyGLEntryAmount(
+        GLDocType: Enum "Gen. Journal Document Type";
+        PostedDocumentNo: Code[20];
+        GLAccountNo: Code[20];
+        Amount: Decimal)
+    var
+        GLEntry: Record "G/L Entry";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        Assert: Codeunit Assert;
+    begin
+        GLEntry.SetRange("Document Type", GLDocType);
+        GLEntry.SetRange("Document No.", PostedDocumentNo);
+        GLEntry.SetRange("G/L Account No.", GLAccountNo);
+        GLEntry.FindFirst();
+
+        Assert.AreNearlyEqual(Amount, GLEntry.Amount, GeneralLedgerSetup."Inv. Rounding Precision (LCY)",
+        StrSubstNo(AmountLEVerifyErr, GLEntry.FieldCaption("Amount"), GLEntry.TableCaption));
     end;
 }

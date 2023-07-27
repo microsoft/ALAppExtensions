@@ -9,11 +9,6 @@ pageextension 31146 "FA Depr. Books Subform CZF" extends "FA Depreciation Books 
                 if Rec."FA Posting Group" <> xRec."FA Posting Group" then
                     Rec.CheckDefaultFAPostingGroupCZF();
             end;
-
-            trigger OnAfterValidate()
-            begin
-                CurrPage.Update();
-            end;
         }
         addafter("FA Posting Group")
         {

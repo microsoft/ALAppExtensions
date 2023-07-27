@@ -505,10 +505,10 @@ codeunit 5261 "Audit File Export Mgt."
     begin
         SizeInMbytes := Round(AuditFile."File Content".Length / (1024 * 1024));
         if SizeInMbytes <= 1024 then
-            exit(StrSubstNo(TwoStringsTxt, Format(SizeInMbytes), ' Mb'));
+            exit(StrSubstNo(TwoStringsTxt, Format(SizeInMbytes), ' MB'));
 
         SizeInGbytes := Round(SizeInMbytes / 1024);
-        exit(StrSubstNo(TwoStringsTxt, Format(SizeInGbytes), ' Gb'));
+        exit(StrSubstNo(TwoStringsTxt, Format(SizeInGbytes), ' GB'));
     end;
 
     procedure DownloadFileFromExportHeader(AuditFileExportHeader: Record "Audit File Export Header")
@@ -644,6 +644,13 @@ codeunit 5261 "Audit File Export Mgt."
 
         AuditFileExportHeader.Get(AuditFileExportHeader.Id);
         NotifyAuditFileExportLineCompleted(AuditFileExportHeader);
+    end;
+
+    procedure UpdateProgressBarOnAuditFileExportLine(var AuditFileExportLine: Record "Audit File Export Line"; ProgressFraction: Integer)
+    begin
+        AuditFileExportLine.Get(AuditFileExportLine.ID, AuditFileExportLine."Line No.");
+        AuditFileExportLine.Validate(Progress, ProgressFraction * 10000);
+        AuditFileExportLine.Modify(true);
     end;
 
     local procedure IsExportSessionActive(AuditFileExportLine: Record "Audit File Export Line"): Boolean

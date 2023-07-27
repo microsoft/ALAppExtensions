@@ -16,11 +16,27 @@ tableextension 11724 "Sales Shipment Header CZL" extends "Sales Shipment Header"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31069; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {

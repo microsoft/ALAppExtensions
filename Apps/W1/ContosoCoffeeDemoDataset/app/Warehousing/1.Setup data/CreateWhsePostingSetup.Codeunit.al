@@ -326,9 +326,16 @@ codeunit 4788 "Create Whse Posting Setup"
     )
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";
+        LocalWhseDemoAccount: Record "Whse. Demo Account";
     begin
         if InventoryPostingSetup.Get(LocationCode, InvtPostingGroupCode) then
             exit;
+
+        LocalWhseDemoAccount := WhseDemoAccounts.GetDemoAccount(InventoryAccountInterim);
+
+        if LocalWhseDemoAccount."Account Value" = '' then
+            exit;
+
         InventoryPostingSetup.Init();
         InventoryPostingSetup."Location Code" := LocationCode;
         InventoryPostingSetup."Invt. Posting Group Code" := InvtPostingGroupCode;

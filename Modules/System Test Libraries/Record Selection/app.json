@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library with permission set for the Record Selection module",
     "description":  "Library with permission set for the Record Selection module",
-    "version":  "22.3.0.0",
+    "version":  "22.4.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "53354ca3-452d-49c4-ae76-579e7df10d6e",
                              "name":  "Record Selection",
                              "publisher":  "Microsoft",
-                             "version":  "22.3.0.0"
+                             "version":  "22.4.0.0"
                          },
                          {
                              "id":  "6faf3d7c-8ef2-4eef-9396-63de586532e8",
                              "name":  "Field Selection Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "22.3.0.0"
+                             "version":  "22.4.0.0"
                          }
                      ],
     "screenshots":  [

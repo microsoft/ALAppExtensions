@@ -24,7 +24,7 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         VATStatementReportLine: array[3] of Record "VAT Statement Report Line";
         TempXMLBuffer: Record "XML Buffer" temporary;
         VATReportMediator: Codeunit "VAT Report Mediator";
-        VATCode: Code[10];
+        VATCode: Code[20];
     begin
         // [SCENARIO 418697] The structure of the XML submission message is correct when using mix of codes with different setup
 
@@ -355,6 +355,38 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'merverdiavgift', LibraryElecVATSubmission.GetAmountTextRounded(Amount));
     end;
 
+#if CLEAN23
+    local procedure VerifyVATCodeWithSpecAndNoteXmlBlock(var TempXMLBuffer: Record "XML Buffer" temporary; BoxNo: Text; Description: Text; Amount: Decimal)
+    var
+        VATReportingCode: Record "VAT Reporting Code";
+        VATSpecification: Record "VAT Specification";
+        VATNote: Record "VAT Note";
+    begin
+        VATReportingCode.Get(CopyStr(BoxNo, 1, MaxStrLen(VATReportingCode.Code)));
+        LibraryElecVATSubmission.AssertElementName(TempXMLBuffer, 'mvaSpesifikasjonslinje');
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'mvaKode', BoxNo);
+        VATSpecification.Get(VATReportingCode."VAT Specification Code");
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'spesifikasjon', VATSpecification."VAT Report Value");
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'mvaKodeRegnskapsystem', Description);
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'merverdiavgift', LibraryElecVATSubmission.GetAmountTextRounded(Amount));
+        VATNote.Get(VATReportingCode."VAT Note Code");
+        LibraryElecVATSubmission.AssertElementName(TempXMLBuffer, 'merknad');
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'utvalgtMerknad', VATNote."VAT Report Value");
+    end;
+
+    local procedure VerifyVATCodeComplexXmlBlock(var TempXMLBuffer: Record "XML Buffer" temporary; BoxNo: Text; Description: Text; Base: Decimal; Amount: Decimal)
+    var
+        VATReportingCode: Record "VAT Reporting Code";
+    begin
+        LibraryElecVATSubmission.AssertElementName(TempXMLBuffer, 'mvaSpesifikasjonslinje');
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'mvaKode', BoxNo);
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'mvaKodeRegnskapsystem', Description);
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'grunnlag', LibraryElecVATSubmission.GetAmountTextRounded(Base));
+        VATReportingCode.Get(CopyStr(BoxNo, 1, MaxStrLen(VATReportingCode.Code)));
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'sats', Format(VATReportingCode."VAT Rate For Reporting", 0, '<Integer><Decimals><Comma,,>'));
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'merverdiavgift', LibraryElecVATSubmission.GetAmountTextRounded(Amount));
+    end;
+#else
     local procedure VerifyVATCodeWithSpecAndNoteXmlBlock(var TempXMLBuffer: Record "XML Buffer" temporary; BoxNo: Text; Description: Text; Amount: Decimal)
     var
         VATCode: Record "VAT Code";
@@ -385,6 +417,7 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'sats', Format(VATCode."VAT Rate For Reporting", 0, '<Integer><Decimals><Comma,,>'));
         LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'merverdiavgift', LibraryElecVATSubmission.GetAmountTextRounded(Amount));
     end;
+#endif
 
     local procedure VerifyPeriodXMLNodesInSubmissionMessage(VATReportHeader: Record "VAT Report Header"; PeriodType: Text; PeriodText: Text)
     var

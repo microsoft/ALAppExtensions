@@ -45,6 +45,10 @@ page 30065 "APIV2 - Purch Receipt Lines"
                 {
                     Caption = 'Description';
                 }
+                field(description2; Rec."Description 2")
+                {
+                    Caption = 'Description 2';
+                }
                 field(unitOfMeasureCode; "Unit of Measure Code")
                 {
                     Caption = 'Unit Of Measure Code';

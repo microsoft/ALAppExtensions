@@ -903,7 +903,7 @@ codeunit 7233 "Master Data Management"
         IsHandled: Boolean;
     begin
         if MasterDataManagementSetup.Get() then
-            EnqueueJobQueEntries := MasterDataManagementSetup."Is Enabled";
+            EnqueueJobQueEntries := (MasterDataManagementSetup."Is Enabled") and (not MasterDataManagementSetup."Delay Job Scheduling");
 
         if IntegrationTableMapping.FindSet() then
             repeat

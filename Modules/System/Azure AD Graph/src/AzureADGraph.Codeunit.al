@@ -200,14 +200,14 @@ codeunit 9012 "Azure AD Graph"
     /// <summary>
     /// Gets a list of licensed users.
     /// </summary>
-    /// <param name="AssingedPlans">The assigned plans (licenses) to filter to.</param>
-    /// <param name="NumberOfUsers">The number of users to return.</param>
+    /// <param name="AssignedPlans">The assigned plans (licenses) to filter to.</param>
+    /// <param name="NumberOfUsers">The number of users per page to return.</param>
     /// <param name="UserInfoPage">The list of users to return.</param>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure GetLicensedUsersPage(AssingedPlans: DotNet StringArray; NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
+    procedure GetLicensedUsersPage(AssignedPlans: DotNet StringArray; NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
     begin
-        AzureADGraphImpl.GetLicensedUsersPage(AssingedPlans, NumberOfUsers, UserInfoPage);
+        AzureADGraphImpl.GetLicensedUsersPage(AssignedPlans, NumberOfUsers, UserInfoPage);
     end;
 
     /// <summary>
@@ -226,12 +226,13 @@ codeunit 9012 "Azure AD Graph"
     /// Gets a list of users who are members of the specified AAD group.
     /// </summary>
     /// <param name="GroupId">The AAD object ID of the AAD security group.</param>
-    /// <param name="GroupMembers">A list of UserInfo objects identifying users that are members of the specified group.</param>
+    /// <param name="NumberOfUsers">The number of users per page to return.</param>
+    /// <param name="UserInfoPage">A list of UserInfo objects identifying users that are members of the specified group.</param>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure GetMembersForGroupId(GroupId: Text; var GroupMembers: DotNet IEnumerable)
+    procedure GetMembersPageForGroupId(GroupId: Text; NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
     begin
-        AzureADGraphImpl.GetMembersForGroupId(GroupId, GroupMembers);
+        AzureADGraphImpl.GetMembersPageForGroupId(GroupId, NumberOfUsers, UserInfoPage);
     end;
 
     /// <summary>

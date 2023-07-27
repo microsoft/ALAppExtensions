@@ -134,6 +134,15 @@ page 30067 "APIV2 - Purchase Order Lines"
                         RegisterFieldSet(FieldNo(Description));
                     end;
                 }
+                field(description2; Rec."Description 2")
+                {
+                    Caption = 'Description 2';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Description 2"));
+                    end;
+                }
                 field(unitOfMeasureId; "Unit of Measure Id")
                 {
                     Caption = 'Unit Of Measure Id';

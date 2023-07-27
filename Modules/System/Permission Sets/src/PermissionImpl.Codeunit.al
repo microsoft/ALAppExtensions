@@ -70,7 +70,7 @@ codeunit 9864 "Permission Impl."
 
         if IsTypeChanged then begin
             EmptyIrrelevantPermissionFields(TenantPermission);
-            SetRelevantPermissionFieldsToYes(TenantPermission);
+            SetDefaultPermissionFields(TenantPermission);
         end;
 
         ReadPermissionAsTxt := GetPermissionAsTxt(TenantPermission.Type, TenantPermission."Read Permission");
@@ -111,13 +111,13 @@ codeunit 9864 "Permission Impl."
         end;
     end;
 
-    procedure SetRelevantPermissionFieldsToYes(var TenantPermission: Record "Tenant Permission")
+    procedure SetDefaultPermissionFields(var TenantPermission: Record "Tenant Permission")
     begin
         if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then begin
             TenantPermission."Read Permission" := TenantPermission."Read Permission"::Yes;
-            TenantPermission."Insert Permission" := TenantPermission."Insert Permission"::Yes;
-            TenantPermission."Modify Permission" := TenantPermission."Modify Permission"::Yes;
-            TenantPermission."Delete Permission" := TenantPermission."Delete Permission"::Yes;
+            TenantPermission."Insert Permission" := TenantPermission."Insert Permission"::" ";
+            TenantPermission."Modify Permission" := TenantPermission."Modify Permission"::" ";
+            TenantPermission."Delete Permission" := TenantPermission."Delete Permission"::" ";
         end else
             TenantPermission."Execute Permission" := TenantPermission."Execute Permission"::Yes;
     end;
@@ -138,7 +138,7 @@ codeunit 9864 "Permission Impl."
         end;
     end;
 
-    procedure GetObjectionCaptionAndName(var MetadataPermission: Record "Metadata Permission"; var ObjectCaption: Text; var ObjectName: Text)
+    procedure GetObjectCaptionAndName(var MetadataPermission: Record "Metadata Permission"; var ObjectCaption: Text; var ObjectName: Text)
     var
         AllObj: Record AllObj;
     begin
@@ -154,7 +154,7 @@ codeunit 9864 "Permission Impl."
         end;
     end;
 
-    procedure GetObjectionCaptionAndName(var ExpandedPermission: Record "Expanded Permission"; var ObjectCaption: Text; var ObjectName: Text)
+    procedure GetObjectCaptionAndName(var ExpandedPermission: Record "Expanded Permission"; var ObjectCaption: Text; var ObjectName: Text)
     var
         AllObj: Record AllObj;
     begin
@@ -243,6 +243,7 @@ codeunit 9864 "Permission Impl."
 
         VerifyPermissionAlreadyExists(TenantPermission);
         EmptyIrrelevantPermissionFields(TenantPermission);
+        SetDefaultPermissionFields(TenantPermission);
 
         TenantPermission.Insert();
     end;
