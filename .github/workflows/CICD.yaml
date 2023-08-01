@@ -104,7 +104,7 @@ jobs:
             $continuousDelivery = $false
             # For multi-project repositories, we will add deliveryTarget AppSource if any project has AppSourceContinuousDelivery set to true
             ('${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
-              $projectSettings = Get-Content (Join-Path $_ '.AL-Go/settings.json') -raw | ConvertFrom-Json
+              $projectSettings = Get-Content (Join-Path $_ '.AL-Go/settings.json') -encoding UTF8 -raw | ConvertFrom-Json
               if ($projectSettings.PSObject.Properties.Name -eq 'AppSourceContinuousDelivery' -and $projectSettings.AppSourceContinuousDelivery) {
                 Write-Host "Project $_ is setup for Continuous Delivery"
                 $continuousDelivery = $true

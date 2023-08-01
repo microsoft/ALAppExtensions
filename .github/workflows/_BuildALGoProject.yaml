@@ -69,6 +69,7 @@ on:
 jobs:
   BuildALGoProject:
     runs-on: ${{ fromJson(inputs.runsOn) }}
+    name: ${{ inputs.project }} - ${{ inputs.buildMode }}
     steps:
         - name: Checkout
           uses: actions/checkout@v3
@@ -138,7 +139,7 @@ jobs:
             shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
             azureCredentialsJson: ${{ secrets.AZURE_CREDENTIALS }}
             settingsJson: ${{ env.Settings }}
-            pathToFiles: '${{ matrix.project }}/.buildartifacts/Apps/*.app'
+            pathToFiles: '${{ inputs.project }}/.buildartifacts/Apps/*.app'
             parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
 
         - name: Calculate Artifact names
