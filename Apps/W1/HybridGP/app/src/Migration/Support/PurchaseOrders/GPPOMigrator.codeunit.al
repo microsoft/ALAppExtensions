@@ -23,6 +23,7 @@ codeunit 40108 "GP PO Migrator"
         CountryCode: Code[10];
         CurrencyCode: Code[10];
     begin
+        SetDirectCostPostingAccountIfNeeded();
         Clear(ItemJnlBatchLineNo);
 
         GPPOP10100.SetRange(POTYPE, GPPOP10100.POTYPE::Standard);
@@ -139,6 +140,7 @@ codeunit 40108 "GP PO Migrator"
         AdjustedQtyShipped: Decimal;
         AdjustedQtyInvoiced: Decimal;
         QtyOverReceipt: Decimal;
+        UnitCost: Decimal;
     begin
         GPPOP10110.SetRange(PONUMBER, GPPOP10100.PONUMBER);
         if not GPPOP10110.FindSet() then
@@ -208,11 +210,14 @@ codeunit 40108 "GP PO Migrator"
             PurchaseLine.Validate("Quantity", AdjustedQuantity);
             PurchaseLine.Validate("Qty. to Receive", AdjustedQtyShipped);
             PurchaseLine.Validate("Outstanding Quantity", AdjustedQuantity);
-            PurchaseLine.Validate("Direct Unit Cost", GPPOP10110.UNITCOST);
-            PurchaseLine.Validate(Amount, GPPOP10110.EXTDCOST);
-            PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * GPPOP10110.UNITCOST);
+
+            UnitCost := GPPOPReceiptApply.GetLineUnitCostFromReceipt(GPPOP10110);
+
+            PurchaseLine.Validate("Direct Unit Cost", UnitCost);
+            PurchaseLine.Validate(Amount, UnitCost * AdjustedQuantity);
+            PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * UnitCost);
             PurchaseLine.Validate("Outstanding Amount (LCY)", PurchaseLine."Outstanding Amount");
-            PurchaseLine.Validate("Unit Cost", GPPOP10110.UNITCOST);
+            PurchaseLine.Validate("Unit Cost", UnitCost);
 
             if QtyOverReceipt > 0 then begin
                 PurchaseLine."Over-Receipt Code" := GPCodeTxt;
@@ -223,16 +228,19 @@ codeunit 40108 "GP PO Migrator"
                 PurchaseLine.Validate("Outstanding Qty. (Base)", PurchaseLine."Outstanding Quantity");
 
             PurchaseLine."Line Amount" := PurchaseLine.Amount;
-            PurchaseLine.Insert(true);
 
-            if IsInventoryItem and (PurchaseLine."Qty. to Receive (Base)" > 0) then begin
-                if not PostPurchaseOrderNoList.Contains(PurchaseHeader."No.") then
-                    PostPurchaseOrderNoList.Add(PurchaseHeader."No.");
+            if PurchaseLine.Quantity > 0 then begin
+                PurchaseLine.Insert(true);
 
-                CreateNegativeAdjustment(PurchaseLine);
+                if IsInventoryItem and (PurchaseLine."Qty. to Receive (Base)" > 0) then begin
+                    if not PostPurchaseOrderNoList.Contains(PurchaseHeader."No.") then
+                        PostPurchaseOrderNoList.Add(PurchaseHeader."No.");
+
+                    CreateNegativeAdjustment(PurchaseLine);
+                end;
+
+                LineNo := LineNo + 10000;
             end;
-
-            LineNo := LineNo + 10000;
         until GPPOP10110.Next() = 0;
     end;
 
@@ -324,6 +332,7 @@ codeunit 40108 "GP PO Migrator"
         ItemJournalLine.Validate("Line No.", ItemJnlBatchLineNo);
         ItemJournalLine.Validate(Description, PurchaseLine.Description);
         ItemJournalLine.Validate(Quantity, PurchaseLine."Qty. to Receive");
+        ItemJournalLine."Location Code" := PurchaseLine."Location Code";
         ItemJournalLine.Insert(true);
     end;
 
@@ -405,6 +414,25 @@ codeunit 40108 "GP PO Migrator"
             if GPPOPReceiptHist.FindFirst() then
                 PurchaseHeader."Vendor Invoice No." := CopyStr(GPPOPReceiptHist.VNDDOCNM.Trim(), 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
         end;
+    end;
+
+    local procedure SetDirectCostPostingAccountIfNeeded()
+    var
+        GeneralPostingSetup: Record "General Posting Setup";
+    begin
+        if GeneralPostingSetup.Get('', GPCodeTxt) then
+            if (GeneralPostingSetup."Direct Cost Applied Account" = '') then
+                if (GeneralPostingSetup."Inventory Adjmt. Account" <> '') then begin
+                    GeneralPostingSetup."Direct Cost Applied Account" := GeneralPostingSetup."Inventory Adjmt. Account";
+                    GeneralPostingSetup.Modify();
+                end;
+
+        if GeneralPostingSetup.Get(GPCodeTxt, GPCodeTxt) then
+            if (GeneralPostingSetup."Direct Cost Applied Account" = '') then
+                if (GeneralPostingSetup."Inventory Adjmt. Account" <> '') then begin
+                    GeneralPostingSetup."Direct Cost Applied Account" := GeneralPostingSetup."Inventory Adjmt. Account";
+                    GeneralPostingSetup.Modify();
+                end;
     end;
 
     local procedure ZeroIfNegative(Minuend: Decimal; Subtrahend: Decimal): Decimal

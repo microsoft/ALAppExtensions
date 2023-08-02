@@ -281,14 +281,15 @@ table 4060 "GPPOPReceiptApply"
         TotalShipped: Decimal;
     begin
         TotalShipped := 0;
-        SetRange(PONUMBER, PO_Number);
-        SetRange(POLNENUM, PO_LineNo);
-        SetFilter(Status, '%1', Status::Posted);
-        if FindSet() then
+        Rec.Reset();
+        Rec.SetRange(PONUMBER, PO_Number);
+        Rec.SetRange(POLNENUM, PO_LineNo);
+        Rec.SetFilter(Status, '%1', Status::Posted);
+        if Rec.FindSet() then
             repeat
-                if QTYSHPPD > 0 then
-                    TotalShipped := TotalShipped + QTYSHPPD;
-            until Next() = 0;
+                if Rec.QTYSHPPD > 0 then
+                    TotalShipped := TotalShipped + Rec.QTYSHPPD;
+            until Rec.Next() = 0;
 
         exit(TotalShipped);
     end;
@@ -298,15 +299,33 @@ table 4060 "GPPOPReceiptApply"
         TotalInvoiced: Decimal;
     begin
         TotalInvoiced := 0;
-        SetRange(PONUMBER, PO_Number);
-        SetRange(POLNENUM, PO_LineNo);
-        SetFilter(Status, '%1', Status::Posted);
-        if FindSet() then
+        Rec.Reset();
+        Rec.SetRange(PONUMBER, PO_Number);
+        Rec.SetRange(POLNENUM, PO_LineNo);
+        Rec.SetFilter(Status, '%1', Status::Posted);
+        if Rec.FindSet() then
             repeat
-                if QTYINVCD > 0 then
-                    TotalInvoiced := TotalInvoiced + QTYINVCD;
-            until Next() = 0;
+                if Rec.QTYINVCD > 0 then
+                    TotalInvoiced := TotalInvoiced + Rec.QTYINVCD;
+            until Rec.Next() = 0;
 
         exit(TotalInvoiced);
+    end;
+
+    procedure GetLineUnitCostFromReceipt(var GPPOP10110: Record "GP POP10110"): Decimal
+    var
+        UnitCost: Decimal;
+    begin
+        UnitCost := GPPOP10110.UNITCOST;
+        Rec.Reset();
+        Rec.SetRange(PONUMBER, GPPOP10110.PONUMBER);
+        Rec.SetRange(POLNENUM, GPPOP10110.ORD);
+        Rec.SetRange(Status, Status::Posted);
+        Rec.SetFilter(POPTYPE, '1|3');
+        Rec.SetFilter(PCHRPTCT, '>%1', 0);
+        if Rec.FindFirst() then
+            UnitCost := Rec.PCHRPTCT;
+
+        exit(UnitCost);
     end;
 }
