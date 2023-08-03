@@ -115,5 +115,6 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GP Hist. Source Error" = IMD,
                     tabledata "GP POP10100" = IMD,
                     tabledata "GP POP10110" = IMD,
-                    tabledata "GP PM00204" = IMD;
+                    tabledata "GP PM00204" = IMD,
+                    tabledata "GP Known Countries" = IMD;
 }

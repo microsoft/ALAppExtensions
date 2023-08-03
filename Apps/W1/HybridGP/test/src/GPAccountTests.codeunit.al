@@ -126,6 +126,55 @@ codeunit 139661 "GP Account Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestSkipAccountPosting()
+    var
+        GPGLTransactions: Record "GP GLTransactions";
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+        GPSegements: Record "GP Segments";
+        GPCodes: Record "GP Codes";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        GenJournalLine: Record "Gen. Journal Line";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] G/L Accounts are migrated from GP
+        // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
+        if not BindSubscription(MSGPAccountMigrationTests) then
+            exit;
+        ClearTables();
+
+        // [GIVEN] GL Master Data Only is enabled
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Only GL Master", false);
+        GPCompanyAdditionalSettings.Validate("Skip Posting Account Batches", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] Some records are created in the staging tables
+        CreateAccountData(GPAccount);
+        CreateDimensionData(GPSegements, GPCodes);
+        HelperFunctions.CreateDimensions();
+        CreateFiscalPeriods(GPFiscalPeriods);
+        CreateTrxData(GPGLTransactions);
+
+        // [WHEN] MigrationAccounts is called
+        GPAccount.FindSet();
+        repeat
+            Migrate(GPAccount);
+        until GPAccount.Next() = 0;
+
+        // [THEN] accounts are created Direct Posting option set
+        GLAccount.SetFilter("Direct Posting", '1');
+        Assert.RecordCount(GLAccount, 7);
+
+        // [THEN] The GL Batch is created but not posted
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Journal Batch Name", 'GP');
+        Assert.AreEqual(false, GenJournalLine.IsEmpty(), 'Could not locate the account batch.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPDimensionsCreation()
     var
         GPSegements: Record "GP Segments";

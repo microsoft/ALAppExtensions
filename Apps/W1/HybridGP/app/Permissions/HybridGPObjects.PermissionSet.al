@@ -144,5 +144,6 @@ permissionset 4029 "HybridGP - Objects"
                     page "Hist. Migration Status Factbox" = X,
                     table "GP POP10100" = X,
                     table "GP POP10110" = X,
-                    table "GP PM00204" = X;
+                    table "GP PM00204" = X,
+                    table "GP Known Countries" = X;
 }

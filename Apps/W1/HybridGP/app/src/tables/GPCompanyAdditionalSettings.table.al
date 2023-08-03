@@ -325,6 +325,27 @@ table 40105 "GP Company Additional Settings"
             FieldClass = FlowField;
             CalcFormula = exist("Hybrid Company Status" where("Name" = field(Name), "Upgrade Status" = const("Completed")));
         }
+
+        field(36; "Skip Posting Account Batches"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
+        field(37; "Skip Posting Customer Batches"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
+        field(38; "Skip Posting Vendor Batches"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
+        field(39; "Skip Posting Bank Batches"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
     }
 
     keys
@@ -456,6 +477,40 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Only Inventory Master");
+    end;
+
+    // Posting
+    procedure GetSkipAllPosting(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Skip Posting Account Batches" and
+             Rec."Skip Posting Customer Batches" and
+             Rec."Skip Posting Vendor Batches" and
+             Rec."Skip Posting Bank Batches");
+    end;
+
+    procedure GetSkipPostingAccountBatches(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Skip Posting Account Batches");
+    end;
+
+    procedure GetSkipPostingCustomerBatches(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Skip Posting Customer Batches");
+    end;
+
+    procedure GetSkipPostingVendorBatches(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Skip Posting Vendor Batches");
+    end;
+
+    procedure GetSkipPostingBankBatches(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Skip Posting Bank Batches");
     end;
 
     // Other

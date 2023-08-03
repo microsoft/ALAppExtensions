@@ -1211,6 +1211,7 @@ Codeunit 4037 "Helper Functions"
     var
         GenJournalLine: Record "Gen. Journal Line";
         GenJournalBatch: Record "Gen. Journal Batch";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         JournalBatchName: Text;
         DurationAsInt: BigInteger;
         StartTime: DateTime;
@@ -1220,10 +1221,12 @@ Codeunit 4037 "Helper Functions"
         StartTime := CurrentDateTime();
         Session.LogMessage('00007GJ', 'Posting GL transactions started.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
 
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipAllPosting();
         OnSkipPostingGLAccounts(SkipPosting);
         if SkipPosting then
             exit;
 
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipPostingAccountBatches();
         OnSkipPostingAccountBatches(SkipPosting);
         if not SkipPosting then begin
             // Post the Account batches
@@ -1232,15 +1235,18 @@ Codeunit 4037 "Helper Functions"
             GenJournalBatch.SetFilter(Name, PostingGroupCodeTxt + '*');
             if GenJournalBatch.FindSet() then
                 repeat
-                    JournalBatchName := GenJournalBatch.Name;
-                    GenJournalLine.Reset();
-                    GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
-                    GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
-                    if not GenJournalLine.IsEmpty() then
-                        PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+                    if (GenJournalBatch.Name <> CustomerBatchNameTxt) and (GenJournalBatch.Name <> VendorBatchNameTxt) and (GenJournalBatch.Name <> BankBatchNameTxt) then begin
+                        JournalBatchName := GenJournalBatch.Name;
+                        GenJournalLine.Reset();
+                        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+                        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+                        if not GenJournalLine.IsEmpty() then
+                            PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+                    end;
                 until GenJournalBatch.Next() = 0;
         end;
 
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipPostingCustomerBatches();
         OnSkipPostingCustomerBatches(SkipPosting);
         if not SkipPosting then begin
             // Post the Customer Batch, if created...
@@ -1252,6 +1258,7 @@ Codeunit 4037 "Helper Functions"
                 PostGLBatch(CopyStr(JournalBatchName, 1, 10));
         end;
 
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipPostingVendorBatches();
         OnSkipPostingVendorBatches(SkipPosting);
         if not SkipPosting then begin
             // Post the Vendor Batch, if created...
@@ -1263,6 +1270,7 @@ Codeunit 4037 "Helper Functions"
                 PostGLBatch(CopyStr(JournalBatchName, 1, 10));
         end;
 
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipPostingBankBatches();
         OnSkipPostingBankBatches(SkipPosting);
         if not SkipPosting then begin
             // Post the Bank Batch, if created...
@@ -1310,64 +1318,87 @@ Codeunit 4037 "Helper Functions"
     var
         GenJournalLine: Record "Gen. Journal Line";
         GenJournalBatch: Record "Gen. Journal Batch";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         JournalBatchName: Text;
+        SkipPosting: Boolean;
     begin
-        // GL Batches
-        GenJournalBatch.Reset();
-        GenJournalBatch.SetRange("Journal Template Name", GeneralTemplateNameTxt);
-        if GenJournalBatch.FindSet() then
-            repeat
-                if strpos(GenJournalBatch.Name, PostingGroupCodeTxt) = 1 then begin
-                    GenJournalLine.Reset();
-                    GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
-                    GenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
-                    GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::"G/L Account");
-                    GenJournalLine.SetRange("Account No.", '');
-                    If GenJournalLine.Count() = 1 then begin
-                        GenJournalLine.DeleteAll();
-                        GenJournalBatch.Delete();
-                    end else
-                        GenJournalBatch.Delete();
-                end;
-            until GenJournalBatch.Next() = 0;
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipAllPosting();
+        OnSkipPostingGLAccounts(SkipPosting);
+        if SkipPosting then
+            exit;
 
-
-        // Customer Batch
-        JournalBatchName := CustomerBatchNameTxt;
-        GenJournalLine.Reset();
-        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
-        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
-        GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::Customer);
-        GenJournalLine.SetRange("Account No.", '');
-        If GenJournalLine.Count() = 1 then begin
-            GenJournalLine.DeleteAll();
-            if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
-                GenJournalBatch.Delete();
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipPostingAccountBatches();
+        OnSkipPostingAccountBatches(SkipPosting);
+        if not SkipPosting then begin
+            // GL Batches
+            GenJournalBatch.Reset();
+            GenJournalBatch.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+            if GenJournalBatch.FindSet() then
+                repeat
+                    if StrPos(GenJournalBatch.Name, PostingGroupCodeTxt) = 1 then
+                        if (GenJournalBatch.Name <> CustomerBatchNameTxt) and (GenJournalBatch.Name <> VendorBatchNameTxt) and (GenJournalBatch.Name <> BankBatchNameTxt) then begin
+                            GenJournalLine.Reset();
+                            GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+                            GenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
+                            GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::"G/L Account");
+                            GenJournalLine.SetRange("Account No.", '');
+                            If GenJournalLine.Count() <= 1 then begin
+                                GenJournalLine.DeleteAll();
+                                GenJournalBatch.Delete();
+                            end else
+                                GenJournalBatch.Delete();
+                        end;
+                until GenJournalBatch.Next() = 0;
         end;
 
-        // Vendor Batch
-        JournalBatchName := VendorBatchNameTxt;
-        GenJournalLine.Reset();
-        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
-        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
-        GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::Vendor);
-        GenJournalLine.SetRange("Account No.", '');
-        If GenJournalLine.Count() = 1 then begin
-            GenJournalLine.DeleteAll();
-            if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
-                GenJournalBatch.Delete();
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipPostingCustomerBatches();
+        OnSkipPostingCustomerBatches(SkipPosting);
+        if not SkipPosting then begin
+            // Customer Batch
+            JournalBatchName := CustomerBatchNameTxt;
+            GenJournalLine.Reset();
+            GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+            GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+            GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::Customer);
+            GenJournalLine.SetRange("Account No.", '');
+            If GenJournalLine.Count() <= 1 then begin
+                GenJournalLine.DeleteAll();
+                if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
+                    GenJournalBatch.Delete();
+            end;
         end;
 
-        // Bank Batch
-        JournalBatchName := BankBatchNameTxt;
-        GenJournalLine.Reset();
-        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
-        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
-        GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::"Bank Account");
-        If GenJournalLine.Count() = 1 then begin
-            GenJournalLine.DeleteAll();
-            if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
-                GenJournalBatch.Delete();
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipPostingVendorBatches();
+        OnSkipPostingVendorBatches(SkipPosting);
+        if not SkipPosting then begin
+            // Vendor Batch
+            JournalBatchName := VendorBatchNameTxt;
+            GenJournalLine.Reset();
+            GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+            GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+            GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::Vendor);
+            GenJournalLine.SetRange("Account No.", '');
+            If GenJournalLine.Count() <= 1 then begin
+                GenJournalLine.DeleteAll();
+                if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
+                    GenJournalBatch.Delete();
+            end;
+        end;
+
+        SkipPosting := GPCompanyAdditionalSettings.GetSkipPostingBankBatches();
+        OnSkipPostingBankBatches(SkipPosting);
+        if not SkipPosting then begin
+            // Bank Batch
+            JournalBatchName := BankBatchNameTxt;
+            GenJournalLine.Reset();
+            GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+            GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+            GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::"Bank Account");
+            If GenJournalLine.Count() <= 1 then begin
+                GenJournalLine.DeleteAll();
+                if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
+                    GenJournalBatch.Delete();
+            end;
         end;
     end;
 
@@ -1981,7 +2012,7 @@ Codeunit 4037 "Helper Functions"
     begin
         if (GPAccountIndex > 0) then
             if GPAccount.Get(GPAccountIndex) then
-                exit(CopyStr(GPAccount.AcctNum, 1, 20));
+                exit(CopyStr(GPAccount.AcctNum.Trim(), 1, 20));
 
         exit('');
     end;

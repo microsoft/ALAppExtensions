@@ -35,6 +35,7 @@ codeunit 139664 "GP Data Migration Tests"
         VendorIdWithBankStr2Txt: Label 'VENDOR002', Comment = 'Vendor Id with bank account information', Locked = true;
         VendorIdWithBankStr3Txt: Label 'VENDOR003', Comment = 'Vendor Id with bank account information', Locked = true;
         VendorIdWithBankStr4Txt: Label 'VENDOR004', Comment = 'Vendor Id with bank account information', Locked = true;
+        VendorIdWithBankStr5Txt: Label 'VENDOR005', Comment = 'Vendor Id with bank account information', Locked = true;
         ValidSwiftCodeStrTxt: Label 'BOFAUS3N', Comment = 'Valid SWIFT Code', Locked = true;
 #pragma warning disable AA0240
         ValidIBANStrTxt: Label 'GB33BUKB20201555555555', Comment = 'Valid IBAN code', Locked = true;
@@ -50,6 +51,55 @@ codeunit 139664 "GP Data Migration Tests"
         PONumberTxt: Label 'PO001', Comment = 'PO number for Migrate Open POs setting tests', Locked = true;
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         TestMoneyCurrencyCodeTxt: Label 'TESTMONEY', Locked = true;
+
+    [Test]
+    procedure TestKnownCountries()
+    var
+        GPKnownCountries: Record "GP Known Countries";
+        FoundKnownCountry: Boolean;
+        CountryCodeISO2: Code[2];
+        CountryName: Text[50];
+    begin
+        GPKnownCountries.SearchKnownCountry('UniteD STATES', FoundKnownCountry, CountryCodeISO2, CountryName);
+        Assert.AreEqual(true, FoundKnownCountry, 'Country was not found.');
+        Assert.AreEqual('US', CountryCodeISO2, 'ISO2 code is incorrect.');
+        Assert.AreEqual('United States', CountryName, 'Found country name is incorrect.');
+
+        GPKnownCountries.SearchKnownCountry('USA', FoundKnownCountry, CountryCodeISO2, CountryName);
+        Assert.AreEqual(true, FoundKnownCountry, 'Country was not found.');
+        Assert.AreEqual('US', CountryCodeISO2, 'ISO2 code is incorrect.');
+        Assert.AreEqual('United States', CountryName, 'Found country name is incorrect.');
+
+        GPKnownCountries.SearchKnownCountry('US', FoundKnownCountry, CountryCodeISO2, CountryName);
+        Assert.AreEqual(true, FoundKnownCountry, 'Country was not found.');
+        Assert.AreEqual('US', CountryCodeISO2, 'ISO2 code is incorrect.');
+        Assert.AreEqual('United States', CountryName, 'Found country name is incorrect.');
+
+        GPKnownCountries.SearchKnownCountry('CaNAda', FoundKnownCountry, CountryCodeISO2, CountryName);
+        Assert.AreEqual(true, FoundKnownCountry, 'Country was not found.');
+        Assert.AreEqual('CA', CountryCodeISO2, 'ISO2 code is incorrect.');
+        Assert.AreEqual('Canada', CountryName, 'Found country name is incorrect.');
+
+        GPKnownCountries.SearchKnownCountry('CAN', FoundKnownCountry, CountryCodeISO2, CountryName);
+        Assert.AreEqual(true, FoundKnownCountry, 'Country was not found.');
+        Assert.AreEqual('CA', CountryCodeISO2, 'ISO2 code is incorrect.');
+        Assert.AreEqual('Canada', CountryName, 'Found country name is incorrect.');
+
+        GPKnownCountries.SearchKnownCountry('CA', FoundKnownCountry, CountryCodeISO2, CountryName);
+        Assert.AreEqual(true, FoundKnownCountry, 'Country was not found.');
+        Assert.AreEqual('CA', CountryCodeISO2, 'ISO2 code is incorrect.');
+        Assert.AreEqual('Canada', CountryName, 'Found country name is incorrect.');
+
+        GPKnownCountries.SearchKnownCountry('', FoundKnownCountry, CountryCodeISO2, CountryName);
+        Assert.AreEqual(false, FoundKnownCountry, 'Country was not found.');
+        Assert.AreEqual('', CountryCodeISO2, 'ISO2 code is incorrect.');
+        Assert.AreEqual('', CountryName, 'Found country name is incorrect.');
+
+        GPKnownCountries.SearchKnownCountry('SATURN', FoundKnownCountry, CountryCodeISO2, CountryName);
+        Assert.AreEqual(false, FoundKnownCountry, 'Country was not found.');
+        Assert.AreEqual('', CountryCodeISO2, 'ISO2 code is incorrect.');
+        Assert.AreEqual('', CountryName, 'Found country name is incorrect.');
+    end;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -132,7 +182,7 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('Toyota Land', Customer."Address 2", 'Address2 of Migrated Customer is wrong');
         Assert.AreEqual('!What a city!', Customer.City, 'City of Migrated Customer is wrong');
         Assert.AreEqual('84953', Customer."Post Code", 'Post Code of Migrated Customer is wrong');
-        Assert.AreEqual('USA', Customer."Country/Region Code", 'Country/Region of Migrated Customer is wrong');
+        Assert.AreEqual('US', Customer."Country/Region Code", 'Country/Region of Migrated Customer is wrong');
         Assert.AreEqual('KNOBL-CHUCK-001', Customer."Salesperson Code", 'Salesperson Code of Migrated Customer is wrong');
         Assert.AreEqual('MAIL', Customer."Shipment Method Code", 'Shipment Method Code of Migrated Customer is wrong');
         Assert.AreEqual(true, Customer."Print Statements", 'Print Statements of Migrated Customer is wrong');
@@ -162,19 +212,19 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] Customer classes are migrated
         Assert.AreEqual('100', HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), 'Default Receivables account is incorrect.');
 
-        // [THEN] The class Receivables account will be used for transactions when an account is configured for the class
+        // [THEN] The class Receivables account will be used for transactions when an account is configured for the class with an account number
         Clear(GenJournalLine);
         GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Customer);
         GenJournalLine.SetRange("Account No.", '!WOW!');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
         Assert.AreEqual('TEST987', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
 
-        // [THEN] No account will be set for the Bal. Account No. where class has no account configured
+        // [THEN] The default account will be set for the Bal. Account No. where class has no account configured
         Clear(GenJournalLine);
         GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Customer);
         GenJournalLine.SetRange("Account No.", '#1');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
-        Assert.AreEqual('', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+        Assert.AreEqual(HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
 
 
         // [WHEN] Customer addresses are migrated
@@ -271,7 +321,7 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('Toyota Land', Customer."Address 2", 'Address2 of Migrated Customer is wrong');
         Assert.AreEqual('!What a city!', Customer.City, 'City of Migrated Customer is wrong');
         Assert.AreEqual('84953', Customer."Post Code", 'Post Code of Migrated Customer is wrong');
-        Assert.AreEqual('USA', Customer."Country/Region Code", 'Country/Region of Migrated Customer is wrong');
+        Assert.AreEqual('US', Customer."Country/Region Code", 'Country/Region of Migrated Customer is wrong');
         Assert.AreEqual('KNOBL-CHUCK-001', Customer."Salesperson Code", 'Salesperson Code of Migrated Customer is wrong');
         Assert.AreEqual('MAIL', Customer."Shipment Method Code", 'Shipment Method Code of Migrated Customer is wrong');
         Assert.AreEqual(true, Customer."Print Statements", 'Print Statements of Migrated Customer is wrong');
@@ -297,6 +347,53 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [THEN] Transactions will NOT be created
         Assert.RecordCount(GenJournalLine, InitialGenJournalLineCount);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestReceivablesSkipPosting()
+    var
+        Customer: Record "Customer";
+        GenJournalLine: Record "Gen. Journal Line";
+        CustomerCount: Integer;
+    begin
+        // [SCENARIO] All Customers are queried from GP
+
+        // [GIVEN] GP data
+        Initialize();
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
+        // Enable Receivables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Only Rec. Master", false);
+        GPCompanyAdditionalSettings.Validate("Skip Posting Customer Batches", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // When adding Customers, update the expected count here
+        CustomerCount := 3;
+
+        // [WHEN] Data is imported
+        CreateCustomerData();
+        CreateCustomerClassData();
+        CreateCustomerTrx();
+
+        GPTestHelperFunctions.InitializeMigration();
+
+        Assert.AreEqual(CustomerCount, GPCustomer.Count(), 'Wrong number of Customers read');
+
+        // [WHEN] Data is migrated
+        Customer.DeleteAll();
+        GPCustomer.Reset();
+        MigrateCustomers(GPCustomer);
+
+        // [then] Then the correct number of Customers are applied
+        Assert.AreEqual(CustomerCount, Customer.Count(), 'Wrong number of Migrated Customers read');
+
+        // [THEN] The GL Batch is created but not posted
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Journal Batch Name", 'GPCUST');
+        Assert.AreEqual(false, GenJournalLine.IsEmpty(), 'Could not locate the account batch.');
     end;
 
     [Test]
@@ -541,7 +638,7 @@ codeunit 139664 "GP Data Migration Tests"
         GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Vendor);
         GenJournalLine.SetRange("Account No.", 'V3130');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
-        Assert.AreEqual('1', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+        Assert.AreEqual(HelperFunctions.GetPostingAccountNumber('PayablesAccount'), GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
 
         // [WHEN] Vendor addresses are migrated
         // [THEN] Email addresses are included with the addresses when they are valid
@@ -682,6 +779,55 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [THEN] Vendor transactions will NOT be created
         Assert.RecordCount(GenJournalLine, InitialGenJournalLineCount);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestPayablesSkipPosting()
+    var
+        Vendor: Record Vendor;
+        GenJournalLine: Record "Gen. Journal Line";
+        VendorCount: Integer;
+    begin
+        // [SCENARIO] All Vendor are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
+        // Enable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", false);
+        GPCompanyAdditionalSettings.Validate("Skip Posting Vendor Batches", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [WHEN] Data is imported
+        CreateVendorData();
+        CreateVendorClassData();
+        CreateVendorTrx();
+
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [WHEN] adding Vendors, update the expected count here
+        VendorCount := 54;
+
+        Clear(GPVendor);
+        Clear(Vendor);
+
+        // [THEN] Then the correct number of Vendors are imported
+        Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
+
+        // [WHEN] data is migrated
+        Vendor.DeleteAll();
+        MigrateVendors(GPVendor);
+
+        // [THEN] Then the correct number of Vendors are applied
+        Assert.AreEqual(VendorCount, Vendor.Count(), 'Wrong number of Migrated Vendors read');
+
+        // [THEN] The GL Batch is created but not posted
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Journal Batch Name", 'GPVEND');
+        Assert.AreEqual(false, GenJournalLine.IsEmpty(), 'Could not locate the account batch.');
     end;
 
     [Test]
@@ -964,9 +1110,10 @@ codeunit 139664 "GP Data Migration Tests"
         Currency: Record Currency;
         VendorBankAccountCount: Integer;
         ActiveVendorBankAccountCount: Integer;
+        BankAccountCounter: Integer;
     begin
-        VendorBankAccountCount := 10;
-        ActiveVendorBankAccountCount := 9;
+        VendorBankAccountCount := 13;
+        ActiveVendorBankAccountCount := 12;
 
         // [SCENARIO] Vendors and their bank account information are queried from GP
         // [GIVEN] GP data
@@ -1006,7 +1153,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is migrated
         Clear(GPVendor);
-        GPVendor.SetFilter(VENDORID, '%1|%2|%3|%4', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt);
+        GPVendor.SetFilter(VENDORID, '%1|%2|%3|%4|%5', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt, VendorIdWithBankStr5Txt);
         MigrateVendors(GPVendor);
         RunPostMigration();
 
@@ -1017,7 +1164,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [THEN] The correct number of Vendor Bank Accounts are imported
         Clear(VendorBankAccount);
-        VendorBankAccount.SetFilter("Vendor No.", '%1|%2|%3|%4', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt);
+        VendorBankAccount.SetFilter("Vendor No.", '%1|%2|%3|%4|%5', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt, VendorIdWithBankStr5Txt);
         Assert.AreEqual(ActiveVendorBankAccountCount, VendorBankAccount.Count(), 'Wrong number of migrated Vendor Bank Accounts read');
 
         // [THEN] The fields for Vendors 1 are correctly applied
@@ -1110,6 +1257,18 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual(VendorIdWithBankStr3Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
         Assert.AreEqual('V03_OTHER', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
         Assert.AreEqual(ValidIBANStrTxt, VendorBankAccount.IBAN, 'IBAN of VendorBankAccount is wrong. V03_OTHER');
+
+        // Vendor 5
+        Clear(VendorBankAccount);
+        Clear(BankAccountCounter);
+        VendorBankAccount.SetCurrentKey("Vendor No.", Code);
+        VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr5Txt);
+        Assert.IsTrue(VendorBankAccount.FindSet(), 'Vendor 5 bank accounts were not created.');
+
+        repeat
+            BankAccountCounter := BankAccountCounter + 1;
+            Assert.AreEqual(VendorIdWithBankStr5Txt + '-' + Format(BankAccountCounter), VendorBankAccount.Code, 'Bank account code is not correct.');
+        until VendorBankAccount.Next() = 0;
     end;
 
     [Test]
@@ -1191,7 +1350,7 @@ codeunit 139664 "GP Data Migration Tests"
         VendorPostingGroup.Get('USA-US-M');
         Assert.AreEqual('USA-US-M', VendorPostingGroup.Code, 'Code of VendorPostingGroup is incorrect.');
         Assert.AreEqual('U.S. Vendors-Misc. Expenses', VendorPostingGroup.Description, 'Description of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('1', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
@@ -1276,7 +1435,7 @@ codeunit 139664 "GP Data Migration Tests"
         CustomerPostingGroup.Get('USA-TEST-2');
         Assert.AreEqual('USA-TEST-2', CustomerPostingGroup.Code, 'Code of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('Test cust class 2', CustomerPostingGroup.Description, 'Description of CustomerPostingGroup is incorrect.');
-        Assert.AreEqual('', CustomerPostingGroup."Receivables Account", 'Receivables Account of CustomerPostingGroup is incorrect.');
+        Assert.AreEqual('100', CustomerPostingGroup."Receivables Account", 'Receivables Account of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('', CustomerPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('', CustomerPostingGroup."Additional Fee Account", 'Additional Fee Account of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('', CustomerPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of CustomerPostingGroup is incorrect.');
@@ -3286,19 +3445,19 @@ codeunit 139664 "GP Data Migration Tests"
         SwiftCode: Record "SWIFT Code";
     begin
         GPVendorAddress.Reset();
-        GPVendorAddress.SetFilter(VENDORID, '%1|%2|%3|%4', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt);
+        GPVendorAddress.SetFilter(VENDORID, '%1|%2|%3|%4|%5', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt, VendorIdWithBankStr5Txt);
         GPVendorAddress.DeleteAll();
 
         GPVendor.Reset();
-        GPVendor.SetFilter(VENDORID, '%1|%2|%3|%4', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt);
+        GPVendor.SetFilter(VENDORID, '%1|%2|%3|%4|%5', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt, VendorIdWithBankStr5Txt);
         GPVendor.DeleteAll();
 
         VendorBankAccount.Reset();
-        VendorBankAccount.SetFilter("Vendor No.", '%1|%2|%3|%4', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt);
+        VendorBankAccount.SetFilter("Vendor No.", '%1|%2|%3|%4|%5', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt, VendorIdWithBankStr5Txt);
         VendorBankAccount.DeleteAll();
 
         Vendor.Reset();
-        Vendor.SetFilter("No.", '%1|%2|%3|%4', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt);
+        Vendor.SetFilter("No.", '%1|%2|%3|%4|%5', VendorIdWithBankStr1Txt, VendorIdWithBankStr2Txt, VendorIdWithBankStr3Txt, VendorIdWithBankStr4Txt, VendorIdWithBankStr5Txt);
         Vendor.DeleteAll();
 
         SwiftCode.Reset();
@@ -3637,6 +3796,65 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00200.VADDCDPR := AddressCodePrimaryTxt;
         GPPM00200.VADCDTRO := AddressCodeRemitToTxt;
         GPPM00200.Insert();
+
+        // Vendor 5
+        Clear(GPVendor);
+        GPVendor.VENDORID := VendorIdWithBankStr5Txt;
+        GPVendor.VENDNAME := 'Vendor with bank account 5';
+        GPVendor.SEARCHNAME := GPVendor.VENDNAME;
+        GPVendor.VNDCHKNM := GPVendor.VENDNAME;
+        GPVendor.ADDRESS1 := '127 Main Street';
+        GPVendor.ADDRESS2 := '';
+        GPVendor.CITY := 'Orlando';
+        GPVendor.VNDCNTCT := 'Tester Testerson II';
+        GPVendor.PHNUMBR1 := '00000000000000';
+        GPVendor.PYMTRMID := 'Net 30';
+        GPVendor.SHIPMTHD := 'OVERNIGHT';
+        GPVendor.COUNTRY := 'USA';
+        GPVendor.PYMNTPRI := '1';
+        GPVendor.AMOUNT := 0;
+        GPVendor.FAXNUMBR := '00000000000000';
+        GPVendor.ZIPCODE := '32830';
+        GPVendor.STATE := 'FL';
+        GPVendor.INET1 := '';
+        GPVendor.INET2 := ' ';
+        GPVendor.TAXSCHID := 'P-T-TXB-%PT%P*2';
+        GPVendor.UPSZONE := '';
+        GPVendor.TXIDNMBR := '';
+        GPVendor.Insert();
+
+        Clear(GPSY06000);
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodePrimaryTxt;
+        GPSY06000.EFTBankCode := '';
+        GPSY06000.BANKNAME := 'Bank Name 1';
+        GPSY06000.EFTBankBranchCode := '01234';
+        GPSY06000.EFTBankAcct := '56789078';
+        GPSY06000.EFTTransitRoutingNo := '123456789';
+        GPSY06000.CURNCYID := CurrencyCodeUSTxt;
+        GPSY06000.Insert();
+
+        Clear(GPSY06000);
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeRemitToTxt;
+        GPSY06000.EFTBankCode := '';
+        GPSY06000.BANKNAME := 'Bank Name 2';
+        GPSY06000.EFTBankBranchCode := '01234';
+        GPSY06000.EFTBankAcct := '56789078';
+        GPSY06000.EFTTransitRoutingNo := '123456789';
+        GPSY06000.CURNCYID := CurrencyCodeUSTxt;
+        GPSY06000.Insert();
+
+        Clear(GPSY06000);
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeOtherTxt;
+        GPSY06000.EFTBankCode := '';
+        GPSY06000.BANKNAME := 'Bank Name 3';
+        GPSY06000.EFTBankBranchCode := '01234';
+        GPSY06000.EFTBankAcct := '56789078';
+        GPSY06000.EFTTransitRoutingNo := '123456789';
+        GPSY06000.CURNCYID := CurrencyCodeUSTxt;
+        GPSY06000.Insert();
 #pragma warning restore AA0139
     end;
 
