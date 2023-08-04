@@ -311,21 +311,4 @@ table 4060 "GPPOPReceiptApply"
 
         exit(TotalInvoiced);
     end;
-
-    procedure GetLineUnitCostFromReceipt(var GPPOP10110: Record "GP POP10110"): Decimal
-    var
-        UnitCost: Decimal;
-    begin
-        UnitCost := GPPOP10110.UNITCOST;
-        Rec.Reset();
-        Rec.SetRange(PONUMBER, GPPOP10110.PONUMBER);
-        Rec.SetRange(POLNENUM, GPPOP10110.ORD);
-        Rec.SetRange(Status, Status::Posted);
-        Rec.SetFilter(POPTYPE, '1|3');
-        Rec.SetFilter(PCHRPTCT, '>%1', 0);
-        if Rec.FindFirst() then
-            UnitCost := Rec.PCHRPTCT;
-
-        exit(UnitCost);
-    end;
 }

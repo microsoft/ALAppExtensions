@@ -86,7 +86,7 @@ codeunit 40108 "GP PO Migrator"
                 SetVendorDocumentNo(PurchaseHeader);
 
                 PurchaseHeader.Modify(true);
-                CreateLines(PurchaseHeader, GPPOP10100);
+                CreateLines(PurchaseHeader."No.");
             end;
         until GPPOP10100.Next() = 0;
 
@@ -122,126 +122,148 @@ codeunit 40108 "GP PO Migrator"
             PurchaseHeader."Ship-to County" := GPPOP10100.STATE;
     end;
 
-    local procedure CreateLines(var PurchaseHeader: Record "Purchase Header"; GPPOP10100: Record "GP POP10100")
+    local procedure CreateLines(PONumber: Code[20])
     var
         GPPOP10110: Record "GP POP10110";
-        PurchaseLine: Record "Purchase Line";
         GPPOPReceiptApply: Record GPPOPReceiptApply;
-        Item: Record Item;
-        PurchaseDocumentType: Enum "Purchase Document Type";
-        PurchaseLineType: Enum "Purchase Line Type";
-        ItemNo: Code[20];
-        IsInventoryItem: Boolean;
+        LineQuantityRemaining: Decimal;
         LineNo: Integer;
-        ActualQuantity: Decimal;
-        ActualQtyShipped: Decimal;
-        ActualQtyInvoiced: Decimal;
-        AdjustedQuantity: Decimal;
-        AdjustedQtyShipped: Decimal;
-        AdjustedQtyInvoiced: Decimal;
-        QtyOverReceipt: Decimal;
-        UnitCost: Decimal;
+        LocationCode: Code[10];
+        UnitOfMeasure: Code[10];
     begin
-        GPPOP10110.SetRange(PONUMBER, GPPOP10100.PONUMBER);
+        GPPOP10110.SetRange(PONUMBER, PONumber);
         if not GPPOP10110.FindSet() then
             exit;
 
         LineNo := 10000;
         repeat
-            // Actual counts from GP
-            ActualQuantity := GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE;
-            ActualQtyShipped := GPPOPReceiptApply.GetSumQtyShipped(GPPOP10110.PONUMBER, GPPOP10110.ORD);
-            ActualQtyInvoiced := GPPOPReceiptApply.GetSumQtyInvoiced(GPPOP10110.PONUMBER, GPPOP10110.ORD);
+            LineQuantityRemaining := GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE;
+            if LineQuantityRemaining > 0 then begin
+                GPPOPReceiptApply.SetRange(PONUMBER, GPPOP10110.PONUMBER);
+                GPPOPReceiptApply.SetRange(POLNENUM, GPPOP10110.ORD);
+                GPPOPReceiptApply.SetRange(Status, GPPOPReceiptApply.Status::Posted);
+                GPPOPReceiptApply.SetFilter(POPTYPE, '1|3');
+                GPPOPReceiptApply.SetFilter(PCHRPTCT, '>%1', 0);
+                if GPPOPReceiptApply.FindSet() then
+                    repeat
+                        LocationCode := CopyStr(GPPOPReceiptApply.TRXLOCTN, 1, MaxStrLen(LocationCode));
+                        UnitOfMeasure := CopyStr(GPPOPReceiptApply.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
+                        if (GPPOPReceiptApply.QTYSHPPD > GPPOPReceiptApply.QTYINVCD) then
+                            CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, GPPOPReceiptApply.QTYSHPPD, GPPOPReceiptApply.QTYINVCD, GPPOPReceiptApply.PCHRPTCT, LocationCode, UnitOfMeasure)
+                        else
+                            LineQuantityRemaining := LineQuantityRemaining - GPPOPReceiptApply.QTYSHPPD;
+                    until GPPOPReceiptApply.Next() = 0;
 
-            // Adjust the counts to be in an initial ordered state.
-            // Not generating an invoice so zero out the Invoice quantity and adjust the other counts accordingly.
-            // Update Qty. to Receive to equal the adjusted amount received.
-            if ActualQtyInvoiced > ActualQtyShipped then
-                ActualQtyInvoiced := ActualQtyShipped;
-
-            AdjustedQtyShipped := ZeroIfNegative(ActualQtyShipped, ActualQtyInvoiced);
-            AdjustedQuantity := ZeroIfNegative(ActualQuantity, ActualQtyInvoiced);
-            QtyOverReceipt := ZeroIfNegative(AdjustedQtyShipped, AdjustedQuantity);
-
-            if QtyOverReceipt > 0 then
-                AdjustedQuantity := AdjustedQtyShipped;
-
-            AdjustedQtyInvoiced := 0;
-            ItemNo := CopyStr(GPPOP10110.ITEMNMBR, 1, MaxStrLen(ItemNo));
-            IsInventoryItem := false;
-
-            if Item.Get(ItemNo) then
-                IsInventoryItem := Item.Type = Item.Type::Inventory;
-
-            PurchaseLine.Init();
-            PurchaseLine."Document No." := CopyStr(GPPOP10110.PONUMBER.Trim(), 1, MaxStrLen(PurchaseLine."Document No."));
-            PurchaseLine."Document Type" := PurchaseDocumentType::Order;
-            PurchaseLine."Line No." := LineNo;
-            PurchaseLine."Buy-from Vendor No." := GPPOP10110.VENDORID;
-            PurchaseLine.Type := PurchaseLineType::Item;
-
-            if GPPOP10110.NONINVEN = 1 then
-                CreateNonInventoryItem(GPPOP10110);
-
-            PurchaseLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
-            PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
-            PurchaseLine."Unit of Measure" := GPPOP10110.UOFM;
-            PurchaseLine."Unit of Measure Code" := GPPOP10110.UOFM;
-            PurchaseLine.Validate("No.", ItemNo);
-            PurchaseLine."Location Code" := CopyStr(GPPOP10110.LOCNCODE, 1, MaxStrLen(PurchaseLine."Location Code"));
-            PurchaseLine."Posting Group" := GPCodeTxt;
-            PurchaseLine.Validate("Expected Receipt Date", GPPOP10110.PRMDATE);
-            PurchaseLine.Description := CopyStr(GPPOP10110.ITEMDESC, 1, MaxStrLen(PurchaseLine.Description));
-
-            if QtyOverReceipt > 0 then begin
-                if IsInventoryItem then begin
-                    CreateOverReceiptCodeIfNeeded(AdjustedQtyShipped, AdjustedQuantity);
-                    if Item."Over-Receipt Code" = '' then begin
-                        Item.Validate("Over-Receipt Code", GPCodeTxt);
-                        Item.Modify();
-                    end;
-                end;
-
-                if not IsInventoryItem then
-                    QtyOverReceipt := 0;
-            end;
-
-            PurchaseLine.Validate("Quantity Invoiced", AdjustedQtyInvoiced);
-            PurchaseLine.Validate("Quantity", AdjustedQuantity);
-            PurchaseLine.Validate("Qty. to Receive", AdjustedQtyShipped);
-            PurchaseLine.Validate("Outstanding Quantity", AdjustedQuantity);
-
-            UnitCost := GPPOPReceiptApply.GetLineUnitCostFromReceipt(GPPOP10110);
-
-            PurchaseLine.Validate("Direct Unit Cost", UnitCost);
-            PurchaseLine.Validate(Amount, UnitCost * AdjustedQuantity);
-            PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * UnitCost);
-            PurchaseLine.Validate("Outstanding Amount (LCY)", PurchaseLine."Outstanding Amount");
-            PurchaseLine.Validate("Unit Cost", UnitCost);
-
-            if QtyOverReceipt > 0 then begin
-                PurchaseLine."Over-Receipt Code" := GPCodeTxt;
-                PurchaseLine."Over-Receipt Quantity" := QtyOverReceipt;
-            end;
-
-            if PurchaseLine."Outstanding Quantity" > 0 then
-                PurchaseLine.Validate("Outstanding Qty. (Base)", PurchaseLine."Outstanding Quantity");
-
-            PurchaseLine."Line Amount" := PurchaseLine.Amount;
-
-            if PurchaseLine.Quantity > 0 then begin
-                PurchaseLine.Insert(true);
-
-                if IsInventoryItem and (PurchaseLine."Qty. to Receive (Base)" > 0) then begin
-                    if not PostPurchaseOrderNoList.Contains(PurchaseHeader."No.") then
-                        PostPurchaseOrderNoList.Add(PurchaseHeader."No.");
-
-                    CreateNegativeAdjustment(PurchaseLine);
-                end;
-
-                LineNo := LineNo + 10000;
+                LocationCode := CopyStr(GPPOP10110.LOCNCODE.Trim(), 1, MaxStrLen(LocationCode));
+                UnitOfMeasure := CopyStr(GPPOP10110.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
+                if LineQuantityRemaining > 0 then
+                    CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, 0, 0, GPPOP10110.UNITCOST, LocationCode, UnitOfMeasure);
             end;
         until GPPOP10110.Next() = 0;
+    end;
+
+    local procedure CreateLine(PONumber: Code[20]; var GPPOP10110: Record "GP POP10110"; var LineQuantityRemaining: Decimal; var LineNo: Integer; QuantityReceived: Decimal; QuantityInvoiced: Decimal; UnitCost: Decimal; LocationCode: Code[10]; UnitOfMeasure: Code[10])
+    var
+        PurchaseLine: Record "Purchase Line";
+        Item: Record Item;
+        PurchaseDocumentType: Enum "Purchase Document Type";
+        PurchaseLineType: Enum "Purchase Line Type";
+        ItemNo: Code[20];
+        IsInventoryItem: Boolean;
+        AdjustedQuantity: Decimal;
+        AdjustedQuantityReceived: Decimal;
+        AdjustedQuantityInvoiced: Decimal;
+        QuantityOverReceipt: Decimal;
+    begin
+        // Not generating an invoice so zero out the Invoice quantity and adjust the other counts accordingly.
+        // Update Qty. to Receive to equal the adjusted amount received.
+        if QuantityInvoiced > QuantityReceived then
+            QuantityInvoiced := QuantityReceived;
+
+        AdjustedQuantityReceived := ZeroIfNegative(QuantityReceived, QuantityInvoiced);
+        if AdjustedQuantityReceived > 0 then
+            AdjustedQuantity := ZeroIfNegative(QuantityReceived, QuantityInvoiced)
+        else
+            AdjustedQuantity := ZeroIfNegative(LineQuantityRemaining, QuantityInvoiced);
+
+        QuantityOverReceipt := ZeroIfNegative(AdjustedQuantityReceived, AdjustedQuantity);
+
+        if QuantityOverReceipt > 0 then
+            AdjustedQuantity := AdjustedQuantityReceived;
+
+        AdjustedQuantityInvoiced := 0;
+        ItemNo := CopyStr(GPPOP10110.ITEMNMBR.Trim(), 1, MaxStrLen(ItemNo));
+        IsInventoryItem := false;
+
+        if Item.Get(ItemNo) then
+            IsInventoryItem := Item.Type = Item.Type::Inventory;
+
+        PurchaseLine.Init();
+        PurchaseLine."Document No." := PONumber;
+        PurchaseLine."Document Type" := PurchaseDocumentType::Order;
+        PurchaseLine."Line No." := LineNo;
+        PurchaseLine."Buy-from Vendor No." := GPPOP10110.VENDORID;
+        PurchaseLine.Type := PurchaseLineType::Item;
+
+        if GPPOP10110.NONINVEN = 1 then
+            CreateNonInventoryItem(GPPOP10110);
+
+        PurchaseLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
+        PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
+        PurchaseLine."Unit of Measure" := UnitOfMeasure;
+        PurchaseLine."Unit of Measure Code" := UnitOfMeasure;
+        PurchaseLine.Validate("No.", ItemNo);
+        PurchaseLine."Location Code" := LocationCode;
+        PurchaseLine."Posting Group" := GPCodeTxt;
+        PurchaseLine.Validate("Expected Receipt Date", GPPOP10110.PRMDATE);
+        PurchaseLine.Description := CopyStr(GPPOP10110.ITEMDESC.Trim(), 1, MaxStrLen(PurchaseLine.Description));
+
+        if QuantityOverReceipt > 0 then begin
+            if IsInventoryItem then begin
+                CreateOverReceiptCodeIfNeeded(AdjustedQuantityReceived, AdjustedQuantity);
+                if Item."Over-Receipt Code" = '' then begin
+                    Item.Validate("Over-Receipt Code", GPCodeTxt);
+                    Item.Modify();
+                end;
+            end;
+
+            if not IsInventoryItem then
+                QuantityOverReceipt := 0;
+        end;
+
+        PurchaseLine.Validate("Quantity Invoiced", AdjustedQuantityInvoiced);
+        PurchaseLine.Validate("Quantity", AdjustedQuantity);
+        PurchaseLine.Validate("Qty. to Receive", AdjustedQuantityReceived);
+        PurchaseLine.Validate("Outstanding Quantity", AdjustedQuantity);
+        PurchaseLine.Validate("Direct Unit Cost", UnitCost);
+        PurchaseLine.Validate(Amount, UnitCost * AdjustedQuantity);
+        PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * UnitCost);
+        PurchaseLine.Validate("Outstanding Amount (LCY)", PurchaseLine."Outstanding Amount");
+        PurchaseLine.Validate("Unit Cost", UnitCost);
+
+        if QuantityOverReceipt > 0 then begin
+            PurchaseLine."Over-Receipt Code" := GPCodeTxt;
+            PurchaseLine."Over-Receipt Quantity" := QuantityOverReceipt;
+        end;
+
+        if PurchaseLine."Outstanding Quantity" > 0 then
+            PurchaseLine.Validate("Outstanding Qty. (Base)", PurchaseLine."Outstanding Quantity");
+
+        PurchaseLine."Line Amount" := PurchaseLine.Amount;
+
+        if PurchaseLine.Quantity > 0 then begin
+            PurchaseLine.Insert(true);
+
+            if IsInventoryItem and (PurchaseLine."Qty. to Receive (Base)" > 0) then begin
+                if not PostPurchaseOrderNoList.Contains(PONumber) then
+                    PostPurchaseOrderNoList.Add(PONumber);
+
+                CreateNegativeAdjustment(PurchaseLine);
+            end;
+
+            LineNo := LineNo + 10000;
+            LineQuantityRemaining := LineQuantityRemaining - PurchaseLine.Quantity;
+        end;
     end;
 
     local procedure CreateNonInventoryItem(GPPOP10110: Record "GP POP10110")

@@ -139,6 +139,15 @@ codeunit 4017 "GP Account Migrator"
         BeginningBalance: Decimal;
         PostingGroupCode: Code[10];
         InitialYear: Integer;
+        ACTNUMBR_1: Code[20];
+        ACTNUMBR_2: Code[20];
+        ACTNUMBR_3: Code[20];
+        ACTNUMBR_4: Code[20];
+        ACTNUMBR_5: Code[20];
+        ACTNUMBR_6: Code[20];
+        ACTNUMBR_7: Code[20];
+        ACTNUMBR_8: Code[20];
+        DimSetID: Integer;
     begin
         InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
         if InitialYear = 0 then
@@ -172,6 +181,22 @@ codeunit 4017 "GP Account Migrator"
                 '',
                 ''
                 );
+
+            ACTNUMBR_1 := GPGL10111.ACTNUMBR_1;
+            ACTNUMBR_2 := GPGL10111.ACTNUMBR_2;
+            ACTNUMBR_3 := GPGL10111.ACTNUMBR_3;
+            ACTNUMBR_4 := GPGL10111.ACTNUMBR_4;
+            ACTNUMBR_5 := GPGL10111.ACTNUMBR_5;
+            ACTNUMBR_6 := GPGL10111.ACTNUMBR_6;
+            ACTNUMBR_7 := GPGL10111.ACTNUMBR_7;
+            ACTNUMBR_8 := GPGL10111.ACTNUMBR_8;
+
+            if AreAllSegmentNumbersEmpty(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8) then
+                GetSegmentNumbersFromGPAccountIndex(GPGL10111.ACTINDX, ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8);
+
+            DimSetID := CreateDimSet(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8);
+            GenJournalLine.Validate("Dimension Set ID", DimSetID);
+            GenJournalLine.Modify(true);
         end;
     end;
 
@@ -233,14 +258,14 @@ codeunit 4017 "GP Account Migrator"
                         '',
                         ''
                         );
-                    DimSetID := CreateDimSet(GPGLTransactions);
+                    DimSetID := CreateDimSet(GPGLTransactions.ACTNUMBR_1, GPGLTransactions.ACTNUMBR_2, GPGLTransactions.ACTNUMBR_3, GPGLTransactions.ACTNUMBR_4, GPGLTransactions.ACTNUMBR_5, GPGLTransactions.ACTNUMBR_6, GPGLTransactions.ACTNUMBR_7, GPGLTransactions.ACTNUMBR_8);
                     GenJournalLine.Validate("Dimension Set ID", DimSetID);
                     GenJournalLine.Modify(true);
                 end;
             until GPGLTransactions.Next() = 0;
     end;
 
-    local procedure CreateDimSet(GPGLTransactions: Record "GP GLTransactions"): Integer
+    local procedure CreateDimSet(ACTNUMBR_1: Code[20]; ACTNUMBR_2: Code[20]; ACTNUMBR_3: Code[20]; ACTNUMBR_4: Code[20]; ACTNUMBR_5: Code[20]; ACTNUMBR_6: Code[20]; ACTNUMBR_7: Code[20]; ACTNUMBR_8: Code[20]): Integer
     var
         TempDimensionSetEntry: Record "Dimension Set Entry" temporary;
         DimensionValue: Record "Dimension Value";
@@ -251,7 +276,9 @@ codeunit 4017 "GP Account Migrator"
     begin
         if GPSegments.FindSet() then
             repeat
-                DimensionValue.Get(HelperFunctions.CheckDimensionName(GPSegments.Id), GetSegmentValue(GPGLTransactions, GPSegments.SegmentNumber));      //'0000'); GPGLTransactions ACTNUMBR_1 - 9
+                DimensionValue.Get(HelperFunctions.CheckDimensionName(GPSegments.Id),
+                    GetSegmentValue(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8, GPSegments.SegmentNumber));      //'0000'); GPGLTransactions ACTNUMBR_1 - 9
+
                 TempDimensionSetEntry.Init();
                 TempDimensionSetEntry.Validate("Dimension Code", DimensionValue."Dimension Code");
                 TempDimensionSetEntry.Validate("Dimension Value Code", DimensionValue.Code);
@@ -264,25 +291,64 @@ codeunit 4017 "GP Account Migrator"
         exit(NewDimSetID);
     end;
 
-    local procedure GetSegmentValue(GPGLTransactions: Record "GP GLTransactions"; SegmentNumber: Integer): Code[20]
+    local procedure GetSegmentValue(ACTNUMBR_1: Code[20]; ACTNUMBR_2: Code[20]; ACTNUMBR_3: Code[20]; ACTNUMBR_4: Code[20]; ACTNUMBR_5: Code[20]; ACTNUMBR_6: Code[20]; ACTNUMBR_7: Code[20]; ACTNUMBR_8: Code[20]; SegmentNumber: Integer): Code[20]
     begin
         case SegmentNumber of
             1:
-                exit(GPGLTransactions.ACTNUMBR_1);
+                exit(ACTNUMBR_1);
             2:
-                exit(GPGLTransactions.ACTNUMBR_2);
+                exit(ACTNUMBR_2);
             3:
-                exit(GPGLTransactions.ACTNUMBR_3);
+                exit(ACTNUMBR_3);
             4:
-                exit(GPGLTransactions.ACTNUMBR_4);
+                exit(ACTNUMBR_4);
             5:
-                exit(GPGLTransactions.ACTNUMBR_5);
+                exit(ACTNUMBR_5);
             6:
-                exit(GPGLTransactions.ACTNUMBR_6);
+                exit(ACTNUMBR_6);
             7:
-                exit(GPGLTransactions.ACTNUMBR_7);
+                exit(ACTNUMBR_7);
             8:
-                exit(GPGLTransactions.ACTNUMBR_8);
+                exit(ACTNUMBR_8);
         end;
+    end;
+
+    local procedure GetSegmentNumbersFromGPAccountIndex(GPAccountIndex: Integer; var ACTNUMBR_1: Code[20]; var ACTNUMBR_2: Code[20]; var ACTNUMBR_3: Code[20]; var ACTNUMBR_4: Code[20]; var ACTNUMBR_5: Code[20]; var ACTNUMBR_6: Code[20]; var ACTNUMBR_7: Code[20]; var ACTNUMBR_8: Code[20]): Code[20]
+    var
+        GPGL00100: Record "GP GL00100";
+    begin
+        if GPGL00100.Get(GPAccountIndex) then begin
+            ACTNUMBR_1 := GPGL00100.ACTNUMBR_1;
+            ACTNUMBR_2 := GPGL00100.ACTNUMBR_2;
+            ACTNUMBR_3 := GPGL00100.ACTNUMBR_3;
+            ACTNUMBR_4 := GPGL00100.ACTNUMBR_4;
+            ACTNUMBR_5 := GPGL00100.ACTNUMBR_5;
+            ACTNUMBR_6 := GPGL00100.ACTNUMBR_6;
+            ACTNUMBR_7 := GPGL00100.ACTNUMBR_7;
+            ACTNUMBR_8 := GPGL00100.ACTNUMBR_8;
+        end;
+    end;
+
+    local procedure AreAllSegmentNumbersEmpty(ACTNUMBR_1: Code[20]; ACTNUMBR_2: Code[20]; ACTNUMBR_3: Code[20]; ACTNUMBR_4: Code[20]; ACTNUMBR_5: Code[20]; ACTNUMBR_6: Code[20]; ACTNUMBR_7: Code[20]; ACTNUMBR_8: Code[20]): Boolean
+    begin
+        exit(
+                CodeIsEmpty(ACTNUMBR_1) and
+                CodeIsEmpty(ACTNUMBR_2) and
+                CodeIsEmpty(ACTNUMBR_3) and
+                CodeIsEmpty(ACTNUMBR_4) and
+                CodeIsEmpty(ACTNUMBR_5) and
+                CodeIsEmpty(ACTNUMBR_6) and
+                CodeIsEmpty(ACTNUMBR_7) and
+                CodeIsEmpty(ACTNUMBR_8)
+            );
+    end;
+
+    local procedure CodeIsEmpty(TheCode: Code[20]): Boolean
+    var
+        CodeText: Text[20];
+    begin
+        CodeText := TheCode;
+        CodeText := CopyStr(CodeText.Trim(), 1, MaxStrLen(CodeText));
+        exit(CodeText = '');
     end;
 }
