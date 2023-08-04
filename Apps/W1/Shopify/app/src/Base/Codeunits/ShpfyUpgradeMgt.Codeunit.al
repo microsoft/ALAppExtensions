@@ -23,6 +23,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 #endif
         PriceCalculationUpgrade();
         LocationUpgrade();
+        AddRetentionPolicyAllowedTables(); // also sets the tag
     end;
 
 #if CLEAN22
@@ -347,6 +348,46 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         exit(CreateDateTime(DMY2Date(1, 8, 2022), 0T));
     end;
 
+
+    procedure AddRetentionPolicyAllowedTables()
+    begin
+        AddRetentionPolicyAllowedTables(false);
+    end;
+
+    procedure AddRetentionPolicyAllowedTables(ForceUpdate: Boolean)
+    var
+        Field: Record Field;
+        RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        IsInitialSetup: Boolean;
+    begin
+        IsInitialSetup := not UpgradeTag.HasUpgradeTag(GetShpfyTablesAddedToAllowedListUpgradeTag());
+        if not (IsInitialSetup or ForceUpdate) then
+            exit;
+
+        RetenPolAllowedTables.AddAllowedTable(Database::"Shpfy Log Entry", Field.FieldNo(SystemCreatedAt), 7);
+
+        if IsInitialSetup then
+            UpgradeTag.SetUpgradeTag(GetShpfyTablesAddedToAllowedListUpgradeTag());
+    end;
+
+    procedure GetShpfyTablesAddedToAllowedListUpgradeTag(): Code[250]
+    begin
+        exit('MS-GIT-24338-ShpfyLogEntryAdded-20230804');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", OnRefreshAllowedTables, '', false, false)]
+    local procedure AddAllowedTablesOnRefreshAllowedTables()
+    begin
+        AddRetentionPolicyAllowedTables(true);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", OnCompanyInitialize, '', false, false)]
+    local procedure AddAllowedTablesOnCompanyInitialize()
+    begin
+        AddRetentionPolicyAllowedTables();
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     var
@@ -357,5 +398,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
         if not UpgradeTag.HasUpgradeTag(GetPriceCalculationUpgradeTag()) then
             PerCompanyUpgradeTags.Add(GetPriceCalculationUpgradeTag());
+
+        PerCompanyUpgradeTags.Add(GetShpfyTablesAddedToAllowedListUpgradeTag());
     end;
 }
