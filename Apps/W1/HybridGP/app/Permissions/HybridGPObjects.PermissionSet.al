@@ -145,5 +145,7 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP POP10100" = X,
                     table "GP POP10110" = X,
                     table "GP PM00204" = X,
-                    table "GP Known Countries" = X;
+                    table "GP Known Countries" = X,
+                    page "GP Company Migration Settings" = X,
+                    query "GP Item Aggregate" = X;
 }

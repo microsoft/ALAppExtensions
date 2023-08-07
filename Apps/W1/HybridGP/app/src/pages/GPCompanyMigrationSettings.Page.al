@@ -2,7 +2,7 @@ page 40056 "GP Company Migration Settings"
 {
     ApplicationArea = All;
     Caption = 'GP Company Migration Settings';
-    PageType = List;
+    PageType = Worksheet;
     SourceTable = "GP Company Additional Settings";
     SourceTableView = sorting(Name) where("Name" = filter(<> ''));
     UsageCategory = Lists;
@@ -19,6 +19,7 @@ page 40056 "GP Company Migration Settings"
             {
                 field(Name; Rec.Name)
                 {
+                    Editable = false;
                     ToolTip = 'Specify the name of the Company.';
                 }
                 field("Global Dimension 1"; Rec."Global Dimension 1")
