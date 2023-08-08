@@ -281,14 +281,15 @@ table 4060 "GPPOPReceiptApply"
         TotalShipped: Decimal;
     begin
         TotalShipped := 0;
-        SetRange(PONUMBER, PO_Number);
-        SetRange(POLNENUM, PO_LineNo);
-        SetFilter(Status, '%1', Status::Posted);
-        if FindSet() then
+        Rec.Reset();
+        Rec.SetRange(PONUMBER, PO_Number);
+        Rec.SetRange(POLNENUM, PO_LineNo);
+        Rec.SetFilter(Status, '%1', Status::Posted);
+        if Rec.FindSet() then
             repeat
-                if QTYSHPPD > 0 then
-                    TotalShipped := TotalShipped + QTYSHPPD;
-            until Next() = 0;
+                if Rec.QTYSHPPD > 0 then
+                    TotalShipped := TotalShipped + Rec.QTYSHPPD;
+            until Rec.Next() = 0;
 
         exit(TotalShipped);
     end;
@@ -298,14 +299,15 @@ table 4060 "GPPOPReceiptApply"
         TotalInvoiced: Decimal;
     begin
         TotalInvoiced := 0;
-        SetRange(PONUMBER, PO_Number);
-        SetRange(POLNENUM, PO_LineNo);
-        SetFilter(Status, '%1', Status::Posted);
-        if FindSet() then
+        Rec.Reset();
+        Rec.SetRange(PONUMBER, PO_Number);
+        Rec.SetRange(POLNENUM, PO_LineNo);
+        Rec.SetFilter(Status, '%1', Status::Posted);
+        if Rec.FindSet() then
             repeat
-                if QTYINVCD > 0 then
-                    TotalInvoiced := TotalInvoiced + QTYINVCD;
-            until Next() = 0;
+                if Rec.QTYINVCD > 0 then
+                    TotalInvoiced := TotalInvoiced + Rec.QTYINVCD;
+            until Rec.Next() = 0;
 
         exit(TotalInvoiced);
     end;
