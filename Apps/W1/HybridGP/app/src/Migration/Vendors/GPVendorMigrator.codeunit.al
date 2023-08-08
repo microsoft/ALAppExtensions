@@ -629,7 +629,6 @@ codeunit 4022 "GP Vendor Migrator"
                 VendorBankAccount.Validate("Transit No.", GPSY06000.EFTTransitRoutingNo);
                 VendorBankAccount.Validate("IBAN", IBANCode);
                 VendorBankAccount.Validate("SWIFT Code", GPSY06000.SWIFTADDR);
-                VendorBankAccount.Validate("Use for Electronic Payments", true);
 
                 if GeneralLedgerSetup.Get() then
                     if GeneralLedgerSetup."LCY Code" <> CurrencyCode then
