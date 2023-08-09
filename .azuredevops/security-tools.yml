@@ -50,7 +50,6 @@ jobs:
       BuildCommand: Powershell.exe -NonInteractive "cd $(Build.SourcesDirectory); .\build.ps1 -ALGoProject 'System Application' -InsiderSasToken '$(InsiderSasToken)' -AutoFill"
       GdnSuppressFile: $(Build.SourcesDirectory)\.azuredevops\security-tools.gdnsuppress
       ExcludeSecurityTools:
-      - Semmle # Not applicable (AL not supported)
       - CodeSignValidation # Not applicable yet (Code is not signed on Github) 
       IncludeOfficialBuildTools:
       - ComponentGovernance
