@@ -76,79 +76,78 @@ jobs:
           with:
             ref: ${{ inputs.checkoutRef }}
             lfs: true
-      
-        - name: Download thisbuild artifacts
-          if: inputs.publishThisBuildArtifacts
-          uses: actions/download-artifact@v3
-          with:
-            path: '.dependencies'
 
         - name: Read settings
-          uses: microsoft/AL-Go-Actions/ReadSettings@preview
+          uses: microsoft/AL-Go/Actions/ReadSettings@d15c25e25c4b0033da9f99970e3a420e231f7fbc
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
             project: ${{ inputs.project }}
+            get: useCompilerFolder,keyVaultCodesignCertificateName,doNotSignApps,artifact
 
         - name: Read secrets
-          uses: microsoft/AL-Go-Actions/ReadSecrets@preview
-          env:
-            secrets: ${{ toJson(secrets) }}
+          if: github.event_name != 'pull_request'
+          uses: microsoft/AL-Go/Actions/ReadSecrets@d15c25e25c4b0033da9f99970e3a420e231f7fbc
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
-            settingsJson: ${{ env.Settings }}
-            secrets: ${{ inputs.secrets }}
+            gitHubSecrets: ${{ toJson(secrets) }}
+            getSecrets: '${{ inputs.secrets }},appDependencyProbingPathsSecrets'
 
         - name: Determine ArtifactUrl
-          uses: microsoft/AL-Go-Actions/DetermineArtifactUrl@preview
+          uses: microsoft/AL-Go/Actions/DetermineArtifactUrl@d15c25e25c4b0033da9f99970e3a420e231f7fbc
           id: determineArtifactUrl
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
             project: ${{ inputs.project }}
-            settingsJson: ${{ env.Settings }}
-            secretsJson: ${{ env.RepoSecrets }}
 
         - name: Cache Business Central Artifacts
-          if: env.useCompilerFolder == 'True' && inputs.useArtifactCache && steps.determineArtifactUrl.outputs.ArtifactCacheKey
+          if: env.useCompilerFolder == 'True' && inputs.useArtifactCache && env.artifactCacheKey
           uses: actions/cache@v3
           with:
             path: .artifactcache
-            key: ${{ steps.determineArtifactUrl.outputs.ArtifactCacheKey }}
+            key: ${{ env.artifactCacheKey }}
+
+        - name: Download Project Dependencies
+          id: DownloadProjectDependencies
+          uses: microsoft/AL-Go/Actions/DownloadProjectDependencies@d15c25e25c4b0033da9f99970e3a420e231f7fbc
+          with:
+            shell: ${{ inputs.shell }}
+            project: ${{ inputs.project }}
+            buildMode: ${{ inputs.buildMode }}
+            projectsDependenciesJson: ${{ inputs.projectDependenciesJson }}
 
         - name: Run pipeline
           id: RunPipeline
-          uses: microsoft/AL-Go-Actions/RunPipeline@preview
+          uses: microsoft/AL-Go/Actions/RunPipeline@d15c25e25c4b0033da9f99970e3a420e231f7fbc
           env:
             BuildMode: ${{ inputs.buildMode }}
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
+            artifact: ${{ env.artifact }}
             project: ${{ inputs.project }}
-            projectDependenciesJson: ${{ inputs.projectDependenciesJson }}
-            settingsJson: ${{ env.Settings }}
-            secretsJson: ${{ env.RepoSecrets }}
             buildMode: ${{ inputs.buildMode }}
+            installAppsJson: ${{ steps.DownloadProjectDependencies.outputs.DownloadedApps }}
+            installTestAppsJson: ${{ steps.DownloadProjectDependencies.outputs.DownloadedTestApps }}
 
         - name: Sign
           if: inputs.signArtifacts && env.doNotSignApps == 'False' && env.keyVaultCodesignCertificateName != ''
           id: sign
-          uses: microsoft/AL-Go-Actions/Sign@preview
+          uses: microsoft/AL-Go/Actions/Sign@d15c25e25c4b0033da9f99970e3a420e231f7fbc
           with:
             shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
             azureCredentialsJson: ${{ secrets.AZURE_CREDENTIALS }}
-            settingsJson: ${{ env.Settings }}
             pathToFiles: '${{ inputs.project }}/.buildartifacts/Apps/*.app'
             parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
 
         - name: Calculate Artifact names
           id: calculateArtifactsNames
-          uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
+          uses: microsoft/AL-Go/Actions/CalculateArtifactNames@d15c25e25c4b0033da9f99970e3a420e231f7fbc
           if: success() || failure()
           with:
             shell: ${{ inputs.shell }}
-            settingsJson: ${{ env.Settings }}
             project: ${{ inputs.project }}
             buildMode: ${{ inputs.buildMode }}
             branchName: ${{ github.ref_name }}
@@ -176,7 +175,7 @@ jobs:
           uses: actions/upload-artifact@v3
           if: inputs.publishArtifacts
           with:
-            name: ${{ env.AppsArtifactsName }}
+            name: ${{ steps.calculateArtifactsNames.outputs.AppsArtifactsName }}
             path: '${{ inputs.project }}/.buildartifacts/Apps/'
             if-no-files-found: ignore
 
@@ -184,7 +183,7 @@ jobs:
           uses: actions/upload-artifact@v3
           if: inputs.publishArtifacts
           with:
-            name: ${{ env.DependenciesArtifactsName }}
+            name: ${{ steps.calculateArtifactsNames.outputs.DependenciesArtifactsName }}
             path: '${{ inputs.project }}/.buildartifacts/Dependencies/'
             if-no-files-found: ignore
 
@@ -192,7 +191,7 @@ jobs:
           uses: actions/upload-artifact@v3
           if: inputs.publishArtifacts
           with:
-            name: ${{ env.TestAppsArtifactsName }}
+            name: ${{ steps.calculateArtifactsNames.outputs.TestAppsArtifactsName }}
             path: '${{ inputs.project }}/.buildartifacts/TestApps/'
             if-no-files-found: ignore
 
@@ -200,7 +199,7 @@ jobs:
           uses: actions/upload-artifact@v3
           if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',inputs.project)) != '')
           with:
-            name: ${{ env.BuildOutputArtifactsName }}
+            name: ${{ steps.calculateArtifactsNames.outputs.BuildOutputArtifactsName }}
             path: '${{ inputs.project }}/BuildOutput.txt'
             if-no-files-found: ignore
 
@@ -208,7 +207,7 @@ jobs:
           uses: actions/upload-artifact@v3
           if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',inputs.project)) != '')
           with:
-            name: ${{ env.ContainerEventLogArtifactsName }}
+            name: ${{ steps.calculateArtifactsNames.outputs.ContainerEventLogArtifactsName }}
             path: '${{ inputs.project }}/ContainerEventLog.evtx'
             if-no-files-found: ignore
 
@@ -216,7 +215,7 @@ jobs:
           uses: actions/upload-artifact@v3
           if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',inputs.project)) != '')
           with:
-            name: ${{ env.TestResultsArtifactsName }}
+            name: ${{ steps.calculateArtifactsNames.outputs.TestResultsArtifactsName }}
             path: '${{ inputs.project }}/TestResults.xml'
             if-no-files-found: ignore
 
@@ -224,23 +223,23 @@ jobs:
           uses: actions/upload-artifact@v3
           if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',inputs.project)) != '')
           with:
-            name: ${{ env.BcptTestResultsArtifactsName }}
+            name: ${{ steps.calculateArtifactsNames.outputs.BcptTestResultsArtifactsName }}
             path: '${{ inputs.project }}/bcptTestResults.json'
             if-no-files-found: ignore
 
         - name: Analyze Test Results
           id: analyzeTestResults
           if: success() || failure()
-          uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
+          uses: microsoft/AL-Go/Actions/AnalyzeTests@d15c25e25c4b0033da9f99970e3a420e231f7fbc
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
-            Project: ${{ inputs.project }}
+            project: ${{ inputs.project }}
 
         - name: Cleanup
           if: always()
-          uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
+          uses: microsoft/AL-Go/Actions/PipelineCleanup@d15c25e25c4b0033da9f99970e3a420e231f7fbc
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
-            Project: ${{ inputs.project }}
+            project: ${{ inputs.project }}
