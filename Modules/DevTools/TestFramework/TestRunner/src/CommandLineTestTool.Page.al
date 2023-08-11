@@ -532,6 +532,8 @@ page 130455 "Command Line Test Tool"
         CodeunitTestMethodLine.SetRange("Test Suite", GlobalALTestSuite.Name);
         CodeunitTestMethodLine.SetRange("Line Type", CodeunitTestMethodLine."Line Type"::Codeunit);
         CodeunitTestMethodLine.SetFilter(Name, CodeunitName);
+        if CodeunitTestMethodLine.IsEmpty() then
+            CodeunitTestMethodLine.SetRange(Name, CodeunitName);
         if not CodeunitTestMethodLine.FindSet() then
             exit;
         repeat
