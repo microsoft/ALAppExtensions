@@ -56,6 +56,7 @@ codeunit 9106 "SharePoint File"
     [NonDebuggable]
     local procedure ParseSingle(Payload: JsonObject) SharePointFile: Record "SharePoint File" temporary
     var
+        SharePointEvents: Codeunit "SharePoint Events";
         JToken: JsonToken;
     begin
         SharePointFile.Init();
@@ -102,5 +103,16 @@ codeunit 9106 "SharePoint File"
             if Payload.Get('type', JToken) then
                 SharePointFile.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.OdataType));
         end;
+
+        if Payload.Get('ListItemAllFields', JToken) then begin
+            Payload := JToken.AsObject();
+
+            if Payload.Get('Id', JToken) then
+                SharePointFile.Id := JToken.AsValue().AsInteger();
+
+            SharePointEvents.ProcessSharePointFileMetadata(JToken, SharePointFile);
+        end;
     end;
+
+
 }
