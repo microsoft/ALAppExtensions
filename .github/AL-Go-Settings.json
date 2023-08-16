@@ -5,10 +5,10 @@
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "bcinsider//22.6/base/latest/{INSIDERSASTOKEN}",
+  "artifact": "bcinsider//22.5/base/latest/{INSIDERSASTOKEN}",
   "country": "base",
   "useProjectDependencies": true,
-  "repoVersion": "22.6",
+  "repoVersion": "22.5",
   "cleanModePreprocessorSymbols": [
     "CLEAN17",
     "CLEAN18",
