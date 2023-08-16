@@ -637,7 +637,7 @@ codeunit 148064 "VAT Ctrl. Report CZL"
         Assert.AreEqual(TariffNumber."Statement Code CZL", VATCtrlReportLineCZL."Commodity Code", UnexpectedCommodityCodeErr);
 
         // [THEN] The amount on the first line will equal the sum of the base amount from the first two sales document lines
-        Assert.AreEqual(SalesLine1."VAT Base Amount" + SalesLine2."VAT Base Amount", VATCtrlReportLineCZL.Base, BaseAmountNotMatchErr);
+        Assert.AreEqual(-(SalesLine1."VAT Base Amount" + SalesLine2."VAT Base Amount"), VATCtrlReportLineCZL.Base, BaseAmountNotMatchErr);
 
         // [THEN] The section on the second line will be A1 and commodity code will be empty
         VATCtrlReportLineCZL.Next();
@@ -645,7 +645,7 @@ codeunit 148064 "VAT Ctrl. Report CZL"
         Assert.AreEqual('', VATCtrlReportLineCZL."Commodity Code", UnexpectedCommodityCodeErr);
 
         // [THEN] The amount on the second line will equal the sum of the base amount from the third sales document line
-        Assert.AreEqual(SalesLine3."VAT Base Amount", VATCtrlReportLineCZL.Base, BaseAmountNotMatchErr);
+        Assert.AreEqual(-SalesLine3."VAT Base Amount", VATCtrlReportLineCZL.Base, BaseAmountNotMatchErr);
     end;
 
     local procedure CreateCommodity(LimitAmount: Decimal) CommodityCZL: Record "Commodity CZL"

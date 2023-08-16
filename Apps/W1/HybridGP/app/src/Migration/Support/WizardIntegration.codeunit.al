@@ -118,7 +118,7 @@ codeunit 4035 "Wizard Integration"
 
     local procedure GetDefaultGPHistoricalMigrationJobMaxAttempts(): Integer
     begin
-        exit(1);
+        exit(10);
     end;
 
     procedure StartGPHistoricalJobMigrationAction(JobNotRanNotification: Notification)

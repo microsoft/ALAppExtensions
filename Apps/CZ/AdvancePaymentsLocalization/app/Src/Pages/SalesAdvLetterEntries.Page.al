@@ -183,7 +183,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     var
                         SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
                     begin
-                        SalesAdvLetterManagement.PostAdvancePaymentVAT(Rec, 0D);
+                        SalesAdvLetterManagement.PostAdvancePaymentVAT(Rec, 0D, false);
                     end;
                 }
                 action(PostAndSendPaymentVAT)

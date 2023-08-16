@@ -213,18 +213,8 @@ page 13 "Email Editor"
                 Image = SendMail;
 
                 trigger OnAction()
-                var
-                    IsEmailDataValid: Boolean;
                 begin
-                    IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessageImpl);
-
-                    if IsEmailDataValid then begin
-                        IsNewOutbox := false;
-                        EmailEditor.SendOutbox(Rec);
-                        EmailAction := Enum::"Email Action"::Sent;
-
-                        CurrPage.Close();
-                    end;
+                    ValidateAndSendEmailData();
                 end;
             }
             action(Discard)
@@ -447,6 +437,21 @@ page 13 "Email Editor"
     internal procedure SetEmailScenario(Scenario: Enum "Email Scenario")
     begin
         EmailScenario := Scenario;
+    end;
+
+    protected procedure ValidateAndSendEmailData()
+    var
+        IsEmailDataValid: Boolean;
+    begin
+        IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessageImpl);
+
+        if IsEmailDataValid then begin
+            IsNewOutbox := false;
+            EmailEditor.SendOutbox(Rec);
+            EmailAction := Enum::"Email Action"::Sent;
+
+            CurrPage.Close();
+        end;
     end;
 
     var

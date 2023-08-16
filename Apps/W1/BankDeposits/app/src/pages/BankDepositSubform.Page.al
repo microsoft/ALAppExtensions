@@ -25,14 +25,17 @@ page 1693 "Bank Deposit Subform"
                     trigger OnValidate()
                     var
                         CurType: Enum "Gen. Journal Account Type";
+                        DocumentNo: Code[20];
                     begin
-                        if xRec."Account Type" <> "Account Type" then begin
+                        if xRec."Account Type" <> Rec."Account Type" then begin
                             CurType := Rec."Account Type";
+                            DocumentNo := Rec."Document No.";
                             OnValidateAccountTypeOnBeforeInit(Rec);
                             Rec.Init();
                             Rec.SetUpNewLine(Rec, Rec.Amount, false);
                             CopyValuesFromHeader();
                             Rec."Account Type" := CurType;
+                            Rec."Document No." := DocumentNo;
                         end;
                         AccountTypeOnAfterValidate();
                     end;

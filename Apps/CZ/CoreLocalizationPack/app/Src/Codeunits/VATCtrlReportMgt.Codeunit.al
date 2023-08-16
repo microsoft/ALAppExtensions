@@ -555,9 +555,9 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                 OnSplitFromSalesInvLineOnBeforeUpdateTempDropShptPostBuffer(SalesInvoiceHeader, SalesInvoiceLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
                     UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, SalesInvoiceLine."Tariff No. CZL",
-                        SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group", SalesInvoiceLine."VAT Base Amount",
+                        SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group", -SalesInvoiceLine."VAT Base Amount",
                         SalesInvoiceHeader."Currency Code", SalesInvoiceHeader."VAT Currency Factor CZL", SalesInvoiceHeader."VAT Reporting Date",
-                        false, SalesInvoiceLine.Amount);
+                        false, -SalesInvoiceLine.Amount);
             until SalesInvoiceLine.Next() = 0;
         end;
     end;
@@ -652,9 +652,9 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                 OnSplitFromPurchCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(PurchCrMemoHdr, PurchCrMemoLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
                     UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, PurchCrMemoLine."Tariff No. CZL",
-                        PurchCrMemoLine."VAT Bus. Posting Group", PurchCrMemoLine."VAT Prod. Posting Group", PurchCrMemoLine."VAT Base Amount",
+                        PurchCrMemoLine."VAT Bus. Posting Group", PurchCrMemoLine."VAT Prod. Posting Group", -PurchCrMemoLine."VAT Base Amount",
                         PurchCrMemoHdr."Currency Code", PurchCrMemoHdr."VAT Currency Factor CZL", PurchCrMemoHdr."VAT Reporting Date",
-                        true, PurchCrMemoLine.Amount);
+                        true, -PurchCrMemoLine.Amount);
             until PurchCrMemoLine.Next() = 0;
         end;
     end;

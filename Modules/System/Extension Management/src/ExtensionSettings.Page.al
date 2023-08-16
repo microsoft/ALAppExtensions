@@ -22,7 +22,6 @@ page 2511 "Extension Settings"
         {
             group(Group)
             {
-
                 field(AppId; AppIdValue)
                 {
                     ApplicationArea = All;
@@ -63,7 +62,7 @@ page 2511 "Extension Settings"
     var
         PublishedApplication: Record "Published Application";
     begin
-        PublishedApplication.SetRange(ID, Rec."App ID");
+        PublishedApplication.SetRange(ID, "App ID");
         PublishedApplication.SetRange("Tenant Visible", true);
 
         if PublishedApplication.FindFirst() then begin
@@ -77,13 +76,13 @@ page 2511 "Extension Settings"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
     begin
-        if Rec.GetFilter("App ID") = '' then
+        if GetFilter("App ID") = '' then
             exit;
 
-        Rec."App ID" := Rec.GetRangeMin("App ID");
-        if not Rec.FindFirst() then begin
-            Rec.Init();
-            Rec.Insert();
+        "App ID" := GetRangeMin("App ID");
+        if not FindFirst() then begin
+            Init();
+            Insert();
         end;
 
         CanManageExtensions := ExtensionInstallationImpl.CanManageExtensions();
@@ -95,3 +94,4 @@ page 2511 "Extension Settings"
         AppIdValue: Text;
         CanManageExtensions: Boolean;
 }
+

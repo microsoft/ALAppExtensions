@@ -67,11 +67,6 @@ table 9100 "SharePoint File"
         {
             Caption = 'Odata.EditLink';
         }
-
-        field(11; Id; Integer)
-        {
-            Caption = 'Id';
-        }
     }
 
     keys

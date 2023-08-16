@@ -336,10 +336,10 @@ report 18931 "Cash Book"
                     GLEntry2."Global Dimension 2 Code", GLEntry2."Close Income Statement Dim. ID", GLEntry2."Posting Date");
                     GLEntry2.SetRange(GLEntry2."G/L Account No.", "G/L Account"."No.");
                     GLEntry2.SetFilter(GLEntry2."Posting Date", '%1..%2', 0D, NormalDate(GetRangeMin("Date Filter")) - 1);
-                    if "Global Dimension 1 Filter" <> '' then
-                        GLEntry2.SetFilter("Global Dimension 1 Code", "Global Dimension 1 Filter");
-                    if "Global Dimension 2 Filter" <> '' then
-                        GLEntry2.SetFilter("Global Dimension 2 Code", "Global Dimension 2 Filter");
+                    if GetFilter("Global Dimension 1 Filter") <> '' then
+                        GLEntry2.SetFilter("Global Dimension 1 Code", GetFilter("Global Dimension 1 Filter"));
+                    if GetFilter("Global Dimension 2 Filter") <> '' then
+                        GLEntry2.SetFilter("Global Dimension 2 Code", GetFilter("Global Dimension 2 Filter"));
 
                     GLEntry2.CalcSums(Amount);
                     if GLEntry2.Amount > 0 then

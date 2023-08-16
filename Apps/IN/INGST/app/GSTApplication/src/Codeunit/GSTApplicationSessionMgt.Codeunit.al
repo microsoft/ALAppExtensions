@@ -266,8 +266,8 @@ codeunit 18434 "GST Application Session Mgt."
             until TempGenJournalLine.Next() = 0;
 
             ClearApplicationGenJnlLine();
-            ClearAllSessionVariables();
         end;
+        ClearAllSessionVariables();
     end;
 
     procedure ClearApplicationGenJnlLine()

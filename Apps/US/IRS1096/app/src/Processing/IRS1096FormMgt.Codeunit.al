@@ -338,6 +338,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
                 IRS1096FormLine := TempIRS1096FormLine;
                 IRS1096FormLine."Total Amount" := TotalAmount;
                 IRS1096FormLine.Insert();
+                TempCreatedIRS1096FormHeader.Get(IRS1096FormLine."Form No.");
                 TempCreatedIRS1096FormHeader."Calc. Amount" += IRS1096FormLine."Calculated Amount";
                 TempCreatedIRS1096FormHeader."Calc. Adjustment Amount" += IRS1096FormLine."Calculated Adjustment Amount";
                 TempCreatedIRS1096FormHeader."Total Amount To Report" += IRS1096FormLine."Calculated Amount" + IRS1096FormLine."Calculated Adjustment Amount";

@@ -11,7 +11,7 @@ codeunit 30214 "Shpfy GQL Next Locations" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{ locationsAvailableForDeliveryProfilesConnection(first: 10, after:\"{{After}}\") { pageInfo { hasNextPage endCursor } nodes { legacyResourceId isActive isPrimary name fulfillmentService { serviceName }}}}"}');
+        exit('{"query":"{ locations(first: 20, after:\"{{After}}\", includeLegacy: true) { pageInfo { hasNextPage endCursor } nodes { legacyResourceId isActive isPrimary name fulfillmentService { serviceName }}}}"}');
     end;
 
     /// <summary>
@@ -20,6 +20,6 @@ codeunit 30214 "Shpfy GQL Next Locations" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(12);
+        exit(22);
     end;
 }

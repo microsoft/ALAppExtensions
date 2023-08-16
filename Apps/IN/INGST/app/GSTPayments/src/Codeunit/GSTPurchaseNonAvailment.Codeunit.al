@@ -84,6 +84,9 @@ codeunit 18251 "GST Purchase Non Availment"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostFixedAssetOnBeforeInitGLEntryFromTempFAGLPostBuf', '', false, false)]
     local procedure UpdateTempFAGLPostBufNonAvailment(var GenJournalLine: Record "Gen. Journal Line"; var TempFAGLPostBuf: Record "FA G/L Posting Buffer")
     begin
+        if TempFAGLPostBuf."FA Entry Type" = TempFAGLPostBuf."FA Entry Type"::Maintenance then
+            exit;
+
         if GenJournalLine."FA Non-Availment" then
             TempFAGLPostBuf.Amount -= GenJournalLine."FA Non-Availment Amount";
     end;

@@ -57,6 +57,7 @@ codeunit 40025 "GP Checkbook Migrator"
     begin
         GPCheckbookTransactions.SetRange(CHEKBKID, CheckbookID);
         GPCheckbookTransactions.SetRange(Recond, false);
+        GPCheckbookTransactions.SetFilter(TRXAMNT, '<>%1', 0);
         if not GPCheckbookTransactions.FindSet() then
             exit;
 

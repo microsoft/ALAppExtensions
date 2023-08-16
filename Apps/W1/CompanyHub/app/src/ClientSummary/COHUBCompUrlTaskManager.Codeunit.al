@@ -221,7 +221,6 @@ codeunit 1155 "COHUB Comp. Url Task Manager"
         COHUBCompanyKPI.Validate("Average Collection Days", GetStringKPIValue(ActivityCuesValuesJsonObject, AverageCollectionDaysAmountPropNameTxt));
         COHUBCompanyKPI.Validate("Ongoing Sales Quotes", GetStringKPIValue(ActivityCuesValuesJsonObject, OngoingSalesQuotesAmountPropNameTxt));
         COHUBCompanyKPI.Validate("Ongoing Sales Orders", GetStringKPIValue(ActivityCuesValuesJsonObject, OngoingSalesOrdersAmountPropNameTxt));
-        COHUBCompanyKPI.Validate("Requests to Approve", GetStringKPIValue(ActivityCuesValuesJsonObject, RequestsToApproveAmountPropNameTxt));
         COHUBCompanyKPI.Validate("Purchase Orders", GetStringKPIValue(ActivityCuesValuesJsonObject, PurchaseOrdersAmountPropNameTxt));
         COHUBCompanyKPI.Validate("Sales Inv. - Pending Doc.Exch.", GetStringKPIValue(ActivityCuesValuesJsonObject, SalesInvPendDocExchangeAmountPropNameTxt));
         COHUBCompanyKPI.Validate("Sales CrM. - Pending Doc.Exch.", GetStringKPIValue(ActivityCuesValuesJsonObject, SalesCrMPendDocExchangeAmountPropNameTxt));
