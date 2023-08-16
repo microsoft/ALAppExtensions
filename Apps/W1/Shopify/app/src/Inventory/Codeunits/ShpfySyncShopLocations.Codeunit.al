@@ -77,14 +77,14 @@ codeunit 30198 "Shpfy Sync Shop Locations"
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             Clear(Cursor);
-            if JsonHelper.GetJsonObject(JResponse, JPageInfo, 'data.locationsAvailableForDeliveryProfilesConnection.pageInfo') then begin
+            if JsonHelper.GetJsonObject(JResponse, JPageInfo, 'data.locations.pageInfo') then begin
                 Cursor := JsonHelper.GetValueAsText(JPageInfo, 'endCursor');
                 GraphQLType := GraphQLType::GetNextLocations;
                 if Parameters.ContainsKey('After') then
                     Parameters.Set('After', Cursor)
                 else
                     Parameters.Add('After', Cursor);
-                foreach JLocation in JsonHelper.GetJsonArray(JResponse, 'data.locationsAvailableForDeliveryProfilesConnection.nodes') do
+                foreach JLocation in JsonHelper.GetJsonArray(JResponse, 'data.locations.nodes') do
                     ImportLocation(JLocation.AsObject(), TempShopLocation)
             end;
         until not HasNextResults(JPageInfo);

@@ -58,7 +58,6 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Gets all list items for the given list.
     /// </summary>
-    /// <raises>ProcessSharePointListItemMetadata</raises>    
     /// <param name="ListTitle">The title of the list/</param>
     /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
@@ -70,7 +69,6 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Gets all list items for the given list.
     /// </summary>
-    /// <raises>ProcessSharePointListItemMetadata</raises>    
     /// <param name="ListId">The GUID of the list/</param>
     /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
@@ -209,7 +207,6 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Creates a new list item in specific list.
     /// </summary>
-    /// <raises>ProcessSharePointListItemMetadata</raises>    
     /// <param name="ListTitle">The title of the list.</param>
     /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
     /// <param name="ListItemTitle">The title of the new list item.</param>
@@ -223,7 +220,6 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Creates a new list item in specific list.
     /// </summary>
-    /// <raises>ProcessSharePointListItemMetadata</raises>    
     /// <param name="ListId">The GUID of the list.</param>
     /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
     /// <param name="ListItemTitle">The title of the new list item.</param>
@@ -253,26 +249,12 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Lists all files in the given folder.
     /// </summary>
-    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="SharePointFile">Collection of the result (temporary record).</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
     procedure GetFolderFilesByServerRelativeUrl(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary): Boolean
     begin
-        exit(SharePointClientImpl.GetFolderFilesByServerRelativeUrl(ServerRelativeUrl, SharePointFile, false));
-    end;
-
-    /// <summary>
-    /// Lists all files in the given folder.
-    /// </summary>
-    /// <raises>ProcessSharePointFileMetadata</raises>
-    /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
-    /// <param name="SharePointFile">Collection of the result (temporary record).</param>
-    /// <param name="ListAllFields">Include metadata in results.</param>
-    /// <returns>True if the operation was successful; otherwise - false.</returns>
-    procedure GetFolderFilesByServerRelativeUrl(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
-    begin
-        exit(SharePointClientImpl.GetFolderFilesByServerRelativeUrl(ServerRelativeUrl, SharePointFile, ListAllFields));
+        exit(SharePointClientImpl.GetFolderFilesByServerRelativeUrl(ServerRelativeUrl, SharePointFile));
     end;
 
     /// <summary>
@@ -408,34 +390,18 @@ codeunit 9100 "SharePoint Client"
     /// <summary>
     /// Adds a file to specific folder.
     /// </summary>
-    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <remarks>Requires UI interaction to pick a file.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="SharePointFile">Collection of the result (temporary record). Always one element.</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
     procedure AddFileToFolder(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary): Boolean
     begin
-        exit(SharePointClientImpl.AddFileToFolder(ServerRelativeUrl, SharePointFile, false));
+        exit(SharePointClientImpl.AddFileToFolder(ServerRelativeUrl, SharePointFile));
     end;
 
     /// <summary>
     /// Adds a file to specific folder.
     /// </summary>
-    /// <raises>ProcessSharePointFileMetadata</raises>
-    /// <remarks>Requires UI interaction to pick a file.</remarks>
-    /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
-    /// <param name="SharePointFile">Collection of the result (temporary record). Always one element.</param>
-    /// <param name="ListAllFields">Include metadata in results.</param>
-    /// <returns>True if the operation was successful; otherwise - false.</returns>
-    procedure AddFileToFolder(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
-    begin
-        exit(SharePointClientImpl.AddFileToFolder(ServerRelativeUrl, SharePointFile, ListAllFields));
-    end;
-
-    /// <summary>
-    /// Adds a file to specific folder.
-    /// </summary>
-    /// <raises>ProcessSharePointFileMetadata</raises>
     /// <remarks>Does not require UI interaction.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="FileName">File name to use on SharePoint.</param>
@@ -444,49 +410,7 @@ codeunit 9100 "SharePoint Client"
     /// <returns>True if the operation was successful; otherwise - false.</returns>
     procedure AddFileToFolder(ServerRelativeUrl: Text; FileName: Text; var FileInStream: InStream; var SharePointFile: Record "SharePoint File" temporary): Boolean
     begin
-        exit(SharePointClientImpl.AddFileToFolder(ServerRelativeUrl, FileName, FileInStream, SharePointFile, false));
-    end;
-
-    /// <summary>
-    /// Adds a file to specific folder.
-    /// </summary>
-    /// <raises>ProcessSharePointFileMetadata</raises>
-    /// <remarks>Does not require UI interaction.</remarks>
-    /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
-    /// <param name="FileName">File name to use on SharePoint.</param>
-    /// <param name="FileInStream">File stream to upload.</param>
-    /// <param name="SharePointFile">Collection of the result (temporary record). Always one element.</param>
-    /// <param name="ListAllFields">Include metadata in results.</param>
-    /// <returns>True if the operation was successful; otherwise - false.</returns>
-    procedure AddFileToFolder(ServerRelativeUrl: Text; FileName: Text; var FileInStream: InStream; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
-    begin
-        exit(SharePointClientImpl.AddFileToFolder(ServerRelativeUrl, FileName, FileInStream, SharePointFile, ListAllFields));
-    end;
-
-    /// <summary>
-    /// Updates metadata field for list item.
-    /// </summary>
-    /// <param name="ListTitle">The title of the list.</param>
-    /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
-    /// <param name="FieldName">The name of the metadata field.</param>
-    /// <param name="FieldValue">Value.</param>    
-    /// <returns>True if the operation was successful; otherwise - false.</returns>
-    procedure UpdateListItemMetaDataField(ListTitle: Text; ItemId: Integer; ListItemEntityTypeFullName: Text; FieldName: Text; FieldValue: Text): Boolean
-    begin
-        exit(SharePointClientImpl.UpdateListItemMetaDataField(ListTitle, ItemId, ListItemEntityTypeFullName, FieldName, FieldValue));
-    end;
-
-    /// <summary>
-    /// Updates metadata field for list item.
-    /// </summary>
-    /// <param name="ListTitle">The GUID of the list.</param>
-    /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
-    /// <param name="FieldName">The name of the metadata field.</param>
-    /// <param name="FieldValue">Value.</param>
-    /// <returns>True if the operation was successful; otherwise - false.</returns>
-    procedure UpdateListItemMetaDataField(ListId: Guid; ItemId: Integer; ListItemEntityTypeFullName: Text; FieldName: Text; FieldValue: Text): Boolean
-    begin
-        exit(SharePointClientImpl.UpdateListItemMetaDataField(ListId, ItemId, ListItemEntityTypeFullName, FieldName, FieldValue));
+        exit(SharePointClientImpl.AddFileToFolder(ServerRelativeUrl, FileName, FileInStream, SharePointFile));
     end;
 
     #endregion

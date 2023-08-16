@@ -2,7 +2,7 @@
     "id":  "5f92e0d5-a60e-435f-ae85-71ec28dd3e41",
     "name":  "_Exclude_PlanConfiguration_",
     "publisher":  "Microsoft",
-    "version":  "22.4.0.0",
+    "version":  "22.5.0.0",
     "brief":  "Manage default user groups for license",
     "description":  "Manage default user groups for license",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -18,7 +18,7 @@
 
                     ],
     "platform":  "22.0.0.0",
-    "application":  "22.4.0.0",
+    "application":  "22.5.0.0",
     "idRanges":  [
                      {
                          "from":  9048,

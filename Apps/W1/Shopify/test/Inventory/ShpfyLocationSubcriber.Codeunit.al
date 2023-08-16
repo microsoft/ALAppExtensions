@@ -31,7 +31,7 @@ codeunit 139587 "Shpfy Location Subcriber"
     var
         Uri: Text;
         GraphQlQuery: Text;
-        GraphQLCmdMsg: Label '{"query":"{ locationsAvailableForDeliveryProfilesConnection(first: 10) { pageInfo { hasNextPage endCursor } nodes { legacyResourceId isActive isPrimary name fulfillmentService { serviceName }}}}"}', Locked = true;
+        GraphQLCmdMsg: Label '{"query":"{ locations(first: 20, includeLegacy: true) { pageInfo { hasNextPage endCursor } nodes { legacyResourceId isActive isPrimary name fulfillmentService { serviceName }}}}"}', Locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of

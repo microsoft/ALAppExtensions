@@ -97,7 +97,9 @@ codeunit 8700 "Table Information Cache Impl."
         SetBiggestTablesFilter(TableInformationCache);
         if TableInformationCache.FindSet() then
             repeat
-                if not TryCalcThirtyDayGrowthForTable(TableInformationCache) then
+                if TryCalcThirtyDayGrowthForTable(TableInformationCache) then
+                    TableInformationCache.Modify()
+                else
                     Session.LogMessage('00001PV', StrSubstNo(FailedToCalculateGrowthTxt, TableInformationCache."Table No.", TableInformationCache."Table Name"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
             until TableInformationCache.Next() = 0;
     end;
@@ -136,7 +138,6 @@ codeunit 8700 "Table Information Cache Impl."
         TableInformationCache."Last Period Data Size (KB)" := Round((RecordRef.Count() * TableInformationCache."Record Size" / 1024), 1);
         if TableInformationCache."Last Period Data Size (KB)" <> 0 then
             TableInformationCache."Growth %" := Round(((TableInformationCache."Data Size (KB)" / TableInformationCache."Last Period Data Size (KB)") - 1), 0.01) * 100;
-        TableInformationCache.Modify();
         RecordRef.Close();
     end;
 

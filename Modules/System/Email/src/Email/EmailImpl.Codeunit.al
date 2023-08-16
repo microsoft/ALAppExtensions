@@ -195,6 +195,13 @@ codeunit 8900 "Email Impl"
         exit(not SentEmail.IsEmpty());
     end;
 
+    procedure AddDefaultAttachments(EmailMessage: Codeunit "Email Message"; EmailScenario: Enum "Email Scenario")
+    var
+        EmailScenarioAttachmentsImpl: Codeunit "Email Scenario Attach Impl.";
+    begin
+        EmailScenarioAttachmentsImpl.AddAttachmentToMessage(EmailMessage, EmailScenario);
+    end;
+
     local procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; InBackground: Boolean; NotBefore: DateTime; var EmailOutbox: Record "Email Outbox"): Boolean
     var
         EmailAccountRec: Record "Email Account";

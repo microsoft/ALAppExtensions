@@ -59,11 +59,14 @@ page 31179 "Advance Letter Templates CZZ"
                     ToolTip = 'Specifies automatic post VAT document.';
                 }
 #if not CLEAN20
-#pragma warning disable AL0432
+#pragma warning disable AL0432,AS0072
                 field("Document Report ID"; Rec."Document Report ID")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies document report ID.';
+                    ObsoleteReason = 'Replaced by standard report selection.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '20.0';
 
                     trigger OnValidate()
                     begin
@@ -74,11 +77,17 @@ page 31179 "Advance Letter Templates CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies document report caption.';
+                    ObsoleteReason = 'Replaced by standard report selection.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '20.0';
                 }
                 field("Invoice/Cr. Memo Report ID"; Rec."Invoice/Cr. Memo Report ID")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies invoice/credit memo report ID';
+                    ObsoleteReason = 'Replaced by standard report selection.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '20.0';
 
                     trigger OnValidate()
                     begin
@@ -89,8 +98,11 @@ page 31179 "Advance Letter Templates CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies invoice/credit memo report caption.';
+                    ObsoleteReason = 'Replaced by standard report selection.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '20.0';
                 }
-#pragma warning restore AL0432
+#pragma warning restore AL0432,AS0072
 #endif
             }
         }

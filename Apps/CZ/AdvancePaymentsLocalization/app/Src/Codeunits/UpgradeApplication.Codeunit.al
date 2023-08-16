@@ -112,19 +112,19 @@ codeunit 31088 "Upgrade Application CZZ"
 
     local procedure GetCurrencyFactor(AdvanceLetterType: Enum "Advance Letter Type CZZ"; AdvanceLetterNo: Code[20]): Decimal
     var
-        PurchAdvanceLetterHeader: Record "Purch. Advance Letter Header";
-        SalesAdvanceLetterHeader: Record "Sales Advance Letter Header";
+        PurchAdvLetterHeader: Record "Purch. Adv. Letter Header CZZ";
+        SalesAdvLetterHeader: Record "Sales Adv. Letter Header CZZ";
     begin
         case AdvanceLetterType of
             AdvanceLetterType::Purchase:
                 begin
-                    PurchAdvanceLetterHeader.Get(AdvanceLetterNo);
-                    exit(PurchAdvanceLetterHeader."Currency Factor");
+                    PurchAdvLetterHeader.Get(AdvanceLetterNo);
+                    exit(PurchAdvLetterHeader."Currency Factor");
                 end;
             AdvanceLetterType::Sales:
                 begin
-                    SalesAdvanceLetterHeader.Get(AdvanceLetterNo);
-                    exit(SalesAdvanceLetterHeader."Currency Factor");
+                    SalesAdvLetterHeader.Get(AdvanceLetterNo);
+                    exit(SalesAdvLetterHeader."Currency Factor");
                 end;
         end;
     end;

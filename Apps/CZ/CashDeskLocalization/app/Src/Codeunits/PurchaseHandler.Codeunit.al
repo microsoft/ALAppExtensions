@@ -71,6 +71,8 @@ codeunit 11737 "Purchase Handler CZP"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnCheckAndUpdateOnAfterSetPostingFlags', '', false, false)]
     local procedure CheckCashDocumentActionOnCheckAndUpdateOnAfterSetPostingFlags(var PurchHeader: Record "Purchase Header")
     begin
+        if not PurchHeader.Invoice then
+            exit;
         if PurchHeader."Cash Document Action CZP".AsInteger() > PurchHeader."Cash Document Action CZP"::" ".AsInteger() then
             CashDeskManagementCZP.CheckUserRights(PurchHeader."Cash Desk Code CZP", PurchHeader."Cash Document Action CZP"::Create);
         if (PurchHeader."Cash Document Action CZP" = PurchHeader."Cash Document Action CZP"::Release) or

@@ -209,6 +209,73 @@ page 4050 "GP Migration Configuration"
                 }
             }
 
+            group(SkipPosting)
+            {
+                Caption = 'Disable Auto Posting';
+                InstructionalText = 'Select whether migrated transactions should be posted automatically during the migration process. By disabling auto posting, you will have the flexibility to adjust transactions in Business Central before posting.';
+
+                field("Skip Posting Account Batches"; Rec."Skip Posting Account Batches")
+                {
+                    Caption = 'Account Batches';
+                    ToolTip = 'Specify whether to disable auto posting Account batches.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Skip Posting Account Batches", Rec."Skip Posting Account Batches");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Skip Posting Customer Batches"; Rec."Skip Posting Customer Batches")
+                {
+                    Caption = 'Customer Batches';
+                    ToolTip = 'Specify whether to disable auto posting Customer batches.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Skip Posting Customer Batches", Rec."Skip Posting Customer Batches");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Skip Posting Vendor Batches"; Rec."Skip Posting Vendor Batches")
+                {
+                    Caption = 'Vendor Batches';
+                    ToolTip = 'Specify whether to disable auto posting Vendor batches.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Skip Posting Vendor Batches", Rec."Skip Posting Vendor Batches");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Skip Posting Bank Batches"; Rec."Skip Posting Bank Batches")
+                {
+                    Caption = 'Bank Batches';
+                    ToolTip = 'Specify whether to disable auto posting Bank batches.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Skip Posting Bank Batches", Rec."Skip Posting Bank Batches");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+            }
+
             group(Inactives)
             {
                 Caption = 'Inactive Records';
@@ -592,6 +659,10 @@ page 4050 "GP Migration Configuration"
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Hist. AP Trx.", Rec."Migrate Hist. AP Trx.");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Hist. Inv. Trx.", Rec."Migrate Hist. Inv. Trx.");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Hist. Purch. Trx.", Rec."Migrate Hist. Purch. Trx.");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Skip Posting Account Batches", Rec."Skip Posting Account Batches");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Skip Posting Bank Batches", Rec."Skip Posting Bank Batches");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Skip Posting Customer Batches", Rec."Skip Posting Customer Batches");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Skip Posting Vendor Batches", Rec."Skip Posting Vendor Batches");
 
                     GPCompanyAdditionalSettingsEachCompany.Insert(true);
                 end;
@@ -650,6 +721,10 @@ page 4050 "GP Migration Configuration"
         Rec.Validate("Migrate Hist. AP Trx.", GPCompanyAdditionalSettingsInit."Migrate Hist. AP Trx.");
         Rec.Validate("Migrate Hist. Inv. Trx.", GPCompanyAdditionalSettingsInit."Migrate Hist. Inv. Trx.");
         Rec.Validate("Migrate Hist. Purch. Trx.", GPCompanyAdditionalSettingsInit."Migrate Hist. Purch. Trx.");
+        Rec.Validate("Skip Posting Account Batches", GPCompanyAdditionalSettingsInit."Skip Posting Account Batches");
+        Rec.Validate("Skip Posting Bank Batches", GPCompanyAdditionalSettingsInit."Skip Posting Bank Batches");
+        Rec.Validate("Skip Posting Customer Batches", GPCompanyAdditionalSettingsInit."Skip Posting Customer Batches");
+        Rec.Validate("Skip Posting Vendor Batches", GPCompanyAdditionalSettingsInit."Skip Posting Vendor Batches");
 
         EnableDisableAllHistTrx := Rec."Migrate Hist. GL Trx." and
                                                         Rec."Migrate Hist. AR Trx." and

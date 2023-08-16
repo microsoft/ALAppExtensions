@@ -43,6 +43,7 @@ page 31185 "VAT Document CZZ"
                     Caption = 'Posting Date';
                     ToolTip = 'Specifies posting date.';
                     ShowMandatory = true;
+                    Editable = not IsSalesDocument;
 
                     trigger OnValidate()
                     var
@@ -66,6 +67,8 @@ page 31185 "VAT Document CZZ"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Document Date';
                     ToolTip = 'Specifies document date.';
+                    Visible = not IsSalesDocument;
+                    Enabled = not IsSalesDocument;
                 }
                 field(VATDate; VATDate)
                 {
@@ -73,12 +76,15 @@ page 31185 "VAT Document CZZ"
                     Caption = 'VAT Date';
                     ToolTip = 'Specifies VAT date.';
                     ShowMandatory = true;
+                    Editable = not IsSalesDocument;
                 }
                 field(OriginalDocumentVATDate; OriginalDocumentVATDate)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Original Document VAT Date';
                     ToolTip = 'Specifies original document VAT date.';
+                    Visible = not IsSalesDocument;
+                    Enabled = not IsSalesDocument;
                     ShowMandatory = true;
                 }
                 field(ExternalDocumentNo; ExternalDocumentNo)
@@ -86,6 +92,8 @@ page 31185 "VAT Document CZZ"
                     ApplicationArea = Basic, Suite;
                     Caption = 'External Document No.';
                     ToolTip = 'Specifies external document no.';
+                    Visible = not IsSalesDocument;
+                    Enabled = not IsSalesDocument;
                 }
                 field(CurrencyCode; CurrencyCode)
                 {
@@ -129,6 +137,7 @@ page 31185 "VAT Document CZZ"
         OriginalDocumentVATDate: Date;
         CurrencyFactor: Decimal;
         DocumentNoEditable: Boolean;
+        IsSalesDocument: Boolean;
 
 #if not CLEAN20
     [Obsolete('Replaced by InitDocument function with NewOriginalDocumentVATDate parameter.', '20.0')]
@@ -151,7 +160,6 @@ page 31185 "VAT Document CZZ"
         GeneralLedgerSetup: Record "General Ledger Setup";
 #if not CLEAN22
 #pragma warning disable AL0432
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
 #endif
@@ -168,14 +176,7 @@ page 31185 "VAT Document CZZ"
 #pragma warning disable AL0432
         if not ReplaceVATDateMgtCZL.IsEnabled() then
             if VATDate = 0D then
-                case PurchasesPayablesSetup."Default VAT Date CZL" of
-                    PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date":
-                        VATDate := PostingDate;
-                    PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date":
-                        VATDate := DocumentDate;
-                    PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
-                        VATDate := 0D;
-                end;
+                VATDate := GetVATDate(PostingDate, DocumentDate);
 #pragma warning restore AL0432
 #endif
         if VATDate = 0D then
@@ -196,6 +197,43 @@ page 31185 "VAT Document CZZ"
         InitDocumentNo := DocumentNo;
     end;
 
+    procedure InitSalesDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewDocumentDate: Date; NewPostingDate: Date; NewVATDate: Date; NewOriginalDocumentVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
+    begin
+        IsSalesDocument := true;
+        InitDocument(NewNoSeriesCode, NewDocumentNo, NewDocumentDate, NewPostingDate, NewVATDate, NewOriginalDocumentVATDate, NewCurrencyCode, NewCurrencyFactor, NewExternalDocumentNo, AdvancePostingBufferCZZ);
+    end;
+
+#if not CLEAN22
+#pragma warning disable AL0432
+    local procedure GetVATDate(PostingDate2: Date; DocumentDate2: Date): Date
+    var
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        if IsSalesDocument then begin
+            SalesReceivablesSetup.Get();
+            case SalesReceivablesSetup."Default VAT Date CZL" of
+                SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
+                    exit(PostingDate2);
+                SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
+                    exit(DocumentDate2);
+                SalesReceivablesSetup."Default VAT Date CZL"::Blank:
+                    exit(0D);
+            end;
+        end;
+
+        PurchasesPayablesSetup.Get();
+        case PurchasesPayablesSetup."Default VAT Date CZL" of
+            PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date":
+                exit(PostingDate2);
+            PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date":
+                exit(DocumentDate2);
+            PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
+                exit(0D);
+        end;
+    end;
+#pragma warning restore AL0432
+#endif
 #if not CLEAN20
     [Obsolete('Replaced by GetDocument function with NewOriginalDocumentVATDate parameter.', '20.0')]
     procedure GetDocument(var NewDocumentNo: Code[20]; var NewPostingDate: Date; var NewDocumentDate: Date; var NewVATDate: Date; var NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
@@ -217,6 +255,14 @@ page 31185 "VAT Document CZZ"
         NewVATDate := VATDate;
         NewOriginalDocumentVATDate := OriginalDocumentVATDate;
         NewExternalDocumentNo := ExternalDocumentNo;
+        CurrPage.Lines.Page.GetDocumentLines(AdvancePostingBufferCZZ);
+    end;
+
+    procedure GetDocument(var NewDocumentNo: Code[20]; var NewPostingDate: Date; var NewVATDate: Date; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
+    begin
+        NewDocumentNo := DocumentNo;
+        NewPostingDate := PostingDate;
+        NewVATDate := VATDate;
         CurrPage.Lines.Page.GetDocumentLines(AdvancePostingBufferCZZ);
     end;
 
