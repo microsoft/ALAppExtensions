@@ -83,12 +83,12 @@ codeunit 139577 "Shpfy Test Locations"
     begin
         Clear(JData);
         Clear(KnownIds);
-        for Index := 1 TO NumberOfLocations do
+        for Index := 1 to NumberOfLocations do
             JNodes.Add(CreateShopifyLocation(Index = 1));
         JLocations.Add('nodes', JNodes);
         JPageInfo.Add('hasNextPage', false);
         JLocations.Add('pageInfo', JPageInfo);
-        JData.Add('locationsAvailableForDeliveryProfilesConnection', JLocations);
+        JData.Add('locations', JLocations);
         JThrottleStatus.Add('maximumAvailable', 1000.0);
         JThrottleStatus.Add('currentlyAvailable', 996);
         JThrottleStatus.Add('restoreRate', 50.0);

@@ -157,7 +157,11 @@ table 11756 "Registration Log CZL"
         RegistrationLogDetail: Record "Registration Log Detail CZL";
         DummyCustomer: Record Customer;
         VATRegLogSuppression: Codeunit "VAT Reg. Log Suppression CZL";
+        IsHandled: Boolean;
     begin
+        OnBeforeApplyDetailChanges(RecordRef, Result, IsHandled);
+        if IsHandled then
+            exit;
         RegistrationLogDetail.SetRange("Log Entry No.", "Entry No.");
         RegistrationLogDetail.SetRange(Status, RegistrationLogDetail.Status::Accepted);
         Result := RegistrationLogDetail.FindSet();
@@ -178,11 +182,14 @@ table 11756 "Registration Log CZL"
                             ValidateField(RecordRef, DummyCustomer.FieldName("VAT Registration No."), RegistrationLogDetail.Response, true);
                             UnbindSubscription(VATRegLogSuppression)
                         end;
+                    else
+                        OnApplyDetailChanges(RegistrationLogDetail, RecordRef, Result);
                 end;
             until RegistrationLogDetail.Next() = 0;
             RegistrationLogDetail.ModifyAll(Status, RegistrationLogDetail.Status::Applied);
             ShowDetailUpdatedMessage(RecordRef.Number());
         end;
+        OnAfterApplyDetailChanges(RecordRef, Result);
     end;
 
     local procedure ValidateField(var RecordRef: RecordRef; FieldName: Text; Value: Text; Validate: Boolean)
@@ -304,5 +311,20 @@ table 11756 "Registration Log CZL"
         RegistrationLogDetail.Status := RegistrationLogDetail.Status::"Not Valid";
         RegistrationLogDetail."Field Name" := FieldName;
         RegistrationLogDetail."Current Value" := CopyStr(CurrentValue, 1, MaxStrLen(RegistrationLogDetail."Current Value"));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeApplyDetailChanges(var RecordRef: RecordRef; var Result: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnApplyDetailChanges(RegistrationLogDetail: Record "Registration Log Detail CZL"; var RecordRef: RecordRef; var Result: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterApplyDetailChanges(var RecordRef: RecordRef; var Result: Boolean)
+    begin
     end;
 }

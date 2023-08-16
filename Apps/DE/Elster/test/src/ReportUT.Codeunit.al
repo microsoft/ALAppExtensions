@@ -173,11 +173,11 @@ codeunit 148164 "Elster Report UT"
         LoadXMLFromSalesVATAdvanceNotif(SalesVATAdvanceNotif);
         Assert.AreEqual(
             Format(VATEntry.Amount, 0, '<precision,2:2><Sign><Integer><Decimals><comma,.>'),
-            LibraryXPathXMLReader.GetXmlElementValue('//ns:Anmeldungssteuern/ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz37'),
+            LibraryXPathXMLReader.GetXmlElementValue('//ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz37'),
             'Kz37');
         Assert.AreEqual(
             Format(VATEntry.Base, 0, '<Sign><Integer>'),
-            LibraryXPathXMLReader.GetXmlElementValue('//ns:Anmeldungssteuern/ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz50'),
+            LibraryXPathXMLReader.GetXmlElementValue('//ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz50'),
             'Kz50');
 
         // Tear down
@@ -321,7 +321,7 @@ codeunit 148164 "Elster Report UT"
         LoadXMLFromSalesVATAdvanceNotif(SalesVATAdvanceNotif);
         Assert.AreEqual(
             Format(VATEntry.Base, 0, '<Sign><Integer>'),
-            LibraryXPathXMLReader.GetXmlElementValue('//ns:Anmeldungssteuern/ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz87'),
+            LibraryXPathXMLReader.GetXmlElementValue('//ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz87'),
             'Kz87');
 
         // Tear down
@@ -359,7 +359,7 @@ codeunit 148164 "Elster Report UT"
         LoadXMLFromSalesVATAdvanceNotif(SalesVATAdvanceNotif);
         Assert.AreEqual(
             Format(VATEntry.Base, 0, '<Sign><Integer>'),
-            LibraryXPathXMLReader.GetXmlElementValue('//ns:Anmeldungssteuern/ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz90'),
+            LibraryXPathXMLReader.GetXmlElementValue('//ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz90'),
             'Kz90');
 
         // Tear down
@@ -490,7 +490,7 @@ codeunit 148164 "Elster Report UT"
     begin
         SalesVATAdvanceNotif.CalcFields("XML Submission Document");
         TempBlob.FromRecord(SalesVATAdvanceNotif, SalesVATAdvanceNotif.FieldNo("XML Submission Document"));
-        LibraryXPathXMLReader.InitializeXml(TempBlob, 'ns', 'http://finkonsens.de/elster/elsteranmeldung/ustva/v2021');
+        LibraryXPathXMLReader.InitializeXml(TempBlob, 'ns', 'http://finkonsens.de/elster/elsteranmeldung/ustva/v2023');
     end;
 
     [RequestPageHandler]

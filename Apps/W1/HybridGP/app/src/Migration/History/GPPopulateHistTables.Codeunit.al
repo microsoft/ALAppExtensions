@@ -89,7 +89,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"GP GL00105";
-
+        GPGL00105.SetLoadFields(DEX_ROW_ID, ACTINDX, ACTNUMST);
         GPGL00105.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPGL00105.SetCurrentKey(DEX_ROW_ID);
         GPGL00105.SetAscending(DEX_ROW_ID, true);
@@ -134,7 +134,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"GP GL20000";
-
+        GPGL20000.SetLoadFields(DEX_ROW_ID, OPENYEAR, ACTINDX, SERIES, SOURCDOC, JRNENTRY, SEQNUMBR, TRXSORCE, TRXDATE, CURNCYID, DEBITAMT, ORDBTAMT, CRDTAMNT, ORCRDAMT, SOURCDOC, REFRENCE, DSCRIPTN, ORTRXSRC, USWHPSTD, User_Defined_Text01, User_Defined_Text02, ORDOCNUM, ORMSTRID, ORMSTRNM);
         GPGL20000.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPGL20000.SetCurrentKey(DEX_ROW_ID);
         GPGL20000.SetAscending(DEX_ROW_ID, true);
@@ -207,7 +207,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"GP GL30000";
-
+        GPGL30000.SetLoadFields(DEX_ROW_ID, HSTYEAR, ACTINDX, SERIES, SOURCDOC, JRNENTRY, SEQNUMBR, TRXSORCE, TRXDATE, CURNCYID, DEBITAMT, ORDBTAMT, CRDTAMNT, ORCRDAMT, SOURCDOC, REFRENCE, DSCRIPTN, ORTRXSRC, USWHPSTD, User_Defined_Text01, User_Defined_Text02, ORDOCNUM, ORMSTRID, ORMSTRNM);
         GPGL30000.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPGL30000.SetCurrentKey(DEX_ROW_ID);
         GPGL30000.SetAscending(DEX_ROW_ID, true);
@@ -290,7 +290,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::GPSOPTrxHist;
-
+        GPSOPTrxHist.SetLoadFields(DEX_ROW_ID, DOCDATE, SOPNUMBE, CUSTNMBR, SOPTYPE, SOPSTATUS, CURNCYID, SUBTOTAL, TAXAMNT, TRDISAMT, FRTAMNT, MISCAMNT, PYMTRCVD, DISTKNAM, DOCAMNT, DUEDATE, ACTLSHIP, CUSTNAME, SHIPMTHD, PRSTADCD, ShipToName, ADDRESS1, ADDRESS2, CITY, STATE, ZIPCODE, COUNTRY, CNTCPRSN, SLPRSNID, SALSTERR, CSTPONBR, ORIGNUMB, TRXSORCE);
         GPSOPTrxHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPSOPTrxHist.SetCurrentKey(DEX_ROW_ID);
         GPSOPTrxHist.SetAscending(DEX_ROW_ID, true);
@@ -356,11 +356,12 @@ codeunit 40900 "GP Populate Hist. Tables"
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
-    local procedure PopulateSalesTransactionLines(GPSOPTrxHist: Record GPSOPTrxHist; DocumentNo: Code[35])
+    local procedure PopulateSalesTransactionLines(var GPSOPTrxHist: Record GPSOPTrxHist; DocumentNo: Code[35])
     var
         GPSOPTrxAmountsHist: Record GPSOPTrxAmountsHist;
         HistSalesTrxLine: Record "Hist. Sales Trx. Line";
     begin
+        GPSOPTrxAmountsHist.SetLoadFields(DEX_ROW_ID, SOPTYPE, SOPNUMBE, LNITMSEQ, CMPNTSEQ, ITEMNMBR, ITEMDESC, UOFM, UNITCOST, UNITPRCE, QUANTITY, EXTDCOST, XTNDPRCE, TAXAMNT, LOCNCODE, ShipToName);
         GPSOPTrxAmountsHist.SetRange(SOPTYPE, GPSOPTrxHist.SOPTYPE);
         GPSOPTrxAmountsHist.SetRange(SOPNUMBE, GPSOPTrxHist.SOPNUMBE);
         if not GPSOPTrxAmountsHist.FindSet() then
@@ -408,7 +409,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"GP RM20101";
-
+        GPRM20101.SetLoadFields(DEX_ROW_ID, DOCDATE, CUSTNMBR, DOCNUMBR, RMDTYPAL, BACHNUMB, BCHSOURC, TRXSORCE, TRXDSCRN, DUEDATE, POSTDATE, PSTUSRID, CURNCYID, ORTRXAMT, CURTRXAM, SLSAMNT, COSTAMNT, FRTAMNT, MISCAMNT, TAXAMNT, DISTKNAM, CSPORNBR, SLPRSNID, SLSTERCD, SHIPMTHD, SHIPMTHD, CASHAMNT, COMDLRAM, DINVPDOF, PYMTRMID, WROFAMNT);
         GPRM20101.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPRM20101.SetCurrentKey(DEX_ROW_ID);
         GPRM20101.SetAscending(DEX_ROW_ID, true);
@@ -483,7 +484,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::GPRMHist;
-
+        GPRMHist.SetLoadFields(DEX_ROW_ID, DOCDATE, CUSTNMBR, DOCNUMBR, RMDTYPAL, BACHNUMB, BCHSOURC, TRXSORCE, TRXDSCRN, DUEDATE, POSTDATE, PSTUSRID, CURNCYID, ORTRXAMT, CURTRXAM, SLSAMNT, COSTAMNT, FRTAMNT, MISCAMNT, TAXAMNT, DISTKNAM, CSPORNBR, SLPRSNID, SLSTERCD, SHIPMTHD, SHIPMTHD, CASHAMNT, COMDLRAM, DINVPDOF, PYMTRMID, WROFAMNT);
         GPRMHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPRMHist.SetCurrentKey(DEX_ROW_ID);
         GPRMHist.SetAscending(DEX_ROW_ID, true);
@@ -569,7 +570,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"GP PM20000";
-
+        GPPM20000.SetLoadFields(DEX_ROW_ID, DOCDATE, VENDORID, DOCTYPE, DOCNUMBR, VCHRNMBR, DOCAMNT, CURNCYID, CURTRXAM, DISTKNAM, BCHSOURC, BACHNUMB, DUEDATE, PORDNMBR, TRXSORCE, TRXDSCRN, POSTEDDT, PTDUSRID, MSCCHAMT, FRTAMNT, TAXAMNT, TTLPYMTS, VOIDED, DINVPDOF, SHIPMTHD, TEN99AMNT, WROFAMNT, TRDISAMT, PYMTRMID, TEN99TYPE, TEN99BOXNUMBER, PONUMBER);
         GPPM20000.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPPM20000.SetCurrentKey(DEX_ROW_ID);
         GPPM20000.SetAscending(DEX_ROW_ID, true);
@@ -646,7 +647,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::GPPMHist;
-
+        GPPMHist.SetLoadFields(DEX_ROW_ID, DOCDATE, VENDORID, DOCTYPE, DOCNUMBR, VCHRNMBR, DOCAMNT, CURNCYID, CURTRXAM, DISTKNAM, BCHSOURC, BACHNUMB, DUEDATE, PORDNMBR, TRXSORCE, TRXDSCRN, POSTEDDT, PTDUSRID, MSCCHAMT, FRTAMNT, TAXAMNT, TTLPYMTS, VOIDED, DINVPDOF, SHIPMTHD, TEN99AMNT, WROFAMNT, TRDISAMT, PYMTRMID, TEN99TYPE, TEN99BOXNUMBER, PONUMBER);
         GPPMHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPPMHist.SetCurrentKey(DEX_ROW_ID);
         GPPMHist.SetAscending(DEX_ROW_ID, true);
@@ -725,7 +726,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             exit;
 
         SourceTableId := Database::GPIVTrxHist;
-
+        GPIVTrxHist.SetLoadFields(DEX_ROW_ID, DOCDATE, TRXSORCE, IVDOCTYP, DOCDATE, BACHNUMB, BCHSOURC, GLPOSTDT, SRCRFRNCNMBR, SOURCEINDICATOR);
         GPIVTrxHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPIVTrxHist.SetCurrentKey(DEX_ROW_ID);
         GPIVTrxHist.SetAscending(DEX_ROW_ID, true);
@@ -775,6 +776,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
         HistInventoryTrxLine: Record "Hist. Inventory Trx. Line";
     begin
+        GPIVTrxAmountsHist.SetLoadFields(DEX_ROW_ID, TRXSORCE, DOCNUMBR, ITEMNMBR, CUSTNMBR, DOCTYPE, LNSEQNBR, DOCDATE, HSTMODUL, UOFM, TRXQTY, UNITCOST, EXTDCOST, TRXLOCTN, TRNSTLOC, Reason_Code);
         GPIVTrxAmountsHist.SetRange(TRXSORCE, AuditCode);
         GPIVTrxAmountsHist.SetRange(DOCNUMBR, DocumentNo);
 
@@ -823,7 +825,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             exit;
 
         SourceTableId := Database::"GP BM30200";
-
+        GPBM30200.SetLoadFields(DEX_ROW_ID, TRXDATE, TRX_ID, TRXSORCE, BACHNUMB, BCHSOURC, PSTGDATE, REFRENCE);
         GPBM30200.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPBM30200.SetCurrentKey(DEX_ROW_ID);
         GPBM30200.SetAscending(DEX_ROW_ID, true);
@@ -880,7 +882,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             exit;
 
         SourceTableId := Database::GPPOPReceiptHist;
-
+        GPPOPReceiptHist.SetLoadFields(DEX_ROW_ID, receiptdate, POPRCTNM, VENDORID, VENDNAME, POPTYPE, VNDDOCNM, GLPOSTDT, ACTLSHIP, BACHNUMB, SUBTOTAL, TRDISAMT, FRTAMNT, MISCAMNT, TAXAMNT, TEN99AMNT, PYMTRMID, DSCPCTAM, DSCDLRAM, DISAVAMT, DISCDATE, DUEDATE, REFRENCE, VOIDSTTS, PTDUSRID, TRXSORCE, VCHRNMBR, CURNCYID, InvoiceReceiptDate, PrepaymentAmount);
         GPPOPReceiptHist.SetFilter(DEX_ROW_ID, GetSourceTableRecIdFilter(SourceTableId));
         GPPOPReceiptHist.SetCurrentKey(DEX_ROW_ID);
         GPPOPReceiptHist.SetAscending(DEX_ROW_ID, true);
@@ -947,12 +949,13 @@ codeunit 40900 "GP Populate Hist. Tables"
         HistMigrationStatusMgmt.UpdateStepStatus("Hist. Migration Step Type"::"GP Purchase Receivables Trx.", true);
     end;
 
-    local procedure PopulatePurchaseRecvLines(GPPOPReceiptHist: Record GPPOPReceiptHist; ReceiptNo: Code[35])
+    local procedure PopulatePurchaseRecvLines(var GPPOPReceiptHist: Record GPPOPReceiptHist; ReceiptNo: Code[35])
     var
         GPPOPReceiptLineHist: Record GPPOPReceiptLineHist;
         GPPOPReceiptApply: Record GPPOPReceiptApply;
         HistPurchaseRecvLine: Record "Hist. Purchase Recv. Line";
     begin
+        GPPOPReceiptLineHist.SetLoadFields(DEX_ROW_ID, POPRCTNM, PONUMBER, ITEMNMBR, RCPTLNNM, ITEMDESC, VNDITNUM, VNDITDSC, UMQTYINB, ACTLSHIP, UOFM, UNITCOST, EXTDCOST, TAXAMNT, LOCNCODE, TRXSORCE, SHIPMTHD, ORUNTCST, OREXTCST, ORDISTKN, ORTDISAM, ORFRTAMT, ORMISCAMT);
         GPPOPReceiptLineHist.SetRange(POPRCTNM, GPPOPReceiptHist.POPRCTNM);
 
         if not GPPOPReceiptLineHist.FindSet() then
@@ -987,6 +990,7 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistPurchaseRecvLine."Orig. Freight Amount" := GPPOPReceiptLineHist.ORFRTAMT;
             HistPurchaseRecvLine."Orig. Misc. Amount" := GPPOPReceiptLineHist.ORMISCAMT;
 
+            GPPOPReceiptApply.SetLoadFields(POPRCTNM, RCPTLNNM, QTYSHPPD, QTYINVCD);
             GPPOPReceiptApply.SetRange(POPRCTNM, GPPOPReceiptLineHist.POPRCTNM);
             GPPOPReceiptApply.SetRange(RCPTLNNM, GPPOPReceiptLineHist.RCPTLNNM);
             if GPPOPReceiptApply.FindFirst() then begin
@@ -1001,7 +1005,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         until GPPOPReceiptLineHist.Next() = 0;
     end;
 
-    local procedure PopulateGLOpenYearItemTransaction(GPGL20000: Record "GP GL20000")
+    local procedure PopulateGLOpenYearItemTransaction(var GPGL20000: Record "GP GL20000")
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
@@ -1020,6 +1024,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         DocumentNo := GPGL20000.REFRENCE.TrimEnd();
 #pragma warning restore AA0139
 
+        GPIVTrxAmountsHist.SetLoadFields(DEX_ROW_ID, TRXSORCE, DOCNUMBR, DOCTYPE);
         GPIVTrxAmountsHist.SetRange(TRXSORCE, GPGL20000.ORTRXSRC);
         GPIVTrxAmountsHist.SetRange(DOCNUMBR, DocumentNo);
         if not GPIVTrxAmountsHist.FindFirst() then
@@ -1047,7 +1052,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         AfterProcessedNextChildRecord();
     end;
 
-    local procedure PopulateGLHistoricalYearItemTransaction(GPGL30000: Record "GP GL30000")
+    local procedure PopulateGLHistoricalYearItemTransaction(var GPGL30000: Record "GP GL30000")
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
@@ -1066,6 +1071,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         DocumentNo := GPGL30000.REFRENCE.TrimEnd();
 #pragma warning restore AA0139
 
+        GPIVTrxAmountsHist.SetLoadFields(DEX_ROW_ID, TRXSORCE, DOCNUMBR, DOCTYPE);
         GPIVTrxAmountsHist.SetRange(TRXSORCE, GPGL30000.ORTRXSRC);
         GPIVTrxAmountsHist.SetRange(DOCNUMBR, DocumentNo);
         if not GPIVTrxAmountsHist.FindFirst() then
@@ -1093,7 +1099,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         AfterProcessedNextChildRecord();
     end;
 
-    local procedure PopulatePOPItemTransaction(GPPOPReceiptHist: Record GPPOPReceiptHist)
+    local procedure PopulatePOPItemTransaction(var GPPOPReceiptHist: Record GPPOPReceiptHist)
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
@@ -1102,6 +1108,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         if not GPCompanyAdditionalSettings.GetMigrateHistInvTrx() then
             exit;
 
+        GPIVTrxAmountsHist.SetLoadFields(TRXSORCE, DOCTYPE);
         GPIVTrxAmountsHist.SetRange(TRXSORCE, GPPOPReceiptHist.TRXSORCE);
 
         if not GPIVTrxAmountsHist.FindFirst() then
@@ -1127,7 +1134,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         AfterProcessedNextChildRecord();
     end;
 
-    local procedure PopulateSOPItemTransaction(GPSOPTrxHist: Record GPSOPTrxHist)
+    local procedure PopulateSOPItemTransaction(var GPSOPTrxHist: Record GPSOPTrxHist)
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
         HistInventoryTrxHeader: Record "Hist. Inventory Trx. Header";
@@ -1136,6 +1143,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         if not GPCompanyAdditionalSettings.GetMigrateHistInvTrx() then
             exit;
 
+        GPIVTrxAmountsHist.SetLoadFields(DEX_ROW_ID, TRXSORCE, DOCTYPE);
         GPIVTrxAmountsHist.SetRange(TRXSORCE, GPSOPTrxHist.TRXSORCE);
 
         if not GPIVTrxAmountsHist.FindFirst() then

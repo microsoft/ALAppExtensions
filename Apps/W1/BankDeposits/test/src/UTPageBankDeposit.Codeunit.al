@@ -675,6 +675,42 @@ codeunit 139768 "UT Page Bank Deposit"
         Assert.AreEqual(SourceCodeSetup."Bank Deposit", GenJnlLine."Source Code", SourceCodeErr);
     end;
 
+    [Test]
+    procedure VerifyDocumentNoOnBankDepositPage()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        //SourceCodeSetup: Record "Source Code Setup";
+        GenJnlLine: Record "Gen. Journal Line";
+        BankDeposit: TestPage "Bank Deposit";
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO 478136] Mistakenly the Document No. in Bank Deposit lines is removed, when changing the Account Type in the lines
+        Initialize();
+
+        // [GIVEN] Create Bank deposit header
+        CreateBankDepositHeader(BankDepositHeader, '');
+
+        // [GIVEN] Open Bank deposit page.
+        BankDeposit.Trap();
+        BankDepositHeader.SetRecFilter();
+        Page.Run(Page::"Bank Deposit", BankDepositHeader);
+
+        // [GIVEN] Add one bank deposit Line of Account Type Vendor
+        BankDeposit.Subform."Account Type".SetValue(GenJnlLine."Account Type"::Vendor.AsInteger());
+        BankDeposit.Subform."Account No.".SetValue(LibraryPurchase.CreateVendorNo());
+        BankDeposit.Subform."Credit Amount".SetValue(BankDepositHeader."Total Deposit Amount");
+
+        // [GIVEN] Save the Document No. 
+        DocumentNo := Format(BankDeposit.Subform."Document No.".Value);
+
+        // [THEN] Go to the next line and change the Account Type to other than Vendor
+        BankDeposit.Subform.Next();
+        BankDeposit.SubForm."Account Type".SetValue(GenJnlLine."Account Type"::"G/L Account".AsInteger());
+
+        // [VERIFY] Verify the Document No. have same value as last line.
+        BankDeposit.Subform."Document No.".AssertEquals(DocumentNo);
+    end;
+
     local procedure GetBankDepositsFeature(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ID: Text[50])
     begin
         if FeatureDataUpdateStatus.Get(ID, CompanyName()) then

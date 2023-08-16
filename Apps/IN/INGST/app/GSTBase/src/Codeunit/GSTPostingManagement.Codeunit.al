@@ -37,7 +37,7 @@ Codeunit 18015 "GST Posting Management"
     begin
         if not Record.IsRecord then
             exit;
-
+        Clear(DetailedGSTLedgerEntry);
         RecRef.GetTable(Record);
         case RecRef.Number of
             database::"Detailed GST Ledger Entry":

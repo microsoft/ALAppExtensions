@@ -1,16 +1,37 @@
 codeunit 40125 "GP Populate Combined Tables"
 {
     internal procedure PopulateAllMappedTables()
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         PopulateGPAccount();
         PouplateGPFiscalPeriods();
-        PopulateGPGLTransactions();
-        PopulateGPCustomer();
-        PopulateGPCustomerTransactions();
-        PopulateGPVendors();
-        PopulateGPVendorTransactions();
-        PopulateGPItem();
-        PopulateGPItemTransactions();
+
+        if not GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
+            PopulateGPGLTransactions();
+
+        if GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then begin
+            PopulateGPCustomer();
+
+            if not GPCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
+                PopulateGPCustomerTransactions();
+        end;
+
+        if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then begin
+            PopulateGPVendors();
+
+            if not GPCompanyAdditionalSettings.GetMigrateOnlyPayablesMaster() then
+                PopulateGPVendorTransactions();
+        end;
+
+
+        if GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then begin
+            PopulateGPItem();
+
+            if not GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
+                PopulateGPItemTransactions();
+        end;
+
         PopulateCodes();
         PopulateGPSegments();
         PopulateGPPostingAccountsTable();
@@ -360,7 +381,7 @@ codeunit 40125 "GP Populate Combined Tables"
     begin
         I := 1;
         GPRM20101.SetRange(RMDTYPAL, 1, 9);
-        GPRM20101.SetFilter(CURTRXAM, '>0');
+        GPRM20101.SetFilter(CURTRXAM, '>=0.01');
         GPRM20101.SetRange(VOIDSTTS, 0);
         GPRM20101.SetCurrentKey(CUSTNMBR, RMDTYPAL);
         if not GPRM20101.FindSet() then
@@ -374,7 +395,7 @@ codeunit 40125 "GP Populate Combined Tables"
 #pragma warning disable AA0139
             GPCustomerTransactions.CUSTNMBR := GPRM20101.CUSTNMBR.TrimEnd();
             GPCustomerTransactions.DOCNUMBR := GPRM20101.DOCNUMBR.TrimEnd();
-#pragma warning restore AA0139            
+#pragma warning restore AA0139
             GPCustomerTransactions.DOCDATE := GPRM20101.DOCDATE;
             if GPRM20101.RMDTYPAL in [1, 3, 4, 5] then
                 GPCustomerTransactions.DUEDATE := GPRM20101.DUEDATE;
@@ -556,7 +577,7 @@ codeunit 40125 "GP Populate Combined Tables"
     begin
         I := 1;
         GPPM20000.SetFilter(DOCTYPE, '<=7');
-        GPPM20000.SetFilter(CURTRXAM, '>0');
+        GPPM20000.SetFilter(CURTRXAM, '>=0.01');
         GPPM20000.SetRange(VOIDED, false);
         GPPM20000.SetCurrentKey(VENDORID, DOCTYPE, VCHRNMBR);
 
@@ -607,6 +628,8 @@ codeunit 40125 "GP Populate Combined Tables"
         GPMC40000: Record "GP MC40000";
         FoundCurrency: Boolean;
     begin
+        UpdateGLSetupUnitRoundingPrecisionIfNeeded();
+
         GPIV00101Inventory.SetFilter(ITEMTYPE, '<>3');
         if not GPIV00101Inventory.FindSet() then
             exit;
@@ -683,6 +706,25 @@ codeunit 40125 "GP Populate Combined Tables"
 
             GPItem.Insert();
         until GPIV00101Inventory.Next() = 0;
+    end;
+
+    local procedure UpdateGLSetupUnitRoundingPrecisionIfNeeded()
+    var
+        GPIV00101: Record "GP IV00101";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        GPItemAggregate: Query "GP Item Aggregate";
+        MaxItemPrecision: Decimal;
+    begin
+        GPItemAggregate.Open();
+        GPItemAggregate.Read();
+        MaxItemPrecision := GPIV00101.GetRoundingPrecision(GPItemAggregate.DECPLCUR);
+        GPItemAggregate.Close();
+
+        GeneralLedgerSetup.Get();
+        if MaxItemPrecision < GeneralLedgerSetup."Unit-Amount Rounding Precision" then begin
+            GeneralLedgerSetup."Unit-Amount Rounding Precision" := MaxItemPrecision;
+            GeneralLedgerSetup.Modify();
+        end;
     end;
 
     internal procedure PopulateGPItemTransactions()

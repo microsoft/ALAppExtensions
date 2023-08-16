@@ -292,9 +292,8 @@ report 18932 "Ledger"
                 }
                 trigger OnAfterGetRecord()
                 begin
-                    GLEntry.SetRange("G/L Account No.", "G/L Account"."No.");
                     GLEntry.SetRange("Transaction No.", "Transaction No.");
-                    GLEntry.SetRange("Entry No.", "Entry No.");
+                    GLEntry.SetFilter("Entry No.", '<>%1', "Entry No.");
                     if GLEntry.FindFirst() then;
 
                     DrCrText := '';

@@ -225,6 +225,12 @@ codeunit 139511 "SAF-T Tests"
         CopyStream(BlobOutStream, FileInStream);
     end;
 
+    local procedure GetSAFTMonetaryDecimal(InputDecimal: Decimal): Text
+    begin
+        InputDecimal := Round(InputDecimal, 0.01);
+        exit(Format(InputDecimal, 0, 9));
+    end;
+
     local procedure VerifyAuditFileCountAndNames(AuditFileExportHeader: Record "Audit File Export Header"; AuditFileNamesStart: Text; AuditFileNamesEnd: List of [Text])
     var
         AuditFile: Record "Audit File";
@@ -278,7 +284,7 @@ codeunit 139511 "SAF-T Tests"
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionID', GenJournalLine."Document No.");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionDate', Format(GenJournalLine."Document Date", 0, 9));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionType', Format(GenJournalLine."Document Type"));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/CreditAmount/Amount', Format(GenJournalLine."Amount (LCY)", 0, 9));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/CreditAmount/Amount', GetSAFTMonetaryDecimal(GenJournalLine."Amount (LCY)"));
     end;
 
     local procedure VerifyAuditFileWithSourceDocs(var TempBlob: Codeunit "Temp Blob"; SalesInvoiceLine: Record "Sales Invoice Line"; PurchInvLine: Record "Purch. Inv. Line"; GenJournalLineCust: Record "Gen. Journal Line"; GenJournalLineVend: Record "Gen. Journal Line")
@@ -297,10 +303,10 @@ codeunit 139511 "SAF-T Tests"
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/InvoiceDate', Format(SalesInvoiceHeader."Document Date", 0, 9));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/ProductCode', SalesInvoiceLine."No.");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/Quantity', Format(SalesInvoiceLine.Quantity, 0, 9));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/UnitPrice', Format(SalesInvoiceLine."Unit Price", 0, 9));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/InvoiceLineAmount/Amount', Format(SalesInvoiceLine.Amount, 0, 9));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/DocumentTotals/NetTotal', Format(SalesInvoiceHeader.Amount, 0, 9));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/DocumentTotals/GrossTotal', Format(SalesInvoiceHeader."Amount Including VAT", 0, 9));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/UnitPrice', GetSAFTMonetaryDecimal(SalesInvoiceLine."Unit Price"));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/InvoiceLineAmount/Amount', GetSAFTMonetaryDecimal(SalesInvoiceLine.Amount));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/DocumentTotals/NetTotal', GetSAFTMonetaryDecimal(SalesInvoiceHeader.Amount));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/DocumentTotals/GrossTotal', GetSAFTMonetaryDecimal(SalesInvoiceHeader."Amount Including VAT"));
 
         PurchInvHeader.Get(PurchInvLine."Document No.");
         PurchInvHeader.CalcFields(Amount, "Amount Including VAT");
@@ -308,22 +314,22 @@ codeunit 139511 "SAF-T Tests"
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/InvoiceDate', Format(PurchInvHeader."Document Date", 0, 9));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/ProductCode', PurchInvLine."No.");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/Quantity', Format(PurchInvLine.Quantity, 0, 9));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/UnitPrice', Format(PurchInvLine."Direct Unit Cost", 0, 9));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/InvoiceLineAmount/Amount', Format(PurchInvLine.Amount, 0, 9));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/DocumentTotals/NetTotal', Format(PurchInvHeader.Amount, 0, 9));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/DocumentTotals/GrossTotal', Format(PurchInvHeader."Amount Including VAT", 0, 9));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/UnitPrice', GetSAFTMonetaryDecimal(PurchInvLine."Direct Unit Cost"));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/InvoiceLineAmount/Amount', GetSAFTMonetaryDecimal(PurchInvLine.Amount));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/DocumentTotals/NetTotal', GetSAFTMonetaryDecimal(PurchInvHeader.Amount));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/DocumentTotals/GrossTotal', GetSAFTMonetaryDecimal(PurchInvHeader."Amount Including VAT"));
 
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/PaymentRefNo', GenJournalLineCust."Document No.", 0);
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/TransactionDate', Format(GenJournalLineCust."Document Date", 0, 9), 0);
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/Line/CustomerID', GenJournalLineCust."Account No.", 0);
-        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/Line/PaymentLineAmount/Amount', Format(GenJournalLineCust.Amount, 0, 9), 0);
-        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/DocumentTotals/GrossTotal', Format(GenJournalLineCust.Amount, 0, 9), 0);
+        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/Line/PaymentLineAmount/Amount', GetSAFTMonetaryDecimal(GenJournalLineCust.Amount), 0);
+        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/DocumentTotals/GrossTotal', GetSAFTMonetaryDecimal(GenJournalLineCust.Amount), 0);
 
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/PaymentRefNo', GenJournalLineVend."Document No.", 1);
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/TransactionDate', Format(GenJournalLineVend."Document Date", 0, 9), 1);
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/Line/SupplierID', GenJournalLineVend."Account No.", 0);
-        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/Line/PaymentLineAmount/Amount', Format(GenJournalLineVend.Amount, 0, 9), 1);
-        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/DocumentTotals/GrossTotal', Format(GenJournalLineVend.Amount, 0, 9), 1);
+        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/Line/PaymentLineAmount/Amount', GetSAFTMonetaryDecimal(GenJournalLineVend.Amount), 1);
+        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('/AuditFile/SourceDocuments/Payments/Payment/DocumentTotals/GrossTotal', GetSAFTMonetaryDecimal(GenJournalLineVend.Amount), 1);
     end;
 
     [ConfirmHandler]

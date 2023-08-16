@@ -50,9 +50,9 @@ codeunit 30195 "Shpfy Inventory API"
                 1:
                     UOM := CopyStr(ShopifyVariant."Option 1 Value", 1, MaxStrLen(UOM));
                 2:
-                    UOM := CopyStr(ShopifyVariant."Option 1 Value", 2, MaxStrLen(UOM));
+                    UOM := CopyStr(ShopifyVariant."Option 2 Value", 1, MaxStrLen(UOM));
                 3:
-                    UOM := CopyStr(ShopifyVariant."Option 1 Value", 3, MaxStrLen(UOM));
+                    UOM := CopyStr(ShopifyVariant."Option 3 Value", 1, MaxStrLen(UOM));
                 else
                     UOM := Item."Sales Unit of Measure";
             end;

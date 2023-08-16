@@ -104,5 +104,6 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata "GP Hist. Source Error" = RIMD,
                   tabledata "GP POP10100" = RIMD,
                   tabledata "GP POP10110" = RIMD,
-                  tabledata "GP PM00204" = RIMD;
+                  tabledata "GP PM00204" = RIMD,
+                  tabledata "GP Known Countries" = RIMD;
 }

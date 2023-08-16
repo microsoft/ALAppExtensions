@@ -77,8 +77,6 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
             var
                 TempAdvanceLetterApplication: Record "Advance Letter Application CZZ" temporary;
             begin
-                if not IsSalesAdvanceLettersConsideredCZZ then
-                    exit;
                 if not TempCFWorksheetLine.Find() then
                     exit;
                 if "Document Type" = "Document Type"::Order then
@@ -99,8 +97,6 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
             var
                 TempAdvanceLetterApplication: Record "Advance Letter Application CZZ" temporary;
             begin
-                if not IsPurchaseAdvanceLettersConsideredCZZ then
-                    exit;
                 if not TempCFWorksheetLine.Find() then
                     exit;
                 if "Document Type" = "Document Type"::Order then
