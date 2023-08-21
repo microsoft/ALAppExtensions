@@ -15,8 +15,8 @@ codeunit 8889 "Email Account Impl."
     procedure GetAllAccounts(LoadLogos: Boolean; var TempEmailAccount: Record "Email Account" temporary)
     var
         EmailAccounts: Record "Email Account";
-        IEmailConnector: Interface "Email Connector";
         Connector: Enum "Email Connector";
+        IEmailConnector: Interface "Email Connector";
     begin
         TempEmailAccount.Reset();
         TempEmailAccount.DeleteAll();
@@ -62,8 +62,8 @@ codeunit 8889 "Email Account Impl."
         CheckPermissions();
 
         if not HideDialog then
-        if not ConfirmManagement.GetResponseOrDefault(ConfirmDeleteQst, true) then
-            exit;
+            if not ConfirmManagement.GetResponseOrDefault(ConfirmDeleteQst, true) then
+                exit;
 
         if not EmailAccountsToDelete.FindSet() then
             exit;
@@ -110,7 +110,7 @@ codeunit 8889 "Email Account Impl."
 
         NewDefaultEmailAccountSelected := false;
         if not HideDialog then begin
-        Commit();  // Commit the accounts deletion in order to prompt for new default account
+            Commit();  // Commit the accounts deletion in order to prompt for new default account
             NewDefaultEmailAccountSelected := PromptNewDefaultAccountChoice(NewDefaultEmailAccount);
         end;
         if NewDefaultEmailAccountSelected then
@@ -137,12 +137,12 @@ codeunit 8889 "Email Account Impl."
     local procedure ImportLogo(var EmailAccount: Record "Email Account"; Connector: Interface "Email Connector")
     var
         EmailConnectorLogo: Record "Email Connector Logo";
-        TempBlob: Codeunit "Temp Blob";
         Base64Convert: Codeunit "Base64 Convert";
-        ConnectorLogoBase64: Text;
-        OutStream: Outstream;
+        TempBlob: Codeunit "Temp Blob";
         InStream: InStream;
         ConnectorLogoDescriptionTxt: Label '%1 Logo', Locked = true;
+        OutStream: Outstream;
+        ConnectorLogoBase64: Text;
     begin
         ConnectorLogoBase64 := Connector.GetLogoAsBase64();
 
@@ -178,10 +178,10 @@ codeunit 8889 "Email Account Impl."
     procedure FindAllConnectors(var EmailConnector: Record "Email Connector")
     var
         Base64Convert: Codeunit "Base64 Convert";
-        ConnectorInterface: Interface "Email Connector";
         Connector: Enum "Email Connector";
-        ConnectorLogoBase64: Text;
+        ConnectorInterface: Interface "Email Connector";
         OutStream: Outstream;
+        ConnectorLogoBase64: Text;
     begin
         foreach Connector in Enum::"Email Connector".Ordinals() do begin
             ConnectorInterface := Connector;
@@ -222,8 +222,8 @@ codeunit 8889 "Email Account Impl."
     local procedure ImportLogoBlob(var EmailAccount: Record "Email Account"; Connector: Interface "Email Connector")
     var
         Base64Convert: Codeunit "Base64 Convert";
-        ConnectorLogoBase64: Text;
         OutStream: Outstream;
+        ConnectorLogoBase64: Text;
     begin
         ConnectorLogoBase64 := Connector.GetLogoAsBase64();
 
@@ -280,9 +280,9 @@ codeunit 8889 "Email Account Impl."
     end;
 
     var
-        ConfirmDeleteQst: Label 'Go ahead and delete?';
-        ChooseNewDefaultTxt: Label 'Choose a Default Account';
-        InvalidEmailAddressErr: Label 'The email address "%1" is not valid.', Comment = '%1=The email address';
-        EmptyEmailAddressErr: Label 'The email address cannot be empty.';
         CannotManageSetupErr: Label 'Your user account does not give you permission to set up email. Please contact your administrator.';
+        ChooseNewDefaultTxt: Label 'Choose a Default Account';
+        ConfirmDeleteQst: Label 'Go ahead and delete?';
+        EmptyEmailAddressErr: Label 'The email address cannot be empty.';
+        InvalidEmailAddressErr: Label 'The email address "%1" is not valid.', Comment = '%1=The email address';
 }
