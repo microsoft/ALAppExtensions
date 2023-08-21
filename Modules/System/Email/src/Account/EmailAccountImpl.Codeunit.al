@@ -45,8 +45,13 @@ codeunit 8889 "Email Account Impl."
         TempEmailAccount.SetCurrentKey(Name);
     end;
 
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Email Rate Limit", 'rd')]
     procedure DeleteAccounts(var EmailAccountsToDelete: Record "Email Account")
+    begin
+        DeleteAccounts(EmailAccountsToDelete, false);
+    end;
+
+    [InherentPermissions(PermissionObjectType::TableData, Database::"Email Rate Limit", 'rd')]
+    procedure DeleteAccounts(var EmailAccountsToDelete: Record "Email Account"; HideDialog: Boolean)
     var
         CurrentDefaultEmailAccount: Record "Email Account";
         EmailRateLimitToDelete: Record "Email Rate Limit";
@@ -56,6 +61,7 @@ codeunit 8889 "Email Account Impl."
     begin
         CheckPermissions();
 
+        if not HideDialog then
         if not ConfirmManagement.GetResponseOrDefault(ConfirmDeleteQst, true) then
             exit;
 
@@ -78,14 +84,15 @@ codeunit 8889 "Email Account Impl."
             end;
         until EmailAccountsToDelete.Next() = 0;
 
-        HandleDefaultAccountDeletion(CurrentDefaultEmailAccount."Account Id", CurrentDefaultEmailAccount.Connector);
+        HandleDefaultAccountDeletion(CurrentDefaultEmailAccount."Account Id", CurrentDefaultEmailAccount.Connector, HideDialog);
     end;
 
-    local procedure HandleDefaultAccountDeletion(CurrentDefaultAccountId: Guid; Connector: Enum "Email Connector")
+    local procedure HandleDefaultAccountDeletion(CurrentDefaultAccountId: Guid; Connector: Enum "Email Connector"; HideDialog: Boolean)
     var
         AllEmailAccounts: Record "Email Account";
         NewDefaultEmailAccount: Record "Email Account";
         EmailScenario: Codeunit "Email Scenario";
+        NewDefaultEmailAccountSelected: Boolean;
     begin
         GetAllAccounts(false, AllEmailAccounts);
 
@@ -101,8 +108,12 @@ codeunit 8889 "Email Account Impl."
             exit;
         end;
 
+        NewDefaultEmailAccountSelected := false;
+        if not HideDialog then begin
         Commit();  // Commit the accounts deletion in order to prompt for new default account
-        if PromptNewDefaultAccountChoice(NewDefaultEmailAccount) then
+            NewDefaultEmailAccountSelected := PromptNewDefaultAccountChoice(NewDefaultEmailAccount);
+        end;
+        if NewDefaultEmailAccountSelected then
             MakeDefault(NewDefaultEmailAccount)
         else
             EmailScenario.UnassignScenario(Enum::"Email Scenario"::Default); // remove the default scenario as it is pointing to a non-existent account
