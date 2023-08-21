@@ -622,6 +622,54 @@ codeunit 9053 "ABS Blob Client"
     end;
 
     /// <summary>
+    /// The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It doesn't return the content of the blob.
+    /// see: https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob-properties?tabs=azure-ad
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <returns>An operation response object. The Blob properties are in the response headers.</returns>
+    procedure GetBlobProperties(BlobName: Text): Codeunit "ABS Operation Response"
+    var
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(ABSClientImpl.GetBlobProperties(BlobName, ABSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It doesn't return the content of the blob.
+    /// see: https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob-properties?tabs=azure-ad
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation response object. The Blob properties are in the response headers.</returns>
+    procedure GetBlobProperties(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(ABSClientImpl.GetBlobProperties(BlobName, ABSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// The Blob Exists operation returns true if a blob exists, or false if the blob does not exist.
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <returns>True if the blob exists, false if not.</returns>
+    procedure BlobExists(BlobName: Text): Boolean
+    var
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(ABSClientImpl.BlobExists(BlobName, ABSOptionalParameters));
+    end;
+
+    /// <summary>
+    /// The Blob Exists operation returns true if a blob exists, or false if the blob does not exist.
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
+    /// <returns>True if the blob exists, false if not.</returns>
+    procedure BlobExists(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Boolean
+    begin
+        exit(ABSClientImpl.BlobExists(BlobName, ABSOptionalParameters));
+    end;
+
+    /// <summary>
     /// The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection.
     /// see: https://go.microsoft.com/fwlink/?linkid=2211408
     /// </summary>

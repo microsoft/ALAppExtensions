@@ -42,7 +42,7 @@ codeunit 9045 "ABS Web Request Helper"
     end;
 
     [NonDebuggable]
-    local procedure GetOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure GetOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
         HttpClient: HttpClient;
