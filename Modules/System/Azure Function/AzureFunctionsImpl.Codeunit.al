@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 7803 "Azure Functions Impl"
+codeunit 7803 "Azure Functions Impl" implements "Azure Functions Impl"
 {
     Access = Internal;
     InherentEntitlements = X;
