@@ -1,4 +1,4 @@
-interface "Azure Functions Impl"
+interface IAzureFunctions
 {
     procedure SendGetRequest(AzureFunctionAuthentication: Interface "Azure Functions Authentication"; QueryDict: Dictionary of [Text, Text]): Codeunit "Azure Functions Response";
 
