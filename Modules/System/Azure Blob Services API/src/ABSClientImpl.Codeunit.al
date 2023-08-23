@@ -484,6 +484,7 @@ codeunit 9051 "ABS Client Impl."
     procedure GetBlobProperties(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters") ABSOperationResponse: Codeunit "ABS Operation Response"
     begin
         ABSOperationPayload.SetOperation("ABS Operation"::GetBlobProperties);
+        ABSOperationPayload.AddRequestHeader('x-ms-upn', 'true');
         ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
         ABSOperationPayload.SetBlobName(BlobName);
 
@@ -611,7 +612,7 @@ codeunit 9051 "ABS Client Impl."
     begin
         ABSOperationPayload.SetOperation(Operation::CopyBlob);
         ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
-        if not SourceName.StartsWith('https://') then begin // SourceName is in the same storage account, use ABSOperationPayload to construct URI.
+        if not (SourceName.StartsWith('http://') or SourceName.StartsWith('https://')) then begin // SourceName is in the same storage account, use ABSOperationPayload to construct URI.
             ABSOperationPayload.SetBlobName(SourceName);
             SourceName := ABSOperationPayload.ConstructUri();
         end;
