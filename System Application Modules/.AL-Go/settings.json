@@ -3,7 +3,7 @@
         "..\\Modules\\System\\*"
     ],
     "testFolders":  [
-        "..\\Modules\\System Test Libraries\\*"
+        "..\\Modules\\System Test Libraries\\*",
         "..\\Modules\\System Tests\\*"
     ],
     "enableAppSourceCop": false,
