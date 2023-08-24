@@ -484,7 +484,6 @@ codeunit 9051 "ABS Client Impl."
     procedure GetBlobProperties(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters") ABSOperationResponse: Codeunit "ABS Operation Response"
     begin
         ABSOperationPayload.SetOperation("ABS Operation"::GetBlobProperties);
-        ABSOperationPayload.AddRequestHeader('x-ms-upn', 'true');
         ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
         ABSOperationPayload.SetBlobName(BlobName);
 
