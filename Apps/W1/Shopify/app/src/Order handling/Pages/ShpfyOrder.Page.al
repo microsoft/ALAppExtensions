@@ -491,6 +491,13 @@ page 30113 "Shpfy Order"
                 SubPageLink = "No." = field("Item No.");
                 Visible = false;
             }
+            part(OrderLineAttributes; "Shpfy Order Line Attributes")
+            {
+                ApplicationArea = all;
+                Provider = ShopifyOrderLines;
+                Caption = 'Order Line Attributes';
+                SubPageLink = "Order Id" = field("Shopify Order Id"), "Order Line Id" = field(SystemId);
+            }
             systempart(Links; Links)
             {
                 ApplicationArea = All;
