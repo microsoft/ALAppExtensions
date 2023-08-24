@@ -48,7 +48,7 @@ codeunit 7804 "Azure Functions"
     [NonDebuggable]
     procedure SendPostRequest(AzureFunctionsAuthentication: Interface "Azure Functions Authentication"; Body: Text; ContentTypeHeader: text): Codeunit "Azure Functions Response"
     begin
-        exit(GetAzureFunctionInterface.SendPostRequest(AzureFunctionsAuthentication, Body, ContentTypeHeader));
+        exit(GetAzureFunctionInterface().SendPostRequest(AzureFunctionsAuthentication, Body, ContentTypeHeader));
     end;
 
     /// <summary>
@@ -63,7 +63,7 @@ codeunit 7804 "Azure Functions"
     [NonDebuggable]
     procedure Send(AzureFunctionsAuthentication: Interface "Azure Functions Authentication"; RequestType: enum "Http Request Type"; QueryDict: Dictionary of [Text, Text]; Body: Text; ContentTypeHeader: text): Codeunit "Azure Functions Response"
     begin
-        exit(GetAzureFunctionInterface.Send(AzureFunctionsAuthentication, RequestType, QueryDict, Body, ContentTypeHeader));
+        exit(GetAzureFunctionInterface().Send(AzureFunctionsAuthentication, RequestType, QueryDict, Body, ContentTypeHeader));
     end;
 
     /// <summary>
