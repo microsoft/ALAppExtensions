@@ -8,6 +8,8 @@
 /// </summary>
 codeunit 8956 "AFS Optional Parameters"
 {
+    Access = Public;
+
     var
         AFSFormatHelper: Codeunit "AFS Format Helper";
         RequestHeaders: Dictionary of [Text, Text];

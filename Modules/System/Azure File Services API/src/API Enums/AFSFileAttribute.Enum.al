@@ -8,6 +8,7 @@
 /// </summary>
 enum 8955 "AFS File Attribute"
 {
+    Access = Public;
     Extensible = false;
 
     /// <summary>

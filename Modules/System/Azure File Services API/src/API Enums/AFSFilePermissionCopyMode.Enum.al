@@ -8,6 +8,7 @@
 /// </summary>
 enum 8956 "AFS File Permission Copy Mode"
 {
+    Access = Public;
     Extensible = false;
 
     /// <summary>
