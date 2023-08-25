@@ -26,9 +26,6 @@ codeunit 4017 "GP Account Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
             exit;
 
-        if GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
-            exit;
-
         GPAccount.Get(RecordIdToMigrate);
 
         AccountNum := CopyStr(GPAccount.AcctNum.Trim(), 1, 20);
