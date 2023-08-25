@@ -16,14 +16,25 @@ codeunit 4016 "Hybrid GP Management"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnReplicationRunCompleted', '', false, false)]
     local procedure HandleGPOnReplicationRunCompleted(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
     var
+        GPConfiguration: Record "GP Configuration";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridGPWizard: Codeunit "Hybrid GP Wizard";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        SessionId: Integer;
     begin
         if not HybridCloudManagement.CanHandleNotification(SubscriptionId, HybridGPWizard.ProductId()) then
             exit;
 
         UpdateStatusOnHybridReplicationCompleted(RunId, NotificationText);
         HandleInitializationofGPSynchronization(RunId, SubscriptionId, NotificationText);
+
+        GPConfiguration.GetSingleInstance();
+        if not GPConfiguration."Use Two Step Process" then begin
+            HybridReplicationSummary.SetCurrentKey("Start Time");
+            if HybridReplicationSummary.FindLast() then
+                if HybridReplicationSummary.Status = HybridReplicationSummary.Status::UpgradePending then
+                    Session.StartSession(SessionId, Codeunit::"Start Data Upgrade", CompanyName, HybridReplicationSummary, GetDefaultJobTimeout());
+        end;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard", 'OnHandleCloseWizard', '', false, false)]

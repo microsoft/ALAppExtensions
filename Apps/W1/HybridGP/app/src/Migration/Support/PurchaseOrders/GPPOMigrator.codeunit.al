@@ -7,6 +7,7 @@ codeunit 40108 "GP PO Migrator"
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
         ItemJnlBatchLineNo: Integer;
         PostPurchaseOrderNoList: List of [Text];
+        InitialAutomaticCostAdjustmentType: Enum "Automatic Cost Adjustment Type";
 
     procedure MigratePOStagingData()
     var
@@ -17,12 +18,17 @@ codeunit 40108 "GP PO Migrator"
         GeneralLedgerSetup: Record "General Ledger Setup";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         Vendor: Record Vendor;
+        InventorySetup: Record "Inventory Setup";
         HelperFunctions: Codeunit "Helper Functions";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
         CountryCode: Code[10];
         CurrencyCode: Code[10];
     begin
+        if InventorySetup.Get() then
+            InitialAutomaticCostAdjustmentType := InventorySetup."Automatic Cost Adjustment";
+
+        SetInventoryAutomaticCostAdjustment(false);
         SetDirectCostPostingAccountIfNeeded();
         Clear(ItemJnlBatchLineNo);
 
@@ -91,6 +97,7 @@ codeunit 40108 "GP PO Migrator"
         until GPPOP10100.Next() = 0;
 
         PostReceivedPurchaseLines();
+        SetInventoryAutomaticCostAdjustment(true);
     end;
 
     local procedure UpdateShipToAddress(GPPOP10100: Record "GP POP10100"; CountryCode: Code[10]; var PurchaseHeader: Record "Purchase Header")
@@ -126,10 +133,15 @@ codeunit 40108 "GP PO Migrator"
     var
         GPPOP10110: Record "GP POP10110";
         GPPOPReceiptApply: Record GPPOPReceiptApply;
+        GPPOPReceiptApplyLineUnitCost: Record GPPOPReceiptApply;
         LineQuantityRemaining: Decimal;
         LineNo: Integer;
         LocationCode: Code[10];
         UnitOfMeasure: Code[10];
+        LastLocation: Text[12];
+        LastLineUnitCost: Decimal;
+        LineQtyReceivedByUnitCost: Decimal;
+        LineQtyInvoicedByUnitCost: Decimal;
     begin
         GPPOP10110.SetRange(PONUMBER, PONumber);
         if not GPPOP10110.FindSet() then
@@ -137,22 +149,37 @@ codeunit 40108 "GP PO Migrator"
 
         LineNo := 10000;
         repeat
+            LastLocation := '';
+            LastLineUnitCost := 0;
+
             LineQuantityRemaining := GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE;
             if LineQuantityRemaining > 0 then begin
-                GPPOPReceiptApply.SetRange(PONUMBER, GPPOP10110.PONUMBER);
-                GPPOPReceiptApply.SetRange(POLNENUM, GPPOP10110.ORD);
-                GPPOPReceiptApply.SetRange(Status, GPPOPReceiptApply.Status::Posted);
-                GPPOPReceiptApply.SetFilter(POPTYPE, '1|3');
-                GPPOPReceiptApply.SetFilter(PCHRPTCT, '>%1', 0);
-                if GPPOPReceiptApply.FindSet() then
+                GPPOPReceiptApplyLineUnitCost.SetLoadFields(TRXLOCTN, PCHRPTCT, UOFM);
+                GPPOPReceiptApplyLineUnitCost.SetCurrentKey(TRXLOCTN, PCHRPTCT);
+                GPPOPReceiptApplyLineUnitCost.SetRange(PONUMBER, GPPOP10110.PONUMBER);
+                GPPOPReceiptApplyLineUnitCost.SetRange(POLNENUM, GPPOP10110.ORD);
+                GPPOPReceiptApplyLineUnitCost.SetRange(Status, GPPOPReceiptApplyLineUnitCost.Status::Posted);
+                GPPOPReceiptApplyLineUnitCost.SetFilter(POPTYPE, '1|3');
+                GPPOPReceiptApplyLineUnitCost.SetFilter(QTYSHPPD, '>%1', 0);
+                GPPOPReceiptApplyLineUnitCost.SetFilter(PCHRPTCT, '>%1', 0);
+
+                if GPPOPReceiptApplyLineUnitCost.FindSet() then
                     repeat
-                        LocationCode := CopyStr(GPPOPReceiptApply.TRXLOCTN, 1, MaxStrLen(LocationCode));
-                        UnitOfMeasure := CopyStr(GPPOPReceiptApply.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
-                        if (GPPOPReceiptApply.QTYSHPPD > GPPOPReceiptApply.QTYINVCD) then
-                            CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, GPPOPReceiptApply.QTYSHPPD, GPPOPReceiptApply.QTYINVCD, GPPOPReceiptApply.PCHRPTCT, LocationCode, UnitOfMeasure)
-                        else
-                            LineQuantityRemaining := LineQuantityRemaining - GPPOPReceiptApply.QTYSHPPD;
-                    until GPPOPReceiptApply.Next() = 0;
+                        if ((LastLocation <> GPPOPReceiptApplyLineUnitCost.TRXLOCTN) or (LastLineUnitCost <> GPPOPReceiptApplyLineUnitCost.PCHRPTCT)) then begin
+                            LocationCode := CopyStr(GPPOPReceiptApplyLineUnitCost.TRXLOCTN, 1, MaxStrLen(LocationCode));
+                            UnitOfMeasure := CopyStr(GPPOPReceiptApplyLineUnitCost.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
+                            LineQtyReceivedByUnitCost := GPPOPReceiptApply.GetSumQtyShippedByUnitCost(GPPOP10110.PONUMBER, GPPOP10110.ORD, LocationCode, GPPOPReceiptApplyLineUnitCost.PCHRPTCT);
+                            LineQtyInvoicedByUnitCost := GPPOPReceiptApply.GetSumQtyInvoicedByUnitCost(GPPOP10110.PONUMBER, GPPOP10110.ORD, LocationCode, GPPOPReceiptApplyLineUnitCost.PCHRPTCT);
+
+                            if (LineQtyReceivedByUnitCost > LineQtyInvoicedByUnitCost) then
+                                CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, LineQtyReceivedByUnitCost, LineQtyInvoicedByUnitCost, GPPOPReceiptApplyLineUnitCost.PCHRPTCT, LocationCode, UnitOfMeasure)
+                            else
+                                LineQuantityRemaining := LineQuantityRemaining - LineQtyReceivedByUnitCost;
+
+                            LastLocation := GPPOPReceiptApplyLineUnitCost.TRXLOCTN;
+                            LastLineUnitCost := GPPOPReceiptApplyLineUnitCost.PCHRPTCT;
+                        end;
+                    until GPPOPReceiptApplyLineUnitCost.Next() = 0;
 
                 LocationCode := CopyStr(GPPOP10110.LOCNCODE.Trim(), 1, MaxStrLen(LocationCode));
                 UnitOfMeasure := CopyStr(GPPOP10110.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
@@ -212,8 +239,8 @@ codeunit 40108 "GP PO Migrator"
         PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
         PurchaseLine."Unit of Measure" := UnitOfMeasure;
         PurchaseLine."Unit of Measure Code" := UnitOfMeasure;
-        PurchaseLine.Validate("No.", ItemNo);
         PurchaseLine."Location Code" := LocationCode;
+        PurchaseLine.Validate("No.", ItemNo);
         PurchaseLine."Posting Group" := GPCodeTxt;
         PurchaseLine.Validate("Expected Receipt Date", GPPOP10110.PRMDATE);
         PurchaseLine.Description := CopyStr(GPPOP10110.ITEMDESC.Trim(), 1, MaxStrLen(PurchaseLine.Description));
@@ -262,8 +289,8 @@ codeunit 40108 "GP PO Migrator"
             end;
 
             LineNo := LineNo + 10000;
-            LineQuantityRemaining := LineQuantityRemaining - PurchaseLine.Quantity;
         end;
+        LineQuantityRemaining := LineQuantityRemaining - QuantityReceived;
     end;
 
     local procedure CreateNonInventoryItem(GPPOP10110: Record "GP POP10110")
@@ -355,6 +382,7 @@ codeunit 40108 "GP PO Migrator"
         ItemJournalLine.Validate(Description, PurchaseLine.Description);
         ItemJournalLine.Validate(Quantity, PurchaseLine."Qty. to Receive");
         ItemJournalLine."Location Code" := PurchaseLine."Location Code";
+        ItemJournalLine."Unit Cost" := PurchaseLine."Unit Cost";
         ItemJournalLine.Insert(true);
     end;
 
@@ -455,6 +483,21 @@ codeunit 40108 "GP PO Migrator"
                     GeneralPostingSetup."Direct Cost Applied Account" := GeneralPostingSetup."Inventory Adjmt. Account";
                     GeneralPostingSetup.Modify();
                 end;
+    end;
+
+    local procedure SetInventoryAutomaticCostAdjustment(Enabled: Boolean)
+    var
+        InventorySetup: Record "Inventory Setup";
+        AutomaticCostAdjustmentType: Enum "Automatic Cost Adjustment Type";
+    begin
+        if InventorySetup.Get() then begin
+            if not Enabled then
+                InventorySetup."Automatic Cost Adjustment" := AutomaticCostAdjustmentType::Never
+            else
+                InventorySetup."Automatic Cost Adjustment" := InitialAutomaticCostAdjustmentType;
+
+            InventorySetup.Modify();
+        end;
     end;
 
     local procedure ZeroIfNegative(Minuend: Decimal; Subtrahend: Decimal): Decimal

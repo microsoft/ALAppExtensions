@@ -1,11 +1,14 @@
 page 4026 "GP Posting Accounts"
 {
+    Caption = 'GP Posting Accounts';
+    AdditionalSearchTerms = 'staging';
     PageType = Card;
     SourceTable = "GP Posting Accounts";
     DeleteAllowed = false;
     InsertAllowed = false;
-    Caption = 'Posting Accounts';
     PromotedActionCategories = 'Posting Accounts';
+    ApplicationArea = All;
+    UsageCategory = Administration;
 
     layout
     {

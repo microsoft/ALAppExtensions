@@ -617,6 +617,27 @@ codeunit 40125 "GP Populate Combined Tables"
         until GPPM20000.Next() = 0;
     end;
 
+    local procedure ShouldAddItemToStagingTable(var GPIV00101: Record "GP IV00101"): Boolean
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        InActive: Boolean;
+    begin
+        if GPIV00101.ITEMTYPE = 2 then
+            InActive := true
+        else
+            InActive := GPIV00101.INACTIVE;
+
+        if InActive then
+            if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
+                exit(false);
+
+        if GPIV00101.IsDiscontinued() then
+            if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
+                exit(false);
+
+        exit(true);
+    end;
+
     internal procedure PopulateGPItem()
     var
         GPItem: Record "GP Item";
@@ -636,75 +657,77 @@ codeunit 40125 "GP Populate Combined Tables"
 
         repeat
             Clear(GPItem);
-            GPItem.No := CopyStr(GPIV00101Inventory.ITEMNMBR.TrimEnd(), 1, MaxStrLen(DummyItem."No."));
-            GPItem.Description := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.Description));
-            GPItem.SearchDescription := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.SearchDescription));
+            if ShouldAddItemToStagingTable(GPIV00101Inventory) then begin
+                GPItem.No := CopyStr(GPIV00101Inventory.ITEMNMBR.TrimEnd(), 1, MaxStrLen(DummyItem."No."));
+                GPItem.Description := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.Description));
+                GPItem.SearchDescription := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.SearchDescription));
 #pragma warning disable AA0139
-            GPItem.ShortName := GPIV00101Inventory.ITEMNMBR.TrimEnd();
-#pragma warning restore AA0139     
-            CASE GPIV00101Inventory.ITEMTYPE of
-                1, 2:
-                    GPItem.ItemType := 0;
-                4, 5, 6:
-                    GPItem.ItemType := 1;
-            end;
+                GPItem.ShortName := GPIV00101Inventory.ITEMNMBR.TrimEnd();
+#pragma warning restore AA0139
+                CASE GPIV00101Inventory.ITEMTYPE of
+                    1, 2:
+                        GPItem.ItemType := 0;
+                    4, 5, 6:
+                        GPItem.ItemType := 1;
+                end;
 
-            CASE GPIV00101Inventory.VCTNMTHD of
-                1:
-                    GPItem.CostingMethod := Format(0);
-                2:
-                    GPItem.CostingMethod := Format(1);
-                3:
-                    GPItem.CostingMethod := Format(3);
-                4, 5:
-                    GPItem.CostingMethod := Format(4);
+                CASE GPIV00101Inventory.VCTNMTHD of
+                    1:
+                        GPItem.CostingMethod := Format(0);
+                    2:
+                        GPItem.CostingMethod := Format(1);
+                    3:
+                        GPItem.CostingMethod := Format(3);
+                    4, 5:
+                        GPItem.CostingMethod := Format(4);
+                    else
+                        GPItem.CostingMethod := Format(0);
+                end;
+
+                GPItem.CurrentCost := GPIV00101Inventory.CURRCOST;
+                GPItem.StandardCost := GPIV00101Inventory.STNDCOST;
+#pragma warning disable AA0139
+                GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
+                GPItem.PurchUnitOfMeasure := GPIV00101Inventory.PRCHSUOM.Trim();
+                GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
+                GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
+#pragma warning restore AA0139
+                CASE GPIV00101Inventory.ITMTRKOP of
+                    2:
+                        GPItem.ItemTrackingCode := ItemTrackingCodeSERIALLbl;
+                    3:
+                        GPItem.ItemTrackingCode := ItemTrackingCodeLOTLbl;
+                end;
+
+                GPItem.ShipWeight := GPIV00101Inventory.ITEMSHWT / 100;
+                if GPIV00101Inventory.ITEMTYPE = 2 then
+                    GPItem.InActive := true
                 else
-                    GPItem.CostingMethod := Format(0);
-            end;
+                    GPItem.InActive := GPIV00101Inventory.INACTIVE;
 
-            GPItem.CurrentCost := GPIV00101Inventory.CURRCOST;
-            GPItem.StandardCost := GPIV00101Inventory.STNDCOST;
+                GPIV40201InventoryUom.SetRange(UOMSCHDL, GPIV00101Inventory.UOMSCHDL);
+                if GPIV40201InventoryUom.FindFirst() then
 #pragma warning disable AA0139
-            GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
-            GPItem.PurchUnitOfMeasure := GPIV00101Inventory.PRCHSUOM.Trim();
-            GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
-            GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
-#pragma warning restore AA0139  
-            CASE GPIV00101Inventory.ITMTRKOP of
-                2:
-                    GPItem.ItemTrackingCode := ItemTrackingCodeSERIALLbl;
-                3:
-                    GPItem.ItemTrackingCode := ItemTrackingCodeLOTLbl;
+                    GPItem.BaseUnitOfMeasure := GPIV40201InventoryUom.BASEUOFM.Trim();
+#pragma warning restore AA0139
+
+                GPIV00102InventoryQty.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
+                GPIV00102InventoryQty.SetRange(LOCNCODE, '');
+                GPIV00102InventoryQty.SetRange(RCRDTYPE, 1);
+                if GPIV00102InventoryQty.FindFirst() then
+                    GPItem.QuantityOnHand := GPIV00102InventoryQty.QTYONHND;
+
+                GPIV00105inventoryCurr.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
+                if GPIV00105inventoryCurr.FindSet() then
+                    repeat
+                        FoundCurrency := GPMC40000.Get(GPIV00105inventoryCurr.CURNCYID);
+                    until (GPIV00105inventoryCurr.Next() = 0) or FoundCurrency;
+
+                if FoundCurrency then
+                    GPItem.UnitListPrice := GPIV00105inventoryCurr.LISTPRCE;
+
+                GPItem.Insert();
             end;
-
-            GPItem.ShipWeight := GPIV00101Inventory.ITEMSHWT / 100;
-            if GPIV00101Inventory.ITEMTYPE = 2 then
-                GPItem.InActive := true
-            else
-                GPItem.InActive := GPIV00101Inventory.INACTIVE;
-
-            GPIV40201InventoryUom.SetRange(UOMSCHDL, GPIV00101Inventory.UOMSCHDL);
-            if GPIV40201InventoryUom.FindFirst() then
-#pragma warning disable AA0139
-                GPItem.BaseUnitOfMeasure := GPIV40201InventoryUom.BASEUOFM.Trim();
-#pragma warning restore AA0139  
-
-            GPIV00102InventoryQty.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
-            GPIV00102InventoryQty.SetRange(LOCNCODE, '');
-            GPIV00102InventoryQty.SetRange(RCRDTYPE, 1);
-            if GPIV00102InventoryQty.FindFirst() then
-                GPItem.QuantityOnHand := GPIV00102InventoryQty.QTYONHND;
-
-            GPIV00105inventoryCurr.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
-            if GPIV00105inventoryCurr.FindSet() then
-                repeat
-                    FoundCurrency := GPMC40000.Get(GPIV00105inventoryCurr.CURNCYID);
-                until (GPIV00105inventoryCurr.Next() = 0) or FoundCurrency;
-
-            if FoundCurrency then
-                GPItem.UnitListPrice := GPIV00105inventoryCurr.LISTPRCE;
-
-            GPItem.Insert();
         until GPIV00101Inventory.Next() = 0;
     end;
 
@@ -1033,37 +1056,6 @@ codeunit 40125 "GP Populate Combined Tables"
         end;
 
         GPPostingAccoutns.Insert();
-    end;
-
-    internal procedure CleanupCombinedTables()
-    var
-        GPAccount: Record "GP Account";
-        GPFiscalPeriods: Record "GP Fiscal Periods";
-        GPGLTransactions: Record "GP GLTransactions";
-        GPCustomer: Record "GP Customer";
-        GPCustomerTransactions: Record "GP Customer Transactions";
-        GPVendor: Record "GP Vendor";
-        GPVendorTransactions: Record "GP Vendor Transactions";
-        GPItem: Record "GP Item";
-        GPItemTransactions: Record "GP Item Transactions";
-        GPCodes: Record "GP Codes";
-        GPSegments: Record "GP Segments";
-        GPPostingAccoutns: Record "GP Posting Accounts";
-        GPRMOpen: Record GPRMOpen;
-    begin
-        GPAccount.DeleteAll();
-        GPFiscalPeriods.DeleteAll();
-        GPGLTransactions.DeleteAll();
-        GPCustomer.DeleteAll();
-        GPCustomerTransactions.DeleteAll();
-        GPVendor.DeleteAll();
-        GPVendorTransactions.DeleteAll();
-        GPItem.DeleteAll();
-        GPItemTransactions.DeleteAll();
-        GPCodes.DeleteAll();
-        GPSegments.DeleteAll();
-        GPPostingAccoutns.DeleteAll();
-        GPRMOpen.DeleteAll();
     end;
 
     internal procedure PopulateGPCompanySettings()

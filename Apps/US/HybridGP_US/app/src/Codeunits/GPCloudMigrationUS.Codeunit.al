@@ -19,6 +19,24 @@ codeunit 42004 "GP Cloud Migration US"
         if GPCompanyAdditionalSettings.GetMigrateVendor1099Enabled() then begin
             BindSubscription(GPPopulateVendor1099Data);
             GPPopulateVendor1099Data.Run();
-        end
+            UnbindSubscription(GPPopulateVendor1099Data);
+        end;
+
+        SetPreferredVendorBankAccountsUseForElectronicPayments();
+    end;
+
+    local procedure SetPreferredVendorBankAccountsUseForElectronicPayments()
+    var
+        Vendor: Record Vendor;
+        VendorBankAccount: Record "Vendor Bank Account";
+    begin
+        Vendor.SetFilter("Preferred Bank Account Code", '<>%1', '');
+        if Vendor.FindSet() then
+            repeat
+                if VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code") then begin
+                    VendorBankAccount.Validate("Use for Electronic Payments", true);
+                    VendorBankAccount.Modify();
+                end;
+            until Vendor.Next() = 0;
     end;
 }

@@ -147,5 +147,7 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP PM00204" = X,
                     table "GP Known Countries" = X,
                     page "GP Company Migration Settings" = X,
-                    query "GP Item Aggregate" = X;
+                    query "GP Item Aggregate" = X,
+                    codeunit "Start Data Upgrade" = X,
+                    page "GP Migration General Settings" = X;
 }

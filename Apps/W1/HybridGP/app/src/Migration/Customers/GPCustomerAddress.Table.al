@@ -101,7 +101,7 @@ table 4048 "GP Customer Address"
                 ShipToAddress."Fax No." := '';
 
             if GPSY01200.Get(CustomerEmailTypeCodeLbl, CUSTNMBR, ADRSCODE) then
-                EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(ShipToAddress."E-Mail"));
+                EmailAddress := CopyStr(GPSY01200.GetSingleEmailAddress(MaxStrLen(ShipToAddress."E-Mail")), 1, MaxStrLen(ShipToAddress."E-Mail"));
 
 #pragma warning disable AA0139
             if MailManagement.ValidateEmailAddressField(EmailAddress) then

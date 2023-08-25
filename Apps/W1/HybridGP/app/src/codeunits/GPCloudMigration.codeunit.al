@@ -33,6 +33,7 @@ codeunit 4025 "GP Cloud Migration"
 
         if Rec.Find() then begin
             Rec.Status := Rec.Status::Completed;
+            Rec.SetDetails('Cloud migration completed.');
             Rec.Modify();
         end;
     end;
@@ -61,16 +62,7 @@ codeunit 4025 "GP Cloud Migration"
 
         SelectLatestVersion();
         HelperFunctions.SetProcessesRunning(true);
-        HelperFunctions.CleanupBeforeSynchronization();
 
-        if not HelperFunctions.PreMigrationCleanupCompleted() then begin
-            HelperFunctions.GetLastError();
-            HelperFunctions.SetProcessesRunning(false);
-            exit;
-        end;
-
-        GPPopulateCombinedTables.CleanupCombinedTables();
-        Commit();
         GPPopulateCombinedTables.PopulateAllMappedTables();
         Commit();
 

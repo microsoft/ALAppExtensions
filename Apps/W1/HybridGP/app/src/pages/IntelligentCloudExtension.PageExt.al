@@ -19,6 +19,11 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
 
     actions
     {
+        modify(RunDataUpgrade)
+        {
+            Visible = UseTwoStepProcess;
+        }
+
         addafter(RunReplicationNow)
         {
             action(ConfigureGPMigration)
@@ -94,11 +99,13 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         HybridCompany.SetRange(Replicate, true);
         HasCompletedSetupWizard := not HybridCompany.IsEmpty();
 
+        GPConfiguration.GetSingleInstance();
+        UseTwoStepProcess := GPConfiguration.ShouldUseTwoStepProcess();
+
         if GetHasCompletedMigration() then
             if GPCompanyAdditionalSettings.GetMigrateHistory() then
-                if GPConfiguration.Get() then
-                    if not GPConfiguration.HasHistoricalJobRan() then
-                        ShowGPHistoricalJobNeedsToRunNotification();
+                if not GPConfiguration.HasHistoricalJobRan() then
+                    ShowGPHistoricalJobNeedsToRunNotification();
     end;
 
     local procedure GetHasCompletedMigration(): Boolean
@@ -125,6 +132,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         IsSuper: Boolean;
         FactBoxesVisible: Boolean;
         HasCompletedSetupWizard: Boolean;
+        UseTwoStepProcess: Boolean;
         DetailSnapshotNotConfiguredMsg: Label 'GP Historical Snapshot is not configured to migrate.';
         ConfirmRerunQst: Label 'Are you sure you want to rerun the GP Historical Snapshot migration?';
         ResetPreviousRunQst: Label 'Do you want to reset your previous GP Historical Snapshot migration? Choose No if you want to continue progress from the previous attempt.';

@@ -21,6 +21,7 @@ codeunit 4017 "GP Account Migrator"
     var
         GPAccount: Record "GP Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        AccountNum: Code[20];
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
             exit;
@@ -29,6 +30,11 @@ codeunit 4017 "GP Account Migrator"
             exit;
 
         GPAccount.Get(RecordIdToMigrate);
+
+        AccountNum := CopyStr(GPAccount.AcctNum.Trim(), 1, 20);
+        if AccountNum = '' then
+            exit;
+
         MigrateAccountDetails(GPAccount, Sender);
     end;
 
@@ -44,6 +50,7 @@ codeunit 4017 "GP Account Migrator"
 #endif
     var
         GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
@@ -53,6 +60,10 @@ codeunit 4017 "GP Account Migrator"
             exit;
 
         GPAccount.Get(RecordIdToMigrate);
+
+        if not GLAccount.Get(GPAccount.AcctNum) then
+            exit;
+
         GenerateGLTransactionBatches(GPAccount);
     end;
 
@@ -68,12 +79,17 @@ codeunit 4017 "GP Account Migrator"
 #endif
     var
         GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
             exit;
 
         GPAccount.Get(RecordIdToMigrate);
+
+        if not GLAccount.Get(GPAccount.AcctNum) then
+            exit;
+
         Sender.CreateGenBusinessPostingGroupIfNeeded(CopyStr(PostingGroupCodeTxt, 1, 20), CopyStr(PostingGroupDescriptionTxt, 1, 50));
         Sender.CreateGenProductPostingGroupIfNeeded(CopyStr(PostingGroupCodeTxt, 1, 20), CopyStr(PostingGroupDescriptionTxt, 1, 50));
         Sender.CreateGeneralPostingSetupIfNeeded(CopyStr(PostingGroupCodeTxt, 1, 10));
@@ -118,12 +134,16 @@ codeunit 4017 "GP Account Migrator"
 #endif
     var
         GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
             exit;
 
         GPAccount.Get(RecordIdToMigrate);
         if GPAccount.IncomeBalance then
+            exit;
+
+        if not GLAccount.Get(GPAccount.AcctNum) then
             exit;
 
         CreateBeginningBalance(GPAccount);
@@ -206,7 +226,7 @@ codeunit 4017 "GP Account Migrator"
         AccountType: Option Posting;
         AccountNum: Code[20];
     begin
-        AccountNum := CopyStr(GPAccount.AcctNum, 1, 20);
+        AccountNum := CopyStr(GPAccount.AcctNum.Trim(), 1, 20);
 
         if not GLAccDataMigrationFacade.CreateGLAccountIfNeeded(AccountNum, CopyStr(GPAccount.Name, 1, 50), AccountType::Posting) then
             exit;
@@ -276,14 +296,13 @@ codeunit 4017 "GP Account Migrator"
     begin
         if GPSegments.FindSet() then
             repeat
-                DimensionValue.Get(HelperFunctions.CheckDimensionName(GPSegments.Id),
-                    GetSegmentValue(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8, GPSegments.SegmentNumber));      //'0000'); GPGLTransactions ACTNUMBR_1 - 9
-
-                TempDimensionSetEntry.Init();
-                TempDimensionSetEntry.Validate("Dimension Code", DimensionValue."Dimension Code");
-                TempDimensionSetEntry.Validate("Dimension Value Code", DimensionValue.Code);
-                TempDimensionSetEntry.Validate("Dimension Value ID", DimensionValue."Dimension Value ID");
-                TempDimensionSetEntry.Insert(true);
+                if DimensionValue.Get(HelperFunctions.CheckDimensionName(GPSegments.Id), GetSegmentValue(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8, GPSegments.SegmentNumber)) then begin
+                    TempDimensionSetEntry.Init();
+                    TempDimensionSetEntry.Validate("Dimension Code", DimensionValue."Dimension Code");
+                    TempDimensionSetEntry.Validate("Dimension Value Code", DimensionValue.Code);
+                    TempDimensionSetEntry.Validate("Dimension Value ID", DimensionValue."Dimension Value ID");
+                    TempDimensionSetEntry.Insert(true);
+                end;
             until GPSegments.Next() = 0;
 
         NewDimSetID := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);

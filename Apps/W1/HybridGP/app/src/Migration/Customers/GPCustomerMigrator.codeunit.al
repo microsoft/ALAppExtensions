@@ -8,6 +8,7 @@ codeunit 4018 "GP Customer Migrator"
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
+        CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
 
 #if not CLEAN22
 #pragma warning disable AA0207
@@ -264,6 +265,9 @@ codeunit 4018 "GP Customer Migrator"
     var
         CompanyInformation: Record "Company Information";
         GPKnownCountries: Record "GP Known Countries";
+        GPRM00101: Record "GP RM00101";
+        GPSY01200: Record "GP SY01200";
+        Customer: Record Customer;
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
         Country: Code[10];
@@ -305,8 +309,12 @@ codeunit 4018 "GP Customer Migrator"
         CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
         CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        CustomerDataMigrationFacade.SetEmail(COPYSTR(MigrationGPCustomer.INET1, 1, 80));
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
+
+        GPRM00101.SetLoadFields(ADRSCODE);
+        if GPRM00101.Get(MigrationGPCustomer.CUSTNMBR) then
+            if GPSY01200.Get(CustomerEmailTypeCodeLbl, GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then
+                CustomerDataMigrationFacade.SetEmail(CopyStr(GPSY01200.GetAllEmailAddressesText(MaxStrLen(Customer."E-Mail")), 1, MaxStrLen(Customer."E-Mail")));
 
         If MigrationGPCustomer.STMTCYCL = true then
             CustomerDataMigrationFacade.SetPrintStatement(true);
