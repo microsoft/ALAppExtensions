@@ -118,14 +118,8 @@ codeunit 425 "Data Compression"
     /// <param name="EntryName">The name of the ZipArchive entry to be extracted.</param>
     /// <param name="TempBlob">The TempBlob the uncompressed binary data will be written to.</param>
     procedure ExtractEntry(EntryName: Text; var TempBlob: Codeunit "Temp Blob"): Integer
-    var
-        os: OutStream;
-        EntryLength: Integer;
     begin
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(os);
-        DataCompressionImpl.ExtractEntry(EntryName, os, EntryLength);
-        exit(EntryLength);
+        exit(DataCompressionImpl.ExtractEntry(EntryName, TempBlob));
     end;
 
     /// <summary>

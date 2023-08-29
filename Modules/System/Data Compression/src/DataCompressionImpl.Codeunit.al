@@ -174,6 +174,17 @@ codeunit 421 "Data Compression Impl."
         ZipArchiveEntryStream.Close();
     end;
 
+    procedure ExtractEntry(EntryName: Text; var TempBlob: Codeunit "Temp Blob"): Integer
+    var
+        os: OutStream;
+        EntryLength: Integer;
+    begin
+        Clear(TempBlob);
+        TempBlob.CreateOutStream(os);
+        ExtractEntry(EntryName, os, EntryLength);
+        exit(EntryLength);
+    end;
+
     procedure AddEntry(InStreamToAdd: InStream; PathInArchive: Text)
     var
         ZipArchiveEntry: DotNet ZipArchiveEntry;
