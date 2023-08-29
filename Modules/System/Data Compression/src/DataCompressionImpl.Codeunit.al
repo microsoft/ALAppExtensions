@@ -108,16 +108,25 @@ codeunit 421 "Data Compression Impl."
         end;
     end;
 
-    [TryFunction]
-    procedure IsZip(InputInStream: InStream)
+    procedure IsZip(InputInStream: InStream): Boolean
     var
         impl2: Codeunit "Data Compression Impl.";
         OriginalStream: DotNet Stream;
+        Header: array[4] of Byte;
+        HeaderIsValid: Boolean;
     begin
+        if (InputInStream.Length < 4) then exit(false);
+
         OriginalStream := InputInStream;
-        impl2.OpenZipArchive(InputInStream, false);
-        impl2.CloseZipArchive();
+        InputInStream.Read(Header[1]);
+        InputInStream.Read(Header[2]);
+        InputInStream.Read(Header[3]);
+        InputInStream.Read(Header[4]);
+        // check against ZIP magic header defined as P K 0x03 0x04
+        HeaderIsValid := (Header[1] = 'P') and (Header[2] = 'K') and (Header[3] = 3) and (Header[4] = 4);
+
         InputInStream := OriginalStream;
+        exit(HeaderIsValid);
     end;
 
     procedure IsGZip(InputInStream: InStream): Boolean
