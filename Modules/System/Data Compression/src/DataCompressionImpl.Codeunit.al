@@ -134,6 +134,8 @@ codeunit 421 "Data Compression Impl."
         OriginalStream: DotNet Stream;
         ID: array[2] of Byte;
     begin
+        if (InputInStream.Length < 2) then exit(false);
+
         OriginalStream := InputInStream;
         InputInStream.Read(ID[1]);
         InputInStream.Read(ID[2]);
