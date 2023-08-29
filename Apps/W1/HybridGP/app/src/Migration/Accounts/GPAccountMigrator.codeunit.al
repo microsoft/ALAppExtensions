@@ -20,12 +20,8 @@ codeunit 4017 "GP Account Migrator"
 #endif
     var
         GPAccount: Record "GP Account";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
-            exit;
-
-        if GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
             exit;
 
         GPAccount.Get(RecordIdToMigrate);
@@ -118,8 +114,12 @@ codeunit 4017 "GP Account Migrator"
 #endif
     var
         GPAccount: Record "GP Account";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
             exit;
 
         GPAccount.Get(RecordIdToMigrate);
