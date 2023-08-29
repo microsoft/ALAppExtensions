@@ -108,6 +108,18 @@ codeunit 421 "Data Compression Impl."
         end;
     end;
 
+    [TryFunction]
+    procedure IsZip(InputInStream: InStream)
+    var
+        impl2: Codeunit "Data Compression Impl.";
+        OriginalStream: DotNet Stream;
+    begin
+        OriginalStream := InputInStream;
+        impl2.OpenZipArchive(InputInStream, false);
+        impl2.CloseZipArchive();
+        InputInStream := OriginalStream;
+    end;
+
     procedure IsGZip(InputInStream: InStream): Boolean
     var
         OriginalStream: DotNet Stream;
