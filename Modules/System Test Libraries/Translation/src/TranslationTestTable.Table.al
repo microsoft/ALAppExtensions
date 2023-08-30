@@ -21,6 +21,10 @@ table 137121 "Translation Test Table"
         {
             Editable = false;
         }
+        field(4; TextFieldWithLimitedLength; Text[100])
+        {
+            Editable = false;
+        }
     }
 
     keys
