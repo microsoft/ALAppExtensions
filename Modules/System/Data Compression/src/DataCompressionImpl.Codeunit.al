@@ -110,7 +110,6 @@ codeunit 421 "Data Compression Impl."
 
     procedure IsZip(InputInStream: InStream): Boolean
     var
-        impl2: Codeunit "Data Compression Impl.";
         OriginalStream: DotNet Stream;
         Header: array[4] of Byte;
         HeaderIsValid: Boolean;

@@ -403,7 +403,6 @@ codeunit 139036 "Data Compression Tests"
     var
         TempBlob: array[2] of Codeunit "Temp Blob";
         TempBlobZipCompressed: Codeunit "Temp Blob";
-        Any: Codeunit Any;
         ShortContentInStream, ContentInStream : InStream;
         ContentOutStream: OutStream;
         ZipCompressedInStream: InStream;
@@ -413,7 +412,7 @@ codeunit 139036 "Data Compression Tests"
 
         // [GIVEN] create stream with text content
         TempBlob[1].CreateOutStream(ContentOutStream);
-        ContentOutStream.WriteText(Any.AlphabeticText(20));
+        ContentOutStream.WriteText('Any.AlphabeticText(20) would be nice to have here.');
         TempBlob[1].CreateInStream(ContentInStream);
 
         TempBlob[2].CreateOutStream(ContentOutStream);
