@@ -398,5 +398,45 @@ codeunit 139036 "Data Compression Tests"
         Clear(DataCompression);
     end;
 
-}
+    [Test]
+    procedure TestIsZip()
+    var
+        TempBlob: array[2] of Codeunit "Temp Blob";
+        TempBlobZipCompressed: Codeunit "Temp Blob";
+        Any: Codeunit Any;
+        ShortContentInStream, ContentInStream : InStream;
+        ContentOutStream: OutStream;
+        ZipCompressedInStream: InStream;
+        ZipCompressedOutStream: OutStream;
+    begin
+        // [SCERNARIO] Verify that one can add streams to ZIP stream.
 
+        // [GIVEN] create stream with text content
+        TempBlob[1].CreateOutStream(ContentOutStream);
+        ContentOutStream.WriteText(Any.AlphabeticText(20));
+        TempBlob[1].CreateInStream(ContentInStream);
+
+        TempBlob[2].CreateOutStream(ContentOutStream);
+        ContentOutStream.WriteText('_');
+        TempBlob[2].CreateInStream(ShortContentInStream);
+
+        // [WHEN] compress the the stream with Zip
+        DataCompression.CreateZipArchive();
+        DataCompression.AddEntry(ContentInStream, 'some/directory/test.txt');
+        TempBlobZipCompressed.CreateOutStream(ZipCompressedOutStream);
+        DataCompression.SaveZipArchive(ZipCompressedOutStream);
+        TempBlobZipCompressed.CreateInStream(ZipCompressedInStream);
+
+        // [THEN] verify that IsGZip returns true for compressed stream and false for the uncompressed stream
+        Assert.IsTrue((ShortContentInStream.Length > 0) and (ShortContentInStream.Length < 4), 'ShortContentInStream should be less than 4 bytes long, but never zero.');
+        Assert.IsFalse(DataCompression.IsZip(ShortContentInStream), 'Stream with less bytes than the header must not fail.');
+        Assert.IsFalse(DataCompression.IsGZip(ZipCompressedInStream), 'ZIP compressed stream must not be recognized as GZIP.');
+        Assert.IsTrue(DataCompression.IsZip(ZipCompressedInStream), 'ZIP compressed stream must be recognized as ZIP.');
+        Assert.IsFalse(ZipCompressedInStream.EOS(), 'IsZip should not have moved the input stream to EOS.');
+        Assert.IsFalse(ContentInStream.EOS(), 'IsZip should not have moved the input stream to EOS.');
+
+        // Clean up
+        Clear(DataCompression);
+    end;
+
+}
