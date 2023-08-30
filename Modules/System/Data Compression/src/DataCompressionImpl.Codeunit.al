@@ -125,6 +125,7 @@ codeunit 421 "Data Compression Impl."
         // check against ZIP magic header defined as P K 0x03 0x04
         HeaderIsValid := (Header[1] = 'P') and (Header[2] = 'K') and (Header[3] = 3) and (Header[4] = 4);
 
+        OriginalStream.Position := 0;
         InputInStream := OriginalStream;
         exit(HeaderIsValid);
     end;
