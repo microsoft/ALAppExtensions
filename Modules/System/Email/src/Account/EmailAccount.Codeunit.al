@@ -39,6 +39,17 @@ codeunit 8894 "Email Account"
     end;
 
     /// <summary>
+    /// Deletes all selected email accounts.
+    /// </summary>
+    /// <param name="TempEmailAccountsToDelete">Holding the selected email accounts to delete.</param>
+    /// <param name="HideDialog">Hides any confirmation or interaction that involves a UI.</param>
+    /// <error>Your user account does not give you permission to set up email. Please contact your administrator.</error>
+    procedure DeleteAccounts(var TempEmailAccountsToDelete: Record "Email Account" temporary; HideDialog: Boolean)
+    begin
+        EmailAccountImpl.DeleteAccounts(TempEmailAccountsToDelete, HideDialog);
+    end;
+
+    /// <summary>
     /// Validates an email address and throws an error if it is invalid.
     /// </summary>
     /// <remarks>If the provided email address is an empty string, the function will do nothing.</remarks>
