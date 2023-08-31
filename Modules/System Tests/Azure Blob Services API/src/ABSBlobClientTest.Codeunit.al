@@ -566,8 +566,8 @@ codeunit 132920 "ABS Blob Client Test"
         ABSOperationResponse := ABSBlobClient.GetBlobProperties(BlobName);
 
         // [THEN] The properties are as expected
-        Assert.IsTrue(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-creation-time') <> '');
-        Assert.AreEqual(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-blob-type'), 'BlockBlob');
+        Assert.IsTrue(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-creation-time') <> '', 'Property x-ms-creation-time is missing');
+        Assert.AreEqual(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-blob-type'), 'BlockBlob', 'Property x-ms-blob-type is wrong');
 
         // Clean-up
         ABSContainerClient.DeleteContainer(ContainerName);
@@ -605,7 +605,7 @@ codeunit 132920 "ABS Blob Client Test"
         BlobExists := ABSBlobClient.BlobExists(BlobName);
 
         // [THEN] The blob exists
-        Assert.IsTrue(BlobExists);
+        Assert.IsTrue(BlobExists, 'The return value of procedure BlobExists should be true.');
 
         // Clean-up
         ABSContainerClient.DeleteContainer(ContainerName);
