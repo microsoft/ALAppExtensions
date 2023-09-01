@@ -25,6 +25,7 @@ codeunit 9051 "ABS Client Impl."
         DeleteBlobOperationNotSuccessfulErr: Label 'Could not %3 Blob %1 in container %2.', Comment = '%1 = Blob Name; %2 = Container Name, %3 = Delete/Undelete';
         CopyOperationNotSuccessfulErr: Label 'Could not copy %1 to %2.', Comment = '%1 = Source, %2 = Desctination';
         AppendBlockFromUrlOperationNotSuccessfulErr: Label 'Could not append block from URL %1 on %2.', Comment = '%1 = Source URI; %2 = Blob';
+        GetPropertiesOperationNotSuccessfulErr: Label 'Could not get properties for %1.', Comment = '%1 = Blob';
         TagsOperationNotSuccessfulErr: Label 'Could not %1 %2 Tags.', Comment = '%1 = Get/Set, %2 = Service/Blob, ';
         FindBlobsByTagsOperationNotSuccessfulErr: Label 'Could not find Blobs by Tags.';
         PutBlockOperationNotSuccessfulErr: Label 'Could not put block on %1.', Comment = '%1 = Blob';
@@ -480,6 +481,23 @@ codeunit 9051 "ABS Client Impl."
         exit(ABSOperationResponse);
     end;
 
+    procedure GetBlobProperties(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters") ABSOperationResponse: Codeunit "ABS Operation Response"
+    begin
+        ABSOperationPayload.SetOperation("ABS Operation"::GetBlobProperties);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
+
+        ABSOperationResponse := ABSWebRequestHelper.GetOperation(ABSOperationPayload, StrSubstNo(GetPropertiesOperationNotSuccessfulErr, BlobName));
+    end;
+
+    procedure BlobExists(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters") Exists: Boolean
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+    begin
+        ABSOperationResponse := GetBlobProperties(BlobName, ABSOptionalParameters);
+        Exists := ABSOperationResponse.IsSuccessful();
+    end;
+
     procedure GetBlobTags(BlobName: Text; var BlobTags: XmlDocument; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
@@ -590,10 +608,14 @@ codeunit 9051 "ABS Client Impl."
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-
     begin
         ABSOperationPayload.SetOperation(Operation::CopyBlob);
         ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        if not (SourceName.StartsWith('http://') or SourceName.StartsWith('https://')) then begin // SourceName is in the same storage account, use ABSOperationPayload to construct URI.
+            ABSOperationPayload.SetBlobName(SourceName);
+            SourceName := ABSOperationPayload.ConstructUri();
+        end;
+
         ABSOperationPayload.SetBlobName(BlobName);
         ABSOperationPayload.AddRequestHeader('x-ms-copy-source', SourceName);
 

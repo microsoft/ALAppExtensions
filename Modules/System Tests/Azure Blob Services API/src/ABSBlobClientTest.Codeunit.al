@@ -535,6 +535,82 @@ codeunit 132920 "ABS Blob Client Test"
         ABSContainerClient.DeleteContainer(ContainerName);
     end;
 
+    [Test]
+    procedure GetBlobPropertiesTest()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ContainerName, BlobName, BlobContent : Text;
+    begin
+        // [SCENARIO] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content
+        // [GIVEN] Shared Key Authorization
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        // [GIVEN] ABS Container 
+        ContainerName := ABSTestLibrary.GetContainerName();
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSContainerClient.CreateContainer(ContainerName);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [GIVEN] Block Blob
+        BlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
+
+        // [WHEN] Properties are read
+        ABSOperationResponse := ABSBlobClient.GetBlobProperties(BlobName);
+
+        // [THEN] The properties are as expected
+        Assert.IsTrue(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-creation-time') <> '', 'Property x-ms-creation-time is missing');
+        Assert.AreEqual(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-blob-type'), 'BlockBlob', 'Property x-ms-blob-type is wrong');
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
+    procedure BlobExistsTest()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ContainerName, BlobName, BlobContent : Text;
+        BlobExists: Boolean;
+    begin
+        // [SCENARIO] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content
+        // [GIVEN] Shared Key Authorization
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        // [GIVEN] ABS Container 
+        ContainerName := ABSTestLibrary.GetContainerName();
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSContainerClient.CreateContainer(ContainerName);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [GIVEN] Block Blob
+        BlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
+
+        // [WHEN] Blob Exists is called
+        BlobExists := ABSBlobClient.BlobExists(BlobName);
+
+        // [THEN] The blob exists
+        Assert.IsTrue(BlobExists, 'The return value of procedure BlobExists should be true.');
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
     var
         Assert: Codeunit "Library Assert";
         ABSBlobClient: Codeunit "ABS Blob Client";
