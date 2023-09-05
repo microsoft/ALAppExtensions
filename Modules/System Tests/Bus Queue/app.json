@@ -1,0 +1,49 @@
+{
+    "id": "e2fff68d-94d4-47c6-9ced-639593dbd8d8",
+    "name": "_Exclude_Bus Queue Tests",
+    "publisher": "Microsoft",
+    "version": "1.0.0.0",
+    "brief": "Tests for the _Exclude_Bus Queue extension.",
+    "description": "Tests for the _Exclude_Bus Queue extension.",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+    "help": "https://go.microsoft.com/fwlink/?linkid=2206519",
+    "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "ExtensionLogo.png",
+    "dependencies": [
+        {
+            "id": "40860557-a18d-42ad-aecb-22b7dd80dc80",
+            "name": "Permissions Mock",
+            "publisher": "Microsoft",
+            "version": "22.4.0.0"
+        },
+        {
+            "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+            "name": "Library Assert",
+            "publisher": "Microsoft",
+            "version": "22.4.0.0"
+        },
+        {
+            "id": "28d3f582-ee37-4b5b-8351-2f19dcbaf5dc",
+            "publisher": "Microsoft",
+            "name": "_Exclude_Bus Queue",
+            "version": "1.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "1.0.0.0",
+    "application": "22.0.0.0",
+    "target": "Cloud",
+    "idRanges": [
+        {
+            "from": 51750,
+            "to": 51765
+        }
+    ],
+    "resourceExposurePolicy": {
+        "allowDebugging": false,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    }
+}

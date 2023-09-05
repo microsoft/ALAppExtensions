@@ -1,0 +1,31 @@
+{
+	"id": "28d3f582-ee37-4b5b-8351-2f19dcbaf5dc",
+	"name": "_Exclude_Bus Queue",
+	"publisher": "Microsoft",
+	"version": "1.0.0.0",
+	"brief": "App to bring a way for developers to make more robust integrations between Business Central and external systems",
+	"description": "This is an app whose goal is to bring a way for developers to make more robust integrations between BC and external systems",
+	"privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+	"EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+	"help": "https://go.microsoft.com/fwlink/?linkid=2206519",
+	"contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+	"url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+	"logo": "ExtensionLogo.png",
+	"dependencies": [],
+	"screenshots": [],
+	"platform": "1.0.0.0",
+	"application": "22.0.0.0",
+	"target": "Cloud",
+	"resourceExposurePolicy": {
+		"allowDebugging": true,
+		"allowDownloadingSource": true,
+		"includeSourceInSymbolFile": true
+	},
+	"internalsVisibleTo": [
+		{
+			"id": "e2fff68d-94d4-47c6-9ced-639593dbd8d8",
+			"name": "_Exclude_Bus Queue Tests",
+			"publisher": "Microsoft"	
+		}
+	]
+}
