@@ -276,8 +276,8 @@ table 4060 "GPPOPReceiptApply"
     {
     }
 
-#if not CLEAN23
-    [Obsolete('This procedure is no longer used, use GetSumQtyShippedByUnitCost instead.', '23.0')]
+#if not CLEAN24
+    [Obsolete('This procedure is no longer used, use GetSumQtyShippedByUnitCost instead.', '24.0')]
     procedure GetSumQtyShipped(PO_Number: Text[18]; PO_LineNo: Integer): Decimal
     var
         GPPOPReceiptApply: Record GPPOPReceiptApply;
@@ -296,7 +296,7 @@ table 4060 "GPPOPReceiptApply"
         exit(TotalShipped);
     end;
 
-    [Obsolete('This procedure is no longer used, use GetSumQtyInvoicedByUnitCost instead.', '23.0')]
+    [Obsolete('This procedure is no longer used, use GetSumQtyInvoicedByUnitCost instead.', '24.0')]
     procedure GetSumQtyInvoiced(PO_Number: Text[18]; PO_LineNo: Integer): Decimal
     var
         GPPOPReceiptApply: Record GPPOPReceiptApply;

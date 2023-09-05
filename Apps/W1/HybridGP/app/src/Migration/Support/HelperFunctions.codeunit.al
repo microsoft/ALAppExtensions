@@ -903,13 +903,13 @@ Codeunit 4037 "Helper Functions"
     end;
 
 
-#if not CLEAN23
-    [Obsolete('Cleaning up tables before running the migration is no longer wanted.', '23.0')]
+#if not CLEAN24
+    [Obsolete('Cleaning up tables before running the migration is no longer wanted.', '24.0')]
     procedure Cleanup();
     begin
     end;
 
-    [Obsolete('Cleaning up tables before running the migration is no longer wanted.', '23.0')]
+    [Obsolete('Cleaning up tables before running the migration is no longer wanted.', '24.0')]
     procedure CleanupBeforeSynchronization();
     begin
     end;
