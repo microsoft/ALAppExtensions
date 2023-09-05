@@ -16,14 +16,11 @@ codeunit 40108 "GP PO Migrator"
         CompanyInformation: Record "Company Information";
         PurchaseHeader: Record "Purchase Header";
         GeneralLedgerSetup: Record "General Ledger Setup";
-        CurrencyExchangeRate: Record "Currency Exchange Rate";
         Vendor: Record Vendor;
         InventorySetup: Record "Inventory Setup";
-        HelperFunctions: Codeunit "Helper Functions";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
         CountryCode: Code[10];
-        CurrencyCode: Code[10];
     begin
         if InventorySetup.Get() then
             InitialAutomaticCostAdjustmentType := InventorySetup."Automatic Cost Adjustment";
@@ -44,9 +41,6 @@ codeunit 40108 "GP PO Migrator"
 
         repeat
             if Vendor.Get(GPPOP10100.VENDORID) then begin
-                CurrencyCode := CopyStr(GPPOP10100.CURNCYID.Trim(), 1, MaxStrLen(CurrencyCode));
-                HelperFunctions.CreateCurrencyIfNeeded(CurrencyCode);
-
                 Clear(PurchaseHeader);
                 PurchaseHeader.Validate("Document Type", PurchaseDocumentType::Order);
                 PurchaseHeader."No." := GPPOP10100.PONUMBER;
@@ -65,22 +59,6 @@ codeunit 40108 "GP PO Migrator"
                 PurchaseHeader.Validate("Prices Including VAT", false);
                 PurchaseHeader.Validate("Vendor Invoice No.", GPPOP10100.PONUMBER);
                 PurchaseHeader.Validate("Gen. Bus. Posting Group", GPCodeTxt);
-
-                if CurrencyCode <> '' then
-                    if CurrencyCode <> GeneralLedgerSetup."LCY Code" then
-                        if GPPOP10100.XCHGRATE <> 0 then begin
-                            if not CurrencyExchangeRate.Get(CurrencyCode, GPPOP10100.EXCHDATE) then begin
-                                Clear(CurrencyExchangeRate);
-                                CurrencyExchangeRate.Validate("Currency Code", CurrencyCode);
-                                CurrencyExchangeRate.Validate("Starting Date", GPPOP10100.EXCHDATE);
-                                CurrencyExchangeRate.Validate("Exchange Rate Amount", GPPOP10100.XCHGRATE);
-                                CurrencyExchangeRate.Validate("Relational Exch. Rate Amount", GPPOP10100.XCHGRATE);
-                                CurrencyExchangeRate.Insert();
-                            end;
-
-                            PurchaseHeader."Currency Factor" := GPPOP10100.XCHGRATE;
-                            PurchaseHeader."Currency Code" := CurrencyCode;
-                        end;
 
                 UpdateShipToAddress(GPPOP10100, CountryCode, PurchaseHeader);
 
