@@ -1,7 +1,10 @@
+# Default owners
+* @microsoft/dynamics-365-business-central
+
 # AL-Go files and build scripts are owned by Engineering Systems
-.AL-Go/ @microsoft/dynamics-smb-engineering-systems
-*.ps1 @microsoft/dynamics-smb-engineering-systems
-/.azuredevops @microsoft/dynamics-smb-engineering-systems
-/.github @microsoft/dynamics-smb-engineering-systems
-/Build @microsoft/dynamics-smb-engineering-systems
-/CODEOWNERS @microsoft/dynamics-smb-engineering-systems
+.AL-Go/ @microsoft/d365-bc-engineering-systems
+*.ps1 @microsoft/d365-bc-engineering-systems
+/.azuredevops @microsoft/d365-bc-engineering-systems
+/.github @microsoft/d365-bc-engineering-systems
+/Build @microsoft/d365-bc-engineering-systems
+/CODEOWNERS @microsoft/d365-bc-engineering-systems
