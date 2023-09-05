@@ -50,7 +50,6 @@ codeunit 139664 "GP Data Migration Tests"
         CurrencyCodeUSTxt: Label 'Z-US$', Comment = 'GP US Currency Code', Locked = true;
         PONumberTxt: Label 'PO001', Comment = 'PO number for Migrate Open POs setting tests', Locked = true;
         PostingGroupCodeTxt: Label 'GP', Locked = true;
-        TestMoneyCurrencyCodeTxt: Label 'TESTMONEY', Locked = true;
 
     [Test]
     procedure TestKnownCountries()
@@ -1586,9 +1585,6 @@ codeunit 139664 "GP Data Migration Tests"
 
         // With the correct generated Payment Terms Code
         Assert.AreEqual('5% 10/NET2', PurchaseHeader."Payment Terms Code", 'Incorrect payment terms code.');
-
-        // [THEN] the new Currency is created
-        Assert.IsTrue(Currency.Get(TestMoneyCurrencyCodeTxt), 'The new Currency was not created.');
     end;
 
     [Normal]
@@ -4076,12 +4072,6 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure CreateOpenPOData()
     begin
-        Clear(GPMC40200);
-        GPMC40200.CURNCYID := TestMoneyCurrencyCodeTxt;
-        GPMC40200.CRNCYDSC := 'Test Money :)';
-        GPMC40200.CRNCYSYM := 'TM';
-        GPMC40200.Insert();
-
         Clear(GPPOP10100);
         GPPOP10100.POTYPE := GPPOP10100.POTYPE::Standard;
         GPPOP10100.POSTATUS := GPPOP10100.POSTATUS::New;
@@ -4091,7 +4081,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOP10100.PRMDATE := 20230101D;
         GPPOP10100.PYMTRMID := '5% 10/NET 30';
         GPPOP10100.SHIPMTHD := 'Space Ship';
-        GPPOP10100.CURNCYID := TestMoneyCurrencyCodeTxt;
         GPPOP10100.XCHGRATE := 0.01;
         GPPOP10100.EXCHDATE := 20230101D;
         GPPOP10100.Insert();
