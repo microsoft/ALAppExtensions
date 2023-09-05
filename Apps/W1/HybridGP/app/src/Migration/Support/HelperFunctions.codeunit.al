@@ -303,6 +303,7 @@ Codeunit 4037 "Helper Functions"
         CustomerDataMigrationFacade.CreateCountryIfNeeded(CountryCode, CountryName, AddressFormatToSet::"City+County+Post Code", ContactAddressFormatToSet::"After Company Name");
     end;
 
+#if not CLEAN23
     [Obsolete('Data cleanup is no longer performed before migration.', '23.0')]
     procedure CleanupGenJournalBatches()
     begin
@@ -312,6 +313,7 @@ Codeunit 4037 "Helper Functions"
     procedure CleanupVatPostingSetup()
     begin
     end;
+#endif
 
     local procedure GetAcctCategoryEntryNo(Category: Option): Integer
     var

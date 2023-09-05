@@ -4,8 +4,6 @@ page 4094 "GP Customer Transactions"
     AdditionalSearchTerms = 'staging';
     PageType = List;
     SourceTable = "GP Customer Transactions";
-    DeleteAllowed = false;
-    InsertAllowed = false;
     ApplicationArea = All;
     UsageCategory = Lists;
 

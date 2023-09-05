@@ -92,11 +92,6 @@ table 4024 "GP Configuration"
             DataClassification = SystemMetadata;
             InitValue = false;
         }
-        field(19; "Use Two Step Process"; Boolean)
-        {
-            DataClassification = SystemMetadata;
-            InitValue = false;
-        }
     }
 
     keys
@@ -149,10 +144,5 @@ table 4024 "GP Configuration"
     procedure HasHistoricalJobRan(): Boolean
     begin
         exit(Rec."Historical Job Ran");
-    end;
-
-    procedure ShouldUseTwoStepProcess(): Boolean
-    begin
-        exit(Rec."Use Two Step Process");
     end;
 }

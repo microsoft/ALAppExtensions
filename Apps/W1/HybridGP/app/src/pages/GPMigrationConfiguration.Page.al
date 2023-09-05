@@ -598,22 +598,6 @@ page 4050 "GP Migration Configuration"
                     end;
                 end;
             }
-
-            action(GeneralSettings)
-            {
-                ApplicationArea = All;
-                Caption = 'General Settings';
-                ToolTip = 'Configure general migration settings.';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
-                Image = Administration;
-
-                trigger OnAction()
-                begin
-                    Page.Run(Page::"GP Migration General Settings");
-                end;
-            }
         }
     }
 

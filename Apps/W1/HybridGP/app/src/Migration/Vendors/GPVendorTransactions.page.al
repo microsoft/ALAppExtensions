@@ -4,8 +4,6 @@ page 4097 "GP Vendor Transactions"
     AdditionalSearchTerms = 'staging';
     PageType = List;
     SourceTable = "GP Vendor Transactions";
-    DeleteAllowed = false;
-    InsertAllowed = false;
     ApplicationArea = All;
     UsageCategory = Lists;
 
