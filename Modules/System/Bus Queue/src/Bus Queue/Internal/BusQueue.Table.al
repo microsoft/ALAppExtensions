@@ -30,9 +30,10 @@ table 51750 "Bus Queue"
 
             trigger OnValidate()
             var
-                WebRequestHelper: Codeunit "Web Request Helper";
+                Regex: Codeunit Regex;
+                RegexURLTok: Label '[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)';
             begin
-                if not WebRequestHelper.IsHttpUrl(URL) then
+                if not Regex.IsMatch(URL, RegexURLTok, 0) then
                     Error(InvalidUriErr);
             end;
         }
