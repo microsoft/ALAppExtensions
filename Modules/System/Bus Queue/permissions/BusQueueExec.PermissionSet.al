@@ -2,8 +2,7 @@ permissionset 60000 "Bus Queue Exec"
 {
 	Access = Internal;
     Assignable = false;
-    Permissions = codeunit "Web Request Helper"=X,
-        codeunit DotNet_Encoding=X,
+    Permissions = codeunit DotNet_Encoding=X,
         codeunit DotNet_StreamReader=X,
         codeunit DotNet_StreamWriter=X,
         codeunit "Job Queue - Enqueue"=X,
