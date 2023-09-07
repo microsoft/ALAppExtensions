@@ -1,5 +1,5 @@
 /// <summary>Implementation of the "Http Authentication" interface for a request that requires basic authentication</summary>
-codeunit 50304 "Http Authentication Basic" implements "Http Authentication"
+codeunit 2356 "Http Authentication Basic" implements "Http Authentication"
 {
     var
         [NonDebuggable]

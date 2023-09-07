@@ -1,4 +1,4 @@
-codeunit 50401 "AL Request Message Tests"
+codeunit 134972 "AL Request Message Tests"
 {
     Subtype = Test;
 

@@ -1,5 +1,5 @@
 /// <summary>Implementation of the "Http Authentication" interface for a anonymous request.</summary>
-codeunit 50311 "Http Authentication Anonymous" implements "Http Authentication"
+codeunit 2355 "Http Authentication Anonymous" implements "Http Authentication"
 {
     /// <summary>Indicates if authentication is required.</summary>
     /// <returns>False, because no authentication is required.</returns>

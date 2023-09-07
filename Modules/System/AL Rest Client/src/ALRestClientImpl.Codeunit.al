@@ -1,4 +1,4 @@
-codeunit 50300 "AL Rest Client Impl."
+codeunit 2351 "AL Rest Client Impl."
 {
     Access = Internal;
     InherentEntitlements = X;

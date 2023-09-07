@@ -1,5 +1,5 @@
 /// <summary>Holder object for the Http Content data.</summary>
-codeunit 50305 "AL Http Content"
+codeunit 2354 "AL Http Content"
 {
     var
         HttpContent: HttpContent;

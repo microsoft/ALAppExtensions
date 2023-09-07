@@ -1,4 +1,4 @@
-codeunit 50400 "Http Authentication Tests"
+codeunit 134973 "Http Authentication Tests"
 {
     Subtype = Test;
 

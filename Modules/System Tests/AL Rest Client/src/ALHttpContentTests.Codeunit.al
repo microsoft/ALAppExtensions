@@ -1,4 +1,4 @@
-codeunit 50402 "AL Http Content Tests"
+codeunit 134970 "AL Http Content Tests"
 {
     Subtype = Test;
 

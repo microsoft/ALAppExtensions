@@ -1,5 +1,5 @@
 /// <summary>Provides functionality to easily work with the HttpClient object.</summary>
-codeunit 50307 "AL Rest Client"
+codeunit 2350 "AL Rest Client"
 {
     var
         ALRestClientImpl: Codeunit "AL Rest Client Impl.";

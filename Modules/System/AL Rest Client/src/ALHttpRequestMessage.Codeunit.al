@@ -1,5 +1,5 @@
 /// <summary>Holder object for the HTTP request data.</summary>
-codeunit 50301 "AL Http Request Message"
+codeunit 2352 "AL Http Request Message"
 {
     var
         HttpRequestMessage: HttpRequestMessage;

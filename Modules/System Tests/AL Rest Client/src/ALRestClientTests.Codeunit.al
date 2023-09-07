@@ -1,4 +1,4 @@
-codeunit 50403 "AL Rest Client Tests"
+codeunit 134971 "AL Rest Client Tests"
 {
     Subtype = Test;
 
