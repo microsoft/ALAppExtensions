@@ -15,7 +15,7 @@
 	"screenshots": [],
 	"platform": "1.0.0.0",
 	"application": "22.0.0.0",
-	"target": "Cloud",
+	"target": "OnPrem",
 	"resourceExposurePolicy": {
 		"allowDebugging": true,
 		"allowDownloadingSource": true,

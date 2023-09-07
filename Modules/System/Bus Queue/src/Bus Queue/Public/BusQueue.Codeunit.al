@@ -35,11 +35,8 @@ codeunit 51754 "Bus Queue"
     /// </summary>
     /// <param name="Body">Body of the request</param>
     procedure SetBody(Body: Text)
-    var
-        DotNetEncoding: Codeunit DotNet_Encoding;
     begin
-        DotNetEncoding.UTF8();
-        BusQueueImpl.SetBody(Body, DotNetEncoding);
+        BusQueueImpl.SetBody(Body, 0);
     end;
 
     /// <summary>
@@ -48,11 +45,8 @@ codeunit 51754 "Bus Queue"
     /// <param name="Body">Body of the request</param>
     /// <param name="Codepage">Codepage body of the request</param>
     procedure SetBody(Body: Text; Codepage: Integer)
-    var
-        DotNetEncoding: Codeunit DotNet_Encoding;
     begin
-        DotNetEncoding.Encoding(Codepage);
-        BusQueueImpl.SetBody(Body, DotNetEncoding);
+        BusQueueImpl.SetBody(Body, Codepage);
     end;
 
     /// <summary>

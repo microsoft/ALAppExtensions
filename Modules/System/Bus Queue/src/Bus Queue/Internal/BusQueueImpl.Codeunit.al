@@ -3,41 +3,52 @@ codeunit 51757 "Bus Queue Impl."
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "Name/Value Buffer" = RI;
+    Permissions = tabledata "Scheduled Task" = I;
 
     var
         BusQueue: Record "Bus Queue";
-        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
+        Headers: List of [Dictionary of [Text, Text]];
+        CannotScheduledTaskErr: Label 'No permission to schedule tasks';
 
     internal procedure Init(URL: Text[2048]; HttpRequestType: Enum "Http Request Type")
     begin
+        Clear(Headers);
         Clear(BusQueue);
         BusQueue.Init();
         BusQueue.Validate(URL, URL);
         BusQueue."HTTP Request Type" := HTTPRequestType;
-
-        TempNameValueBuffer.DeleteAll();
     end;
 
     internal procedure AddHeader(Name: Text[250]; Value: Text)
+    var
+        Dictionary: Dictionary of [Text, Text];
     begin
-        if (Name <> '') and (Value <> '') then
-            TempNameValueBuffer.AddNewEntry(Name, Value);
+        if (Name <> '') and (Value <> '') then begin
+            Dictionary.Add(Name, Value);
+            Headers.Add(Dictionary);
+        end;
     end;
 
-    internal procedure SetBody(NewBody: Text; DotNetEncoding: Codeunit DotNet_Encoding)
+    internal procedure SetBody(NewBody: Text; Codepage: Integer)
     var
-        DotNetStreamWriter: Codeunit DotNet_StreamWriter;
+        StreamWriter: DotNet StreamWriter;
+        Encoding: DotNet Encoding;
         OutStream: OutStream;
     begin
         if NewBody = '' then
             exit;
 
         BusQueue."Is Text" := true;
-        BusQueue.Codepage := DotNetEncoding.Codepage();
-        BusQueue.Body.CreateOutStream(OutStream);
-        DotNetStreamWriter.StreamWriter(OutStream, DotNetEncoding);
-        DotNetStreamWriter.Write(NewBody);
+        BusQueue.Codepage := Codepage;
+
+        if Codepage = 0 then begin
+            BusQueue.Body.CreateOutStream(OutStream, TextEncoding::UTF8);
+            OutStream.WriteText(NewBody);
+        end else begin
+            BusQueue.Body.CreateOutStream(OutStream);
+            StreamWriter := StreamWriter.StreamWriter(OutStream, Encoding.GetEncoding(Codepage));
+            StreamWriter.Write(NewBody);
+        end;
     end;
 
     internal procedure SetBody(InStreamBody: InStream)
@@ -103,9 +114,37 @@ codeunit 51757 "Bus Queue Impl."
     internal procedure Enqueue(): Integer
     begin
         BusQueue.TestField(URL);
-        BusQueue.SaveHeaders(TempNameValueBuffer);
+        BusQueue.SaveHeaders(Headers);
         BusQueue.Insert(true);
 
+        if BusQueue."Use Task Scheduler" then begin
+            if not TaskScheduler.CanCreateTask() then
+                Error(CannotScheduledTaskErr);
+            
+            ScheduleBusQueuesHandlerTask();
+        end else
+            Codeunit.Run(Codeunit::"Bus Queues Handler");
+
         exit(BusQueue."Entry No.");
+    end;
+
+    local procedure ScheduleBusQueuesHandlerTask()
+    var
+        ScheduledTask: Record "Scheduled Task";
+        SystemTaskId: Guid;
+        i: Integer;
+    begin
+        ScheduledTask.SetRange(Company, CompanyName());
+        ScheduledTask.SetRange("Run Codeunit", Codeunit::"Bus Queues Handler");
+        if not ScheduledTask.IsEmpty() then
+            exit;
+
+        SystemTaskId := TaskScheduler.CreateTask(Codeunit::"Bus Queues Handler", 0, true, CompanyName(), CurrentDateTime() + 60000);
+        ScheduledTask.SetRange(ID, SystemTaskId);
+        if ScheduledTask.IsEmpty() then
+            repeat
+                Sleep(100);
+                i += 1;
+            until (not ScheduledTask.IsEmpty()) or (i = 10);
     end;
 }

@@ -52,28 +52,61 @@ page 51752 "Bus Queue Responses"
             }
         }
     }
+    actions
+    {
+        area(Processing)
+        {
+            action(Download)
+            {
+                Caption = 'Download body';
+                Image = Download;
+                ToolTip = 'Allows to download the body.';
+
+                trigger OnAction()
+                var
+                    InStream: InStream;
+                    FileName: Text;
+                begin
+                    if not Rec.Body.HasValue() then begin
+                        Message(EmptyLbl);
+                        exit;
+                    end;
+                    
+                    Rec.CalcFields(Body);
+                    Rec.Body.CreateInStream(InStream, TextEncoding::UTF8);
+                    FileName := 'BusQueueResponse_' + Format(CurrentDateTime(), 0, FormatFileTok);
+                    DownloadFromStream(InStream, '', '', '', FileName);
+                end;
+            }
+        }
+        area(Promoted)
+        {
+            actionref(Download_Promoted; Download)
+            {
+            }
+        }
+    }
 
     var
         ViewLbl: Label 'View';
         EmptyLbl: Label '(empty)';
+        FormatFileTok: Label '<Day,2>_<Month,2>_<Year4>_<Hours24>_<Minutes,2>_<Seconds,2>', Locked = true;
         HeadersTxt: Text;
 
     trigger OnAfterGetRecord()
     var
-        TypeHelper: Codeunit "Type Helper";
         HeadersInStream: InStream;
     begin
         HeadersTxt := '';
         
         if TryViewHeaders() then begin
             Rec.Headers.CreateInStream(HeadersInStream, TextEncoding::UTF8);
-            TypeHelper.TryReadAsTextWithSeparator(HeadersInStream, TypeHelper.CRLFSeparator(), HeadersTxt);
-        end;        
+            TryReadAsTextWithSeparator(HeadersInStream, CRLFSeparator(), HeadersTxt);
+        end;
     end;
 
     local procedure ViewBody()
     var
-        TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
         FileName, BodyText : Text;
     begin
@@ -85,12 +118,44 @@ page 51752 "Bus Queue Responses"
         Rec.CalcFields(Body);
         Rec.Body.CreateInStream(InStream, TextEncoding::UTF8);
 
-        if TypeHelper.TryReadAsTextWithSeparator(InStream, TypeHelper.CRLFSeparator(), BodyText) then 
+        if TryReadAsTextWithSeparator(InStream, CRLFSeparator(), BodyText) then 
             Message(BodyText)
         else begin
-            FileName := 'BusQueueResponse_' + Format(CurrentDateTime(), 0, '<Day,2>_<Month,2>_<Year4>_<Hours24>_<Minutes,2>_<Seconds,2>');
+            FileName := 'BusQueueResponse_' + Format(CurrentDateTime(), 0, FormatFileTok);
             DownloadFromStream(InStream, '', '', '', FileName);
         end;
+    end;
+
+    [TryFunction]
+    local procedure TryReadAsTextWithSeparator(InStream: InStream; LineSeparator: Text; var Content: Text)
+    begin
+        Content := ReadAsTextWithSeparator(InStream, LineSeparator);
+    end;
+
+    local procedure ReadAsTextWithSeparator(InStream: InStream; LineSeparator: Text): Text
+    var
+        Tb: TextBuilder;
+        ContentLine: Text;
+    begin
+        InStream.ReadText(ContentLine);
+        Tb.Append(ContentLine);
+        while not InStream.EOS() do begin
+            InStream.ReadText(ContentLine);
+            Tb.Append(LineSeparator);
+            Tb.Append(ContentLine);
+        end;
+
+        exit(Tb.ToText());
+    end;
+
+    local procedure CRLFSeparator(): Text[2]
+    var
+        CRLF: Text[2];
+    begin
+        CRLF[1] := 13;
+        CRLF[2] := 10;
+        
+        exit(CRLF);
     end;
 
     [TryFunction]

@@ -4,10 +4,8 @@ codeunit 51750 "Bus Queue E2E"
     Subtype = Test;
 
     var
-        JobQueueEntry: Record "Job Queue Entry";
-        LibraryAssert: Codeunit "Library Assert";
-        PermissionsMock: Codeunit "Permissions Mock";
         BusQueue: Codeunit "Bus Queue";
+        LibraryAssert: Codeunit "Library Assert";
         NonExistingUrlTxt: Label 'https://www.e89b2cb3d714451c94f03b617b5fd6824109b0cfef864576a3b5e7febadfe39b.com', Locked = true;
         MicrosoftUrlTxt: Label 'https://www.microsoft.com', Locked = true;
 
@@ -18,17 +16,14 @@ codeunit 51750 "Bus Queue E2E"
         BusQueueEntryNo: Integer;
     begin
         // [SCENARIO] Enqueues a bus queue with an existing URL and status must be Processed
-
-        // Verify the module highest permission level is sufficient ignore non Tables
-        PermissionsMock.Set('Bus Queue Exec');
         
         // [GIVEN] One bus queue
         BusQueue.Init(MicrosoftUrlTxt, Enum::"Http Request Type"::GET);
         BusQueue.SetRaiseOnAfterInsertBusQueueResponse(false);
-        BusQueueEntryNo := Initialize();
+        Initialize();
 
-        // [WHEN] Status is different than Pending
-        Codeunit.Run(Codeunit::"Job Queue Start Codeunit", JobQueueEntry);
+        // [WHEN] Bus queue is processed
+        BusQueueEntryNo := BusQueue.Enqueue();
         
         // [THEN] The bus queue status must be Processed
         BusQueueRec.Get(BusQueueEntryNo);
@@ -43,16 +38,13 @@ codeunit 51750 "Bus Queue E2E"
     begin
         // [SCENARIO] Enqueues a bus queue with a non existing URL and status must be Error
 
-        // Verify the module highest permission level is sufficient ignore non Tables
-        PermissionsMock.Set('Bus Queue Exec');
-
         // [GIVEN] One bus queue
         BusQueue.Init(NonExistingUrlTxt, Enum::"Http Request Type"::GET);
         BusQueue.SetRaiseOnAfterInsertBusQueueResponse(false);
-        BusQueueEntryNo := Initialize();
+        Initialize();
 
-        // [WHEN] Status is different than Pending
-        Codeunit.Run(Codeunit::"Job Queue Start Codeunit", JobQueueEntry);
+        // [WHEN] Bus queue is processed
+        BusQueueEntryNo := BusQueue.Enqueue();
 
         // [THEN] The bus queue status must be Error
         BusQueueRec.Get(BusQueueEntryNo);
@@ -71,9 +63,6 @@ codeunit 51750 "Bus Queue E2E"
     begin
         // [SCENARIO] Enqueues a bus queue with a specific codepage. Body of the bus queue must be read in the same codepage.
 
-        // Verify the module highest permission level is sufficient ignore non Tables
-        PermissionsMock.Set('Bus Queue Exec');
-
         // [GIVEN] Some non English characters 
         JapaneseCharactersTok := 'こんにちは世界'; //Hello world in Japanese
 
@@ -81,9 +70,10 @@ codeunit 51750 "Bus Queue E2E"
         BusQueue.Init(MicrosoftUrlTxt, Enum::"Http Request Type"::GET);
         BusQueue.SetBody(JapaneseCharactersTok, 932); //Japanese (Shift-JIS)
         BusQueue.SetRaiseOnAfterInsertBusQueueResponse(false);
-        BusQueueEntryNo := Initialize();
+        Initialize();
 
         // [THEN] The body must be read in the same codepage
+        BusQueueEntryNo := BusQueue.Enqueue();
         BusQueueRec.SetAutoCalcFields(Body);
         BusQueueRec.Get(BusQueueEntryNo);
         BusQueueRec.Body.CreateInStream(InStream);
@@ -101,17 +91,14 @@ codeunit 51750 "Bus Queue E2E"
         BusQueueEntryNo: Integer;
     begin
         // [SCENARIO] Enqueues a bus queue and only three tries must be run
-
-        // Verify the module highest permission level is sufficient ignore non Tables
-        PermissionsMock.Set('Bus Queue Exec');
         
         // [GIVEN] One bus queue
         BusQueue.Init(NonExistingUrlTxt, Enum::"Http Request Type"::GET);
         BusQueue.SetRaiseOnAfterInsertBusQueueResponse(false);
-        BusQueueEntryNo := Initialize();
+        Initialize();
 
-        // [WHEN] Status is different than Pending
-        Codeunit.Run(Codeunit::"Job Queue Start Codeunit", JobQueueEntry);
+        // [WHEN] Bus queue is processed
+        BusQueueEntryNo := BusQueue.Enqueue();
         
         // [THEN] The bus queue number of tries must be three
         BusQueueRec.Get(BusQueueEntryNo);
@@ -126,18 +113,15 @@ codeunit 51750 "Bus Queue E2E"
         BeforeRunDateTime, AfterRunDateTime: DateTime;
     begin
         // [SCENARIO] Enqueues a bus queue and very approximately only two seconds must elapse after three tries
-
-        // Verify the module highest permission level is sufficient ignore non Tables
-        PermissionsMock.Set('Bus Queue Exec');
         
         // [GIVEN] One bus queue
         BusQueue.Init(NonExistingUrlTxt, Enum::"Http Request Type"::GET);
         BusQueue.SetRaiseOnAfterInsertBusQueueResponse(false);
-        BusQueueEntryNo := Initialize();
+        Initialize();
 
-        // [WHEN] Status is different than Pending
+        // [WHEN] Bus queue is processed
         BeforeRunDateTime := CurrentDateTime();
-        Codeunit.Run(Codeunit::"Job Queue Start Codeunit", JobQueueEntry);
+        BusQueueEntryNo := BusQueue.Enqueue();
         AfterRunDateTime := CurrentDateTime();
         
         // [THEN] The bus queue status must be Processed
@@ -154,47 +138,25 @@ codeunit 51750 "Bus Queue E2E"
     begin
         // [SCENARIO] Enqueues a bus queue and response must be retrieved through event subscription
 
-        // Verify the module highest permission level is sufficient ignore non Tables
-        PermissionsMock.Set('Bus Queue Exec');
-
         // [GIVEN] One bus queue
         if BindSubscription(BusQueueTestSubscriber) then;
         BusQueueTestSubscriber.ClearReasonPhrase();
         BusQueue.Init(NonExistingUrlTxt, Enum::"Http Request Type"::GET);
         BusQueue.SetRaiseOnAfterInsertBusQueueResponse(true);
-        BusQueueEntryNo := Initialize();
+        Initialize();
 
-        // [WHEN] Status is different than Pending
-        Codeunit.Run(Codeunit::"Job Queue Start Codeunit", JobQueueEntry);
+        // [WHEN] Bus queue is processed
+        BusQueueEntryNo := BusQueue.Enqueue();
         
         // [THEN] The reason phrase must not be empty
         BusQueueRec.Get(BusQueueEntryNo);
         LibraryAssert.AreNotEqual('', BusQueueTestSubscriber.GetReasonPhrase(), 'Response''s reason phrase is empty');
     end;
 
-    local procedure Initialize(): Integer
-    var
-        BusQueueEntryNo: Integer;
+    local procedure Initialize()
     begin
         BusQueue.SetSecondsBetweenRetries(1);
         BusQueue.SetMaximumNumberOfTries(3);
-        BusQueue.SetUseTaskScheduler(false);
-        BusQueueEntryNo := BusQueue.Enqueue();
-
-        CreateJobQueueEntry();
-        Commit();
-
-        exit(BusQueueEntryNo);
-    end;
-
-    local procedure CreateJobQueueEntry()
-    begin
-        Clear(JobQueueEntry);
-        JobQueueEntry.Init();
-        JobQueueEntry."Object Type to Run" := JobQueueEntry."Object Type to Run"::Codeunit;
-        JobQueueEntry."Object ID to Run" := Codeunit::"Bus Queues Handler";
-        JobQueueEntry.Status := JobQueueEntry.Status::"On Hold";
-        JobQueueEntry."Job Queue Category Code" := 'BQH';
-        JobQueueEntry.Insert(true);
+        BusQueue.SetUseTaskScheduler(false);        
     end;
 }

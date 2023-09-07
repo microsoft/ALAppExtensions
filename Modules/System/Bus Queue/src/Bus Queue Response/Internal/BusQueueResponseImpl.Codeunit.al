@@ -3,7 +3,6 @@ codeunit 51760 "Bus Queue Response Impl."
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "Name/Value Buffer" = RI;
 
     var
         BusQueueResponse: Record "Bus Queue Response";
@@ -60,42 +59,45 @@ codeunit 51760 "Bus Queue Response Impl."
 
     internal procedure GetHeadersAsJson(HttpHeaders: HttpHeaders; HttpContentHeaders: HttpHeaders): Text
     var
-        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
-        JsonObject: JsonObject;
-        JsonText: Text;
+        HttpHeadersTxt, HttpContentHeadersTxt: Text;
     begin
-        GetHeaders(HttpHeaders, TempNameValueBuffer);
-        GetHeaders(HttpContentHeaders, TempNameValueBuffer);
-
-        if not TempNameValueBuffer.FindSet() then
-            exit;
+        HttpHeadersTxt := Convert(HttpHeaders);
+        HttpContentHeadersTxt := Convert(HttpContentHeaders);
         
-        repeat
-            JsonObject.Add(TempNameValueBuffer.Name, TempNameValueBuffer.GetValue());
-        until TempNameValueBuffer.Next() = 0;
+        HttpHeadersTxt := HttpHeadersTxt.TrimEnd('}');
+        HttpHeadersTxt += ',';
+        HttpContentHeadersTxt := HttpContentHeadersTxt.TrimStart('{');
 
-        JsonObject.WriteTo(JsonText);
-        exit(JsonText);
+        exit(HttpHeadersTxt + HttpContentHeadersTxt);
     end;
 
-    local procedure GetHeaders(HttpHeaders: HttpHeaders; var TempNameValueBuffer: Record "Name/Value Buffer" temporary)
+    local procedure Convert(HttpHeaders: HttpHeaders): Text
     var
-        Keys, Values: List of [Text];
-        "Key", Value: Text;
+        JsonConvert: DotNet JsonConvert;
+        Keys, Values : List of [Text];
+        "Key", Value, Val, JsonText : Text;
+        Tb: TextBuilder;
     begin
         Keys := HttpHeaders.Keys();
+        if Keys.Count() = 0 then
+            exit;
+
+        Tb.Append('{');
 
         foreach "Key" in Keys do begin
             Clear(Values);
-            if HttpHeaders.GetValues("Key", Values) then
-                foreach Value in Values do begin
-                    TempNameValueBuffer.SetRange(Name, "Key");
-                    if TempNameValueBuffer.FindFirst() then begin
-                        TempNameValueBuffer.SetValue(TempNameValueBuffer.GetValue() + ',' + Value);
-                        TempNameValueBuffer.Modify();
-                    end else
-                        TempNameValueBuffer.AddNewEntry(CopyStr("Key", 1, 250), Value);
-                end;
+            if HttpHeaders.GetValues("Key", Values) then begin
+                Val := '';
+                foreach Value in Values do
+                    Val += Value + ',';
+
+                Val := Val.TrimEnd(',');
+                Tb.Append('"' + "Key" + '": ' + JsonConvert.SerializeObject(Val) + ',');
+            end;
         end;
+
+        JsonText := Tb.ToText().TrimEnd(',') + '}';
+        
+        exit(JsonText);
     end;
 }

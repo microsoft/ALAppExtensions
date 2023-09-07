@@ -84,10 +84,35 @@ page 51750 "Bus Queues"
                         ReenqueueBusQueues();
                 end;
             }
+            action(Download)
+            {
+                Caption = 'Download body';
+                Image = Download;
+                ToolTip = 'Allows to download the body.';
+
+                trigger OnAction()
+                var
+                    InStream: InStream;
+                    FileName: Text;
+                begin
+                    if not Rec.Body.HasValue() then begin
+                        Message(EmptyLbl);
+                        exit;
+                    end;
+                    
+                    Rec.CalcFields(Body);
+                    Rec.Body.CreateInStream(InStream, TextEncoding::UTF8);
+                    FileName := 'BusQueue_' + Format(CurrentDateTime(), 0, FormatFileTok);
+                    DownloadFromStream(InStream, '', '', '', FileName);
+                end;
+            }
         }
         area(Promoted)
         {
             actionref(Reenqueue_Promoted; Reenqueue)
+            {
+            }
+            actionref(Download_Promoted; Download)
             {
             }
         }
@@ -97,6 +122,7 @@ page 51750 "Bus Queues"
         ViewLbl: Label 'View';
         EmptyLbl: Label '(empty)';
         ConfirmToReenqueueLbl: Label '¿Do you confirm to reenqueue?';
+        FormatFileTok: Label '<Day,2>_<Month,2>_<Year4>_<Hours24>_<Minutes,2>_<Seconds,2>', Locked = true;
         HeadersTxt: Text;
     
     trigger OnAfterGetRecord()
@@ -106,8 +132,8 @@ page 51750 "Bus Queues"
 
     local procedure ViewBody()
     var
-        DotNetEncoding: Codeunit DotNet_Encoding;
-        DotNetStreamReader: Codeunit DotNet_StreamReader;
+        Encoding: DotNet Encoding;
+        StreamReader: DotNet StreamReader;
         InStream: InStream;
         FileName, BodyText : Text;
     begin
@@ -120,13 +146,13 @@ page 51750 "Bus Queues"
         Rec.Body.CreateInStream(InStream);
 
         if Rec."Is Text" then begin
-            DotNetEncoding.Encoding(Rec.Codepage);
-            DotNetStreamReader.StreamReader(InStream, DotNetEncoding);
-            BodyText := DotNetStreamReader.ReadToEnd();
+            Encoding.GetEncoding(Rec.Codepage);
+            StreamReader := StreamReader.StreamReader(InStream, Encoding);
+            BodyText := StreamReader.ReadToEnd();
 
             Message(BodyText);
         end else begin
-            FileName := 'BusQueue_' + Format(CurrentDateTime(), 0, '<Day,2>_<Month,2>_<Year4>_<Hours24>_<Minutes,2>_<Seconds,2>');
+            FileName := 'BusQueue_' + Format(CurrentDateTime(), 0, FormatFileTok);
             DownloadFromStream(InStream, '', '', '', FileName);
         end;
     end;

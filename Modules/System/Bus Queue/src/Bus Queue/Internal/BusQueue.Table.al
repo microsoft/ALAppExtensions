@@ -7,8 +7,6 @@ table 51750 "Bus Queue"
     InherentEntitlements = RIMD;
     InherentPermissions = RIMD;
     Extensible = false;
-    Permissions = tabledata "Job Queue Entry" = RM,
-                  tabledata "Name/Value Buffer" = R;
 
     fields
     {
@@ -30,12 +28,18 @@ table 51750 "Bus Queue"
 
             trigger OnValidate()
             var
-                Regex: Codeunit Regex;
-                RegexURLTok: Label '[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)';
+                Uri, ResultUri: DotNet Uri;
+                UriKind: DotNet UriKind;
             begin
-                if not Regex.IsMatch(URL, RegexURLTok, 0) then
+                if not Uri.IsWellFormedUriString(Url, UriKind.Absolute) then
+                    if not Uri.TryCreate(Url, UriKind.Absolute, ResultUri) then
+                        Error(InvalidUriErr);
+
+                Uri := Uri.Uri(Url);
+                if (Uri.Scheme <> 'http') and (Uri.Scheme <> 'https') then
                     Error(InvalidUriErr);
             end;
+    
         }
         field(4; Headers; Text[2048])
         {
@@ -170,39 +174,42 @@ table 51750 "Bus Queue"
             "Entry No." := 1;
     end;
 
-    internal procedure SaveHeaders(var TempNameValueBuffer: Record "Name/Value Buffer" temporary)
+    internal procedure SaveHeaders(HeadersList: List of [Dictionary of [Text, Text]])
     var
-        JsonTextReaderWriterHeaders, JsonTextReaderWriterContentHeaders : Codeunit "Json Text Reader/Writer";
-        Name, Value, HeadersTxt, ContentHeadersTxt : Text;
+        JsonConvert: DotNet JsonConvert;
+        HeadersTb, ContentHeadersTb: TextBuilder;
+        Header: Dictionary of [Text, Text];
+        Keys: List of [Text];
+        HeadersTxt, ContentHeadersTxt, "Key": Text;
     begin
-        if not TempNameValueBuffer.FindSet() then
+        if HeadersList.Count() = 0 then
             exit;
 
-        JsonTextReaderWriterHeaders.WriteStartObject('');
-        JsonTextReaderWriterContentHeaders.WriteStartObject('');
-        repeat
-            Name := TempNameValueBuffer.Name.Trim();
-            Value := TempNameValueBuffer.GetValue();
+        HeadersTb.Append('{');
+        ContentHeadersTb.Append('{');
+        foreach Header in HeadersList do begin
+            Keys := Header.Keys();
+            foreach "Key" in Keys do
+                if IsContentHeader("Key") then
+                    ContentHeadersTb.Append('"' + "Key" + '":' + JsonConvert.SerializeObject(Header.Get("Key")) + ',')
+                else
+                    HeadersTb.Append('"' + "Key" + '":' + JsonConvert.SerializeObject(Header.Get("Key")) + ',');
+        end;
 
-            if IsContentHeader(Name) then
-                JsonTextReaderWriterContentHeaders.WriteStringProperty(Name, Value)
-            else
-                JsonTextReaderWriterHeaders.WriteStringProperty(Name, Value);
-        until TempNameValueBuffer.Next() = 0;
-        JsonTextReaderWriterHeaders.WriteEndObject();
-        JsonTextReaderWriterContentHeaders.WriteEndObject();
+        HeadersTxt := HeadersTb.ToText().TrimEnd(',') + '}';
+        ContentHeadersTxt := ContentHeadersTb.ToText().TrimEnd(',') + '}';
 
-        HeadersTxt := JsonTextReaderWriterHeaders.GetJSonAsText();
         if StrLen(HeadersTxt) > MaxStrLen(Headers) then
             Error(HeadersTooLongErr, MaxStrLen(Headers))
         else
-            Headers := CopyStr(HeadersTxt, 1, StrLen(HeadersTxt));
+            if HeadersTxt <> '{}' then
+                Headers := CopyStr(HeadersTxt, 1, StrLen(HeadersTxt));
 
-        ContentHeadersTxt := JsonTextReaderWriterContentHeaders.GetJSonAsText();
         if StrLen(ContentHeadersTxt) > MaxStrLen("Content Headers") then
             Error(HeadersTooLongErr, MaxStrLen("Content Headers"))
         else
-            "Content Headers" := CopyStr(ContentHeadersTxt, 1, StrLen(ContentHeadersTxt));
+            if ContentHeadersTxt <> '{}' then
+                "Content Headers" := CopyStr(ContentHeadersTxt, 1, StrLen(ContentHeadersTxt));
     end;
 
     internal procedure UpdateStatus(IsSuccessStatusCode: Boolean)

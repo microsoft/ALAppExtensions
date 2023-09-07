@@ -38,16 +38,15 @@ codeunit 51755 "Bus Queue Handler"
 
     local procedure SetHttpBody(BusQueue: Record "Bus Queue"; var HttpContent: HttpContent; var HttpRequestMessage: HttpRequestMessage)
     var
-        DotNetStreamReader: Codeunit DotNet_StreamReader;
-        DotNetEncoding: Codeunit DotNet_Encoding;
+        StreamReader: DotNet StreamReader;
+        Encoding: DotNet Encoding;
         InStream: InStream;
     begin
         if not BusQueue.Body.HasValue() then
             exit;
 
         BusQueue.Body.CreateInStream(InStream);
-        DotNetEncoding.Encoding(BusQueue.Codepage);
-        DotNetStreamReader.StreamReader(InStream, DotNetEncoding);
+        StreamReader := StreamReader.StreamReader(InStream, Encoding.GetEncoding(BusQueue.Codepage));
         HttpContent.WriteFrom(InStream);
         HttpRequestMessage.Content(HttpContent);
     end;
