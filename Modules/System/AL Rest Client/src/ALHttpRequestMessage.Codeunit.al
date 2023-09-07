@@ -43,6 +43,7 @@ codeunit 50301 "AL Http Request Message"
     /// <param name="HeaderName">The name of the header to add.</param>
     /// <param name="HeaderValue">The value of the header to add.</param>
     /// <remarks>If the header already exists, it will be overwritten.</remarks>
+    [NonDebuggable]
     procedure AddRequestHeader(HeaderName: Text; HeaderValue: Text)
     var
         RequestHeaders: HttpHeaders;

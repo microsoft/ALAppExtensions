@@ -2,6 +2,7 @@
 codeunit 50304 "Http Authentication Basic" implements "Http Authentication"
 {
     var
+        [NonDebuggable]
         GlobalUsername, GlobalPassword : Text;
 
     [NonDebuggable]

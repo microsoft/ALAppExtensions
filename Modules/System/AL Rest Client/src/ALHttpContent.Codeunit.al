@@ -189,7 +189,6 @@ codeunit 50305 "AL Http Content"
     procedure AsXmlDocument() ReturnValue: XmlDocument
     var
         XmlReadOptions: XmlReadOptions;
-        xml: Text;
     begin
         XmlReadOptions.PreserveWhitespace(false);
         XmlDocument.ReadFrom(AsText(), XmlReadOptions, ReturnValue);
