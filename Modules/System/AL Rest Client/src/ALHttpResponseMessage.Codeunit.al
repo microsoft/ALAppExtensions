@@ -2,8 +2,8 @@
 codeunit 2353 "AL Http Response Message"
 {
     var
-        HttpResponseMessage: HttpResponseMessage;
         ALHttpContent: Codeunit "AL Http Content";
+        HttpResponseMessage: HttpResponseMessage;
         ErrorMessage: Text;
         Initialized: Boolean;
         HasResponse: Boolean;

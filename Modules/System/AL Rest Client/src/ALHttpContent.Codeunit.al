@@ -98,8 +98,6 @@ codeunit 2354 "AL Http Content"
     /// <returns>The HttpContent object.</returns>
     /// <remarks>The HttpContent must be properly prepared including the Content-Type header.</remarks>
     procedure Create(Content: HttpContent) ALHttpContent: Codeunit "AL Http Content"
-    var
-        ContentText: Text;
     begin
         ALHttpContent.SetHttpContent(Content);
     end;

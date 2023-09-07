@@ -10,9 +10,9 @@ codeunit 2351 "AL Rest Client Impl."
         ConnectionError: Boolean;
         Initialized: Boolean;
         NotInitializedErr: Label 'The AL Rest Client has not been initialized';
-        EnvironmentBlocksErr: label 'Environment blocks an outgoing HTTP request to ''%1''.', Comment = '%1 = url, e.g. https://microsoft.com';
-        ConnectionErr: label 'Connection to the remote service ''%1'' could not be established.', Comment = '%1 = url, e.g. https://microsoft.com';
-        RequestFailedErr: label 'The request failed: %1 %2', Comment = '%1 = HTTP status code, %2 = Reason phrase';
+        EnvironmentBlocksErr: Label 'Environment blocks an outgoing HTTP request to ''%1''.', Comment = '%1 = url, e.g. https://microsoft.com';
+        ConnectionErr: Label 'Connection to the remote service ''%1'' could not be established.', Comment = '%1 = url, e.g. https://microsoft.com';
+        RequestFailedErr: Label 'The request failed: %1 %2', Comment = '%1 = HTTP status code, %2 = Reason phrase';
         UserAgentLbl: Label 'Dynamics 365 Business Central - |%1| %2/%3', Locked = true, Comment = '%1 = App Publisher; %2 = App Name; %3 = App Version';
 
     procedure Initialize()
