@@ -2,38 +2,37 @@
   "id": "ae153cbb-ad55-447c-9226-5af3ef57280f",
   "name": "AL Rest Client Tests",
   "publisher": "Microsoft",
-  "version": "21.0.0.0",
+  "version": "22.5.0.0",
   "brief": "Tests for the AL Rest Client module",
   "description": "Tests for the AL Rest Client module",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
   "help": "https://go.microsoft.com/fwlink/?linkid=2206603",
   "url": "https://go.microsoft.com/fwlink/?LinkId=72401",
-  "logo": "ExtensionLogo.png",
   "dependencies": [
     {
       "id": "812b339d-a9db-4a6e-84e4-fe35cbef0c44",
       "name": "AL Rest Client",
       "publisher": "Microsoft",
-      "version": "21.0.0.0"
+      "version": "22.5.0.0"
     },
     {
         "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
         "name":  "Tests-TestLibraries",
         "publisher":  "Microsoft",
-        "version":  "21.0.0.0"
+        "version":  "22.5.0.0"
     },
     {
         "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
         "name":  "Library Assert",
         "publisher":  "Microsoft",
-        "version":  "21.0.0.0"
+        "version":  "22.5.0.0"
     },
     {
       "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
       "name":  "System Application",
       "publisher":  "Microsoft",
-      "version":  "22.0.0.0"
+      "version":  "22.5.0.0"
     }
   ],
   "screenshots": [],
@@ -49,7 +48,6 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "runtime": "10.0",
   "features": [
     "NoImplicitWith"
   ]
