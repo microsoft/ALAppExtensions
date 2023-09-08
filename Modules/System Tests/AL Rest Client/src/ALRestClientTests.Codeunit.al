@@ -306,7 +306,7 @@ codeunit 134971 "AL Rest Client Tests"
 
         // [GIVEN] An uninitialized AL Rest Client
         // [WHEN] The Send method is called without content
-        ALHttpResponseMessage := ALRestClient.Send(Enum::"Http Request Type"::GET, 'https://httpbin.org/get');
+        ALHttpResponseMessage := ALRestClient.Send(Enum::"Http Method"::GET, 'https://httpbin.org/get');
 
         // [THEN] The response contains the expected data
         Assert.AreEqual(ALHttpResponseMessage.HttpStatusCode(), 200, 'The response status code should be 200');
@@ -326,7 +326,7 @@ codeunit 134971 "AL Rest Client Tests"
 
         // [GIVEN] An uninitialized AL Rest Client
         // [WHEN] The Send method is called with content
-        ALHttpResponseMessage := ALRestClient.Send(Enum::"Http Request Type"::POST, 'https://httpbin.org/post', 'Hello World');
+        ALHttpResponseMessage := ALRestClient.Send(Enum::"Http Method"::POST, 'https://httpbin.org/post', 'Hello World');
 
         // [THEN] The response contains the expected data
         Assert.AreEqual(ALHttpResponseMessage.HttpStatusCode(), 200, 'The response status code should be 200');
@@ -349,7 +349,7 @@ codeunit 134971 "AL Rest Client Tests"
         // [GIVEN] An uninitialized AL Rest Client
         // [WHEN] The Send method is called with a request message
         ALHttpRequestMessage.Initialize();
-        ALHttpRequestMessage.SetHttpMethod(Enum::"Http Request Type"::GET);
+        ALHttpRequestMessage.SetHttpMethod(Enum::"Http Method"::GET);
         ALHttpRequestMessage.SetRequestUri('https://httpbin.org/get');
         ALHttpResponseMessage := ALRestClient.Send(ALHttpRequestMessage);
 

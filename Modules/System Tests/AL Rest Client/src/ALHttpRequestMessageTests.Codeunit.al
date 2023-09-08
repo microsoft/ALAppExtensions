@@ -18,7 +18,7 @@ codeunit 134972 "AL Request Message Tests"
 
         // [GIVEN] An initialized AL Http Request Message
         ALHttpRequestMessage.Initialize();
-        ALHttpRequestMessage.SetHttpMethod(Enum::"Http Request Type"::PATCH);
+        ALHttpRequestMessage.SetHttpMethod(Enum::"Http Method"::PATCH);
 
         // [WHEN] The request message is read
         HttpRequestMessage := ALHttpRequestMessage.GetRequestMessage();

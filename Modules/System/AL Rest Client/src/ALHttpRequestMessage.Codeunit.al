@@ -25,7 +25,7 @@ codeunit 2352 "AL Http Request Message"
     /// <summary>Sets the HTTP method for the HttpRequestMessage object.</summary>
     /// <param name="Method">The HTTP method to use.</param>
     /// <remarks>Default method is GET</remarks>
-    procedure SetHttpMethod(Method: Enum "Http Request Type")
+    procedure SetHttpMethod(Method: Enum "Http Method")
     begin
         SetHttpMethod(Method.Names.Get(Method.Ordinals.IndexOf(Method.AsInteger())));
     end;

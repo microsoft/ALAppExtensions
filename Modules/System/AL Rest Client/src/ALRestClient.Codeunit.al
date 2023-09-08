@@ -70,7 +70,7 @@ codeunit 2350 "AL Rest Client"
     /// <returns>The response message object</returns>
     procedure Get(RequestUri: Text) HttpResponseMessage: Codeunit "AL Http Response Message"
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::GET, RequestUri);
+        HttpResponseMessage := Send(Enum::"Http Method"::GET, RequestUri);
     end;
 
     /// <summary>Sends a POST request to the specified Uri and returns the response message.</summary>
@@ -81,7 +81,7 @@ codeunit 2350 "AL Rest Client"
     /// <returns>The response message object</returns>
     procedure Post(RequestUri: Text; Content: Codeunit "AL Http Content") HttpResponseMessage: Codeunit "AL Http Response Message"
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::POST, RequestUri, Content);
+        HttpResponseMessage := Send(Enum::"Http Method"::POST, RequestUri, Content);
     end;
 
     /// <summary>Sends a PATCH request to the specified Uri and returns the response message.</summary>
@@ -92,7 +92,7 @@ codeunit 2350 "AL Rest Client"
     /// <returns>The response message object</returns>
     procedure Patch(RequestUri: Text; Content: Codeunit "AL Http Content") HttpResponseMessage: Codeunit "AL Http Response Message"
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::PATCH, RequestUri, Content);
+        HttpResponseMessage := Send(Enum::"Http Method"::PATCH, RequestUri, Content);
     end;
 
     /// <summary>Sends a PUT request to the specified Uri and returns the response message.</summary>
@@ -103,7 +103,7 @@ codeunit 2350 "AL Rest Client"
     /// <returns>The response message object</returns>
     procedure Put(RequestUri: Text; Content: Codeunit "AL Http Content") HttpResponseMessage: Codeunit "AL Http Response Message"
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::PUT, RequestUri, Content);
+        HttpResponseMessage := Send(Enum::"Http Method"::PUT, RequestUri, Content);
     end;
 
     /// <summary>Sends a DELETE request to the specified Uri and returns the response message.</summary>
@@ -113,7 +113,7 @@ codeunit 2350 "AL Rest Client"
     /// <returns>The response message object</returns>
     procedure Delete(RequestUri: Text) HttpResponseMessage: Codeunit "AL Http Response Message";
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::DELETE, RequestUri);
+        HttpResponseMessage := Send(Enum::"Http Method"::DELETE, RequestUri);
     end;
 
     #endregion
@@ -128,7 +128,7 @@ codeunit 2350 "AL Rest Client"
     var
         HttpResponseMessage: Codeunit "AL Http Response Message";
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::GET, RequestUri);
+        HttpResponseMessage := Send(Enum::"Http Method"::GET, RequestUri);
         if not HttpResponseMessage.IsSuccessStatusCode() then
             Error(HttpResponseMessage.GetErrorMessage());
 
@@ -167,7 +167,7 @@ codeunit 2350 "AL Rest Client"
     var
         HttpResponseMessage: Codeunit "AL Http Response Message";
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::POST, RequestUri, Content);
+        HttpResponseMessage := Send(Enum::"Http Method"::POST, RequestUri, Content);
 
         if not HttpResponseMessage.IsSuccessStatusCode() then
             Error(HttpResponseMessage.GetErrorMessage());
@@ -207,7 +207,7 @@ codeunit 2350 "AL Rest Client"
     var
         HttpResponseMessage: Codeunit "AL Http Response Message";
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::PATCH, RequestUri, Content);
+        HttpResponseMessage := Send(Enum::"Http Method"::PATCH, RequestUri, Content);
 
         if not HttpResponseMessage.IsSuccessStatusCode() then
             Error(HttpResponseMessage.GetErrorMessage());
@@ -247,7 +247,7 @@ codeunit 2350 "AL Rest Client"
     var
         HttpResponseMessage: Codeunit "AL Http Response Message";
     begin
-        HttpResponseMessage := Send(Enum::"Http Request Type"::PUT, RequestUri, Content);
+        HttpResponseMessage := Send(Enum::"Http Method"::PUT, RequestUri, Content);
 
         if not HttpResponseMessage.IsSuccessStatusCode() then
             Error(HttpResponseMessage.GetErrorMessage());
@@ -263,7 +263,7 @@ codeunit 2350 "AL Rest Client"
     /// <param name="Method">The HTTP method to use.</param>
     /// <param name="RequestUri">The Uri the request is sent to.</param>
     /// <returns>The response message object</returns>
-    procedure Send(Method: Enum "Http Request Type"; RequestUri: Text) HttpResponseMessage: Codeunit "AL Http Response Message"
+    procedure Send(Method: Enum "Http Method"; RequestUri: Text) HttpResponseMessage: Codeunit "AL Http Response Message"
     var
         EmptyALHttpContent: Codeunit "AL Http Content";
     begin
@@ -278,7 +278,7 @@ codeunit 2350 "AL Rest Client"
     /// <param name="RequestUri">The Uri the request is sent to.</param>
     /// <param name="Content">The content to send. Valid types are: Codeunit (Temp Blob), InStream, JsonObject, JsonArray, Jsontoken, XmlDocument, Text</param>
     /// <returns>The response message object</returns>
-    procedure Send(Method: Enum "Http Request Type"; RequestUri: Text; Content: Variant) HttpResponseMessage: Codeunit "AL Http Response Message"
+    procedure Send(Method: Enum "Http Method"; RequestUri: Text; Content: Variant) HttpResponseMessage: Codeunit "AL Http Response Message"
     var
         ALHttpContent: Codeunit "AL Http Content";
     begin
@@ -293,7 +293,7 @@ codeunit 2350 "AL Rest Client"
     /// <param name="Content">The content to send. Valid types are: Codeunit (Temp Blob), InStream, JsonObject, JsonArray, Jsontoken, XmlDocument, Text</param>
     /// <param name="ContentType">The content type of the content. Only required for content of type Codeunit or InStream.</param>
     /// <returns>The response message object</returns>
-    procedure Send(Method: Enum "Http Request Type"; RequestUri: Text; Content: Variant; ContentType: Text) HttpResponseMessage: Codeunit "AL Http Response Message"
+    procedure Send(Method: Enum "Http Method"; RequestUri: Text; Content: Variant; ContentType: Text) HttpResponseMessage: Codeunit "AL Http Response Message"
     var
         ALHttpContent: Codeunit "AL Http Content";
     begin
@@ -307,7 +307,7 @@ codeunit 2350 "AL Rest Client"
     /// <param name="RequestUri">The Uri the request is sent to.</param>
     /// <param name="Content">The content to send.</param>
     /// <returns>The response message object</returns>
-    procedure Send(Method: Enum "Http Request Type"; RequestUri: Text; Content: Codeunit "AL Http Content") HttpResponseMessage: Codeunit "AL Http Response Message"
+    procedure Send(Method: Enum "Http Method"; RequestUri: Text; Content: Codeunit "AL Http Content") HttpResponseMessage: Codeunit "AL Http Response Message"
     var
         HttpRequestMessage: Codeunit "AL Http Request Message";
     begin
