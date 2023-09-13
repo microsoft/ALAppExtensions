@@ -268,7 +268,7 @@ table 51750 "Bus Queue"
 
     local procedure IsContentHeader(Header: Text): Boolean
     begin
-        exit(Header in ['Allow', 'Content-Disposition', 'Content-Encoding', 'Content-Language', 'Content-Length', 'Content-Location',
-            'Content-MD5', 'Content-Range', 'Content-Type', 'Expires', 'Last-Modified']);
+        exit(Header.ToLower() in ['allow', 'content-disposition', 'content-encoding', 'content-language', 'content-length', 'content-location',
+            'content-md5', 'content-range', 'content-type', 'expires', 'last-modified']);
     end;
 }
