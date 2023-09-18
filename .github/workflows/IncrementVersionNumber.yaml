@@ -41,57 +41,38 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v3.2
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           eventId: "DO0096"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.2
-        if: github.event.inputs.useGhTokenWorkflow == 'true'
+        uses: microsoft/AL-Go/Actions/ReadSettings@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.2
-        if: github.event.inputs.useGhTokenWorkflow == 'true'
+        id: ReadSecrets
+        uses: microsoft/AL-Go/Actions/ReadSecrets@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'ghTokenWorkflow'
-
-      - name: CalculateToken
-        id: CalculateToken
-        env:
-          useGhTokenWorkflow: ${{ github.event.inputs.useGhTokenWorkflow }}
-        run: |
-          $ghToken = '${{ secrets.GITHUB_TOKEN }}'
-          if ($env:useGhTokenWorkflow -eq 'true') {
-            $secrets = $env:Secrets | ConvertFrom-Json
-            if ($secrets.GHTOKENWORKFLOW) {
-              $ghToken = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($secrets.GHTOKENWORKFLOW))
-            }
-            else {
-              Write-Host "::Warning::GHTOKENWORKFLOW secret not found. Using GITHUB_TOKEN."
-            }
-          }
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "ghToken=$ghToken"
+          getSecrets: 'TokenForPush'
+          useGhTokenWorkflowForPush: '${{ github.event.inputs.useGhTokenWorkflow }}'
 
       - name: Increment Version Number
-        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@v3.2
+        uses: microsoft/AL-Go/Actions/IncrementVersionNumber@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
-          token: ${{ steps.CalculateToken.outputs.ghToken }}
+          token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           project: ${{ github.event.inputs.project }}
           versionNumber: ${{ github.event.inputs.versionNumber }}
           directCommit: ${{ github.event.inputs.directCommit }}
-  
+
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v3.2
+        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           eventId: "DO0096"
