@@ -27,13 +27,12 @@ jobs:
     runs-on: [ windows-latest ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-      environments: ${{ steps.ReadSettings.outputs.EnvironmentsJson }}
-      environmentCount: ${{ steps.ReadSettings.outputs.EnvironmentCount }}
-      deliveryTargets: ${{ steps.DetermineDeliveryTargets.outputs.DeliveryTargetsJson }}
-      deliveryTargetCount: ${{ steps.DetermineDeliveryTargets.outputs.DeliveryTargetCount }}
+      environmentsMatrixJson: ${{ steps.DetermineDeploymentEnvironments.outputs.EnvironmentsMatrixJson }}
+      environmentCount: ${{ steps.DetermineDeploymentEnvironments.outputs.EnvironmentCount }}
+      deploymentEnvironmentsJson: ${{ steps.DetermineDeploymentEnvironments.outputs.DeploymentEnvironmentsJson }}
+      deliveryTargetsJson: ${{ steps.DetermineDeliveryTargets.outputs.DeliveryTargetsJson }}
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
       githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
-      checkRunId: ${{ steps.CreateCheckRun.outputs.checkRunId }}
       projects: ${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}
       projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
@@ -46,108 +45,65 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v3.2
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           eventId: "DO0091"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.2
+        uses: microsoft/AL-Go/Actions/ReadSettings@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          getEnvironments: '*'
           get: type
 
       - name: Determine Workflow Depth
         id: DetermineWorkflowDepth
         run: |
           Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "WorkflowDepth=$($env:workflowDepth)"
-          
+
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: microsoft/AL-Go-Actions/DetermineProjectsToBuild@v3.2
+        uses: microsoft/AL-Go/Actions/DetermineProjectsToBuild@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
-        run: |
-          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-          $deliveryTargetSecrets = @('GitHubPackagesContext','NuGetContext','StorageContext','AppSourceContext')
-          $namePrefix = 'DeliverTo'
-          Get-Item -Path (Join-Path $ENV:GITHUB_WORKSPACE ".github/$($namePrefix)*.ps1") | ForEach-Object {
-            $deliveryTarget = [System.IO.Path]::GetFileNameWithoutExtension($_.Name.SubString($namePrefix.Length))
-            $deliveryTargetSecrets += @("$($deliveryTarget)Context")
-          }
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Secrets=$($deliveryTargetSecrets -join ',')"
+        uses: microsoft/AL-Go/Actions/DetermineDeliveryTargets@7839c2380d659b294268251d23c2643c6bf067d7
+        with:
+          shell: powershell
+          projectsJson: '${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}'
+          checkContextSecrets: 'N'
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.2
+        id: ReadSecrets
+        uses: microsoft/AL-Go/Actions/ReadSecrets@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: ${{ steps.DetermineDeliveryTargetSecrets.outputs.Secrets }}
+          getSecrets: ${{ steps.DetermineDeliveryTargetSecrets.outputs.ContextSecrets }}
 
       - name: Determine Delivery Targets
         id: DetermineDeliveryTargets
-        run: |
-          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-          $deliveryTargets = @('GitHubPackages','NuGet','Storage')
-          if ($env:type -eq "AppSource App") {
-            $continuousDelivery = $false
-            # For multi-project repositories, we will add deliveryTarget AppSource if any project has AppSourceContinuousDelivery set to true
-            ('${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}' | ConvertFrom-Json) | where-Object { $_ } | ForEach-Object {
-              $projectSettings = Get-Content (Join-Path $_ '.AL-Go/settings.json') -encoding UTF8 -raw | ConvertFrom-Json
-              if ($projectSettings.PSObject.Properties.Name -eq 'AppSourceContinuousDelivery' -and $projectSettings.AppSourceContinuousDelivery) {
-                Write-Host "Project $_ is setup for Continuous Delivery"
-                $continuousDelivery = $true
-              }
-            }
-            if ($continuousDelivery) {
-              $deliveryTargets += @("AppSource")
-            }
-          }
-          $namePrefix = 'DeliverTo'
-          Get-Item -Path (Join-Path $ENV:GITHUB_WORKSPACE ".github/$($namePrefix)*.ps1") | ForEach-Object {
-            $deliveryTarget = [System.IO.Path]::GetFileNameWithoutExtension($_.Name.SubString($namePrefix.Length))
-            $deliveryTargets += @($deliveryTarget)
-          }
-          $settings = $env:Settings | ConvertFrom-Json
-          $secrets = $env:Secrets | ConvertFrom-Json
-          $deliveryTargets = @($deliveryTargets | Select-Object -unique | Where-Object {
-            $include = $false
-            Write-Host "Check DeliveryTarget $_"
-            $contextName = "$($_)Context"
-            if ($secrets."$contextName") {
-              $settingName = "DeliverTo$_"
-              if (($settings.PSObject.Properties.Name -eq $settingName) -and ($settings."$settingName".PSObject.Properties.Name -eq "Branches")) {
-                Write-Host "Branches:"
-                $settings."$settingName".Branches | ForEach-Object {
-                  Write-Host "- $_"
-                  if ($ENV:GITHUB_REF_NAME -like $_) {
-                    $include = $true
-                  }
-                }
-              }
-              else {
-                $include = ($ENV:GITHUB_REF_NAME -eq 'main')
-              }
-            }
-            if ($include) {
-              Write-Host "DeliveryTarget $_ included"
-            }
-            $include
-          })
-          $deliveryTargetsJson = $deliveryTargets | ConvertTo-Json -Depth 99 -compress
-          if ($deliveryTargets.Count -lt 2) { $deliveryTargetsJson = "[$($deliveryTargetsJson)]" }
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "DeliveryTargetsJson=$deliveryTargetsJson"
-          Write-Host "DeliveryTargetsJson=$deliveryTargetsJson"
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "DeliveryTargetCount=$($deliveryTargets.Count)"
-          Write-Host "DeliveryTargetCount=$($deliveryTargets.Count)"
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "DeliveryTargets=$deliveryTargetsJson"
+        uses: microsoft/AL-Go/Actions/DetermineDeliveryTargets@7839c2380d659b294268251d23c2643c6bf067d7
+        env:
+          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
+        with:
+          shell: powershell
+          projectsJson: '${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}'
+          checkContextSecrets: 'Y'
+
+      - name: Determine Deployment Environments
+        id: DetermineDeploymentEnvironments
+        uses: microsoft/AL-Go/Actions/DetermineDeploymentEnvironments@7839c2380d659b294268251d23c2643c6bf067d7
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          shell: powershell
+          getEnvironments: '*'
+          type: 'CD'
 
   CheckForUpdates:
     runs-on: [ windows-latest ]
@@ -157,14 +113,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.2
+        uses: microsoft/AL-Go/Actions/ReadSettings@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           get: templateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v3.2
+        uses: microsoft/AL-Go/Actions/CheckForUpdates@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -177,7 +132,7 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[0].buildDimensions }}
       fail-fast: false
-    name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
+    name: Build ${{ matrix.projectName }} (${{ matrix.buildMode }})
     uses: ./.github/workflows/_BuildALGoProject.yaml
     secrets: inherit
     with:
@@ -185,11 +140,12 @@ jobs:
       runsOn: ${{ needs.Initialization.outputs.githubRunner }}
       parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
       project: ${{ matrix.project }}
+      projectName: ${{ matrix.projectName }}
       buildMode: ${{ matrix.buildMode }}
       projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
-      secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
+      secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
-      publishArtifacts: ${{ github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0 }}
+      publishArtifacts: ${{ github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetsJson != '[]' || needs.Initialization.outputs.environmentCount > 0 }}
       signArtifacts: true
       useArtifactCache: true
 
@@ -200,7 +156,7 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[1].buildDimensions }}
       fail-fast: false
-    name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
+    name: Build ${{ matrix.projectName }} (${{ matrix.buildMode }})
     uses: ./.github/workflows/_BuildALGoProject.yaml
     secrets: inherit
     with:
@@ -208,18 +164,19 @@ jobs:
       runsOn: ${{ needs.Initialization.outputs.githubRunner }}
       parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
       project: ${{ matrix.project }}
+      projectName: ${{ matrix.projectName }}
       buildMode: ${{ matrix.buildMode }}
       projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
-      secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,codeSignCertificatePassword,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
+      secrets: 'licenseFileUrl,insiderSasToken,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
-      publishArtifacts: ${{ github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetCount > 0 || needs.Initialization.outputs.environmentCount > 0 }}
+      publishArtifacts: ${{ github.ref_name == 'main' || startswith(github.ref_name, 'release/') || needs.Initialization.outputs.deliveryTargetsJson != '[]' || needs.Initialization.outputs.environmentCount > 0 }}
       signArtifacts: true
       useArtifactCache: true
 
   Deploy:
     needs: [ Initialization, Build ]
     if: always() && needs.Build.result == 'Success' && needs.Initialization.outputs.environmentCount > 0
-    strategy: ${{ fromJson(needs.Initialization.outputs.environments) }}
+    strategy: ${{ fromJson(needs.Initialization.outputs.environmentsMatrixJson) }}
     runs-on: ${{ fromJson(matrix.os) }}
     name: Deploy to ${{ matrix.environment }}
     environment:
@@ -233,6 +190,11 @@ jobs:
         with:
           path: '.artifacts'
 
+      - name: Read settings
+        uses: microsoft/AL-Go/Actions/ReadSettings@7839c2380d659b294268251d23c2643c6bf067d7
+        with:
+          shell: powershell
+
       - name: EnvName
         id: envName
         run: |
@@ -240,113 +202,31 @@ jobs:
           $envName = '${{ matrix.environment }}'.split(' ')[0]
           Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
-      - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.2
-        with:
-          shell: powershell
-
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.2
+        id: ReadSecrets
+        uses: microsoft/AL-Go/Actions/ReadSecrets@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext,${{ steps.envName.outputs.envName }}-EnvironmentName,${{ steps.envName.outputs.envName }}_EnvironmentName,EnvironmentName,projects'
 
-      - name: AuthContext
-        id: authContext
-        run: |
-          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-          $settings = $env:Settings | ConvertFrom-Json
-          $envName = '${{ steps.envName.outputs.envName }}'
-          $settingsName = "DeployTo$envName"
-          if ($settings.PSObject.Properties.name -eq $settingsName) {
-            $deployToSetting = $settings."$settingsName" | ConvertFrom-Json
-          }
-          else {
-            $deployToSetting = [PSCustomObject]@{}
-          }
-          $secrets = $env:Secrets | ConvertFrom-Json
-          $authContext = $null
-          "$($envName)-AuthContext", "$($envName)_AuthContext", "AuthContext" | ForEach-Object {
-            if (!($authContext)) {
-              if ($secrets."$_") {
-                Write-Host "Using $_ secret as AuthContext"
-                $authContext = $secrets."$_"
-              }
-            }            
-          }
-          if (!($authContext)) {
-            Write-Host "::Error::No AuthContext provided"
-            exit 1
-          }
-          if (("$deployToSetting" -ne "") -and $deployToSetting.PSObject.Properties.name -eq "EnvironmentName") {
-            $environmentName = $deployToSetting.EnvironmentName
-          }
-          else {
-            $environmentName = $null
-            "$($envName)-EnvironmentName", "$($envName)_EnvironmentName", "EnvironmentName" | ForEach-Object {
-              if (!($EnvironmentName)) {
-                if ($secrets."$_") {
-                  Write-Host "Using $_ secret as EnvironmentName"
-                  Write-Host "::Warning::Please consider using the $settingsName setting, where you can specify EnvironmentName, projects and branches - instead of specifying the EnvironmentName in a Secret."
-                  $EnvironmentName = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($secrets."$_"))
-                }
-              }            
-            }
-          }
-          if (!($environmentName)) {
-            $environmentName = '${{ steps.envName.outputs.envName }}'
-          }
-          $environmentName = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($environmentName + '${{ matrix.environment }}'.SubString($envName.Length)).ToUpperInvariant()))
-
-          $projects = ''
-          if (("$deployToSetting" -ne "") -and $deployToSetting.PSObject.Properties.name -eq "projects") {
-            $projects = $deployToSetting.projects
-          }
-          elseif ($settings.PSObject.Properties.name -eq "$($envName)-projects") {
-            $projects = $settings."$($envName)-projects"
-            Write-Host "::Warning::Please consider using the $settingsName setting, where you can specify EnvironmentName, projects and branches - instead of specifying the Projects in Setting '$($envName)-projects'"
-          }
-          elseif ($settings.PSObject.Properties.name -eq "$($envName)_projects") {
-            $projects = $settings."$($envName)_projects"
-            Write-Host "::Warning::Please consider using the $settingsName setting, where you can specify EnvironmentName, projects and branches - instead of specifying the Projects in Setting '$($envName)_projects'"
-          }
-          elseif ($secrets.projects) {
-            $projects = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($secrets.projects))
-            Write-Host "::Warning::Please consider using the $settingsName setting, where you can specify EnvironmentName, projects and branches - instead of specifying the Projects in the secret 'project'"
-          }
-          if ($projects -eq '' -or $projects -eq '*') {
-            $projects = '*'
-          }
-          else {
-            $buildProjects = '${{ needs.Initialization.outputs.projects }}' | ConvertFrom-Json
-            $projects = ($projects.Split(',') | Where-Object { $buildProjects -contains $_ }) -join ','
-          }
-
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "authContext=$authContext"
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "environmentName=$environmentName"
-          Write-Host "environmentName=$([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($environmentName)))"
-          Write-Host "environmentName (as Base64)=$environmentName"
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "projects=$projects"
-          Write-Host "projects=$projects"
-
       - name: Deploy
-        uses: microsoft/AL-Go-Actions/Deploy@v3.2
+        uses: microsoft/AL-Go/Actions/Deploy@7839c2380d659b294268251d23c2643c6bf067d7
         env:
-          AuthContext: ${{ steps.authContext.outputs.authContext }}
+          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
           shell: powershell
-          type: 'CD'
-          projects: ${{ steps.authContext.outputs.projects }}
-          environmentName: ${{ steps.authContext.outputs.environmentName }}
+          environmentName: ${{ matrix.environment }}
           artifacts: '.artifacts'
+          type: 'CD'
+          deploymentEnvironmentsJson: ${{ needs.Initialization.outputs.deploymentEnvironmentsJson }}
 
   Deliver:
     needs: [ Initialization, Build ]
-    if: always() && needs.Build.result == 'Success' && needs.Initialization.outputs.deliveryTargetCount > 0
+    if: always() && needs.Build.result == 'Success' && needs.Initialization.outputs.deliveryTargetsJson != '[]'
     strategy:
       matrix:
-        deliveryTarget: ${{ fromJson(needs.Initialization.outputs.deliveryTargets) }}
+        deliveryTarget: ${{ fromJson(needs.Initialization.outputs.deliveryTargetsJson) }}
       fail-fast: false
     runs-on: [ windows-latest ]
     name: Deliver to ${{ matrix.deliveryTarget }}
@@ -360,31 +240,22 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.2
+        uses: microsoft/AL-Go/Actions/ReadSettings@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.2
+        id: ReadSecrets
+        uses: microsoft/AL-Go/Actions/ReadSecrets@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ matrix.deliveryTarget }}Context'
 
-      - name: DeliveryContext
-        id: deliveryContext
-        run: |
-          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-          $secrets = $env:Secrets | ConvertFrom-Json
-          $contextName = '${{ matrix.deliveryTarget }}Context'
-          $deliveryContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($secrets."$contextName"))
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "deliveryContext=$deliveryContext"
-          Write-Host "deliveryContext=$deliveryContext"
-
       - name: Deliver
-        uses: microsoft/AL-Go-Actions/Deliver@v3.2
+        uses: microsoft/AL-Go/Actions/Deliver@7839c2380d659b294268251d23c2643c6bf067d7
         env:
-          deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
+          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
           shell: powershell
           type: 'CD'
@@ -402,7 +273,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v3.2
+        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@7839c2380d659b294268251d23c2643c6bf067d7
         with:
           shell: powershell
           eventId: "DO0091"
