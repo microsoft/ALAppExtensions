@@ -103,7 +103,7 @@ jobs:
             getSecrets: '${{ inputs.secrets }},appDependencyProbingPathsSecrets'
 
         - name: Determine ArtifactUrl
-          uses: microsoft/AL-Go/Actions/DetermineArtifactUrl@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+          uses: microsoft/AL-Go/Actions/DetermineArtifactUrl@fe43587cf036ab516dda1a33647b6918ac73775b
           id: determineArtifactUrl
           env:
             Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
@@ -132,7 +132,7 @@ jobs:
 
         - name: Run pipeline
           id: RunPipeline
-          uses: microsoft/AL-Go/Actions/RunPipeline@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+          uses: microsoft/AL-Go/Actions/RunPipeline@fe43587cf036ab516dda1a33647b6918ac73775b
           env:
             Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
             BuildMode: ${{ inputs.buildMode }}
