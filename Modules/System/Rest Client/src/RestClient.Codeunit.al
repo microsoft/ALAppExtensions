@@ -6,25 +6,21 @@ codeunit 2350 "AL Rest Client"
 
     var
         RestClientImpl: Codeunit "Rest Client Impl.";
-        DefaultHttpClientHandler: Codeunit "Http Client Handler";
-        HttpAuthenticationAnonymous: Codeunit "Http Authentication Anonymous";
         IsInitialized: Boolean;
 
     #region Initialization
     /// <summary>Initializes the Rest Client with the default Http Client Handler and anonymous Http authentication.</summary>
     procedure Initialize()
     begin
-        Initialize(DefaultHttpClientHandler, HttpAuthenticationAnonymous);
+        RestClientImpl.Initialize();
     end;
 
     /// <summary>Initializes the Reest Client with the given Http Client Handler</summary>
     /// <param name="HttpClientHandler">The Http Client Handler to use.</param>
     /// <remarks>The anynomous Http Authentication will be used.</remarks>
     procedure Initialize(HttpClientHandler: Interface "Http Client Handler")
-    var
-        HttpAuthenticationAnonymous: Codeunit "Http Authentication Anonymous";
     begin
-        Initialize(HttpClientHandler, HttpAuthenticationAnonymous);
+        RestClientImpl.Initialize(HttpClientHandler);
     end;
 
     /// <summary>Initializes the Rest Client with the given Http Authentication.</summary>
@@ -32,7 +28,7 @@ codeunit 2350 "AL Rest Client"
     /// <remarks>The default Http Client Handler will be used.</remarks>
     procedure Initialize(HttpAuthentication: Interface "Http Authentication")
     begin
-        Initialize(DefaultHttpClientHandler, HttpAuthentication);
+        RestClientImpl.Initialize(HttpAuthentication);
     end;
 
     /// <summary>Initializes the Rest Client with the given Http Client Handler and Http Authentication.</summary>

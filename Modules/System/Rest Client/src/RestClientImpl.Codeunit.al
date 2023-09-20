@@ -7,6 +7,8 @@ codeunit 2351 "Rest Client Impl."
     var
         HttpAuthentication: Interface "Http Authentication";
         HttpClientHandler: Interface "Http Client Handler";
+        HttpClientHandler: Interface "Http Client Handler";
+        DefaultHttpClientHandler: Codeunit "Http Client Handler";
         HttpClient: HttpClient;
         Initialized: Boolean;
         NotInitializedErr: Label 'The Rest Client has not been initialized';
@@ -15,6 +17,21 @@ codeunit 2351 "Rest Client Impl."
         RequestFailedErr: label 'The request failed: %1 %2', Comment = '%1 = HTTP status code, %2 = Reason phrase';
         UserAgentLbl: Label 'Dynamics 365 Business Central - |%1| %2/%3', Locked = true, Comment = '%1 = App Publisher; %2 = App Name; %3 = App Version';
 
+    procedure Initialize()
+    begin
+        Initialize(DefaultHttpClientHandler, HttpAuthenticationAnonymous);
+    end;
+
+    procedure Initialize(HttpClientHandler: Interface "Http Client Handler")
+    begin
+        Initialize(HttpClientHandler, HttpAuthenticationAnonymous);
+    end;
+
+    procedure Initialize(HttpAuthentication: Interface "Http Authentication")
+    begin
+        Initialize(DefaultHttpClientHandler, HttpAuthentication);
+    end;
+    
     procedure Initialize(HttpClientHandlerInstance: Interface "Http Client Handler"; HttpAuthenticationInstance: Interface "Http Authentication")
     begin
         ClearAll();
