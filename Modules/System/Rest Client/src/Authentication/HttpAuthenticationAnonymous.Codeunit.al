@@ -1,6 +1,9 @@
 /// <summary>Implementation of the "Http Authentication" interface for a anonymous request.</summary>
-codeunit 2355 "Http Authentication Anonymous" implements "Http Authentication"
+codeunit 2358 "Http Authentication Anonymous" implements "Http Authentication"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     /// <summary>Indicates if authentication is required.</summary>
     /// <returns>False, because no authentication is required.</returns>
     procedure IsAuthenticationRequired(): Boolean
@@ -10,7 +13,7 @@ codeunit 2355 "Http Authentication Anonymous" implements "Http Authentication"
 
     /// <summary>Gets the authorization headers.</summary>
     /// <returns>Empty dictionary, because no authentication is required.</returns>
-    procedure GetAuthorizationHeaders() Header: Dictionary of [Text, Text]
+    procedure GetAuthorizationHeaders() Header: Dictionary of [Text, SecretText]
     begin
     end;
 }

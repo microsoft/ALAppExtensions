@@ -1,25 +1,26 @@
 /// <summary>Implementation of the "Http Authentication" interface for a request that requires basic authentication</summary>
-codeunit 2356 "Http Authentication Basic" implements "Http Authentication"
+codeunit 2359 "Http Authentication Basic" implements "Http Authentication"
 {
-    var
-        [NonDebuggable]
-        GlobalUsername, GlobalPassword : Text;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
-    [NonDebuggable]
+    var
+        GlobalUsername: Text;
+        GlobalPassword: SecretText;
+
     /// <summary>Initializes the authentication object with the given username and password</summary>
     /// <param name="Username">The username to use for authentication</param>
     /// <param name="Password">The password to use for authentication</param>
-    procedure Initialize(Username: Text; Password: Text)
+    procedure Initialize(Username: Text; Password: SecretText)
     begin
         Initialize(Username, '', Password);
     end;
 
-    [NonDebuggable]
     /// <summary>Initializes the authentication object with the given username, domain and password</summary>
     /// <param name="Username">The username to use for authentication</param>
     /// <param name="Domain">The domain to use for authentication</param>
     /// <param name="Password">The password to use for authentication</param>
-    procedure Initialize(Username: Text; Domain: Text; Password: Text)
+    procedure Initialize(Username: Text; Domain: Text; Password: SecretText)
     begin
         if Domain = '' then
             GlobalUsername := Username
@@ -36,13 +37,20 @@ codeunit 2356 "Http Authentication Basic" implements "Http Authentication"
         exit(true);
     end;
 
-    [NonDebuggable]
     /// <summary>Gets the authorization headers for the request</summary>
     /// <returns>Returns a dictionary of headers that need to be added to the request</returns>
-    procedure GetAuthorizationHeaders() Header: Dictionary of [Text, Text];
-    var
-        Base64Convert: Codeunit "Base64 Convert";
+    procedure GetAuthorizationHeaders() Header: Dictionary of [Text, SecretText];
     begin
-        Header.Add('Authorization', StrSubstNo('Basic %1', Base64Convert.ToBase64(StrSubstNo('%1:%2', GlobalUsername, GlobalPassword))));
+        Header.Add('Authorization', SecretStrSubstNo('Basic %1', ToBase64(SecretStrSubstNo('%1:%2', GlobalUsername, GlobalPassword))));
+    end;
+
+    local procedure ToBase64(String: SecretText) Base64String: SecretText
+    var
+        Convert: DotNet Convert;
+        Encoding: DotNet Encoding;
+    begin
+#pragma warning disable AL0796
+        Base64String := Convert.ToBase64String(Encoding.UTF8().GetBytes(String.Unwrap()));
+#pragma warning restore AL0796
     end;
 }

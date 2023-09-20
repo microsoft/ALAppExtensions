@@ -7,5 +7,5 @@ interface "Http Authentication"
 
     /// <summary>Gets the authorization headers for the request.</summary>
     /// <returns>A dictionary of authorization headers.</returns>
-    procedure GetAuthorizationHeaders(): Dictionary of [Text, Text]
+    procedure GetAuthorizationHeaders(): Dictionary of [Text, SecretText]
 }

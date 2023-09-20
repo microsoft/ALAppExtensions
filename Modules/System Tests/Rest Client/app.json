@@ -12,9 +12,9 @@
   "dependencies": [
       {
         "id": "812b339d-a9db-4a6e-84e4-fe35cbef0c44",
-        "name": "AL Rest Client",
+        "name": "Rest Client",
         "publisher": "Microsoft",
-        "version": "22.5.0.0"
+        "version": "23.0.0.0"
       },
       {
           "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",

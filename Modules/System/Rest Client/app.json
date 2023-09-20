@@ -1,8 +1,8 @@
 {
   "id": "812b339d-a9db-4a6e-84e4-fe35cbef0c44",
-  "name": "AL Rest Client",
+  "name": "Rest Client",
   "publisher": "Microsoft",
-  "version": "22.5.0.0",
+  "version": "23.0.0.0",
   "brief": "Provides functionality to call REST services from AL",
   "description": "Provides functionality to call REST services from AL",
   "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -17,20 +17,22 @@
       "version":  "22.5.0.0"
     },
     {
-        "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
-        "name":  "Base64 Convert",
-        "publisher":  "Microsoft",
-        "version":  "22.5.0.0"
+      "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+      "name":  "DotNet Aliases",
+      "publisher":  "Microsoft",
+      "version":  "22.5.0.0"
     }
   ],
   "screenshots": [],
-  "platform": "22.0.0.0",
+  "platform": "23.0.0.0",
   "idRanges": [
     {
       "from": 2350,
-      "to": 2356
+      "to": 2360
     }
   ],
+  "target": "OnPrem",
+  "runtime": "12.0",
   "resourceExposurePolicy": {
     "allowDebugging": true,
     "allowDownloadingSource": true,

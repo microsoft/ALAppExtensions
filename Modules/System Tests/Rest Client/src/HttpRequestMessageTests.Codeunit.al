@@ -1,4 +1,4 @@
-codeunit 134972 "AL Request Message Tests"
+codeunit 134972 "Request Message Tests"
 {
     Subtype = Test;
 
@@ -8,20 +8,19 @@ codeunit 134972 "AL Request Message Tests"
     [Test]
     procedure TestSetHttpMethod()
     var
-        ALHttpRequestMessage: Codeunit "AL Http Request Message";
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpRequestMessage: Codeunit "Http Request Message";
+        HttpContent: Codeunit "Http Content";
         HttpRequestMessage: HttpRequestMessage;
         ContentHeaders: HttpHeaders;
         ContentHeaderValues: List of [Text];
     begin
         // [SCENARIO] The request message is initialized with an empty content
 
-        // [GIVEN] An initialized AL Http Request Message
-        ALHttpRequestMessage.Initialize();
+        // [GIVEN] An initialized Http Request Message
         ALHttpRequestMessage.SetHttpMethod(Enum::"Http Method"::PATCH);
 
         // [WHEN] The request message is read
-        HttpRequestMessage := ALHttpRequestMessage.GetRequestMessage();
+        HttpRequestMessage := ALHttpRequestMessage.GetHttpRequestMessage();
 
         // [THEN] The request message is initialized correctly
         Assert.AreEqual(HttpRequestMessage.Method(), 'PATCH', 'The request message method is not correct.');
@@ -30,18 +29,17 @@ codeunit 134972 "AL Request Message Tests"
     [Test]
     procedure TestRequestMessageWithoutContent()
     var
-        ALHttpRequestMessage: Codeunit "AL Http Request Message";
+        ALHttpRequestMessage: Codeunit "Http Request Message";
         HttpRequestMessage: HttpRequestMessage;
     begin
         // [SCENARIO] The request message is initialized without content
 
-        // [GIVEN] An initialized AL Http Request Message
-        ALHttpRequestMessage.Initialize();
+        // [GIVEN] An initialized Http Request Message
         ALHttpRequestMessage.SetHttpMethod('GET');
         ALHttpRequestMessage.SetRequestUri('https://www.microsoft.com/');
 
         // [WHEN] The request message is read
-        HttpRequestMessage := ALHttpRequestMessage.GetRequestMessage();
+        HttpRequestMessage := ALHttpRequestMessage.GetHttpRequestMessage();
 
         // [THEN] The request message is initialized correctly
         Assert.AreEqual(HttpRequestMessage.Method(), 'GET', 'The request message method is not correct.');
@@ -51,23 +49,22 @@ codeunit 134972 "AL Request Message Tests"
     [Test]
     procedure TestRequestMessageWithTextContent()
     var
-        ALHttpRequestMessage: Codeunit "AL Http Request Message";
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpRequestMessage: Codeunit "Http Request Message";
+        HttpContent: Codeunit "Http Content";
         HttpRequestMessage: HttpRequestMessage;
         ContentHeaders: HttpHeaders;
         ContentHeaderValues: List of [Text];
         ContentText: Text;
     begin
-        // [GIVEN] An initialized AL Http Request Message
-        ALHttpRequestMessage.Initialize();
+        // [GIVEN] An initialized Http Request Message
         ALHttpRequestMessage.SetHttpMethod('POST');
         ALHttpRequestMessage.SetRequestUri('https://www.microsoft.com/');
 
         // [GIVEN] The request message content is a text
-        ALHttpRequestMessage.SetContent(ALHttpContent.Create('Hello World!'));
+        ALHttpRequestMessage.SetContent(HttpContent.Create('Hello World!'));
 
         // [WHEN] The request message is read
-        HttpRequestMessage := ALHttpRequestMessage.GetRequestMessage();
+        HttpRequestMessage := ALHttpRequestMessage.GetHttpRequestMessage();
 
         // [THEN] The request message is initialized correctly
         Assert.AreEqual(HttpRequestMessage.Method(), 'POST', 'The request message method is not correct.');
@@ -86,25 +83,24 @@ codeunit 134972 "AL Request Message Tests"
     [Test]
     procedure TestRequestMessageWithJsonContent()
     var
-        ALHttpRequestMessage: Codeunit "AL Http Request Message";
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpRequestMessage: Codeunit "Http Request Message";
+        HttpContent: Codeunit "Http Content";
         HttpRequestMessage: HttpRequestMessage;
         ContentHeaders: HttpHeaders;
         ContentHeaderValues: List of [Text];
         ContentJson: JsonObject;
         ContentText: Text;
     begin
-        // [GIVEN] An initialized AL Http Request Message
-        ALHttpRequestMessage.Initialize();
+        // [GIVEN] An initialized Http Request Message
         ALHttpRequestMessage.SetHttpMethod('POST');
         ALHttpRequestMessage.SetRequestUri('https://www.microsoft.com/');
 
         // [GIVEN] The request message content is a JSON object
         ContentJson.Add('value', 'Hello World!');
-        ALHttpRequestMessage.SetContent(ALHttpContent.Create(ContentJson));
+        ALHttpRequestMessage.SetContent(HttpContent.Create(ContentJson));
 
         // [WHEN] The request message is read
-        HttpRequestMessage := ALHttpRequestMessage.GetRequestMessage();
+        HttpRequestMessage := ALHttpRequestMessage.GetHttpRequestMessage();
 
         // [THEN] The request message is initialized correctly
         Assert.AreEqual(HttpRequestMessage.Method(), 'POST', 'The request message method is not correct.');
@@ -125,22 +121,21 @@ codeunit 134972 "AL Request Message Tests"
     [Test]
     procedure TestAddRequestHeader()
     var
-        ALHttpRequestMessage: Codeunit "AL Http Request Message";
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpRequestMessage: Codeunit "Http Request Message";
+        HttpContent: Codeunit "Http Content";
         HttpRequestMessage: HttpRequestMessage;
         ContentHeaders: HttpHeaders;
         ContentHeaderValues: List of [Text];
     begin
-        // [GIVEN] An initialized AL Http Request Message
-        ALHttpRequestMessage.Initialize();
+        // [GIVEN] An initialized Http Request Message
         ALHttpRequestMessage.SetHttpMethod('GET');
         ALHttpRequestMessage.SetRequestUri('https://www.microsoft.com/');
 
         // [GIVEN] The request message has a custom header
-        ALHttpRequestMessage.AddRequestHeader('X-Custom-Header', 'My Request Header');
+        ALHttpRequestMessage.SetHeader('X-Custom-Header', 'My Request Header');
 
         // [WHEN] The request message is read
-        HttpRequestMessage := ALHttpRequestMessage.GetRequestMessage();
+        HttpRequestMessage := ALHttpRequestMessage.GetHttpRequestMessage();
 
         // [THEN] The request message is initialized correctly
         HttpRequestMessage.GetHeaders(ContentHeaders);

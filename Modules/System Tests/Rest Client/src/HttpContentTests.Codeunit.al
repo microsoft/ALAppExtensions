@@ -1,4 +1,4 @@
-codeunit 134970 "AL Http Content Tests"
+codeunit 134970 "Http Content Tests"
 {
     Subtype = Test;
 
@@ -8,7 +8,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestCreateWithText()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -35,7 +35,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestCreateWithTextAndContentType()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -62,7 +62,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestCreateWithJsonObject()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -94,43 +94,9 @@ codeunit 134970 "AL Http Content Tests"
     end;
 
     [Test]
-    procedure TestCreateWithJsonObjectWithContentType()
-    var
-        ALHttpContent: Codeunit "AL Http Content";
-        HttpContent: HttpContent;
-        HttpHeaders: HttpHeaders;
-        HeaderValues: List of [Text];
-        JsonObject1: JsonObject;
-        JsonObject2: JsonObject;
-        JsonText1: Text;
-        JsonText2: Text;
-    begin
-        // [SCENARIO] Create AL Http Content object with json object
-
-        // [GIVEN] AL Http Content created with json object
-        JsonObject1.Add('name', 'John');
-        JsonObject1.Add('age', 30);
-        ALHttpContent := ALHttpContent.Create(JsonObject1, 'text/plain');
-
-        // [WHEN] Http Content is retrieved as JsonObject
-        JsonObject2 := ALHttpContent.AsJson().AsObject();
-
-        // [THEN] JsonObject is equal to JsonObject2
-        JsonObject1.WriteTo(JsonText1);
-        JsonObject2.WriteTo(JsonText2);
-        Assert.AreEqual(JsonText1, JsonText2, 'The json objects must be equal');
-
-        // [THEN] Header Content-Type is application/json
-        HttpContent := ALHttpContent.GetHttpContent();
-        HttpContent.GetHeaders(HttpHeaders);
-        HttpHeaders.GetValues('Content-Type', HeaderValues);
-        Assert.AreEqual('application/json', HeaderValues.Get(1), 'The Content-Type header must be application/json');
-    end;
-
-    [Test]
     procedure TestCreateWithJsonArray()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -162,43 +128,9 @@ codeunit 134970 "AL Http Content Tests"
     end;
 
     [Test]
-    procedure TestCreateWithJsonArrayWithContentType()
-    var
-        ALHttpContent: Codeunit "AL Http Content";
-        HttpContent: HttpContent;
-        HttpHeaders: HttpHeaders;
-        HeaderValues: List of [Text];
-        JsonArray1: JsonArray;
-        JsonArray2: JsonArray;
-        JsonText1: Text;
-        JsonText2: Text;
-    begin
-        // [SCENARIO] Create AL Http Content object with json array
-
-        // [GIVEN] AL Http Content created with json array
-        JsonArray1.Add('John');
-        JsonArray1.Add('Doe');
-        ALHttpContent := ALHttpContent.Create(JsonArray1, 'text/plain');
-
-        // [WHEN] Http Content is retrieved as JsonArray
-        JsonArray2 := ALHttpContent.AsJson().AsArray();
-
-        // [THEN] JsonArray is equal to JsonArray2
-        JsonArray1.WriteTo(JsonText1);
-        JsonArray2.WriteTo(JsonText2);
-        Assert.AreEqual(JsonText1, JsonText2, 'The json arrays must be equal');
-
-        // [THEN] Header Content-Type is application/json
-        HttpContent := ALHttpContent.GetHttpContent();
-        HttpContent.GetHeaders(HttpHeaders);
-        HttpHeaders.GetValues('Content-Type', HeaderValues);
-        Assert.AreEqual('application/json', HeaderValues.Get(1), 'The Content-Type header must be application/json');
-    end;
-
-    [Test]
     procedure TestCreateWithJsonToken()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -229,42 +161,9 @@ codeunit 134970 "AL Http Content Tests"
     end;
 
     [Test]
-    procedure TestCreateWithJsonTokenWithContentType()
-    var
-        ALHttpContent: Codeunit "AL Http Content";
-        HttpContent: HttpContent;
-        HttpHeaders: HttpHeaders;
-        HeaderValues: List of [Text];
-        JsonToken1: JsonToken;
-        JsonToken2: JsonToken;
-        JsonText1: Text;
-        JsonText2: Text;
-    begin
-        // [SCENARIO] Create AL Http Content object with json token
-
-        // [GIVEN] AL Http Content created with json token
-        JsonToken1.ReadFrom('{"name":"John","age":30}');
-        ALHttpContent := ALHttpContent.Create(JsonToken1, 'text/plain');
-
-        // [WHEN] Http Content is retrieved as JsonToken
-        JsonToken2 := ALHttpContent.AsJson();
-
-        // [THEN] JsonToken is equal to JsonToken2
-        JsonToken1.WriteTo(JsonText1);
-        JsonToken2.WriteTo(JsonText2);
-        Assert.AreEqual(JsonText1, JsonText2, 'The json tokens must be equal');
-
-        // [THEN] Header Content-Type is application/json
-        HttpContent := ALHttpContent.GetHttpContent();
-        HttpContent.GetHeaders(HttpHeaders);
-        HttpHeaders.GetValues('Content-Type', HeaderValues);
-        Assert.AreEqual('application/json', HeaderValues.Get(1), 'The Content-Type header must be application/json');
-    end;
-
-    [Test]
     procedure TestCreateWithXmlDocument()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -302,49 +201,9 @@ codeunit 134970 "AL Http Content Tests"
     end;
 
     [Test]
-    procedure TestCreateWithXmlDocumentWithContentType()
-    var
-        ALHttpContent: Codeunit "AL Http Content";
-        HttpContent: HttpContent;
-        HttpHeaders: HttpHeaders;
-        HeaderValues: List of [Text];
-        XmlDoc1: XmlDocument;
-        XmlDoc2: XmlDocument;
-        XmlReadOptions: XmlReadOptions;
-        XmlWriteOptions: XmlWriteOptions;
-        Xml1: Text;
-        Xml2: Text;
-    begin
-        // [SCENARIO] Create AL Http Content object with xml document
-
-        // [GIVEN] AL Http Content created with xml document
-        XmlReadOptions.PreserveWhitespace(false);
-        XmlDocument.ReadFrom('<?xml version="1.0" encoding="utf-8"?><root><name>John</name><age>30</age></root>', XmlReadOptions, XmlDoc1);
-        ALHttpContent := ALHttpContent.Create(XmlDoc1, 'text/plain');
-
-        // [WHEN] Http Content is retrieved as XmlDocument
-        XmlDoc2 := ALHttpContent.AsXmlDocument();
-
-        // [THEN] Xml is equal to XmlDoc1
-        XmlWriteOptions.PreserveWhitespace(false);
-        XmlDoc1.WriteTo(XmlWriteOptions, Xml1);
-
-        Clear(XmlWriteOptions); // PreserveWhitespace setting is not preserved between two calls to WriteTo, needed to reset it
-        XmlWriteOptions.PreserveWhitespace(false);
-        XmlDoc2.WriteTo(XmlWriteOptions, Xml2);
-        Assert.AreEqual(Xml1, Xml2, 'The xml documents must be equal');
-
-        // [THEN] Header Content-Type is text/xml
-        HttpContent := ALHttpContent.GetHttpContent();
-        HttpContent.GetHeaders(HttpHeaders);
-        HttpHeaders.GetValues('Content-Type', HeaderValues);
-        Assert.AreEqual('text/xml', HeaderValues.Get(1), 'The Content-Type header must be application/xml');
-    end;
-
-    [Test]
     procedure TestCreateWithInStream()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         TempBlob: Codeunit "Temp Blob";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
@@ -353,6 +212,7 @@ codeunit 134970 "AL Http Content Tests"
         InStream1: InStream;
         InStream2: InStream;
         TextContent: Text;
+        Length: Integer;
     begin
         // [SCENARIO] Create AL Http Content object with InStream
 
@@ -379,7 +239,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestCreateWithInStreamWithContentType()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         TempBlob: Codeunit "Temp Blob";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
@@ -414,7 +274,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestCreateWithTempBlob()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         TempBlob1: Codeunit "Temp Blob";
         TempBlob2: Codeunit "Temp Blob";
         HttpContent: HttpContent;
@@ -449,7 +309,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestCreateWithTempBlobWithContentType()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         TempBlob1: Codeunit "Temp Blob";
         TempBlob2: Codeunit "Temp Blob";
         HttpContent: HttpContent;
@@ -482,27 +342,9 @@ codeunit 134970 "AL Http Content Tests"
     end;
 
     [Test]
-    procedure TestCreateWithUnsupportedContent()
-    var
-        ALHttpContent: Codeunit "AL Http Content";
-        Bool: Boolean;
-    begin
-        // [SCENARIO] Create AL Http Content object with unsupported content
-
-        // [GIVEN] A boolean value
-        Bool := true;
-
-        // [WHEN] AL Http Content is created with boolean value
-        asserterror ALHttpContent := ALHttpContent.Create(Bool);
-
-        // [THEN] An error occurrs that the content is not supported
-        Assert.ExpectedError('The content is not supported.');
-    end;
-
-    [Test]
     procedure TestCreateWithHttpContent()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpContentHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -536,7 +378,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestSetContentTypeHeader()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -559,7 +401,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestSetContentEncoding()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
@@ -584,7 +426,7 @@ codeunit 134970 "AL Http Content Tests"
     [Test]
     procedure TestSetHeader()
     var
-        ALHttpContent: Codeunit "AL Http Content";
+        ALHttpContent: Codeunit "Http Content";
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         HeaderValues: List of [Text];
