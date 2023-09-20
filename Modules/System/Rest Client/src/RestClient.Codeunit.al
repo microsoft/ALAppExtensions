@@ -1,12 +1,11 @@
 /// <summary>Provides functionality to easily work with the HttpClient object.</summary>
-codeunit 2350 "AL Rest Client"
+codeunit 2350 "Rest Client"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
 
     var
         RestClientImpl: Codeunit "Rest Client Impl.";
-        IsInitialized: Boolean;
 
     #region Initialization
     /// <summary>Initializes the Rest Client with the default Http Client Handler and anonymous Http authentication.</summary>
@@ -37,7 +36,6 @@ codeunit 2350 "AL Rest Client"
     procedure Initialize(HttpClientHandler: Interface "Http Client Handler"; HttpAuthentication: Interface "Http Authentication")
     begin
         RestClientImpl.Initialize(HttpClientHandler, HttpAuthentication);
-        IsInitialized := true;
     end;
 
     /// <summary>Sets a new value for an existing default header of the Http Client object, or addds the header if it does not already exist.</summary>
@@ -47,9 +45,6 @@ codeunit 2350 "AL Rest Client"
     /// The Rest Client will be initialized if it was not initialized before.</remarks>
     procedure SetDefaultRequestHeader(Name: Text; Value: Text)
     begin
-        if not IsInitialized then
-            Initialize();
-
         RestClientImpl.SetDefaultRequestHeader(Name, Value);
     end;
 
@@ -60,9 +55,6 @@ codeunit 2350 "AL Rest Client"
     /// The Rest Client will be initialized if it was not initialized before.</remarks>
     procedure SetDefaultRequestHeader(Name: Text; Value: SecretText)
     begin
-        if not IsInitialized then
-            Initialize();
-
         RestClientImpl.SetDefaultRequestHeader(Name, Value);
     end;
 
@@ -73,9 +65,6 @@ codeunit 2350 "AL Rest Client"
     /// <param name="Url">The base address to use.</param>
     procedure SetBaseAddress(Url: Text)
     begin
-        if not IsInitialized then
-            Initialize();
-
         RestClientImpl.SetBaseAddress(Url);
     end;
 
@@ -92,9 +81,6 @@ codeunit 2350 "AL Rest Client"
     /// The Rest Client will be initialized if it was not initialized before.</remarks>
     procedure SetTimeOut(Timeout: Duration)
     begin
-        if not IsInitialized then
-            Initialize();
-
         RestClientImpl.SetTimeOut(Timeout);
     end;
 
@@ -111,8 +97,6 @@ codeunit 2350 "AL Rest Client"
     /// The Rest Client will be initialized if it was not initialized before.</remarks>
     procedure AddCertificate(Certificate: Text)
     begin
-        if not IsInitialized then
-            Initialize();
         RestClientImpl.AddCertificate(Certificate);
     end;
 
@@ -124,8 +108,6 @@ codeunit 2350 "AL Rest Client"
 
     procedure AddCertificate(Certificate: Text; Password: SecretText)
     begin
-        if not IsInitialized then
-            Initialize();
         RestClientImpl.AddCertificate(Certificate, Password);
     end;
 
@@ -136,9 +118,6 @@ codeunit 2350 "AL Rest Client"
     /// <param name="Value">The user agent header to use.</param>
     procedure SetUserAgentHeader(Value: Text)
     begin
-        if not IsInitialized then
-            Initialize();
-
         RestClientImpl.SetUserAgentHeader(Value);
     end;
 
@@ -148,7 +127,7 @@ codeunit 2350 "AL Rest Client"
     /// <param name="Value">The authorization header to use.</param>
     procedure SetAuthorizationHeader(Value: SecretText)
     begin
-        SetDefaultRequestHeader('Authorization', Value);
+        RestClientImpl.SetAuthorizationHeader(Value);
     end;
     #endregion
 
@@ -214,14 +193,8 @@ codeunit 2350 "AL Rest Client"
     /// <param name="RequestUri">The Uri the request is sent to.</param>
     /// <returns>The response content as JsonToken</returns>
     procedure GetAsJson(RequestUri: Text) JsonToken: JsonToken
-    var
-        HttpResponseMessage: Codeunit "Http Response Message";
     begin
-        HttpResponseMessage := Send(Enum::"Http Method"::GET, RequestUri);
-        if not HttpResponseMessage.GetIsSuccessStatusCode() then
-            Error(HttpResponseMessage.GetErrorMessage());
-
-        JsonToken := HttpResponseMessage.GetContent().AsJson();
+        JsonToken := RestClientImpl.GetAsJson(RequestUri);
     end;
 
     /// <summary>Sends a POST request to the specified Uri and returns the response content as JsonToken.</summary>
@@ -253,16 +226,8 @@ codeunit 2350 "AL Rest Client"
     /// <param name="Content">The content to send as a JsonToken.</param>
     /// <returns>The response content as JsonToken</returns>
     procedure PostAsJson(RequestUri: Text; Content: JsonToken) Response: JsonToken
-    var
-        HttpResponseMessage: Codeunit "Http Response Message";
-        HttpContent: Codeunit "Http Content";
     begin
-        HttpResponseMessage := Send(Enum::"Http Method"::POST, RequestUri, HttpContent.Create(Content));
-
-        if not HttpResponseMessage.GetIsSuccessStatusCode() then
-            Error(HttpResponseMessage.GetErrorMessage());
-
-        Response := HttpResponseMessage.GetContent().AsJson();
+        Response := RestClientImpl.PostAsJson(RequestUri, Content);
     end;
 
     /// <summary>Sends a PATCH request to the specified Uri and returns the response content as JsonToken.</summary>
@@ -294,16 +259,8 @@ codeunit 2350 "AL Rest Client"
     /// <param name="Content">The content to send as a JsonToken.</param>
     /// <returns>The response content as JsonToken</returns>
     procedure PatchAsJson(RequestUri: Text; Content: JSonToken) Response: JsonToken
-    var
-        HttpResponseMessage: Codeunit "Http Response Message";
-        HttpContent: Codeunit "Http Content";
     begin
-        HttpResponseMessage := Send(Enum::"Http Method"::PATCH, RequestUri, HttpContent.Create(Content));
-
-        if not HttpResponseMessage.GetIsSuccessStatusCode() then
-            Error(HttpResponseMessage.GetErrorMessage());
-
-        Response := HttpResponseMessage.GetContent().AsJson();
+        Response := RestClientImpl.PatchAsJson(RequestUri, Content);
     end;
 
     /// <summary>Sends a PUT request to the specified Uri and returns the response content as JsonToken.</summary>
@@ -339,12 +296,7 @@ codeunit 2350 "AL Rest Client"
         HttpResponseMessage: Codeunit "Http Response Message";
         HttpContent: Codeunit "Http Content";
     begin
-        HttpResponseMessage := Send(Enum::"Http Method"::PUT, RequestUri, HttpContent.Create(Content));
-
-        if not HttpResponseMessage.GetIsSuccessStatusCode() then
-            Error(HttpResponseMessage.GetErrorMessage());
-
-        Response := HttpResponseMessage.GetContent().AsJson();
+        Response := RestClientImpl.PutAsJson(RequestUri, Content);
     end;
     #endregion
 
@@ -356,10 +308,8 @@ codeunit 2350 "AL Rest Client"
     /// <param name="RequestUri">The Uri the request is sent to.</param>
     /// <returns>The response message object</returns>
     procedure Send(Method: Enum "Http Method"; RequestUri: Text) HttpResponseMessage: Codeunit "Http Response Message"
-    var
-        EmptyHttpContent: Codeunit "Http Content";
     begin
-        HttpResponseMessage := Send(Method, RequestUri, EmptyHttpContent);
+        HttpResponseMessage := RestClientImpl.Send(Method, RequestUri);
     end;
 
     /// <summary>Sends a request with the specific Http method and the given content to the specified Uri and returns the response message.</summary>
@@ -370,17 +320,8 @@ codeunit 2350 "AL Rest Client"
     /// <param name="Content">The content to send.</param>
     /// <returns>The response message object</returns>
     procedure Send(Method: Enum "Http Method"; RequestUri: Text; Content: Codeunit "Http Content") HttpResponseMessage: Codeunit "Http Response Message"
-    var
-        HttpRequestMessage: Codeunit "Http Request Message";
     begin
-        HttpRequestMessage.SetHttpMethod(Method);
-        if RequestUri.StartsWith('http://') or RequestUri.StartsWith('https://') then
-            HttpRequestMessage.SetRequestUri(RequestUri)
-        else
-            HttpRequestMessage.SetRequestUri(RestClientImpl.GetBaseAddress() + RequestUri);
-        HttpRequestMessage.SetContent(Content);
-
-        HttpResponseMessage := Send(HttpRequestMessage);
+        HttpResponseMessage := RestClientImpl.Send(Method, RequestUri, Content);
     end;
 
     /// <summary>Sends the given request message and returns the response message.</summary>
@@ -389,11 +330,7 @@ codeunit 2350 "AL Rest Client"
     /// <returns>The response message object</returns>
     procedure Send(var HttpRequestMessage: Codeunit "Http Request Message") HttpResponseMessage: Codeunit "Http Response Message"
     begin
-        if not IsInitialized then
-            Initialize();
-
-        if not RestClientImpl.SendRequest(HttpRequestMessage, HttpResponseMessage) then
-            Error(HttpResponseMessage.GetErrorMessage());
+        HttpResponseMessage := RestClientImpl.Send(HttpRequestMessage);
     end;
     #endregion
 }

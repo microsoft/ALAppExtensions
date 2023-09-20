@@ -437,12 +437,12 @@ codeunit 134970 "Http Content Tests"
         ALHttpContent := ALHttpContent.Create('{ "name": "John", "age": 30 }');
 
         // [WHEN] Header is set
-        ALHttpContent.SetHeader('X-My-Custom-Header', 'AL Rest Client');
+        ALHttpContent.SetHeader('X-My-Custom-Header', 'BC Rest Client');
 
-        // [THEN] Header X-My-Custom-Header is AL Rest Client
+        // [THEN] Header X-My-Custom-Header is BC Rest Client
         HttpContent := ALHttpContent.GetHttpContent();
         HttpContent.GetHeaders(HttpHeaders);
         HttpHeaders.GetValues('X-My-Custom-Header', HeaderValues);
-        Assert.AreEqual('AL Rest Client', HeaderValues.Get(1), 'The X-Test header must be AL Rest Client');
+        Assert.AreEqual('BC Rest Client', HeaderValues.Get(1), 'The X-Test header must be BC Rest Client');
     end;
 }

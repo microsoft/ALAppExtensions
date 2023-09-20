@@ -15,7 +15,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test GET request
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Get method is called
@@ -38,7 +38,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test POST request
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Post method is called
@@ -62,7 +62,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test PATCH request
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Patch method is called
@@ -86,7 +86,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test PUT request
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Put method is called
@@ -109,7 +109,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test DELETE request
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Delete method is called
@@ -131,7 +131,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test GET request with headers
 
-        // [GIVEN] An initialized AL Rest Client with default request headers
+        // [GIVEN] An initialized Rest Client with default request headers
         RestClient.Initialize(HttpClientHandler);
         RestClient.SetDefaultRequestHeader('X-Test-Header', 'Test');
 
@@ -155,7 +155,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test GET request with base address
 
-        // [GIVEN] An initialized AL Rest Client with base address
+        // [GIVEN] An initialized Rest Client with base address
         RestClient.Initialize(HttpClientHandler);
         RestClient.SetBaseAddress('https://httpbin.org');
 
@@ -178,7 +178,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test GET request with default User-Agent header
 
-        // [GIVEN] An uninitialized AL Rest Client 
+        // [GIVEN] An uninitialized Rest Client 
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Get method is called using the default User-Agent header
@@ -200,9 +200,9 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test GET request with custom User-Agent header
 
-        // [GIVEN] An initialized AL Rest Client with a customer User-Agent header
+        // [GIVEN] An initialized Rest Client with a customer User-Agent header
         RestClient.Initialize(HttpClientHandler);
-        RestClient.SetUserAgentHeader('AL Rest Client Test');
+        RestClient.SetUserAgentHeader('BC Rest Client Test');
 
         // [WHEN] The Get method is called using a custom User-Agent header
         HttpResponseMessage := RestClient.Get('https://httpbin.org/get');
@@ -211,7 +211,7 @@ codeunit 134971 "Rest Client Tests"
         Assert.AreEqual(HttpResponseMessage.GetHttpStatusCode(), 200, 'The response status code should be 200');
         Assert.IsTrue(HttpResponseMessage.GetIsSuccessStatusCode(), 'GetIsSuccessStatusCode should be true');
         JsonObject := HttpResponseMessage.GetContent().AsJson().AsObject();
-        Assert.AreEqual(SelectJsonToken('$.headers.User-Agent', JsonObject).AsValue().AsText(), 'AL Rest Client Test', 'The response should contain the expected User-Agent header');
+        Assert.AreEqual(SelectJsonToken('$.headers.User-Agent', JsonObject).AsValue().AsText(), 'BC Rest Client Test', 'The response should contain the expected User-Agent header');
     end;
 
     [Test]
@@ -222,7 +222,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test GET request with JSON response
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The GetAsJson method is called
@@ -243,7 +243,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test POST request with JSON request and response
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [GIVEN] A Json object
@@ -272,7 +272,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test PATCH request with JSON request and response
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [GIVEN] A Json object
@@ -301,7 +301,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test PUT request with JSON request and response
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [GIVEN] A Json object
@@ -328,7 +328,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test Send method without Getcontent
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Send method is called without Getcontent
@@ -351,7 +351,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test Send method with Getcontent
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Send method is called with Getcontent
@@ -375,7 +375,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test Send method with request message
 
-        // [GIVEN] An uninitialized AL Rest Client
+        // [GIVEN] An uninitialized Rest Client
         RestClient.Initialize(HttpClientHandler);
 
         // [WHEN] The Send method is called with a request message
@@ -401,7 +401,7 @@ codeunit 134971 "Rest Client Tests"
     begin
         // [SCENARIO] Test Http Get with Basic Authentication
 
-        // [GIVEN] An initialized AL Rest Client with Basic Authentication
+        // [GIVEN] An initialized Rest Client with Basic Authentication
         PasswordText := 'Password123';
         HttpAuthenticationBasic.Initialize('user01', PasswordText);
         RestClient.Initialize(HttpClientHandler, HttpAuthenticationBasic);
