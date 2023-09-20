@@ -87,6 +87,8 @@ codeunit 9102 "SharePoint List Item Atch."
 
             if Payload.Get('type', JToken) then
                 SharePointListItemAttachment.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItemAttachment.OdataType));
+
+            OnAfterApplyMetadata(JToken, SharePointListItemAttachment);
         end;
 
         if SharePointListItemAttachment.OdataEditLink <> '' then begin
@@ -95,5 +97,10 @@ codeunit 9102 "SharePoint List Item Atch."
             SharePointListItemAttachment."List Id" := SharePointUriBuilder.GetMethodParameter('Lists').Substring(6, 36);
             Evaluate(SharePointListItemAttachment."List Item Id", SharePointUriBuilder.GetMethodParameter('Items'));
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterApplyMetadata(JToken: JsonToken; var SharePointListItemAttachment: Record "SharePoint List Item Atch" temporary)
+    begin
     end;
 }

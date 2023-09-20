@@ -14,7 +14,6 @@ table 9100 "SharePoint File"
     DataClassification = SystemMetadata; // Data classification is SystemMetadata as the table is temporary
     Caption = 'SharePoint File';
     TableType = Temporary;
-    Extensible = false;
 
     fields
     {

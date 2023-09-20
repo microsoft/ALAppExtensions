@@ -99,6 +99,13 @@ codeunit 9105 "SharePoint Folder"
 
             if Payload.Get('type', JToken) then
                 SharePointFolder.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFolder.OdataType));
+
+            OnAfterApplyMetadata(JToken, SharePointFolder);
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterApplyMetadata(JToken: JsonToken; var SharePointFolder: Record "SharePoint Folder" temporary)
+    begin
     end;
 }
