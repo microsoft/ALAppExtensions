@@ -1,10 +1,10 @@
 {
   "id": "ae153cbb-ad55-447c-9226-5af3ef57280f",
-  "name": "AL Rest Client Tests",
+  "name": "Rest Client Tests",
   "publisher": "Microsoft",
   "version": "22.5.0.0",
-  "brief": "Tests for the AL Rest Client module",
-  "description": "Tests for the AL Rest Client module",
+  "brief": "Tests for the Rest Client module",
+  "description": "Tests for the Rest Client module",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
   "help": "https://go.microsoft.com/fwlink/?linkid=2206603",
@@ -36,7 +36,7 @@
       }
   ],
   "screenshots": [],
-  "platform": "22.0.0.0",
+  "platform": "23.0.0.0",
   "idRanges": [
     {
       "from": 134970,
