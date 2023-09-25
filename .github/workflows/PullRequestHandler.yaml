@@ -29,7 +29,7 @@ jobs:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
     runs-on: [ windows-latest ]
     steps:
-      - uses: microsoft/AL-Go/Actions/VerifyPRChanges@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+      - uses: microsoft/AL-Go/Actions/VerifyPRChanges@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
 
   Initialization:
     needs: [ PregateCheck ]
@@ -52,14 +52,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go/Actions/WorkflowInitialize@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           eventId: "DO0104"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go/Actions/ReadSettings@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/ReadSettings@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
 
@@ -70,7 +70,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: microsoft/AL-Go/Actions/DetermineProjectsToBuild@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/DetermineProjectsToBuild@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -127,7 +127,7 @@ jobs:
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: microsoft/AL-Go/Actions/PullRequestStatusCheck@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/PullRequestStatusCheck@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

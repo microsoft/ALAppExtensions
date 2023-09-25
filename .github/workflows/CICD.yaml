@@ -45,14 +45,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go/Actions/WorkflowInitialize@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           eventId: "DO0091"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go/Actions/ReadSettings@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/ReadSettings@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           get: type
@@ -64,14 +64,14 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: microsoft/AL-Go/Actions/DetermineProjectsToBuild@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/DetermineProjectsToBuild@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
-        uses: microsoft/AL-Go/Actions/DetermineDeliveryTargets@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/DetermineDeliveryTargets@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           projectsJson: '${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}'
@@ -79,7 +79,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: microsoft/AL-Go/Actions/ReadSecrets@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/ReadSecrets@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -87,7 +87,7 @@ jobs:
 
       - name: Determine Delivery Targets
         id: DetermineDeliveryTargets
-        uses: microsoft/AL-Go/Actions/DetermineDeliveryTargets@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/DetermineDeliveryTargets@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -97,7 +97,7 @@ jobs:
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: microsoft/AL-Go/Actions/DetermineDeploymentEnvironments@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/DetermineDeploymentEnvironments@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -113,13 +113,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: microsoft/AL-Go/Actions/ReadSettings@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/ReadSettings@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           get: templateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go/Actions/CheckForUpdates@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/CheckForUpdates@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
@@ -191,7 +191,7 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: microsoft/AL-Go/Actions/ReadSettings@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/ReadSettings@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
 
@@ -204,14 +204,14 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: microsoft/AL-Go/Actions/ReadSecrets@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/ReadSecrets@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext,${{ steps.envName.outputs.envName }}-EnvironmentName,${{ steps.envName.outputs.envName }}_EnvironmentName,EnvironmentName,projects'
 
       - name: Deploy
-        uses: microsoft/AL-Go/Actions/Deploy@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/Deploy@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -240,20 +240,20 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: microsoft/AL-Go/Actions/ReadSettings@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/ReadSettings@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: microsoft/AL-Go/Actions/ReadSecrets@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/ReadSecrets@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ matrix.deliveryTarget }}Context'
 
       - name: Deliver
-        uses: microsoft/AL-Go/Actions/Deliver@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/Deliver@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -273,7 +273,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@ce6a36367580e96a44bbc3b5dd31238d945cf8fe
+        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@d9d3b069e8e3d8891a3602a75e3261d85d8f4555
         with:
           shell: powershell
           eventId: "DO0091"
