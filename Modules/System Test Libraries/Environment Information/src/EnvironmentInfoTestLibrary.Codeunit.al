@@ -65,7 +65,7 @@ codeunit 135094 "Environment Info Test Library"
     /// Sets the Environment Name that of the current Environment.
     /// </summary>
     /// <param name="NewEnvironmentName">The desired new Environment Name.</param>
-    procedure SetTestabilityEn(NewEnvironmentName: Text)
+    procedure SetTestabilityEnvironmentName(NewEnvironmentName: Text)
     begin
         EnvironmentInformationImpl.SetTestMode(true);
         EnvironmentInformationImpl.SetTestabilityEnvironmentName(NewEnvironmentName);
