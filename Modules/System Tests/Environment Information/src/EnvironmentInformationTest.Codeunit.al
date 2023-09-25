@@ -23,7 +23,7 @@ codeunit 135091 "Environment Information Test"
     end;
 
     [Test]
-    procedure TestIsSandboxIsTrueWhenTestabilitySandboxIsSet()
+    procedure TestIsSandboxIsTrueWhenTestabilitySandboxIsSetTrue()
     begin
         // [Scenario] Set the testability to true. IsSandBox returns correct values.
 
@@ -36,7 +36,7 @@ codeunit 135091 "Environment Information Test"
     end;
 
     [Test]
-    procedure TestIsSandboxIsFalseWhenTestabilitySandboxIsNotSet()
+    procedure TestIsSandboxIsFalseWhenTestabilitySandboxIsSetFalse()
     begin
         // [Scenario] Set the testability to false. IsSandBox returns correct values.
 
