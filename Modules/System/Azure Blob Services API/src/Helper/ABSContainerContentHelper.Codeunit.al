@@ -38,6 +38,7 @@ codeunit 9054 "ABS Container Content Helper"
         ABSContainerContent."Parent Directory" := CopyStr(GetParentDirectory(NameFromXml), 1, MaxStrLen(ABSContainerContent."Parent Directory"));
         ABSContainerContent."Full Name" := CopyStr(NameFromXml, 1, MaxStrLen(ABSContainerContent."Full Name"));
         ABSContainerContent.Name := CopyStr(GetName(NameFromXml), 1, MaxStrLen(ABSContainerContent.Name));
+        LeafNodesList.Add(NameFromXml);
 
         SetPropertyFields(ABSContainerContent, ChildNodes);
 
@@ -52,7 +53,6 @@ codeunit 9054 "ABS Container Content Helper"
     [NonDebuggable]
     local procedure AddParentEntries(NameFromXml: Text; var ABSContainerContent: Record "ABS Container Content"; var EntryNo: Integer)
     var
-        DirectoryContentTypeTxt: Label 'Directory', Locked = true;
         ParentEntries: List of [Text];
         CurrentParent, ParentEntryFullName, ParentEntryName : Text[2048];
         Level: Integer;
@@ -74,23 +74,47 @@ codeunit 9054 "ABS Container Content Helper"
 
             // Only create the parent entry if it doesn't exist already.
             // The full name should be unique.
-            if not ParentEntryFullNameList.Contains(ParentEntryFullName) then begin
-                ParentEntryFullNameList.Add(ParentEntryFullName);
-
-                ABSContainerContent.Init();
-                ABSContainerContent.Level := Level - 1; // Levels start from 0 to be used for indentation
-                ABSContainerContent.Name := ParentEntryName;
-                ABSContainerContent."Full Name" := ParentEntryFullName;
-                ABSContainerContent."Parent Directory" := CurrentParent;
-                ABSContainerContent."Content Type" := DirectoryContentTypeTxt;
-
-                ABSContainerContent."Entry No." := EntryNo;
-                ABSContainerContent.Insert(true);
-                EntryNo += 1;
-            end;
+            if LeafNodesList.Contains(ParentEntryFullName) then
+                UpdateContainerContentEntryToDirectory(ParentEntryFullName)
+            else
+                if not ParentEntryFullNameList.Contains(ParentEntryFullName) then
+                    AddDirectoryContainerContentEntry(ParentEntryFullName, ABSContainerContent, Level, ParentEntryName, CurrentParent, EntryNo);
 
             CurrentParent := CopyStr(ParentEntryFullName + '/', 1, MaxStrLen(CurrentParent));
         end;
+    end;
+
+    [NonDebuggable]
+    local procedure AddDirectoryContainerContentEntry(
+        ParentEntryFullName: Text; var ABSContainerContent: Record "ABS Container Content"; Level: Integer; ParentEntryName: Text; CurrentParent: Text; var EntryNo: Integer)
+    begin
+        ParentEntryFullNameList.Add(ParentEntryFullName);
+
+        ABSContainerContent.Init();
+        ABSContainerContent.Level := Level - 1; // Levels start from 0 to be used for indentation
+        ABSContainerContent.Name := CopyStr(ParentEntryName, 1, MaxStrLen(ABSContainerContent.Name));
+        ABSContainerContent."Full Name" := CopyStr(ParentEntryFullName, 1, MaxStrLen(ABSContainerContent."Full Name"));
+        ABSContainerContent."Parent Directory" := CopyStr(CurrentParent, 1, MaxStrLen(ABSContainerContent."Parent Directory"));
+        ABSContainerContent."Content Type" := DirectoryContentTypeTxt;
+
+        ABSContainerContent."Entry No." := EntryNo;
+        ABSContainerContent.Insert(true);
+        EntryNo += 1;
+    end;
+
+    [NonDebuggable]
+    local procedure UpdateContainerContentEntryToDirectory(EntryFullName: Text)
+    var
+        ABSContainerContent: Record "ABS Container Content";
+    begin
+        ABSContainerContent.SetRange("Full Name", EntryFullName);
+        if not ABSContainerContent.FindFirst() then
+            exit;
+
+        LeafNodesList.Remove(EntryFullName);
+        ParentEntryFullNameList.Add(EntryFullName);
+        ABSContainerContent."Content Type" := DirectoryContentTypeTxt;
+        ABSContainerContent.Modify(true);
     end;
 
     [NonDebuggable]
@@ -199,4 +223,6 @@ codeunit 9054 "ABS Container Content Helper"
 
     var
         ParentEntryFullNameList: List of [Text];
+        LeafNodesList: List of [Text];
+        DirectoryContentTypeTxt: Label 'Directory', Locked = true;
 }

@@ -13,7 +13,7 @@ codeunit 132920 "ABS Blob Client Test"
         Response: Codeunit "ABS Operation Response";
         ContainerName, BlobName, BlobContent, NewBlobContent : Text;
     begin
-        // [Scenarion] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content 
+        // [Scenario] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content 
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
 
@@ -48,7 +48,7 @@ codeunit 132920 "ABS Blob Client Test"
         Response: Codeunit "ABS Operation Response";
         ContainerName, FirstBlobName, SecondBlobName, BlobContent : Text;
     begin
-        // [Scenarion] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
+        // [Scenario] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
 
@@ -96,7 +96,7 @@ codeunit 132920 "ABS Blob Client Test"
         BlobList: Dictionary of [Text, XmlNode];
         Blobs: List of [Text];
     begin
-        // [Scenarion] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
+        // [Scenario] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
 
@@ -146,7 +146,7 @@ codeunit 132920 "ABS Blob Client Test"
         ABSContainerContent: Record "ABS Container Content";
         ContainerName: Text;
     begin
-        // [Scenarion] When listing blobs, the levels, parent directories etc. are set correctly
+        // [Scenario] When listing blobs, the levels, parent directories etc. are set correctly
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
 
@@ -484,7 +484,7 @@ codeunit 132920 "ABS Blob Client Test"
         LeaseId: Guid;
         ProposedLeaseId: Guid;
     begin
-        // [Scenarion] Given a storage account and a container, PutBlobBlockBlob operation succeeds and subsequent lease-operations
+        // [Scenario] Given a storage account and a container, PutBlobBlockBlob operation succeeds and subsequent lease-operations
         // (1) create a lease, (2) renew a lease, [(3) change a lease], (4) break a lease and (5) release the lease
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
@@ -609,6 +609,60 @@ codeunit 132920 "ABS Blob Client Test"
 
         // Clean-up
         ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
+    procedure ParseResponseWithHierarchicalBlobName()
+    var
+        ABSContainerContent: Record "ABS Container Content";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        NodeList: XmlNodeList;
+        NextMarker: Text;
+    begin
+        // [SCENARIO] Parse the BLOB storage API response listing BLOBs in a container without the hierarchical namespace
+
+        // [GIVEN] Prepare an XML response from the BLOB Storage API, listing all BLOBs in a container.
+        // [GIVEN] Container does not have hierarchical namespace and contains a single BLOB with the name like "folder/blob"
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ABSTestLibrary.GetServiceResponseBlobWithHierarchicalName(), NextMarker);
+
+        // [WHEN] Invoke BlobNodeListToTempRecord
+        ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
+
+        // [THEN] "ABS Container Content" contains one record "folder" and one record "blob"
+        Assert.RecordCount(ABSContainerContent, 2);
+
+        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseDirName());
+        Assert.RecordCount(ABSContainerContent, 1);
+
+        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseFileName());
+        Assert.RecordCount(ABSContainerContent, 1);
+    end;
+
+    [Test]
+    procedure ParseResponseFromStorageHierarachicalNamespace()
+    var
+        ABSContainerContent: Record "ABS Container Content";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        NodeList: XmlNodeList;
+        NextMarker: Text;
+    begin
+        // [SCENARIO] Parse the BLOB storage API response listing BLOBs in a container with the hierarchical namespace enabled
+
+        // [GIVEN] Prepare an XML response from the BLOB Storage API, listing all BLOBs in a container.
+        // [GIVEN] Container has the hierarchical namespace enabled, and contains on e folder named "folder" and a blob named "blob" inside the folder.
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ABSTestLibrary.GetServiceResponseHierarchicalNamespace(), NextMarker);
+
+        // [WHEN] Invoke BlobNodeListToTempRecord
+        ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
+
+        // [THEN] "ABS Container Content" contains one record "folder" and one record "blob"
+        Assert.RecordCount(ABSContainerContent, 2);
+
+        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseDirName());
+        Assert.RecordCount(ABSContainerContent, 1);
+
+        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseFileName());
+        Assert.RecordCount(ABSContainerContent, 1);
     end;
 
     var

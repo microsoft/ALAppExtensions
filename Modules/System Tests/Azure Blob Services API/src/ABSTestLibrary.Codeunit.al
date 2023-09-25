@@ -152,6 +152,84 @@ codeunit 132921 "ABS Test Library"
         exit(Document);
     end;
 
+    procedure GetServiceResponseBlobWithHierarchicalName() ResponseText: Text;
+    begin
+        ResponseText := '<?xml version="1.0" encoding="utf-8"?>';
+        ResponseText += '<EnumerationResults ContainerName="https://myaccount.blob.core.windows.net/mycontainer">';
+        ResponseText += '<Blobs>';
+        ResponseText += '<Blob>';
+        ResponseText += '<Name>dirname/filename.txt</Name>';
+        ResponseText += '<Url>https://myaccount.blob.core.windows.net/mycontainer/dirname/filename.txt</Url>';
+        ResponseText += '<Properties>';
+        ResponseText += '<Last-Modified>Sat, 23 Sep 2023 21:32:55 GMT</Last-Modified>';
+        ResponseText += '<Etag>0x8DBBC7CA6253661</Etag>';
+        ResponseText += '<Content-Length>1</Content-Length>';
+        ResponseText += '<Content-Type>text/plain</Content-Type>';
+        ResponseText += '<Content-Encoding />';
+        ResponseText += '<Content-Language />';
+        ResponseText += '<Content-MD5>dpT0pmMW5TyM3Z2ZVL1hHQ==</Content-MD5>';
+        ResponseText += '<Cache-Control />';
+        ResponseText += '<BlobType>BlockBlob</BlobType>';
+        ResponseText += '<LeaseStatus>unlocked</LeaseStatus>';
+        ResponseText += '</Properties>';
+        ResponseText += '</Blob>';
+        ResponseText += '</Blobs>';
+        ResponseText += '<NextMarker />';
+        ResponseText += '</EnumerationResults>';
+    end;
+
+    procedure GetServiceResponseHierarchicalNamespace() ResponseText: Text;
+    begin
+        ResponseText := '<?xml version="1.0" encoding="utf-8"?>';
+        ResponseText += '<EnumerationResults ContainerName="https://myaccount.blob.core.windows.net/mycontainer">';
+        ResponseText += '<Blobs>';
+        ResponseText += '<Blob>';
+        ResponseText += '<Name>dirname</Name>';
+        ResponseText += '<Url>https://myaccount.blob.core.windows.net/mycontainer/dirname</Url>';
+        ResponseText += '<Properties>';
+        ResponseText += '<Last-Modified>Sat, 23 Sep 2023 21:04:18 GMT</Last-Modified>';
+        ResponseText += '<Etag>0x8DBBC78A6E95AF7</Etag>';
+        ResponseText += '<Content-Length>0</Content-Length>';
+        ResponseText += '<Content-Type>application/octet-stream</Content-Type>';
+        ResponseText += '<Content-Encoding />';
+        ResponseText += '<Content-Language />';
+        ResponseText += '<Content-MD5 />';
+        ResponseText += '<Cache-Control />';
+        ResponseText += '<BlobType>BlockBlob</BlobType>';
+        ResponseText += '<LeaseStatus>unlocked</LeaseStatus>';
+        ResponseText += '</Properties>';
+        ResponseText += '</Blob>';
+        ResponseText += '<Blob>';
+        ResponseText += '<Name>dirname/filename.txt</Name>';
+        ResponseText += '<Url>https://myaccount.blob.core.windows.net/mycontainer/dirname/filename.txt</Url>';
+        ResponseText += '<Properties>';
+        ResponseText += '<Last-Modified>Sat, 23 Sep 2023 21:32:55 GMT</Last-Modified>';
+        ResponseText += '<Etag>0x8DBBC7CA6253661</Etag>';
+        ResponseText += '<Content-Length>1</Content-Length>';
+        ResponseText += '<Content-Type>text/plain</Content-Type>';
+        ResponseText += '<Content-Encoding />';
+        ResponseText += '<Content-Language />';
+        ResponseText += '<Content-MD5>dpT0pmMW5TyM3Z2ZVL1hHQ==</Content-MD5>';
+        ResponseText += '<Cache-Control />';
+        ResponseText += '<BlobType>BlockBlob</BlobType>';
+        ResponseText += '<LeaseStatus>unlocked</LeaseStatus>';
+        ResponseText += '</Properties>';
+        ResponseText += '</Blob>';
+        ResponseText += '</Blobs>';
+        ResponseText += '<NextMarker />';
+        ResponseText += '</EnumerationResults>';
+    end;
+
+    procedure GetSampleResponseDirName(): Text
+    begin
+        exit('dirname');
+    end;
+
+    procedure GetSampleResponseFileName(): Text
+    begin
+        exit('filename.txt');
+    end;
+
     local procedure GetNewLineCharacter(): Text
     var
         LF: Char;
