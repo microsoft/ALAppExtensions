@@ -14,7 +14,6 @@ codeunit 135091 "Environment Information Test"
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
 
     [Test]
-    [Scope('OnPrem')]
     procedure TestCanStartSessionWithTestIsolationEnabled()
     begin
         // [Scenario] When running the tests with the test isolation enabled (the default), CanStartSession returns false.
@@ -24,7 +23,6 @@ codeunit 135091 "Environment Information Test"
     end;
 
     [Test]
-    [Scope('OnPrem')]
     procedure TestIsSandboxIsTrueWhenTestabilitySandboxIsSet()
     begin
         // [Scenario] Set the testability to true. IsSandBox returns correct values.
@@ -38,7 +36,6 @@ codeunit 135091 "Environment Information Test"
     end;
 
     [Test]
-    [Scope('OnPrem')]
     procedure TestIsSandboxIsFalseWhenTestabilitySandboxIsNotSet()
     begin
         // [Scenario] Set the testability to false. IsSandBox returns correct values.
@@ -52,8 +49,20 @@ codeunit 135091 "Environment Information Test"
     end;
 
     [Test]
-    [Scope('OnPrem')]
-    procedure TestIsSaaSIsTrueWhenTestabilitySaaSIsSet()
+    procedure TestIsSandboxIsFalseWhenTestabilitySandboxIsNotSet()
+    begin
+        // [Scenario] Set the testability to false. IsSandBox returns correct values.
+
+        // [Given] Set the testability sandbox to false
+        EnvironmentInfoTestLibrary.SetTestability(false);
+
+        // [When] Poll for IsSandbox
+        // [Then] Should return false
+        Assert.IsFalse(EnvironmentInformation.IsSandbox(), 'Testability should have dictacted a non-sandbox environment');
+    end;
+
+    [Test]
+    procedure TestIsSaaSIsTrueWhenTestabilitySaaSIsSetTrue()
     begin
         // [SCENARIO] Set the testability to true. IsSaaS returns correct values.
 
@@ -66,13 +75,25 @@ codeunit 135091 "Environment Information Test"
     end;
 
     [Test]
-    [Scope('OnPrem')]
-    procedure TestIsSaaSIsFalseWhenTestabilitySaaSIsNotSet()
+    procedure TestIsSaaSIsFalseWhenTestabilitySaaSIsSetFalse()
     begin
-        // [SCENARIO] Set the testability to false. IsSaaS returns correct values.
+        // [SCENARIO] Set the testability to false. IsSaaS returns false.
 
         // [Given] Set the testability SaaS to false
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+
+        // [When] Poll for IsSaaS
+        // [Then] Should return false
+        Assert.IsFalse(EnvironmentInformation.IsSaaS(), 'Testability should have dictacted a non- SaaS environment');
+    end;
+
+    [Test]
+    procedure TestIsSaaSIsFalseWhenTestabilitySaaSIsNotSet()
+    begin
+        // [SCENARIO] Set the testability to false. IsSaaS returns false.
+
+        // [Given] Set the testability SaaS to false
+        EnvironmentInfoTestLibrary.SetTestability(false);
 
         // [When] Poll for IsSaaS
         // [Then] Should return false

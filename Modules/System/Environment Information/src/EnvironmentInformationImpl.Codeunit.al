@@ -14,6 +14,9 @@ codeunit 3702 "Environment Information Impl."
         NavTenantSettingsHelper: DotNet NavTenantSettingsHelper;
         TestabilitySoftwareAsAService: Boolean;
         TestabilitySandbox: Boolean;
+        TestabilityAppId: Text;
+        TestabilityEnvironmentName: Text;
+        TestMode: Boolean;
         IsSaasInitialized: Boolean;
         IsSaaSConfig: Boolean;
         IsSandboxConfig: Boolean;
@@ -28,8 +31,8 @@ codeunit 3702 "Environment Information Impl."
 
     procedure IsSandbox(): Boolean
     begin
-        if TestabilitySandbox then
-            exit(true);
+        if TestMode then
+            exit(TestabilitySandbox);
 
         if not IsSandboxInitialized then begin
             IsSandboxConfig := NavTenantSettingsHelper.IsSandbox();
@@ -42,6 +45,9 @@ codeunit 3702 "Environment Information Impl."
     var
         EnvironmentName: Text;
     begin
+        If TestMode then
+            exit(TestabilityEnvironmentName);
+
         EnvironmentName := NavTenantSettingsHelper.GetEnvironmentName();
         if EnvironmentName <> '' then
             exit(EnvironmentName);
@@ -62,12 +68,27 @@ codeunit 3702 "Environment Information Impl."
         TestabilitySoftwareAsAService := EnableSoftwareAsAServiceForTest;
     end;
 
+    procedure SetTestabilityAppId(AppId: Text)
+    begin
+        TestabilityAppId := AppId;
+    end;
+
+    procedure SetTestabilityEnvironmentName(Name: Text)
+    begin
+        TestabilityEnvironmentName := Name;
+    end;
+
+    procedure SetTestMode(Mode: Boolean)
+    begin
+        TestMode := Mode;
+    end;
+
     procedure IsSaaS(): Boolean
     var
         ServerSettings: Codeunit "Server Setting";
     begin
-        if TestabilitySoftwareAsAService then
-            exit(true);
+        if TestMode then
+            exit(TestabilitySoftwareAsAService);
 
         if not IsSaasInitialized then begin
             IsSaaSConfig := IsSandbox() or ServerSettings.GetEnableMembershipEntitlement();
@@ -81,8 +102,8 @@ codeunit 3702 "Environment Information Impl."
     var
         UserAccountHelper: DotNet NavUserAccountHelper;
     begin
-        if TestabilitySoftwareAsAService then
-            exit(true);
+        if TestMode then
+            exit(TestabilitySoftwareAsAService);
 
         exit(IsSaaS() and UserAccountHelper.IsAzure());
     end;
@@ -133,6 +154,9 @@ codeunit 3702 "Environment Information Impl."
 
     local procedure GetAppId() AppId: Text
     begin
+        if TestMode then
+            exit(TestabilityAppId);
+
         OnBeforeGetApplicationIdentifier(AppId);
         if AppId = '' then
             AppId := ApplicationIdentifier();
