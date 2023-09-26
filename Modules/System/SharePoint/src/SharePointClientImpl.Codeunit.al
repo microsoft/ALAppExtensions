@@ -358,13 +358,13 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetObject('lists');
 
         Metadata.Add('type', 'SP.List');
-        SharepointEvents.OnAfterAddListMetaData(Metadata);
         Request.Add('__metadata', Metadata);
         Request.Add('AllowContentTypes', true);
         Request.Add('BaseTemplate', 100);
         Request.Add('ContentTypesEnabled', true);
         Request.Add('Description', ListDescription);
         Request.Add('Title', ListTitle);
+        SharepointEvents.OnAfterAddListMetaData(Request);
 
         SharePointHttpContent.FromJson(Request);
         SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));
@@ -392,9 +392,9 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetObject('items');
 
         Metadata.Add('type', ListItemEntityTypeFullName);
-        SharepointEvents.OnAfterAddListItemMetaData(Metadata);
         Request.Add('__metadata', Metadata);
         Request.Add('Title', ListItemTitle);
+        SharepointEvents.OnAfterAddListItemMetaData(Request);
 
         SharePointHttpContent.FromJson(Request);
         SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));
@@ -421,9 +421,9 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetObject('items');
 
         Metadata.Add('type', ListItemEntityTypeFullName);
-        SharepointEvents.OnAfterAddListItemMetaData(Metadata);
         Request.Add('__metadata', Metadata);
         Request.Add('Title', ListItemTitle);
+        SharepointEvents.OnAfterAddListItemMetaData(Request);
 
         SharePointHttpContent.FromJson(Request);
         SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));
@@ -613,9 +613,9 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetObject('folders');
 
         Metadata.Add('type', 'SP.Folder');
-        SharepointEvents.OnAfterAddFolderMetaData(Metadata);
         Request.Add('__metadata', Metadata);
         Request.Add('ServerRelativeUrl', ServerRelativeUrl);
+        SharepointEvents.OnAfterAddFolderMetaData(Request);
 
         SharePointHttpContent.FromJson(Request);
         SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));

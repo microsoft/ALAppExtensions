@@ -21,17 +21,17 @@ codeunit 9112 "Sharepoint Events"
     end;
 
     [IntegrationEvent(false, false)]
-    procedure OnAfterAddListItemMetaData(var Metadata: JsonObject)
+    procedure OnAfterAddListItemMetaData(var Request: JsonObject)
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    procedure OnAfterAddListMetaData(var Metadata: JsonObject)
+    procedure OnAfterAddListMetaData(var Request: JsonObject)
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    procedure OnAfterAddFolderMetaData(var Metadata: JsonObject)
+    procedure OnAfterAddFolderMetaData(var Request: JsonObject)
     begin
     end;
 }
