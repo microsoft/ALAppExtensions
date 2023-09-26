@@ -358,7 +358,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetObject('lists');
 
         Metadata.Add('type', 'SP.List');
-        OnAfterAddListMetaData(Metadata);
+        SharepointEvents.OnAfterAddListMetaData(Metadata);
         Request.Add('__metadata', Metadata);
         Request.Add('AllowContentTypes', true);
         Request.Add('BaseTemplate', 100);
@@ -392,7 +392,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetObject('items');
 
         Metadata.Add('type', ListItemEntityTypeFullName);
-        OnAfterAddListItemMetaData(Metadata);
+        SharepointEvents.OnAfterAddListItemMetaData(Metadata);
         Request.Add('__metadata', Metadata);
         Request.Add('Title', ListItemTitle);
 
@@ -421,7 +421,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetObject('items');
 
         Metadata.Add('type', ListItemEntityTypeFullName);
-        OnAfterAddListItemMetaData(Metadata);
+        SharepointEvents.OnAfterAddListItemMetaData(Metadata);
         Request.Add('__metadata', Metadata);
         Request.Add('Title', ListItemTitle);
 
@@ -613,7 +613,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetObject('folders');
 
         Metadata.Add('type', 'SP.Folder');
-        OnAfterAddFolderMetaData(Metadata);
+        SharepointEvents.OnAfterAddFolderMetaData(Metadata);
         Request.Add('__metadata', Metadata);
         Request.Add('ServerRelativeUrl', ServerRelativeUrl);
 
@@ -709,18 +709,6 @@ codeunit 9101 "SharePoint Client Impl."
     end;
     #endregion
 
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterAddListItemMetaData(var Metadata: JsonObject)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterAddListMetaData(var Metadata: JsonObject)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterAddFolderMetaData(var Metadata: JsonObject)
-    begin
-    end;
+    var
+        SharepointEvents: Codeunit "Sharepoint Events";
 }

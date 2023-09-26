@@ -96,12 +96,10 @@ codeunit 9104 "SharePoint List"
             if Payload.Get('type', JToken) then
                 SharePointList.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList.OdataType));
 
-            OnAfterApplyMetadata(JToken, SharePointList);
+            SharepointEvents.OnAfterApplySharepointListMetadata(JToken, SharePointList);
         end;
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterApplyMetadata(JToken: JsonToken; var SharePointList: Record "SharePoint List" temporary)
-    begin
-    end;
+    var
+        SharepointEvents: Codeunit "Sharepoint Events";
 }

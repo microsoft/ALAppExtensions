@@ -83,7 +83,7 @@ codeunit 9103 "SharePoint List Item"
             if Payload.Get('uri', JToken) then
                 SharePointListItem.OdataEditLink := CopyStr(JToken.AsValue().AsText(), JToken.AsValue().AsText().IndexOf('Web/Lists'), MaxStrLen(SharePointListItem.OdataEditLink));
 
-            OnAfterApplyMetadata(JToken, SharePointListItem);
+            SharepointEvents.OnAfterApplySharepointListItemMetadata(JToken, SharePointListItem);
         end;
 
         if SharePointListItem.OdataEditLink <> '' then begin
@@ -93,8 +93,6 @@ codeunit 9103 "SharePoint List Item"
         end;
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterApplyMetadata(JToken: JsonToken; var SharePointListItem: Record "SharePoint List Item" temporary)
-    begin
-    end;
+    var
+        SharepointEvents: Codeunit "Sharepoint Events";
 }
