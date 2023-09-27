@@ -631,7 +631,7 @@ codeunit 132920 "ABS Blob Client Test"
         // [THEN] "ABS Container Content" contains one record "folder" and one record "blob"
         Assert.RecordCount(ABSContainerContent, 2);
 
-        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseDirName());
+        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseRootDirName());
         Assert.RecordCount(ABSContainerContent, 1);
 
         ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseFileName());
@@ -649,20 +649,28 @@ codeunit 132920 "ABS Blob Client Test"
         // [SCENARIO] Parse the BLOB storage API response listing BLOBs in a container with the hierarchical namespace enabled
 
         // [GIVEN] Prepare an XML response from the BLOB Storage API, listing all BLOBs in a container.
-        // [GIVEN] Container has the hierarchical namespace enabled, and contains on e folder named "folder" and a blob named "blob" inside the folder.
+        // [GIVEN] Container has the hierarchical namespace enabled, and contains a root folder named "rootdir".
+        // [GIVEN] There is a subdirectory "subdir" in the root, and one blob named "blob" in the subdirectory.
         NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ABSTestLibrary.GetServiceResponseHierarchicalNamespace(), NextMarker);
 
         // [WHEN] Invoke BlobNodeListToTempRecord
         ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
 
-        // [THEN] "ABS Container Content" contains one record "folder" and one record "blob"
-        Assert.RecordCount(ABSContainerContent, 2);
+        // [THEN] "ABS Container Content" contains two records for folders and one record "blob"
+        Assert.RecordCount(ABSContainerContent, 3);
 
-        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseDirName());
-        Assert.RecordCount(ABSContainerContent, 1);
+        VerifyContinerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseRootDirName(), Enum::"ABS Blob Resource Type"::Directory);
+        VerifyContinerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseSubdirName(), Enum::"ABS Blob Resource Type"::Directory);
+        VerifyContinerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseFileName(), Enum::"ABS Blob Resource Type"::File);
+    end;
 
-        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseFileName());
-        Assert.RecordCount(ABSContainerContent, 1);
+    local procedure VerifyContinerContentType(var ABSContainerContent: Record "ABS Container Content"; BlobName: Text[2048]; ExpectedResourceType: Enum "ABS Blob Resource Type")
+    var
+        IncorrectBlobPropertyErr: Label 'BLOB property is assigned incorrectly';
+    begin
+        ABSContainerContent.SetRange(Name, BlobName);
+        ABSContainerContent.FindFirst();
+        Assert.AreEqual(ExpectedResourceType, ABSContainerContent."Resource Type", IncorrectBlobPropertyErr);
     end;
 
     var

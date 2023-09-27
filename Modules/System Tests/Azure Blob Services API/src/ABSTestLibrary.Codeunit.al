@@ -158,8 +158,8 @@ codeunit 132921 "ABS Test Library"
         ResponseText += '<EnumerationResults ContainerName="https://myaccount.blob.core.windows.net/mycontainer">';
         ResponseText += '<Blobs>';
         ResponseText += '<Blob>';
-        ResponseText += '<Name>dirname/filename.txt</Name>';
-        ResponseText += '<Url>https://myaccount.blob.core.windows.net/mycontainer/dirname/filename.txt</Url>';
+        ResponseText += '<Name>rootdir/filename.txt</Name>';
+        ResponseText += '<Url>https://myaccount.blob.core.windows.net/mycontainer/rootdir/filename.txt</Url>';
         ResponseText += '<Properties>';
         ResponseText += '<Last-Modified>Sat, 23 Sep 2023 21:32:55 GMT</Last-Modified>';
         ResponseText += '<Etag>0x8DBBC7CA6253661</Etag>';
@@ -181,48 +181,93 @@ codeunit 132921 "ABS Test Library"
     procedure GetServiceResponseHierarchicalNamespace() ResponseText: Text;
     begin
         ResponseText := '<?xml version="1.0" encoding="utf-8"?>';
-        ResponseText += '<EnumerationResults ContainerName="https://myaccount.blob.core.windows.net/mycontainer">';
+        ResponseText += '<EnumerationResults ServiceEndpoint="https://myaccount.blob.core.windows.net/" ContainerName="mycontainer">';
         ResponseText += '<Blobs>';
         ResponseText += '<Blob>';
-        ResponseText += '<Name>dirname</Name>';
-        ResponseText += '<Url>https://myaccount.blob.core.windows.net/mycontainer/dirname</Url>';
+        ResponseText += '<Name>rootdir</Name>';
         ResponseText += '<Properties>';
+        ResponseText += '<Creation-Time>Sat, 23 Sep 2023 21:04:18 GMT</Creation-Time>';
         ResponseText += '<Last-Modified>Sat, 23 Sep 2023 21:04:18 GMT</Last-Modified>';
         ResponseText += '<Etag>0x8DBBC78A6E95AF7</Etag>';
+        ResponseText += '<ResourceType>directory</ResourceType>';
         ResponseText += '<Content-Length>0</Content-Length>';
         ResponseText += '<Content-Type>application/octet-stream</Content-Type>';
         ResponseText += '<Content-Encoding />';
         ResponseText += '<Content-Language />';
+        ResponseText += '<Content-CRC64>AAAAAAAAAAA=</Content-CRC64>';
         ResponseText += '<Content-MD5 />';
         ResponseText += '<Cache-Control />';
+        ResponseText += '<Content-Disposition />';
         ResponseText += '<BlobType>BlockBlob</BlobType>';
+        ResponseText += '<AccessTier>Hot</AccessTier>';
+        ResponseText += '<AccessTierInferred>true</AccessTierInferred>';
         ResponseText += '<LeaseStatus>unlocked</LeaseStatus>';
+        ResponseText += '<LeaseState>available</LeaseState>';
+        ResponseText += '<ServerEncrypted>true</ServerEncrypted>';
         ResponseText += '</Properties>';
+        ResponseText += '<OrMetadata />';
         ResponseText += '</Blob>';
         ResponseText += '<Blob>';
-        ResponseText += '<Name>dirname/filename.txt</Name>';
-        ResponseText += '<Url>https://myaccount.blob.core.windows.net/mycontainer/dirname/filename.txt</Url>';
+        ResponseText += '<Name>rootdir/subdirectory</Name>';
         ResponseText += '<Properties>';
-        ResponseText += '<Last-Modified>Sat, 23 Sep 2023 21:32:55 GMT</Last-Modified>';
-        ResponseText += '<Etag>0x8DBBC7CA6253661</Etag>';
+        ResponseText += '<Creation-Time>Tue, 26 Sep 2023 21:47:48 GMT</Creation-Time>';
+        ResponseText += '<Last-Modified>Tue, 26 Sep 2023 21:47:48 GMT</Last-Modified>';
+        ResponseText += '<Etag>0x8DBBEDA39F9C41D</Etag>';
+        ResponseText += '<ResourceType>directory</ResourceType>';
+        ResponseText += '<Content-Length>0</Content-Length>';
+        ResponseText += '<Content-Type>application/octet-stream</Content-Type>';
+        ResponseText += '<Content-Encoding />';
+        ResponseText += '<Content-Language />';
+        ResponseText += '<Content-CRC64>AAAAAAAAAAA=</Content-CRC64>';
+        ResponseText += '<Content-MD5 />';
+        ResponseText += '<Cache-Control />';
+        ResponseText += '<Content-Disposition />';
+        ResponseText += '<BlobType>BlockBlob</BlobType>';
+        ResponseText += '<AccessTier>Hot</AccessTier>';
+        ResponseText += '<AccessTierInferred>true</AccessTierInferred>';
+        ResponseText += '<LeaseStatus>unlocked</LeaseStatus>';
+        ResponseText += '<LeaseState>available</LeaseState>';
+        ResponseText += '<ServerEncrypted>true</ServerEncrypted>';
+        ResponseText += '</Properties>';
+        ResponseText += '<OrMetadata />';
+        ResponseText += '</Blob>';
+        ResponseText += '<Blob>';
+        ResponseText += '<Name>rootdir/subdirectory/filename.txt</Name>';
+        ResponseText += '<Properties>';
+        ResponseText += '<Creation-Time>Wed, 27 Sep 2023 20:24:18 GMT</Creation-Time>';
+        ResponseText += '<Last-Modified>Wed, 27 Sep 2023 20:24:18 GMT</Last-Modified>';
+        ResponseText += '<Etag>0x8DBBF97BA4A9839</Etag>';
+        ResponseText += '<ResourceType>file</ResourceType>';
         ResponseText += '<Content-Length>1</Content-Length>';
         ResponseText += '<Content-Type>text/plain</Content-Type>';
         ResponseText += '<Content-Encoding />';
         ResponseText += '<Content-Language />';
+        ResponseText += '<Content-CRC64 />';
         ResponseText += '<Content-MD5>dpT0pmMW5TyM3Z2ZVL1hHQ==</Content-MD5>';
         ResponseText += '<Cache-Control />';
+        ResponseText += '<Content-Disposition />';
         ResponseText += '<BlobType>BlockBlob</BlobType>';
+        ResponseText += '<AccessTier>Hot</AccessTier>';
+        ResponseText += '<AccessTierInferred>true</AccessTierInferred>';
         ResponseText += '<LeaseStatus>unlocked</LeaseStatus>';
+        ResponseText += '<LeaseState>available</LeaseState>';
+        ResponseText += '<ServerEncrypted>true</ServerEncrypted>';
         ResponseText += '</Properties>';
+        ResponseText += '<OrMetadata />';
         ResponseText += '</Blob>';
         ResponseText += '</Blobs>';
         ResponseText += '<NextMarker />';
         ResponseText += '</EnumerationResults>';
     end;
 
-    procedure GetSampleResponseDirName(): Text
+    procedure GetSampleResponseRootDirName(): Text
     begin
-        exit('dirname');
+        exit('rootdir');
+    end;
+
+    procedure GetSampleResponseSubdirName(): Text
+    begin
+        exit('subdirectory');
     end;
 
     procedure GetSampleResponseFileName(): Text
