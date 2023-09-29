@@ -17,12 +17,6 @@
         "version": "24.0.0.0"
       },
       {
-          "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-          "name":  "Tests-TestLibraries",
-          "publisher":  "Microsoft",
-          "version":  "24.0.0.0"
-      },
-      {
           "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
           "name":  "Library Assert",
           "publisher":  "Microsoft",
@@ -37,10 +31,11 @@
   ],
   "screenshots": [],
   "platform": "24.0.0.0",
+  "target":  "OnPrem",
   "idRanges": [
     {
       "from": 134970,
-      "to": 134973
+      "to": 134974
     }
   ],
   "resourceExposurePolicy": {
