@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Test.RestClient;
+
+using System.RestClient;
+using System.TestLibraries.Utilities;
+using System.Utilities;
+
 codeunit 134970 "Http Content Tests"
 {
     Subtype = Test;
@@ -212,7 +223,6 @@ codeunit 134970 "Http Content Tests"
         InStream1: InStream;
         InStream2: InStream;
         TextContent: Text;
-        Length: Integer;
     begin
         // [SCENARIO] Create AL Http Content object with InStream
 

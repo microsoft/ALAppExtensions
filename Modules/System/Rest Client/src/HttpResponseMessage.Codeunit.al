@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.RestClient;
+
 /// <summary>Holder object for the HTTP response data.</summary>
 codeunit 2356 "Http Response Message"
 {
@@ -92,8 +98,6 @@ codeunit 2356 "Http Response Message"
     /// <summary>Sets the HTTP response message.</summary>
     /// <param name="ResponseMessage">The HTTP response message.</param>
     procedure SetResponseMessage(ResponseMessage: HttpResponseMessage)
-    var
-        HttpContent: Codeunit "Http Content";
     begin
         HttpResponseMessageImpl.SetResponseMessage(ResponseMessage);
     end;

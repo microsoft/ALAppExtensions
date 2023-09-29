@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.RestClient;
+
+using System.Utilities;
+
 /// <summary>Holder object for the Http Content data.</summary>
 codeunit 2354 "Http Content"
 {
@@ -157,7 +165,7 @@ codeunit 2354 "Http Content"
         HttpContentImpl.AddContentEncoding(ContentEncoding);
     end;
 
-    /// <summary>Sets a new value for an existing header of the HttpContent object, or addds the header if it does not already exist.</summary>
+    /// <summary>Sets a new value for an existing header of the HttpContent object, or adds the header if it does not already exist.</summary>
     /// <param name="Name">The name of the header to add.</param>
     /// <param name="Value">The value of the header to add.</param>
     procedure SetHeader(Name: Text; Value: Text)
@@ -165,7 +173,7 @@ codeunit 2354 "Http Content"
         HttpContentImpl.SetHeader(Name, Value);
     end;
 
-    /// <summary>Sets a new value for an existing header of the HttpContent object, or addds the header if it does not already exist.</summary>
+    /// <summary>Sets a new value for an existing header of the HttpContent object, or adds the header if it does not already exist.</summary>
     /// <param name="Name">The name of the header to add.</param>
     /// <param name="Value">The value of the header to add.</param>
     procedure SetHeader(Name: Text; Value: SecretText)

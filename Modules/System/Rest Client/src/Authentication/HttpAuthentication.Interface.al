@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.RestClient;
+
 /// <summary>An interface to support different authorization mechanism in a generic way.</summary>
 interface "Http Authentication"
 {

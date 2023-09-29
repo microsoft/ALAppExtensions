@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.RestClient;
+
 /// <summary>Provides functionality to easily work with the HttpClient object.</summary>
 codeunit 2350 "Rest Client"
 {
@@ -292,9 +298,6 @@ codeunit 2350 "Rest Client"
     /// <param name="Content">The content to send as a JsonToken.</param>
     /// <returns>The response content as JsonToken</returns>
     procedure PutAsJson(RequestUri: Text; Content: JSonToken) Response: JsonToken
-    var
-        HttpResponseMessage: Codeunit "Http Response Message";
-        HttpContent: Codeunit "Http Content";
     begin
         Response := RestClientImpl.PutAsJson(RequestUri, Content);
     end;

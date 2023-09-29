@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Test.RestClient;
+
+using System.RestClient;
+using System.TestLibraries.Utilities;
+
 codeunit 134971 "Rest Client Tests"
 {
     Subtype = Test;
@@ -237,7 +247,6 @@ codeunit 134971 "Rest Client Tests"
     var
         RestClient: Codeunit "Rest Client";
         HttpGetContent: Codeunit "Http Content";
-        HttpResponseMessage: Codeunit "Http Response Message";
         JsonObject1: JsonObject;
         JsonObject2: JsonObject;
     begin
@@ -266,7 +275,6 @@ codeunit 134971 "Rest Client Tests"
     var
         RestClient: Codeunit "Rest Client";
         HttpGetContent: Codeunit "Http Content";
-        HttpResponseMessage: Codeunit "Http Response Message";
         JsonObject1: JsonObject;
         JsonObject2: JsonObject;
     begin
@@ -295,7 +303,6 @@ codeunit 134971 "Rest Client Tests"
     var
         RestClient: Codeunit "Rest Client";
         HttpGetContent: Codeunit "Http Content";
-        HttpResponseMessage: Codeunit "Http Response Message";
         JsonObject1: JsonObject;
         JsonObject2: JsonObject;
     begin

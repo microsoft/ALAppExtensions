@@ -1,4 +1,12 @@
 /// <summary>Implementation of the "Http Authentication" interface for a request that requires basic authentication</summary>
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.RestClient;
+
+using System;
+
 codeunit 2359 "Http Authentication Basic" implements "Http Authentication"
 {
     InherentEntitlements = X;
@@ -7,6 +15,7 @@ codeunit 2359 "Http Authentication Basic" implements "Http Authentication"
     var
         GlobalUsername: Text;
         GlobalPassword: SecretText;
+        UsernameDomainTxt: Label '%1\%2', Locked = true;
 
     /// <summary>Initializes the authentication object with the given username and password</summary>
     /// <param name="Username">The username to use for authentication</param>
@@ -25,7 +34,7 @@ codeunit 2359 "Http Authentication Basic" implements "Http Authentication"
         if Domain = '' then
             GlobalUsername := Username
         else
-            GlobalUsername := StrSubstNo('%1\%2', Username, Domain);
+            GlobalUsername := StrSubstNo(UsernameDomainTxt, Username, Domain);
 
         GlobalPassword := Password;
     end;

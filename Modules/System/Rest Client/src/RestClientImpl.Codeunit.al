@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.RestClient;
+
 codeunit 2351 "Rest Client Impl."
 {
     Access = Internal;
@@ -5,13 +11,12 @@ codeunit 2351 "Rest Client Impl."
     InherentPermissions = X;
 
     var
-        HttpAuthentication: Interface "Http Authentication";
-        HttpClientHandler: Interface "Http Client Handler";
         DefaultHttpClientHandler: Codeunit "Http Client Handler";
         HttpAuthenticationAnonymous: Codeunit "Http Authentication Anonymous";
+        HttpAuthentication: Interface "Http Authentication";
+        HttpClientHandler: Interface "Http Client Handler";
         HttpClient: HttpClient;
         IsInitialized: Boolean;
-        NotInitializedErr: Label 'The Rest Client has not been initialized';
         EnvironmentBlocksErr: label 'Environment blocks an outgoing HTTP request to ''%1''.', Comment = '%1 = url, e.g. https://microsoft.com';
         ConnectionErr: label 'Connection to the remote service ''%1'' could not be established.', Comment = '%1 = url, e.g. https://microsoft.com';
         RequestFailedErr: label 'The request failed: %1 %2', Comment = '%1 = HTTP status code, %2 = Reason phrase';
@@ -23,6 +28,7 @@ codeunit 2351 "Rest Client Impl."
         Initialize(DefaultHttpClientHandler, HttpAuthenticationAnonymous);
     end;
 
+    #pragma warning disable AA0244
     procedure Initialize(HttpClientHandler: Interface "Http Client Handler")
     begin
         Initialize(HttpClientHandler, HttpAuthenticationAnonymous);
@@ -32,6 +38,7 @@ codeunit 2351 "Rest Client Impl."
     begin
         Initialize(DefaultHttpClientHandler, HttpAuthentication);
     end;
+    #pragma warning restore AA0244
 
     procedure Initialize(HttpClientHandlerInstance: Interface "Http Client Handler"; HttpAuthenticationInstance: Interface "Http Authentication")
     begin
@@ -228,7 +235,7 @@ codeunit 2351 "Rest Client Impl."
             exit(false);
         end;
 
-        if not HttpResponseMessage.GetIsSuccessStatusCode then begin
+        if not HttpResponseMessage.GetIsSuccessStatusCode() then begin
             ErrorMessage := StrSubstNo(RequestFailedErr, HttpResponseMessage.GetHttpStatusCode(), HttpResponseMessage.GetReasonPhrase());
             HttpResponseMessage.SetErrorMessage(ErrorMessage);
         end;

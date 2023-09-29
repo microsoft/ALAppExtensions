@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Test.RestClient;
+
+using System.RestClient;
+using System.TestLibraries.Utilities;
+
 codeunit 134973 "Http Authentication Tests"
 {
     Subtype = Test;
@@ -21,15 +31,16 @@ codeunit 134973 "Http Authentication Tests"
         Assert.AreEqual(HttpAuthenticationAnonymous.GetAuthorizationHeaders().Count, 0, 'Anonymous authentication should not return an authorization header');
     end;
 
+    [NonDebuggable]
     [Test]
     procedure TestBasicAuthentication()
     var
         HttpAuthenticationBasic: Codeunit "Http Authentication Basic";
-        AuthHeader: Dictionary of [Text, Text];
-        BasicAuthHeaderValue: Text;
+        AuthHeader: Dictionary of [Text, SecretText];
+        BasicAuthHeaderValue: SecretText;
     begin
         // [GIVEN] A basic authentication object
-        HttpAuthenticationBasic.Initialize('USER01', 'Password123!');
+        HttpAuthenticationBasic.Initialize('USER01', SecretText.SecretStrSubstNo('Password123!'));
 
         // [WHEN] The authentication object is asked if authentication is required
         // [THEN] The authentication object should return true
@@ -42,6 +53,6 @@ codeunit 134973 "Http Authentication Tests"
         Assert.AreEqual(AuthHeader.ContainsKey('Authorization'), true, 'Basic authentication should return an authorization header');  
         
         BasicAuthHeaderValue := AuthHeader.Get('Authorization');
-        Assert.AreEqual(BasicAuthHeaderValue, 'Basic VVNFUjAxOlBhc3N3b3JkMTIzIQ==', 'Basic authentication should return a base64 encoded string');
+        Assert.AreEqual(BasicAuthHeaderValue.Unwrap(), 'Basic VVNFUjAxOlBhc3N3b3JkMTIzIQ==', 'Basic authentication should return a base64 encoded string');
     end;
 }

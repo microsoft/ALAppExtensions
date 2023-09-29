@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Test.RestClient;
+
+using System.RestClient;
+using System.TestLibraries.Utilities;
+
 codeunit 134972 "Request Message Tests"
 {
     Subtype = Test;
@@ -9,10 +19,7 @@ codeunit 134972 "Request Message Tests"
     procedure TestSetHttpMethod()
     var
         ALHttpRequestMessage: Codeunit "Http Request Message";
-        HttpContent: Codeunit "Http Content";
         HttpRequestMessage: HttpRequestMessage;
-        ContentHeaders: HttpHeaders;
-        ContentHeaderValues: List of [Text];
     begin
         // [SCENARIO] The request message is initialized with an empty content
 
@@ -122,7 +129,6 @@ codeunit 134972 "Request Message Tests"
     procedure TestAddRequestHeader()
     var
         ALHttpRequestMessage: Codeunit "Http Request Message";
-        HttpContent: Codeunit "Http Content";
         HttpRequestMessage: HttpRequestMessage;
         ContentHeaders: HttpHeaders;
         ContentHeaderValues: List of [Text];
