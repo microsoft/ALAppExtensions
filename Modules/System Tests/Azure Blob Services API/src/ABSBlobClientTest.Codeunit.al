@@ -656,15 +656,15 @@ codeunit 132920 "ABS Blob Client Test"
         // [WHEN] Invoke BlobNodeListToTempRecord
         ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
 
-        // [THEN] "ABS Container Content" contains two records for folders and one record "blob"
+        // [THEN] "ABS Container Content" contains two records with resource type "folder" and one record with resource type = "blob"
         Assert.RecordCount(ABSContainerContent, 3);
 
-        VerifyContinerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseRootDirName(), Enum::"ABS Blob Resource Type"::Directory);
-        VerifyContinerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseSubdirName(), Enum::"ABS Blob Resource Type"::Directory);
-        VerifyContinerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseFileName(), Enum::"ABS Blob Resource Type"::File);
+        VerifyContainerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseRootDirName(), Enum::"ABS Blob Resource Type"::Directory);
+        VerifyContainerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseSubdirName(), Enum::"ABS Blob Resource Type"::Directory);
+        VerifyContainerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseFileName(), Enum::"ABS Blob Resource Type"::File);
     end;
 
-    local procedure VerifyContinerContentType(var ABSContainerContent: Record "ABS Container Content"; BlobName: Text[2048]; ExpectedResourceType: Enum "ABS Blob Resource Type")
+    local procedure VerifyContainerContentType(var ABSContainerContent: Record "ABS Container Content"; BlobName: Text[2048]; ExpectedResourceType: Enum "ABS Blob Resource Type")
     var
         IncorrectBlobPropertyErr: Label 'BLOB property is assigned incorrectly';
     begin
