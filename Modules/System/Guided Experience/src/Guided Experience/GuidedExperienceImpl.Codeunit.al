@@ -992,6 +992,8 @@ codeunit 1991 "Guided Experience Impl."
             DeleteSpotlightTourTexts(GuidedExperienceItem.Code);
         end;
 
+        LogMessageOnDatabaseEvent(GuidedExperienceItem, '0000EIN', GuidedExperienceItemDeletedLbl);
+
         GuidedExperienceItem.DeleteAll(true);
     end;
 
@@ -1225,32 +1227,39 @@ codeunit 1991 "Guided Experience Impl."
     var
         GuidedExperienceItem: Record "Guided Experience Item";
         GuidedExperienceItem2: Record "Guided Experience Item";
+        PublishedApplication: Record "Published Application";
+        FirstPartyPublisherFilterString: Text;
         ItemsToCleanUp: List of [Code[300]];
         ItemCode: Code[300];
     begin
-        if OnlyFirstParty then
-            GuidedExperienceItem.SetRange("Extension Publisher", 'Microsoft');
+        if OnlyFirstParty then begin
+            PublishedApplication.SetRange(Publisher, 'Microsoft');
+            FirstPartyPublisherFilterString := '';
+
+            if PublishedApplication.FindSet() then
+                repeat
+                    if FirstPartyPublisherFilterString = '' then
+                        FirstPartyPublisherFilterString := PublishedApplication.ID
+                    else
+                        FirstPartyPublisherFilterString += '|' + PublishedApplication.ID;
+                until PublishedApplication.Next() = 0;
+
+            GuidedExperienceItem.SetFilter("Extension ID", FirstPartyPublisherFilterString);
+        end;
 
         if GuidedExperienceItem.FindSet() then
             repeat
                 GuidedExperienceItem2.SetRange(Code, GuidedExperienceItem.Code);
+
                 if GuidedExperienceItem2.Count() > Threshold then
-                    ItemsToCleanUp.Add(GuidedExperienceItem.Code);
+                    if not ItemsToCleanUp.Contains(GuidedExperienceItem.Code) then
+                        ItemsToCleanUp.Add(GuidedExperienceItem.Code);
             until GuidedExperienceItem.Next() = 0;
 
         foreach ItemCode in ItemsToCleanUp do begin
             GuidedExperienceItem.SetRange(Code, ItemCode);
             GuidedExperienceItem.SetRange(Version, 0, GuidedExperienceItem.Count() - 2);
-            GuidedExperienceItem.DeleteAll();
+            GuidedExperienceItem.DeleteAll(false);
         end;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Guided Experience Item", OnAfterDeleteEvent, '', true, true)]
-    local procedure OnAfterGuidedExperienceItemDelete(var Rec: Record "Guided Experience Item")
-    begin
-        if Rec.IsTemporary() then
-            exit;
-
-        LogMessageOnDatabaseEvent(Rec, '0000EIN', GuidedExperienceItemDeletedLbl);
     end;
 }

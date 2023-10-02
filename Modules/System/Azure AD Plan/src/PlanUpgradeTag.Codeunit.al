@@ -24,6 +24,7 @@ codeunit 9058 "Plan Upgrade Tag"
         PerDatabaseUpgradeTags.Add(GetRenameTeamMemberPlanUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetPlanfigurationsUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetMicrosoft365UpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetEssentialAttachUpgradeTag());
     end;
 
     /// <summary>
@@ -80,6 +81,15 @@ codeunit 9058 "Plan Upgrade Tag"
         exit('MS-410756-AddMicrosoft365-20220825');
     end;
 
+    /// <summary>
+    /// Returns the Essential Attach upgrade tag.
+    /// </summary>
+    /// <returns>The Essential Attach upgrade tag.</returns>
+    internal procedure GetEssentialAttachUpgradeTag(): Code[250]
+    begin
+        exit('MS-471088-AddAttachPlans-20230427');
+    end;
+    
     internal procedure GetPlanfigurationsUpgradeTag(): Code[250]
     begin
         exit('MS-430587-AddPlanConfigurations-20220321');

@@ -12,35 +12,38 @@ Param(
 $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
 try {
-$webClient = New-Object System.Net.WebClient
-$webClient.CachePolicy = New-Object System.Net.Cache.RequestCachePolicy -argumentList ([System.Net.Cache.RequestCacheLevel]::NoCacheNoStore)
-$webClient.Encoding = [System.Text.Encoding]::UTF8
-Write-Host "Downloading GitHub Helper module"
-$GitHubHelperPath = "$([System.IO.Path]::GetTempFileName()).psm1"
-$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v3.2/Github-Helper.psm1', $GitHubHelperPath)
-Write-Host "Downloading AL-Go Helper script"
-$ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
-$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v3.2/AL-Go-Helper.ps1', $ALGoHelperPath)
-
-Import-Module $GitHubHelperPath
-. $ALGoHelperPath -local
-    
-$baseFolder = GetBaseFolder -folder $PSScriptRoot
-$project = GetProject -baseFolder $baseFolder -projectALGoFolder $PSScriptRoot
-
 Clear-Host
 Write-Host
 Write-Host -ForegroundColor Yellow @'
-   _____ _                 _   _____             ______            
-  / ____| |               | | |  __ \           |  ____|           
+   _____ _                 _   _____             ______
+  / ____| |               | | |  __ \           |  ____|
  | |    | | ___  _   _  __| | | |  | | _____   __ |__   _ ____   __
  | |    | |/ _ \| | | |/ _` | | |  | |/ _ \ \ / /  __| | '_ \ \ / /
- | |____| | (_) | |_| | (_| | | |__| |  __/\ V /| |____| | | \ V / 
-  \_____|_|\___/ \__,_|\__,_| |_____/ \___| \_/ |______|_| |_|\_/  
-                                                                   
+ | |____| | (_) | |_| | (_| | | |__| |  __/\ V /| |____| | | \ V /
+  \_____|_|\___/ \__,_|\__,_| |_____/ \___| \_/ |______|_| |_|\_/
+
 '@
 
+$webClient = New-Object System.Net.WebClient
+$webClient.CachePolicy = New-Object System.Net.Cache.RequestCachePolicy -argumentList ([System.Net.Cache.RequestCacheLevel]::NoCacheNoStore)
+$webClient.Encoding = [System.Text.Encoding]::UTF8
+$GitHubHelperUrl = 'https://raw.githubusercontent.com/microsoft/AL-Go/31944622373d473cf9b727a320333e170290265b/Actions/Github-Helper.psm1'
+Write-Host "Downloading GitHub Helper module from $GitHubHelperUrl"
+$GitHubHelperPath = "$([System.IO.Path]::GetTempFileName()).psm1"
+$webClient.DownloadFile($GitHubHelperUrl, $GitHubHelperPath)
+$ALGoHelperUrl = 'https://raw.githubusercontent.com/microsoft/AL-Go/31944622373d473cf9b727a320333e170290265b/Actions/AL-Go-Helper.ps1'
+Write-Host "Downloading AL-Go Helper script from $ALGoHelperUrl"
+$ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
+$webClient.DownloadFile($ALGoHelperUrl, $ALGoHelperPath)
+
+Import-Module $GitHubHelperPath
+. $ALGoHelperPath -local
+
+$baseFolder = GetBaseFolder -folder $PSScriptRoot
+$project = GetProject -baseFolder $baseFolder -projectALGoFolder $PSScriptRoot
+
 Write-Host @'
+
 This script will create a cloud based development environment (Business Central SaaS Sandbox) for your project.
 All apps and test apps will be compiled and published to the environment in the development scope.
 The script will also modify launch.json to have a "Cloud Sandbox (<name>)" configuration point to your environment.
@@ -50,8 +53,6 @@ The script will also modify launch.json to have a "Cloud Sandbox (<name>)" confi
 if (Test-Path (Join-Path $PSScriptRoot "NewBcContainer.ps1")) {
     Write-Host -ForegroundColor Red "WARNING: The project has a NewBcContainer override defined. Typically, this means that you cannot run a cloud development environment"
 }
-
-$settings = ReadSettings -baseFolder $baseFolder -project $project -userName $env:USERNAME
 
 Write-Host
 

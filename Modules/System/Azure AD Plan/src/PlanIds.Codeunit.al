@@ -27,6 +27,7 @@ codeunit 9027 "Plan Ids"
         EssentialISVPlanGUIDTxt: Label '{8bb56cea-3f11-4647-854a-212e2b05306a}', Locked = true;
         PremiumISVPlanGUIDTxt: Label '{4c52d56d-5121-425a-91a5-dd0de136ca17}', Locked = true;
         DeviceISVPlanGUIDTxt: Label '{a98d0c4a-a52f-4771-a609-e20366102d2a}', Locked = true;
+        EssentialAttachPlanGUIDTxt: Label '{17ca446c-d7a4-4d29-8dec-8e241592164b}', Locked = true;
         DevicePlanGUIDTxt: Label '{100e1865-35d4-4463-aaff-d38eee3a1116}', Locked = true;
         BasicPlanGUIDTxt: Label '{2ec8b6ca-ab13-4753-a479-8c2ffe4c323b}', Locked = true;
         AccountantHubPlanGuidTxt: Label '{5d60ea51-0053-458f-80a8-b6f426a1a0c1}', Locked = true;
@@ -166,6 +167,15 @@ codeunit 9027 "Plan Ids"
     procedure GetPremiumISVPlanId(): Guid
     begin
         exit(PremiumISVPlanGUIDTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the Dynamics 365 Business Central Essential - Attach plan.
+    /// </summary>
+    /// <returns>The ID for the Dynamics 365 Business Central Essential - Attach plan.</returns>
+    procedure GetEssentialAttachPlanId(): Guid
+    begin
+        exit(EssentialAttachPlanGUIDTxt);
     end;
 
     /// <summary>
