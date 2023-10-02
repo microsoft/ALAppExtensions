@@ -83,7 +83,9 @@ codeunit 1482 "Edit in Excel Impl."
         TenantWebService: Record "Tenant Web Service";
         EditinExcelWorkbook: Codeunit "Edit in Excel Workbook";
     begin
-        if not TenantWebService.Get(TenantWebService."Object Type"::Page, ServiceName) then
+        if (not TenantWebService.Get(TenantWebService."Object Type"::Page, ServiceName)) and
+            (not TenantWebService.Get(TenantWebService."Object Type"::Query, ServiceName)) and
+            (not TenantWebService.Get(TenantWebService."Object Type"::Codeunit, ServiceName)) then
             exit;
 
         Session.LogMessage('0000DB6', StrSubstNo(CreateEndpointForObjectTxt, TenantWebService."Object Type", TenantWebService."Object ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);

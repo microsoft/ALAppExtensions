@@ -78,7 +78,7 @@ codeunit 9050 "ABS Operation Response"
     end;
 
     [NonDebuggable]
-    procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
+    internal procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
     var
         Headers: HttpHeaders;
         Values: array[100] of Text;

@@ -96,6 +96,18 @@ codeunit 1481 "Edit in Excel"
         EditInExcelImpl.GetEndPointAndCreateWorkbookWStructuredFilter(TenantWebService."Service Name", EditinExcelFilters, SearchFilter);
     end;
 
+    /// <summary>
+    /// Prepares an Excel file for the Edit in Excel functionality by using the specified web service, and downloads the file.
+    /// </summary>
+    /// <param name="TenantWebService">The web service referenced through Edit in Excel.</param>
+    /// <param name="EditinExcelFilters">The filters which will be applied to Edit in Excel.</param>
+    procedure GenerateExcelWorkBook(TenantWebService: Record "Tenant Web Service"; EditinExcelFilters: Codeunit "Edit in Excel Filters")
+    var
+        EditInExcelImpl: Codeunit "Edit in Excel Impl.";
+    begin
+        EditInExcelImpl.GetEndPointAndCreateWorkbookWStructuredFilter(TenantWebService."Service Name", EditinExcelFilters, '');
+    end;
+
 #if not CLEAN22
     /// <summary>
     /// This event is called when Edit in Excel is invoked, accepting Filter in Text format. It allows overriding the Edit in Excel functionality.

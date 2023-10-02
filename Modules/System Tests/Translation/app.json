@@ -36,12 +36,6 @@
                              "version":  "22.5.0.0"
                          },
                          {
-                             "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
-                             "name":  "Any",
-                             "publisher":  "Microsoft",
-                             "version":  "22.5.0.0"
-                         },
-                         {
                              "id":  "5d986913-9dd6-44b7-875b-3e8c455fac7c",
                              "name":  "Translation Test Library",
                              "publisher":  "Microsoft",

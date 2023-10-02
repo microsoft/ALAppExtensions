@@ -12,7 +12,6 @@ page 3712 Translation
     SourceTable = Translation;
     ContextSensitiveHelpPage = 'ui-get-ready-business';
     Permissions = tabledata Translation = rimd;
-    UsageCategory = None;
 
     layout
     {
@@ -34,17 +33,10 @@ page 3712 Translation
                         CalculateLanguageFromID();
                     end;
                 }
-                field(Value; Rec.Value)
+                field(Value; Value)
                 {
                     ApplicationArea = All;
                     ToolTip = 'The translated text.';
-                    trigger OnValidate()
-                    var
-                        TranslationImplementation: Codeunit "Translation Implementation";
-                    begin
-                        if FieldLengthCheckEnabled then
-                            TranslationImplementation.CheckLengthOfTranslationValue(Rec);
-                    end;
                 }
             }
         }
@@ -65,14 +57,13 @@ page 3712 Translation
     var
         Language: Codeunit Language;
     begin
-        Rec.CalcFields("Language Name");
-        LanguageNameValue := Rec."Language Name";
+        CalcFields("Language Name");
+        LanguageNameValue := "Language Name";
         if LanguageNameValue = '' then
-            LanguageNameValue := Language.GetWindowsLanguageName(Rec."Language ID");
+            LanguageNameValue := Language.GetWindowsLanguageName("Language ID");
     end;
 
     var
-        FieldLengthCheckEnabled: Boolean;
         TableId: Integer;
         CaptionTxt: Text;
         LanguageNameValue: Text;
@@ -80,11 +71,6 @@ page 3712 Translation
     internal procedure SetTableId(TableNo: Integer)
     begin
         TableId := TableNo;
-    end;
-
-    internal procedure SetCheckFieldLength(CheckFieldLength: Boolean)
-    begin
-        FieldLengthCheckEnabled := CheckFieldLength;
     end;
 
     /// <summary>
