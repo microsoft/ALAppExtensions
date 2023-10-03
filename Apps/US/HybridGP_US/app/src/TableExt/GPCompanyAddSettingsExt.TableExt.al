@@ -55,7 +55,7 @@ tableextension 41103 "GP Company Add. Settings Ext." extends "GP Company Additio
         {
             trigger OnAfterValidate()
             begin
-                if not rec."Migrate GL Module" then
+                if not Rec."Migrate GL Module" then
                     Rec.Validate("Migrate Vendor 1099", false);
             end;
         }
