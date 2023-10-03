@@ -3,7 +3,6 @@
 /// </summary>
 codeunit 30124 "Shpfy Update Customer"
 {
-    Access = Internal;
     Permissions =
 #if not CLEAN22
         tabledata "Config. Template Header" = r,

@@ -3,7 +3,6 @@
 /// </summary>
 codeunit 30110 "Shpfy Create Customer"
 {
-    Access = Internal;
     Permissions =
 #if not CLEAN22
         tabledata "Config. Template Header" = r,
@@ -171,7 +170,7 @@ codeunit 30110 "Shpfy Create Customer"
     /// Set Shop.
     /// </summary>
     /// <param name="Code">Parameter of type Code[20].</param>
-    internal procedure SetShop(Code: Code[20])
+    procedure SetShop(Code: Code[20])
     begin
         Clear(Shop);
         Shop.Get(Code);
@@ -181,7 +180,7 @@ codeunit 30110 "Shpfy Create Customer"
     /// Set Shop.
     /// </summary>
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
-    internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
+    procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         Shop := ShopifyShop;
     end;
@@ -190,7 +189,7 @@ codeunit 30110 "Shpfy Create Customer"
     /// Set Template Code.
     /// </summary>
     /// <param name="Code">Parameter of type Code[20].</param>
-    internal procedure SetTemplateCode(Code: Code[20])
+    procedure SetTemplateCode(Code: Code[20])
     begin
         TemplateCode := Code;
     end;

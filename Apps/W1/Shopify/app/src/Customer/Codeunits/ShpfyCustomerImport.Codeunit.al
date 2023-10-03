@@ -3,8 +3,6 @@
 /// </summary>
 codeunit 30117 "Shpfy Customer Import"
 {
-    Access = Internal;
-
     trigger OnRun()
     var
         CustomerAddress: Record "Shpfy Customer Address";
@@ -49,12 +47,12 @@ codeunit 30117 "Shpfy Customer Import"
     /// Get Customer.
     /// </summary>
     /// <param name="ShopifyCustomerResult">Parameter of type Record "Shopify Customer".</param>
-    internal procedure GetCustomer(var ShopifyCustomerResult: Record "Shpfy Customer")
+    procedure GetCustomer(var ShopifyCustomerResult: Record "Shpfy Customer")
     begin
         ShopifyCustomerResult := ShopifyCustomer;
     end;
 
-    internal procedure SetAllowCreate(Value: Boolean)
+    procedure SetAllowCreate(Value: Boolean)
     begin
         AllowCreate := Value;
     end;
@@ -63,7 +61,7 @@ codeunit 30117 "Shpfy Customer Import"
     /// Set Customer.
     /// </summary>
     /// <param name="Id">Parameter of type BigInteger.</param>
-    internal procedure SetCustomer(Id: BigInteger)
+    procedure SetCustomer(Id: BigInteger)
     begin
         if Id <> 0 then begin
             Clear(ShopifyCustomer);
@@ -82,7 +80,7 @@ codeunit 30117 "Shpfy Customer Import"
     /// Set Customer.
     /// </summary>
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
-    internal procedure SetCustomer(ShopifyCustomer: Record "Shpfy Customer")
+    procedure SetCustomer(ShopifyCustomer: Record "Shpfy Customer")
     begin
         SetCustomer(ShopifyCustomer.Id);
     end;
@@ -91,7 +89,7 @@ codeunit 30117 "Shpfy Customer Import"
     /// Set Shop.
     /// </summary>
     /// <param name="Code">Parameter of type Code[20].</param>
-    internal procedure SetShop(Code: Code[20])
+    procedure SetShop(Code: Code[20])
     begin
         Clear(Shop);
         Shop.Get(Code);
@@ -102,7 +100,7 @@ codeunit 30117 "Shpfy Customer Import"
     /// Set Shop.
     /// </summary>
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
-    internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
+    procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         Shop := ShopifyShop;
         CustomerApi.SetShop(Shop);
@@ -112,7 +110,7 @@ codeunit 30117 "Shpfy Customer Import"
     /// Set Template Code.
     /// </summary>
     /// <param name="Code">Parameter of type Code[10].</param>
-    internal procedure SetTemplateCode(Code: Code[10])
+    procedure SetTemplateCode(Code: Code[10])
     begin
         TemplateCode := Code;
     end;
