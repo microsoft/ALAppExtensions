@@ -113,7 +113,8 @@ table 4024 "GP Configuration"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if not "Fiscal Periods Created" then
-            exit(false);
+            if GPCompanyAdditionalSettings.GetGLModuleEnabled() then
+                exit(false);
 
         if not "CheckBooks Created" then
             if GPCompanyAdditionalSettings.GetBankModuleEnabled() then

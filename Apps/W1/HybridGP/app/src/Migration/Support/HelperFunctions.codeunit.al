@@ -1919,7 +1919,7 @@ Codeunit 4037 "Helper Functions"
     begin
         // this procedure might run multiple times depending upon migration errors.
 
-        if not FiscalPeriodsCreated() then
+        if GPCompanyAdditionalSettings.GetGLModuleEnabled() and not FiscalPeriodsCreated() then
             CreateFiscalPeriods();
 
         if GPCompanyAdditionalSettings.GetBankModuleEnabled() and not CheckBooksCreated() then

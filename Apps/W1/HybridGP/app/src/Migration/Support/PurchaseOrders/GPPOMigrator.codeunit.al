@@ -14,6 +14,7 @@ codeunit 40108 "GP PO Migrator"
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         CompanyInformation: Record "Company Information";
         PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
         GeneralLedgerSetup: Record "General Ledger Setup";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         Vendor: Record Vendor;
@@ -87,6 +88,12 @@ codeunit 40108 "GP PO Migrator"
 
                 PurchaseHeader.Modify(true);
                 CreateLines(PurchaseHeader."No.");
+
+                // If no lines were created, delete the empty Purchase Header
+                PurchaseLine.SetRange("Document Type", PurchaseLine."Document Type"::Order);
+                PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+                if PurchaseLine.IsEmpty() then
+                    PurchaseHeader.Delete();
             end;
         until GPPOP10100.Next() = 0;
 

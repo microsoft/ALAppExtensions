@@ -4,11 +4,15 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        PopulateGPAccount();
         PouplateGPFiscalPeriods();
 
-        if not GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
-            PopulateGPGLTransactions();
+        if GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
+            PopulateGPAccount();
+            PopulateGPPostingAccountsTable();
+
+            if not GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
+                PopulateGPGLTransactions();
+        end;
 
         if GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then begin
             PopulateGPCustomer();
@@ -34,7 +38,6 @@ codeunit 40125 "GP Populate Combined Tables"
 
         PopulateCodes();
         PopulateGPSegments();
-        PopulateGPPostingAccountsTable();
         PopulateGPRMOpen();
     end;
 
@@ -89,7 +92,6 @@ codeunit 40125 "GP Populate Combined Tables"
         ExistingGPFiscalPeriods: Record "GP Fiscal Periods";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
     begin
-        GPSY40100.SetFilter(PERIODID, '>0');
         GPSY40100.SetRange(SERIES, 0);
 
         if not GPSY40100.FindSet() then
@@ -103,7 +105,7 @@ codeunit 40125 "GP Populate Combined Tables"
                 GPFiscalPeriods.PERIODDT := DT2Date(OutlookSynchTypeConv.LocalDT2UTC(GPSY40100.PERIODDT));
                 GPFiscalPeriods.PERDENDT := DT2Date(OutlookSynchTypeConv.LocalDT2UTC(GPSY40100.PERDENDT));
 
-                if not ExistingGPFiscalPeriods.Get(GPFiscalPeriods.PERIODDT, GPFiscalPeriods.YEAR1) then
+                if not ExistingGPFiscalPeriods.Get(GPFiscalPeriods.PERIODID, GPFiscalPeriods.YEAR1) then
                     GPFiscalPeriods.Insert();
             end;
         until GPSY40100.Next() = 0;
@@ -128,6 +130,7 @@ codeunit 40125 "GP Populate Combined Tables"
         SegmentCount := GetTotalSegmentCount();
         CurrentKey := 1;
         GPGL10110.SetFilter(PERDBLNC, '<>0');
+        GPGL10110.SetFilter(PERIODID, '>0');
         GPGL10110.SetRange(GL00100ACCTYPE1Exist, true);
         GPGL10110.SetCurrentKey(YEAR1, PERIODID, ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8);
         if GPGL10110.FindSet() then
@@ -137,7 +140,6 @@ codeunit 40125 "GP Populate Combined Tables"
                 GPGLTransactions.ACTINDX := GPGL10110.ACTINDX;
                 GPGLTransactions.YEAR1 := GPGL10110.YEAR1;
                 GPGLTransactions.PERIODID := GPGL10110.PERIODID;
-
                 GPGLTransactions.ACTNUMBR_1 := GPGL10110.ACTNUMBR_1;
                 GPGLTransactions.ACTNUMBR_2 := GPGL10110.ACTNUMBR_2;
                 GPGLTransactions.ACTNUMBR_3 := GPGL10110.ACTNUMBR_3;
@@ -191,6 +193,7 @@ codeunit 40125 "GP Populate Combined Tables"
             until GPGL10110.Next() = 0;
 
         GPGL10111.SetFilter(PERDBLNC, '<>0');
+        GPGL10111.SetFilter(PERIODID, '>0');
         GPGL10111.SetRange(GL00100ACCTYPE1Exist, true);
         GPGL10111.SetCurrentKey(YEAR1, PERIODID, ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8);
         if GPGL10111.FindSet() then
@@ -817,9 +820,9 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPSY01100PostingAccounts: Record "GP SY01100";
         GPGL00100Accounts: Record "GP GL00100";
-        GPPostingAccoutns: Record "GP Posting Accounts";
+        GPPostingAccounts: Record "GP Posting Accounts";
     begin
-        GPPostingAccoutns.Id := 1;
+        GPPostingAccounts.Id := 1;
 
         // Sales Account
         GPSY01100PostingAccounts.SetRange(PTGACDSC, 'Sales');
@@ -827,8 +830,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.SalesAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.SalesAccount));
-                GPPostingAccoutns.SalesAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.SalesAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.SalesAccount));
+                GPPostingAccounts.SalesAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -838,8 +841,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.SalesLineDiscAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.SalesLineDiscAccount));
-                GPPostingAccoutns.SalesLineDiscAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.SalesLineDiscAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.SalesLineDiscAccount));
+                GPPostingAccounts.SalesLineDiscAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -849,8 +852,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.SalesInvDiscAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.SalesInvDiscAccount));
-                GPPostingAccoutns.SalesInvDiscAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.SalesInvDiscAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.SalesInvDiscAccount));
+                GPPostingAccounts.SalesInvDiscAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -860,8 +863,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.SalesPmtDiscDebitAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.SalesPmtDiscDebitAccount));
-                GPPostingAccoutns.SalesPmtDiscDebitAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.SalesPmtDiscDebitAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.SalesPmtDiscDebitAccount));
+                GPPostingAccounts.SalesPmtDiscDebitAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -871,8 +874,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PurchAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PurchAccount));
-                GPPostingAccoutns.PurchAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PurchAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PurchAccount));
+                GPPostingAccounts.PurchAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -882,8 +885,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PurchLineDiscAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PurchLineDiscAccount));
-                GPPostingAccoutns.PurchLineDiscAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PurchLineDiscAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PurchLineDiscAccount));
+                GPPostingAccounts.PurchLineDiscAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -893,8 +896,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.COGSAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.COGSAccount));
-                GPPostingAccoutns.COGSAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.COGSAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.COGSAccount));
+                GPPostingAccounts.COGSAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -904,8 +907,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.InventoryAdjmtAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.InventoryAdjmtAccount));
-                GPPostingAccoutns.InventoryAdjmtAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.InventoryAdjmtAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.InventoryAdjmtAccount));
+                GPPostingAccounts.InventoryAdjmtAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -915,8 +918,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.SalesCreditMemoAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.SalesCreditMemoAccount));
-                GPPostingAccoutns.SalesCreditMemoAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.SalesCreditMemoAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.SalesCreditMemoAccount));
+                GPPostingAccounts.SalesCreditMemoAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -926,8 +929,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PurchPmtDiscDebitAcc := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PurchPmtDiscDebitAcc));
-                GPPostingAccoutns.PurchPmtDiscDebitAccIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PurchPmtDiscDebitAcc := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PurchPmtDiscDebitAcc));
+                GPPostingAccounts.PurchPmtDiscDebitAccIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -937,8 +940,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PurchPrepaymentsAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PurchPrepaymentsAccount));
-                GPPostingAccoutns.PurchPrepaymentsAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PurchPrepaymentsAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PurchPrepaymentsAccount));
+                GPPostingAccounts.PurchPrepaymentsAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -948,8 +951,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PurchaseVarianceAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PurchaseVarianceAccount));
-                GPPostingAccoutns.PurchaseVarianceAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PurchaseVarianceAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PurchaseVarianceAccount));
+                GPPostingAccounts.PurchaseVarianceAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -959,8 +962,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.ReceivablesAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.ReceivablesAccount));
-                GPPostingAccoutns.ReceivablesAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.ReceivablesAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.ReceivablesAccount));
+                GPPostingAccounts.ReceivablesAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -970,8 +973,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.ServiceChargeAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.ServiceChargeAccount));
-                GPPostingAccoutns.ServiceChargeAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.ServiceChargeAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.ServiceChargeAccount));
+                GPPostingAccounts.ServiceChargeAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -981,8 +984,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PaymentDiscDebitAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PaymentDiscDebitAccount));
-                GPPostingAccoutns.PaymentDiscDebitAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PaymentDiscDebitAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PaymentDiscDebitAccount));
+                GPPostingAccounts.PaymentDiscDebitAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -993,8 +996,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PayablesAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PayablesAccount));
-                GPPostingAccoutns.PayablesAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PayablesAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PayablesAccount));
+                GPPostingAccounts.PayablesAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -1004,8 +1007,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PurchServiceChargeAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PurchServiceChargeAccount));
-                GPPostingAccoutns.PurchServiceChargeAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PurchServiceChargeAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PurchServiceChargeAccount));
+                GPPostingAccounts.PurchServiceChargeAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -1015,8 +1018,8 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.PurchPmtDiscDebitAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.PurchPmtDiscDebitAccount));
-                GPPostingAccoutns.PurchPmtDiscDebitAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.PurchPmtDiscDebitAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.PurchPmtDiscDebitAccount));
+                GPPostingAccounts.PurchPmtDiscDebitAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
@@ -1027,12 +1030,12 @@ codeunit 40125 "GP Populate Combined Tables"
         if GPSY01100PostingAccounts.FindFirst() then begin
             GPGL00100Accounts.SetRange(ACTINDX, GPSY01100PostingAccounts.ACTINDX);
             if GPGL00100Accounts.FindFirst() then begin
-                GPPostingAccoutns.InventoryAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccoutns.InventoryAccount));
-                GPPostingAccoutns.InventoryAccountIdx := GPSY01100PostingAccounts.ACTINDX;
+                GPPostingAccounts.InventoryAccount := CopyStr(GPGL00100Accounts.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPPostingAccounts.InventoryAccount));
+                GPPostingAccounts.InventoryAccountIdx := GPSY01100PostingAccounts.ACTINDX;
             end;
         end;
 
-        GPPostingAccoutns.Insert();
+        GPPostingAccounts.Insert();
     end;
 
     internal procedure CleanupCombinedTables()

@@ -20,6 +20,7 @@ codeunit 40107 FiscalPeriods
         AccountingPeriod: Record "Accounting Period";
         InventorySetup: Record "Inventory Setup";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
+        StartingDate: Date;
         I: Integer;
     begin
         GPSY40100.Reset();
@@ -32,10 +33,11 @@ codeunit 40107 FiscalPeriods
             GPSY40100.SetFilter(PERIODID, Format(I));
             if GPSY40100.FindFirst() then begin
                 Clear(AccountingPeriod);
-                AccountingPeriod.Validate("Starting Date", DT2Date(OutlookSynchTypeConv.LocalDT2UTC(GPSY40100.PERIODDT)));
+                StartingDate := DT2Date(OutlookSynchTypeConv.LocalDT2UTC(GPSY40100.PERIODDT));
 
-                if not AccountingPeriod.Get() then begin
-                    AccountingPeriod.Validate(Name, CopyStr(GPSY40100.PERNAME.TrimEnd(), 1, 10));
+                if not AccountingPeriod.Get(StartingDate) then begin
+                    AccountingPeriod.Validate("Starting Date", StartingDate);
+                    AccountingPeriod.Validate(Name, CopyStr(GPSY40100.PERNAME.TrimEnd(), 1, MaxStrLen(AccountingPeriod.Name)));
                     if I = 1 then begin
                         AccountingPeriod."New Fiscal Year" := true;
                         InventorySetup.Get();

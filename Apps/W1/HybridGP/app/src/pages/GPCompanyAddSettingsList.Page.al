@@ -48,6 +48,12 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specify whether to migrate open Purchase Orders.';
                     ApplicationArea = All;
                 }
+                field("Migrate GL Module"; Rec."Migrate GL Module")
+                {
+                    Caption = 'GL Module';
+                    ToolTip = 'Specify whether to migrate the GL module.';
+                    ApplicationArea = All;
+                }
                 field("Migrate Bank Module"; Rec."Migrate Bank Module")
                 {
                     Caption = 'Bank Module';

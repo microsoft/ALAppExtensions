@@ -23,6 +23,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOP10100: Record "GP POP10100";
         GPPOP10110: Record "GP POP10110";
         GPSY01200: Record "GP SY01200";
+        Item: Record Item;
         GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
@@ -1530,6 +1531,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOP10100.FindFirst();
         Assert.AreEqual('5% 10/NET2', GPPOP10100.PYMTRMID, 'Incorrect payment terms code in staging table.');
 
+        Assert.AreEqual(1, PurchaseHeader.Count, 'Incorrect number of POs created.');
+
         // [THEN] the POs will be migrated
         PurchaseHeader.SetRange("No.", PONumberTxt);
         Assert.IsTrue(PurchaseHeader.FindFirst(), 'POs should have been created.');
@@ -1549,11 +1552,15 @@ codeunit 139664 "GP Data Migration Tests"
         VendorPostingGroup: Record "Vendor Posting Group";
         GPConfiguration: Record "GP Configuration";
         GPPostingAccounts: Record "GP Posting Accounts";
+        PurchaseHeader: Record "Purchase Header";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
+        InventoryPostingGroup: Record "Inventory Posting Group";
     begin
         if not BindSubscription(GPDataMigrationTests) then
             exit;
 
         DataMigrationEntity.DeleteAll();
+        PurchaseHeader.DeleteAll();
         GPConfiguration.DeleteAll();
         GPTestHelperFunctions.DeleteAllSettings();
         GPCustomer.DeleteAll();
@@ -1582,6 +1589,16 @@ codeunit 139664 "GP Data Migration Tests"
             GPPostingAccounts.PayablesAccount := '1';
             GPPostingAccounts.ReceivablesAccount := '100';
             GPPostingAccounts.Insert();
+        end;
+
+        if not GenProductPostingGroup.Get(PostingGroupCodeTxt) then begin
+            GenProductPostingGroup.Code := PostingGroupCodeTxt;
+            GenProductPostingGroup.Insert();
+        end;
+
+        if not InventoryPostingGroup.Get(PostingGroupCodeTxt) then begin
+            InventoryPostingGroup.Code := PostingGroupCodeTxt;
+            InventoryPostingGroup.Insert();
         end;
 
         if UnbindSubscription(GPDataMigrationTests) then
@@ -4015,6 +4032,12 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure CreateOpenPOData()
     begin
+        Clear(Item);
+        Item."No." := 'ITEM-1';
+        Item.Validate("Gen. Prod. Posting Group", PostingGroupCodeTxt);
+        Item.Validate("Inventory Posting Group", PostingGroupCodeTxt);
+        Item.Insert();
+
         Clear(GPMC40200);
         GPMC40200.CURNCYID := TestMoneyCurrencyCodeTxt;
         GPMC40200.CRNCYDSC := 'Test Money :)';
@@ -4034,5 +4057,39 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOP10100.XCHGRATE := 0.01;
         GPPOP10100.EXCHDATE := 20230101D;
         GPPOP10100.Insert();
+
+        Clear(GPPOP10110);
+        GPPOP10110.PONUMBER := GPPOP10100.PONUMBER;
+        GPPOP10110.QTYORDER := 1;
+        GPPOP10110.QTYCANCE := 0;
+        GPPOP10110.ORD := 1;
+        GPPOP10110.UOFM := 'EACH';
+        GPPOP10110.ITEMNMBR := Item."No.";
+        GPPOP10110.VENDORID := GPPOP10100.VENDORID;
+        GPPOP10110.Insert();
+
+        // PO with a line that won't be migrated.
+        GPPOP10100.POTYPE := GPPOP10100.POTYPE::Standard;
+        GPPOP10100.POSTATUS := GPPOP10100.POSTATUS::New;
+        GPPOP10100.PONUMBER := 'PO002';
+        GPPOP10100.VENDORID := 'DUFFY';
+        GPPOP10100.DOCDATE := 20230101D;
+        GPPOP10100.PRMDATE := 20230101D;
+        GPPOP10100.PYMTRMID := '5% 10/NET 30';
+        GPPOP10100.SHIPMTHD := 'Space Ship';
+        GPPOP10100.CURNCYID := TestMoneyCurrencyCodeTxt;
+        GPPOP10100.XCHGRATE := 0.01;
+        GPPOP10100.EXCHDATE := 20230101D;
+        GPPOP10100.Insert();
+
+        Clear(GPPOP10110);
+        GPPOP10110.PONUMBER := GPPOP10100.PONUMBER;
+        GPPOP10110.QTYORDER := 1;
+        GPPOP10110.QTYCANCE := 1;
+        GPPOP10110.ORD := 1;
+        GPPOP10110.UOFM := 'EACH';
+        GPPOP10110.ITEMNMBR := Item."No.";
+        GPPOP10110.VENDORID := GPPOP10100.VENDORID;
+        GPPOP10110.Insert();
     end;
 }
