@@ -1919,23 +1919,29 @@ Codeunit 4037 "Helper Functions"
     begin
         // this procedure might run multiple times depending upon migration errors.
 
-        if GPCompanyAdditionalSettings.GetGLModuleEnabled() and not FiscalPeriodsCreated() then
-            CreateFiscalPeriods();
+        if GPCompanyAdditionalSettings.GetGLModuleEnabled() then
+            if not FiscalPeriodsCreated() then
+                CreateFiscalPeriods();
 
-        if GPCompanyAdditionalSettings.GetBankModuleEnabled() and not CheckBooksCreated() then
-            CreateCheckbooks();
+        if GPCompanyAdditionalSettings.GetBankModuleEnabled() then
+            if not CheckBooksCreated() then
+                CreateCheckbooks();
 
-        if GPCompanyAdditionalSettings.GetMigrateOpenPOs() and not OpenPurchaseOrdersCreated() then
-            CreateOpenPOs();
+        if GPCompanyAdditionalSettings.GetMigrateOpenPOs() then
+            if not OpenPurchaseOrdersCreated() then
+                CreateOpenPOs();
 
-        if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() and not VendorEFTBankAccountsCreated() then
-            CreateVendorEFTBankAccounts();
+        if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+            if not VendorEFTBankAccountsCreated() then
+                CreateVendorEFTBankAccounts();
 
-        if GPCompanyAdditionalSettings.GetMigrateVendorClasses() and not VendorClassesCreated() then
-            CreateVendorClasses();
+        if GPCompanyAdditionalSettings.GetMigrateVendorClasses() then
+            if not VendorClassesCreated() then
+                CreateVendorClasses();
 
-        if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() and not CustomerClassesCreated() then
-            CreateCustomerClasses();
+        if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+            if not CustomerClassesCreated() then
+                CreateCustomerClasses();
 
         exit(GPConfiguration.IsAllPostMigrationDataCreated());
     end;
