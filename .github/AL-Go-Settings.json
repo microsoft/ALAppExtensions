@@ -34,6 +34,9 @@
     "Default",
     "Clean"
   ],
+  "excludeEnvironments":  [
+    "Official"
+  ],
   "enableCodeCop": true,
   "CICDPushBranches": [
     "main"
