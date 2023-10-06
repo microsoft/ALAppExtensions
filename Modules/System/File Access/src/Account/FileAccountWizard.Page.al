@@ -477,9 +477,11 @@ page 70001 "File Account Wizard"
     end;
 
     local procedure LoadTopBanners()
+    var
+        AssistedSetupLogoTok: Label 'ASSISTEDSETUP-NOTEXT-400PX.PNG', Locked = true;
     begin
-        if MediaResourcesStandard.Get('ASSISTEDSETUP-NOTEXT-400PX.PNG') and
-            MediaResourcesDone.Get('ASSISTEDSETUPDONE-NOTEXT-400PX.PNG') and (CurrentClientType() = ClientType::Web)
+        if MediaResourcesStandard.Get(AssistedSetupLogoTok) and
+            MediaResourcesDone.Get(AssistedSetupLogoTok) and (CurrentClientType() = ClientType::Web)
         then
             TopBannerVisible := MediaResourcesDone."Media Reference".HasValue();
     end;
