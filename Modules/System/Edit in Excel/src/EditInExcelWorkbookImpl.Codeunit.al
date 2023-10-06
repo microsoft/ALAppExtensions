@@ -33,7 +33,9 @@ codeunit 1489 "Edit in Excel Workbook Impl."
         EditInExcelImpl: Codeunit "Edit in Excel Impl.";
     begin
         // Ensure web service exist and is published
-        if not TenantWebService.Get(TenantWebService."Object Type"::Page, ServiceName) then
+        if (not TenantWebService.Get(TenantWebService."Object Type"::Page, ServiceName)) and
+            (not TenantWebService.Get(TenantWebService."Object Type"::Query, ServiceName)) and
+            (not TenantWebService.Get(TenantWebService."Object Type"::Codeunit, ServiceName)) then
             Error(WebServiceDoesNotExistErr, ServiceName);
 
         if not TenantWebService.Published then

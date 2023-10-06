@@ -9,19 +9,18 @@ codeunit 137121 "Translation Tests"
     Permissions = tabledata Language = rimd;
 
     var
-        Any: Codeunit Any;
+        Translation: Codeunit Translation;
         Assert: Codeunit "Library Assert";
         PermissionsMock: Codeunit "Permissions Mock";
-        Translation: Codeunit Translation;
         IsInitialzied: Boolean;
-        CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
-        DifferentTableErr: Label 'The records cannot belong to different tables.';
-        NoRecordIdErr: Label 'The variant passed is not a record.';
         Text1Txt: Label 'Translation 1';
         Text2Txt: Label 'Translation 2';
         Text3Txt: Label 'Translation 3';
         Text4Txt: Label 'Translation 4';
         Text5Txt: Label 'Translation 5';
+        CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
+        DifferentTableErr: Label 'The records cannot belong to different tables.';
+        NoRecordIdErr: Label 'The variant passed is not a record.';
         TranslationEditRoleTok: Label 'Translation Edit', Locked = true;
 
     [Test]
@@ -104,8 +103,8 @@ codeunit 137121 "Translation Tests"
     procedure TestRetrivalAndStorageThroughUI()
     var
         TranslationTestTable: Record "Translation Test Table";
-        TranslationPage: TestPage Translation;
         TranslationTestPage: TestPage "Translation Test Page";
+        TranslationPage: TestPage Translation;
         Translation2: Text;
         Translation3: Text;
         Translation4: Text;
@@ -162,44 +161,6 @@ codeunit 137121 "Translation Tests"
         Assert.AreEqual(Text3Txt, Translation3, 'Incorrect translation stored for global language');
         Assert.AreEqual(Text2Txt, Translation2, 'Incorrect translation stored for DAN language');
         Assert.AreEqual(Text4Txt, Translation4, 'Incorrect translation stored for FRA language');
-    end;
-
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestRetrivalAndStorageThroughUIWithFieldLengthCheck()
-    var
-        TranslationTestTable: Record "Translation Test Table";
-        ExpectedErr: Label 'The provided translation "%1" must not exceeds', Comment = '%1 = Translation Value';
-        TranslationPage: TestPage Translation;
-        NewTranslationValueWithToLongValue: Text;
-    begin
-        // [SCENARIO] Tests if the Translation page shows an error on Field Lenght Check Enabled
-        Initialize();
-
-        PermissionsMock.Set(TranslationEditRoleTok);
-
-        // [GIVEN] Create a record for which data in fields can be translated
-        TranslationTestTable.Init();
-        TranslationTestTable.PK := 1;
-        TranslationTestTable.Insert();
-
-        // [GIVEN] Set the translations in Global and another language
-        Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextFieldWithLimitedLength), Text1Txt);
-
-        // [WHEN] Assist edit triggers the Translation page
-        TranslationPage.Trap();
-        Translation.Show(TranslationTestTable, TranslationTestTable.FieldNo(TextFieldWithLimitedLength), true);
-
-        // [THEN] Records show up
-        TranslationPage.First();
-
-        // [WHEN] Edit the Danish record
-        NewTranslationValueWithToLongValue := Any.AlphabeticText(MaxStrLen(TranslationTestTable.TextFieldWithLimitedLength) + 1);
-        asserterror TranslationPage.Value.SetValue(NewTranslationValueWithToLongValue);
-
-        // [THEN] Verify error
-        Assert.ExpectedError(StrSubstNo(ExpectedErr, NewTranslationValueWithToLongValue));
     end;
 
     [Test]
@@ -321,8 +282,8 @@ codeunit 137121 "Translation Tests"
     [Scope('OnPrem')]
     procedure TestCopyTranslations()
     var
-        TargetTranslationTestTable: Record "Translation Test Table";
         TranslationTestTable: Record "Translation Test Table";
+        TargetTranslationTestTable: Record "Translation Test Table";
     begin
         // [SCENARIO] Translation can be copied for a specified field when the field ID matches in the source and destination tables
         Initialize();
@@ -376,8 +337,8 @@ codeunit 137121 "Translation Tests"
     procedure CopyTranslationRecordRefs()
     var
         TranslationTestTable: Record "Translation Test Table";
-        DestRecRef: RecordRef;
         SourceRecRef: RecordRef;
+        DestRecRef: RecordRef;
     begin
         // [SCENARIO] Translation must be copied if the source and destination tables are sent as RecordRef
 
@@ -409,8 +370,8 @@ codeunit 137121 "Translation Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestCopyTranslationForDifferentRecords()
     var
-        TranslationTestTable2: Record Translation;
         TranslationTestTable: Record "Translation Test Table";
+        TranslationTestTable2: Record Translation;
     begin
         // [SCENARIO] Checks for an error message when translation is copied from one to another table
         Initialize();

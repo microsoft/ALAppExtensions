@@ -168,20 +168,7 @@ codeunit 3711 Translation
     /// <error>If the RecVariant parameter is the type Record, and the table number is 0.</error>
     procedure Show(RecVariant: Variant; FieldId: Integer)
     begin
-        Show(RecVariant, FieldId, false);
-    end;
-
-    /// <summary>
-    /// Shows all language translations that are available for a field in a new page.
-    /// </summary>
-    /// <param name="RecVariant">The record to get the translated value for.</param>
-    /// <param name="FieldId">The ID of the field to get translations for.</param>
-    /// <param name="CheckFieldLength">If this value is true, then it's checked that the translation isn't longer than the field length.</param>
-    /// <error>If the RecVariant parameter is the type Record, and it is temporary.</error>
-    /// <error>If the RecVariant parameter is the type Record, and the table number is 0.</error>
-    procedure Show(RecVariant: Variant; FieldId: Integer; CheckFieldLength: Boolean)
-    begin
-        TranslationImplementation.Show(RecVariant, FieldId, CheckFieldLength);
+        TranslationImplementation.Show(RecVariant, FieldId);
     end;
 
     /// <summary>

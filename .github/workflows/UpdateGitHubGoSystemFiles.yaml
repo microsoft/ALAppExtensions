@@ -32,23 +32,22 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v3.2
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@31944622373d473cf9b727a320333e170290265b
         with:
           shell: powershell
           eventId: "DO0098"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v3.2
+        uses: microsoft/AL-Go/Actions/ReadSettings@31944622373d473cf9b727a320333e170290265b
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           get: templateUrl
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v3.2
+        id: ReadSecrets
+        uses: microsoft/AL-Go/Actions/ReadSecrets@31944622373d473cf9b727a320333e170290265b
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
 
@@ -78,18 +77,18 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "DirectCommit=$directCommit"
 
       - name: Update AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v3.2
+        uses: microsoft/AL-Go/Actions/CheckForUpdates@31944622373d473cf9b727a320333e170290265b
         with:
           shell: powershell
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          token: ${{ fromJson(env.Secrets).ghTokenWorkflow }}
+          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           Update: Y
           templateUrl: ${{ env.templateUrl }}
           directCommit: ${{ env.directCommit }}
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v3.2
+        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@31944622373d473cf9b727a320333e170290265b
         with:
           shell: powershell
           eventId: "DO0098"
