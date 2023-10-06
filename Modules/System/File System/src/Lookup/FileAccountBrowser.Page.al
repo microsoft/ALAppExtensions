@@ -6,6 +6,7 @@ page 70005 "File Account Browser"
     ModifyAllowed = false;
     InsertAllowed = false;
     DeleteAllowed = false;
+    Extensible = false;
 
     layout
     {
@@ -82,12 +83,49 @@ page 70005 "File Account Browser"
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
+                Ellipsis = true;
                 Visible = not IsInLookupMode;
                 Enabled = not IsInLookupMode;
 
                 trigger OnAction()
                 begin
                     UploadFile();
+                    BrowseFolder(CurrPath);
+                end;
+            }
+            action("Create Directory")
+            {
+                Caption = 'Create Directory';
+                ApplicationArea = All;
+                Image = Bin;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Ellipsis = true;
+                Visible = not IsInLookupMode;
+                Enabled = not IsInLookupMode;
+
+                trigger OnAction()
+                begin
+                    CreateDirectory();
+                    BrowseFolder(CurrPath);
+                end;
+            }
+            action(Delete)
+            {
+                Caption = 'Delete';
+                ApplicationArea = All;
+                Image = Delete;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Ellipsis = true;
+                Visible = not IsInLookupMode;
+                Enabled = not IsInLookupMode;
+
+                trigger OnAction()
+                begin
+                    DeleteFileOrDirectory();
                     BrowseFolder(CurrPath);
                 end;
             }
@@ -213,6 +251,18 @@ page 70005 "File Account Browser"
         FileSystem.SetFile(FileSystem.CombinePath(CurrPath, FromFile), Stream);
     end;
 
+    local procedure CreateDirectory()
+    var
+        FolderNameInput: Page "Folder Name Input";
+        FolderName: Text;
+    begin
+        if FolderNameInput.RunModal() <> Action::OK then
+            exit;
+
+        FolderName := StripNotsupportChrInFileName(FolderNameInput.GetFolderName());
+        FileSystem.CreateDirectory(FileSystem.CombinePath(CurrPath, FolderName));
+    end;
+
     local procedure ListFiles(var Path: Text)
     var
         FileAccountContent: Record "File Account Content" temporary;
@@ -241,5 +291,22 @@ page 70005 "File Account Browser"
             Rec.TransferFields(FileAccountContent);
             Rec.Insert();
         until FileAccountContent.Next() = 0;
+    end;
+
+    local procedure DeleteFileOrDirectory()
+    var
+        PathToDelete: Text;
+        DeleteQst: Label 'Delete %1?', Comment = '%1 - Path to Delete';
+    begin
+        PathToDelete := FileSystem.CombinePath(Rec."Parent Directory", Rec.Name);
+        if not Confirm(DeleteQst, false, PathToDelete) then
+            exit;
+
+        case Rec.Type of
+            Rec.Type::Directory:
+                FileSystem.DeleteDirectory(PathToDelete);
+            Rec.Type::File:
+                FileSystem.DeleteFile(PathToDelete);
+        end;
     end;
 }

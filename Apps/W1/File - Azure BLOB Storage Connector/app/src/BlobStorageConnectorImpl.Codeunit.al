@@ -12,6 +12,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         ConnectorDescriptionTxt: Label 'Use Azure Blob Storage to store and retrieve files.';
         NotRegisteredAccountErr: Label 'We could not find the account. Typically, this is because the account has been deleted.';
         ConnectorBase64LogoTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAACBZJREFUeJzt3d+LXGcZB/DnPTO7290k21VbUtrU+CNqraYV/FFBa6WKF13aUlrbO6XiP1GK1BtBrwS90CsFi4h6YdsgeCNqoWCrhQiFYkEQktDUNg2Ju5tNujOvF17JujPJ5uw5b+b9fG7PGea5mPc7z3POzHkjAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAK5N2+8JPvvCbD6Zx3NpmMcCVy02cePlzD/1jN6+9ogC460/HvpJj9L2U0id282bA3sk5H89NeuIvdz/4u8t9zeUFQM7pM88/91Sk/K0Uqdl1hcCeyhE5pfjOi59/4KlIaTzt/MsKgLuef+YnEenxqy8P6ELO8auX7nnwsWnnTQ2Au55/5pGI9Ot2ygI6k8Zfe/Huh56eeMqkg5/+w29vSoOtv6eI5XYrA/Zajjg/iq3bXv7Cw6/vdM7keb7Z+qbFD9emFLHc5MHXJ50zMQBSyne2WxLQpRTpo5OOT7min462WQzQrZTybZOOT+4AcuxvtxygSznHzZOOu6cPFRMAUDEBABUTAFAxAQAVEwBQMQEAFRMAUDEBABUTAFAxAQAVEwBQMQEAFRMAUDEBABUTAFAxAQAVEwBQMQEAFRMAUDEBABUTAFAxAQAVEwBQMQEAFRMAUDEBABUTAFAxAQAVEwBQMQEAFRMAUDEBABUTAFAxAQAVEwBQMQEAFRMAUDEBABUTAFAxAQAVEwBQseGkg0/cdOS1ccpvdVUM0K5h07z1wKTjk178qX3XfzildEvLNQEdyTmfnHTcCAAVm9gB5Jy7qgPogQ4AKiYAoGITR4AIYwDMMh0AVEwAQMXcBYCK6QCgYgIAKmYEgIrpAKBiAgAqZgSAik39JWAfFhYWYmVlJebn56NpNClcu0ajUVy8eDHOnj0bW1tbfZezTXEdwGAwiIMHD0ZKqfP3hrYNBoNYWlqK+fn5OHXqVOdratr7Fff1ury8bPEzc4bDYezbt6/vMrYpLgDm5ub6LgH2RImf7YkjwHg87vzb2Lc/s6ppGiMAUA4BABUr7i4AzKqcsxEAKIcAgIoZAaBDRgCgGAIAKmYEgI70cRdgGh0AVEwAQMWK2xmotBYJ2lTa51sHABUTAFAxdwGgQ6WtKR0AVEwHAB3xOwCgKMUFQGkJCW0p8bNd3AgwGo06f0/owmg0Ki4EiusANjc3+y4B9sSFCxf6LmGb4gLg7bffjrW1tb7LgFadOXMm1tfX+y5jm+JGgIiIEydOxNLSUiwuLnpMONe00WgUFy5c6K2znbaGi9wbMCJiY2MjNjY2+i4DZlpxIwDQneJ2BgLa45mAwI4EAFSsyLsAQDuMAMCOBABUzAgAM8wIAOxIAEDFih4BXh+9E+fD34O5dl0XTRwezPddxo6K/C/Aa1ub8eP1N+Lfedx3KXDV5iLFI4vvjnsXlvsuZZviOoC18Si+v3Y6tsIFSGbDO5HjFxfOxAcG83F4sNB3Of+juGsAv7903uJnJv35UnnPAyguANa1/cyoN8bv9F3CNsXtDTjy2wNm1MhjwaFiBf6zXgBAxYq7CwCzys5AQFEEAFSsuBGgtBYJ2lTa51sHABUTAFCx4kYAmGVdrykPBAF2JACgYsWNAMYOZlUfPwQyAgA7EgBQMZuDQoeMAEAxirsICLNMBwAUo7gAaDQdzKhBgY8EKm4EuD4Vl0nQipVoihuri1tttw+u67sE2BNHC/xsFxcAh9IwvjG3EosFtkuwG8Mc8fBwOT7WlLUpSESBI0BExJ1pIW6fvzFezZfi5Ki8Z6nD5bqhGcYdzUJcF6m49j+i0L0BI/67n9odaSHuGJaXmjArihsBgO4UtzMQ0B0dAFRMAEDFirwLAHRDBwAVEwBQMSMAVEwHABUTAFCxokeA1zfW4tyli73WAFdjcTCMwweu7+39p63hIv8L8PKbp+Onrx6P9S1/BOLaN0xNPPah2+PLh97fdynbFNcBnL24GT965a8xcgGSGbGVx/Hz116JI8vv6rwbuOaeCfjSG6csfmbSC6dP9l3CNsUFwJubG32XAHviXxvrfZewTXEbg4zGvv2ZTVt57LHgQDkEAFSsuLsAMMuMAEAxBABUzAgAHck5F7emdABQMQEAFStuBCitRYI2lfb51gFAxYrrAGCWlbamdABQMQEAFStub8DSWiRoi98BAEURAFAxdwGgQ6WtKR0AVKy4DiBHWQkJbUlR3kX14jqA5bn5vkuAPbE8v9B3CdsUFwCH9/e3iwrspcP7l/suYZviRoCPr7wnvnjTofhjgc9Qh906unJD3HPwUHEjQJFbg331fR+Jz954c/xz7Xycu7TZdzmwa0vDuXjv/uU4cmCl71L+ryIDICLi1n0H4tZ9B/ouA2ZacSMA0J5r7i4A0J3itgYD2qMDAHYkAKBiLgLCDDMCADsSAFAxIwBUTAcAFZv2U+BzOedbOqkEaF3O+dyk49M6gL+1WAvQsZTSxDU8MQBSSsfbLQfo2MQ1PO0i4M/G4/G3U0qL7dYE7LWc81rTNE9POmdiB7C6unq6aZon2y0L6ELTNE+urq6ennTO1OcBrK+v/2BxcfHxiDjaWmXAXntldXX1h9NOmnob8NFHHx0NBoMvRcRzrZQF7LXnBoPBvSmlqT/kuaL/+h47duyxiHgiIu7cbWXAnjkeEd+9//77f3m5L9j1n/2fffbZI03THNrt64Grl3POw+Hw5H333fePvmsBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA6/AeyXHTtib4x0gAAAABJRU5ErkJggg==', Locked = true;
+        MarkerFileNameTok: Label 'BusinessCentral.FileSystem.txt', Locked = true;
 
     /// <summary>
     /// Gets a List of Files stored on the provided account.
@@ -35,6 +36,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         ValidateListingResponse(FilePaginationData, ABSOperationResponse);
 
         ABSContainerContent.SetFilter("Blob Type", '<>%1', '');
+        ABSContainerContent.SetFilter(Name, '<>%1', MarkerFileNameTok);
         if not ABSContainerContent.FindSet() then
             exit;
 
@@ -212,8 +214,23 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
     /// <param name="Path">The directory path inside the file account.</param>
     procedure CreateDirectory(AccountId: Guid; Path: Text)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        FileSystem: Codeunit "File System";
+        IStream: InStream;
+        OStream: OutStream;
+        DirectoryAlreadyExistsErr: Label 'Directory already exists.';
+        MarkerFileContentTok: Label 'This is a directory marker file created by Business Central. It is safe to delete it.', Locked = true;
     begin
+        if DirectoryExists(AccountId, Path) then
+            Error(DirectoryAlreadyExistsErr);
 
+        Path := CombinePath(Path, MarkerFileNameTok);
+        TempBlob.CreateOutStream(OStream);
+        OStream.WriteText(MarkerFileContentTok);
+
+        TempBlob.CreateInStream(IStream);
+        SetFile(AccountId, Path, IStream);
     end;
 
     /// <summary>
@@ -248,8 +265,18 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
     /// <param name="Path">The directory path inside the file account.</param>
     procedure DeleteDirectory(AccountId: Guid; Path: Text)
+    var
+        FileAccountContent: Record "File Account Content" temporary;
+        FilePaginationData: Codeunit "File Pagination Data";
+        DirectoryMustBeEmptyErr: Label 'Directory is not empty.';
     begin
+        ListFiles(AccountId, Path, FilePaginationData, FileAccountContent);
+        ListDirectories(AccountId, Path, FilePaginationData, FileAccountContent);
+        FileAccountContent.SetFilter(Name, '<>%1', MarkerFileNameTok);
+        if not FileAccountContent.IsEmpty() then
+            Error(DirectoryMustBeEmptyErr);
 
+        DeleteFile(AccountId, CombinePath(Path, MarkerFileNameTok));
     end;
 
     /// <summary>
@@ -410,8 +437,19 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
 
     local procedure CheckPath(var Path: Text)
     begin
-        if (Path <> '') and not Path.EndsWith('/') then
-            Path += '/';
+        if (Path <> '') and not Path.EndsWith(PathSeparator()) then
+            Path += PathSeparator();
+    end;
+
+    local procedure CombinePath(Path: Text; ChildPath: Text): Text
+    begin
+        if Path = '' then
+            exit(ChildPath);
+
+        if not Path.EndsWith(PathSeparator()) then
+            Path += PathSeparator();
+
+        exit(Path + ChildPath);
     end;
 
     local procedure InitOptionalParameters(var Path: Text; var FilePaginationData: Codeunit "File Pagination Data"; var ABSOptionalParameters: Codeunit "ABS Optional Parameters")
