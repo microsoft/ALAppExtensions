@@ -44,6 +44,7 @@ page 70005 "File Account Browser"
 
                 field(SaveFileNameField; SaveFileName)
                 {
+                    ApplicationArea = All;
                     Caption = 'Filename';
                 }
             }
