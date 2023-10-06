@@ -11,7 +11,7 @@ codeunit 8950 "AFS File Client"
     Access = Public;
 
     var
-        AFSClientImpl: Codeunit "AFS Client Impl.";
+        AFSFileClientImpl: Codeunit "AFS File Client Impl.";
 
     /// <summary>
     /// Initializes the AFS Client.
@@ -23,7 +23,7 @@ codeunit 8950 "AFS File Client"
     var
         StorageServiceAuthorization: Codeunit "Storage Service Authorization";
     begin
-        AFSClientImpl.Initialize(StorageAccount, FileShare, '', Authorization, StorageServiceAuthorization.GetDefaultAPIVersion());
+        AFSFileClientImpl.Initialize(StorageAccount, FileShare, '', Authorization, StorageServiceAuthorization.GetDefaultAPIVersion());
     end;
 
     /// <summary>
@@ -35,7 +35,7 @@ codeunit 8950 "AFS File Client"
     /// <param name="APIVersion">The API Version to use.</param>
     procedure Initialize(StorageAccount: Text; FileShare: Text; Authorization: Interface "Storage Service Authorization"; APIVersion: Enum "Storage Service API Version")
     begin
-        AFSClientImpl.Initialize(StorageAccount, FileShare, '', Authorization, APIVersion);
+        AFSFileClientImpl.Initialize(StorageAccount, FileShare, '', Authorization, APIVersion);
     end;
 
     /// <summary>
@@ -49,7 +49,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.CreateFile(FilePath, InStream, AFSOptionalParameters));
+        exit(AFSFileClientImpl.CreateFile(FilePath, InStream, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -62,7 +62,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object.</returns>
     procedure CreateFile(FilePath: Text; InStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.CreateFile(FilePath, InStream, AFSOptionalParameters));
+        exit(AFSFileClientImpl.CreateFile(FilePath, InStream, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -76,7 +76,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.CreateFile(FilePath, FileSize, AFSOptionalParameters));
+        exit(AFSFileClientImpl.CreateFile(FilePath, FileSize, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -89,7 +89,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object.</returns>
     procedure CreateFile(FilePath: Text; FileSize: Integer; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.CreateFile(FilePath, FileSize, AFSOptionalParameters));
+        exit(AFSFileClientImpl.CreateFile(FilePath, FileSize, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -102,7 +102,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.GetFileAsFile(FilePath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.GetFileAsFile(FilePath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -114,7 +114,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure GetFileAsFile(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.GetFileAsFile(FilePath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.GetFileAsFile(FilePath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -127,7 +127,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.GetFileAsStream(FilePath, TargetInStream, AFSOptionalParameters));
+        exit(AFSFileClientImpl.GetFileAsStream(FilePath, TargetInStream, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -139,7 +139,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure GetFileAsStream(FilePath: Text; var TargetInStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.GetFileAsStream(FilePath, TargetInStream, AFSOptionalParameters));
+        exit(AFSFileClientImpl.GetFileAsStream(FilePath, TargetInStream, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -152,7 +152,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.GetFileAsText(FilePath, TargetText, AFSOptionalParameters));
+        exit(AFSFileClientImpl.GetFileAsText(FilePath, TargetText, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -164,7 +164,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure GetFileAsText(FilePath: Text; var TargetText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.GetFileAsText(FilePath, TargetText, AFSOptionalParameters));
+        exit(AFSFileClientImpl.GetFileAsText(FilePath, TargetText, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -177,7 +177,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.GetFileMetadata(FilePath, TargetMetadata, AFSOptionalParameters));
+        exit(AFSFileClientImpl.GetFileMetadata(FilePath, TargetMetadata, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -189,7 +189,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure GetFileMetadata(FilePath: Text; var TargetMetadata: Dictionary of [Text, Text]; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.GetFileMetadata(FilePath, TargetMetadata, AFSOptionalParameters));
+        exit(AFSFileClientImpl.GetFileMetadata(FilePath, TargetMetadata, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -202,7 +202,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.SetFileMetadata(FilePath, Metadata, AFSOptionalParameters));
+        exit(AFSFileClientImpl.SetFileMetadata(FilePath, Metadata, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -214,7 +214,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure SetFileMetadata(FilePath: Text; var Metadata: Dictionary of [Text, Text]; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.SetFileMetadata(FilePath, Metadata, AFSOptionalParameters));
+        exit(AFSFileClientImpl.SetFileMetadata(FilePath, Metadata, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -226,7 +226,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.PutFileUI(AFSOptionalParameters));
+        exit(AFSFileClientImpl.PutFileUI(AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -237,7 +237,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure PutFileUI(AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.PutFileUI(AFSOptionalParameters));
+        exit(AFSFileClientImpl.PutFileUI(AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -250,7 +250,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.PutFileStream(FilePath, SourceInStream, AFSOptionalParameters));
+        exit(AFSFileClientImpl.PutFileStream(FilePath, SourceInStream, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -262,7 +262,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure PutFileStream(FilePath: Text; var SourceInStream: InStream; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.PutFileStream(FilePath, SourceInStream, AFSOptionalParameters));
+        exit(AFSFileClientImpl.PutFileStream(FilePath, SourceInStream, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -275,7 +275,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.PutFileText(FilePath, SourceText, AFSOptionalParameters));
+        exit(AFSFileClientImpl.PutFileText(FilePath, SourceText, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -287,7 +287,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure PutFileText(FilePath: Text; SourceText: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.PutFileText(FilePath, SourceText, AFSOptionalParameters));
+        exit(AFSFileClientImpl.PutFileText(FilePath, SourceText, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -299,7 +299,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.DeleteFile(FilePath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.DeleteFile(FilePath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -310,7 +310,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure DeleteFile(FilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.DeleteFile(FilePath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.DeleteFile(FilePath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -319,11 +319,11 @@ codeunit 8950 "AFS File Client"
     /// <param name="DirectoryPath">The path of the directory to list.</param>
     /// <param name="AFSDirectoryContent">The result collection with contents of the directory (temporary)</param>
     /// <returns>An operation response object</returns>
-    procedure ListDirectory(DirectoryPath: Text; var AFSDirectoryContent: Record "AFS Directory Content"): Codeunit "AFS Operation Response"
+    procedure ListDirectory(DirectoryPath: Text[2048]; var AFSDirectoryContent: Record "AFS Directory Content"): Codeunit "AFS Operation Response"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.ListDirectory(DirectoryPath, AFSDirectoryContent, false, AFSOptionalParameters));
+        exit(AFSFileClientImpl.ListDirectory(DirectoryPath, AFSDirectoryContent, false, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -333,9 +333,9 @@ codeunit 8950 "AFS File Client"
     /// <param name="AFSDirectoryContent">The result collection with contents of the directory (temporary)</param>
     /// <param name="AFSOptionalParameters">Optional parameters to pass with the request.</param>
     /// <returns>An operation response object</returns>
-    procedure ListDirectory(DirectoryPath: Text; var AFSDirectoryContent: Record "AFS Directory Content"; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure ListDirectory(DirectoryPath: Text[2048]; var AFSDirectoryContent: Record "AFS Directory Content"; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.ListDirectory(DirectoryPath, AFSDirectoryContent, false, AFSOptionalParameters));
+        exit(AFSFileClientImpl.ListDirectory(DirectoryPath, AFSDirectoryContent, false, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -345,11 +345,11 @@ codeunit 8950 "AFS File Client"
     /// <param name="PreserveDirectoryContent">Specifies if the result collection should be cleared before filling it with the response data.</param>
     /// <param name="AFSDirectoryContent">The result collection with contents of the directory (temporary)</param>
     /// <returns>An operation response object</returns>
-    procedure ListDirectory(DirectoryPath: Text; PreserveDirectoryContent: Boolean; var AFSDirectoryContent: Record "AFS Directory Content"): Codeunit "AFS Operation Response"
+    procedure ListDirectory(DirectoryPath: Text[2048]; PreserveDirectoryContent: Boolean; var AFSDirectoryContent: Record "AFS Directory Content"): Codeunit "AFS Operation Response"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.ListDirectory(DirectoryPath, AFSDirectoryContent, PreserveDirectoryContent, AFSOptionalParameters));
+        exit(AFSFileClientImpl.ListDirectory(DirectoryPath, AFSDirectoryContent, PreserveDirectoryContent, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -360,9 +360,9 @@ codeunit 8950 "AFS File Client"
     /// <param name="AFSDirectoryContent">The result collection with contents of the directory (temporary)</param>
     /// <param name="AFSOptionalParameters">Optional parameters to pass with the request.</param>
     /// <returns>An operation response object</returns>
-    procedure ListDirectory(DirectoryPath: Text; PreserveDirectoryContent: Boolean; var AFSDirectoryContent: Record "AFS Directory Content"; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure ListDirectory(DirectoryPath: Text[2048]; PreserveDirectoryContent: Boolean; var AFSDirectoryContent: Record "AFS Directory Content"; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.ListDirectory(DirectoryPath, AFSDirectoryContent, PreserveDirectoryContent, AFSOptionalParameters));
+        exit(AFSFileClientImpl.ListDirectory(DirectoryPath, AFSDirectoryContent, PreserveDirectoryContent, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -374,7 +374,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.CreateDirectory(DirectoryPath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.CreateDirectory(DirectoryPath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -385,7 +385,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure CreateDirectory(DirectoryPath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.CreateDirectory(DirectoryPath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.CreateDirectory(DirectoryPath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -397,7 +397,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.DeleteDirectory(DirectoryPath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.DeleteDirectory(DirectoryPath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -408,7 +408,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure DeleteDirectory(DirectoryPath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.DeleteDirectory(DirectoryPath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.DeleteDirectory(DirectoryPath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -421,7 +421,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.CopyFile(SourceFileURI, DestinationFilePath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.CopyFile(SourceFileURI, DestinationFilePath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -433,7 +433,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure CopyFile(SourceFileURI: Text; DestinationFilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.CopyFile(SourceFileURI, DestinationFilePath, AFSOptionalParameters));
+        exit(AFSFileClientImpl.CopyFile(SourceFileURI, DestinationFilePath, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -446,7 +446,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.AbortCopyFile(DestinationFilePath, CopyID, AFSOptionalParameters));
+        exit(AFSFileClientImpl.AbortCopyFile(DestinationFilePath, CopyID, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -458,7 +458,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure AbortCopyFile(DestinationFilePath: Text; CopyID: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.AbortCopyFile(DestinationFilePath, CopyID, AFSOptionalParameters));
+        exit(AFSFileClientImpl.AbortCopyFile(DestinationFilePath, CopyID, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -471,7 +471,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.ListFileHandles(Path, AFSHandle, AFSOptionalParameters));
+        exit(AFSFileClientImpl.ListFileHandles(Path, AFSHandle, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -483,7 +483,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure ListHandles(Path: Text; var AFSHandle: Record "AFS Handle"; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.ListFileHandles(Path, AFSHandle, AFSOptionalParameters));
+        exit(AFSFileClientImpl.ListFileHandles(Path, AFSHandle, AFSOptionalParameters));
     end;
 
     /// <summary>
@@ -496,7 +496,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.RenameFile(SourceFilePath, DestinationFilePath, AFSOptionalParameters))
+        exit(AFSFileClientImpl.RenameFile(SourceFilePath, DestinationFilePath, AFSOptionalParameters))
     end;
 
     /// <summary>
@@ -508,7 +508,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation response object</returns>
     procedure RenameFile(SourceFilePath: Text; DestinationFilePath: Text; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.RenameFile(SourceFilePath, DestinationFilePath, AFSOptionalParameters))
+        exit(AFSFileClientImpl.RenameFile(SourceFilePath, DestinationFilePath, AFSOptionalParameters))
     end;
 
     /// <summary>
@@ -522,7 +522,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.FileAcquireLease(FilePath, AFSOptionalParameters, ProposedLeaseId, LeaseId));
+        exit(AFSFileClientImpl.FileAcquireLease(FilePath, AFSOptionalParameters, ProposedLeaseId, LeaseId));
     end;
 
     /// <summary>
@@ -535,7 +535,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation reponse object</returns>
     procedure AcquireLease(FilePath: Text; ProposedLeaseId: Guid; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; var LeaseId: Guid): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.FileAcquireLease(FilePath, AFSOptionalParameters, ProposedLeaseId, LeaseId));
+        exit(AFSFileClientImpl.FileAcquireLease(FilePath, AFSOptionalParameters, ProposedLeaseId, LeaseId));
     end;
 
     /// <summary>
@@ -549,7 +549,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.FileChangeLease(FilePath, AFSOptionalParameters, LeaseId, ProposedLeaseId));
+        exit(AFSFileClientImpl.FileChangeLease(FilePath, AFSOptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     /// <summary>
@@ -562,7 +562,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>Return value of type Codeunit "AFS Operation Response".</returns>
     procedure ChangeLease(FilePath: Text; ProposedLeaseId: Guid; AFSOptionalParameters: Codeunit "AFS Optional Parameters"; var LeaseId: Guid): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.FileChangeLease(FilePath, AFSOptionalParameters, LeaseId, ProposedLeaseId));
+        exit(AFSFileClientImpl.FileChangeLease(FilePath, AFSOptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     /// <summary>
@@ -575,7 +575,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.FileReleaseLease(FilePath, AFSOptionalParameters, LeaseId));
+        exit(AFSFileClientImpl.FileReleaseLease(FilePath, AFSOptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -587,7 +587,7 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation reponse object</returns>
     procedure ReleaseLease(FilePath: Text; LeaseId: Guid; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.FileReleaseLease(FilePath, AFSOptionalParameters, LeaseId));
+        exit(AFSFileClientImpl.FileReleaseLease(FilePath, AFSOptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -600,7 +600,7 @@ codeunit 8950 "AFS File Client"
     var
         AFSOptionalParameters: Codeunit "AFS Optional Parameters";
     begin
-        exit(AFSClientImpl.FileBreakLease(FilePath, AFSOptionalParameters, LeaseId));
+        exit(AFSFileClientImpl.FileBreakLease(FilePath, AFSOptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -612,6 +612,6 @@ codeunit 8950 "AFS File Client"
     /// <returns>An operation reponse object</returns>
     procedure BreakLease(FilePath: Text; LeaseId: Guid; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     begin
-        exit(AFSClientImpl.FileBreakLease(FilePath, AFSOptionalParameters, LeaseId));
+        exit(AFSFileClientImpl.FileBreakLease(FilePath, AFSOptionalParameters, LeaseId));
     end;
 }

@@ -45,7 +45,7 @@ codeunit 8960 "AFS Helper Library"
     end;
 
     [NonDebuggable]
-    procedure DirectoryContentNodeListToTempRecord(DirectoryURI: Text; DirectoryPath: Text; NodeList: XmlNodeList; PreserveDirectoryContent: Boolean; var AFSDirectoryContent: Record "AFS Directory Content")
+    procedure DirectoryContentNodeListToTempRecord(DirectoryURI: Text; DirectoryPath: Text[2048]; NodeList: XmlNodeList; PreserveDirectoryContent: Boolean; var AFSDirectoryContent: Record "AFS Directory Content")
     begin
         NodeListToTempRecord(DirectoryURI, DirectoryPath, NodeList, './/Name', PreserveDirectoryContent, AFSDirectoryContent);
     end;
@@ -102,7 +102,7 @@ codeunit 8960 "AFS Helper Library"
     end;
 
     [NonDebuggable]
-    local procedure NodeListToTempRecord(DirectoryURI: Text; DirectoryPath: Text; NodeList: XmlNodeList; XPathName: Text; PreserveDirectoryContent: Boolean; var AFSDirectoryContent: Record "AFS Directory Content")
+    local procedure NodeListToTempRecord(DirectoryURI: Text; DirectoryPath: Text[2048]; NodeList: XmlNodeList; XPathName: Text; PreserveDirectoryContent: Boolean; var AFSDirectoryContent: Record "AFS Directory Content")
     var
         AFSDirectoryContentHelper: Codeunit "AFS Directory Content Helper";
         Node: XmlNode;

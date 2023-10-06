@@ -21,7 +21,6 @@ table 8950 "AFS Directory Content"
         {
             DataClassification = SystemMetadata;
             Caption = 'Entry No.', Locked = true;
-            Access = Internal;
         }
         field(2; "Parent Directory"; Text[2048])
         {

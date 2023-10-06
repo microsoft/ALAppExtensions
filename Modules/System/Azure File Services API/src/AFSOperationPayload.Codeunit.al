@@ -133,6 +133,7 @@ codeunit 8952 "AFS Operation Payload"
         Clear(UriParameters);
         Clear(RequestHeaders);
         Clear(ContentHeaders);
+        Clear(AFSOperation);
     end;
 
     /// <summary>

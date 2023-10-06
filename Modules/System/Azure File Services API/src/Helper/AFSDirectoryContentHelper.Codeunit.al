@@ -10,7 +10,7 @@ codeunit 8961 "AFS Directory Content Helper"
     InherentPermissions = X;
 
     [NonDebuggable]
-    procedure AddNewEntryFromNode(DirectoryURI: Text; DirectoryPath: Text; var AFSDirectoryContent: Record "AFS Directory Content"; var Node: XmlNode; XPathName: Text)
+    procedure AddNewEntryFromNode(DirectoryURI: Text; DirectoryPath: Text[2048]; var AFSDirectoryContent: Record "AFS Directory Content"; var Node: XmlNode; XPathName: Text)
     var
         AFSHelperLibrary: Codeunit "AFS Helper Library";
         NameFromXml: Text;
@@ -33,7 +33,7 @@ codeunit 8961 "AFS Directory Content Helper"
     end;
 
     [NonDebuggable]
-    procedure AddNewEntry(DirectoryURI: Text; DirectoryPath: Text; ResourceType: Enum "AFS File Resource Type"; var AFSDirectoryContent: Record "AFS Directory Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList; AttributesNode: XmlNode; PermissionKeyNode: XmlNode)
+    procedure AddNewEntry(DirectoryURI: Text; DirectoryPath: Text[2048]; ResourceType: Enum "AFS File Resource Type"; var AFSDirectoryContent: Record "AFS Directory Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList; AttributesNode: XmlNode; PermissionKeyNode: XmlNode)
     var
         OutStream: OutStream;
         EntryNo: Integer;
@@ -43,7 +43,7 @@ codeunit 8961 "AFS Directory Content Helper"
         EntryNo := GetNextEntryNo(AFSDirectoryContent);
 
         AFSDirectoryContent.Init();
-        AFSDirectoryContent."Parent Directory" := CopyStr(DirectoryPath, 1, MaxStrLen(AFSDirectoryContent."Parent Directory"));
+        AFSDirectoryContent."Parent Directory" := DirectoryPath;
         AFSDirectoryContent."Full Name" := AFSDirectoryContent."Parent Directory";
         if DirectoryPath.EndsWith('/') or (DirectoryPath = '') then
             AFSDirectoryContent."Full Name" += NameFromXml
@@ -71,6 +71,7 @@ codeunit 8961 "AFS Directory Content Helper"
     [NonDebuggable]
     local procedure AddParentEntries(DirectoryPath: Text; var AFSDirectoryContent: Record "AFS Directory Content")
     var
+        FullNameTooLongErr: Label 'The full name (%1) of the directory is too long (over %2 characters).', Comment = '%1 - full name, %2 - max length';
         ParentEntries: List of [Text];
         CurrentParent, ParentEntryFullName, ParentEntryName : Text[2048];
         Level, EntryNo : Integer;
@@ -107,6 +108,8 @@ codeunit 8961 "AFS Directory Content Helper"
                 AFSDirectoryContent.Insert(true);
             end;
 
+            if StrLen(AFSDirectoryContent."Full Name" + '/') > 2048 then
+                Error(FullNameTooLongErr, AFSDirectoryContent."Full Name", MaxStrLen(AFSDirectoryContent."Full Name"));
             CurrentParent := CopyStr(AFSDirectoryContent."Full Name" + '/', 1, MaxStrLen(AFSDirectoryContent.Name));
         end;
     end;

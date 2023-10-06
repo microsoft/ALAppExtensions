@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 8951 "AFS Client Impl."
+codeunit 8951 "AFS File Client Impl."
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -77,7 +77,7 @@ codeunit 8951 "AFS Client Impl."
         exit(AFSOperationResponse);
     end;
 
-    procedure ListDirectory(DirectoryPath: Text; var AFSDirectoryContent: Record "AFS Directory Content"; PreserveDirectoryContent: Boolean; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
+    procedure ListDirectory(DirectoryPath: Text[2048]; var AFSDirectoryContent: Record "AFS Directory Content"; PreserveDirectoryContent: Boolean; AFSOptionalParameters: Codeunit "AFS Optional Parameters"): Codeunit "AFS Operation Response"
     var
         AFSOperationResponse: Codeunit "AFS Operation Response";
         AFSHelperLibrary: Codeunit "AFS Helper Library";

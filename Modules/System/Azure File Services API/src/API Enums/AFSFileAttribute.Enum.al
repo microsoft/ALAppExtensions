@@ -5,6 +5,7 @@
 
 /// <summary>
 /// Describes possible values for file attributes.
+/// For the list of possible values see: https://learn.microsoft.com/en-us/rest/api/storageservices/create-file#file-system-attributes
 /// </summary>
 enum 8955 "AFS File Attribute"
 {

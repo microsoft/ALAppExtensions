@@ -10,19 +10,18 @@ codeunit 8955 "AFS Format Helper"
     InherentPermissions = X;
 
     [NonDebuggable]
-    procedure AppendToUri(var Uri: Text; ParameterIdentifier: Text; ParameterValue: Text)
+    procedure AppendToUri(var UriText: Text; ParameterIdentifier: Text; ParameterValue: Text)
     var
-        ConcatChar: Text;
-        AppendType1Lbl: Label '%1%2=%3', Comment = '%1 = Concatenation character, %2 = Parameter Identifer, %3 = Parameter Value', Locked = true;
-        AppendType2Lbl: Label '%1%2', Comment = '%1 = Concatenation character, %2 = Parameter Value', Locked = true;
+        UriBuilder: Codeunit "Uri Builder";
+        Uri: Codeunit Uri;
     begin
-        ConcatChar := '?';
-        if Uri.Contains('?') then
-            ConcatChar := '&';
+        UriBuilder.Init(UriText);
         if ParameterIdentifier <> '' then
-            Uri += StrSubstNo(AppendType1Lbl, ConcatChar, ParameterIdentifier, ParameterValue)
+            UriBuilder.AddQueryParameter(ParameterIdentifier, ParameterValue)
         else
-            Uri += StrSubstNo(AppendType2Lbl, ConcatChar, ParameterValue)
+            UriBuilder.AddQueryFlag(ParameterValue);
+        UriBuilder.GetUri(Uri);
+        UriText := Uri.GetAbsoluteUri();
     end;
 
     [NonDebuggable]
@@ -53,10 +52,10 @@ codeunit 8955 "AFS Format Helper"
     procedure ConvertToEnum(FieldName: Text; PropertyValue: Text): Variant
     begin
         if FieldName = 'Resource Type' then
-            case PropertyValue of
-                Text.LowerCase(Format(Enum::"AFS File Resource Type"::File)):
+            case LowerCase(PropertyValue) of
+                LowerCase(Format(Enum::"AFS File Resource Type"::File)):
                     exit(Enum::"AFS File Resource Type"::File);
-                Text.LowerCase(Format(Enum::"AFS File Resource Type"::Directory)):
+                LowerCase(Format(Enum::"AFS File Resource Type"::Directory)):
                     exit(Enum::"AFS File Resource Type"::Directory);
             end;
     end;
