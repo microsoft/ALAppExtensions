@@ -1,6 +1,6 @@
 {
     "id":  "c9c54414-80c3-4cc9-98c6-589158882774",
-    "name":  "File Access",
+    "name":  "File System",
     "publisher":  "Microsoft",
     "brief":  "Enables user to send emails from Business Central.",
     "description":  "Enables user to send emails from Business Central.",
@@ -36,5 +36,6 @@
                      }
                  ],
     "target":  "OnPrem",
+    "runtime": "11.0",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520"
 }

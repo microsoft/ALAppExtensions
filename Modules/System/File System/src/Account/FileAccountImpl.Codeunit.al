@@ -8,14 +8,14 @@ codeunit 70001 "File Account Impl."
     Access = Internal;
     InherentPermissions = X;
     InherentEntitlements = X;
-    Permissions = tabledata "File Connector Logo" = rimd,
+    Permissions = tabledata "File System Connector Logo" = rimd,
                   tabledata "File Scenario" = imd;
 
     procedure GetAllAccounts(LoadLogos: Boolean; var TempFileAccount: Record "File Account" temporary)
     var
         FileAccounts: Record "File Account";
-        IFileConnector: Interface "File Connector";
-        Connector: Enum "File Connector";
+        IFileConnector: Interface "File System Connector";
+        Connector: Enum "File System Connector";
     begin
         TempFileAccount.Reset();
         TempFileAccount.DeleteAll();
@@ -49,7 +49,7 @@ codeunit 70001 "File Account Impl."
         CurrentDefaultFileAccount: Record "File Account";
         ConfirmManagement: Codeunit "Confirm Management";
         FileScenario: Codeunit "File Scenario";
-        FileConnector: Interface "File Connector";
+        FileConnector: Interface "File System Connector";
     begin
         CheckPermissions();
 
@@ -75,7 +75,7 @@ codeunit 70001 "File Account Impl."
         HandleDefaultAccountDeletion(CurrentDefaultFileAccount."Account Id", CurrentDefaultFileAccount.Connector);
     end;
 
-    local procedure HandleDefaultAccountDeletion(CurrentDefaultAccountId: Guid; Connector: Enum "File Connector")
+    local procedure HandleDefaultAccountDeletion(CurrentDefaultAccountId: Guid; Connector: Enum "File System Connector")
     var
         AllFileAccounts: Record "File Account";
         NewDefaultFileAccount: Record "File Account";
@@ -117,9 +117,9 @@ codeunit 70001 "File Account Impl."
         exit(false);
     end;
 
-    local procedure ImportLogo(var FileAccount: Record "File Account"; Connector: Interface "File Connector")
+    local procedure ImportLogo(var FileAccount: Record "File Account"; Connector: Interface "File System Connector")
     var
-        FileConnectorLogo: Record "File Connector Logo";
+        FileConnectorLogo: Record "File System Connector Logo";
         TempBlob: Codeunit "Temp Blob";
         Base64Convert: Codeunit "Base64 Convert";
         ConnectorLogoBase64: Text;
@@ -158,15 +158,15 @@ codeunit 70001 "File Account Impl."
         exit(FileScenario.WritePermission());
     end;
 
-    procedure FindAllConnectors(var FileConnector: Record "File Connector")
+    procedure FindAllConnectors(var FileConnector: Record "File System Connector")
     var
         Base64Convert: Codeunit "Base64 Convert";
-        ConnectorInterface: Interface "File Connector";
-        Connector: Enum "File Connector";
+        ConnectorInterface: Interface "File System Connector";
+        Connector: Enum "File System Connector";
         ConnectorLogoBase64: Text;
         OutStream: Outstream;
     begin
-        foreach Connector in Enum::"File Connector".Ordinals() do begin
+        foreach Connector in Enum::"File System Connector".Ordinals() do begin
             ConnectorInterface := Connector;
             ConnectorLogoBase64 := ConnectorInterface.GetLogoAsBase64();
             FileConnector.Connector := Connector;
@@ -179,9 +179,9 @@ codeunit 70001 "File Account Impl."
         end;
     end;
 
-    procedure IsValidConnector(Connector: Enum "File Connector"): Boolean
+    procedure IsValidConnector(Connector: Enum "File System Connector"): Boolean
     begin
-        exit("File Connector".Ordinals().Contains(Connector.AsInteger()));
+        exit("File System Connector".Ordinals().Contains(Connector.AsInteger()));
     end;
 
     procedure MakeDefault(var FileAccount: Record "File Account")
@@ -216,7 +216,7 @@ codeunit 70001 "File Account Impl."
             Error(CannotManageSetupErr);
     end;
 
-    local procedure ImportLogoBlob(var FileAccount: Record "File Account"; Connector: Interface "File Connector")
+    local procedure ImportLogoBlob(var FileAccount: Record "File Account"; Connector: Interface "File System Connector")
     var
         Base64Convert: Codeunit "Base64 Convert";
         ConnectorLogoBase64: Text;

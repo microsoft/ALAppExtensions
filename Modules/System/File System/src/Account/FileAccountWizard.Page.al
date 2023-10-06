@@ -12,7 +12,7 @@ page 70001 "File Account Wizard"
     ApplicationArea = All;
     UsageCategory = Administration;
     Caption = 'Set Up File';
-    SourceTable = "File Connector";
+    SourceTable = "File System Connector";
     SourceTableTemporary = true;
     InsertAllowed = false;
     ModifyAllowed = false;
@@ -435,7 +435,7 @@ page 70001 "File Account Wizard"
     local procedure TryRegisterAccount(var AccountWasRegistered: Boolean)
     var
         FileAccountImpl: Codeunit "File Account Impl.";
-        FileConnector: Interface "File Connector";
+        FileConnector: Interface "File System Connector";
     begin
         // Check to validate that the connector is still installed
         // The connector could have been uninstalled by another user/session

@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
+codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
 {
     Access = Internal;
     Permissions = tabledata "Blob Storage Account" = rimd;
@@ -275,7 +275,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
         repeat
             Accounts."Account Id" := Account.Id;
             Accounts.Name := Account.Name;
-            Accounts.Connector := Enum::"File Connector"::"Blob Storage";
+            Accounts.Connector := Enum::"File System Connector"::"Blob Storage";
             Accounts.Insert();
         until Account.Next() = 0;
     end;
@@ -370,7 +370,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
 
         FileAccount."Account Id" := NewBlobStorageAccount.Id;
         FileAccount.Name := NewBlobStorageAccount.Name;
-        FileAccount.Connector := Enum::"File Connector"::"Blob Storage";
+        FileAccount.Connector := Enum::"File System Connector"::"Blob Storage";
     end;
 
     internal procedure LookUpContainer(var Account: Record "Blob Storage Account"; Password: Text; var NewContainerName: Text[2048])

@@ -3,27 +3,22 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 70001 "File Connector"
+table 70002 "File System Connector Logo"
 {
-    TableType = Temporary;
+    DataClassification = SystemMetadata;
     Access = Internal;
     InherentPermissions = X;
     InherentEntitlements = X;
 
     fields
     {
-        field(1; Connector; Enum "File Connector")
+        field(1; Connector; Enum "File System Connector")
         {
             DataClassification = SystemMetadata;
         }
-        field(2; Logo; Blob)
+        field(2; Logo; Media)
         {
-            DataClassification = SystemMetadata;
-            Subtype = Bitmap;
-        }
-        field(3; Description; Text[250])
-        {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
         }
     }
 
@@ -34,4 +29,5 @@ table 70001 "File Connector"
             Clustered = true;
         }
     }
+
 }

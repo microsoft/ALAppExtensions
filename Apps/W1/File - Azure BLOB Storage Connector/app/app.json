@@ -17,7 +17,7 @@
     "dependencies":  [
                          {
                             "id":  "c9c54414-80c3-4cc9-98c6-589158882774",
-                            "name":  "File Access",
+                            "name":  "File System",
                             "publisher":  "Microsoft",
                             "version":  "22.1.0.0"
                          }
@@ -42,5 +42,6 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
+                               "runtime": "11.0",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520"
 }

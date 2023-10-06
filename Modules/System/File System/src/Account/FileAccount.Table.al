@@ -23,7 +23,7 @@ table 70000 "File Account"
             DataClassification = SystemMetadata; // Field only in Memory
         }
 
-        field(4; Connector; Enum "File Connector")
+        field(4; Connector; Enum "File System Connector")
         {
             DataClassification = SystemMetadata;
         }

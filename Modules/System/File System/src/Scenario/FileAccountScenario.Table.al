@@ -20,7 +20,7 @@ table 70003 "File Account Scenario"
             DataClassification = SystemMetadata;
         }
 
-        field(2; Connector; Enum "File Connector")
+        field(2; Connector; Enum "File System Connector")
         {
             DataClassification = SystemMetadata;
         }

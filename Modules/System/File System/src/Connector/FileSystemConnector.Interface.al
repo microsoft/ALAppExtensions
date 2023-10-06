@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// An file connector interface used to creating file accounts and handle external files.
+/// An File System Connector interface used to creating file accounts and handle external files.
 /// </summary>
-interface "File Connector"
+interface "File System Connector"
 {
     /// <summary>
     /// Gets a List of Files stored on the provided account.

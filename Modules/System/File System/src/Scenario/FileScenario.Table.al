@@ -3,31 +3,38 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-table 70002 "File Connector Logo"
+/// <summary>
+/// Holds the mapping between file account and scenarios.
+/// One scenarios is mapped to one file account.
+/// One file account can be used for multiple scenarios.
+/// </summary>
+table 70004 "File Scenario"
 {
-    DataClassification = SystemMetadata;
     Access = Internal;
-    InherentPermissions = X;
-    InherentEntitlements = X;
 
     fields
     {
-        field(1; Connector; Enum "File Connector")
+        field(1; Scenario; Enum "File Scenario")
         {
             DataClassification = SystemMetadata;
         }
-        field(2; Logo; Media)
+
+        field(2; Connector; Enum "File System Connector")
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
+        }
+
+        field(3; "Account Id"; Guid)
+        {
+            DataClassification = SystemMetadata;
         }
     }
 
     keys
     {
-        key(PK; Connector)
+        key(PK; Scenario)
         {
             Clustered = true;
         }
     }
-
 }

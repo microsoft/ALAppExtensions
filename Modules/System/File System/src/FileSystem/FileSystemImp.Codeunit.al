@@ -1,7 +1,7 @@
 codeunit 70005 "File System Impl."
 {
     var
-        IFileConnector: Interface "File Connector";
+        IFileConnector: Interface "File System Connector";
         CurrFileAccount: Record "File Account";
         Initialized: Boolean;
 

@@ -274,7 +274,7 @@ page 70000 "File Accounts"
     local procedure ShowAccountInformation()
     var
         FileAccountImpl: Codeunit "File Account Impl.";
-        Connector: Interface "File Connector";
+        Connector: Interface "File System Connector";
     begin
         UpdateAccounts := true;
 

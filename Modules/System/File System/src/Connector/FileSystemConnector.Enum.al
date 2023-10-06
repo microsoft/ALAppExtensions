@@ -6,7 +6,7 @@
 /// <summary>
 /// Enum that holds all of the available file connectors.
 /// </summary>
-enum 70000 "File Connector" implements "File Connector"
+enum 70000 "File System Connector" implements "File System Connector"
 {
     Extensible = true;
 }

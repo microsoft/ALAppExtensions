@@ -169,7 +169,7 @@ page 70002 "File Scenario Setup"
     end;
 
     // Used to set the focus on an file account
-    internal procedure SetFileAccountId(AccountId: Guid; Connector: Enum "File Connector")
+    internal procedure SetFileAccountId(AccountId: Guid; Connector: Enum "File System Connector")
     begin
         FileAccountId := AccountId;
         FileConnector := Connector;
@@ -186,7 +186,7 @@ page 70002 "File Scenario Setup"
         FileScenarioImpl: Codeunit "File Scenario Impl.";
         FileAccountImpl: Codeunit "File Account Impl.";
         FileAccountId: Guid;
-        FileConnector: Enum "File Connector";
+        FileConnector: Enum "File System Connector";
         Style, DefaultTxt : Text;
         TypeOfEntry: Option Account,Scenario;
         Indentation: Integer;
