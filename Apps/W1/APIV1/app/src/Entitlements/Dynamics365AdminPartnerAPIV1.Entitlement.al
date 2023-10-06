@@ -1,3 +1,5 @@
+namespace Microsoft.API.V1;
+
 entitlement "Dynamics 365 Admin - Partner APIV1"
 {
     Type = Role;

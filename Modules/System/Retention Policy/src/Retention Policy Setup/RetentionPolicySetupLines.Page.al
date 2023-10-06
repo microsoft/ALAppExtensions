@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
 /// <summary>
 /// This page shows the retention policy setup lines. Each line defines a subset of records in a table for which you can set a separate retention period.
 /// </summary>
@@ -54,7 +56,7 @@ page 3902 "Retention Policy Setup Lines"
                 field(Locked; Rec.Locked)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specified whether the retention policy is editable for this subset.';
+                    ToolTip = 'Specifies whether the retention policy is editable for this subset.';
                     Editable = false;
                     Style = Subordinate;
                     StyleExpr = Rec.Locked;

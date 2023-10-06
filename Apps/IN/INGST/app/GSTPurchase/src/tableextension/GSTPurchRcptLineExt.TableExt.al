@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.History;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Purchase;
+
 tableextension 18091 "GST Purch. Rcpt. Line Ext" extends "Purch. Rcpt. Line"
 {
     fields

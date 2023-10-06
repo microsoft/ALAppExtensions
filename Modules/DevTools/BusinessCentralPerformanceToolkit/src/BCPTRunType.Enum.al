@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
 /// <summary>
 /// This enum has the Run Type of the BCPT Header.
 /// </summary>

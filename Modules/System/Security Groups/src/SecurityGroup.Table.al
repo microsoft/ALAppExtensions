@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 table 9020 "Security Group"
 {
     Access = Internal;
@@ -17,16 +19,17 @@ table 9020 "Security Group"
     {
         field(1; "Code"; Code[20])
         {
+            DataClassification = SystemMetadata;
             NotBlank = true;
         }
-        // User security ID of a user record that represents an AAD group or a Windows group 
+        // User security ID of a user record that represents a Microsoft Entra group or a Windows group 
         field(2; "Group User SID"; Guid)
         {
             TableRelation = User;
             NotBlank = true;
             DataClassification = EndUserPseudonymousIdentifiers;
         }
-        // AAD object ID of an AAD security group
+        // object ID of a Microsoft Entra security group
         field(3; "AAD Group ID"; Text[80])
         {
             CalcFormula = lookup("User Property"."Authentication Object ID" where("User Security ID" = field("Group User SID")));

@@ -1,3 +1,8 @@
+namespace Microsoft.Utility.ImageAnalysis;
+
+using Microsoft.CRM.Contact;
+using System.AI;
+using Microsoft.CRM.Profiling;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 
 // Licensed under the MIT License. See License.txt in the project root for license information. 

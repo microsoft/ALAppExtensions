@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP.SmartLists;
+
+using Microsoft.DataMigration.GP;
+using Microsoft.Sales.Customer;
+
 query 3005 GPHistReceivablesTrx
 {
     QueryType = Normal;
@@ -90,9 +95,4 @@ query 3005 GPHistReceivablesTrx
             }
         }
     }
-
-    trigger OnBeforeOpen()
-    begin
-
-    end;
 }

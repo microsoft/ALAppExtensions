@@ -1,3 +1,11 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.IO;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.VAT.Setup;
+
 /// <summary>
 /// Codeunit Shpfy Product Price Calc. (ID 30182).
 /// </summary>

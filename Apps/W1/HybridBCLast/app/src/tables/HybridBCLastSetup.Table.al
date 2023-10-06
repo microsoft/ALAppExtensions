@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.BC;
+
 table 4020 "Hybrid BC Last Setup"
 {
     ReplicateData = false;

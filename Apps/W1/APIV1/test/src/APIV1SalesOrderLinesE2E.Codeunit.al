@@ -637,7 +637,8 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         SalesHeader: Record "Sales Header";
         Item: Record "Item";
         SalesLine: Record "Sales Line";
-        DiscountAmount, InvDiscAmount : Decimal;
+        DiscountAmount: Decimal;
+        InvDiscAmount: Decimal;
         TargetURL: Text;
         OrderLineJSON: Text;
         ResponseText: Text;

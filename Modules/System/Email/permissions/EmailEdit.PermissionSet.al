@@ -3,7 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 8901 "Email - Edit"
+namespace System.Email;
+
+using System.Environment;
+
+permissionset 8901 "Email - Edit"
 {
     Access = Public;
     Assignable = false;

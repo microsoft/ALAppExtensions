@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Warehouse.GateEntry;
+
+using Microsoft.Finance.TaxBase;
+using System.Security.User;
+using Microsoft.Sales.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Inventory.Transfer;
+using System.Security.AccessControl;
+using Microsoft.Warehouse.Document;
+
 codeunit 18601 "Gate Entry Handler"
 {
     var

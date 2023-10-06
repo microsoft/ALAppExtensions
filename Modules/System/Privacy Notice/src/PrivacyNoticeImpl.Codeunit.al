@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Privacy;
+
+using System.Environment;
+
 codeunit 1565 "Privacy Notice Impl."
 {
     Access = Internal;

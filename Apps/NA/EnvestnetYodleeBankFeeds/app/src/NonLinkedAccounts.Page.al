@@ -1,3 +1,7 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using Microsoft.Bank.BankAccount;
+
 page 1453 "MS - Yodlee NonLinked Accounts"
 {
     Caption = 'Non-Linked Bank Accounts';
@@ -14,7 +18,7 @@ page 1453 "MS - Yodlee NonLinked Accounts"
         {
             repeater(Group)
             {
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -27,13 +31,13 @@ page 1453 "MS - Yodlee NonLinked Accounts"
                     Editable = false;
                     ToolTip = 'Specifies the branch number of the online bank account.';
                 }
-                field("Bank Account No."; "Bank Account No.")
+                field("Bank Account No."; Rec."Bank Account No.")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ToolTip = 'Specifies the account number of the online bank account.';
                 }
-                field("Currency Code"; "Currency Code")
+                field("Currency Code"; Rec."Currency Code")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -81,7 +85,7 @@ page 1453 "MS - Yodlee NonLinked Accounts"
                     BankBranchNumber := BankAccount."Bank Branch No.";
                     UpdateTempLink(LinkedBankAccountNo);
 
-                    CurrPage.UPDATE(TRUE);
+                    CurrPage.UPDATE(true);
                 end;
             }
             action(LinkToExistingBankAccount)
@@ -101,12 +105,12 @@ page 1453 "MS - Yodlee NonLinked Accounts"
                 begin
                     TempBankAccount.GetUnlinkedBankAccounts(TempBankAccount);
                     BankAccountList.SETTABLEVIEW(TempBankAccount);
-                    BankAccountList.LOOKUPMODE := TRUE;
-                    IF BankAccountList.RUNMODAL() = ACTION::LookupOK THEN BEGIN
+                    BankAccountList.LOOKUPMODE := true;
+                    if BankAccountList.RUNMODAL() = ACTION::LookupOK then begin
                         BankAccountList.GETRECORD(TempBankAccount);
                         LinkedBankAccountNo := TempBankAccount."No.";
                         ValidateLinkedBankAccount();
-                    END;
+                    end;
                 end;
             }
             action(UnlinkOnlineBankAccount)
@@ -123,15 +127,15 @@ page 1453 "MS - Yodlee NonLinked Accounts"
                 var
                     MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
                 begin
-                    IF LinkedBankAccountNo <> '' THEN
-                        RENAME(LinkedBankAccountNo);
+                    if LinkedBankAccountNo <> '' then
+                        Rec.RENAME(LinkedBankAccountNo);
 
                     MSYodleeServiceMgt.UnlinkBankAccountFromYodlee(Rec);
 
-                    IF COUNT() = 0 THEN BEGIN
+                    if Rec.COUNT() = 0 then begin
                         MESSAGE(NoMoreAccountsMsg);
                         CurrPage.CLOSE();
-                    END;
+                    end;
                 end;
             }
         }
@@ -163,22 +167,22 @@ page 1453 "MS - Yodlee NonLinked Accounts"
         AccountNo := '';
         BankBranchNum := '';
 
-        IF "Online Bank Account ID" = '' THEN
-            EXIT;
+        if Rec."Online Bank Account ID" = '' then
+            exit;
 
-        MSYodleeBankAccLink.SETRANGE("Online Bank Account ID", "Online Bank Account ID");
-        IF MSYodleeBankAccLink.FINDFIRST() THEN BEGIN
+        MSYodleeBankAccLink.SETRANGE("Online Bank Account ID", Rec."Online Bank Account ID");
+        if MSYodleeBankAccLink.FINDFIRST() then begin
             AccountNo := MSYodleeBankAccLink."No.";
             BankAccount.GET(AccountNo);
             BankBranchNum := BankAccount."Bank Branch No.";
-        END;
+        end;
     end;
 
     local procedure UpdateTempLink(Value: Code[20]);
     begin
-        "Temp Linked Bank Account No." := Value;
-        MODIFY();
-        CurrPage.UPDATE(FALSE);
+        Rec."Temp Linked Bank Account No." := Value;
+        Rec.MODIFY();
+        CurrPage.UPDATE(false);
     end;
 
     local procedure ValidateLinkedBankAccount();
@@ -186,25 +190,27 @@ page 1453 "MS - Yodlee NonLinked Accounts"
         MSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link";
         MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
     begin
-        IF MSYodleeBankAccLink.GET(LinkedBankAccountNo) THEN
+        if MSYodleeBankAccLink.GET(LinkedBankAccountNo) then
             ERROR(AccountIsAlreadyLinkedErr, MSYodleeBankAccLink.Name);
 
-        IF "Online Bank Account ID" <> '' THEN BEGIN // re-select?
-            MSYodleeBankAccLink.SETRANGE("Online Bank Account ID", "Online Bank Account ID");
-            IF MSYodleeBankAccLink.FINDFIRST() THEN
-                IF (LinkedBankAccountNo = '') OR (MSYodleeBankAccLink."No." <> LinkedBankAccountNo) THEN BEGIN
+        if Rec."Online Bank Account ID" <> '' then begin // re-select?
+            MSYodleeBankAccLink.SETRANGE("Online Bank Account ID", Rec."Online Bank Account ID");
+            if MSYodleeBankAccLink.FINDFIRST() then
+                if (LinkedBankAccountNo = '') or (MSYodleeBankAccLink."No." <> LinkedBankAccountNo) then begin
                     MSYodleeServiceMgt.MarkBankAccountAsUnlinked(MSYodleeBankAccLink."No.");
 
                     UpdateTempLink('');
-                END ELSE
-                    EXIT;
-        END;
+                end else
+                    exit;
+        end;
 
-        IF LinkedBankAccountNo = '' THEN
-            EXIT;
+        if LinkedBankAccountNo = '' then
+            exit;
 
-        IF MSYodleeServiceMgt.MarkBankAccountAsLinked(LinkedBankAccountNo, Rec) THEN
+        if MSYodleeServiceMgt.MarkBankAccountAsLinked(LinkedBankAccountNo, Rec) then
             UpdateTempLink(LinkedBankAccountNo);
     end;
 }
+
+#pragma implicitwith restore
 

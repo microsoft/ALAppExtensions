@@ -6,6 +6,9 @@
 /// <summary>
 /// Used for 'recording' delete operations.
 /// </summary>
+
+namespace System.DataAdministration;
+
 page 633 "Data Archive - New Archive"
 {
     Caption = 'New Data Archive';

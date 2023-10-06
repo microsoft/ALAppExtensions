@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
 /// <summary>
 /// This enum has the styles for the cues and KPIs on RoleCenter pages.
 /// <remarks>The values match the original option field on the Cue Setup table, values 1 to 6 are blank options to be extended.</remarks>

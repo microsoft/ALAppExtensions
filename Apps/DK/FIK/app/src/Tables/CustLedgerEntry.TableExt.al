@@ -1,7 +1,13 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
 
 tableextension 13610 CustLedgerEntry extends "Cust. Ledger Entry"
 {

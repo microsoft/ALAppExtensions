@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Test.Email;
+
+using System.Email;
+using System.DataAdministration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
 codeunit 134706 "Email Retention Policy Tests"
 {
     Subtype = test;

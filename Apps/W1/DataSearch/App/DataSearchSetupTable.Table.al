@@ -1,3 +1,12 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using System.Reflection;
+using System.Environment.Configuration;
+using Microsoft.Sales.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Service.Document;
+using Microsoft.Service.Contract;
+
 table 2681 "Data Search Setup (Table)"
 {
     Caption = 'Search Setup (Table)';
@@ -8,7 +17,8 @@ table 2681 "Data Search Setup (Table)"
         field(1; "Table No."; Integer)
         {
             Caption = 'Table No.';
-            TableRelation = AllObjWithCaption."Object ID" WHERE("Object Type" = CONST(Table));
+            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Table));
+            DataClassification = SystemMetadata;
         }
         field(2; "Table Subtype"; Integer)
         {
@@ -32,7 +42,7 @@ table 2681 "Data Search Setup (Table)"
         }
         field(9; "Table Caption"; Text[250])
         {
-            CalcFormula = Lookup(AllObjWithCaption."Object Caption" WHERE("Object Type" = CONST(Table), "Object ID" = FIELD("Table No.")));
+            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Table), "Object ID" = field("Table No.")));
             Caption = 'Table Caption';
             FieldClass = FlowField;
         }
@@ -65,8 +75,7 @@ table 2681 "Data Search Setup (Table)"
     begin
         if Rec.IsTemporary() then
             exit;
-        DataSearchDefaults.AddTextFields(Rec."Table No.");
-        DataSearchDefaults.AddIndexedFields(Rec."Table No.");
+        DataSearchDefaults.AddDefaultFields(Rec."Table No.");
         if Rec."Table/Type ID" > 0 then
             exit;
         GetSubtypes(SubtypeList);
@@ -95,7 +104,7 @@ table 2681 "Data Search Setup (Table)"
         DataSearchEvents: Codeunit "Data Search Events";
         FieldNo: Integer;
     begin
-        Case Rec."Table No." of
+        case Rec."Table No." of
             Database::"Sales Header", Database::"Sales Line",
             Database::"Purchase Header", Database::"Purchase Line",
             Database::"Service Header", Database::"Service Item Line",

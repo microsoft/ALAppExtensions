@@ -1,3 +1,7 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using System.Telemetry;
+
 codeunit 1154 "COHUB Url Task Manager"
 {
     TableNo = "COHUB Enviroment";

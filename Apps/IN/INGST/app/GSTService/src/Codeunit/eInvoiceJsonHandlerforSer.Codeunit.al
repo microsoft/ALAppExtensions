@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Services;
+
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Sales;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Service.History;
+using System.Security.Encryption;
+using System.Text;
+using System.Utilities;
+using Microsoft.QRGeneration;
+
 codeunit 18160 "e-Invoice Json Handler for Ser"
 {
     Permissions = tabledata "Service Invoice Header" = rm,
@@ -420,9 +441,9 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
 
         ServiceCrMemoLine.SetRange("Document No.", ServiceCrMemoHeader."No.");
         if ServiceCrMemoLine.FindSet() then
-                repeat
-                    DocumentAmount := DocumentAmount + ServiceCrMemoLine.Amount;
-                until ServiceCrMemoLine.Next() = 0;
+            repeat
+                DocumentAmount := DocumentAmount + ServiceCrMemoLine.Amount;
+            until ServiceCrMemoLine.Next() = 0;
 
         CurrencyCode := CopyStr(ServiceCrMemoHeader."Currency Code", 1, 3);
         CountryCode := CopyStr(ServiceCrMemoHeader."Bill-to Country/Region Code", 1, 2);
@@ -958,47 +979,47 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
             if ServiceInvoiceLine.FindSet() then begin
                 if ServiceInvoiceLine.Count > 100 then
                     Error(ServiceLinesMaxCountLimitErr, ServiceInvoiceLine.Count);
-                                                     repeat
-                                                         if ServiceInvoiceLine."GST Assessable Value (LCY)" <> 0 then
-                                                             AssessableAmount := ServiceInvoiceLine."GST Assessable Value (LCY)"
-                                                         else
-                                                             AssessableAmount := ServiceInvoiceLine.Amount;
+                repeat
+                    if ServiceInvoiceLine."GST Assessable Value (LCY)" <> 0 then
+                        AssessableAmount := ServiceInvoiceLine."GST Assessable Value (LCY)"
+                    else
+                        AssessableAmount := ServiceInvoiceLine.Amount;
 
-                                                         if ServiceInvoiceLine."GST Group Type" = ServiceInvoiceLine."GST Group Type"::Goods then
-                                                             IsServc := 'N'
-                                                         else
-                                                             IsServc := 'Y';
+                    if ServiceInvoiceLine."GST Group Type" = ServiceInvoiceLine."GST Group Type"::Goods then
+                        IsServc := 'N'
+                    else
+                        IsServc := 'Y';
 
-                                                         GetGSTComponentRate(
-                                                             ServiceInvoiceLine."Document No.",
-                                                             ServiceInvoiceLine."Line No.",
-                                                             CGSTRate,
-                                                             SGSTRate,
-                                                             IGSTRate,
-                                                             CessRate,
-                                                             CesNonAdval,
-                                                             StateCess);
+                    GetGSTComponentRate(
+                        ServiceInvoiceLine."Document No.",
+                        ServiceInvoiceLine."Line No.",
+                        CGSTRate,
+                        SGSTRate,
+                        IGSTRate,
+                        CessRate,
+                        CesNonAdval,
+                        StateCess);
 
-                                                         if ServiceInvoiceLine."GST Jurisdiction Type" = ServiceInvoiceLine."GST Jurisdiction Type"::Intrastate then
-                                                             GstRate := CGSTRate + SGSTRate
-                                                         else
-                                                             GstRate := IGSTRate;
+                    if ServiceInvoiceLine."GST Jurisdiction Type" = ServiceInvoiceLine."GST Jurisdiction Type"::Intrastate then
+                        GstRate := CGSTRate + SGSTRate
+                    else
+                        GstRate := IGSTRate;
 
-                                                         GetGSTValueForLine(ServiceInvoiceLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
-                                                         WriteItem(
-                                                           Format(Count),
-                                                           ServiceInvoiceLine.Description + ServiceInvoiceLine."Description 2",
-                                                           ServiceInvoiceLine."HSN/SAC Code", GstRate,
-                                                           ServiceInvoiceLine.Quantity,
-                                                           CopyStr(ServiceInvoiceLine."Unit of Measure Code", 1, 3),
-                                                           ServiceInvoiceLine."Unit Price",
-                                                           ServiceInvoiceLine."Line Amount" + ServiceInvoiceLine."Line Discount Amount",
-                                                           ServiceInvoiceLine."Line Discount Amount", 0,
-                                                           AssessableAmount, CGSTRate, SGSTRate, IGSTRate, CessRate, CesNonAdval, StateCess,
-                                                           AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
-                                                           IsServc);
-                                                         Count += 1;
-                                                     until ServiceInvoiceLine.Next() = 0;
+                    GetGSTValueForLine(ServiceInvoiceLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
+                    WriteItem(
+                      Format(Count),
+                      ServiceInvoiceLine.Description + ServiceInvoiceLine."Description 2",
+                      ServiceInvoiceLine."HSN/SAC Code", GstRate,
+                      ServiceInvoiceLine.Quantity,
+                      CopyStr(ServiceInvoiceLine."Unit of Measure Code", 1, 3),
+                      ServiceInvoiceLine."Unit Price",
+                      ServiceInvoiceLine."Line Amount" + ServiceInvoiceLine."Line Discount Amount",
+                      ServiceInvoiceLine."Line Discount Amount", 0,
+                      AssessableAmount, CGSTRate, SGSTRate, IGSTRate, CessRate, CesNonAdval, StateCess,
+                      AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
+                      IsServc);
+                    Count += 1;
+                until ServiceInvoiceLine.Next() = 0;
             end;
 
             JObject.Add('ItemList', JsonArrayData);
@@ -1008,47 +1029,47 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
                 if ServiceCrMemoLine.Count > 100 then
                     Error(ServiceLinesMaxCountLimitErr, ServiceCrMemoLine.Count);
 
-                                                    repeat
-                                                        if ServiceCrMemoLine."GST Assessable Value (LCY)" <> 0 then
-                                                            AssessableAmount := ServiceCrMemoLine."GST Assessable Value (LCY)"
-                                                        else
-                                                            AssessableAmount := ServiceCrMemoLine.Amount;
+                repeat
+                    if ServiceCrMemoLine."GST Assessable Value (LCY)" <> 0 then
+                        AssessableAmount := ServiceCrMemoLine."GST Assessable Value (LCY)"
+                    else
+                        AssessableAmount := ServiceCrMemoLine.Amount;
 
-                                                        if ServiceCrMemoLine."GST Group Type" = ServiceCrMemoLine."GST Group Type"::Goods then
-                                                            IsServc := 'N'
-                                                        else
-                                                            IsServc := 'Y';
+                    if ServiceCrMemoLine."GST Group Type" = ServiceCrMemoLine."GST Group Type"::Goods then
+                        IsServc := 'N'
+                    else
+                        IsServc := 'Y';
 
-                                                        GetGSTComponentRate(
-                                                            ServiceCrMemoLine."Document No.",
-                                                            ServiceCrMemoLine."Line No.",
-                                                            CGSTRate,
-                                                            SGSTRate,
-                                                            IGSTRate,
-                                                            CessRate,
-                                                            CesNonAdval,
-                                                            StateCess);
+                    GetGSTComponentRate(
+                        ServiceCrMemoLine."Document No.",
+                        ServiceCrMemoLine."Line No.",
+                        CGSTRate,
+                        SGSTRate,
+                        IGSTRate,
+                        CessRate,
+                        CesNonAdval,
+                        StateCess);
 
-                                                        if ServiceCrMemoLine."GST Jurisdiction Type" = ServiceCrMemoLine."GST Jurisdiction Type"::Intrastate then
-                                                            GstRate := CGSTRate + SGSTRate
-                                                        else
-                                                            GstRate := IGSTRate;
+                    if ServiceCrMemoLine."GST Jurisdiction Type" = ServiceCrMemoLine."GST Jurisdiction Type"::Intrastate then
+                        GstRate := CGSTRate + SGSTRate
+                    else
+                        GstRate := IGSTRate;
 
-                                                        GetGSTValueForLine(ServiceCrMemoLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
-                                                        WriteItem(
-                                                          Format(Count),
-                                                          ServiceCrMemoLine.Description + ServiceCrMemoLine."Description 2",
-                                                          ServiceCrMemoLine."HSN/SAC Code", GstRate,
-                                                          ServiceCrMemoLine.Quantity,
-                                                          CopyStr(ServiceCrMemoLine."Unit of Measure Code", 1, 3),
-                                                          ServiceCrMemoLine."Unit Price",
-                                                          ServiceCrMemoLine."Line Amount" + ServiceCrMemoLine."Line Discount Amount",
-                                                          ServiceCrMemoLine."Line Discount Amount", 0,
-                                                          AssessableAmount, CGSTRate, SGSTRate, IGSTRate, CessRate, CesNonAdval, StateCess,
-                                                          AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
-                                                          IsServc);
-                                                        Count += 1;
-                                                    until ServiceCrMemoLine.Next() = 0;
+                    GetGSTValueForLine(ServiceCrMemoLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
+                    WriteItem(
+                      Format(Count),
+                      ServiceCrMemoLine.Description + ServiceCrMemoLine."Description 2",
+                      ServiceCrMemoLine."HSN/SAC Code", GstRate,
+                      ServiceCrMemoLine.Quantity,
+                      CopyStr(ServiceCrMemoLine."Unit of Measure Code", 1, 3),
+                      ServiceCrMemoLine."Unit Price",
+                      ServiceCrMemoLine."Line Amount" + ServiceCrMemoLine."Line Discount Amount",
+                      ServiceCrMemoLine."Line Discount Amount", 0,
+                      AssessableAmount, CGSTRate, SGSTRate, IGSTRate, CessRate, CesNonAdval, StateCess,
+                      AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
+                      IsServc);
+                    Count += 1;
+                until ServiceCrMemoLine.Next() = 0;
             end;
 
             JObject.Add('ItemList', JsonArrayData);
@@ -1175,11 +1196,11 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
         StateCess := 0;
         DetailedGSTLedgerEntry.SetRange("GST Component Code");
         if DetailedGSTLedgerEntry.FindSet() then
-                repeat
-                    if not (DetailedGSTLedgerEntry."GST Component Code" in [CGSTLbl, SGSTLbl, IGSTLbl, CESSLbl])
-                    then
-                        StateCess := DetailedGSTLedgerEntry."GST %";
-                until DetailedGSTLedgerEntry.Next() = 0;
+            repeat
+                if not (DetailedGSTLedgerEntry."GST Component Code" in [CGSTLbl, SGSTLbl, IGSTLbl, CESSLbl])
+                then
+                    StateCess := DetailedGSTLedgerEntry."GST %";
+            until DetailedGSTLedgerEntry.Next() = 0;
     end;
 
     local procedure GetGSTValue(
@@ -1206,25 +1227,25 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
 
         GSTLedgerEntry.SetRange("GST Component Code", CGSTLbl);
         if GSTLedgerEntry.FindSet() then
-                repeat
-                    CGSTAmount += Abs(GSTLedgerEntry."GST Amount");
-                until GSTLedgerEntry.Next() = 0
+            repeat
+                CGSTAmount += Abs(GSTLedgerEntry."GST Amount");
+            until GSTLedgerEntry.Next() = 0
         else
             CGSTAmount := 0;
 
         GSTLedgerEntry.SetRange("GST Component Code", SGSTLbl);
         if GSTLedgerEntry.FindSet() then
-                repeat
-                    SGSTAmount += Abs(GSTLedgerEntry."GST Amount")
-                until GSTLedgerEntry.Next() = 0
+            repeat
+                SGSTAmount += Abs(GSTLedgerEntry."GST Amount")
+            until GSTLedgerEntry.Next() = 0
         else
             SGSTAmount := 0;
 
         GSTLedgerEntry.SetRange("GST Component Code", IGSTLbl);
         if GSTLedgerEntry.FindSet() then
-                repeat
-                    IGSTAmount += Abs(GSTLedgerEntry."GST Amount")
-                until GSTLedgerEntry.Next() = 0
+            repeat
+                IGSTAmount += Abs(GSTLedgerEntry."GST Amount")
+            until GSTLedgerEntry.Next() = 0
         else
             IGSTAmount := 0;
 
@@ -1234,24 +1255,24 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
         DetailedGSTLedgerEntry.SetRange("Document No.", DocumentNo);
         DetailedGSTLedgerEntry.SetRange("GST Component Code", CESSLbl);
         if DetailedGSTLedgerEntry.FindFirst() then
-                repeat
-                    if DetailedGSTLedgerEntry."GST %" > 0 then
-                        CessAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
-                    else
-                        CessNonAdvanceAmount += Abs(DetailedGSTLedgerEntry."GST Amount");
-                until GSTLedgerEntry.Next() = 0;
+            repeat
+                if DetailedGSTLedgerEntry."GST %" > 0 then
+                    CessAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
+                else
+                    CessNonAdvanceAmount += Abs(DetailedGSTLedgerEntry."GST Amount");
+            until GSTLedgerEntry.Next() = 0;
 
         GSTLedgerEntry.SetFilter("GST Component Code", '<>CGST|<>SGST|<>IGST|<>CESS');
         if GSTLedgerEntry.FindSet() then
             repeat
-                    StateCessValue += Abs(GSTLedgerEntry."GST Amount");
+                StateCessValue += Abs(GSTLedgerEntry."GST Amount");
             until GSTLedgerEntry.Next() = 0;
 
         if IsInvoice then begin
             ServiceInvoiceLine.SetRange("Document No.", DocumentNo);
             if ServiceInvoiceLine.FindSet() then
                 repeat
-                        AssessableAmount += ServiceInvoiceLine.Amount;
+                    AssessableAmount += ServiceInvoiceLine.Amount;
                     DiscountAmount += ServiceInvoiceLine."Inv. Discount Amount";
                 until ServiceInvoiceLine.Next() = 0;
             TotGSTAmt := CGSTAmount + SGSTAmount + IGSTAmount + CessAmount + CessNonAdvanceAmount + StateCessValue;
@@ -1268,10 +1289,10 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
         end else begin
             ServiceCrMemoLine.SetRange("Document No.", DocumentNo);
             if ServiceCrMemoLine.FindSet() then begin
-                                                    repeat
-                                                        AssessableAmount += ServiceCrMemoLine.Amount;
-                                                        DiscountAmount += ServiceCrMemoLine."Inv. Discount Amount";
-                                                    until ServiceCrMemoLine.Next() = 0;
+                repeat
+                    AssessableAmount += ServiceCrMemoLine.Amount;
+                    DiscountAmount += ServiceCrMemoLine."Inv. Discount Amount";
+                until ServiceCrMemoLine.Next() = 0;
                 TotGSTAmt := CGSTAmount + SGSTAmount + IGSTAmount + CessAmount + CessNonAdvanceAmount + StateCessValue;
             end;
 
@@ -1338,19 +1359,19 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
         DetailedGSTLedgerEntry.SetRange("GST Component Code", CGSTLbl);
         if DetailedGSTLedgerEntry.FindSet() then
             repeat
-                    CGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount");
+                CGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount");
             until DetailedGSTLedgerEntry.Next() = 0;
 
         DetailedGSTLedgerEntry.SetRange("GST Component Code", SGSTLbl);
         if DetailedGSTLedgerEntry.FindSet() then
-                repeat
-                    SGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
-                until DetailedGSTLedgerEntry.Next() = 0;
+            repeat
+                SGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
+            until DetailedGSTLedgerEntry.Next() = 0;
 
         DetailedGSTLedgerEntry.SetRange("GST Component Code", IGSTLbl);
         if DetailedGSTLedgerEntry.FindSet() then
             repeat
-                    IGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
+                IGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
             until DetailedGSTLedgerEntry.Next() = 0;
     end;
 

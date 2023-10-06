@@ -532,7 +532,13 @@ codeunit 31116 "EET Service Management CZL"
     end;
 
     [EventSubscriber(ObjectType::Table, 1400, 'OnRegisterServiceConnection', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure HandleEETRegisterServiceConnection(var ServiceConnection: Record "Service Connection")
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     var
         EETServiceSetupCZL: Record "EET Service Setup CZL";
         PageEETServiceSetupCZL: Page "EET Service Setup CZL";

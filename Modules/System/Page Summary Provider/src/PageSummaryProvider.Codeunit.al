@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
 /// <summary>
 /// Exposes functionality that gets page summary for a selected page.
 /// This codeunit is exposed as a webservice and hence all functions are available through OData calls.

@@ -3,11 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 /// <summary>
 /// Provides functionality to operate the Microsoft 365 License.
 /// </summary>
 codeunit 9085 "Microsoft 365 License"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     /// <summary>   
     /// Assign D365 Read Permission.
     /// </summary>

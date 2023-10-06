@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Dimension;
+
 codeunit 2623 "Stat. Acc. Jnl Check Line"
 {
     TableNo = "Statistical Acc. Journal Line";

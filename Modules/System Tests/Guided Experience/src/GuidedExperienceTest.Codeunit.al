@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment.Configuration;
+using System.TestLibraries.Environment.Configuration;
+using System.Media;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 132594 "Guided Experience Test"
 {
     Subtype = Test;
@@ -138,72 +146,6 @@ codeunit 132594 "Guided Experience Test"
 
         VerifyAfterIdenticalInsertion(Code);
     end;
-
-#if not CLEAN19
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestInsertLearnPage()
-    var
-        GuidedExperienceItem: Record "Guided Experience Item";
-        GuidedExperience: Codeunit "Guided Experience";
-        ObjectTypeToRun: Enum "Guided Experience Object Type";
-        GuidedExperienceType: Enum "Guided Experience Type";
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        VideoCategory: Enum "Video Category";
-        ManualSetupCategory: Enum "Manual Setup Category";
-        SpotlightTourType: Enum "Spotlight Tour Type";
-        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
-        Title: Text[2048];
-        ShortTitle: Text[30];
-        Description: Text[1024];
-        ExpectedDuration: Integer;
-        PageID: Integer;
-        Code: Code[300];
-    begin
-        // [GIVEN] The Guided Experience Item table is empty
-        GuidedExperienceItem.DeleteAll();
-
-        PermissionsMock.Set('Guided Exp Edit');
-
-        // [WHEN] Inserting a new learn page
-        Title := 'This is the title of the guided experience item';
-        ShortTitle := 'Short title';
-        Description := 'Description blah blah';
-        ExpectedDuration := 5;
-        PageID := 1801;
-        GuidedExperience.InsertLearnPage(Title, ShortTitle, Description, ExpectedDuration, PageID);
-
-        // [THEN] There is exactly one record in the Guided Experience Item table
-        Assert.AreEqual(1, GuidedExperienceItem.Count, 'The Guided Experience Item should contain exactly one record');
-
-        // [THEN] The fields of the Guided Experience Item are set correctly
-        if GuidedExperienceItem.FindFirst() then;
-        Code := 'LEARN_PAGE_1801__0';
-        VerifyGuidedExperienceItemFields(GuidedExperienceItem, Code, 0, ObjectTypeToRun::Page, PageID, '', Title, ShortTitle, Description,
-            ExpectedDuration, false, GuidedExperienceType::Learn, AssistedSetupGroup::Uncategorized,
-            '', '', VideoCategory::Uncategorized, ManualSetupCategory::Uncategorized, '', SpotlightTourType::None, SpotlightTourTexts);
-
-        // [WHEN] Inserting a new version of the learn page
-        Title := 'Title different version';
-        ShortTitle := 'Another short title';
-        Description := 'Description version 2';
-        ExpectedDuration := 10;
-        GuidedExperience.InsertLearnPage(Title, ShortTitle, Description, ExpectedDuration, PageID);
-
-        VerifyAfterNonIdenticalInsertion(Code);
-
-        // [THEN] The fields of the second version of the Guided Experience Item are set correctly
-        if GuidedExperienceItem.Get(Code, 1) then;
-        VerifyGuidedExperienceItemFields(GuidedExperienceItem, Code, 1, ObjectTypeToRun::Page, PageID, '', Title, ShortTitle, Description,
-            ExpectedDuration, false, GuidedExperienceType::Learn, AssistedSetupGroup::Uncategorized,
-            '', '', VideoCategory::Uncategorized, ManualSetupCategory::Uncategorized, '', SpotlightTourType::None, SpotlightTourTexts);
-
-        // [WHEN] Trying to insert a learn page with the same fields as the last version that was inserted
-        GuidedExperience.InsertLearnPage(Title, ShortTitle, Description, ExpectedDuration, PageID);
-
-        VerifyAfterIdenticalInsertion(Code);
-    end;
-#endif
 
     [Test]
     [Scope('OnPrem')]

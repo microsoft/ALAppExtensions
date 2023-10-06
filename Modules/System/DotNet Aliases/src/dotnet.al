@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System;
+
 dotnet
 {
     assembly("DocumentFormat.OpenXml")
@@ -275,6 +277,10 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.AzureADGraphClient.UserInfoPage"; "UserInfoPage")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.AzureADGraphClient.UserIdsPage"; "UserIdsPage")
         {
         }
     }
@@ -849,6 +855,7 @@ dotnet
         Culture = 'neutral';
         PublicKeyToken = '31bf3856ad364e35';
 
+#if not CLEAN23
         type("Microsoft.Dynamics.Nav.PowerBIEmbedded.Models.ImportedReport"; "ImportedReport")
         {
         }
@@ -882,6 +889,30 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.PowerBIEmbedded.ServiceWrapper"; "ServiceWrapper")
+        {
+        }
+#endif
+        type("Microsoft.Dynamics.Nav.PowerBIEmbedded.Models.ReturnedReport"; "ReturnedReport")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.PowerBIEmbedded.Models.ReturnedReportList"; "ReturnedReportList")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.PowerBIEmbedded.Models.ReturnedWorkspace"; "ReturnedWorkspace")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.PowerBIEmbedded.Models.ReturnedWorkspaceList"; "ReturnedWorkspaceList")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.PowerBIEmbedded.Models.OperationResult"; "OperationResult")
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.PowerBIEmbedded.PowerBiRestServiceWrapper"; "PowerBiRestServiceWrapper")
         {
         }
     }
@@ -1755,11 +1786,6 @@ dotnet
         type("System.Diagnostics.FileVersionInfo"; "FileVersionInfo")
         {
         }
-#if not CLEAN17
-        type("System.Diagnostics.Process"; "Process")
-        {
-        }
-#endif
         type("System.Diagnostics.Stopwatch"; "Stopwatch")
         {
         }

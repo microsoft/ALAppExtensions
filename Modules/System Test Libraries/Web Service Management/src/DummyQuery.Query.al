@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Integration;
+
+using System.Integration;
+
 query 139043 "Dummy Query"
 {
     elements

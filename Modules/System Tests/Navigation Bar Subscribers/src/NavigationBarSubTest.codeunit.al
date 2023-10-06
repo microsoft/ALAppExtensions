@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment;
+using System.Environment.Configuration;
+
 codeunit 132598 "Navigation Bar Sub. Test"
 {
     EventSubscriberInstance = Manual;

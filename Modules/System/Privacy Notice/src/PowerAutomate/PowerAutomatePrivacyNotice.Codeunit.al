@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Privacy;
+
 codeunit 1568 "Power Automate Privacy Notice"
 {
     Access = Internal;

@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 entitlement "Azure AD Application Api COHUB"
 {
     Type = ApplicationScope;

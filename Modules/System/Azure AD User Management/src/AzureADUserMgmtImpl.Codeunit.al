@@ -3,6 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System;
+using System.Security.User;
+using System.Environment;
+using System.Telemetry;
+using System.Globalization;
+using System.Security.AccessControl;
+using System.Environment.Configuration;
+
 codeunit 9017 "Azure AD User Mgmt. Impl."
 {
     Access = Internal;
@@ -36,6 +46,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         UserNotTenantAdminMsg: Label 'User is not a tenant admin.', Locked = true;
 #pragma warning disable AA0240
         CompanyAdminRoleTemplateIdTok: Label '62e90394-69f5-4237-9190-012177145e10', Locked = true;
+        D365AdminRoleTemplateIdTok: Label '44367163-eba1-44c3-98af-f5787879f96a', Locked = true;
 #pragma warning restore AA0240
         UserSetupCategoryTxt: Label 'User Setup', Locked = true;
         UserCreatedMsg: Label 'User %1 has been created', Locked = true;
@@ -170,7 +181,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
 
         if not IsNull(GraphUserInfo.Roles()) then
             foreach GraphRoleInfo in GraphUserInfo.Roles() do
-                if GraphRoleInfo.RoleTemplateId() = CompanyAdminRoleTemplateIdTok then begin
+                if GraphRoleInfo.RoleTemplateId() in [CompanyAdminRoleTemplateIdTok, D365AdminRoleTemplateIdTok] then begin
                     Session.LogMessage('000071T', UserTenantAdminMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserCategoryTxt);
                     exit(true);
                 end;
@@ -313,7 +324,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             exit;
 
         // Add IsAdmin
-        IsAdmin := AzureADGraphUser.IsUserDelegatedAdmin() or AzureADPlan.IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId());
+        IsAdmin := AzureADGraphUser.IsUserDelegatedAdmin() or AzureADPlan.IsPlanAssignedToUser(PlanIds.GetGlobalAdminPlanId()) or AzureADPlan.IsPlanAssignedToUser(PlanIds.GetD365AdminPlanId());
         Sender.AddCommonCustomDimension('IsAdmin', Language.ToDefaultLanguage(IsAdmin));
 
         // Add CountryCode

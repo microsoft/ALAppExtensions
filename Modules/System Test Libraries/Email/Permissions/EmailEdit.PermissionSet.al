@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Email;
+
+using System.Email;
+using System.Environment;
+
 permissionset 134686 "Email Edit"
 {
     Assignable = true;

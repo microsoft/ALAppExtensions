@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 page 30148 "Shpfy Linked To Documents"
 {
     ApplicationArea = All;

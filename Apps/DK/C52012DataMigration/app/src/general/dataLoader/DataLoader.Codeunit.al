@@ -3,6 +3,17 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using System.Integration;
+using System.Utilities;
+using System.Reflection;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Item;
+using Microsoft.Utilities;
+
 codeunit 1868 "C5 Data Loader"
 {
     var

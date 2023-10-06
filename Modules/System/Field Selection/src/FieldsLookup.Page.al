@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Reflection;
 
 /// <summary>
 /// List page that contains table fields.
@@ -12,6 +14,8 @@ page 9806 "Fields Lookup"
     Editable = false;
     PageType = List;
     SourceTable = "Field";
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata Field = r;
 
     layout
@@ -66,7 +70,7 @@ page 9806 "Fields Lookup"
         LastTableNo: Integer;
     begin
         Rec.FindLast();
-        LastTableNo := TableNo;
+        LastTableNo := Rec.TableNo;
         Rec.FindFirst();
         TableNameVisible := LastTableNo <> Rec.TableNo;
     end;
@@ -98,4 +102,5 @@ page 9806 "Fields Lookup"
         end;
     end;
 }
+
 

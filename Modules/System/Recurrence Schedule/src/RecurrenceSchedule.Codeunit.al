@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DateTime;
+
 /// <summary>
 /// Calculates when the next event will occur. Events can recur daily, weekly, monthly or yearly.
 /// </summary>
 codeunit 4690 "Recurrence Schedule"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Sets the earliest date to be returned from CalculateNextOccurrence.
@@ -37,7 +41,7 @@ codeunit 4690 "Recurrence Schedule"
     /// </example>
     procedure CalculateNextOccurrence(RecurrenceID: Guid; LastOccurrence: DateTime): DateTime
     begin
-        EXIT(RecurrenceScheduleImpl.CalculateNextOccurrence(RecurrenceID, LastOccurrence));
+        exit(RecurrenceScheduleImpl.CalculateNextOccurrence(RecurrenceID, LastOccurrence));
     end;
 
     /// <summary>
@@ -54,7 +58,7 @@ codeunit 4690 "Recurrence Schedule"
     /// </example>
     procedure CreateDaily(StartTime: Time; StartDate: Date; EndDate: Date; DaysBetween: Integer): Guid
     begin
-        EXIT(RecurrenceScheduleImpl.CreateDaily(StartTime, StartDate, EndDate, DaysBetween));
+        exit(RecurrenceScheduleImpl.CreateDaily(StartTime, StartDate, EndDate, DaysBetween));
     end;
 
     /// <summary>
@@ -78,7 +82,7 @@ codeunit 4690 "Recurrence Schedule"
     /// </example>
     procedure CreateWeekly(StartTime: Time; StartDate: Date; EndDate: Date; WeeksBetween: Integer; Monday: Boolean; Tuesday: Boolean; Wednesday: Boolean; Thursday: Boolean; Friday: Boolean; Saturday: Boolean; Sunday: Boolean): Guid
     begin
-        EXIT(
+        exit(
           RecurrenceScheduleImpl.CreateWeekly(StartTime, StartDate, EndDate, WeeksBetween, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday));
     end;
 
@@ -98,7 +102,7 @@ codeunit 4690 "Recurrence Schedule"
     procedure CreateMonthlyByDay(StartTime: Time; StartDate: Date; EndDate: Date; MonthsBetween: Integer; DayOfMonth: Integer): Guid
     begin
 
-        EXIT(RecurrenceScheduleImpl.CreateMonthlyByDay(StartTime, StartDate, EndDate, MonthsBetween, DayOfMonth));
+        exit(RecurrenceScheduleImpl.CreateMonthlyByDay(StartTime, StartDate, EndDate, MonthsBetween, DayOfMonth));
     end;
 
     /// <summary>
@@ -117,7 +121,7 @@ codeunit 4690 "Recurrence Schedule"
     /// </example>
     procedure CreateMonthlyByDayOfWeek(StartTime: Time; StartDate: Date; EndDate: Date; MonthsBetween: Integer; InWeek: Enum "Recurrence - Ordinal No."; DayOfWeek: Enum "Recurrence - Day of Week"): Guid
     begin
-        EXIT(RecurrenceScheduleImpl.CreateMonthlyByDayOfWeek(StartTime, StartDate, EndDate, MonthsBetween, InWeek, DayOfWeek));
+        exit(RecurrenceScheduleImpl.CreateMonthlyByDayOfWeek(StartTime, StartDate, EndDate, MonthsBetween, InWeek, DayOfWeek));
     end;
 
     /// <summary>
@@ -136,7 +140,7 @@ codeunit 4690 "Recurrence Schedule"
     /// </example>
     procedure CreateYearlyByDay(StartTime: Time; StartDate: Date; EndDate: Date; YearsBetween: Integer; DayOfMonth: Integer; Month: Enum "Recurrence - Month"): Guid
     begin
-        EXIT(RecurrenceScheduleImpl.CreateYearlyByDay(StartTime, StartDate, EndDate, YearsBetween, DayOfMonth, Month));
+        exit(RecurrenceScheduleImpl.CreateYearlyByDay(StartTime, StartDate, EndDate, YearsBetween, DayOfMonth, Month));
     end;
 
     /// <summary>
@@ -156,7 +160,7 @@ codeunit 4690 "Recurrence Schedule"
     /// </example>
     procedure CreateYearlyByDayOfWeek(StartTime: Time; StartDate: Date; EndDate: Date; YearsBetween: Integer; InWeek: Enum "Recurrence - Ordinal No."; DayOfWeek: Enum "Recurrence - Day of Week"; Month: Enum "Recurrence - Month"): Guid
     begin
-        EXIT(RecurrenceScheduleImpl.CreateYearlyByDayOfWeek(StartTime, StartDate, EndDate, YearsBetween, InWeek, DayOfWeek, Month));
+        exit(RecurrenceScheduleImpl.CreateYearlyByDayOfWeek(StartTime, StartDate, EndDate, YearsBetween, InWeek, DayOfWeek, Month));
     end;
 
     /// <summary>
@@ -175,7 +179,7 @@ codeunit 4690 "Recurrence Schedule"
     /// <returns>The short text to display.</returns>
     procedure RecurrenceDisplayText(RecurrenceID: Guid): Text
     begin
-        EXIT(RecurrenceScheduleImpl.RecurrenceDisplayText(RecurrenceID));
+        exit(RecurrenceScheduleImpl.RecurrenceDisplayText(RecurrenceID));
     end;
 
     var

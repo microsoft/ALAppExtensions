@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Setup;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.NoSeries;
+
 tableextension 18003 "GST General Ledger Setup Ext" extends "General Ledger Setup"
 {
     fields

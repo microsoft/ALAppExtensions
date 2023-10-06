@@ -87,23 +87,23 @@ jobs:
             lfs: true
 
         - name: Read settings
-          uses: microsoft/AL-Go/Actions/ReadSettings@31944622373d473cf9b727a320333e170290265b
+          uses: microsoft/AL-Go/Actions/ReadSettings@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           with:
             shell: ${{ inputs.shell }}
             project: ${{ inputs.project }}
-            get: useCompilerFolder,keyVaultCodesignCertificateName,doNotSignApps,artifact
+            get: useCompilerFolder,keyVaultCodesignCertificateName,doNotSignApps,doNotRunTests,artifact
 
         - name: Read secrets
           id: ReadSecrets
           if: github.event_name != 'pull_request'
-          uses: microsoft/AL-Go/Actions/ReadSecrets@31944622373d473cf9b727a320333e170290265b
+          uses: microsoft/AL-Go/Actions/ReadSecrets@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           with:
             shell: ${{ inputs.shell }}
             gitHubSecrets: ${{ toJson(secrets) }}
             getSecrets: '${{ inputs.secrets }},appDependencyProbingPathsSecrets'
 
         - name: Determine ArtifactUrl
-          uses: microsoft/AL-Go/Actions/DetermineArtifactUrl@31944622373d473cf9b727a320333e170290265b
+          uses: microsoft/AL-Go/Actions/DetermineArtifactUrl@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           id: determineArtifactUrl
           with:
             shell: ${{ inputs.shell }}
@@ -119,7 +119,7 @@ jobs:
 
         - name: Download Project Dependencies
           id: DownloadProjectDependencies
-          uses: microsoft/AL-Go/Actions/DownloadProjectDependencies@31944622373d473cf9b727a320333e170290265b
+          uses: microsoft/AL-Go/Actions/DownloadProjectDependencies@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           env:
             Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           with:
@@ -130,7 +130,7 @@ jobs:
 
         - name: Run pipeline
           id: RunPipeline
-          uses: microsoft/AL-Go/Actions/RunPipeline@31944622373d473cf9b727a320333e170290265b
+          uses: microsoft/AL-Go/Actions/RunPipeline@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           env:
             Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
             BuildMode: ${{ inputs.buildMode }}
@@ -146,7 +146,7 @@ jobs:
         - name: Sign
           if: inputs.signArtifacts && env.doNotSignApps == 'False' && env.keyVaultCodesignCertificateName != ''
           id: sign
-          uses: microsoft/AL-Go/Actions/Sign@31944622373d473cf9b727a320333e170290265b
+          uses: microsoft/AL-Go/Actions/Sign@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           with:
             shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
             azureCredentialsJson: ${{ secrets.AZURE_CREDENTIALS }}
@@ -155,13 +155,12 @@ jobs:
 
         - name: Calculate Artifact names
           id: calculateArtifactsNames
-          uses: microsoft/AL-Go/Actions/CalculateArtifactNames@31944622373d473cf9b727a320333e170290265b
+          uses: microsoft/AL-Go/Actions/CalculateArtifactNames@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           if: success() || failure()
           with:
             shell: ${{ inputs.shell }}
             project: ${{ inputs.project }}
             buildMode: ${{ inputs.buildMode }}
-            branchName: ${{ github.ref_name }}
             suffix: ${{ inputs.artifactsNameSuffix }}
 
         - name: Upload thisbuild artifacts - apps
@@ -240,8 +239,8 @@ jobs:
 
         - name: Analyze Test Results
           id: analyzeTestResults
-          if: success() || failure()
-          uses: microsoft/AL-Go/Actions/AnalyzeTests@31944622373d473cf9b727a320333e170290265b
+          if: (success() || failure()) && env.doNotRunTests == 'False'
+          uses: microsoft/AL-Go/Actions/AnalyzeTests@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
@@ -249,7 +248,7 @@ jobs:
 
         - name: Cleanup
           if: always()
-          uses: microsoft/AL-Go/Actions/PipelineCleanup@31944622373d473cf9b727a320333e170290265b
+          uses: microsoft/AL-Go/Actions/PipelineCleanup@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
           with:
             shell: ${{ inputs.shell }}
             parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}

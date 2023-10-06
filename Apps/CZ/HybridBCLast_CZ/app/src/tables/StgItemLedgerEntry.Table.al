@@ -442,9 +442,9 @@ table 11715 "Stg Item Ledger Entry"
             TableRelation = IF ("Source Type" = CONST(Customer)) Customer
             ELSE
             IF ("Source Type" = CONST(Vendor)) Vendor;
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(11791; "Source No. 3"; Code[20])
         {
@@ -452,37 +452,35 @@ table 11715 "Stg Item Ledger Entry"
             TableRelation = IF ("Source Type" = CONST(Customer)) "Ship-to Address".Code WHERE("Customer No." = FIELD("Source No."))
             ELSE
             IF ("Source Type" = CONST(Vendor)) "Order Address".Code WHERE("Vendor No." = FIELD("Source No."));
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(11793; "Source Code"; Code[10])
         {
             Caption = 'Source Code';
             TableRelation = "Source Code";
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(11794; "Reason Code"; Code[10])
         {
             Caption = 'Reason Code';
             TableRelation = "Reason Code";
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(11795; "User ID"; Code[50])
         {
             Caption = 'User ID';
             DataClassification = EndUserIdentifiableInformation;
             TableRelation = User."User Name";
-            //This property is currently not supported
-            //TestTableRelation = false;
             ValidateTableRelation = false;
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(31043; "FA No."; Code[20])
         {
@@ -511,23 +509,23 @@ table 11715 "Stg Item Ledger Entry"
         {
             Caption = 'Tariff No.';
             TableRelation = "Tariff Number";
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(31062; "Statistic Indication"; Code[10])
         {
             Caption = 'Statistic Indication';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(31063; "Physical Transfer"; Boolean)
         {
             Caption = 'Physical Transfer';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(31065; "Shipment Method Code"; Code[10])
         {
@@ -538,25 +536,25 @@ table 11715 "Stg Item Ledger Entry"
         {
             Caption = 'Net Weight';
             DecimalPlaces = 0 : 5;
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(31068; "Country/Region of Origin Code"; Code[10])
         {
             Caption = 'Country/Region of Origin Code';
             TableRelation = "Country/Region";
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(31074; "Currency Code"; Code[10])
         {
             Caption = 'Currency Code';
             TableRelation = Currency;
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(31075; "Currency Factor"; Decimal)
         {
@@ -564,16 +562,16 @@ table 11715 "Stg Item Ledger Entry"
             DecimalPlaces = 0 : 15;
             Editable = false;
             MinValue = 0;
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
         field(31076; "Intrastat Transaction"; Boolean)
         {
             Caption = 'Intrastat Transaction';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
-            ObsoleteTag = '18.0';
+            ObsoleteTag = '23.0';
         }
     }
 

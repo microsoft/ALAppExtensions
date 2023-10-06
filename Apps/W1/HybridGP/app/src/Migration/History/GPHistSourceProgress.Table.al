@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 41004 "GP Hist. Source Progress"
 {
     Caption = 'GP Hist. Source Progress';

@@ -1,9 +1,17 @@
 table 1361 "MS - WorldPay Std. Template"
 {
     Caption = 'WorldPay Payments Standard Account Template';
+    ReplicateData = false;
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+#if not CLEAN23
     DrillDownPageID = 1361;
     LookupPageID = 1361;
-    ReplicateData = false;
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '26.0';
+#endif
 
     fields
     {
@@ -45,7 +53,7 @@ table 1361 "MS - WorldPay Std. Template"
     {
         fieldgroup(Description; Description) { }
     }
-
+#if not CLEAN23
     var
         UpdatingWorldPayLogoFailedTxt: Label 'Cannot update the WorldPay logo.';
         WorldPayContextTxt: Label 'WorldPay Standard';
@@ -150,5 +158,6 @@ table 1361 "MS - WorldPay Std. Template"
         Logo.CREATEOUTSTREAM(LogoOutStream);
         exit(COPYSTREAM(LogoOutStream, ResponseInStream));
     end;
+#endif
 }
 

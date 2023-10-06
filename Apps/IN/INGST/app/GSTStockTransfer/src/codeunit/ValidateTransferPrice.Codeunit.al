@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.StockTransfer;
+
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using Microsoft.Inventory.Transfer;
+
 codeunit 18393 "Validate Transfer Price"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Event Library", 'OnAddUseCaseEventstoLibrary', '', false, false)]
@@ -16,7 +26,7 @@ codeunit 18393 "Validate Transfer Price"
         TaxCaseExecution.HandleEvent('OnAfterTransferPrirce', Rec, '', 1);
     end;
 
-   [EventSubscriber(ObjectType::Table, Database::"Tax Transaction Value", 'OnBeforeTableFilterApplied', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Tax Transaction Value", 'OnBeforeTableFilterApplied', '', false, false)]
     local procedure OnBeforeTableFilterApplied(var TaxRecordID: RecordID; LineNoFilter: Integer; DocumentNoFilter: Text; TableIDFilter: Integer)
     var
         TransferLine: Record "Transfer Line";

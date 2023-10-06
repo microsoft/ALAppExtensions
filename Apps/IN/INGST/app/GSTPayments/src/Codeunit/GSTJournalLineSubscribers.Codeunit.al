@@ -1,3 +1,31 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Payments;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.PostingHandler;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Posting;
+using Microsoft.Sales.Receivables;
+
 codeunit 18243 "GST Journal Line Subscribers"
 {
     var
@@ -252,7 +280,7 @@ codeunit 18243 "GST Journal Line Subscribers"
         end;
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostBalancingEntry', '', false, false)]
     local procedure OnBeforePostBalancingEntry(var GenJnlLine: Record "Gen. Journal Line"; var PurchHeader: Record "Purchase Header"; var TotalPurchLine: Record "Purchase Line"; var TotalPurchLineLCY: Record "Purchase Line"; PreviewMode: Boolean; CommitIsSupressed: Boolean; var VendLedgEntry: Record "Vendor Ledger Entry")
     var
@@ -312,7 +340,7 @@ codeunit 18243 "GST Journal Line Subscribers"
                     end;
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostBalancingEntry', '', false, false)]
     local procedure OnBeforePostBalancingEntryforSales(var GenJnlLine: Record "Gen. Journal Line"; SalesHeader: Record "Sales Header")
     var

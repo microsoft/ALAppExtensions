@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 table 40026 "Replication Run Completed Arg"
 {
     DataClassification = SystemMetadata;

@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Table Shpfy Order Line (ID 30119).
 /// </summary>
@@ -169,6 +173,17 @@ table 30119 "Shpfy Order Line"
             MaintainSiftIndex = true;
         }
     }
+
+    trigger OnDelete()
+    var
+        DataCapture: Record "Shpfy Data Capture";
+    begin
+        DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
+        DataCapture.SetRange("Linked To Table", Database::"Shpfy Order Line");
+        DataCapture.SetRange("Linked To Id", Rec.SystemId);
+        if not DataCapture.IsEmpty then
+            DataCapture.DeleteAll(false);
+    end;
 
     /// <summary> 
     /// Error If Sales Order Exists.

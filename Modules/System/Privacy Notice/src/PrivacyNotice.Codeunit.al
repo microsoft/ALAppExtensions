@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Privacy;
+
 /// <summary>
 /// This codeunit provides an interface for creating, showing and approving Privacy Notices
 /// </summary>

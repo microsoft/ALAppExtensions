@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Sends a test email to a specified account.
 /// </summary>
@@ -45,11 +47,6 @@ codeunit 8887 "Email Test Mail"
             else
                 exit;
 
-#if not CLEAN17
-#pragma warning disable AL0432
-        Email.OnGetTestEmailBody(Rec.Connector, EmailBody);
-#pragma warning restore        
-#endif
         Email.OnGetBodyForTestEmail(Rec.Connector, Rec."Account Id", EmailBody);
 
         if EmailBody = '' then

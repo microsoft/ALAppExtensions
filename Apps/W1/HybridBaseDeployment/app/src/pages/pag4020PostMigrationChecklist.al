@@ -1,3 +1,10 @@
+namespace Microsoft.DataMigration;
+
+using System.Environment;
+using System.Security.User;
+using Microsoft.Integration.D365Sales;
+
+
 page 4020 "Post Migration Checklist"
 {
     Caption = 'Post Migration Checklist';
@@ -79,7 +86,7 @@ page 4020 "Post Migration Checklist"
                 group(Checkbox)
                 {
                     Caption = 'Mark Complete';
-                    field(Help; Help)
+                    field(Help; Rec.Help)
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
@@ -87,11 +94,11 @@ page 4020 "Post Migration Checklist"
                         var
                             PostMigChecklist: Record "Post Migration Checklist";
                         begin
-                            PostMigChecklist.ModifyAll(Help, Help);
+                            PostMigChecklist.ModifyAll(Help, Rec.Help);
                             CurrPage.Update(false);
                         end;
                     }
-                    field("Disable Intelligent Cloud"; "Disable Intelligent Cloud")
+                    field("Disable Intelligent Cloud"; Rec."Disable Intelligent Cloud")
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
@@ -99,11 +106,11 @@ page 4020 "Post Migration Checklist"
                         var
                             PostMigChecklist: Record "Post Migration Checklist";
                         begin
-                            PostMigChecklist.ModifyAll("Disable Intelligent Cloud", "Disable Intelligent Cloud");
+                            PostMigChecklist.ModifyAll("Disable Intelligent Cloud", Rec."Disable Intelligent Cloud");
                             CurrPage.Update(false);
                         end;
                     }
-                    field("Users Setup"; "Users Setup")
+                    field("Users Setup"; Rec."Users Setup")
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
@@ -111,11 +118,11 @@ page 4020 "Post Migration Checklist"
                         var
                             PostMigChecklist: Record "Post Migration Checklist";
                         begin
-                            PostMigChecklist.ModifyAll("Users Setup", "Users Setup");
+                            PostMigChecklist.ModifyAll("Users Setup", Rec."Users Setup");
                             CurrPage.Update(false);
                         end;
                     }
-                    field("Define User Mappings"; "Define User Mappings")
+                    field("Define User Mappings"; Rec."Define User Mappings")
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
@@ -123,11 +130,11 @@ page 4020 "Post Migration Checklist"
                         var
                             PostMigChecklist: Record "Post Migration Checklist";
                         begin
-                            PostMigChecklist.ModifyAll("Define User Mappings", "Define User Mappings");
+                            PostMigChecklist.ModifyAll("Define User Mappings", Rec."Define User Mappings");
                             CurrPage.Update(false);
                         end;
                     }
-                    field("D365 Sales"; "D365 Sales")
+                    field("D365 Sales"; Rec."D365 Sales")
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
@@ -135,7 +142,7 @@ page 4020 "Post Migration Checklist"
                         var
                             PostMigChecklist: Record "Post Migration Checklist";
                         begin
-                            PostMigChecklist.ModifyAll("D365 Sales", "D365 Sales");
+                            PostMigChecklist.ModifyAll("D365 Sales", Rec."D365 Sales");
                             CurrPage.Update(false);
                         end;
                     }
@@ -238,7 +245,7 @@ page 4020 "Post Migration Checklist"
                     PostMigrationChecklist.Get(PostMigrationChecklistWork."Company Name");
                     PostMigrationChecklist.Delete();
                 end else
-                    If HybridCompany.Replicate = false then begin
+                    if HybridCompany.Replicate = false then begin
                         PostMigrationChecklist.Get(PostMigrationChecklistWork."Company Name");
                         PostMigrationChecklist.Delete();
                     end;
@@ -297,3 +304,4 @@ page 4020 "Post Migration Checklist"
         ResetSalesConnectionInstructionsTxt: Label 'You must choose actions ''Rebuild Coupling Table'' and ''Use Certificate Authentication'' on the page ''Microsoft Dynamics 365 Connection Setup'' to complete the setup of the connection to Dynamics 365 Sales.\Choose Yes to open the setup page.';
 
 }
+

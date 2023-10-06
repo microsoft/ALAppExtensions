@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
+
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.AuditCodes;
+
 page 18747 "TDS Adjustment Journal"
 {
     AutoSplitKey = true;

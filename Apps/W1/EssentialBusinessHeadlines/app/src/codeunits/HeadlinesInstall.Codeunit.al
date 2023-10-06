@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Privacy;
+
 codeunit 1436 "Headlines Install"
 {
     Subtype = install;

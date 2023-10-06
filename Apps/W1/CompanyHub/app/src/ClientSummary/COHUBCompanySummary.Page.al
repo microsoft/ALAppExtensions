@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 page 1152 "COHUB Company Summary"
 {
     Caption = 'Summary';
@@ -501,7 +503,7 @@ page 1152 "COHUB Company Summary"
         Indentation := Rec.Indent;
         SetStyleDescriptions();
         SetUserTasksKPI();
-        CalcFields("Currency Symbol");
+        Rec.CalcFields("Currency Symbol");
         if not IsGroupEntry(Rec) then
             if not COHUBEnviroment.Get(Rec."Enviroment No.") then
                 Rec.Delete()

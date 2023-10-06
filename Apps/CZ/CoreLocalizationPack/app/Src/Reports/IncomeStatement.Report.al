@@ -456,7 +456,7 @@ report 11795 "Income Statement CZL"
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Business Unit Filter';
-                            LookupPageID = "Business Unit List";
+                            LookupPageId = "Business Unit List";
                             TableRelation = "Business Unit";
                             ToolTip = 'Specifies a business unit filter for the report.';
 
@@ -708,15 +708,10 @@ report 11795 "Income Statement CZL"
         Underline_control: Boolean;
         PageGroupNo: Integer;
         NextPageGroupNo: Integer;
-        [InDataSet]
         Dim1FilterEnable: Boolean;
-        [InDataSet]
         Dim2FilterEnable: Boolean;
-        [InDataSet]
         Dim3FilterEnable: Boolean;
-        [InDataSet]
         Dim4FilterEnable: Boolean;
-        [InDataSet]
         AccSchedNameEditable: Boolean;
         LineShadowed: Boolean;
         LineSkipped: Boolean;
@@ -864,9 +859,11 @@ report 11795 "Income Statement CZL"
             Dim4Filter := Dim4FilterHidden;
         end;
 #if not CLEAN21
+#pragma warning disable AL0432
         if ColumnLayoutName = '' then
             if AccScheduleName.Get(AccSchedName) then
                 ColumnLayoutName := AccScheduleName."Default Column Layout";
+#pragma warning restore AL0432
 #endif
     end;
 
@@ -875,8 +872,10 @@ report 11795 "Income Statement CZL"
         AccSchedManagement.CheckName(AccSchedName);
         AccScheduleName.Get(AccSchedName);
 #if not CLEAN21
+#pragma warning disable AL0432
         if AccScheduleName."Default Column Layout" <> '' then
             ColumnLayoutName := AccScheduleName."Default Column Layout";
+#pragma warning restore AL0432
 #endif
         if AccScheduleName."Analysis View Name" <> '' then
             AnalysisView.Get(AccScheduleName."Analysis View Name")

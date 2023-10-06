@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Telemetry;
+
 /// <summary>
 /// This page shows the retention policy setup.
 /// </summary>
@@ -79,7 +83,7 @@ page 3901 "Retention Policy Setup Card"
                 {
                     ApplicationArea = All;
                     Caption = 'Expired Records';
-                    ToolTip = 'Displays the number of expired records.';
+                    ToolTip = 'Specifies the number of expired records.';
                     Editable = false;
                     StyleExpr = ExpiredRecordCountStyleTxt;
                 }
@@ -87,7 +91,7 @@ page 3901 "Retention Policy Setup Card"
                 {
                     ApplicationArea = All;
                     Caption = 'Expired Records Expiration Date';
-                    ToolTip = 'Displays the earliest expiration date for which there are more expired records than the maximum to be deleted in a single run.';
+                    ToolTip = 'Specifies the earliest expiration date for which there are more expired records than the maximum to be deleted in a single run.';
                     Editable = false;
                     Visible = ShowExpiredRecordExpirationDate;
                     StyleExpr = ExpiredRecordCountStyleTxt;
@@ -117,8 +121,8 @@ page 3901 "Retention Policy Setup Card"
             {
                 ApplicationArea = All;
                 Caption = 'Record Retention Policy', Comment = 'Record as in ''a record in a table''.';
-                SubPageLink = "Table ID" = Field("Table ID");
-                Visible = NOT Rec."Apply to all records";
+                SubPageLink = "Table ID" = field("Table ID");
+                Visible = not Rec."Apply to all records";
             }
         }
     }
@@ -219,7 +223,7 @@ page 3901 "Retention Policy Setup Card"
         ReadPermissionNotification: Notification;
         PageBackgroundParameters: Dictionary of [Text, Text];
     begin
-        if not RetentionPolicySetup.GetBySystemId(SystemId) then
+        if not RetentionPolicySetup.GetBySystemId(Rec.SystemId) then
             exit;
 
         if not RetentionPolicySetupImpl.TableExists(Rec."Table Id") then

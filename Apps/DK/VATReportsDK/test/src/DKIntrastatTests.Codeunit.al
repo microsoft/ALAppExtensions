@@ -1,7 +1,11 @@
+#if not CLEAN22
 codeunit 148042 "DK Intrastat Tests"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    ObsoleteReason = 'Intrastat was moved to a separate extension.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
 
     trigger OnRun();
     begin
@@ -48,3 +52,4 @@ codeunit 148042 "DK Intrastat Tests"
         IntrastatMakeDiskTaxAuth.Cancel().Invoke();
     end;
 }
+#endif

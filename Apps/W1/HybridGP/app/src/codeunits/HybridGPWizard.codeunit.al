@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+using System.Environment;
+
 codeunit 4015 "Hybrid GP Wizard"
 {
     var

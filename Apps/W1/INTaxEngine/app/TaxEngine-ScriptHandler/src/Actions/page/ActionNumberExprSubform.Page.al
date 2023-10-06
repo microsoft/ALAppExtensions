@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.ScriptHandler;
+
+using Microsoft.Finance.TaxEngine.Core;
+
 page 20176 "Action Number Expr. Subform"
 {
     Caption = 'Tokens';
@@ -18,13 +26,13 @@ page 20176 "Action Number Expr. Subform"
                 {
                     Editable = false;
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specified the Token Name from expression.';
+                    ToolTip = 'Specifies the Token Name from expression.';
                 }
                 field(ValueVariable; ValueVariable2)
                 {
                     Caption = 'Value';
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specified the value of token.';
+                    ToolTip = 'Specifies the value of token.';
                     trigger OnValidate();
                     begin
                         if LookupMgmt.ConvertLookupToConstant(

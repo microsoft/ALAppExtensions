@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Telemetry;
+
 codeunit 8709 "Telemetry Loggers Impl."
 {
     Access = Internal;

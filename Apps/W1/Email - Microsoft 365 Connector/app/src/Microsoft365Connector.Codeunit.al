@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 codeunit 4503 "Microsoft 365 Connector" implements "Email Connector", "Default Email Rate Limit"
 {
     Access = Internal;

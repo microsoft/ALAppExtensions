@@ -1,3 +1,9 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.CRM.Outlook;
+using System.Environment;
+using System.Security.AccessControl;
+
 table 4003 "Intelligent Cloud Setup"
 {
     DataPerCompany = false;
@@ -136,12 +142,19 @@ table 4003 "Intelligent Cloud Setup"
             Description = 'Specifies the reason why the cloud migration was disabled.';
             OptionMembers = ,Completed,Paused,Abandoned;
             OptionCaption = ' ,Completed,Paused,Abandoned';
+            DataClassification = SystemMetadata;
         }
         field(25; "Use New UI"; Option)
         {
             Description = 'Specifies if the new UI should be used.';
             OptionMembers = Default,Yes,No;
             OptionCaption = 'Default,Yes,No';
+            DataClassification = SystemMetadata;
+        }
+        field(26; "Keep User Permissions"; Boolean)
+        {
+            Description = 'Specifies if the permissions should be removed from users.';
+            DataClassification = SystemMetadata;
         }
     }
 
@@ -225,7 +238,7 @@ table 4003 "Intelligent Cloud Setup"
                 Bitmap := CopyStr(FORMAT(Monday, 1, '<Number>') + FORMAT(Tuesday, 1, '<Number>') + FORMAT(Wednesday, 1, '<Number>') + FORMAT(Thursday, 1, '<Number>') + FORMAT(Friday, 1, '<Number>') + FORMAT(Saturday, 1, '<Number>') + FORMAT(Sunday, 1, '<Number>'), 1, 7);
         end;
 
-        // If the UTC time is tomorrow, then rotate the bitmap right with carry
+        // if the UTC time is tomorrow, then rotate the bitmap right with carry
         if Utc then begin
             TimeToRunUtc := OutlookSynchTypeConv.LocalDT2UTC(CreateDateTime(Today(), "Time to Run"));
             if (DT2Date(TimeToRunUtc) > Today()) then

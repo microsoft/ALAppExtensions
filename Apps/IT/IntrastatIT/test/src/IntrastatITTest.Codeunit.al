@@ -783,7 +783,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithItemChargeOnStartDate()
     var
@@ -810,7 +810,7 @@ codeunit 139511 "Intrastat IT Test"
         LibraryPatterns.ASSIGNPurchChargeToPurchaseLine(PurchaseHeader, PurchaseLine, 1, LibraryRandom.RandDecInRange(100, 200, 2));
 
         // [GIVEN] Purchase Order is Received and Invoiced on 01.Jan
-        DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
         // [WHEN] Run Get Entries on Intrastat Report with "Show item charge entries" options set to TRUE
         // [THEN] No Intrastat Report Lines should be created for Item "X"

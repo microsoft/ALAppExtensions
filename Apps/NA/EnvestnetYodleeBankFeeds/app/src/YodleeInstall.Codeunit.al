@@ -1,3 +1,10 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Privacy;
+using System.Upgrade;
+
 codeunit 1454 "Yodlee Install"
 {
     Subtype = install;

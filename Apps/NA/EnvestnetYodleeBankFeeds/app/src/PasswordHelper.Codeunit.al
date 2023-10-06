@@ -1,4 +1,9 @@
-Codeunit 1267 "Password Helper"
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using System.Utilities;
+using System.Security.AccessControl;
+
+codeunit 1267 "Password Helper"
 {
     procedure GeneratePassword(Length: Integer): Text;
     var

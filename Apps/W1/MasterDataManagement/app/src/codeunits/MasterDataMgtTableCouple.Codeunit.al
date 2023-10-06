@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+
 codeunit 7235 "Master Data Mgt. Table Couple"
 {
     TableNo = "Integration Table Mapping";
@@ -11,7 +15,7 @@ codeunit 7235 "Master Data Mgt. Table Couple"
         Handled: Boolean;
     begin
         OnBeforeRun(Rec, Handled);
-        If Handled then
+        if Handled then
             exit;
 
         PerformScheduledCoupling(Rec);

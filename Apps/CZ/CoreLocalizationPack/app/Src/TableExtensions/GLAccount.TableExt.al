@@ -55,7 +55,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
             Caption = 'Net Change ACY (VAT Date)';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Sum("G/L Entry"."Additional-Currency Amount" where("G/L Account No." = field("No."),
+            CalcFormula = sum("G/L Entry"."Additional-Currency Amount" where("G/L Account No." = field("No."),
                                                                               "G/L Account No." = field(filter(Totaling)),
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
@@ -69,7 +69,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
             Caption = 'Debit Amount ACY (VAT Date)';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Sum("G/L Entry"."Add.-Currency Debit Amount" where("G/L Account No." = field("No."),
+            CalcFormula = sum("G/L Entry"."Add.-Currency Debit Amount" where("G/L Account No." = field("No."),
                                                                               "G/L Account No." = field(filter(Totaling)),
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
@@ -83,7 +83,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
             Caption = 'Credit Amount ACY (VAT Date)';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Sum("G/L Entry"."Add.-Currency Debit Amount" where("G/L Account No." = field("No."),
+            CalcFormula = sum("G/L Entry"."Add.-Currency Debit Amount" where("G/L Account No." = field("No."),
                                                                               "G/L Account No." = field(filter(Totaling)),
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),

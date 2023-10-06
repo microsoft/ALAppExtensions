@@ -3,14 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 9018 "Azure AD Plan - View"
+namespace System.Azure.Identity;
+
+permissionset 9018 "Azure AD Plan - View"
 {
     Access = Public;
     Assignable = false;
 
-    IncludedPermissionSets = "Azure AD Plan - Read",
-                             "Upgrade Tags - View",
-                             "Telemetry - Exec";
+    IncludedPermissionSets = "Azure AD Plan - Read";
 
     Permissions = tabledata Plan = imd,
                   tabledata "User Plan" = imd;

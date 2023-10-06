@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Document;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Media;
+using System.Privacy;
+using System.Upgrade;
+
 codeunit 11517 "Swiss QR-Bill Install"
 {
     Subtype = Install;

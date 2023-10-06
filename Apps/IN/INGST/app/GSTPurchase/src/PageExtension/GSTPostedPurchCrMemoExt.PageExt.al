@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.History;
+
 pageextension 18080 "GST Posted Purch. Cr. Memo Ext" extends "Posted Purchase Credit Memo"
 {
     layout

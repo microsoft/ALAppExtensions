@@ -1,4 +1,28 @@
-﻿report 4810 "Intrastat Report Get Lines"
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Ledger;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Service.History;
+
+report 4810 "Intrastat Report Get Lines"
 {
     Caption = 'Intrastat Report Get Lines';
     ProcessingOnly = true;
@@ -207,6 +231,8 @@
                             CurrReport.Skip();
                         if not HasCrossedBorder("Item Ledger Entry") then
                             CurrReport.Skip();
+                        if SkipValueEntry("Value Entry", "Item Ledger Entry") then
+                            CurrReport.Skip();
                         InsertValueEntryLine();
                     end;
                 end;
@@ -344,6 +370,7 @@
             AddCurrencyFactor :=
                 CurrExchRate.ExchangeRate(EndDate, GLSetup."Additional Reporting Currency");
         end;
+        AmtRoundingDirection := GetAmtRoundingDirection();
     end;
 
     trigger OnPostReport()
@@ -383,6 +410,7 @@
         PricesIncludingVATErr: Label 'Prices including VAT cannot be calculated when %1 is %2.', Comment = '%1 - VAT Calculation Type caption, %2 - "VAT Calculation Type"';
         LinesDeletionConfirmationQst: Label 'The existing lines for Intrastat report %1 will be deleted. Do you want to continue?', Comment = '%1 - Intrastat Report number';
         NoLinesMsg: Label 'No lines are suggested for the period. Please check %1.', Comment = '%1 - Intrastat Report Setup caption';
+        DefaultRoundingDirectionTok: Label '=', Locked = true;
         CostRegulationEnable: Boolean;
 
     protected var
@@ -393,6 +421,7 @@
         SkipZeroAmounts: Boolean;
         ShowItemCharges: Boolean;
         SkipNotInvoicedEntries: Boolean;
+        AmtRoundingDirection: Text[1];
 
 
     procedure SetIntrastatReportHeader(NewIntrastatReportHeader: Record "Intrastat Report Header")
@@ -428,9 +457,9 @@
             IntrastatReportLine."Indirect Cost" := Abs(TotalAmt + TotalIndirectCost) - Abs(TotalAmt);
 
         if IntrastatReportHeader."Amounts in Add. Currency" then
-            IntrastatReportLine.Amount := Round(Abs(TotalAmt), AddCurrency."Amount Rounding Precision")
+            IntrastatReportLine.Amount := Round(Abs(TotalAmt), AddCurrency."Amount Rounding Precision", AmtRoundingDirection)
         else
-            IntrastatReportLine.Amount := Round(Abs(TotalAmt), GLSetup."Amount Rounding Precision");
+            IntrastatReportLine.Amount := Round(Abs(TotalAmt), GLSetup."Amount Rounding Precision", AmtRoundingDirection);
 
         IntrastatReportLine."Currency Code" := IntrastatReportMgt.GetOriginalCurrency("Item Ledger Entry");
         if IntrastatReportLine."Currency Code" <> '' then begin
@@ -448,7 +477,8 @@
                                 GLSetup."Additional Reporting Currency",
                                 IntrastatReportLine."Currency Code",
                                 TotalAmt)),
-                        AmtRoundingPrecision)
+                        AmtRoundingPrecision,
+                        AmtRoundingDirection)
             else
                 IntrastatReportLine."Source Currency Amount" :=
                     Round(
@@ -460,7 +490,8 @@
                                 CurrExchRate.ExchangeRate(
                                     IntrastatReportLine.Date,
                                     IntrastatReportLine."Currency Code"))),
-                        AmtRoundingPrecision)
+                        AmtRoundingPrecision,
+                        AmtRoundingDirection)
         end else
             IntrastatReportLine."Source Currency Amount" := IntrastatReportLine.Amount;
 
@@ -515,12 +546,14 @@
             IntrastatReportLine.Amount :=
                 Round(
                     Abs("Job Ledger Entry"."Add.-Currency Line Amount"),
-                    AddCurrency."Amount Rounding Precision")
+                    AddCurrency."Amount Rounding Precision",
+                    AmtRoundingDirection)
         else
             IntrastatReportLine.Amount :=
                 Round(
                     Abs("Job Ledger Entry"."Line Amount (LCY)"),
-                    GLSetup."Amount Rounding Precision");
+                    GLSetup."Amount Rounding Precision",
+                    AmtRoundingDirection);
 
         IntrastatReportLine."Currency Code" := "Job Ledger Entry"."Currency Code";
 
@@ -532,7 +565,8 @@
         IntrastatReportLine."Source Currency Amount" :=
             Round(
                 Abs("Job Ledger Entry"."Line Amount"),
-                AmtRoundingPrecision);
+                AmtRoundingPrecision,
+                AmtRoundingDirection);
 
         IntrastatReportLine."Source Entry No." := "Job Ledger Entry"."Entry No.";
         IntrastatReportLine."Document No." := "Job Ledger Entry"."Document No.";
@@ -652,12 +686,14 @@
                         CurrExchRate.ExchangeAmtLCYToFCY(
                             IntrastatReportLine.Date, GLSetup."Additional Reporting Currency",
                             "FA Ledger Entry"."Amount (LCY)", AddCurrencyFactor)),
-                    AddCurrency."Amount Rounding Precision")
+                    AddCurrency."Amount Rounding Precision",
+                    AmtRoundingDirection)
         else
             IntrastatReportLine.Amount :=
                 Round(
                     Abs("FA Ledger Entry"."Amount (LCY)"),
-                    GLSetup."Amount Rounding Precision");
+                    GLSetup."Amount Rounding Precision",
+                    AmtRoundingDirection);
 
         IntrastatReportLine."Currency Code" := IntrastatReportMgt.GetOriginalCurrency("FA Ledger Entry");
         AmtRoundingPrecision := GLSetup."Amount Rounding Precision";
@@ -668,7 +704,8 @@
         IntrastatReportLine."Source Currency Amount" :=
             Round(
                 Abs("FA Ledger Entry".Amount),
-                AmtRoundingPrecision);
+                AmtRoundingPrecision,
+                AmtRoundingDirection);
 
         IntrastatReportLine."Source Entry No." := "FA Ledger Entry"."Entry No.";
 
@@ -781,6 +818,9 @@
                         if IsHandled then
                             exit(Result);
 
+                        if not IntrastatReportSetup."Include Drop Shipment" then
+                            exit(false);
+
                         if Country.Code in [CompanyInfo."Country/Region Code", ''] then
                             exit(false);
                         if ItemLedgEntry."Applies-to Entry" = 0 then begin
@@ -873,7 +913,7 @@
         IntrastatReportLine.Area := "Item Ledger Entry".Area;
         IntrastatReportLine."Transaction Specification" := "Item Ledger Entry"."Transaction Specification";
         IntrastatReportLine."Location Code" := "Item Ledger Entry"."Location Code";
-        IntrastatReportLine.Amount := Round(Abs("Value Entry"."Sales Amount (Actual)"), 1);
+        IntrastatReportLine.Amount := Round(Abs("Value Entry"."Sales Amount (Actual)"), 1, AmtRoundingDirection);
 
         SetJnlLineType(IntrastatReportLine, "Value Entry"."Document Type");
 
@@ -983,9 +1023,7 @@
         ValueEntry.SetRange("Item Ledger Entry No.", ItemLedgerEntry."Entry No.");
         if ValueEntry.FindSet() then
             repeat
-                if not ((ValueEntry."Item Charge No." <> '') and
-                        ((ValueEntry."Posting Date" > EndDate) or (ValueEntry."Posting Date" < StartDate)))
-                then begin
+                if not SkipValueEntry(ValueEntry, ItemLedgerEntry) then begin
                     TotalInvoicedQty += ValueEntry."Invoiced Quantity";
                     if not IntrastatReportHeader."Amounts in Add. Currency" then begin
                         if ValueEntry."Item Charge No." = '' then begin
@@ -1095,6 +1133,19 @@
         OnAfterCalculateTotals(ItemLedgerEntry, IntrastatReportHeader,
             TotalAmt, TotalCostAmt, TotalAmtExpected, TotalCostAmtExpected,
             TotalIndirectCost, TotalIndirectCostAmt, TotalIndirectCostExpected, TotalIndirectCostAmtExpected);
+    end;
+
+    local procedure SkipValueEntry(ValueEntry: Record "Value Entry"; ItemLedgerEntry: Record "Item Ledger Entry") IsSkipped: Boolean
+    begin
+        IsSkipped := (ValueEntry."Item Charge No." <> '') and
+            ((ValueEntry."Posting Date" > EndDate) or (ValueEntry."Posting Date" < StartDate));
+        OnAfterSkipValueEntry(StartDate, EndDate, ValueEntry, ItemLedgerEntry, IsSkipped);
+    end;
+
+    local procedure GetAmtRoundingDirection() Direction: Text[1]
+    begin
+        Direction := DefaultRoundingDirectionTok;
+        OnAfterGetAmtRoundingDirection(Direction);
     end;
 
     local procedure IsJobService(JobLedgEntry: Record "Job Ledger Entry"): Boolean
@@ -1279,6 +1330,16 @@
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitRequestPage(var IntrastatReportHeader: Record "Intrastat Report Header"; var AmountInclItemCharges: Boolean; var StartDate: Date; var EndDate: Date; var CostRegulationEnable: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSkipValueEntry(StartDate: Date; EndDate: Date; ValueEntry: Record "Value Entry"; ItemLedgerEntry: Record "Item Ledger Entry"; var IsSkipped: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAmtRoundingDirection(var Direction: Text[1]);
     begin
     end;
 }

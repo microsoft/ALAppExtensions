@@ -15,12 +15,12 @@ This example shows how to use the `CreateAuthorizationCode()` function when savi
         SharePointFile: Record "SharePoint File";
         SharePointClient: Codeunit "SharePoint Client";
         SaveFailedErr: Label 'Save to SharePoint failed.\ErrorMessage: %1\HttpRetryAfter: %2\HttpStatusCode: %3\ResponseReasonPhrase: %4', Comment = '%1=GetErrorMessage; %2=GetHttpRetryAfter; %3=GetHttpStatusCode; %4=GetResponseReasonPhrase';
-        AadTenantId: Text;
+        EntraTenantId: Text;
         InStream: InStream;
         HttpDiagnostics: Interface "HTTP Diagnostics";
     begin
-        AadTenantId := GetAadTenantNameFromBaseUrl(BaseUrl);
-        SharePointClient.Initialize(BaseUrl, GetSharePointAuthorization(AadTenantId));
+        EntraTenantId := GetEntraTenantNameFromBaseUrl(BaseUrl);
+        SharePointClient.Initialize(BaseUrl, GetSharePointAuthorization(EntraTenantId));
         InStream := TempBlob.CreateInStream();
         if not SharePointClient.AddFileToFolder(LibraryAndFolderPath, Filename, InStream, SharePointFile) then begin
             HttpDiagnostics:= SharePointClient.GetDiagnostics();
@@ -28,7 +28,7 @@ This example shows how to use the `CreateAuthorizationCode()` function when savi
         end;
     end;
 
-    local procedure GetSharePointAuthorization(AadTenantId: Text): Interface "SharePoint Authorization"
+    local procedure GetSharePointAuthorization(EntraTenantId: Text): Interface "SharePoint Authorization"
     var
         SharePointAuth: Codeunit "SharePoint Auth.";
         Scopes: List of [Text];
@@ -38,10 +38,10 @@ This example shows how to use the `CreateAuthorizationCode()` function when savi
     begin
         GetAppRegistration(ClientId, ClientSecret);
         Scopes.Add('00000003-0000-0ff1-ce00-000000000000/.default');
-        exit(SharePointAuth.CreateAuthorizationCode(AadTenantId, ClientId, ClientSecret, Scopes));
+        exit(SharePointAuth.CreateAuthorizationCode(EntraTenantId, ClientId, ClientSecret, Scopes));
     end;
 
-    local procedure GetAadTenantNameFromBaseUrl(BaseUrl: Text): Text
+    local procedure GetEntraTenantNameFromBaseUrl(BaseUrl: Text): Text
     var
         Uri: Codeunit Uri;
         MySiteHostSuffixTxt: Label '-my.sharepoint.com', Locked = true;
@@ -86,10 +86,10 @@ Creates an authorization mechanism with authentication code.
 
 ```
     [NonDebuggable]
-    procedure CreateAuthorizationCode(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "SharePoint Authorization";
+    procedure CreateAuthorizationCode(EntraTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "SharePoint Authorization";
 ```
 
 ```
     [NonDebuggable]
-    procedure CreateAuthorizationCode(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scope: Text): Interface "SharePoint Authorization";
+    procedure CreateAuthorizationCode(EntraTenantId: Text; ClientId: Text; ClientSecret: Text; Scope: Text): Interface "SharePoint Authorization";
 ```

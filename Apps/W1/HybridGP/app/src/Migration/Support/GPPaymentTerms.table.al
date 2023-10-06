@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4026 "GP Payment Terms"
 {
     Extensible = false;

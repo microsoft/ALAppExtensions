@@ -8,11 +8,6 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -21,7 +16,6 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                 ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
             }
         }
-#endif
 #if not CLEAN22
         addafter("Posting Date")
         {
@@ -200,7 +194,9 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
 
     var
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
 #endif

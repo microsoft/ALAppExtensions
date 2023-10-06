@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Journal;
+
 enumextension 18548 "Voucher Enum" extends "Gen. Journal Template Type"
 {
 #pragma warning disable AS0013 - The IDs should have been in the range [18543..18597]

@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy ToArchivedProduct (ID 30186) implements Interface Shpfy IRemoveProductAction.
 /// </summary>

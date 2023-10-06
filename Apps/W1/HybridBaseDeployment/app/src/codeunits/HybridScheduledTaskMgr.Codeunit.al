@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Threading;
+
 codeunit 40028 "Hybrid Scheduled Task Mgr"
 {
     TableNo = "Job Queue Entry";

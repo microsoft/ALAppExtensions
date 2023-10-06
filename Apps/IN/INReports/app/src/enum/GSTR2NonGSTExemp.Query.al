@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Reports;
+
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+
 query 18000 GSTR2NonGSTExemp
 {
     QueryType = Normal;

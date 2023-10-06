@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Projects.Resources.Ledger;
+
+using Microsoft.Service.Reports;
+
 pageextension 5251 "Serv. Decl. Res. Ledg. Entries" extends "Resource Ledger Entries"
 {
     layout

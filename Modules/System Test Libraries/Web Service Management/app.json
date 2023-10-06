@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library with test objects for Web Service Management module",
     "description":  "Library with test objects for Web Service Management module",
-    "version":  "22.5.0.0",
+    "version":  "23.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "9bc20107-0927-405d-abec-ed877f67c2a3",
                              "name":  "Web Service Management",
                              "publisher":  "Microsoft",
-                             "version":  "22.5.0.0"
+                             "version":  "23.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
+    "platform":  "23.0.0.0",
     "idRanges":  [
                      {
                          "from":  139043,

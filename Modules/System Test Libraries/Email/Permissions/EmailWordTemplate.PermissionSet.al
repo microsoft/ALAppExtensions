@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Email;
+
+using System.Email;
+using System.Integration.Word;
+
 permissionset 134683 "Email Word Template"
 {
     Assignable = true;

@@ -275,11 +275,6 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Export VAT Ctrl. Dialog CZL" = X,
                   report "Export VAT Stmt. Dialog CZL" = X,
                   report "Finance Charge Memo CZL" = X,
-#if not CLEAN20
-#pragma warning disable AL0432
-                  report "Finance Charge Memo MIR CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "General Journal CZL" = X,
                   report "General Journal - Test CZL" = X,
                   report "General Ledger CZL" = X,
@@ -307,6 +302,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Open Cust. Entries to Date CZL" = X,
                   report "Open Vend. Entries to Date CZL" = X,
                   report "Phys. Inventory Document CZL" = X,
+                  report "Posted Direct Transfer CZL" = X,
                   report "Posted Inventory Document CZL" = X,
                   report "Posted Inventory Receipt CZL" = X,
                   report "Posted Inventory Shipment CZL" = X,
@@ -317,11 +313,6 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Quantity Shipped Check CZL" = X,
                   report "Recon. Bank Account Entry CZL" = X,
                   report "Reminder CZL" = X,
-#if not CLEAN20
-#pragma warning disable AL0432
-                  report "Reminder MIR CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "Sales Credit Memo CZL" = X,
                   report "Sales Invoice CZL" = X,
                   report "Sales Order Confirmation CZL" = X,
@@ -414,10 +405,10 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   table "VAT Statement Comment Line CZL" = X,
                   table "VIES Declaration Header CZL" = X,
                   table "VIES Declaration Line CZL" = X,
-                  xmlPort "Import Tariff Numbers CZL" = X,
-                  xmlPort "Unreliable Payer List CZL" = X,
-                  xmlPort "Unreliable Payer Status CZL" = X,
-                  xmlPort "VAT Control Report DPHKH1 CZL" = X,
-                  xmlPort "VAT Statement DPHDP3 CZL" = X,
-                  xmlPort "VIES Declaration CZL" = X;
+                  xmlport "Import Tariff Numbers CZL" = X,
+                  xmlport "Unreliable Payer List CZL" = X,
+                  xmlport "Unreliable Payer Status CZL" = X,
+                  xmlport "VAT Control Report DPHKH1 CZL" = X,
+                  xmlport "VAT Statement DPHDP3 CZL" = X,
+                  xmlport "VIES Declaration CZL" = X;
 }

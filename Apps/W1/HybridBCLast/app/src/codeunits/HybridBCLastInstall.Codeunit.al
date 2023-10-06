@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.BC;
+
 codeunit 4023 "Hybrid BC Last Install"
 {
     Subtype = Install;

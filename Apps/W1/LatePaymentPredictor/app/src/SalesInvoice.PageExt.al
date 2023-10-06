@@ -1,3 +1,6 @@
+namespace Microsoft.Finance.Latepayment;
+
+using Microsoft.Sales.Document;
 pageextension 1957 "LPP Sales Invoice" extends "Sales Invoice"
 {
     layout

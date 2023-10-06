@@ -1,3 +1,11 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Integration.Graph;
+using Microsoft.Finance.Dimension;
+
 page 20049 "APIV1 - JournalLines"
 {
     APIVersion = 'v1.0';
@@ -17,7 +25,7 @@ page 20049 "APIV1 - JournalLines"
             repeater(Control2)
             {
                 ShowCaption = false;
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id', Locked = true;
                     Editable = false;
@@ -32,71 +40,71 @@ page 20049 "APIV1 - JournalLines"
                         Error(CannotEditBatchNameErr);
                     end;
                 }
-                field(lineNumber; "Line No.")
+                field(lineNumber; Rec."Line No.")
                 {
                     Caption = 'LineNumber', Locked = true;
                 }
-                field(accountType; "Account Type")
+                field(accountType; Rec."Account Type")
                 {
                     Caption = 'AccountType', Locked = true;
                 }
-                field(accountId; "Account Id")
+                field(accountId; Rec."Account Id")
                 {
                     Caption = 'AccountId', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        if "Account Id" = BlankGUID then begin
-                            "Account No." := '';
+                        if Rec."Account Id" = BlankGUID then begin
+                            Rec."Account No." := '';
                             exit;
                         end;
-                        if "Account Type" = "Account Type"::"G/L Account" then begin
-                            if not GLAccount.GetBySystemId("Account Id") then
+                        if Rec."Account Type" = Rec."Account Type"::"G/L Account" then begin
+                            if not GLAccount.GetBySystemId(Rec."Account Id") then
                                 Error(AccountIdDoesNotMatchAnAccountErr);
-                            "Account No." := GLAccount."No.";
+                            Rec."Account No." := GLAccount."No.";
                         end;
-                        if "Account Type" = "Account Type"::"Bank Account" then
-                            if BankAccount.GetBySystemId("Account Id") then
-                                "Account No." := BankAccount."No."
+                        if Rec."Account Type" = Rec."Account Type"::"Bank Account" then
+                            if BankAccount.GetBySystemId(Rec."Account Id") then
+                                Rec."Account No." := BankAccount."No."
                             else
                                 Error(AccountIdDoesNotMatchAnAccountErr);
                     end;
                 }
-                field(accountNumber; "Account No.")
+                field(accountNumber; Rec."Account No.")
                 {
                     Caption = 'AccountNumber', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        case "Account Type" of
-                            "Account Type"::"G/L Account":
+                        case Rec."Account Type" of
+                            Rec."Account Type"::"G/L Account":
                                 UpdateAccountIdForGLAccount();
-                            "Account Type"::"Bank Account":
+                            Rec."Account Type"::"Bank Account":
                                 UpdateAccountIdForBankAccount();
                         end;
                     end;
                 }
-                field(postingDate; "Posting Date")
+                field(postingDate; Rec."Posting Date")
                 {
                     Caption = 'PostingDate', Locked = true;
                 }
-                field(documentNumber; "Document No.")
+                field(documentNumber; Rec."Document No.")
                 {
                     Caption = 'DocumentNumber', Locked = true;
                 }
-                field(externalDocumentNumber; "External Document No.")
+                field(externalDocumentNumber; Rec."External Document No.")
                 {
                     Caption = 'ExternalDocumentNumber', Locked = true;
                 }
-                field(amount; Amount)
+                field(amount; Rec.Amount)
                 {
                     Caption = 'Amount', Locked = true;
                 }
-                field(description; Description)
+                field(description; Rec.Description)
                 {
                     Caption = 'Description', Locked = true;
                 }
-                field(comment; Comment)
+                field(comment; Rec.Comment)
                 {
                     Caption = 'Comment', Locked = true;
                 }
@@ -113,7 +121,7 @@ page 20049 "APIV1 - JournalLines"
                         DimensionsSet := PreviousDimensionsJSON <> DimensionsJSON;
                     end;
                 }
-                field(lastModifiedDateTime; "Last Modified DateTime")
+                field(lastModifiedDateTime; Rec."Last Modified DateTime")
                 {
                     Caption = 'LastModifiedDateTime', Locked = true;
                     Editable = false;
@@ -123,7 +131,7 @@ page 20049 "APIV1 - JournalLines"
                     Caption = 'attachments', Locked = true;
                     EntityName = 'attachments';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = FIELD(SystemId);
+                    SubPageLink = "Document Id" = field(SystemId);
                 }
 
             }
@@ -170,14 +178,14 @@ page 20049 "APIV1 - JournalLines"
     var
         GenJournalLine: Record "Gen. Journal Line";
     begin
-        GenJournalLine.GetBySystemId(SystemId);
+        GenJournalLine.GetBySystemId(Rec.SystemId);
 
-        if "Line No." = GenJournalLine."Line No." then
-            Modify(true)
+        if Rec."Line No." = GenJournalLine."Line No." then
+            Rec.Modify(true)
         else begin
             GenJournalLine.TransferFields(Rec, false);
-            GenJournalLine.Rename("Journal Template Name", "Journal Batch Name", "Line No.");
-            TransferFields(GenJournalLine, true);
+            GenJournalLine.Rename(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Line No.");
+            Rec.TransferFields(GenJournalLine, true);
         end;
 
         UpdateDimensions(true);
@@ -192,8 +200,8 @@ page 20049 "APIV1 - JournalLines"
 
         ClearCalculatedFields();
 
-        "Document Type" := "Document Type"::" ";
-        "Account Type" := "Account Type"::"G/L Account";
+        Rec."Document Type" := Rec."Document Type"::" ";
+        Rec."Account Type" := Rec."Account Type"::"G/L Account";
     end;
 
     trigger OnOpenPage()
@@ -222,8 +230,8 @@ page 20049 "APIV1 - JournalLines"
     var
         GraphMgtComplexTypes: Codeunit "Graph Mgt - Complex Types";
     begin
-        GlobalJournalDisplayNameTxt := "Journal Batch Name";
-        DimensionsJSON := GraphMgtComplexTypes.GetDimensionsJSON("Dimension Set ID");
+        GlobalJournalDisplayNameTxt := Rec."Journal Batch Name";
+        DimensionsJSON := GraphMgtComplexTypes.GetDimensionsJSON(Rec."Dimension Set ID");
         PreviousDimensionsJSON := DimensionsJSON;
     end;
 
@@ -237,8 +245,8 @@ page 20049 "APIV1 - JournalLines"
 
     local procedure CheckFilters()
     begin
-        if (GetFilter("Journal Batch Id") = '') and
-           (GetFilter(SystemId) = '')
+        if (Rec.GetFilter("Journal Batch Id") = '') and
+           (Rec.GetFilter(SystemId) = '')
         then
             Error(FiltersNotSpecifiedErr);
     end;
@@ -254,55 +262,56 @@ page 20049 "APIV1 - JournalLines"
         if not DimensionsSet then
             exit;
 
-        GraphMgtComplexTypes.GetDimensionSetFromJSON(DimensionsJSON, "Dimension Set ID", JSONDimensionSetId);
-        DimSetIdArr[1] := "Dimension Set ID";
+        GraphMgtComplexTypes.GetDimensionSetFromJSON(DimensionsJSON, Rec."Dimension Set ID", JSONDimensionSetId);
+        DimSetIdArr[1] := Rec."Dimension Set ID";
         DimSetIdArr[2] := JSONDimensionSetId;
-        NewDimensionSetId := DimensionManagement.GetCombinedDimensionSetID(DimSetIdArr, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+        NewDimensionSetId := DimensionManagement.GetCombinedDimensionSetID(DimSetIdArr, Rec."Shortcut Dimension 1 Code", Rec."Shortcut Dimension 2 Code");
 
-        if "Dimension Set ID" <> NewDimensionSetId then begin
-            "Dimension Set ID" := NewDimensionSetId;
-            DimensionManagement.UpdateGlobalDimFromDimSetID(NewDimensionSetId, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+        if Rec."Dimension Set ID" <> NewDimensionSetId then begin
+            Rec."Dimension Set ID" := NewDimensionSetId;
+            DimensionManagement.UpdateGlobalDimFromDimSetID(NewDimensionSetId, Rec."Shortcut Dimension 1 Code", Rec."Shortcut Dimension 2 Code");
             if LineExists then
-                Modify();
+                Rec.Modify();
         end;
     end;
 
     local procedure UpdateAccountIdForGLAccount();
     begin
         if GLAccount."No." <> '' then begin
-            if GLAccount."No." <> "Account No." then
+            if GLAccount."No." <> Rec."Account No." then
                 Error(AccountValuesDontMatchErr);
             exit;
         end;
 
-        if "Account No." = '' then begin
-            "Account Id" := BlankGUID;
+        if Rec."Account No." = '' then begin
+            Rec."Account Id" := BlankGUID;
             exit;
         end;
 
-        if not GLAccount.Get("Account No.") then
+        if not GLAccount.Get(Rec."Account No.") then
             Error(AccountNumberDoesNotMatchAnAccountErr);
 
-        "Account Id" := GLAccount.SystemId;
+        Rec."Account Id" := GLAccount.SystemId;
     end;
 
     local procedure UpdateAccountIdForBankAccount();
     begin
         if BankAccount."No." <> '' then begin
-            if BankAccount."No." <> "Account No." then
+            if BankAccount."No." <> Rec."Account No." then
                 Error(AccountValuesDontMatchErr);
             exit;
         end;
 
-        if "Account No." = '' then begin
-            "Account Id" := BlankGUID;
+        if Rec."Account No." = '' then begin
+            Rec."Account Id" := BlankGUID;
             exit;
         end;
 
-        if not BankAccount.Get("Account No.") then
+        if not BankAccount.Get(Rec."Account No.") then
             Error(AccountNumberDoesNotMatchAnAccountErr);
 
-        "Account Id" := BankAccount.SystemId;
+        Rec."Account Id" := BankAccount.SystemId;
     end;
 }
+
 

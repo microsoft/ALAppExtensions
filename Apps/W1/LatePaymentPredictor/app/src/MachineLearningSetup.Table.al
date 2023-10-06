@@ -1,3 +1,9 @@
+namespace Microsoft.Finance.Latepayment;
+
+using System.AI;
+using System.Environment;
+using System.Utilities;
+using System.Privacy;
 table 1950 "LP Machine Learning Setup"
 {
     ReplicateData = false;

@@ -1,3 +1,11 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
+using Microsoft.Foundation.Address;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Posting;
+
 /// <summary>
 /// Codeunit Shpfy Process Order (ID 30166).
 /// </summary>

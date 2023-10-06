@@ -2,7 +2,7 @@ codeunit 31307 "Inv. Post. Buffer Handler CZL"
 {
     Access = Internal;
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnBeforeInvPostBufferModify', '', false, false)]
     local procedure UpdateExtendedAmountsOnBeforeInvPostBufferModify(var InvoicePostBuffer: Record "Invoice Post. Buffer"; FromInvoicePostBuffer: Record "Invoice Post. Buffer")

@@ -78,6 +78,9 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState.Insert();
     end;
 
+#if not CLEAN21
+#pragma warning disable AS0072
+    [Obsolete('Evaluation notification is removed', '21.0')]
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
@@ -89,7 +92,8 @@ codeunit 138075 "O365 Preview RC Notifications"
         SetLicenseState(TenantLicenseState.State::Evaluation, GetUtcNow);
         RoleCenterNotificationMgt.ShowEvaluationNotification();
     end;
-
+#pragma warning restore AS0072
+#endif
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
@@ -184,6 +188,9 @@ codeunit 138075 "O365 Preview RC Notifications"
         RoleCenterNotificationMgt.ShowPaidSuspendedNotification;
     end;
 
+#if not CLEAN21
+#pragma warning disable AS0072
+    [Obsolete('Evaluation notification is removed', '21.0')]
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
@@ -197,7 +204,8 @@ codeunit 138075 "O365 Preview RC Notifications"
         RoleCenterNotificationMgt.ShowEvaluationNotification();
         DisableSandbox;
     end;
-
+#pragma warning restore AS0072
+#endif
     [Test]
     [HandlerFunctions('SendSandboxNotificationHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]

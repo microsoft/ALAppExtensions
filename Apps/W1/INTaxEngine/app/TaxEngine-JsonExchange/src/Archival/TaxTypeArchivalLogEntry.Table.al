@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.JsonExchange;
+
+using System.Security.User;
+
 table 20362 "Tax Type Archival Log Entry"
 {
     DataClassification = EndUserIdentifiableInformation;

@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.JsonExchange;
+
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Utilities;
+
 page 20364 "Tax Engine Setup Wizard"
 {
     Caption = 'Tax Engine Setup';

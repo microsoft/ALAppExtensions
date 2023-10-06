@@ -1,7 +1,13 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Test.Reflection;
+
+using System.Environment;
+using System.TestLibraries.Reflection;
+using System.TestLibraries.Utilities;
 
 codeunit 132700 "Test Client Type Management"
 {

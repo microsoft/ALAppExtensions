@@ -808,6 +808,7 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
             trigger OnAfterGetRecord()
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Purch. Inv. Header");
                 FormatDocumentFields("Purch. Inv. Header");

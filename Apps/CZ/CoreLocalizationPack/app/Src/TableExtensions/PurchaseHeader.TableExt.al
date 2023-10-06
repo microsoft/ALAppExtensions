@@ -324,7 +324,9 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         ConfirmManagement: Codeunit "Confirm Management";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
         GlobalDocumentType: Enum "Purchase Document Type";
         GlobalDocumentNo: Code[20];
@@ -370,7 +372,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         if "Currency Code" = '' then
             exit;
         if not CurrencyExchangeRate.CurrencyExchangeRateExist("Currency Code", CurrencyDate) then
-            Error(CurrExchRateNotExistsErr)
+            Error(CurrExchRateNotExistsErr, CurrencyExchangeRate.TableCaption, "Currency Code", CurrencyDate);
     end;
 
     procedure UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()

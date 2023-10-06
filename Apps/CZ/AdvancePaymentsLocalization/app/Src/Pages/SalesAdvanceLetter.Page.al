@@ -159,19 +159,19 @@ page 31171 "Sales Advance Letter CZZ"
                     QuickEntry = false;
                     ToolTip = 'Specifies the name of the salesperson who is assigned to the customer.';
                 }
-                field("Responsibility Center"; Rec."Responsibility Center")
-                {
-                    AccessByPermission = tabledata "Responsibility Center" = R;
-                    ApplicationArea = Basic, Suite;
-                    Importance = Additional;
-                    ToolTip = 'Specifies the code of the responsibility center, such as a distribution hub, that is associated with the involved user, company, customer, or vendor.';
-                }
                 field(Status; Rec.Status)
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Promoted;
                     QuickEntry = false;
                     ToolTip = 'Specifies document status.';
+                }
+                field("Responsibility Center"; Rec."Responsibility Center")
+                {
+                    AccessByPermission = tabledata "Responsibility Center" = R;
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                    ToolTip = 'Specifies the code of the responsibility center, such as a distribution hub, that is associated with the involved user, company, customer, or vendor.';
                 }
                 field("Automatic Post VAT Document"; Rec."Automatic Post VAT Document")
                 {
@@ -782,6 +782,7 @@ page 31171 "Sales Advance Letter CZZ"
                 }
             }
 #if not CLEAN22
+#pragma warning disable AS0072
             group(Category_Report)
             {
                 Caption = 'Report';
@@ -792,12 +793,21 @@ page 31171 "Sales Advance Letter CZZ"
 
                 actionref(Print_Promoted; Print)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
                 actionref(Email_Promoted; Email)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
                 actionref(PrintToAttachment_Promoted; PrintToAttachment)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
             }
             group(Category_History)
@@ -810,6 +820,9 @@ page 31171 "Sales Advance Letter CZZ"
 
                 actionref(Entries_Promoted; Entries)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
             }
             group(Category_Approve)
@@ -822,17 +835,30 @@ page 31171 "Sales Advance Letter CZZ"
 
                 actionref(Approve_Promoted; Approve)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
                 actionref(Reject_Promoted; Reject)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
                 actionref(Delegate_Promoted; Delegate)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
                 actionref(Comment_Promoted; Comment)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
             }
+#pragma warning restore AS0072
 #endif
             group(Category_Category7)
             {
@@ -856,6 +882,7 @@ page 31171 "Sales Advance Letter CZZ"
 
     trigger OnOpenPage()
     begin
+        Rec.SetSecurityFilterOnRespCenter();
         ActivateFields();
         SetDocNoVisible();
     end;
@@ -863,6 +890,7 @@ page 31171 "Sales Advance Letter CZZ"
     trigger OnNewRecord(BelowxRec: Boolean)
     var
         AdvanceLetterTemplate: Record "Advance Letter Template CZZ";
+        UserSetupManagement: Codeunit "User Setup Management";
     begin
         AdvanceLetterTemplate.SetRange("Sales/Purchase", AdvanceLetterTemplate."Sales/Purchase"::Sales);
         if Page.RunModal(0, AdvanceLetterTemplate) <> Action::LookupOK then
@@ -871,6 +899,7 @@ page 31171 "Sales Advance Letter CZZ"
         AdvanceLetterTemplate.TestField("Advance Letter Document Nos.");
         Rec."Advance Letter Code" := AdvanceLetterTemplate.Code;
         Rec."No. Series" := AdvanceLetterTemplate."Advance Letter Document Nos.";
+        Rec."Responsibility Center" := UserSetupManagement.GetSalesFilter();
     end;
 
     trigger OnAfterGetCurrRecord()

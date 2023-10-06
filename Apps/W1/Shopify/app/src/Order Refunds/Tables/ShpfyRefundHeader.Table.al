@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Reflection;
+
 table 30142 "Shpfy Refund Header"
 {
     Caption = 'Refund Header';
@@ -128,6 +132,23 @@ table 30142 "Shpfy Refund Header"
             Clustered = true;
         }
     }
+
+    trigger OnDelete()
+    var
+        RefundLine: Record "Shpfy Refund Line";
+        DataCapture: Record "Shpfy Data Capture";
+    begin
+        RefundLine.SetRange("Refund Id");
+        if not RefundLine.IsEmpty() then
+            RefundLine.DeleteAll(true);
+
+        DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
+        DataCapture.SetRange("Linked To Table", Database::"Shpfy Refund Header");
+        DataCapture.SetRange("Linked To Id", Rec.SystemId);
+        if not DataCapture.IsEmpty then
+            DataCapture.DeleteAll(false);
+    end;
+
     internal procedure GetNote(): Text
     var
         TypeHelper: Codeunit "Type Helper";

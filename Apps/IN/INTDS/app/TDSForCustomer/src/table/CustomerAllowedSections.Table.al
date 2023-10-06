@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSForCustomer;
+
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Sales.Customer;
+
 table 18661 "Customer Allowed Sections"
 {
     Caption = 'Customer Allowed Sections';

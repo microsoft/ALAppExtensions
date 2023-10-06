@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
+
+using Microsoft.Finance.TCS.TCSBase;
+
 page 18875 "Update TCS Register"
 {
     Caption = 'Update TCS Register';

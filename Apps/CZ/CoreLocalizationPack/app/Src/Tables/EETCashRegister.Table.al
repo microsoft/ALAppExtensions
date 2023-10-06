@@ -1,7 +1,7 @@
 table 31127 "EET Cash Register CZL"
 {
     Caption = 'EET Cash Register';
-    LookupPageID = "EET Cash Registers CZL";
+    LookupPageId = "EET Cash Registers CZL";
 
     fields
     {

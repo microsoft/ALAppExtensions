@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Payments;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.Posting;
+using Microsoft.Inventory.Journal;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+
 codeunit 18251 "GST Purchase Non Availment"
 {
     var
@@ -10,7 +31,7 @@ codeunit 18251 "GST Purchase Non Availment"
         GSTNonAvailmentSessionMgt.SetQtyToBeInvoiced(QtyToBeInvoiced);
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPreparePurchase', '', false, false)]
     local procedure FillInvoicePostingBufferNonAvailmentFA(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var PurchaseLine: Record "Purchase Line")
     var
@@ -46,7 +67,7 @@ codeunit 18251 "GST Purchase Non Availment"
     end;
 #endif
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferModify', '', false, false)]
     local procedure UpdateInvoicePostingBufferNonAvailmentFA(FromInvoicePostBuffer: Record "Invoice Post. Buffer"; var InvoicePostBuffer: Record "Invoice Post. Buffer")
     begin
@@ -98,6 +119,10 @@ codeunit 18251 "GST Purchase Non Availment"
         QuantityFactor: Decimal;
         CustomDutyAmount: Decimal;
     begin
+        if (PurchaseLine.Type = PurchaseLine.Type::"Charge (Item)") and
+            (PurchaseLine."GST Credit" = PurchaseLine."GST Credit"::"Non-Availment") then
+            exit;
+
         PurchLineGSTAmount := GSTCalculatedAmount(PurchaseLine);
         if PurchLineGSTAmount = 0 then
             exit;

@@ -3,10 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// This permission set is required to turn a feature on or off.
 /// </summary>
-PermissionSet 2611 "Feature Key - Admin"
+permissionset 2611 "Feature Key - Admin"
 {
     Access = Internal;
     Assignable = false;

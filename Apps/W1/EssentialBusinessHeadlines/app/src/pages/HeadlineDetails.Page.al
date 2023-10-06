@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Item;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 page 1439 "Headline Details"
 {
     PageType = List;

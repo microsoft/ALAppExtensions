@@ -1,4 +1,9 @@
-#if not CLEAN18
+namespace Microsoft.DataMigration;
+
+using Microsoft.CashFlow.Forecast;
+using System.Integration.PowerBI;
+
+#if not CLEAN21
 page 4013 "Intelligent Cloud Insights"
 {
     PageType = Card;
@@ -62,15 +67,5 @@ page 4013 "Intelligent Cloud Insights"
             }
         }
     }
-
-    var
-
-    trigger OnOpenPage()
-    var
-
-    begin
-        CurrPage.PowerBIReportSpinnerPart.Page.SetContext('4009PowerBIPartOne');
-        CurrPage.PowerBIReportSpinnerPart2.Page.SetContext('4009PowerBIPartTwo');
-    end;
 }
 #endif

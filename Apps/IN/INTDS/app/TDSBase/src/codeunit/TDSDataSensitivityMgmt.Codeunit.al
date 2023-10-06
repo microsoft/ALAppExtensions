@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSBase;
+
+using Microsoft.Finance.TDS.TDSForCustomer;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Finance.TDS.TDSReturnAndSettlement;
+using Microsoft.Utilities;
+using System.Privacy;
+
 codeunit 18692 "TDS Data Sensitivity Mgmt."
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]

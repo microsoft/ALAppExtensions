@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Application;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+
 codeunit 18431 "GST Sales Application Mgt."
 {
     var

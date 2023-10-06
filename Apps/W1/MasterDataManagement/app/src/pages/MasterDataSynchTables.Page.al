@@ -1,3 +1,10 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+using System.Globalization;
+using System.Reflection;
+using System.Threading;
+
 page 7233 "Master Data Synch. Tables"
 {
     ApplicationArea = Suite;
@@ -5,7 +12,7 @@ page 7233 "Master Data Synch. Tables"
     PageType = List;
     SourceTable = "Integration Table Mapping";
     SourceTableView = where("Delete After Synchronization" = const(false),
-                            Type = const(Type::"Master Data Management"));
+                            Type = const(7230));
     UsageCategory = Lists;
     AdditionalSearchTerms = 'mdm,master data management,master data';
     Permissions = tabledata "Integration Table Mapping" = r,
@@ -52,7 +59,7 @@ page 7233 "Master Data Synch. Tables"
                             FilterPageBuilder.SetView(TableCaptionValue, TableFilter);
                         if FilterPageBuilder.RunModal() then begin
                             TableFilter := FilterPageBuilder.GetView(TableCaptionValue, false);
-                            SetTableFilter(TableFilter);
+                            Rec.SetTableFilter(TableFilter);
                         end;
                     end;
                 }
@@ -98,13 +105,13 @@ page 7233 "Master Data Synch. Tables"
                         MasterDataManagement: Codeunit "Master Data Management";
                         FilterPageBuilder: FilterPageBuilder;
                     begin
-                        FilterPageBuilder.AddTable(IntegrationTableCaptionValue, "Integration Table ID");
+                        FilterPageBuilder.AddTable(IntegrationTableCaptionValue, Rec."Integration Table ID");
                         if IntegrationTableFilter <> '' then
                             FilterPageBuilder.SetView(IntegrationTableCaptionValue, IntegrationTableFilter);
                         Commit();
                         if FilterPageBuilder.RunModal() then begin
                             IntegrationTableFilter := FilterPageBuilder.GetView(IntegrationTableCaptionValue, false);
-                            Session.LogMessage('0000J8R', StrSubstNo(UserEditedIntegrationTableFilterTxt, Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
+                            Session.LogMessage('0000J8R', StrSubstNo(UserEditedIntegrationTableFilterTxt, Rec.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
                             Rec.SetIntegrationTableFilter(IntegrationTableFilter);
                         end;
                     end;
@@ -569,15 +576,15 @@ page 7233 "Master Data Synch. Tables"
         IntegrationFieldCaptionValue := GetFieldCaption();
         IntegrationFieldTypeValue := GetFieldType();
 
-        TableFilter := GetTableFilter();
-        IntegrationTableFilter := GetIntegrationTableFilter();
+        TableFilter := Rec.GetTableFilter();
+        IntegrationTableFilter := Rec.GetIntegrationTableFilter();
 
         if IntegrationTableFilter <> '' then
             IntegrationTableFilterHint := EditIntegrationTableFilterTxt
         else
             IntegrationTableFilterHint := '';
 
-        HasRecords := not IsEmpty();
+        HasRecords := not Rec.IsEmpty();
     end;
 
     trigger OnInit()
@@ -623,7 +630,7 @@ page 7233 "Master Data Synch. Tables"
     var
         "Field": Record "Field";
     begin
-        if TypeHelper.GetField("Integration Table ID", "Integration Table UID Fld. No.", Field) then
+        if TypeHelper.GetField(Rec."Integration Table ID", Rec."Integration Table UID Fld. No.", Field) then
             exit(Field."Field Caption");
     end;
 
@@ -631,7 +638,7 @@ page 7233 "Master Data Synch. Tables"
     var
         "Field": Record "Field";
     begin
-        Field.Type := "Int. Table UID Field Type";
+        Field.Type := Rec."Int. Table UID Field Type";
         exit(Format(Field.Type))
     end;
 
@@ -653,4 +660,6 @@ page 7233 "Master Data Synch. Tables"
             Page.Run(Page::"Job Queue Entries", JQueueEntry);
     end;
 }
+
+
 

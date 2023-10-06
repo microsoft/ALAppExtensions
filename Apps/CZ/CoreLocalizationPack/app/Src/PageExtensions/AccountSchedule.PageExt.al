@@ -107,7 +107,7 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
                     Caption = 'Set up Custom Functions';
                     Ellipsis = true;
                     Image = NewSum;
-                    RunObject = Page "Acc. Schedule Extensions CZL";
+                    RunObject = page "Acc. Schedule Extensions CZL";
                     ToolTip = 'Specifies acc. schedule extensions page';
                     ObsoleteReason = 'The action is moved to Financial Reports.';
                     ObsoleteState = Pending;
@@ -165,7 +165,7 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Results';
                     Image = ViewDetails;
-                    RunObject = Page "Acc. Sched. Res. Hdr. List CZL";
+                    RunObject = page "Acc. Sched. Res. Hdr. List CZL";
                     RunPageLink = "Acc. Schedule Name" = field("Schedule Name");
                     ToolTip = 'Opens acc. schedule res. header list';
                     ObsoleteReason = 'The action is moved to Financial Reports.';

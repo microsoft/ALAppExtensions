@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.History;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Inventory.Location;
+
 tableextension 18090 "GST Purch. Rcpt. Header Ext." extends "Purch. Rcpt. Header"
 {
     fields

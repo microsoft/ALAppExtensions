@@ -42,7 +42,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ClientScreensTxt: Label 'width=%1&height=%2&scaling-factor=1&colour-depth=%3', Locked = true;
         ClientWindowTxt: Label 'width=%1&height=%2', Locked = true;
 
-#if not CLEAN20
+#if not CLEAN21
     [Obsolete('Not used anymore.', '21.0')]
     internal procedure CheckInitDefaultHeadersList()
     begin

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.BC;
+
 codeunit 4024 "Hybrid BC Last Upgrade"
 {
     Subtype = Upgrade;

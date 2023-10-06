@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.RoleCenters;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Payments;
+using Microsoft.Finance.GST.Reconcilation;
+using Microsoft.Finance.GST.ReturnSettlement;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 pageextension 18247 "GST Payment Order Processor" extends "Order Processor Role Center"
 {
     Actions

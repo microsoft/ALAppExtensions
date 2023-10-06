@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
+using System;
+using System.Reflection;
+
 codeunit 9751 "Web Service Management Impl."
 {
     Access = Internal;
@@ -342,7 +347,7 @@ codeunit 9751 "Web Service Management Impl."
         if TenantWebService.Find('-') then
             repeat
                 TenantWebServiceColumns.SetRange(TenantWebServiceID, TenantWebService.RecordId());
-                if NOT TenantWebServiceColumns.IsEmpty() then begin
+                if not TenantWebServiceColumns.IsEmpty() then begin
                     TenantWebServiceRec := TenantWebService;
                     TenantWebServiceRec.Insert();
                 end;

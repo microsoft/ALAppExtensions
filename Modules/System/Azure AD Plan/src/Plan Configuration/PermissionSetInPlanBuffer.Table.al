@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Environment;
+using System.Security.AccessControl;
+using System.Apps;
+
 /// <summary>
 /// The container used for fetching permission sets associated with plans.
 /// </summary>
@@ -34,7 +40,7 @@ table 9016 "Permission Set In Plan Buffer"
         }
         field(4; "Role Name"; Text[30])
         {
-            CalcFormula = Lookup("Permission Set".Name Where("Role ID" = Field("Role ID")));
+            CalcFormula = lookup("Aggregate Permission Set".Name where("Role ID" = field("Role ID")));
             Caption = 'Name';
             FieldClass = FlowField;
         }
@@ -45,7 +51,7 @@ table 9016 "Permission Set In Plan Buffer"
         }
         field(6; "App Name"; Text[250])
         {
-            CalcFormula = Lookup("Published Application".Name Where(ID = Field("App ID"), "Tenant Visible" = Const(true)));
+            CalcFormula = lookup("Published Application".Name where(ID = field("App ID"), "Tenant Visible" = const(true)));
             Caption = 'Extension Name';
             FieldClass = FlowField;
         }

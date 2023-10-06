@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 query 40101 "GP Item Aggregate"
 {
     QueryType = Normal;

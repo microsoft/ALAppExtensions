@@ -239,6 +239,23 @@ codeunit 148035 "Audit File Export Tests"
         // [THEN] No error is shown.
     end;
 
+    [Test]
+    procedure AuditFileExportFormatNone()
+    var
+        AuditFileExportSetup: Record "Audit File Export Setup";
+        AuditFileExportHeader: Record "Audit File Export Header";
+    begin
+        // [SCENARIO 465520] Audit File Export Format "None" with 0 value exists.
+        AuditFileExportSetup.Validate("Audit File Export Format", "Audit File Export Format"::None);
+        Assert.AreEqual("Audit File Export Format"::None, AuditFileExportSetup."Audit File Export Format", '');
+
+        AuditFileExportHeader.Validate("Audit File Export Format", "Audit File Export Format"::None);
+        Assert.AreEqual("Audit File Export Format"::None, AuditFileExportHeader."Audit File Export Format", '');
+
+        // restore setup
+        AuditFileExportSetup.InitSetup("Audit File Export Format"::TEST);
+    end;
+
     local procedure Initialize()
     begin
         if IsInitialized then
@@ -291,13 +308,12 @@ codeunit 148035 "Audit File Export Tests"
     local procedure GetFileContentFromZip(var ZipTempBlob: Codeunit "Temp Blob"; var TempBlob: Codeunit "Temp Blob"; FileNameInZip: Text)
     var
         DataCompression: Codeunit "Data Compression";
-        ZipEntryLength: Integer;
         FileOutStream: OutStream;
     begin
         Clear(TempBlob);
         DataCompression.OpenZipArchive(ZipTempBlob, false);
         TempBlob.CreateOutStream(FileOutStream);
-        DataCompression.ExtractEntry(FileNameInZip, FileOutStream, ZipEntryLength);
+        DataCompression.ExtractEntry(FileNameInZip, FileOutStream);
         DataCompression.CloseZipArchive();
     end;
 

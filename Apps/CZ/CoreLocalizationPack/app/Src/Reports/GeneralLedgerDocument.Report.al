@@ -145,7 +145,7 @@ report 11766 "General Ledger Document CZL"
             }
             dataitem(DimensionLoop; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 column(DimText; DimText)
                 {
                 }

@@ -1,8 +1,8 @@
 table 11776 "VAT Statement Attachment CZL"
 {
     Caption = 'VAT Statement Attachment';
-    DrillDownPageID = "VAT Statement Attachments CZL";
-    LookupPageID = "VAT Statement Attachments CZL";
+    DrillDownPageId = "VAT Statement Attachments CZL";
+    LookupPageId = "VAT Statement Attachments CZL";
 
     fields
     {
@@ -35,7 +35,7 @@ table 11776 "VAT Statement Attachment CZL"
             Caption = 'Description';
             DataClassification = CustomerContent;
         }
-        field(6; Attachment; BLOB)
+        field(6; Attachment; Blob)
         {
             Caption = 'Attachment';
             DataClassification = CustomerContent;

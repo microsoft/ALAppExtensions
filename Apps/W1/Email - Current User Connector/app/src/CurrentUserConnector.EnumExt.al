@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 enumextension 4501 "Current User Connector" extends "Email Connector"
 {
     /// <summary>

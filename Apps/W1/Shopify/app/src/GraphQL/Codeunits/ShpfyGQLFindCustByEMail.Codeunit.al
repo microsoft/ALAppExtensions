@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy GQL FindCustByEMail (ID 30129) implements Interface Shpfy IGarphQL.
 /// </summary>

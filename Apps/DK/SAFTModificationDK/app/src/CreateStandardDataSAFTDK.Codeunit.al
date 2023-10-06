@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.VAT.Reporting;
+using System.IO;
+
 codeunit 13687 "Create Standard Data SAF-T DK" implements CreateStandardDataSAFT
 {
     Access = Internal;
@@ -51,37 +60,37 @@ codeunit 13687 "Create Standard Data SAF-T DK" implements CreateStandardDataSAFT
         AuditExportDataTypeSetup.DeleteAll(true);
 
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::GeneralLedgerAccounts, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::GeneralLedgerAccounts, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::Customers, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::Customers, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::Suppliers, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::Suppliers, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::TaxTable, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::TaxTable, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::UOMTable, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::UOMTable, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::AnalysisTypeTable, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::AnalysisTypeTable, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::MovementTypeTable, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::MovementTypeTable, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::Products, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::Products, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::PhysicalStock, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::PhysicalStock, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::Assets, "Audit File Export Data Class"::MasterData, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::Assets, Enum::"Audit File Export Data Class"::MasterData, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::GeneralLedgerEntries, "Audit File Export Data Class"::GeneralLedgerEntries, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::GeneralLedgerEntries, Enum::"Audit File Export Data Class"::GeneralLedgerEntries, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::SalesInvoices, "Audit File Export Data Class"::SourceDocuments, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::SalesInvoices, Enum::"Audit File Export Data Class"::SourceDocuments, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::PurchaseInvoices, "Audit File Export Data Class"::SourceDocuments, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::PurchaseInvoices, Enum::"Audit File Export Data Class"::SourceDocuments, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::Payments, "Audit File Export Data Class"::SourceDocuments, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::Payments, Enum::"Audit File Export Data Class"::SourceDocuments, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::MovementOfGoods, "Audit File Export Data Class"::SourceDocuments, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::MovementOfGoods, Enum::"Audit File Export Data Class"::SourceDocuments, true);
         AuditExportDataTypeSetup.InsertRecord(
-            "Audit File Export Format"::SAFT, "Audit File Export Data Type"::AssetTransactions, "Audit File Export Data Class"::SourceDocuments, true);
+            Enum::"Audit File Export Format"::SAFT, Enum::"Audit File Export Data Type"::AssetTransactions, Enum::"Audit File Export Data Class"::SourceDocuments, true);
     end;
 
     local procedure ImportStandardTaxCodesFromCSVBuffer(var TempCSVBuffer: Record "CSV Buffer" temporary)

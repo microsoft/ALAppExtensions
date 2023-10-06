@@ -1,3 +1,5 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
 enum 22202 "G/L Entry Reviewer" implements "G/L Entry Reviewer"
 {
     Extensible = true;

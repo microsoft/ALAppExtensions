@@ -184,6 +184,7 @@ codeunit 31087 "Install Application CZZ"
                     PurchAdvLetterHeaderCZZ."Pay-to County" := PurchAdvanceLetterHeader."Pay-to County";
                     PurchAdvLetterHeaderCZZ."Pay-to Country/Region Code" := PurchAdvanceLetterHeader."Pay-to Country/Region Code";
                     PurchAdvLetterHeaderCZZ."Language Code" := PurchAdvanceLetterHeader."Language Code";
+                    PurchAdvLetterHeaderCZZ."Format Region" := PurchAdvanceLetterHeader."Format Region";
                     PurchAdvLetterHeaderCZZ."Pay-to Contact" := PurchAdvanceLetterHeader."Pay-to Contact";
                     PurchAdvLetterHeaderCZZ."Purchaser Code" := PurchAdvanceLetterHeader."Purchaser Code";
                     PurchAdvLetterHeaderCZZ."Shortcut Dimension 1 Code" := PurchAdvanceLetterHeader."Shortcut Dimension 1 Code";
@@ -525,6 +526,7 @@ codeunit 31087 "Install Application CZZ"
                     SalesAdvLetterHeaderCZZ."Bill-to County" := SalesAdvanceLetterHeader."Bill-to County";
                     SalesAdvLetterHeaderCZZ."Bill-to Country/Region Code" := SalesAdvanceLetterHeader."Bill-to Country/Region Code";
                     SalesAdvLetterHeaderCZZ."Language Code" := SalesAdvanceLetterHeader."Language Code";
+                    SalesAdvLetterHeaderCZZ."Format Region" := SalesAdvanceLetterHeader."Format Region";
                     SalesAdvLetterHeaderCZZ."Bill-to Contact" := SalesAdvanceLetterHeader."Bill-to Contact";
                     SalesAdvLetterHeaderCZZ."Salesperson Code" := SalesAdvanceLetterHeader."Salesperson Code";
                     SalesAdvLetterHeaderCZZ."Shortcut Dimension 1 Code" := SalesAdvanceLetterHeader."Shortcut Dimension 1 Code";

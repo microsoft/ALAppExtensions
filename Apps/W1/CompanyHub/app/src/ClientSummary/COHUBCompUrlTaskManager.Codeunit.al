@@ -1,3 +1,7 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using Microsoft.Foundation.Company;
+
 codeunit 1155 "COHUB Comp. Url Task Manager"
 {
     Access = Internal;
@@ -194,7 +198,7 @@ codeunit 1155 "COHUB Comp. Url Task Manager"
         // SetValueForKPI(JsonObject,OverduePurchInvoiceAmountPropNameTxt,JsonValue);
         COHUBCompanyKPI.Validate("Overdue Purch. Invoice Amount", GetStringKPIValue(ActivityCuesValuesJsonObject, OverduePurchInvoiceAmountPropNameTxt));
         COHUBCompanyKPI.Validate("Overdue Sales Invoice Amount", GetStringKPIValue(ActivityCuesValuesJsonObject, OverdueSalesInvoiceAmountPropNameTxt));
-        If COHUBCompanyKPI."Currency Symbol" = '' then
+        if COHUBCompanyKPI."Currency Symbol" = '' then
             COHUBCompanyKPI.Validate("Currency Symbol", GetStringKPIValue(ActivityCuesValuesJsonObject, CurrencySymbolPropNameTxt));
 
         if not GetDecimalKPIValue(ActivityCuesValuesJsonObject, OverduePurchInvoiceAmountDecimalPropNameTxt, OverduePurchaseInvoiceAmount) then
@@ -266,7 +270,7 @@ codeunit 1155 "COHUB Comp. Url Task Manager"
         FinanceCuesJsonArray.Get(0, FinanceCuesValuesJsonToken);
         FinanceCuesValuesJsonObject := FinanceCuesValuesJsonToken.AsObject();
 
-        If COHUBCompanyKPI."Currency Symbol" = '' then
+        if COHUBCompanyKPI."Currency Symbol" = '' then
             COHUBCompanyKPI.Validate("Currency Symbol", GetStringKPIValue(FinanceCuesValuesJsonObject, CurrencySymbolPropNameTxt));
 
         COHUBCompanyKPI.Validate("Overdue Purchase Documents", GetStringKPIValue(FinanceCuesValuesJsonObject, OverduePurchaseDocumentsAmountPropNameTxt));

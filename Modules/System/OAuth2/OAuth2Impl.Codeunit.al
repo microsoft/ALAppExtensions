@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Authentication;
+
+using System;
+using System.Environment;
+using System.Utilities;
+
 codeunit 502 OAuth2Impl
 {
     Access = Internal;
@@ -503,17 +509,6 @@ codeunit 502 OAuth2Impl
         AccessToken := CompoundToken.AccessToken;
         IdToken := CompoundToken.IdToken;
     end;
-
-#if not CLEAN17
-    [NonDebuggable]
-    [Obsolete('Added OAuthority parameter', '17.0')]
-    [TryFunction]
-    procedure AcquireTokenFromCache(RedirectURL: Text; ClientId: Text; ClientSecret: Text; ResourceURL: Text; var AccessToken: Text)
-    begin
-        Initialize(RedirectURL);
-        AccessToken := AuthFlow.ALAcquireTokenFromCacheWithCredentials(ClientID, ClientSecret, ResourceURL);
-    end;
-#endif
 
     [NonDebuggable]
     [TryFunction]

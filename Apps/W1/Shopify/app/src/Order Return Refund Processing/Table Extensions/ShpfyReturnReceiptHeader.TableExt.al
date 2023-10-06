@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 tableextension 30110 "Shpfy Return Receipt Header" extends "Return Receipt Header"
 {
     fields

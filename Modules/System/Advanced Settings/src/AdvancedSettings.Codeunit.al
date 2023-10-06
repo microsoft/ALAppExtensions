@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>Advanced settings exposes integration events raised at Advance Settings Page open.</summary>
 codeunit 9202 "Advanced Settings"
 {

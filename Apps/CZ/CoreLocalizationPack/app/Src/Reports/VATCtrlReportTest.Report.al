@@ -321,10 +321,10 @@ report 31103 "VAT Ctrl. Report - Test CZL"
                                                 VATControlReportBuffer.Modify();
                                             end;
                                         else begin
-                                                // other section codes
-                                                CopyLineToBuffer(VATCtrlReportLineCZL, VATControlReportBuffer);
-                                                VATControlReportBuffer.Insert();
-                                            end;
+                                            // other section codes
+                                            CopyLineToBuffer(VATCtrlReportLineCZL, VATControlReportBuffer);
+                                            VATControlReportBuffer.Insert();
+                                        end;
                                     end;
                                 until VATCtrlReportLineCZL.Next() = 0;
                         end;
@@ -402,7 +402,6 @@ report 31103 "VAT Ctrl. Report - Test CZL"
         ReportPrintType: Option Detail,Export,Summary;
         ReportPrintEntries: Option All,Export,"Not Export";
         OnlyErrorLines: Boolean;
-        [InDataSet]
         LinesDetailEnable: Boolean;
         VATStatementReportSelection: Enum "VAT Statement Report Selection";
 

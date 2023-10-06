@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Table Shpfy Order Risk (ID 30123).
 /// </summary>

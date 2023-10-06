@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// Lists guided experience items.
 /// </summary>
@@ -25,22 +27,22 @@ page 1996 "Guided Experience Item List"
             {
                 ShowCaption = false;
 
-                field(Title; Title)
+                field(Title; Rec.Title)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the item.';
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the description of the item.';
                 }
-                field(Extension; "Extension Name")
+                field(Extension; Rec."Extension Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the app that added the guided experience item.';
                 }
-                field(Link; Link)
+                field(Link; Rec.Link)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the link to start the guided experience.';

@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.IO;
+
+using System.Utilities;
 
 /// <summary>
 /// Exposes functionality to provide ability to create, update, read and dispose a binary data compression archive.
@@ -90,17 +94,20 @@ codeunit 425 "Data Compression"
         DataCompressionImpl.GetEntryList(EntryList);
     end;
 
+#if not CLEAN23
     /// <summary>
     /// Extracts an entry from the ZipArchive.
     /// </summary>
     /// <param name="EntryName">The name of the ZipArchive entry to be extracted.</param>
     /// <param name="OutputOutStream">The OutStream to which binary content of the extracted entry is saved.</param>
     /// <param name="EntryLength">The length of the extracted entry.</param>
+    [Obsolete('This function has been replaced by the function ExtractEntry(EntryName: Text; OutputOutStream: OutStream) which instead returns the entry length.', '23.0')]
     procedure ExtractEntry(EntryName: Text; OutputOutStream: OutStream; var EntryLength: Integer)
     begin
         DataCompressionImpl.ExtractEntry(EntryName, OutputOutStream, EntryLength);
     end;
 
+#endif
     /// <summary>
     /// Extracts an entry from the ZipArchive.
     /// </summary>
@@ -110,6 +117,16 @@ codeunit 425 "Data Compression"
     procedure ExtractEntry(EntryName: Text; OutputOutStream: OutStream) EntryLength: Integer
     begin
         DataCompressionImpl.ExtractEntry(EntryName, OutputOutStream, EntryLength);
+    end;
+
+    /// <summary>
+    /// Extracts an entry from the ZipArchive to a TempBlob instance.
+    /// </summary>
+    /// <param name="EntryName">The name of the ZipArchive entry to be extracted.</param>
+    /// <param name="TempBlob">The TempBlob the uncompressed binary data will be written to.</param>
+    procedure ExtractEntry(EntryName: Text; var TempBlob: Codeunit "Temp Blob"): Integer
+    begin
+        exit(DataCompressionImpl.ExtractEntry(EntryName, TempBlob));
     end;
 
     /// <summary>
@@ -139,7 +156,17 @@ codeunit 425 "Data Compression"
     /// <returns>Returns true if and only if the given InStream is compressed with GZip</returns>
     procedure IsGZip(InStream: InStream): Boolean
     begin
-        EXIT(DataCompressionImpl.IsGZip(InStream));
+        exit(DataCompressionImpl.IsGZip(InStream));
+    end;
+
+    /// <summary>
+    /// Determines whether the given InStream is compressed with Zip.
+    /// </summary>
+    /// <param name="InStream">An InStream that contains binary content.</param>
+    /// <returns>Returns true if and only if the given InStream is compressed with Zip</returns>
+    procedure IsZip(InStream: InStream): Boolean
+    begin
+        exit(DataCompressionImpl.IsZip(InStream));
     end;
 
     /// <summary>

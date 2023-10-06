@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy Orders API (ID 30165).
 /// </summary>
@@ -10,7 +12,7 @@ codeunit 30165 "Shpfy Orders API"
         LocalShop: Record "Shpfy Shop";
     begin
         LocalShop.SetFilter("Shopify URL", '<>%1', '');
-        if LocalShop.FindSet(false, false) then
+        if LocalShop.FindSet(false) then
             repeat
                 SetShop(LocalShop);
                 GetOrdersToImport(LocalShop);
@@ -114,7 +116,7 @@ codeunit 30165 "Shpfy Orders API"
 
         Clear(OrderAttribute);
         OrderAttribute.SetRange("Order Id", OrderHeader."Shopify Order Id");
-        if OrderAttribute.FindSet(false, false) then
+        if OrderAttribute.FindSet(false) then
             repeat
                 Clear(JAttrib);
                 JAttrib.Add('key', OrderAttribute."Key");

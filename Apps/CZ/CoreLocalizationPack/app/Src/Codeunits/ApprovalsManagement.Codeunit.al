@@ -22,11 +22,11 @@ codeunit 31397 "Approvals Management CZL"
                     SetStatusToApproved(Variant);
                 end;
             else begin
-                    IsHandled := false;
-                    OnSetStatusToApproved(InputRecordRef, Variant, IsHandled);
-                    if not IsHandled then
-                        Error(UnsupportedRecordTypeErr, InputRecordRef.Caption);
-                end;
+                IsHandled := false;
+                OnSetStatusToApproved(InputRecordRef, Variant, IsHandled);
+                if not IsHandled then
+                    Error(UnsupportedRecordTypeErr, InputRecordRef.Caption);
+            end;
         end;
     end;
 

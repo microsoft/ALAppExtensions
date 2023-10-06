@@ -649,7 +649,8 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
         ResponseText: Text;
         TargetURL: Text;
         DiscountPct: Decimal;
-        DiscountAmt, InvDiscAmount : Decimal;
+        DiscountAmt: Decimal;
+        InvDiscAmount: Decimal;
     begin
         // [SCENARIO 184721] When an invoice is created, the GET Method should update the invoice and assign a total
         // [GIVEN] 2 invoices, one posted and one unposted with discount amount that should be redistributed

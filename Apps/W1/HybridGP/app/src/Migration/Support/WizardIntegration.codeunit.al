@@ -1,3 +1,14 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+using System.Threading;
+using Microsoft.DataMigration;
+using System.Security.User;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Inventory.Item;
+
 codeunit 4035 "Wizard Integration"
 {
     var
@@ -50,9 +61,13 @@ codeunit 4035 "Wizard Integration"
     var
         GPConfiguration: Record "GP Configuration";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPMigrationErrorHandler: Codeunit "GP Migration Error Handler";
         Flag: Boolean;
     begin
         if not (DataMigrationStatus."Migration Type" = HelperFunctions.GetMigrationTypeTxt()) then
+            exit;
+
+        if GPMigrationErrorHandler.GetErrorOccured() then
             exit;
 
         if not HelperFunctions.CreatePostMigrationData() then begin

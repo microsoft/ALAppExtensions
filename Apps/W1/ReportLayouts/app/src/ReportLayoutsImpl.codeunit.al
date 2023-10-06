@@ -1,6 +1,19 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Shared.Report;
+
+using Microsoft.EServices.EDocument;
+using Microsoft.Foundation.Reporting;
+using System.Environment.Configuration;
+using System.Reflection;
+using System.IO;
+using System.Utilities;
 /// <summary>
 /// This code unit supports the 'Report Layouts' page and provides implementations for adding/deleting/editing user and extension defined report layouts.
 /// </summary>
+
 codeunit 9660 "Report Layouts Impl."
 {
     Access = Internal;
@@ -24,9 +37,9 @@ codeunit 9660 "Report Layouts Impl."
         EmptyLayoutNameTxt: Label 'A layout name must be specified.';
         LayoutAlreadyExistsErr: Label 'A layout named "%1" already exists.', Comment = '%1 = Layout Name';
 
-    internal procedure SetSelectedCompany(CompanyName: Text[30])
+    internal procedure SetSelectedCompany(NewCompanyName: Text)
     begin
-        SelectedCompany := CompanyName;
+        SelectedCompany := CopyStr(NewCompanyName, 1, MaxStrLen(SelectedCompany));
     end;
 
     internal procedure RunCustomReport(SelectedReportLayoutList: Record "Report Layout List")
@@ -98,7 +111,7 @@ codeunit 9660 "Report Layouts Impl."
             end;
     end;
 
-    internal procedure SetDefaultReportLayoutSelection(SelectedReportLayoutList: Record "Report Layout List")
+    internal procedure SetDefaultReportLayoutSelection(SelectedReportLayoutList: Record "Report Layout List"; ShowMessage: Boolean)
     var
         ReportLayoutSelection: Record "Report Layout Selection";
     begin
@@ -116,7 +129,38 @@ codeunit 9660 "Report Layouts Impl."
             ReportLayoutSelection.Type := GetReportLayoutSelectionCorrespondingEnum(SelectedReportLayoutList);
             ReportLayoutSelection.Insert(true);
         end;
-        Message(DefaultLayoutSetTxt, SelectedReportLayoutList."Caption", SelectedReportLayoutList."Report Name");
+
+        if ShowMessage then
+            Message(DefaultLayoutSetTxt, SelectedReportLayoutList."Caption", SelectedReportLayoutList."Report Name");
+    end;
+
+    internal procedure GetDefaultReportLayoutSelection(ReportId: Integer; var DefaultReportLayoutList: Record "Report Layout List"): Boolean
+    var
+        ReportMetadata: Record "Report Metadata";
+    begin
+        TenantReportLayoutSelection.Init();
+        DefaultReportLayoutList.Init();
+
+        if TenantReportLayoutSelection.Get(ReportId, SelectedCompany, EmptyGuid) then begin
+            // Filter Default Report Layout List by the layout name and application id and report id
+            DefaultReportLayoutList.SetRange("Name", TenantReportLayoutSelection."Layout Name");
+            DefaultReportLayoutList.SetRange("Application ID", TenantReportLayoutSelection."App ID");
+            DefaultReportLayoutList.SetRange("Report ID", ReportId);
+
+            // Retrive the record based on filters
+            if DefaultReportLayoutList.FindFirst() then
+                exit(true);
+        end else
+            if ReportMetadata.Get(ReportId) then begin
+                DefaultReportLayoutList.SetRange("Name", ReportMetadata."DefaultLayoutName");
+                DefaultReportLayoutList.SetFilter("Application ID", '<>%1', EmptyGuid);
+                DefaultReportLayoutList.SetRange("Report ID", ReportId);
+
+                if DefaultReportLayoutList.FindFirst() then
+                    exit(true);
+            end;
+
+        exit(false);
     end;
 
     internal procedure UpdateDefaultLayoutSelectionName(SelectedReportLayoutList: Record "Report Layout List"; NewLayoutName: Text[250]): Boolean
@@ -354,6 +398,81 @@ codeunit 9660 "Report Layouts Impl."
         exit(FileManagement.BLOBExport(TempBlob, FileName, true));
     end;
 
+    internal procedure OpenInOneDrive(SelectedReportLayoutList: Record "Report Layout List")
+    var
+        TenantReportLayout: Record "Tenant Report Layout";
+        DocumentServiceMgt: Codeunit "Document Service Management";
+        TempBlob: Codeunit "Temp Blob";
+        FileName: Text;
+        FileExtension: Text;
+        MediaInStream: InStream;
+        MediaOutStream: OutStream;
+    begin
+        if not TenantReportLayout.Get(SelectedReportLayoutList."Report ID", SelectedReportLayoutList."Name", EmptyGuid) then
+            exit;
+
+        FileName := GetFileName(SelectedReportLayoutList);
+        FileExtension := GetFileExtension(SelectedReportLayoutList);
+
+        TempBlob.CreateOutStream(MediaOutStream);
+        TenantReportLayout."Layout".ExportStream(MediaOutStream);
+
+        MediaInStream := TempBlob.CreateInStream();
+        DocumentServiceMgt.OpenInOneDrive(FileName, FileExtension, MediaInStream);
+    end;
+
+    internal procedure ShareWithOneDrive(SelectedReportLayoutList: Record "Report Layout List")
+    var
+        TenantReportLayout: Record "Tenant Report Layout";
+        DocumentServiceMgt: Codeunit "Document Service Management";
+        TempBlob: Codeunit "Temp Blob";
+        FileName: Text;
+        FileExtension: Text;
+        MediaInStream: InStream;
+        MediaOutStream: OutStream;
+    begin
+        if not TenantReportLayout.Get(SelectedReportLayoutList."Report ID", SelectedReportLayoutList."Name", EmptyGuid) then
+            exit;
+
+        FileName := GetFileName(SelectedReportLayoutList);
+        FileExtension := GetFileExtension(SelectedReportLayoutList);
+
+        TempBlob.CreateOutStream(MediaOutStream);
+        TenantReportLayout."Layout".ExportStream(MediaOutStream);
+
+        MediaInStream := TempBlob.CreateInStream();
+        DocumentServiceMgt.ShareWithOneDrive(FileName, FileExtension, MediaInStream);
+    end;
+
+    internal procedure EditInOneDrive(SelectedReportLayoutList: Record "Report Layout List")
+    var
+        TenantReportLayout: Record "Tenant Report Layout";
+        DocumentServiceMgt: Codeunit "Document Service Management";
+        TempBlob: Codeunit "Temp Blob";
+        FileName: Text;
+        FileExtension: Text;
+        MediaInStream: InStream;
+        MediaOutStream: OutStream;
+    begin
+        if not TenantReportLayout.Get(SelectedReportLayoutList."Report ID", SelectedReportLayoutList."Name", EmptyGuid) then
+            exit;
+
+        FileName := GetFileName(SelectedReportLayoutList);
+        FileExtension := GetFileExtension(SelectedReportLayoutList);
+
+        TempBlob.CreateOutStream(MediaOutStream);
+        TenantReportLayout."Layout".ExportStream(MediaOutStream);
+
+        if DocumentServiceMgt.EditInOneDrive(FileName, FileExtension, TempBlob) then begin
+
+            MediaInStream := TempBlob.CreateInStream();
+            TenantReportLayout."Layout".ImportStream(MediaInStream, TenantReportLayout."Description");
+
+            if not TenantReportLayout.Insert(true) then
+                TenantReportLayout.Modify(true);
+        end;
+    end;
+
     local procedure GetFileName(SelectedReportLayoutList: Record "Report Layout List"): Text
     var
         CurrentExt: Text;
@@ -378,7 +497,7 @@ codeunit 9660 "Report Layouts Impl."
             SelectedReportLayoutList."Layout Format"::Word:
                 FileExt := 'docx';
             SelectedReportLayoutList."Layout Format"::RDLC:
-                FileExt := 'rdlc';
+                FileExt := 'rdl';
             SelectedReportLayoutList."Layout Format"::Excel:
                 FileExt := 'xlsx';
             SelectedReportLayoutList."Layout Format"::Custom:

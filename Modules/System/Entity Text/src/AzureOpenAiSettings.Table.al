@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Text;
+
+using System;
+using System.Utilities;
+using System.Environment;
+using System.Azure.KeyVault;
+using System.Security.Authentication;
+using System.Azure.Identity;
+
 /// <summary>
 /// Contains settings for Azure OpenAI.
 /// </summary>
@@ -345,7 +354,7 @@ table 2010 "Azure OpenAi Settings"
         TelemetrySecretSetTxt: Label 'The secret was set.', Locked = true;
         TelemetryEndpointClearedTxt: Label 'The endpoint was cleared.', Locked = true;
         TelemetryEndpointSetTxt: Label 'The endpoint was set.', Locked = true;
-        TelemetryTenantIdInvalidTxt: Label 'The AAD tenant id is not a valid guid, generating a random one.', Locked = true;
+        TelemetryTenantIdInvalidTxt: Label 'The Microsoft Entra tenant ID is not a valid guid, generating a random one.', Locked = true;
         TelemetrySelectedIslandTxt: Label 'Island %1 of %2 was selected.', Locked = true;
         TelemetryTotalIslandsInvalidTxt: Label 'The total islands config key is not set or is not a number.', Locked = true;
 }

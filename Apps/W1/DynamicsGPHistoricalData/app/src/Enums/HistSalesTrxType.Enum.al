@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 enum 40900 "Hist. Sales Trx. Type"
 {
     value(0; "Blank") { Caption = ''; }

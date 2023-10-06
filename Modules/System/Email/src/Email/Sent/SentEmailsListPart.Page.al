@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Provides an overview of all e-mail that were sent out in a ListPart.
 /// </summary>
@@ -175,7 +177,6 @@ page 8888 "Sent Emails List Part"
         NewerThanDate: DateTime;
         EmailAccountId, SourceSystemID : Guid;
         SourceTableID: Integer;
-        [InDataSet]
         NoSentEmails: Boolean;
         EmailConnectorHasBeenUninstalledMsg: Label 'The email extension that was used to send this email has been uninstalled. To view information about the email account, you must reinstall the extension.';
 }

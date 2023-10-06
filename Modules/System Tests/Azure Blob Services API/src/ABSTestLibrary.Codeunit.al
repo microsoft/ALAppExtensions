@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Azure.Storage;
+
+using System.TestLibraries.Utilities;
+
 codeunit 132921 "ABS Test Library"
 {
     Access = Internal;

@@ -5,17 +5,18 @@
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "bcartifacts//22.5/base/latest",
+  "artifact": "bcartifacts//23.0/base/latest",
   "country": "base",
   "useProjectDependencies": true,
-  "repoVersion": "22.5",
+  "repoVersion": "23.0",
   "cleanModePreprocessorSymbols": [
     "CLEAN17",
     "CLEAN18",
     "CLEAN19",
     "CLEAN20",
     "CLEAN21",
-    "CLEAN22"
+    "CLEAN22",
+    "CLEAN23"
   ],
   "unusedALGoSystemFiles": [
     "AddExistingAppOrTestApp.yaml",
@@ -33,10 +34,14 @@
     "Default",
     "Clean"
   ],
+  "excludeEnvironments":  [
+    "Official"
+  ],
   "enableCodeCop": true,
   "CICDPushBranches": [
     "main"
   ],
   "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json",
-  "PullRequestTrigger": "pull_request"
+  "PullRequestTrigger": "pull_request",
+  "alwaysBuildAllProjects": true
 }

@@ -1,3 +1,11 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using Microsoft.Utilities;
+using System.Telemetry;
+using System.Environment.Configuration;
+using System.Utilities;
+using System.Environment;
+
 codeunit 1151 "COHUB Core"
 {
     TableNo = "COHUB Enviroment";
@@ -245,7 +253,7 @@ codeunit 1151 "COHUB Core"
         Url: Text;
     begin
         Url := LowerCase(GetUrl(ClientType::Web));
-        exit((StrPos(Url, 'businesscentral.dynamics-tie.com') <> 0) OR (StrPos(Url, 'localhost.businesscentral.dynamics-ppe.com') <> 0));
+        exit((StrPos(Url, 'businesscentral.dynamics-tie.com') <> 0) or (StrPos(Url, 'localhost.businesscentral.dynamics-ppe.com') <> 0));
     end;
 
     procedure GetFixedWebServicesUrl(): Text;

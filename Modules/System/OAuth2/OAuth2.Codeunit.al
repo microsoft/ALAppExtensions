@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Authentication;
+
 /// <summary>
 /// Contains methods supporting authentication via OAuth 2.0 protocol.
 /// </summary>
@@ -15,27 +17,6 @@ codeunit 501 OAuth2
     var
         [NonDebuggable]
         OAuth2Impl: Codeunit OAuth2Impl;
-
-#if not CLEAN18
-    /// <summary>
-    /// Gets the authorization token based on the authorization code via the OAuth2 v1.0 code grant flow.
-    /// </summary>
-    /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
-    /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>
-    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
-    /// <param name="PromptInteraction">Indicates the type of user interaction that is required.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token. When this parameter is empty, check the AuthCodeErr for a description of the error.</param>
-    /// <param name="AuthCodeErr">Exit parameter containing the encountered error in the authorization code grant flow. This parameter will be empty in case the token is aquired successfuly.</param>
-    [NonDebuggable]
-    [Obsolete('Replaced with AcquireTokenByAuthorizationCode with Scopes parameter', '18.0')]
-    [TryFunction]
-    procedure AcquireTokenByAuthorizationCode(ClientId: Text; ClientSecret: Text; OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceURL: Text; PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text; var AuthCodeErr: Text)
-    begin
-        OAuth2Impl.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, ResourceURL, PromptInteraction, AccessToken, AuthCodeErr);
-    end;
-#endif
 
     /// <summary>
     /// Gets the authorization token based on the authorization code via the OAuth2 v1.0 code grant flow.
@@ -208,22 +189,6 @@ codeunit 501 OAuth2
     end;
 
 #pragma warning disable AS0022
-#if not CLEAN18
-    /// <summary>
-    /// Gets the authentication token via the On-Behalf-Of OAuth2 v1.0 protocol flow.
-    /// </summary>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Replaced with AcquireOnBehalfOfToken with Scopes parameter', '18.0')]
-    [TryFunction]
-    procedure AcquireOnBehalfOfToken(RedirectURL: Text; ResourceURL: Text; var AccessToken: Text)
-    begin
-        OAuth2Impl.AcquireOnBehalfOfToken(RedirectURL, ResourceURL, AccessToken);
-    end;
-#endif
 
     /// <summary>
     /// Gets the authentication token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
@@ -300,45 +265,6 @@ codeunit 501 OAuth2
     begin
         OAuth2Impl.AcquireTokenWithClientCredentials(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, Scopes, AccessToken);
     end;
-
-#if not CLEAN17
-    /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol.
-    /// </summary>
-    /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
-    /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    [NonDebuggable]
-    [Obsolete('Added OAuthority parameter', '17.0')]
-    [TryFunction]
-    procedure AcquireAuthorizationCodeTokenFromCache(ClientId: Text; ClientSecret: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text)
-    begin
-#pragma warning disable AL0432
-        OAuth2Impl.AcquireTokenFromCache(RedirectURL, ClientId, ClientSecret, ResourceURL, AccessToken);
-#pragma warning restore
-    end;
-#endif
-
-#if not CLEAN18
-    /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol.
-    /// </summary>
-    /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
-    /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
-    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    [NonDebuggable]
-    [Obsolete('Replaced with AcquireAuthorizationCodeTokenFromCache with Scopes parameter', '18.0')]
-    [TryFunction]
-    procedure AcquireAuthorizationCodeTokenFromCache(ClientId: Text; ClientSecret: Text; RedirectURL: Text; OAuthAuthorityUrl: Text; ResourceURL: Text; var AccessToken: Text)
-    begin
-        OAuth2Impl.AcquireTokenFromCache(RedirectURL, ClientId, ClientSecret, OAuthAuthorityUrl, ResourceURL, AccessToken);
-    end;
-#endif
 
     /// <summary>
     /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol.
@@ -434,59 +360,6 @@ codeunit 501 OAuth2
         OAuth2Impl.AcquireTokensWithCertificate(RedirectURL, ClientId, Certificate, OAuthAuthorityUrl, Scopes, AccessToken, IdToken);
     end;
 
-#if not CLEAN18
-    /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow.
-    /// </summary>
-    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    /// <param name="RefreshToken">Exit parameter containing the refresh_token that you acquired when you requested an access token.</param>
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Renaming to AcquireOnBehalfAccessTokenAndTokenCache', '18.0')]
-    [TryFunction]
-    procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text; var RefreshToken: Text)
-    begin
-        OAuth2Impl.AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrl, RedirectURL, ResourceURL, AccessToken, RefreshToken);
-    end;
-
-    /// <summary>
-    /// Gets the access token and token cache  via the On-Behalf-Of OAuth2 v1.0 protocol flow.
-    /// </summary>
-    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    /// <param name="TokenCache">Exit parameter containing the token cache acquired when the access token was requested .</param>
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Replaced with AcquireOnBehalfAccessTokenAndTokenCache with Scopes parameter', '18.0')]
-    [TryFunction]
-    procedure AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrl: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text; var TokenCache: Text)
-    begin
-        OAuth2Impl.AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrl, RedirectURL, ResourceURL, AccessToken, TokenCache);
-    end;
-
-    /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
-    /// </summary>
-    /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    /// <param name="RefreshToken">Exit parameter containing the refresh_token that you acquired when you requested an access token.</param>
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Renaming to AcquireOnBehalfAccessTokenAndTokenCache ', '18.0')]
-    [TryFunction]
-    procedure AcquireOnBehalfAccessTokenAndRefreshToken(OAuthAuthorityUrl: Text; RedirectURL: Text; Scopes: List of [Text]; var AccessToken: Text; var RefreshToken: Text)
-    begin
-        OAuth2Impl.AcquireOnBehalfAccessTokenAndTokenCache(OAuthAuthorityUrl, RedirectURL, Scopes, AccessToken, RefreshToken);
-    end;
-#endif
-
     /// <summary>
     /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
     /// </summary>
@@ -519,62 +392,6 @@ codeunit 501 OAuth2
     begin
         OAuth2Impl.AcquireOnBehalfTokensAndTokenCache(OAuthAuthorityUrl, RedirectURL, Scopes, AccessToken, IdToken, TokenCache);
     end;
-
-#if not CLEAN18
-    /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow.
-    /// </summary>
-    /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
-    /// <param name="RefreshToken">The refresh_token that you acquired when you requested an access token.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    /// <param name="NewRefreshToken">Exit parameter containing the new refresh token.</param>
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Renaming to AcquireOnBehalfOfTokenByTokenCache ', '18.0')]
-    [TryFunction]
-    procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; ResourceURL: Text; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
-    begin
-        OAuth2Impl.AcquireOnBehalfOfTokenByTokenCache(ClientId, RedirectURL, ResourceURL, RefreshToken, AccessToken, NewRefreshToken);
-    end;
-
-    /// <summary>
-    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow.
-    /// </summary>
-    /// <param name="LoginHint">The user login hint, i.e. authentication email.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
-    /// <param name="TokenCache">The token cache acquired when the access token was requested .</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    /// <param name="NewTokenCache">Exit parameter containing the new token cache.</param>
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Replaced with AcquireOnBehalfOfTokenByTokenCache with Scopes parameter', '18.0')]
-    [TryFunction]
-    procedure AcquireOnBehalfOfTokenByTokenCache(LoginHint: Text; RedirectURL: Text; ResourceURL: Text; TokenCache: Text; var AccessToken: Text; var NewTokenCache: Text)
-    begin
-        OAuth2Impl.AcquireOnBehalfOfTokenByTokenCache(LoginHint, RedirectURL, ResourceURL, TokenCache, AccessToken, NewTokenCache);
-    end;
-
-    /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
-    /// </summary>
-    /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
-    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
-    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
-    /// <param name="RefreshToken">The refresh_token that you acquired when you requested an access token.</param>
-    /// <param name="AccessToken">Exit parameter containing the access token.</param>
-    /// <param name="NewRefreshToken">Exit parameter containing the new refresh token.</param>
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Renaming to AcquireOnBehalfOfTokenByTokenCache ', '18.0')]
-    [TryFunction]
-    procedure AcquireOnBehalfOfTokenByRefreshToken(ClientId: Text; RedirectURL: Text; Scopes: List of [Text]; RefreshToken: Text; var AccessToken: Text; var NewRefreshToken: Text)
-    begin
-        OAuth2Impl.AcquireOnBehalfOfTokenByTokenCache(ClientId, RedirectURL, Scopes, RefreshToken, AccessToken, NewRefreshToken);
-    end;
-#endif
 
     /// <summary>
     /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow.

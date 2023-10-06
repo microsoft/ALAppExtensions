@@ -1,3 +1,9 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Purchases.Payables;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.ReceivablesPayables;
+
 page 30073 "APIV2 - Apply Vendor Entries"
 {
     APIVersion = 'v2.0';
@@ -20,7 +26,7 @@ page 30073 "APIV2 - Apply Vendor Entries"
         {
             repeater(GroupName)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
@@ -29,49 +35,54 @@ page 30073 "APIV2 - Apply Vendor Entries"
                 {
                     Caption = 'Applied';
                 }
-                field(appliesToId; "Applies-to ID")
+                field(appliesToId; Rec."Applies-to ID")
                 {
                     Caption = 'Applies-to Id';
                     Editable = false;
                 }
-                field(postingDate; "Posting Date")
+                field(postingDate; Rec."Posting Date")
                 {
                     Caption = 'Posting Date';
                     Editable = false;
                 }
-                field(documentType; "Document Type")
+                field(documentType; Rec."Document Type")
                 {
                     Caption = 'Document Type';
                     Editable = false;
                 }
-                field(documentNumber; "Document No.")
+                field(documentNumber; Rec."Document No.")
                 {
                     Caption = 'Document No.';
                     Editable = false;
                 }
-                field(externalDocumentNumber; "External Document No.")
+                field(externalDocumentNumber; Rec."External Document No.")
                 {
                     Caption = 'External Document No.';
                     Editable = false;
                 }
-                field(vendorNumber; "Vendor No.")
+                field(vendorNumber; Rec."Vendor No.")
                 {
                     Caption = 'Vendor No.';
                     Editable = false;
                 }
-                field(vendorName; "Vendor Name")
+                field(vendorName; Rec."Vendor Name")
                 {
                     Caption = 'Vendor Name';
                     Editable = false;
                 }
-                field(description; Description)
+                field(description; Rec.Description)
                 {
                     Caption = 'Description';
                     Editable = false;
                 }
-                field(remainingAmount; "Remaining Amount")
+                field(remainingAmount; Rec."Remaining Amount")
                 {
                     Caption = 'Remaining Amount';
+                    Editable = false;
+                }
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
+                {
+                    Caption = 'Last Modified Date';
                     Editable = false;
                 }
             }
@@ -91,7 +102,7 @@ page 30073 "APIV2 - Apply Vendor Entries"
         if RecordsLoaded then
             exit(true);
         FilterView := Rec.GetView();
-        LoadDataFromFilter(VendorIdFilter, GenJournalLineIdFilter);
+        Rec.LoadDataFromFilter(VendorIdFilter, GenJournalLineIdFilter);
         Rec.SetView(FilterView);
         if not Rec.FindFirst() then
             exit(false);
@@ -110,11 +121,11 @@ page 30073 "APIV2 - Apply Vendor Entries"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         GenJnlApply: Codeunit "Gen. Jnl.-Apply";
     begin
-        GenJournalLine.GetBySystemId("Gen. Journal Line Id");
-        VendorLedgerEntry.Get("Entry No.");
+        GenJournalLine.GetBySystemId(Rec."Gen. Journal Line Id");
+        VendorLedgerEntry.Get(Rec."Entry No.");
         GenJnlApply.SetVendApplIdAPI(GenJournalLine, VendorLedgerEntry);
         GenJnlApply.ApplyVendorLedgerEntryAPI(GenJournalLine);
-        VendorLedgerEntry.Get("Entry No.");
+        VendorLedgerEntry.Get(Rec."Entry No.");
         Rec.TransferFields(VendorLedgerEntry);
         VendorLedgerEntry.CalcFields("Remaining Amount");
         Rec."Remaining Amount" := VendorLedgerEntry."Remaining Amount";
@@ -130,6 +141,6 @@ page 30073 "APIV2 - Apply Vendor Entries"
 
     local procedure SetCalculatedFields()
     begin
-        Applied := "Applies-to ID" <> '';
+        Applied := Rec."Applies-to ID" <> '';
     end;
 }

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Reports;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Sales.Receivables;
+
 query 18039 GSTR1B2CInterCess
 {
     QueryType = Normal;

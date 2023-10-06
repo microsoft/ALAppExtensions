@@ -41,7 +41,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
 #endif
         InventoryPostingSetup: Record "Inventory Posting Setup";
         InventorySetup: Record "Inventory Setup";
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
         InvoicePostBuffer: Record "Invoice Post. Buffer";
 #pragma warning restore AL0432
@@ -365,7 +365,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Def.Tmpl. for Phys.Neg.Adj CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Post Exp.Cost Conv.As Corr.CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Post Neg.Transf. As Corr.CZL"));
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Ext. Amount CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Ext. Amount Incl. VAT CZL"));
@@ -519,9 +519,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Statistic Indication CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line Archive", PurchaseLineArchive.FieldNo("Physical Transfer CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchases & Payables Setup", PurchasesPayablesSetup.FieldNo("Default VAT Date CZL"));
-#if not CLEAN20
-        DataClassificationMgt.SetFieldToNormal(Database::"Purchases & Payables Setup", PurchasesPayablesSetup.FieldNo("Allow Alter Posting Groups CZL"));
-#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Purchases & Payables Setup", PurchasesPayablesSetup.FieldNo("Def. Orig. Doc. VAT Date CZL"));
 #pragma warning restore AL0432
 #endif
@@ -707,11 +704,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Sales & Receivables Setup", SalesReceivablesSetup.FieldNo("Default VAT Date CZL"));
 #pragma warning restore AL0432
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        DataClassificationMgt.SetFieldToNormal(Database::"Sales & Receivables Setup", SalesReceivablesSetup.FieldNo("Allow Alter Posting Groups CZL"));
-#pragma warning restore AL0432
-#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Tax Registration No. CZL"));
 #if not CLEAN22
@@ -787,11 +779,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Service Line", ServiceLine.FieldNo("Physical Transfer CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Line", ServiceLine.FieldNo("Statistic Indication CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Mgt. Setup", ServiceMgtSetup.FieldNo("Default VAT Date CZL"));
-#pragma warning restore AL0432
-#endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        DataClassificationMgt.SetFieldToNormal(Database::"Service Mgt. Setup", ServiceMgtSetup.FieldNo("Allow Alter Posting Groups CZL"));
 #pragma warning restore AL0432
 #endif
         DataClassificationMgt.SetFieldToNormal(Database::"Service Shipment Header", ServiceShipmentHeader.FieldNo("Registration No. CZL"));
@@ -872,6 +859,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Location Code CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Release LocationCode CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Invt. Movement Temp. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow VAT Date Changing CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("G/L Correction CZL"));
 #if not CLEAN22
 #pragma warning disable AL0432

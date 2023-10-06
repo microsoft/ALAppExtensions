@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.StockTransfer;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Inventory.Ledger;
+
 table 18390 "GST Tracking Entry"
 {
     fields

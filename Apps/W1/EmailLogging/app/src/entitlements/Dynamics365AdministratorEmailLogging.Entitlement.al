@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 entitlement "Dynamics 365 Administrator Email Logging"
 {
     Type = Role;

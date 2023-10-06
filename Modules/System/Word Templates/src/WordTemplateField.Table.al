@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Integration.Word;
+
+using System.Reflection;
+
 table 9989 "Word Template Field"
 {
     Access = Internal;
@@ -38,6 +47,9 @@ table 9989 "Word Template Field"
         key(Primary; "Word Template Code", "Table ID", "Field Name")
         {
             Clustered = true;
+        }
+        key(FieldNo; "Field No.")
+        {
         }
     }
 }

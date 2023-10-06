@@ -98,7 +98,7 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 Image = View;
                 Promoted = true;
                 PromotedCategory = Process;
-                RunObject = Page "VAT Statement Preview CZL";
+                RunObject = page "VAT Statement Preview CZL";
                 RunPageLink = "Statement Template Name" = field("Statement Template Name"), Name = field("Statement Name");
                 ToolTip = 'Preview the VAT statement report.';
             }
@@ -133,7 +133,7 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 Caption = 'Documentation for VAT';
                 Ellipsis = true;
                 Image = PrintInstallment;
-                RunObject = Report "Documentation for VAT CZL";
+                RunObject = report "Documentation for VAT CZL";
                 ToolTip = 'Print documentation of VAT entries.';
             }
             action(VATDocumentListCZL)
@@ -142,7 +142,7 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 Caption = 'VAT Documents List';
                 Ellipsis = true;
                 Image = PrintVAT;
-                RunObject = Report "VAT Documents List CZL";
+                RunObject = report "VAT Documents List CZL";
                 ToolTip = 'Print sales and purchase documents list.';
             }
             action(GLVATReconciliationCZL)
@@ -151,7 +151,7 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 Caption = 'G/L VAT Reconciliation';
                 Ellipsis = true;
                 Image = PrintForm;
-                RunObject = Report "G/L VAT Reconciliation CZL";
+                RunObject = report "G/L VAT Reconciliation CZL";
                 ToolTip = 'Print reconciliation G/L entries and VAT entries.';
             }
         }

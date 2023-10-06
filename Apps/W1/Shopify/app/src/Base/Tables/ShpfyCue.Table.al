@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+using System.Threading;
+
 /// <summary>
 /// Table Shpfy Cue (ID 30100).
 /// </summary>

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
+using Microsoft.Sales.Document;
+
 pageextension 41021 "Hist. Sales Factbox Ext." extends "Sales Hist. Sell-to FactBox"
 {
     layout

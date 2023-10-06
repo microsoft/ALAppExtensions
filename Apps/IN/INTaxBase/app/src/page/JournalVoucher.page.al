@@ -1,3 +1,31 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.Statement;
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Automation;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Integration;
+using System.Threading;
+using System.Utilities;
+
 page 18557 "Journal Voucher"
 {
     ApplicationArea = Basic, Suite;

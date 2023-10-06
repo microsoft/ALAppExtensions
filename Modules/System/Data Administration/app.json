@@ -1,10 +1,10 @@
 {
     "id":  "d604b641-b148-4230-8bb7-70086b143ebf",
-    "name":  "Data administration",
+    "name":  "Data Administration",
     "publisher":  "Microsoft",
     "brief":  "Provides an interface for managing and cleaning up data data in the database.",
     "description":  "Provides the ability to manage data in the database.",
-    "version":  "22.5.0.0",
+    "version":  "23.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -13,13 +13,13 @@
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
+    "platform":  "23.0.0.0",
     "dependencies":  [
                          {
                              "id":  "fd3d0b8e-61fa-4f87-b2fc-c4a1f3e53a63",
                              "name":  "Math",
                              "publisher":  "Microsoft",
-                             "version":  "22.5.0.0"
+                             "version":  "23.0.0.0"
                          }
                      ],
     "idRanges":  [

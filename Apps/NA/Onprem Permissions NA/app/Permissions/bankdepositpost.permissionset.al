@@ -24,7 +24,6 @@ permissionset 27002 "BANKDEPOSIT-POST"
                   tabledata "Customer Bank Account" = R,
                   tabledata "Customer Posting Group" = R,
                   tabledata "Date Compr. Register" = r,
-                  tabledata "Deposit Header" = RIMD,
                   tabledata "Detailed Cust. Ledg. Entry" = ri,
                   tabledata "Dimension Combination" = R,
                   tabledata "Dimension Value Combination" = R,

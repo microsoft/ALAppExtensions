@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Integration.Sharepoint;
+
+using System.Integration.Sharepoint;
+using System.Utilities;
+
 codeunit 132973 "SharePoint Test Library"
 {
     EventSubscriberInstance = Manual;

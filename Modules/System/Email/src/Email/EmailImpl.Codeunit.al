@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Telemetry;
+using System.Globalization;
+using System.Security.AccessControl;
+using System.Reflection;
+
 codeunit 8900 "Email Impl"
 {
     Access = Internal;

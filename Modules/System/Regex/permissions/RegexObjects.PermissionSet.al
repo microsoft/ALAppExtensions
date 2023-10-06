@@ -4,6 +4,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
 permissionset 3960 "Regex - Objects"
 {
     Access = Public;

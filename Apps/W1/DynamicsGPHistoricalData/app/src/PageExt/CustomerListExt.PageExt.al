@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
+using Microsoft.Sales.Customer;
+
 pageextension 41018 "Customer List Ext." extends "Customer List"
 {
     actions

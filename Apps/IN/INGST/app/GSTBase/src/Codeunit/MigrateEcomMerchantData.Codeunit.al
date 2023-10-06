@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Base;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Sales.Archive;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using System.Reflection;
+
 codeunit 18025 "Migrate Ecom Merchant Data"
 {
     Subtype = Upgrade;

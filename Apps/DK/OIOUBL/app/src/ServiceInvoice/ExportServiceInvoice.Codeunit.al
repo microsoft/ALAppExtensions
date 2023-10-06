@@ -1,7 +1,20 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Sales.Peppol;
+using Microsoft.Service.History;
+using Microsoft.Service.Setup;
+using System.IO;
+using System.Utilities;
 
 codeunit 13643 "OIOUBL-Export Service Invoice"
 {
@@ -53,7 +66,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
 
         ServiceMgtSetup.Get();
 
-        FileName := ElectronicDocumentFormat.GetAttachmentFileName(ServiceInvoiceHeader."No.", 'Invoice', 'xml');
+        FileName := ElectronicDocumentFormat.GetAttachmentFileName(ServiceInvoiceHeader, ServiceInvoiceHeader."No.", 'Invoice', 'xml');
         OIOUBLManagement.UpdateRecordExportBuffer(ServiceInvoiceHeader.RecordId(), TempBlob, FileName);
 
         OIOUBLManagement.ExportXMLFile(

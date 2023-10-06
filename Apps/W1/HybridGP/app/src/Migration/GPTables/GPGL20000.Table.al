@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 41001 "GP GL20000"
 {
     Description = 'Open Year Posted Transactions';

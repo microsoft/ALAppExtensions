@@ -1,7 +1,11 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using System.Reflection;
+
 page 2684 "Data Search Setup (Field) List"
 {
     Caption = 'Search Setup (Field) List';
-    DataCaptionExpression = PageCaption;
+    DataCaptionExpression = SelectedPageCaption;
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = List;
@@ -71,12 +75,18 @@ page 2684 "Data Search Setup (Field) List"
                 end;
             }
         }
+        area(Promoted)
+        {
+            actionref(ClearSetup_Promoted; ClearSetup)
+            {
+            }
+        }
     }
 
     trigger OnAfterGetCurrRecord()
     begin
         GetRec();
-        PageCaption := Format(Rec.TableNo) + ' ' + Rec.TableName;
+        SelectedPageCaption := Format(Rec.TableNo) + ' ' + GetTableCaption(Rec.TableNo);
     end;
 
     trigger OnAfterGetRecord()
@@ -93,22 +103,23 @@ page 2684 "Data Search Setup (Field) List"
         Rec.setrange(ObsoleteState, Rec.ObsoleteState::No);
         Rec.setfilter(Type, '%1|%2', Rec.Type::Code, Rec.Type::Text);
         Rec.FilterGroup(0);
-        PageCaption := Format(Rec.TableNo) + ' ' + Rec.TableName;
+        SelectedPageCaption := Format(Rec.TableNo) + ' ' + GetTableCaption(Rec.TableNo);
         if DataSearchSetupTable.Get(Rec.TableNo) then
             InitDefaultSetup();
     end;
 
     var
         SearchSetupField: Record "Data Search Setup (Field)";
-        PageCaption: Text[250];
+        SelectedPageCaption: Text;
+        PrevTableCaption: Text;
+        PrevTableNo: Integer;
         ResetQst: Label 'Do you want to remove the current setup and insert the default?';
 
     local procedure InitDefaultSetup()
     var
         DataSearchDefaults: codeunit "Data Search Defaults";
     begin
-        DataSearchDefaults.AddTextFields(Rec.TableNo);
-        DataSearchDefaults.AddIndexedFields(Rec.TableNo);
+        DataSearchDefaults.AddDefaultFields(Rec.TableNo);
     end;
 
     local procedure UpdateRec()
@@ -127,6 +138,20 @@ page 2684 "Data Search Setup (Field) List"
             SearchSetupField."Table No." := Rec.TableNo;
             SearchSetupField."Field No." := Rec."No.";
         end;
+    end;
+
+    local procedure GetTableCaption(TableNo: Integer): Text
+    var
+        AllObjWithCaption: Record AllObjWithCaption;
+    begin
+        if TableNo = PrevTableNo then
+            exit(PrevTableCaption);
+        PrevTableNo := TableNo;
+        PrevTableCaption := '';
+        if TableNo <> 0 then
+            if AllObjWithCaption.Get(AllObjWithCaption."Object Type"::Table, TableNo) then
+                PrevTableCaption := AllObjWithCaption."Object Caption";
+        exit(PrevTableCaption);
     end;
 }
 

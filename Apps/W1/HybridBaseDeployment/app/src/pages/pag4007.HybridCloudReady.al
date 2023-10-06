@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using System.Security.AccessControl;
+using System.Security.User;
+
 page 4007 "Intelligent Cloud Ready"
 {
     Caption = 'Cloud Ready Checklist';

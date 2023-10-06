@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.EU3PartyTrade;
+
+using Microsoft.Purchases.History;
+
 pageextension 4884 "EU3 Posted Purch. Invoice" extends "Posted Purchase Invoice"
 {
     layout

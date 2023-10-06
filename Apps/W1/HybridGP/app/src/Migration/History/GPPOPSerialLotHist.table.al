@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4063 "GPPOPSerialLotHist"
 {
     DataClassification = CustomerContent;

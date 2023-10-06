@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy GQL Locations (ID 30100) implements Interface Shpfy IGarphQL.
 /// </summary>

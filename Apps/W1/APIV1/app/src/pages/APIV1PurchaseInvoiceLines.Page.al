@@ -1,3 +1,12 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Foundation.UOM;
+using Microsoft.Integration.Entity;
+using Microsoft.Integration.Graph;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item;
+using System.Reflection;
+
 page 20047 "APIV1 - Purchase Invoice Lines"
 {
     DelayedInsert = true;
@@ -13,7 +22,7 @@ page 20047 "APIV1 - Purchase Invoice Lines"
         {
             repeater(Group)
             {
-                field(id; Id)
+                field(id; Rec.Id)
                 {
                     ApplicationArea = All;
                     Caption = 'id', Locked = true;
@@ -21,11 +30,11 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        IF xRec.Id <> Id THEN
-                            ERROR(CannotChangeIdNoErr);
+                        if xRec.Id <> Rec.Id then
+                            error(CannotChangeIdNoErr);
                     end;
                 }
-                field(documentId; "Document Id")
+                field(documentId; Rec."Document Id")
                 {
                     ApplicationArea = All;
                     Caption = 'documentId', Locked = true;
@@ -33,11 +42,11 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        IF (not IsNullGuid(xRec."Document Id")) and (xRec."Document Id" <> "Document Id") THEN
-                            ERROR(CannotChangeDocumentIdNoErr);
+                        if (not IsNullGuid(xRec."Document Id")) and (xRec."Document Id" <> Rec."Document Id") then
+                            error(CannotChangeDocumentIdNoErr);
                     end;
                 }
-                field(sequence; "Line No.")
+                field(sequence; Rec."Line No.")
                 {
                     ApplicationArea = All;
                     Caption = 'sequence', Locked = true;
@@ -45,13 +54,13 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        IF (xRec."Line No." <> "Line No.") AND (xRec."Line No." <> 0) THEN
-                            ERROR(CannotChangeLineNoErr);
+                        if (xRec."Line No." <> Rec."Line No.") and (xRec."Line No." <> 0) then
+                            error(CannotChangeLineNoErr);
 
-                        RegisterFieldSet(FIELDNO("Line No."));
+                        RegisterFieldSet(Rec.FieldNo("Line No."));
                     end;
                 }
-                field(itemId; "Item Id")
+                field(itemId; Rec."Item Id")
                 {
                     ApplicationArea = All;
                     Caption = 'itemId', Locked = true;
@@ -59,19 +68,19 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO(Type));
-                        RegisterFieldSet(FIELDNO("No."));
-                        RegisterFieldSet(FIELDNO("Item Id"));
+                        RegisterFieldSet(Rec.FieldNo(Type));
+                        RegisterFieldSet(Rec.FieldNo("No."));
+                        RegisterFieldSet(Rec.FieldNo("Item Id"));
 
-                        IF NOT Item.GetBySystemId("Item Id") THEN BEGIN
-                            InsertItem := TRUE;
-                            EXIT;
-                        END;
+                        if not Item.GetBySystemId(Rec."Item Id") then begin
+                            InsertItem := true;
+                            exit;
+                        end;
 
-                        "No." := Item."No.";
+                        Rec."No." := Item."No.";
                     end;
                 }
-                field(accountId; "Account Id")
+                field(accountId; Rec."Account Id")
                 {
                     ApplicationArea = All;
                     Caption = 'accountId', Locked = true;
@@ -81,15 +90,15 @@ page 20047 "APIV1 - Purchase Invoice Lines"
                     var
                         EmptyGuid: Guid;
                     begin
-                        IF "Account Id" <> EmptyGuid THEN
-                            IF Item."No." <> '' THEN
-                                ERROR(BothItemIdAndAccountIdAreSpecifiedErr);
-                        RegisterFieldSet(FIELDNO(Type));
-                        RegisterFieldSet(FIELDNO("Account Id"));
-                        RegisterFieldSet(FIELDNO("No."));
+                        if Rec."Account Id" <> EmptyGuid then
+                            if Item."No." <> '' then
+                                error(BothItemIdAndAccountIdAreSpecifiedErr);
+                        RegisterFieldSet(Rec.FieldNo(Type));
+                        RegisterFieldSet(Rec.FieldNo("Account Id"));
+                        RegisterFieldSet(Rec.FieldNo("No."));
                     end;
                 }
-                field(lineType; "API Type")
+                field(lineType; Rec."API Type")
                 {
                     ApplicationArea = All;
                     Caption = 'lineType', Locked = true;
@@ -97,7 +106,7 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO(Type));
+                        RegisterFieldSet(Rec.FieldNo(Type));
                     end;
                 }
                 field(lineDetails; LineObjectDetailsJSON)
@@ -113,33 +122,33 @@ page 20047 "APIV1 - Purchase Invoice Lines"
                     var
                         GraphMgtComplexTypes: Codeunit "Graph Mgt - Complex Types";
                     begin
-                        IF NOT InsertItem THEN
-                            EXIT;
+                        if not InsertItem then
+                            exit;
 
                         GraphMgtComplexTypes.ParseDocumentLineObjectDetailsFromJSON(
                           LineObjectDetailsJSON, Item."No.", Item.Description, Item."Description 2");
 
-                        IF Item."No." <> '' THEN
-                            RegisterItemFieldSet(Item.FIELDNO("No."));
+                        if Item."No." <> '' then
+                            RegisterItemFieldSet(Item.FieldNo("No."));
 
-                        RegisterFieldSet(FIELDNO("No."));
+                        RegisterFieldSet(Rec.FieldNo("No."));
 
-                        IF Item.Description <> '' THEN
-                            RegisterItemFieldSet(Item.FIELDNO(Description));
+                        if Item.Description <> '' then
+                            RegisterItemFieldSet(Item.FieldNo(Description));
 
-                        IF Description = '' THEN BEGIN
-                            Description := Item.Description;
-                            RegisterFieldSet(FIELDNO(Description));
-                        END;
+                        if Rec.Description = '' then begin
+                            Rec.Description := Item.Description;
+                            RegisterFieldSet(Rec.FieldNo(Description));
+                        end;
 
-                        IF Item."Description 2" <> '' THEN BEGIN
-                            "Description 2" := Item."Description 2";
-                            RegisterItemFieldSet(Item.FIELDNO("Description 2"));
-                            RegisterFieldSet(FIELDNO("Description 2"));
-                        END;
+                        if Item."Description 2" <> '' then begin
+                            Rec."Description 2" := Item."Description 2";
+                            RegisterItemFieldSet(Item.FieldNo("Description 2"));
+                            RegisterFieldSet(Rec.FieldNo("Description 2"));
+                        end;
                     end;
                 }
-                field(description; Description)
+                field(description; Rec.Description)
                 {
                     ApplicationArea = All;
                     Caption = 'description';
@@ -147,7 +156,7 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO(Description));
+                        RegisterFieldSet(Rec.FieldNo(Description));
                     end;
                 }
                 field(unitOfMeasure; UnitOfMeasureJSON)
@@ -167,16 +176,16 @@ page 20047 "APIV1 - Purchase Invoice Lines"
                     begin
                         PurchInvAggregator.VerifyCanUpdateUOM(Rec);
                         GraphCollectionMgtItem.ParseJSONToUnitOfMeasure(UnitOfMeasureJSON, TempUnitOfMeasure);
-                        "Unit of Measure Code" := TempUnitOfMeasure.Code;
-                        RegisterFieldSet(FIELDNO("Unit of Measure Code"));
+                        Rec."Unit of Measure Code" := TempUnitOfMeasure.Code;
+                        RegisterFieldSet(Rec.FieldNo("Unit of Measure Code"));
 
-                        IF InsertItem THEN
-                            EXIT;
+                        if InsertItem then
+                            exit;
 
                         PurchInvAggregator.UpdateUnitOfMeasure(Item, UnitOfMeasureJSON);
                     end;
                 }
-                field(unitCost; "Direct Unit Cost")
+                field(unitCost; Rec."Direct Unit Cost")
                 {
                     ApplicationArea = All;
                     Caption = 'directUnitCost', Locked = true;
@@ -184,15 +193,15 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        IF InsertItem THEN BEGIN
-                            Item."Unit Cost" := "Direct Unit Cost";
-                            RegisterFieldSet(Item.FIELDNO("Unit Cost"));
-                        END;
+                        if InsertItem then begin
+                            Item."Unit Cost" := Rec."Direct Unit Cost";
+                            RegisterFieldSet(Item.FieldNo("Unit Cost"));
+                        end;
 
-                        RegisterFieldSet(FIELDNO("Direct Unit Cost"));
+                        RegisterFieldSet(Rec.FieldNo("Direct Unit Cost"));
                     end;
                 }
-                field(quantity; Quantity)
+                field(quantity; Rec.Quantity)
                 {
                     ApplicationArea = All;
                     Caption = 'quantity', Locked = true;
@@ -200,10 +209,10 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO(Quantity));
+                        RegisterFieldSet(Rec.FieldNo(Quantity));
                     end;
                 }
-                field(discountAmount; "Line Discount Amount")
+                field(discountAmount; Rec."Line Discount Amount")
                 {
                     ApplicationArea = All;
                     Caption = 'discountAmount', Locked = true;
@@ -211,10 +220,10 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO("Line Discount Amount"));
+                        RegisterFieldSet(Rec.FieldNo("Line Discount Amount"));
                     end;
                 }
-                field(discountPercent; "Line Discount %")
+                field(discountPercent; Rec."Line Discount %")
                 {
                     ApplicationArea = All;
                     Caption = 'discountPercent', Locked = true;
@@ -222,16 +231,16 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO("Line Discount %"));
+                        RegisterFieldSet(Rec.FieldNo("Line Discount %"));
                     end;
                 }
-                field(discountAppliedBeforeTax; "Discount Applied Before Tax")
+                field(discountAppliedBeforeTax; Rec."Discount Applied Before Tax")
                 {
                     ApplicationArea = All;
                     Caption = 'discountAppliedBeforeTax';
                     ToolTip = 'Specifies the discount applied before tax.';
                 }
-                field(amountExcludingTax; "Line Amount Excluding Tax")
+                field(amountExcludingTax; Rec."Line Amount Excluding Tax")
                 {
                     ApplicationArea = All;
                     Caption = 'amountExcludingTax', Locked = true;
@@ -239,10 +248,10 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO(Amount));
+                        RegisterFieldSet(Rec.FieldNo(Amount));
                     end;
                 }
-                field(taxCode; "Tax Code")
+                field(taxCode; Rec."Tax Code")
                 {
                     ApplicationArea = All;
                     Caption = 'taxCode', Locked = true;
@@ -252,28 +261,28 @@ page 20047 "APIV1 - Purchase Invoice Lines"
                     var
                         GeneralLedgerSetup: Record "General Ledger Setup";
                     begin
-                        IF InsertItem THEN BEGIN
-                            IF GeneralLedgerSetup.UseVat() THEN
-                                EXIT;
+                        if InsertItem then begin
+                            if GeneralLedgerSetup.UseVat() then
+                                exit;
 
-                            Item."Tax Group Code" := COPYSTR("Tax Code", 1, MAXSTRLEN(Item."Tax Group Code"));
-                            RegisterFieldSet(FIELDNO("Tax Code"));
-                        END;
+                            Item."Tax Group Code" := COPYSTR(Rec."Tax Code", 1, MAXSTRLEN(Item."Tax Group Code"));
+                            RegisterFieldSet(Rec.FieldNo("Tax Code"));
+                        end;
                     end;
                 }
-                field(taxPercent; "VAT %")
+                field(taxPercent; Rec."VAT %")
                 {
                     ApplicationArea = All;
                     Caption = 'taxPercent', Locked = true;
                     ToolTip = 'Specifies the tax percent.';
                 }
-                field(totalTaxAmount; "Line Tax Amount")
+                field(totalTaxAmount; Rec."Line Tax Amount")
                 {
                     ApplicationArea = All;
                     Caption = 'totalTaxAmount', Locked = true;
                     ToolTip = 'Specifies the tax amount.';
                 }
-                field(amountIncludingTax; "Line Amount Including Tax")
+                field(amountIncludingTax; Rec."Line Amount Including Tax")
                 {
                     ApplicationArea = All;
                     Caption = 'amountIncludingTax', Locked = true;
@@ -281,34 +290,34 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO("Amount Including VAT"));
+                        RegisterFieldSet(Rec.FieldNo("Amount Including VAT"));
                     end;
                 }
-                field(invoiceDiscountAllocation; "Inv. Discount Amount Excl. VAT")
+                field(invoiceDiscountAllocation; Rec."Inv. Discount Amount Excl. VAT")
                 {
                     ApplicationArea = All;
                     Caption = 'invoiceDiscountAllocation', Locked = true;
                     ToolTip = 'Specifies the invoice discount amount excluding tax.';
                 }
-                field(netAmount; Amount)
+                field(netAmount; Rec.Amount)
                 {
                     ApplicationArea = All;
                     Caption = 'netAmount', Locked = true;
                     ToolTip = 'Specifies the net amount.';
                 }
-                field(netTaxAmount; "Tax Amount")
+                field(netTaxAmount; Rec."Tax Amount")
                 {
                     ApplicationArea = All;
                     Caption = 'netTaxAmount', Locked = true;
                     ToolTip = 'Specifies the net tax amount.';
                 }
-                field(netAmountIncludingTax; "Amount Including VAT")
+                field(netAmountIncludingTax; Rec."Amount Including VAT")
                 {
                     ApplicationArea = All;
                     Caption = 'netAmountIncludingTax', Locked = true;
                     ToolTip = 'Specifies the net amount including tax.';
                 }
-                field(expectedReceiptDate; "Expected Receipt Date")
+                field(expectedReceiptDate; Rec."Expected Receipt Date")
                 {
                     ApplicationArea = All;
                     Caption = 'expectedReceiptDate', Locked = true;
@@ -316,10 +325,10 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO("Expected Receipt Date"));
+                        RegisterFieldSet(Rec.FieldNo("Expected Receipt Date"));
                     end;
                 }
-                field(itemVariantId; "Variant Id")
+                field(itemVariantId; Rec."Variant Id")
                 {
                     ApplicationArea = All;
                     Caption = 'itemVariantId', Locked = true;
@@ -327,7 +336,7 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO("Variant Code"));
+                        RegisterFieldSet(Rec.FieldNo("Variant Code"));
                     end;
                 }
             }
@@ -358,31 +367,31 @@ page 20047 "APIV1 - Purchase Invoice Lines"
         IdFilter: Text;
         FilterView: Text;
     begin
-        IF NOT LinesLoaded THEN BEGIN
-            FilterView := GETVIEW();
-            IdFilter := GETFILTER(Id);
-            DocumentIdFilter := GETFILTER("Document Id");
-            IF (IdFilter = '') AND (DocumentIdFilter = '') THEN
-                ERROR(IDOrDocumentIdShouldBeSpecifiedForLinesErr);
-            IF IdFilter <> '' THEN
+        if not LinesLoaded then begin
+            FilterView := Rec.GetView();
+            IdFilter := Rec.GetFilter(Id);
+            DocumentIdFilter := Rec.GetFilter("Document Id");
+            if (IdFilter = '') and (DocumentIdFilter = '') then
+                error(IDOrDocumentIdShouldBeSpecifiedForLinesErr);
+            if IdFilter <> '' then
                 DocumentIdFilter := GraphMgtSalesInvLines.GetDocumentIdFilterFromIdFilter(IdFilter)
-            ELSE
-                DocumentIdFilter := GETFILTER("Document Id");
+            else
+                DocumentIdFilter := Rec.GetFilter("Document Id");
             PurchInvAggregator.LoadLines(Rec, DocumentIdFilter);
-            SETVIEW(FilterView);
-            IF NOT FINDFIRST() THEN
-                EXIT(FALSE);
-            LinesLoaded := TRUE;
-        END;
+            Rec.SETVIEW(FilterView);
+            if not Rec.FINDFIRST() then
+                exit(false);
+            LinesLoaded := true;
+        end;
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         PurchInvAggregator: Codeunit "Purch. Inv. Aggregator";
     begin
-        IF InsertItem THEN
+        if InsertItem then
             InsertItemOnTheFly();
         PurchInvAggregator.PropagateInsertLine(Rec, TempFieldBuffer);
     end;
@@ -391,7 +400,7 @@ page 20047 "APIV1 - Purchase Invoice Lines"
     var
         PurchInvAggregator: Codeunit "Purch. Inv. Aggregator";
     begin
-        IF InsertItem THEN
+        if InsertItem then
             InsertItemOnTheFly();
         PurchInvAggregator.PropagateModifyLine(Rec, TempFieldBuffer);
     end;
@@ -399,8 +408,8 @@ page 20047 "APIV1 - Purchase Invoice Lines"
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
         ClearCalculatedFields();
-        VALIDATE(Type, Type::Item);
-        RegisterFieldSet(FIELDNO(Type));
+        Rec.Validate(Type, Rec.Type::Item);
+        RegisterFieldSet(Rec.FieldNo(Type));
     end;
 
     var
@@ -422,14 +431,14 @@ page 20047 "APIV1 - Purchase Invoice Lines"
         LastOrderNo: Integer;
     begin
         LastOrderNo := 1;
-        IF TempFieldBuffer.FINDLAST() THEN
+        if TempFieldBuffer.FINDLAST() then
             LastOrderNo := TempFieldBuffer.Order + 1;
 
         CLEAR(TempFieldBuffer);
         TempFieldBuffer.Order := LastOrderNo;
         TempFieldBuffer."Table ID" := DATABASE::"Purch. Inv. Line Aggregate";
         TempFieldBuffer."Field ID" := FieldNo;
-        TempFieldBuffer.INSERT();
+        TempFieldBuffer.insert();
     end;
 
     local procedure ClearCalculatedFields()
@@ -456,13 +465,13 @@ page 20047 "APIV1 - Purchase Invoice Lines"
 
     local procedure RegisterItemFieldSet(FieldNo: Integer)
     begin
-        IF TempItemFieldSet.GET(DATABASE::Item, FieldNo) THEN
-            EXIT;
+        if TempItemFieldSet.GET(DATABASE::Item, FieldNo) then
+            exit;
 
         TempItemFieldSet.INIT();
         TempItemFieldSet.TableNo := DATABASE::Item;
-        TempItemFieldSet.VALIDATE("No.", FieldNo);
-        TempItemFieldSet.INSERT(TRUE);
+        TempItemFieldSet.Validate("No.", FieldNo);
+        TempItemFieldSet.insert(true);
     end;
 
     local procedure InsertItemOnTheFly()
@@ -470,9 +479,9 @@ page 20047 "APIV1 - Purchase Invoice Lines"
         GraphCollectionMgtItem: Codeunit "Graph Collection Mgt - Item";
     begin
         GraphCollectionMgtItem.InsertItemFromSalesDocument(Item, TempItemFieldSet, UnitOfMeasureJSON);
-        VALIDATE("No.", Item."No.");
+        Rec.Validate("No.", Item."No.");
 
-        IF Description = '' THEN
-            Description := Item.Description;
+        if Rec.Description = '' then
+            Rec.Description := Item.Description;
     end;
 }

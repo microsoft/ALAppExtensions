@@ -1,7 +1,7 @@
 table 31092 "Acc. Schedule Extension CZL"
 {
     Caption = 'Acc. Schedule Extension';
-    LookupPageID = "Acc. Schedule Extensions CZL";
+    LookupPageId = "Acc. Schedule Extensions CZL";
 
     fields
     {
@@ -86,13 +86,8 @@ table 31092 "Acc. Schedule Extension CZL"
             DataClassification = CustomerContent;
             OptionCaption = ' ,Yes,No';
             OptionMembers = " ",Yes,No;
-#if not CLEAN20
-            ObsoleteState = Pending;
-            ObsoleteTag = '20.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '23.0';
-#endif
             ObsoleteReason = 'Replaced by Advance Payments field in Advance Payments Localization for Czech app';
         }
         field(18; "Reverse Sign"; Boolean)
@@ -159,9 +154,9 @@ table 31092 "Acc. Schedule Extension CZL"
         {
             Caption = 'Posting Group Filter';
             DataClassification = CustomerContent;
-            TableRelation = IF ("Source Table" = CONST("Customer Entry")) "Customer Posting Group"
-            ELSE
-            IF ("Source Table" = CONST("Vendor Entry")) "Vendor Posting Group";
+            TableRelation = if ("Source Table" = const("Customer Entry")) "Customer Posting Group"
+            else
+            if ("Source Table" = const("Vendor Entry")) "Vendor Posting Group";
             ValidateTableRelation = false;
         }
         field(57; "Posting Date Filter"; Code[20])

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.VAT.Setup;
+
 tableextension 5285 "VAT Posting Setup SAF-T" extends "VAT Posting Setup"
 {
     fields
@@ -29,7 +37,8 @@ tableextension 5285 "VAT Posting Setup SAF-T" extends "VAT Posting Setup"
         PurchaseTaxCodeSAFT: Integer;
     begin
         AuditFileExportSetup.LockTable();
-        AuditFileExportSetup.Get();
+        if not AuditFileExportSetup.Get() then
+            exit;
         SalesTaxCodeSAFT := AuditFileExportSetup."Last Tax Code" + 1;
         PurchaseTaxCodeSAFT := AuditFileExportSetup."Last Tax Code" + 2;
 

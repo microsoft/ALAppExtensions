@@ -37,6 +37,11 @@ codeunit 1913 "MigrationQB Vendor Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     local procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
 #endif
+    begin
+        MigrateVendorPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+
+    procedure MigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
     begin
@@ -143,7 +148,7 @@ codeunit 1913 "MigrationQB Vendor Migrator"
 			until MigrationQBVendTrans.Next() = 0;	 */
     end;
 
-    local procedure MigrateVendorDetails(MigrationQBVendor: Record "MigrationQB Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
+    procedure MigrateVendorDetails(MigrationQBVendor: Record "MigrationQB Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";

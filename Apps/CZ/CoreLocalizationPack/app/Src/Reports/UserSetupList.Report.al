@@ -52,8 +52,8 @@ report 31201 "User Setup List CZL"
             }
             dataitem("User Setup Line CZL"; "User Setup Line CZL")
             {
-                DataItemLink = "User ID" = FIELD("User ID");
-                DataItemTableView = SORTING("User ID", Type, "Line No.");
+                DataItemLink = "User ID" = field("User ID");
+                DataItemTableView = sorting("User ID", Type, "Line No.");
                 column(CodeName_USL_Fld; "Code / Name")
                 {
                     IncludeCaption = true;
@@ -75,8 +75,8 @@ report 31201 "User Setup List CZL"
             }
             dataitem("Selected Dimension"; "Selected Dimension")
             {
-                DataItemLink = "User ID" = FIELD("User ID");
-                DataItemTableView = SORTING("User ID", "Object Type", "Object ID", "Analysis View Code", "Dimension Code");
+                DataItemLink = "User ID" = field("User ID");
+                DataItemTableView = sorting("User ID", "Object Type", "Object ID", "Analysis View Code", "Dimension Code");
                 column(DimensionCode_SD_Fld; "Dimension Code")
                 {
                     IncludeCaption = true;

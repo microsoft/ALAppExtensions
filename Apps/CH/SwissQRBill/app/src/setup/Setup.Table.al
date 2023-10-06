@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.GeneralLedger.Journal;
+using System.IO;
+
 table 11512 "Swiss QR-Bill Setup"
 {
     DataClassification = CustomerContent;
@@ -7,12 +17,8 @@ table 11512 "Swiss QR-Bill Setup"
         field(1; "Primary key"; Code[10]) { }
         field(2; "Swiss-Cross Image"; Media)
         {
-#if CLEAN20
             ObsoleteState = Removed;
-#else
-            ObsoleteState = Pending;
-#endif
-            ObsoleteTag = '20.0';
+            ObsoleteTag = '23.0';
             ObsoleteReason = 'Use W1 codeunit 4113 "Swiss QR Code Helper"';
         }
         field(3; "Address Type"; enum "Swiss QR-Bill Address Type")

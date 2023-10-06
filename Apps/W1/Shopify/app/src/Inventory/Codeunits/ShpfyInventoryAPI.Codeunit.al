@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Codeunit Shpfy Inventory API (ID 30195).
 /// </summary>
@@ -98,7 +102,7 @@ codeunit 30195 "Shpfy Inventory API"
                 exit(JsonHelper.GetJsonObject(JLocation, JResult, 'inventoryLevels'));
     end;
 
-    local procedure SetInventoryIds()
+    internal procedure SetInventoryIds()
     var
         ShopInventory: Record "Shpfy Shop Inventory";
     begin
@@ -127,7 +131,8 @@ codeunit 30195 "Shpfy Inventory API"
         IGraphQL: Interface "Shpfy IGraphQL";
         JGraphQL: JsonObject;
         JSetQuantities: JsonArray;
-        JSetQunatity: JsonObject;
+        JSetQuantity: JsonObject;
+        InputSize: Integer;
     begin
         if ShopInventory.FindSet() then begin
             IGraphQL := Enum::"Shpfy GraphQL Type"::ModifyInventory;
@@ -135,9 +140,18 @@ codeunit 30195 "Shpfy Inventory API"
             JSetQuantities := JsonHelper.GetJsonArray(JGraphQL, 'variables.input.setQuantities');
 
             repeat
-                JSetQunatity := CalcStock(ShopInventory);
-                if JSetQunatity.Keys.Count = 3 then
-                    JSetQuantities.Add(JSetQunatity);
+                JSetQuantity := CalcStock(ShopInventory);
+                if JSetQuantity.Keys.Count = 3 then begin
+                    JSetQuantities.Add(JSetQuantity);
+                    InputSize += 1;
+                    if InputSize = 250 then begin
+                        ShopifyCommunicationMgt.ExecuteGraphQL(Format(JGraphQL), IGraphQL.GetExpectedCost());
+                        Clear(JGraphQL);
+                        JGraphQL.ReadFrom(IGraphQL.GetGraphQL());
+                        JSetQuantities := JsonHelper.GetJsonArray(JGraphQL, 'variables.input.setQuantities');
+                        InputSize := 0;
+                    end;
+                end;
             until ShopInventory.Next() = 0;
 
             ShopifyCommunicationMgt.ExecuteGraphQL(Format(JGraphQL), IGraphQL.GetExpectedCost());
@@ -172,7 +186,10 @@ codeunit 30195 "Shpfy Inventory API"
                         if IStockAvailable.CanHaveStock() then begin
                             JSetQuantity.Add('inventoryItemId', StrSubstNo(InventoryItemIdTxt, ShopInventory."Inventory Item Id"));
                             JSetQuantity.Add('locationId', StrSubstNo(LocationIdTxt, ShopLocation.Id));
-                            JSetQuantity.Add('quantity', ShopInventory.Stock);
+                            if ShopInventory.Stock < 0 then
+                                JSetQuantity.Add('quantity', 0)
+                            else
+                                JSetQuantity.Add('quantity', ShopInventory.Stock);
                         end;
                     end;
             end;
@@ -290,7 +307,6 @@ codeunit 30195 "Shpfy Inventory API"
             ShopifyShop.Get(ShopCode);
             ShopifyCommunicationMgt.SetShop(ShopifyShop);
         end;
-        SetInventoryIds();
     end;
 
     local procedure StockCalculationFactory(var StockCalculation: Interface "Shpfy Stock Calculation"; CalculationType: Enum "Shpfy Stock Calculation")

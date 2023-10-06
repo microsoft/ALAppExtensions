@@ -1,3 +1,10 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Period;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Integration.Graph;
+
 page 20011 "APIV1 - Company Information"
 {
     APIVersion = 'v1.0';
@@ -19,12 +26,12 @@ page 20011 "APIV1 - Company Information"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'id', Locked = true;
                     Editable = false;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'displayName', Locked = true;
                 }
@@ -36,23 +43,23 @@ page 20011 "APIV1 - Company Information"
 #pragma warning restore
                     ToolTip = 'Specifies the company''s primary business address.';
                 }
-                field(phoneNumber; "Phone No.")
+                field(phoneNumber; Rec."Phone No.")
                 {
                     Caption = 'phoneNumber', Locked = true;
                 }
-                field(faxNumber; "Fax No.")
+                field(faxNumber; Rec."Fax No.")
                 {
                     Caption = 'faxNumber', Locked = true;
                 }
-                field(email; "E-Mail")
+                field(email; Rec."E-Mail")
                 {
                     Caption = 'email', Locked = true;
                 }
-                field(website; "Home Page")
+                field(website; Rec."Home Page")
                 {
                     Caption = 'website', Locked = true;
                 }
-                field(taxRegistrationNumber; "VAT Registration No.")
+                field(taxRegistrationNumber; Rec."VAT Registration No.")
                 {
                     Caption = 'taxRegistrationNumber', Locked = true;
                 }
@@ -66,16 +73,16 @@ page 20011 "APIV1 - Company Information"
                     Caption = 'currentFiscalYearStartDate', Locked = true;
                     Editable = false;
                 }
-                field(industry; "Industrial Classification")
+                field(industry; Rec."Industrial Classification")
                 {
                     Caption = 'industry', Locked = true;
                 }
-                field(picture; Picture)
+                field(picture; Rec.Picture)
                 {
                     Caption = 'picture', Locked = true;
                     Editable = false;
                 }
-                field(lastModifiedDateTime; "Last Modified Date Time")
+                field(lastModifiedDateTime; Rec."Last Modified Date Time")
                 {
                     Caption = 'lastModifiedDateTime', Locked = true;
                 }
@@ -96,9 +103,9 @@ page 20011 "APIV1 - Company Information"
     var
         CompanyInformation: Record "Company Information";
     begin
-        CompanyInformation.GetBySystemId(SystemId);
+        CompanyInformation.GetBySystemId(Rec.SystemId);
         ProcessComplexTypes(Rec, PostalAddressJSON);
-        MODIFY(TRUE);
+        Rec.Modify(true);
 
         SetCalculatedFields();
     end;
@@ -120,11 +127,11 @@ page 20011 "APIV1 - Company Information"
     begin
         PostalAddressJSON := PostalAddressToJSON(Rec);
 
-        GeneralLedgerSetup.GET();
+        GeneralLedgerSetup.Get();
         LCYCurrencyCode := GeneralLedgerSetup."LCY Code";
 
-        AccountingPeriod.SETRANGE("New Fiscal Year", TRUE);
-        IF AccountingPeriod.FINDLAST() THEN
+        AccountingPeriod.SetRange("New Fiscal Year", true);
+        if AccountingPeriod.FindLast() then
             FiscalYearStart := AccountingPeriod."Starting Date";
     end;
 
@@ -132,14 +139,13 @@ page 20011 "APIV1 - Company Information"
     var
         GraphMgtComplexTypes: Codeunit "Graph Mgt - Complex Types";
     begin
-        with CompanyInformation do
-            GraphMgtComplexTypes.GetPostalAddressJSON(Address, "Address 2", City, County, "Country/Region Code", "Post Code", JSON);
+        GraphMgtComplexTypes.GetPostalAddressJSON(CompanyInformation.Address, CompanyInformation."Address 2", CompanyInformation.City, CompanyInformation.County, CompanyInformation."Country/Region Code", CompanyInformation."Post Code", JSON);
     end;
 
     local procedure ClearCalculatedFields()
     begin
-        CLEAR(SystemId);
-        CLEAR(PostalAddressJSON);
+        Clear(Rec.SystemId);
+        Clear(PostalAddressJSON);
     end;
 
     local procedure ProcessComplexTypes(var CompanyInformation: Record "Company Information"; LocalPostalAddressJSON: Text)
@@ -155,12 +161,11 @@ page 20011 "APIV1 - Company Information"
         if PostalAddressJSON = '' then
             exit;
 
-        with CompanyInformation do begin
-            RecordRef.GetTable(CompanyInformation);
-            GraphMgtComplexTypes.ApplyPostalAddressFromJSON(LocalPostalAddressJSON, RecordRef,
-              FieldNo(Address), FieldNo("Address 2"), FieldNo(City), FieldNo(County), FieldNo("Country/Region Code"), FieldNo("Post Code"));
-            RecordRef.SetTable(CompanyInformation);
-        end;
+        RecordRef.GetTable(CompanyInformation);
+        GraphMgtComplexTypes.ApplyPostalAddressFromJSON(LocalPostalAddressJSON, RecordRef,
+          CompanyInformation.FieldNo(CompanyInformation.Address), CompanyInformation.FieldNo(CompanyInformation."Address 2"), CompanyInformation.FieldNo(CompanyInformation.City), CompanyInformation.FieldNo(CompanyInformation.County), CompanyInformation.FieldNo(CompanyInformation."Country/Region Code"), CompanyInformation.FieldNo(CompanyInformation."Post Code"));
+        RecordRef.SetTable(CompanyInformation);
     end;
 }
+
 

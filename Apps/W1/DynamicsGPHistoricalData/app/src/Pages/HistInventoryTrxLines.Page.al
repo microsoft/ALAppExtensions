@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41011 "Hist. Inventory Trx. Lines"
 {
     Caption = 'Historical Inventory Trx. Lines';

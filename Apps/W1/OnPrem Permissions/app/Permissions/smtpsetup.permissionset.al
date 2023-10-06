@@ -11,7 +11,4 @@ permissionset 2271 "SMTP-SETUP"
     ObsoleteTag = '20.0';
     ObsoleteState =  Pending;
     ObsoleteReason = '"SMTP Mail - Admin" has been removed.';
-#if not CLEAN20
-    IncludedPermissionSets = "SMTP Mail - Admin";
-#endif
 }

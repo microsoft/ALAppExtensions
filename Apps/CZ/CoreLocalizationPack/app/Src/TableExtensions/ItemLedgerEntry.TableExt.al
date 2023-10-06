@@ -100,6 +100,13 @@ tableextension 11799 "Item Ledger Entry CZL" extends "Item Ledger Entry"
         SetRange("Posting Date", InvtShipmentHeader."Posting Date");
     end;
 
+    procedure SetFilterFromDirectTransHeaderCZL(DirectTransHeader: Record "Direct Trans. Header")
+    begin
+        SetCurrentKey("Document No.");
+        SetRange("Document No.", DirectTransHeader."No.");
+        SetRange("Posting Date", DirectTransHeader."Posting Date");
+    end;
+
     procedure GetRegisterUserIDCZL(): Code[50]
     var
         ItemRegister: Record "Item Register";

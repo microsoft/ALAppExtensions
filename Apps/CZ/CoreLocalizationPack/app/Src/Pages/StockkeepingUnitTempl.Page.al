@@ -63,7 +63,7 @@ page 31005 "Stockkeeping Unit Templ. CZL"
                 Caption = 'Configuration Template';
                 ApplicationArea = Basic, Suite;
                 Image = Template;
-                RunObject = Page "Config. Template Header";
+                RunObject = page "Config. Template Header";
                 RunPageLink = Code = field("Configuration Template Code");
                 RunPageMode = View;
                 ToolTip = 'Open configuration template card.';

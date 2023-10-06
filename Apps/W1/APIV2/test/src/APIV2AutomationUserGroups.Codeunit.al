@@ -2,9 +2,13 @@
 codeunit 139867 "APIV2 - Automation User Groups"
 {
     // version Test,ERM,W1,All
-
     Subtype = Test;
     TestPermissions = Disabled;
+    ObsoleteReason = 'User groups are obsoleted.';
+    ObsoleteState = Pending;
+#pragma warning disable AS0072    
+    ObsoleteTag = '22.0';
+#pragma warning restore AS0072    
 
     trigger OnRun()
     begin

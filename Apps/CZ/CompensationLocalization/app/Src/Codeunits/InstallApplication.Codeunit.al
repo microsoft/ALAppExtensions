@@ -174,6 +174,7 @@ codeunit 31270 "Install Application CZC"
                 CompensationHeaderCZC."Company Type" := CreditHeader.Type;
                 CompensationHeaderCZC."Incoming Document Entry No." := CreditHeader."Incoming Document Entry No.";
                 CompensationHeaderCZC."Language Code" := UpgradeApplicationCZC.GetLanguageCode(CompensationHeaderCZC."Company Type", CompensationHeaderCZC."Company No.");
+                CompensationHeaderCZC."Format Region" := UpgradeApplicationCZC.GetFormatRegion(CompensationHeaderCZC."Company Type", CompensationHeaderCZC."Company No.");
                 CompensationHeaderCZC.Modify(false);
             until CreditHeader.Next() = 0;
     end;
@@ -250,6 +251,7 @@ codeunit 31270 "Install Application CZC"
                 PostedCompensationHeaderCZC."No. Series" := PostedCreditHeader."No. Series";
                 PostedCompensationHeaderCZC."Company Type" := PostedCreditHeader.Type;
                 PostedCompensationHeaderCZC."Language Code" := UpgradeApplicationCZC.GetLanguageCode(PostedCompensationHeaderCZC."Company Type", PostedCompensationHeaderCZC."Company No.");
+                PostedCompensationHeaderCZC."Format Region" := UpgradeApplicationCZC.GetFormatRegion(PostedCompensationHeaderCZC."Company Type", PostedCompensationHeaderCZC."Company No.");
                 PostedCompensationHeaderCZC.Modify(false);
             until PostedCreditHeader.Next() = 0;
     end;

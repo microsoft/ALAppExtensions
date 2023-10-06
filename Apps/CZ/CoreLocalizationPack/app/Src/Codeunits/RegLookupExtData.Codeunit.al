@@ -14,44 +14,67 @@ codeunit 11754 "Reg. Lookup Ext. Data CZL"
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
 
     procedure LookupRegistrationFromService()
-    var
-        RegNoServiceResponse: Text;
     begin
-        RegNoServiceResponse := SendRequest();
-        InsertLogEntry(RegNoServiceResponse);
+        InsertLogEntry(SendRequest());
         Commit();
     end;
 
-    local procedure SendRequest() ResponseText: Text
+    local procedure SendRequest() HttpResponseMessage: HttpResponseMessage
     var
         RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
         HttpClient: HttpClient;
-        HttpResponseMessage: HttpResponseMessage;
         RequestURL: Text;
-        RegNoTok: Label '%1?ico=%2', Locked = true, Comment = '%1 = Registration No. service URL, %2 = Reistraton No.';
+        RegNoTok: Label '%1/%2', Locked = true, Comment = '%1 = Registration No. service URL, %2 = Registraton No.';
+#if not CLEAN23
+        OldRegNoTok: Label '%1?ico=%2', Locked = true, Comment = '%1 = Registration No. service URL, %2 = Reistraton No.';
+#endif
         ServiceCallErr: Label 'Web service call failed.';
-        ServiceStatusErr: Label 'Web service returned error message.\\Status Code: %1\Description: %2', Comment = '%1 = HTTP error status, %2 = HTTP error description';
     begin
+#if not CLEAN23
+        if RegNoServiceConfigCZL.GetRegNoURL() = GetRegistrationNoValidationWebServiceURL() then
+            RequestURL := StrSubstNo(RegNoTok, RegNoServiceConfigCZL.GetRegNoURL(), RegistrationLogCZL."Registration No.")
+        else
+            RequestURL := StrSubstNo(OldRegNoTok, RegNoServiceConfigCZL.GetRegNoURL(), RegistrationLogCZL."Registration No.");
+#else
         RequestURL := StrSubstNo(RegNoTok, RegNoServiceConfigCZL.GetRegNoURL(), RegistrationLogCZL."Registration No.");
+#endif
         if not HttpClient.Get(RequestURL, HttpResponseMessage) then
             Error(ServiceCallErr);
-        if not HttpResponseMessage.IsSuccessStatusCode() then
-            Error(ServiceStatusErr, HttpResponseMessage.HttpStatusCode(), HttpResponseMessage.ReasonPhrase());
-        HttpResponseMessage.Content().ReadAs(ResponseText);
     end;
 
-    local procedure InsertLogEntry(ResponseText: Text)
+    local procedure InsertLogEntry(HttpResponseMessage: HttpResponseMessage)
     var
-        XmlDoc: XmlDocument;
+        ResponseObject: JsonObject;
+#if not CLEAN23
+        ResponseXmlDoc: XmlDocument;
+#endif
+        HttpResponseText: Text;
+#if not CLEAN23
         NamespaceTok: Label 'http://wwwinfo.mfcr.cz/ares/xml_doc/schemas/ares/ares_datatypes/v_1.0.3', Locked = true;
+#endif
     begin
-        XmlDocument.ReadFrom(ResponseText, XmlDoc);
-        RegistrationLogMgtCZL.LogVerification(RegistrationLogCZL, XmlDoc, NamespaceTok);
+        HttpResponseMessage.Content().ReadAs(HttpResponseText);
+#if not CLEAN23
+        if ResponseObject.ReadFrom(HttpResponseText) then begin
+#endif            
+            if HttpResponseMessage.IsSuccessStatusCode() then
+                RegistrationLogMgtCZL.LogVerification(RegistrationLogCZL, ResponseObject)
+            else
+                RegistrationLogMgtCZL.LogError(RegistrationLogCZL, ResponseObject);
+#if not CLEAN23
+            exit;
+        end;
+
+        XmlDocument.ReadFrom(HttpResponseText, ResponseXmlDoc);
+#pragma warning disable AL0432
+        RegistrationLogMgtCZL.LogVerification(RegistrationLogCZL, ResponseXmlDoc, NamespaceTok);
+#pragma warning restore AL0432
+#endif
     end;
 
     procedure GetRegistrationNoValidationWebServiceURL(): Text[250]
     var
-        RegNoValidationWebServiceURLTok: Label 'http://wwwinfo.mfcr.cz/cgi-bin/ares/darv_bas.cgi', Locked = true;
+        RegNoValidationWebServiceURLTok: Label 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty', Locked = true;
     begin
         exit(RegNoValidationWebServiceURLTok);
     end;

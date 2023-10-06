@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Integration;
+
 table 4001 "Hybrid Replication Summary"
 {
     DataPerCompany = false;

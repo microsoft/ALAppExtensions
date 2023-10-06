@@ -388,7 +388,8 @@ report 31191 "Sales Shipment CZL"
             var
                 ItemTrackingDocHandlerCZL: Codeunit "Item Tracking Doc. Handler CZL";
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddress.SalesShptShipTo(ShipToAddr, "Sales Shipment Header");
                 FormatAddress.SalesShptBillTo(CustAddr, ShipToAddr, "Sales Shipment Header");
@@ -474,7 +475,7 @@ report 31191 "Sales Shipment CZL"
         ShipmentMethod: Record "Shipment Method";
         TempTrackingSpecification: Record "Tracking Specification" temporary;
         ItemTrackingAppendix: Report "Item Tracking Appendix";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
@@ -490,7 +491,6 @@ report 31191 "Sales Shipment CZL"
         OldNo: Code[20];
         LogInteraction: Boolean;
         ShowCorrectionLines: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         ShowLotSN: Boolean;
         ShowTotal: Boolean;
@@ -522,7 +522,7 @@ report 31191 "Sales Shipment CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(5) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Sales Shpt. Note") <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

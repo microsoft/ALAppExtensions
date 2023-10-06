@@ -1,8 +1,16 @@
+namespace Microsoft.FixedAssets.Repair;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.FixedAssets.FixedAsset;
+
 table 6090 "FA Ledg. Entry w. Issue"
 {
     Caption = 'FA Ledger Entry';
     DrillDownPageID = "FA Ledger Entries";
     LookupPageID = "FA Ledger Entries";
+    DataClassification = CustomerContent;
 
     fields
     {

@@ -1,10 +1,16 @@
+namespace Microsoft.DataMigration;
+
+using System.Security.AccessControl;
+using Microsoft.Finance.RoleCenters;
+
+
 pageextension 4011 "Hybrid Accountant Activities" extends "Accountant Activities"
 {
     layout
     {
         addlast(Control36)
         {
-            field("Replication Success Rate"; "Replication Success Rate")
+            field("Replication Success Rate"; Rec."Replication Success Rate")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Table Migration Success Rate';
@@ -27,9 +33,9 @@ pageextension 4011 "Hybrid Accountant Activities" extends "Accountant Activities
     var
         HybridCueSetupManagement: Codeunit "Hybrid Cue Setup Management";
     begin
-        if FieldActive("Replication Success Rate") then begin
-            "Replication Success Rate" := HybridCueSetupManagement.GetReplicationSuccessRateCueValue();
-            CueStyle := Format(HybridCueSetupManagement.GetReplicationSuccessRateCueStyle("Replication Success Rate"));
+        if Rec.FieldActive("Replication Success Rate") then begin
+            Rec."Replication Success Rate" := HybridCueSetupManagement.GetReplicationSuccessRateCueValue();
+            CueStyle := Format(HybridCueSetupManagement.GetReplicationSuccessRateCueStyle(Rec."Replication Success Rate"));
         end;
     end;
 
@@ -37,3 +43,4 @@ pageextension 4011 "Hybrid Accountant Activities" extends "Accountant Activities
         CueStyle: Text;
         IsIntelligentCloudEnabled: Boolean;
 }
+

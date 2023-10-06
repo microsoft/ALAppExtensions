@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Telemetry;
+using System.Reflection;
+using System.Security.User;
+using System.Security.AccessControl;
+
 codeunit 3904 "Apply Retention Policy Impl."
 {
     Access = Internal;
@@ -77,7 +84,7 @@ codeunit 3904 "Apply Retention Policy Impl."
 
         RetentionPolicySetup.SetRange(Enabled, true);
         RetentionPolicySetup.SetRange(Manual, false);
-        if RetentionPolicySetup.FindSet(false, false) then begin
+        if RetentionPolicySetup.FindSet(false) then begin
             if GuiAllowed() then begin
                 Dialog.HideSubsequentDialogs(true);
                 Dialog.Open(WaitDialogMsg);

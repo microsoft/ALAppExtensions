@@ -1,7 +1,10 @@
+namespace Microsoft.Payroll.Ceridian;
+
 table 1665 "MS Ceridian Payroll Setup"
 {
     Caption = 'Ceridian Payroll Setup';
     ReplicateData = false;
+    DataClassification = CustomerContent;
 
     fields
     {
@@ -41,10 +44,10 @@ table 1665 "MS Ceridian Payroll Setup"
     procedure SavePassword(var PasswordKey: Guid; PasswordText: Text);
     var
     begin
-        IF ISNULLGUID(PasswordKey) OR NOT IsolatedStorage.Contains(PasswordKey, Datascope::Company) THEN
+        if ISNULLGUID(PasswordKey) or not IsolatedStorage.Contains(PasswordKey, Datascope::Company) then
             PasswordKey := FORMAT(CreateGuid());
 
-        IF NOT EncryptionEnabled() THEN
+        if not EncryptionEnabled() then
             IsolatedStorage.Set(PasswordKey, PasswordText, Datascope::Company)
         else
             IsolatedStorage.SetEncrypted(PasswordKey, PasswordText, Datascope::Company);
@@ -52,7 +55,7 @@ table 1665 "MS Ceridian Payroll Setup"
 
     procedure GetAppID(): Guid;
     begin
-        EXIT('{30828ce4-53e3-407f-ba80-13ce8d79d110}');
+        exit('{30828ce4-53e3-407f-ba80-13ce8d79d110}');
     end;
 }
 

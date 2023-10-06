@@ -1,3 +1,5 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
 enum 22201 "G/L Account Review Policy"
 {
     Extensible = true;

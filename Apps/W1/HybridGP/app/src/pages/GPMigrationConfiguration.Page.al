@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+
 page 4050 "GP Migration Configuration"
 {
     Caption = 'GP Company Migration Configuration';

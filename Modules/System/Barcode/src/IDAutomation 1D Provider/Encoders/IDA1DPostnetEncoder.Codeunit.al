@@ -1,7 +1,12 @@
 // ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Text;
+
+using System;
+using System.Utilities;
 
 codeunit 9211 "IDA 1D Postnet Encoder" implements "Barcode Font Encoder"
 {

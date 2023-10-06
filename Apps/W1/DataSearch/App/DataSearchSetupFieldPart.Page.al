@@ -1,3 +1,5 @@
+namespace Microsoft.Foundation.DataSearch;
+
 page 2685 "Data Search Setup (Field) Part"
 {
     Caption = 'Search Enabled Fields';

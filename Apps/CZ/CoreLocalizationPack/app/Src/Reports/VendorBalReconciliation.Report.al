@@ -10,7 +10,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
     {
         dataitem(Vendor; Vendor)
         {
-            DataItemTableView = SORTING("No.");
+            DataItemTableView = sorting("No.");
             RequestFilterFields = "No.", Blocked;
             column(WORKDATE; Format(WorkDate()))
             {
@@ -176,7 +176,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             }
             dataitem(TotalInCurrency; "Integer")
             {
-                DataItemTableView = SORTING(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 column(DebitAmount; DebitAmount)
                 {
                 }
@@ -210,7 +210,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             }
             dataitem(Footer; "Integer")
             {
-                DataItemTableView = SORTING(Number) WHERE(Number = CONST(1));
+                DataItemTableView = sorting(Number) where(Number = const(1));
                 column(AccountantCaption; AccountantCaptionLbl)
                 {
                 }
@@ -229,7 +229,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             }
             dataitem(Currencies; "Integer")
             {
-                DataItemTableView = SORTING(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 column(OpenDocumentsCaption; StrSubstNo(OpenDocumentsTxt, GetCurrencyCode(TempCurrency.Code)))
                 {
                 }
@@ -265,7 +265,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                 }
                 dataitem(CVLedgEntryBuf; "Integer")
                 {
-                    DataItemTableView = SORTING(Number) WHERE(Number = FILTER(1 ..));
+                    DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                     column(CVLedgEntryDocumentDate; Format(TempCVLedgerEntryBuffer."Document Date"))
                     {
                     }
@@ -315,7 +315,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                 }
                 dataitem(Total; "Integer")
                 {
-                    DataItemTableView = SORTING(Number) WHERE(Number = CONST(1));
+                    DataItemTableView = sorting(Number) where(Number = const(1));
                     column(TotalCaption; StrSubstNo(TotalTxt, GetCurrencyCode(TempCurrency.Code)))
                     {
                     }
@@ -356,7 +356,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             }
             dataitem(TotalLCY; "Integer")
             {
-                DataItemTableView = SORTING(Number) WHERE(Number = CONST(1));
+                DataItemTableView = sorting(Number) where(Number = const(1));
                 column(TotalLCYCaption; StrSubstNo(TotalTxt, GeneralLedgerSetup."LCY Code"))
                 {
                 }
@@ -375,20 +375,8 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
-#if not CLEAN20
-#pragma warning disable AL0432
-                if not CurrReport.Preview() then begin
-                    LockTable();
-                    Find();
-                    "Last Statement No." += 1;
-                    "Last Statement Date" := Today();
-                    Modify();
-                    Commit();
-                end else
-                    "Last Statement No." += 1;
-#pragma warning restore AL0432
-#endif
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 if IncludeCustBalance then
                     CustomerNo := GetLinkedCustomerCZL()
@@ -486,7 +474,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         CompanyOfficialCZL: Record "Company Official CZL";
         Employee: Record Employee;
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         CustomerVendorBalanceCZL: Codeunit "Customer Vendor Balance CZL";
         ReturnDate: Date;
         ReconcileDate: Date;

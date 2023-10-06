@@ -1,4 +1,12 @@
 #if not CLEAN22
+namespace Microsoft.CRM.EmailLoggin;
+
+using Microsoft.CRM.Outlook;
+using Microsoft.CRM.Setup;
+using Microsoft.Foundation.Navigate;
+using System.Environment.Configuration;
+using System.Threading;
+
 codeunit 1680 "Feature Email Log. Using Graph" implements "Feature Data Update"
 {
     ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';

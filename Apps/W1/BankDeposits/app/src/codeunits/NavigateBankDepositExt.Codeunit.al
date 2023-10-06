@@ -1,3 +1,17 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Foundation.Navigate;
+using Microsoft.Sales.History;
+using Microsoft.Purchases.History;
+using Microsoft.Service.History;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Purchases.Payables;
+using Microsoft.Service.Ledger;
+using Microsoft.Sales.Receivables;
+using Microsoft.Bank.Ledger;
+
 codeunit 1699 "Navigate Bank Deposit Ext."
 {
     Access = Internal;

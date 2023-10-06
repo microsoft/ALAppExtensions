@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
+using Microsoft.Finance.TaxEngine.Core;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 codeunit 20301 "Tax Document Stats Mgmt."
 {
     procedure UpdateTaxComponent(RecordIDList: List of [RecordID]; var ComponentSummary: Record "Tax Component Summary" temporary)

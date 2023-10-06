@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Codeunit Shpfy Item Reference Mgt. (ID 30175).
 /// </summary>

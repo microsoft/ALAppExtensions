@@ -1,7 +1,10 @@
+#if not CLEAN23
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Environment.Configuration;
 
 /// <summary>
 /// Factbox part page that enables a user to learn more about upcoming changes
@@ -11,6 +14,9 @@ page 2611 "Upcoming Changes Factbox"
     PageType = CardPart;
     Caption = 'Managing change';
     Extensible = false;
+    ObsoleteReason = 'Replaced by teaching tips';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     layout
     {
@@ -71,3 +77,4 @@ page 2611 "Upcoming Changes Factbox"
         LearnMoreAboutPreviewProcessUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2112707', Locked = true;
         ReleasePlanUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2047422', Locked = true;
 }
+#endif

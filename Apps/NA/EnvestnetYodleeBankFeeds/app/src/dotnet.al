@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
 dotnet
 {
     assembly("netstandard")

@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 /// <summary>
 /// Codeunit Shpfy Shipping Events (ID 30192).
 /// </summary>

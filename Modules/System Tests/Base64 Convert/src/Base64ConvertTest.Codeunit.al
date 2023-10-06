@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Text;
+
+using System.Text;
+using System.Utilities;
+using System.TestLibraries.Utilities;
+
 codeunit 135041 "Base64 Convert Test"
 {
     Subtype = Test;

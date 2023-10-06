@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy Shipping Methods (ID 30193).
 /// </summary>
@@ -29,7 +31,7 @@ codeunit 30193 "Shpfy Shipping Methods"
             Shop.SetRecFilter();
         end else
             Shop.CopyFilters(ShopifyShop);
-        if Shop.FindSet(false, false) then begin
+        if Shop.FindSet(false) then begin
             CommunicationMgt.SetShop(Shop);
             JResponse := CommunicationMgt.ExecuteWebRequest(CommunicationMgt.CreateWebRequestURL('shipping_zones.json'), 'GET', JResponse);
             if JsonHelper.GetJsonArray(JResponse, JZones, 'shipping_zones') then

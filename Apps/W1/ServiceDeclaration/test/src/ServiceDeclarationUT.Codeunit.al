@@ -791,6 +791,41 @@ codeunit 139903 "Service Declaration UT"
         Assert.ExpectedError(CannotEnterNumbersManuallyErr);
     end;
 
+    [Test]
+    procedure RemoveServTransTypeCodeInNonServiceItem()
+    var
+        Item: Record Item;
+    begin
+        // [SCENARIO 455289] Stan can remove the "Service Transaction Type Code" in non-service item
+
+        Initialize();
+        // [GIVEN] Item of type "Inventory" with "Service Transaction Type Code" = "X"
+        Item.Type := Item.Type::Inventory;
+        Item."Service Transaction Type Code" := LibraryServiceDeclaration.CreateServTransTypeCode();
+        // [WHEN] Remove value from "Service Transaction Type Code"
+        Item.Validate("Service Transaction Type Code", '');
+        // [THEN] "Service Transaction Type Code" is blank
+        Item.TestField("Service Transaction Type Code", '');
+
+    end;
+
+    [Test]
+    procedure SetServTransTypeCodeInServiceItem()
+    var
+        Item: Record Item;
+    begin
+        // [SCENARIO 455289] Stan cannot set the "Service Transaction Type Code" in non-service item
+
+        Initialize();
+        // [GIVEN] Item of type "Inventory"
+        Item.Type := Item.Type::Inventory;
+        // [WHEN] Set value to "Service Transaction Type Code"
+        asserterror Item.Validate("Service Transaction Type Code", LibraryServiceDeclaration.CreateServTransTypeCode());
+        // [THEN] An error message "Type must be equal to Service" is thrown
+        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedError('Type must be equal to ''Service''');
+    end;
+
     local procedure Initialize()
     var
     begin

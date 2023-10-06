@@ -7,7 +7,7 @@ report 31203 "Exp. Acc. Sched. Res. Exc. CZL"
     {
         dataitem("Integer"; "Integer")
         {
-            DataItemTableView = SORTING(Number);
+            DataItemTableView = sorting(Number);
             MaxIteration = 1;
 
             trigger OnAfterGetRecord()

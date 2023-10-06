@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Feedback;
 
 /// <summary>
 /// Management codeunit that exposes various functions to work with Satisfaction Survey.
@@ -9,6 +11,8 @@
 codeunit 1433 "Satisfaction Survey Mgt."
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         SatisfactionSurveyImpl: Codeunit "Satisfaction Survey Impl.";

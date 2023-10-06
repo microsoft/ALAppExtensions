@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.SyncBase;
+
+using System.Security.AccessControl;
+
 permissionsetextension 35314 "D365 BUS PREMIUM - SyncBaseApp" extends "D365 BUS PREMIUM"
 {
     Permissions = tabledata "Sync Change" = RIMD,

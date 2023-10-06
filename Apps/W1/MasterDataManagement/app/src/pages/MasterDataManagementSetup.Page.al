@@ -1,3 +1,11 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+using System.Threading;
+using System.Environment.Configuration;
+using System.Telemetry;
+using System.Utilities;
+
 page 7230 "Master Data Management Setup"
 {
     ApplicationArea = Suite;
@@ -21,7 +29,7 @@ page 7230 "Master Data Management Setup"
                 {
                     ApplicationArea = Suite;
                     Editable = IsEditable;
-                    ToolTip = 'Specifies the name of the cource company that you synchronize data from.';
+                    ToolTip = 'Specifies the name of the source company that you synchronize data from.';
                 }
                 field("Is Enabled"; Rec."Is Enabled")
                 {

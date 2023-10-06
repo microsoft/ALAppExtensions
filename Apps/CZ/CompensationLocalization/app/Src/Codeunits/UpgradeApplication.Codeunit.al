@@ -28,11 +28,13 @@ codeunit 31263 "Upgrade Application CZC"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZC.GetCompensationLanguageCodeUpgradeTag()) then
             exit;
 
-        CompensationHeaderCZC.SetLoadFields("Company Type", "Company No.", "Language Code");
+        CompensationHeaderCZC.SetLoadFields("Company Type", "Company No.", "Language Code", "Format Region");
         if CompensationHeaderCZC.FindSet(true) then
             repeat
                 CompensationHeaderCZC."Language Code" :=
                     GetLanguageCode(CompensationHeaderCZC."Company Type", CompensationHeaderCZC."Company No.");
+                CompensationHeaderCZC."Format Region" := 
+                    GetFormatRegion(CompensationHeaderCZC."Company Type", CompensationHeaderCZC."Company No.");
                 CompensationHeaderCZC.Modify();
             until CompensationHeaderCZC.Next() = 0;
 
@@ -46,11 +48,13 @@ codeunit 31263 "Upgrade Application CZC"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZC.GetPostedCompensationLanguageCodeUpgradeTag()) then
             exit;
 
-        PostedCompensationHeaderCZC.SetLoadFields("Company Type", "Company No.", "Language Code");
+        PostedCompensationHeaderCZC.SetLoadFields("Company Type", "Company No.", "Language Code", "Format Region");
         if PostedCompensationHeaderCZC.FindSet(true) then
             repeat
                 PostedCompensationHeaderCZC."Language Code" :=
                     GetLanguageCode(PostedCompensationHeaderCZC."Company Type", PostedCompensationHeaderCZC."Company No.");
+                PostedCompensationHeaderCZC."Format Region" := 
+                    GetFormatRegion(PostedCompensationHeaderCZC."Company Type", PostedCompensationHeaderCZC."Company No.");
                 PostedCompensationHeaderCZC.Modify();
             until PostedCompensationHeaderCZC.Next() = 0;
 
@@ -81,6 +85,34 @@ codeunit 31263 "Upgrade Application CZC"
                     Vendor.SetLoadFields("Language Code");
                     if Vendor.Get(CompanyNo) then
                         exit(Vendor."Language Code");
+                end;
+        end;
+    end;
+    
+    internal procedure GetFormatRegion(CompanyType: Enum "Compensation Company Type CZC"; CompanyNo: Code[20]): Text[80]
+    var
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+        Contact: Record Contact;
+    begin
+        case CompanyType of
+            CompanyType::Customer:
+                begin
+                    Customer.SetLoadFields("Format Region");
+                    if Customer.Get(CompanyNo) then
+                        exit(Customer."Format Region");
+                end;
+            CompanyType::Contact:
+                begin
+                    Contact.SetLoadFields("Format Region");
+                    if Contact.Get(CompanyNo) then
+                        exit(Contact."Format Region");
+                end;
+            CompanyType::Vendor:
+                begin
+                    Vendor.SetLoadFields("Format Region");
+                    if Vendor.Get(CompanyNo) then
+                        exit(Vendor."Format Region");
                 end;
         end;
     end;

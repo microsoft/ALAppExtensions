@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.DataMigration;
+using System.Upgrade;
+
 codeunit 4008 "Hybrid BC Management"
 {
     var
@@ -59,6 +64,7 @@ codeunit 4008 "Hybrid BC Management"
     end;
 
 
+#pragma warning disable AA0245
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnBackupUpgradeTags', '', false, false)]
     local procedure BackupUpgradeTags(ProductID: Text[250]; var Handled: Boolean; var BackupUpgradeTags: Boolean)
     begin
@@ -71,6 +77,7 @@ codeunit 4008 "Hybrid BC Management"
         // Don't set handled to allow the others to override
         BackupUpgradeTags := true;
     end;
+#pragma warning restore AA0245
 
     [EventSubscriber(ObjectType::Page, Page::"Migration Table Mapping", 'OnIsBCMigration', '', false, false)]
     local procedure OnIsBCMigration(var SourceBC: Boolean)

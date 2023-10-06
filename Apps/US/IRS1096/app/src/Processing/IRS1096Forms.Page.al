@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
 page 10019 "IRS 1096 Forms"
 {
     Caption = '1096 Forms';
@@ -128,14 +134,4 @@ page 10019 "IRS 1096 Forms"
             }
         }
     }
-
-    trigger OnOpenPage()
-    var
-        IRS1096FormMgt: Codeunit "IRS 1096 Form Mgt.";
-    begin
-        if not IRS1096FormMgt.IsFeatureEnabled() then begin
-            IRS1096FormMgt.ShowNotEnabledMessage(CurrPage.Caption());
-            Error('');
-        end;
-    end;
 }

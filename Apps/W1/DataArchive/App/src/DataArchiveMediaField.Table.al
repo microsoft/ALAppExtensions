@@ -7,6 +7,8 @@
 /// This table contains references to archived media and blob fields.
 /// </summary>
 
+namespace System.DataAdministration;
+
 table 602 "Data Archive Media Field"
 {
     Access = Public;

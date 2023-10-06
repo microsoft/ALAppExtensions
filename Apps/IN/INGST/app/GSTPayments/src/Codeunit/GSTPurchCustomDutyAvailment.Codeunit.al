@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Payments;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.Posting;
+using Microsoft.Inventory.Journal;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+
 codeunit 18253 "GST Purch CustomDuty Availment"
 {
     var
@@ -59,7 +80,7 @@ codeunit 18253 "GST Purch CustomDuty Availment"
         GSTCalculatedAmount(PurchaseLine);
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPreparePurchase', '', false, false)]
     local procedure FillInvoicePostingBufferNonAvailmentFA(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var PurchaseLine: Record "Purchase Line")
     var

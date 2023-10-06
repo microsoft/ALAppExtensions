@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
 /// <summary>
 /// This codeunit provides functions to apply a retention policy.
 /// </summary>
@@ -51,7 +53,7 @@ codeunit 3910 "Apply Retention Policy"
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
         ExpiredRecordExpirationDate: Date;
     begin
-        Exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate))
+        exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate))
     end;
 
     /// <summary>
@@ -64,7 +66,7 @@ codeunit 3910 "Apply Retention Policy"
     var
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
     begin
-        Exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate))
+        exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate))
     end;
 
     /// <summary>

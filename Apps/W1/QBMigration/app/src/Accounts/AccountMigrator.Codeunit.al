@@ -88,6 +88,11 @@ codeunit 1911 "MigrationQB Account Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
     local procedure OnMigratePostingGroups(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #endif
+    begin
+        MigratePostingGroups(Sender, RecordIdToMigrate);
+    end;
+
+    procedure MigratePostingGroups(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         MigrationQBAccount: Record "MigrationQB Account";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";

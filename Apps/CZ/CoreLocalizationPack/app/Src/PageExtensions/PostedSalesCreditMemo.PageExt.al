@@ -8,22 +8,6 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
-        addlast(General)
-        {
-            field("Posting Description"; Rec."Posting Description")
-            {
-                ApplicationArea = Basic, Suite;
-                Editable = false;
-                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
-                Visible = false;
-            }
-        }
-#endif
         addlast(General)
         {
             field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
@@ -279,7 +263,9 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
     end;
 
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;

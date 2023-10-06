@@ -62,7 +62,7 @@ report 31187 "Sales Order Confirmation CZL"
         }
         dataitem("Sales Header"; "Sales Header")
         {
-            DataItemTableView = WHERE("Document Type" = CONST(Order));
+            DataItemTableView = where("Document Type" = const(Order));
             column(DocumentLbl; DocumentLbl)
             {
             }
@@ -268,7 +268,7 @@ report 31187 "Sales Order Confirmation CZL"
                 {
                     DataItemLink = "Document No." = field("No.");
                     DataItemLinkReference = "Sales Header";
-                    DataItemTableView = sorting("Document Type", "Document No.", "Line No.") WHERE("Document Type" = CONST(Order));
+                    DataItemTableView = sorting("Document Type", "Document No.", "Line No.") where("Document Type" = const(Order));
 
                     trigger OnPreDataItem()
                     begin
@@ -393,7 +393,8 @@ report 31187 "Sales Order Confirmation CZL"
                 TempVATAmountLine: Record "VAT Amount Line" temporary;
                 SalesPost: Codeunit "Sales-Post";
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Sales Header");
                 FormatDocumentFields("Sales Header");
@@ -501,7 +502,7 @@ report 31187 "Sales Order Confirmation CZL"
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
         TempSalesLine: Record "Sales Line" temporary;
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
@@ -515,7 +516,6 @@ report 31187 "Sales Order Confirmation CZL"
         NoOfLoops: Integer;
         LogInteraction: Boolean;
         ArchiveDocument: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Order Confirmation';
         PageLbl: Label 'Page';
@@ -547,7 +547,7 @@ report 31187 "Sales Order Confirmation CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(3) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Sales Ord. Cnfrmn.") <> '';
     end;
 
     local procedure FormatDocumentFields(SalesHeader: Record "Sales Header")

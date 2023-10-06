@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Functions;
+
 /// <summary>
 /// Holder object for holding for Azure Function request result.
 /// </summary>

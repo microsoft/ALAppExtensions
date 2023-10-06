@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 table 4008 "Post Migration Checklist"
 {
     DataPerCompany = false;

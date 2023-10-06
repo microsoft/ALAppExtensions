@@ -4,6 +4,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 permissionset 433 "Azure AD Tenant - Objects"
 {
     Assignable = false;

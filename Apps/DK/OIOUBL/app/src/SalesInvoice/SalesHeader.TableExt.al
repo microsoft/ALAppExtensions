@@ -1,7 +1,12 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Document;
+
+using Microsoft.CRM.Contact;
+using Microsoft.EServices.EDocument;
+using Microsoft.Sales.Customer;
 
 tableextension 13646 "OIOUBL-Sales Header" extends "Sales Header"
 {

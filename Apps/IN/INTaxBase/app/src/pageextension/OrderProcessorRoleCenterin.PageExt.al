@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.RoleCenters;
+
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 pageextension 18548 "Order Processor Role Center IN" extends "Order Processor Role Center"
 {
     actions

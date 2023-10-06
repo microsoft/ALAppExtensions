@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+
 /// <summary>
 /// Table Shpfy Order Transaction (ID 30133).
 /// </summary>
@@ -141,6 +146,7 @@ table 30133 "Shpfy Order Transaction"
             FieldClass = FlowField;
             CalcFormula = lookup("Sales Header"."No." where("Shpfy Order Id" = field("Shopify Order Id")));
         }
+
         field(102; "Posted Invoice No."; Code[20])
         {
             Caption = 'Posted Invoice No.';

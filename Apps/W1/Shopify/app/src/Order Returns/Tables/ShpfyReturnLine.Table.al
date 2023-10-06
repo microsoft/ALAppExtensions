@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Reflection;
+
 table 30141 "Shpfy Return Line"
 {
     Caption = 'Return Line';
@@ -121,6 +125,17 @@ table 30141 "Shpfy Return Line"
             SumIndexFields = "Discounted Total Amount", "Presentment Disc. Total Amt.";
         }
     }
+
+    trigger OnDelete()
+    var
+        DataCapture: Record "Shpfy Data Capture";
+    begin
+        DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
+        DataCapture.SetRange("Linked To Table", Database::"Shpfy Return Line");
+        DataCapture.SetRange("Linked To Id", Rec.SystemId);
+        if not DataCapture.IsEmpty then
+            DataCapture.DeleteAll(false);
+    end;
 
     internal procedure GetReturnReasonNote(): Text
     var

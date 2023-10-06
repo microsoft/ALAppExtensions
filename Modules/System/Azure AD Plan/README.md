@@ -1,4 +1,4 @@
-This module provides methods for retrieving and managing user plans in Azure Active Directory as well as configuring the permissions users will get when assigned a plan. The Plan and User Plan tables are marked as internal, so you must use the methods provided in this module to query them.
+This module provides methods for retrieving and managing user plans in Microsoft Entra as well as configuring the permissions users will get when assigned a plan. The Plan and User Plan tables are marked as internal, so you must use the methods provided in this module to query them.
 
 For on-premises versions, you can also use this module to do the following:
 - Check which plans are assigned to the users.
@@ -9,7 +9,7 @@ For on-premises versions, you can also use this module to do the following:
 # Public Objects
 ## Azure AD Plan (Codeunit 9016)
 
- Retrieve plans in Azure AD and manage plans
+ Retrieve plans in Microsoft Entra and manage plans
  
 
 ### IsPlanAssigned (Method) <a name="IsPlanAssigned"></a> 

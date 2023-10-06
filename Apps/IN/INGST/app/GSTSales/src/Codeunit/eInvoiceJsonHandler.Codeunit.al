@@ -1,3 +1,25 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Sales;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Inventory.Location;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using System.Security.Encryption;
+using System.Text;
+using System.Utilities;
+using Microsoft.QRGeneration;
+
 codeunit 18147 "e-Invoice Json Handler"
 {
     Permissions = tabledata "Sales Invoice Header" = rm,

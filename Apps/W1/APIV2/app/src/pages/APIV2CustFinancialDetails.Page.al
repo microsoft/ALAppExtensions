@@ -1,3 +1,7 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Sales.Customer;
+
 page 30048 "APIV2 - Cust Financial Details"
 {
     PageType = API;
@@ -22,30 +26,34 @@ page 30048 "APIV2 - Cust Financial Details"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(number; "No.")
+                field(number; Rec."No.")
                 {
                     Caption = 'No.';
                     Editable = false;
                 }
-                field(balance; "Balance (LCY)")
+                field(balance; Rec."Balance (LCY)")
                 {
                     Caption = 'Balance';
                     Editable = false;
                 }
-                field(totalSalesExcludingTax; "Sales (LCY)")
+                field(totalSalesExcludingTax; Rec."Sales (LCY)")
                 {
                     Caption = 'Total Sales Excluding Tax';
                     Editable = false;
                 }
-                field(overdueAmount; "Balance Due (LCY)")
+                field(overdueAmount; Rec."Balance Due (LCY)")
                 {
                     Caption = 'Overdue Amount';
                     Editable = false;
+                }
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
+                {
+                    Caption = 'Last Modified Date';
                 }
             }
         }
@@ -57,8 +65,8 @@ page 30048 "APIV2 - Cust Financial Details"
     }
     trigger OnAfterGetRecord()
     begin
-        SetRange("Date Filter", 0D, WorkDate() - 1);
-        CalcFields("Balance Due (LCY)", "Sales (LCY)", "Balance (LCY)");
+        Rec.SetRange("Date Filter", 0D, WorkDate() - 1);
+        Rec.CalcFields("Balance Due (LCY)", "Sales (LCY)", "Balance (LCY)");
     end;
 
 }

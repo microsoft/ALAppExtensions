@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSOnPurchase;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Payables;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Utilities;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Inventory.Location;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 codeunit 18716 "TDS Subscribers"
 {
     var
@@ -25,7 +43,7 @@ codeunit 18716 "TDS Subscribers"
         end;
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
     local procedure InsertTDSSectionCodeGenJnlLine(
         var GenJnlLine: Record "Gen. Journal Line";

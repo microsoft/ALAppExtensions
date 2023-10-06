@@ -20,7 +20,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Account Schedule Name';
                     Lookup = true;
-                    LookupPageID = "Account Schedule Names";
+                    LookupPageId = "Account Schedule Names";
                     ToolTip = 'Specifies the account schedule name.';
 #if CLEAN22
                     Editable = false;
@@ -298,7 +298,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
             {
                 Caption = 'Export to Excel';
                 Image = ExportToExcel;
-                Action(CreateNewDocument)
+                action(CreateNewDocument)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Create New Document';
@@ -317,7 +317,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                         AccScheduleExportFileCZL.Run();
                     end;
                 }
-                Action(UpdateExistingDocument)
+                action(UpdateExistingDocument)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Update Existing Document';
@@ -336,7 +336,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                         AccScheduleExportFileCZL.Run();
                     end;
                 }
-                Action(CreateFromTemplate)
+                action(CreateFromTemplate)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Create from Template';
@@ -356,7 +356,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     end;
                 }
             }
-            Action("Previous Column")
+            action("Previous Column")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Previous Column';
@@ -372,7 +372,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     AdjustColumnOffset(-1);
                 end;
             }
-            Action("Next Column")
+            action("Next Column")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Next Column';
@@ -466,9 +466,11 @@ page 11702 "Acc. Schedule File Mapping CZL"
         CurrentSchedName := NewAccSchedName;
 #endif
 #if not CLEAN21
+#pragma warning disable AL0432
         if AccScheduleName.Get(NewCurrentSchedName) then
             if AccScheduleName."Default Column Layout" <> '' then
                 NewCurrentColumnName := AccScheduleName."Default Column Layout";
+#pragma warning restore AL0432
 #endif
     end;
 
@@ -554,6 +556,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
         CurrPage.SaveRecord();
         AccSchedManagement.SetName(CurrentSchedName, Rec);
 #if not CLEAN21
+#pragma warning disable AL0432
         if AccScheduleName.Get(CurrentSchedName) then
             if (AccScheduleName."Default Column Layout" <> '') and
                (CurrentColumnName <> AccScheduleName."Default Column Layout")
@@ -562,6 +565,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                 AccSchedManagement.CopyColumnsToTemp(CurrentColumnName, TempColumnLayout);
                 AccSchedManagement.SetColumnName(CurrentColumnName, TempColumnLayout);
             end;
+#pragma warning restore AL0432
 #else
         AccSchedManagement.CopyColumnsToTemp(CurrentColumnName, TempColumnLayout);
         AccSchedManagement.SetColumnName(CurrentColumnName, TempColumnLayout);

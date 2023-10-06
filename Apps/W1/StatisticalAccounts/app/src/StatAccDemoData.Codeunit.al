@@ -1,3 +1,10 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using System.Environment.Configuration;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Company;
+
 codeunit 2625 "Stat. Acc. Demo Data"
 {
     trigger OnRun()

@@ -75,7 +75,9 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
 #if not CLEAN22
         addafter(PricesandDiscounts)
         {
+#pragma warning disable AS0011
             group("Foreign Trade")
+#pragma warning restore AS0011
             {
                 Caption = 'Foreign Trade (Obsolete)';
                 ObsoleteState = Pending;
@@ -149,7 +151,6 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
     var
         Vendor: Record Vendor;
         BalanceAsVendor: Decimal;
-        [InDataSet]
         BalanceOfVendorEnabled: Boolean;
 #endif
 }

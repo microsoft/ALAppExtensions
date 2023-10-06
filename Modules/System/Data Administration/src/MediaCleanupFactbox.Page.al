@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Environment;
+
 page 1928 "Media Cleanup FactBox"
 {
     Caption = 'Media picture';

@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 entitlement "Dynamics 365 Business Central Device COHUB"
 {
     Type = ConcurrentUserServicePlan;

@@ -1,3 +1,11 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Period;
+
 codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
 {
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeLookupTotaling', '', false, false)]

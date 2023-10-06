@@ -3,6 +3,17 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Reflection;
+using System.Tooling;
+using System.Privacy;
+using System.Utilities;
+using System.Integration;
+using System.Environment.Configuration;
+using System.Environment;
+using System.Globalization;
+
 permissionset 162 "SECURITY (System)"
 {
     Access = Internal;
@@ -53,23 +64,23 @@ permissionset 162 "SECURITY (System)"
                   tabledata "Membership Entitlement" = imd,
                   tabledata "NAV App Setting" = RIMD,
                   tabledata "Object Metadata" = imd,
-#if not CLEAN22
 #pragma warning disable AL0432 // Disabling deprecation warning since these tables are being moved on prem and hence still need permissions
-#endif
                   tabledata Permission = imd,
                   tabledata "Permission Set" = imd,
-#if not CLEAN22
 #pragma warning restore AL0432
-#endif
                   tabledata "Permission Range" = imd,
                   tabledata "Profile Configuration Symbols" = IMD,
                   tabledata "Server Instance" = imd,
                   tabledata "SID - Account ID" = Rimd,
                   tabledata "System Object" = imd,
                   tabledata "Table Information" = Rimd,
+#pragma warning disable AL0432
                   tabledata "Tenant Profile" = IMD,
+#pragma warning restore AL0432
                   tabledata "Tenant Profile Extension" = IMD,
+#pragma warning disable AL0432
                   tabledata "Tenant Profile Page Metadata" = IMD,
+#pragma warning restore AL0432
                   tabledata "Tenant Profile Setting" = IMD,
                   tabledata User = RMD,
                   tabledata "User Property" = Rimd,

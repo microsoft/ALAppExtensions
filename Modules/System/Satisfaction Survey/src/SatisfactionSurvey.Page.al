@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Feedback;
 
 /// <summary>
 /// Displays the satisfaction survey dialog box.
@@ -12,6 +14,8 @@ page 1433 "Satisfaction Survey"
     Caption = ' ';
     Editable = false;
     PageType = Card;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {

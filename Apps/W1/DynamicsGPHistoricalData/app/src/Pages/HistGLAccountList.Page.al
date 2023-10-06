@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41009 "Hist. G/L Account List"
 {
     Caption = 'Historical G/L Accounts';

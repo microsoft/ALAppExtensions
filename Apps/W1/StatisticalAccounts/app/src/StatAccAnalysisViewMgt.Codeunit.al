@@ -1,3 +1,9 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 codeunit 2621 "Stat. Acc. Analysis View Mgt."
 {
     [EventSubscriber(ObjectType::Table, Database::"Analysis View", 'OnValidateAccountFilter', '', false, false)]

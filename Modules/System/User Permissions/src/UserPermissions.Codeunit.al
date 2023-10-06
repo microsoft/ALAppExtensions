@@ -3,12 +3,18 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.User;
+
+using System.Security.AccessControl;
+
 /// <summary>
 /// Exposes functionality to check if a user has SUPER permissions set assigned as well as removing such permissions set from a user.
 /// </summary>
 codeunit 152 "User Permissions"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Checks whether the user has the SUPER permissions set.

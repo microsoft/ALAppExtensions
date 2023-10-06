@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
 pageextension 1443 "Headlines RC Project Mgr. Ext" extends "Headline RC Project Manager"
 {
 

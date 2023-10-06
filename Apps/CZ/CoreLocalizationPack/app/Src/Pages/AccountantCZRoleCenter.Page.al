@@ -21,6 +21,11 @@ page 31210 "Accountant CZ Role Center CZL"
             {
                 ApplicationArea = Basic, Suite;
             }
+            part("Intercompany Activities"; "Intercompany Activities")
+            {
+                ApplicationArea = Intercompany;
+                Visible = false;
+            }
             part("User Tasks Activities"; "User Tasks Activities")
             {
                 ApplicationArea = Basic, Suite;
@@ -60,7 +65,7 @@ page 31210 "Accountant CZ Role Center CZL"
             }
             part("Report Inbox Part"; "Report Inbox Part")
             {
-                AccessByPermission = TableData "Report Inbox" = IMD;
+                AccessByPermission = tabledata "Report Inbox" = IMD;
                 ApplicationArea = Basic, Suite;
             }
 #if not CLEAN21
@@ -88,14 +93,14 @@ page 31210 "Accountant CZ Role Center CZL"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Chart of Accounts';
-                RunObject = Page "Chart of Accounts";
+                RunObject = page "Chart of Accounts";
                 ToolTip = 'View or edit chart of accounts.';
             }
             action("Contacts")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Contacts';
-                RunObject = Page "Contact List";
+                RunObject = page "Contact List";
                 ToolTip = 'View or edit contacts.';
             }
             action(Vendors)
@@ -103,7 +108,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Vendors';
                 Image = Vendor;
-                RunObject = Page "Vendor List";
+                RunObject = page "Vendor List";
                 ToolTip = 'View or edit detailed information for the vendors that you trade with. From each vendor card, you can open related information, such as purchase statistics and ongoing orders, and you can define special prices and line discounts that the vendor grants you if certain conditions are met.';
             }
             action("Purchase Invoices")
@@ -111,14 +116,14 @@ page 31210 "Accountant CZ Role Center CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Purchase Invoices';
                 Image = Invoice;
-                RunObject = Page "Purchase Invoices";
+                RunObject = page "Purchase Invoices";
                 ToolTip = 'Create purchase invoices to mirror sales documents that vendors send to you. This enables you to record the cost of purchases and to track accounts payable. Posting purchase invoices dynamically updates inventory levels so that you can minimize inventory costs and provide better customer service. Purchase invoices can be created automatically from PDF or image files from your vendors by using the Incoming Documents feature.';
             }
             action("Purchase Credit Memos")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Purchase Credit Memos';
-                RunObject = Page "Purchase Credit Memos";
+                RunObject = page "Purchase Credit Memos";
                 ToolTip = 'Create purchase credit memos to mirror sales credit memos that vendors send to you for incorrect or damaged items that you have paid for and then returned to the vendor. If you need more control of the purchase return process, such as warehouse documents for the physical handling, use purchase return orders, in which purchase credit memos are integrated. Purchase credit memos can be created automatically from PDF or image files from your vendors by using the Incoming Documents feature. Note: If you have not yet paid for an erroneous purchase, you can simply cancel the posted purchase invoice to automatically revert the financial transaction.';
             }
             action(Customers)
@@ -126,21 +131,21 @@ page 31210 "Accountant CZ Role Center CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Customers';
                 Image = Customer;
-                RunObject = Page "Customer List";
+                RunObject = page "Customer List";
                 ToolTip = 'View or edit detailed information for the customers that you trade with. From each customer card, you can open related information, such as sales statistics and ongoing orders, and you can define special prices and line discounts that you grant if certain conditions are met.';
             }
             action("Sales Invoices")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Sales Invoices';
-                RunObject = Page "Sales Invoice List";
+                RunObject = page "Sales Invoice List";
                 ToolTip = 'Register your sales to customers and invite them to pay according to the delivery and payment terms by sending them a sales invoice document. Posting a sales invoice registers shipment and records an open receivable entry on the customer''s account, which will be closed when payment is received. To manage the shipment process, use sales orders, in which sales invoicing is integrated.';
             }
             action("Sales Credit Memos")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Sales Credit Memos';
-                RunObject = Page "Sales Credit Memos";
+                RunObject = page "Sales Credit Memos";
                 ToolTip = 'Revert the financial transactions involved when your customers want to cancel a purchase or return incorrect or damaged items that you sent to them and received payment for. To include the correct information, you can create the sales credit memo from the related posted sales invoice or you can create a new sales credit memo with copied invoice information. If you need more control of the sales return process, such as warehouse documents for the physical handling, use sales return orders, in which sales credit memos are integrated. Note: If an erroneous sale has not been paid yet, you can simply cancel the posted sales invoice to automatically revert the financial transaction.';
             }
             action("Incoming Documents")
@@ -148,7 +153,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Incoming Documents';
                 Image = Documents;
-                RunObject = Page "Incoming Documents";
+                RunObject = page "Incoming Documents";
                 ToolTip = 'Handle incoming documents, such as vendor invoices in PDF or as image files, that you can manually or automatically convert to document records, such as purchase invoices. The external files that represent incoming documents can be attached at any process stage, including to posted documents and to the resulting vendor, customer, and general ledger entries.';
             }
             action(Reminders)
@@ -156,7 +161,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Reminders';
                 Image = Reminder;
-                RunObject = Page "Reminder List";
+                RunObject = page "Reminder List";
                 ToolTip = 'Remind customers about overdue amounts based on reminder terms and the related reminder levels. Each reminder level includes rules about when the reminder will be issued in relation to the invoice due date or the date of the previous reminder and whether interests are added. Reminders are integrated with finance charge memos, which are documents informing customers of interests or other money penalties for payment delays.';
             }
             action("Finance Charge Memos")
@@ -164,14 +169,14 @@ page 31210 "Accountant CZ Role Center CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Finance Charge Memos';
                 Image = FinChargeMemo;
-                RunObject = Page "Finance Charge Memo List";
+                RunObject = page "Finance Charge Memo List";
                 ToolTip = 'Send finance charge memos to customers with delayed payments, typically following a reminder process. Finance charges are calculated automatically and added to the overdue amounts on the customer''s account according to the specified finance charge terms and penalty/interest amounts.';
             }
             action("VAT Returns")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'VAT Returns';
-                RunObject = Page "VAT Report List";
+                RunObject = page "VAT Report List";
                 ToolTip = 'Prepare the VAT Return report so you can submit VAT amounts to a tax authority.';
                 Visible = false;
             }
@@ -179,7 +184,7 @@ page 31210 "Accountant CZ Role Center CZL"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Budgets';
-                RunObject = Page "G/L Budget Names";
+                RunObject = page "G/L Budget Names";
                 ToolTip = 'View or edit estimated amounts for a range of accounting periods.';
             }
 #if not CLEAN22
@@ -187,7 +192,7 @@ page 31210 "Accountant CZ Role Center CZL"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat';
-                RunObject = Page "Intrastat Jnl. Batches";
+                RunObject = page "Intrastat Jnl. Batches";
                 ToolTip = 'Report your trade with other EU countries/regions for Intrastat reporting.';
                 Visible = false;
                 ObsoleteState = Pending;
@@ -199,14 +204,14 @@ page 31210 "Accountant CZ Role Center CZL"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Items';
-                RunObject = Page "Item List";
+                RunObject = page "Item List";
                 ToolTip = 'View or edit detailed information for the products that you trade in. The item card can be of type Inventory or Service to specify if the item is a physical unit or a labor time unit. Here you also define if items in inventory or on incoming orders are automatically reserved for outbound documents and whether order tracking links are created between demand and supply to reflect planning actions.';
             }
             action(FixedAssets)
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Fixed Assets';
-                RunObject = Page "Fixed Asset List";
+                RunObject = page "Fixed Asset List";
                 ToolTip = 'Manage periodic depreciation of your machinery or machines, keep track of your maintenance costs, manage insurance policies related to fixed assets, and monitor fixed asset statistics.';
             }
         }
@@ -221,7 +226,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'G/L Account Categories';
-                    RunObject = Page "G/L Account Categories";
+                    RunObject = page "G/L Account Categories";
                     ToolTip = 'Personalize the structure of your financial statements by mapping general ledger accounts to account categories. You can create category groups by indenting subcategories under them. Each grouping shows a total balance. When you choose the Generate Account Schedules action, the account schedules for the underlying financial reports are updated. The next time you run one of these reports, such as the balance statement, new totals and subentries are added, based on your changes.';
                 }
                 action(Currencies)
@@ -229,7 +234,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Currencies';
                     Image = Currency;
-                    RunObject = Page Currencies;
+                    RunObject = page Currencies;
                     ToolTip = 'View the different currencies that you trade in or update the exchange rates by getting the latest rates from an external service provider.';
                 }
                 action(Dimensions)
@@ -237,14 +242,14 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Dimensions';
                     Image = Dimensions;
-                    RunObject = Page Dimensions;
+                    RunObject = page Dimensions;
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
                 }
                 action(Employees)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Employees';
-                    RunObject = Page "Employee List";
+                    RunObject = page "Employee List";
                     ToolTip = 'View or modify employees'' details and related information, such as qualifications and pictures, or register and analyze employee absence. Keeping up-to-date records about your employees simplifies personnel tasks. For example, if an employee''s address changes, you register this on the employee card.';
                     Visible = false;
                 }
@@ -252,14 +257,14 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Deferrals';
-                    RunObject = Page "Deferral Template List";
+                    RunObject = page "Deferral Template List";
                     ToolTip = 'Distribute revenues or expenses to the relevant accounting periods instead of the date of posting the transaction. Set up a deferral template for the resource, item, or G/L account that the revenue or expense will be posted for. When you post the related sales or purchase document, the revenue or expense is deferred to the involved accounting periods, according to a deferral schedule that is governed by settings in the deferral template and the posting date.';
                 }
                 action(Partners)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Partners';
-                    RunObject = Page "IC Partner List";
+                    RunObject = page "IC Partner List";
                     ToolTip = 'Set up each company or department within the group of companies as an intercompany partner of type Vendor or Customer. Intercompany partners can then be inserted on regular sales and purchase documents or journal lines that are exchanged through the intercompany inbox/outbox system and posted to agreed accounts in an intercompany chart of accounts.';
                     Visible = false;
                 }
@@ -267,7 +272,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'IC Chart of Accounts';
-                    RunObject = Page "IC Chart of Accounts";
+                    RunObject = page "IC Chart of Accounts";
                     ToolTip = 'Manage intercompany transactions within your group of companies in an aligned chart of accounts that uses the same account numbers and settings. In the setup phase, the parent company of the group can create a simplified version of their own chart of accounts and exports it to an XML file that each subsidiary can quickly implement.';
                     Visible = false;
                 }
@@ -275,7 +280,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Intercompany Dimensions';
-                    RunObject = Page "IC Dimensions";
+                    RunObject = page "IC Dimensions";
                     ToolTip = 'Enable companies within a group to exchange transactions with dimensions and to perform financial analysis by dimensions across the group. The parent company of the group can create a simplified version of their own set of dimensions and export them to an XML file that each subsidiary can import into the intercompany Dimensions window and then map them to their own dimensions.';
                     Visible = false;
                 }
@@ -283,7 +288,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Number Series';
-                    RunObject = Page "No. Series";
+                    RunObject = page "No. Series";
                     ToolTip = 'View or edit the number series that are used to organize transactions.';
                 }
             }
@@ -297,7 +302,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'General Journals';
                     Image = Journal;
-                    RunObject = Page "General Journal Batches";
+                    RunObject = page "General Journal Batches";
                     RunPageView = where("Template Type" = const(General), Recurring = const(false));
                     ToolTip = 'Post financial transactions directly to general ledger accounts and other accounts, such as bank, customer, vendor, and employee accounts. Posting with a general journal always creates entries on general ledger accounts. This is true even when, for example, you post a journal line to a customer account, because an entry is posted to a general ledger receivables account through a posting group.';
                 }
@@ -305,7 +310,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Recurring General Journals';
-                    RunObject = Page "General Journal Batches";
+                    RunObject = page "General Journal Batches";
                     RunPageView = where("Template Type" = const(General), Recurring = const(true));
                     ToolTip = 'Define how to post transactions that recur with few or no changes to general ledger, bank, customer, vendor, or fixed asset accounts';
                 }
@@ -313,7 +318,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purchase Journals';
-                    RunObject = Page "General Journal Batches";
+                    RunObject = page "General Journal Batches";
                     RunPageView = where("Template Type" = const(Purchases), Recurring = const(false));
                     ToolTip = 'Post any purchase-related transaction directly to a vendor, bank, or general ledger account instead of using dedicated documents. You can post all types of financial purchase transactions, including payments, refunds, and finance charge amounts. Note that you cannot post item quantities with a purchase journal.';
                 }
@@ -321,7 +326,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Journals';
-                    RunObject = Page "General Journal Batches";
+                    RunObject = page "General Journal Batches";
                     RunPageView = where("Template Type" = const(Sales), Recurring = const(false));
                     ToolTip = 'Post any sales-related transaction directly to a customer, bank, or general ledger account instead of using dedicated documents. You can post all types of financial sales transactions, including payments, refunds, and finance charge amounts. Note that you cannot post item quantities with a sales journal.';
                 }
@@ -329,7 +334,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'IC General Journals';
-                    RunObject = Page "General Journal Batches";
+                    RunObject = page "General Journal Batches";
                     RunPageView = where("Template Type" = const(Intercompany), Recurring = const(false));
                     ToolTip = 'Post intercompany transactions. IC general journal lines must contain either an IC partner account or a customer or vendor account that has been assigned an intercompany partner code.';
                     Visible = false;
@@ -340,7 +345,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Intrastat Journals';
                     Image = Report;
-                    RunObject = Page "Intrastat Jnl. Batches";
+                    RunObject = page "Intrastat Jnl. Batches";
                     ToolTip = 'Summarize the value of your purchases and sales with business partners in the EU for statistical purposes and prepare to send it to the relevant authority.';
                     ObsoleteState = Pending;
                     ObsoleteTag = '22.0';
@@ -351,7 +356,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Posted General Journals';
-                    RunObject = Page "Posted General Journal";
+                    RunObject = page "Posted General Journal";
                     ToolTip = 'Open the list of posted general journal lines.';
                 }
             }
@@ -363,7 +368,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Bank Accounts';
                     Image = BankAccount;
-                    RunObject = Page "Bank Account List";
+                    RunObject = page "Bank Account List";
                     ToolTip = 'View or set up detailed information about your bank account, such as which currency to use, the format of bank files that you import and export as electronic payments, and the numbering of checks.';
                 }
                 action(CashReceiptJournals)
@@ -371,7 +376,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cash Receipt Journals';
                     Image = Journals;
-                    RunObject = Page "General Journal Batches";
+                    RunObject = page "General Journal Batches";
                     RunPageView = where("Template Type" = const("Cash Receipts"), Recurring = const(false));
                     ToolTip = 'Register received payments by manually applying them to the related customer, vendor, or bank ledger entries. Then, post the payments to G/L accounts and thereby close the related ledger entries.';
                     Visible = false;
@@ -381,7 +386,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Payment Journals';
                     Image = Journals;
-                    RunObject = Page "General Journal Batches";
+                    RunObject = page "General Journal Batches";
                     RunPageView = where("Template Type" = const(Payments), Recurring = const(false));
                     ToolTip = 'Register payments to vendors. A payment journal is a type of general journal that is used to post outgoing payment transactions to G/L, bank, customer, vendor, employee, and fixed assets accounts. The Suggest Vendor Payments functions automatically fills the journal with payments that are due. When payments are posted, you can export the payments to a bank file for upload to your bank if your system is set up for electronic banking. You can also issue computer checks from the payment journal.';
                 }
@@ -389,7 +394,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Direct Debit Collections';
-                    RunObject = Page "Direct Debit Collections";
+                    RunObject = page "Direct Debit Collections";
                     ToolTip = 'Instruct your bank to withdraw payment amounts from your customer''s bank account and transfer them to your company''s account. A direct debit collection holds information about the customer''s bank account, the affected sales invoices, and the customer''s agreement, the so-called direct-debit mandate. From the resulting direct-debit collection entry, you can then export an XML file that you send or upload to your bank for processing.';
                     Visible = false;
                 }
@@ -398,7 +403,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Payment Recon. Journals';
                     Image = ApplyEntries;
-                    RunObject = Page "Pmt. Reconciliation Journals";
+                    RunObject = page "Pmt. Reconciliation Journals";
                     ToolTip = 'Reconcile unpaid documents automatically with their related bank transactions by importing a bank statement feed or file. In the payment reconciliation journal, incoming or outgoing payments on your bank are automatically, or semi-automatically, applied to their related open customer or vendor ledger entries. Any open bank account ledger entries related to the applied customer or vendor ledger entries will be closed when you choose the Post Payments and Reconcile Bank Account action. This means that the bank account is automatically reconciled for payments that you post with the journal.';
                     Visible = false;
                 }
@@ -407,7 +412,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Bank Acc. Statements';
                     Image = BankAccountStatement;
-                    RunObject = Page "Bank Account Statement List";
+                    RunObject = page "Bank Account Statement List";
                     ToolTip = 'View statements for selected bank accounts. For each bank transaction, the report shows a description, an applied amount, a statement amount, and other information.';
                     Visible = false;
                 }
@@ -416,7 +421,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Payment Terms';
                     Image = Payment;
-                    RunObject = Page "Payment Terms";
+                    RunObject = page "Payment Terms";
                     ToolTip = 'Set up the payment terms that you select from customer cards or sales documents to define when the customer must pay, such as within 14 days.';
                 }
                 action(BankAccountReconciliations)
@@ -424,7 +429,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Bank Account Reconciliations';
                     Image = BankAccountRec;
-                    RunObject = Page "Bank Acc. Reconciliation List";
+                    RunObject = page "Bank Acc. Reconciliation List";
                     ToolTip = 'Reconcile bank accounts in your system with bank statements received from your bank.';
                     Visible = false;
                 }
@@ -438,14 +443,14 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Fixed Assets';
-                    RunObject = Page "Fixed Asset List";
+                    RunObject = page "Fixed Asset List";
                     ToolTip = 'Manage periodic depreciation of your machinery or machines, keep track of your maintenance costs, manage insurance policies related to fixed assets, and monitor fixed asset statistics.';
                 }
                 action("Fixed Assets G/L Journals")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Fixed Assets G/L Journals';
-                    RunObject = Page "General Journal Batches";
+                    RunObject = page "General Journal Batches";
                     RunPageView = where("Template Type" = const(Assets),
                                         Recurring = const(false));
                     ToolTip = 'Post fixed asset transactions, such as acquisition and depreciation, in integration with the general ledger. The FA G/L Journal is a general journal, which is integrated into the general ledger.';
@@ -454,7 +459,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Fixed Assets Journals';
-                    RunObject = Page "FA Journal Batches";
+                    RunObject = page "FA Journal Batches";
                     RunPageView = where(Recurring = const(false));
                     ToolTip = 'Post fixed asset transactions, such as acquisition and depreciation book without integration to the general ledger.';
                 }
@@ -462,7 +467,7 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Fixed Assets Reclass. Journals';
-                    RunObject = Page "FA Reclass. Journal Batches";
+                    RunObject = page "FA Reclass. Journal Batches";
                     ToolTip = 'Transfer, split, or combine fixed assets by preparing reclassification entries to be posted in the fixed asset journal.';
                 }
                 action("FA Registers")
@@ -470,28 +475,28 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'FA Registers';
                     Image = GLRegisters;
-                    RunObject = Page "FA Registers";
+                    RunObject = page "FA Registers";
                     ToolTip = 'View posted FA ledger entries.';
                 }
                 action(Insurance)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Insurance';
-                    RunObject = Page "Insurance List";
+                    RunObject = page "Insurance List";
                     ToolTip = 'Manage insurance policies for fixed assets and monitor insurance coverage.';
                 }
                 action("Insurance Journals")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Insurance Journals';
-                    RunObject = Page "Insurance Journal Batches";
+                    RunObject = page "Insurance Journal Batches";
                     ToolTip = 'Post entries to the insurance coverage ledger.';
                 }
                 action("Recurring Fixed Asset Journals")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Recurring Fixed Asset Journals';
-                    RunObject = Page "FA Journal Batches";
+                    RunObject = page "FA Journal Batches";
                     RunPageView = where(Recurring = const(true));
                     ToolTip = 'Post recurring fixed asset transactions, such as acquisition and depreciation book without integration to the general ledger.';
                 }
@@ -505,14 +510,14 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Posted Purchase Invoices';
-                    RunObject = Page "Posted Purchase Invoices";
+                    RunObject = page "Posted Purchase Invoices";
                     ToolTip = 'Open the list of posted purchase invoices.';
                 }
                 action("Posted Purchase Credit Memos")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Posted Purchase Credit Memos';
-                    RunObject = Page "Posted Purchase Credit Memos";
+                    RunObject = page "Posted Purchase Credit Memos";
                     ToolTip = 'Open the list of posted purchase credit memos.';
                 }
                 action("Posted Sales Invoices")
@@ -520,7 +525,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Posted Sales Invoices';
                     Image = PostedOrder;
-                    RunObject = Page "Posted Sales Invoices";
+                    RunObject = page "Posted Sales Invoices";
                     ToolTip = 'Open the list of posted sales invoices.';
                 }
                 action("Posted Sales Credit Memos")
@@ -528,7 +533,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Posted Sales Credit Memos';
                     Image = PostedOrder;
-                    RunObject = Page "Posted Sales Credit Memos";
+                    RunObject = page "Posted Sales Credit Memos";
                     ToolTip = 'Open the list of posted sales credit memos.';
                 }
                 action("Issued Reminders")
@@ -536,7 +541,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Issued Reminders';
                     Image = OrderReminder;
-                    RunObject = Page "Issued Reminder List";
+                    RunObject = page "Issued Reminder List";
                     ToolTip = 'Open the list of issued reminders.';
                 }
                 action("Issued Fin. Charge Memos")
@@ -544,7 +549,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Issued Fin. Charge Memos';
                     Image = PostedMemo;
-                    RunObject = Page "Issued Fin. Charge Memo List";
+                    RunObject = page "Issued Fin. Charge Memo List";
                     ToolTip = 'Open the list of issued finance charge memos.';
                 }
             }
@@ -557,28 +562,28 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cash Flow Forecasts';
-                    RunObject = Page "Cash Flow Forecast List";
+                    RunObject = page "Cash Flow Forecast List";
                     ToolTip = 'Combine various financial data sources to find out when a cash surplus or deficit might happen or whether you should pay down debt, or borrow to meet upcoming expenses.';
                 }
                 action("Chart of Cash Flow Accounts")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Chart of Cash Flow Accounts';
-                    RunObject = Page "Chart of Cash Flow Accounts";
+                    RunObject = page "Chart of Cash Flow Accounts";
                     ToolTip = 'View a chart contain a graphical representation of one or more cash flow accounts and one or more cash flow setups for the included general ledger, purchase, sales, services, or fixed assets accounts.';
                 }
                 action("Cash Flow Manual Revenues")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cash Flow Manual Revenues';
-                    RunObject = Page "Cash Flow Manual Revenues";
+                    RunObject = page "Cash Flow Manual Revenues";
                     ToolTip = 'Record manual revenues, such as rental income, interest from financial assets, or new private capital to be used in cash flow forecasting.';
                 }
                 action("Cash Flow Manual Expenses")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cash Flow Manual Expenses';
-                    RunObject = Page "Cash Flow Manual Expenses";
+                    RunObject = page "Cash Flow Manual Expenses";
                     ToolTip = 'Record manual expenses, such as salaries, interest on credit, or planned investments to be used in cash flow forecasting.';
                 }
             }
@@ -590,42 +595,42 @@ page 31210 "Accountant CZ Role Center CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cost Types';
-                    RunObject = Page "Chart of Cost Types";
+                    RunObject = page "Chart of Cost Types";
                     ToolTip = 'View the chart of cost types with a structure and functionality that resembles the general ledger chart of accounts. You can transfer the general ledger income statement accounts or create your own chart of cost types.';
                 }
                 action("Cost Centers")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cost Centers';
-                    RunObject = Page "Chart of Cost Centers";
+                    RunObject = page "Chart of Cost Centers";
                     ToolTip = 'Manage cost centers, which are departments and profit centers that are responsible for costs and income. Often, there are more cost centers set up in cost accounting than in any dimension that is set up in the general ledger. In the general ledger, usually only the first level cost centers for direct costs and the initial costs are used. In cost accounting, additional cost centers are created for additional allocation levels.';
                 }
                 action("Cost Objects")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cost Objects';
-                    RunObject = Page "Chart of Cost Objects";
+                    RunObject = page "Chart of Cost Objects";
                     ToolTip = 'Set up cost objects, which are products, product groups, or services of a company. These are the finished goods of a company that carry the costs. You can link cost centers to departments and cost objects to projects in your company.';
                 }
                 action("Cost Allocations")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cost Allocations';
-                    RunObject = Page "Cost Allocation Sources";
+                    RunObject = page "Cost Allocation Sources";
                     ToolTip = 'Manage allocation rules to allocate costs and revenues between cost types, cost centers, and cost objects. Each allocation consists of an allocation source and one or more allocation targets. For example, all costs for the cost type Electricity and Heating are an allocation source. You want to allocate the costs to the cost centers Workshop, Production, and Sales, which are three allocation targets.';
                 }
                 action("Cost Budgets")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cost Budgets';
-                    RunObject = Page "Cost Budget Names";
+                    RunObject = page "Cost Budget Names";
                     ToolTip = 'Set up cost accounting budgets that are created based on cost types just as a budget for the general ledger is created based on general ledger accounts. A cost budget is created for a certain period of time, for example, a fiscal year. You can create as many cost budgets as needed. You can create a new cost budget manually, or by importing a cost budget, or by copying an existing cost budget as the budget base.';
                 }
                 action("Cost Accounting Registers")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cost Accounting Registers';
-                    RunObject = Page "Cost Registers";
+                    RunObject = page "Cost Registers";
                     ToolTip = 'View auditing details for all cost accounting entries. Every time an entry is posted, a register is created in which you can see the first and last number of its entries in order to document when entries were posted.';
                 }
             }
@@ -634,46 +639,46 @@ page 31210 "Accountant CZ Role Center CZL"
         {
             action("Purchase Invoice")
             {
-                AccessByPermission = TableData "Purchase Header" = IMD;
+                AccessByPermission = tabledata "Purchase Header" = IMD;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Purchase Invoice';
-                RunObject = Page "Purchase Invoice";
+                RunObject = page "Purchase Invoice";
                 RunPageMode = Create;
                 ToolTip = 'Create a new purchase invoice.';
             }
             action("Purchase Credit Memo")
             {
-                AccessByPermission = TableData "Purchase Header" = IMD;
+                AccessByPermission = tabledata "Purchase Header" = IMD;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Purchase Credit Memo';
-                RunObject = Page "Purchase Credit Memo";
+                RunObject = page "Purchase Credit Memo";
                 RunPageMode = Create;
                 ToolTip = 'Create a new purchase credit memo.';
             }
             action("Sales Invoice")
             {
-                AccessByPermission = TableData "Sales Header" = IMD;
+                AccessByPermission = tabledata "Sales Header" = IMD;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Sales Invoice';
-                RunObject = Page "Sales Invoice";
+                RunObject = page "Sales Invoice";
                 RunPageMode = Create;
                 ToolTip = 'Create a new sales invoice.';
             }
             action("Sales Credit Memo")
             {
-                AccessByPermission = TableData "Sales Header" = IMD;
+                AccessByPermission = tabledata "Sales Header" = IMD;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Sales Credit Memo';
-                RunObject = Page "Sales Credit Memo";
+                RunObject = page "Sales Credit Memo";
                 RunPageMode = Create;
                 ToolTip = 'Create a new sales credit memo.';
             }
             action("G/L Journal Entry")
             {
-                AccessByPermission = TableData "G/L Entry" = IMD;
+                AccessByPermission = tabledata "G/L Entry" = IMD;
                 ApplicationArea = Basic, Suite;
                 Caption = 'G/L Journal Entry';
-                RunObject = Page "General Journal";
+                RunObject = page "General Journal";
                 ToolTip = 'Prepare to post any transaction to the company books.';
             }
         }
@@ -687,7 +692,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Dimensions;
                     Caption = 'Analysis Views';
                     Image = AnalysisView;
-                    RunObject = Page "Analysis View List";
+                    RunObject = page "Analysis View List";
                     ToolTip = 'Analyze amounts in your general ledger by their dimensions using analysis views that you have set up.';
                 }
                 action("Account Schedules")
@@ -695,7 +700,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Financial Reporting';
                     Image = CalculateBalanceAccount;
-                    RunObject = Page "Financial Reports";
+                    RunObject = page "Financial Reports";
                     ToolTip = 'Get insight into the financial data stored in your chart of accounts. Financial reports analyze figures in G/L accounts, and compare general ledger entries with general ledger budget entries. For example, you can view the general ledger entries as percentages of the budget entries. Financial reports provide the data for core financial statements and views, such as the Cash Flow chart.';
                 }
             }
@@ -708,7 +713,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Calculate Depreciation';
                     Ellipsis = true;
                     Image = CalculateDepreciation;
-                    RunObject = Report "Calculate Depreciation";
+                    RunObject = report "Calculate Depreciation";
                     ToolTip = 'Calculate depreciation according to the conditions that you define. If the fixed assets that are included in the batch job are integrated with the general ledger (defined in the depreciation book that is used in the batch job), the resulting entries are transferred to the fixed assets general ledger journal. Otherwise, the batch job transfers the entries to the fixed asset journal. You can then post the journal or adjust the entries before posting, if necessary.';
                 }
                 action("Bank Account Reconciliation")
@@ -716,7 +721,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Bank Account Reconciliation';
                     Image = BankAccountRec;
-                    RunObject = Page "Bank Acc. Reconciliation";
+                    RunObject = page "Bank Acc. Reconciliation";
                     ToolTip = 'View the entries and the balance on your bank accounts against a statement from the bank.';
                     Visible = false;
                 }
@@ -725,7 +730,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Payment Reconciliation Journals';
                     Image = ApplyEntries;
-                    RunObject = Page "Pmt. Reconciliation Journals";
+                    RunObject = page "Pmt. Reconciliation Journals";
                     RunPageMode = View;
                     ToolTip = 'Reconcile unpaid documents automatically with their related bank transactions by importing a bank statement feed or file. In the payment reconciliation journal, incoming or outgoing payments on your bank are automatically, or semi-automatically, applied to their related open customer or vendor ledger entries. Any open bank account ledger entries related to the applied customer or vendor ledger entries will be closed when you choose the Post Payments and Reconcile Bank Account action. This means that the bank account is automatically reconciled for payments that you post with the journal.';
                     Visible = false;
@@ -736,7 +741,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Adjust Cost - Item Entries';
                     Ellipsis = true;
                     Image = AdjustEntries;
-                    RunObject = Report "Adjust Cost - Item Entries";
+                    RunObject = report "Adjust Cost - Item Entries";
                     ToolTip = 'Adjust inventory values in value entries so that you use the correct adjusted cost for updating the general ledger and so that sales and profit statistics are up to date.';
                 }
                 action("Post Inventory Cost to G/L")
@@ -745,7 +750,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Post Inventory Cost to G/L';
                     Ellipsis = true;
                     Image = PostInventoryToGL;
-                    RunObject = Report "Post Inventory Cost to G/L";
+                    RunObject = report "Post Inventory Cost to G/L";
                     ToolTip = 'Record the quantity and value changes to the inventory in the item ledger entries and the value entries when you post inventory transactions, such as sales shipments or purchase receipts.';
                 }
 #if not CLEAN22
@@ -754,7 +759,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Intrastat Journal';
                     Image = Journal;
-                    RunObject = Page "Intrastat Jnl. Batches";
+                    RunObject = page "Intrastat Jnl. Batches";
                     ToolTip = 'Summarize the value of your purchases and sales with business partners in the EU for statistical purposes and prepare to send it to the relevant authority.';
                     Visible = false;
                     ObsoleteState = Pending;
@@ -768,7 +773,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Create Reminders';
                     Ellipsis = true;
                     Image = CreateReminders;
-                    RunObject = Report "Create Reminders";
+                    RunObject = report "Create Reminders";
                     ToolTip = 'Create reminders for one or more customers with overdue payments.';
                 }
                 action("Create Finance Charge Memos")
@@ -777,7 +782,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Create Finance Charge Memos';
                     Ellipsis = true;
                     Image = CreateFinanceChargememo;
-                    RunObject = Report "Create Finance Charge Memos";
+                    RunObject = report "Create Finance Charge Memos";
                     ToolTip = 'Create finance charge memos for one or more customers with overdue payments.';
                 }
                 action("Import Tariff Numbers")
@@ -798,7 +803,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'VAT Statements';
                     Image = VATStatement;
-                    RunObject = Page "VAT Statement Names";
+                    RunObject = page "VAT Statement Names";
                     ToolTip = 'View a statement of posted VAT amounts, calculate your VAT settlement amount for a certain period, such as a quarter, and prepare to send the settlement to the tax authorities.';
                 }
                 action("VAT Control Reports")
@@ -830,7 +835,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'VAT Entries';
                     Image = VATLedger;
-                    RunObject = Page "VAT Entries";
+                    RunObject = page "VAT Entries";
                     ToolTip = 'Views all VAT entries.';
                 }
                 action("VAT Periods")
@@ -855,7 +860,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Calc. and Post VAT Settlement';
                     Image = SettleOpenTransactions;
-                    RunObject = Report "Calc. and Post VAT Settlement";
+                    RunObject = report "Calc. and Post VAT Settlement";
                     Ellipsis = true;
                     ToolTip = 'Close open VAT entries and transfers purchase and sales VAT amounts to the VAT settlement account. For every VAT posting group, the batch job finds all the VAT entries in the VAT Entry table that are included in the filters in the definition window.';
                 }
@@ -869,8 +874,8 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Find Entries';
                     Image = Navigate;
                     Ellipsis = true;
-                    RunObject = Page Navigate;
-                    ShortCutKey = 'Ctrl+Alt+Q';
+                    RunObject = page Navigate;
+                    ShortcutKey = 'Ctrl+Alt+Q';
                     ToolTip = 'Find entries and documents that exist for the document number and posting date on the selected document. (Formerly this action was named Navigate.)';
                 }
                 action("G/L Registers")
@@ -878,7 +883,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'G/L Registers';
                     Image = GLRegisters;
-                    RunObject = Page "G/L Registers";
+                    RunObject = page "G/L Registers";
                     ToolTip = 'View auditing details for all general ledger entries. Every time an entry is posted, a register is created in which you can see the first and last number of its entries in order to document when entries were posted.';
                 }
                 action("Cost Accounting Budget Registers")
@@ -886,7 +891,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Cost Accounting Budget Registers';
                     Image = Register;
-                    RunObject = Page "Cost Budget Registers";
+                    RunObject = page "Cost Budget Registers";
                     ToolTip = 'View auditing details for all cost accounting budget entries. Every time an entry is posted, a register is created in which you can see the first and last number of its entries in order to document when entries were posted.';
                     Visible = false;
                 }
@@ -895,7 +900,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'General Ledger Entries';
                     Image = GeneralLedger;
-                    RunObject = Page "General Ledger Entries";
+                    RunObject = page "General Ledger Entries";
                     ToolTip = 'View all general ledger entries.';
                 }
                 action("Vendor Ledger Entries")
@@ -903,7 +908,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Vendor Ledger Entries';
                     Image = VendorLedger;
-                    RunObject = Page "Vendor Ledger Entries";
+                    RunObject = page "Vendor Ledger Entries";
                     ToolTip = 'View all vendor ledger entries.';
                 }
                 action("Customer Ledger Entries")
@@ -911,7 +916,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Customer Ledger Entries';
                     Image = CustomerLedger;
-                    RunObject = Page "Customer Ledger Entries";
+                    RunObject = page "Customer Ledger Entries";
                     ToolTip = 'View all customer ledger entries.';
                 }
                 action("FA Ledger Entries")
@@ -919,7 +924,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Fixed Asset Ledger Entries';
                     Image = FixedAssetLedger;
-                    RunObject = Page "FA Ledger Entries";
+                    RunObject = page "FA Ledger Entries";
                     ToolTip = 'View all fixed asset ledger entries.';
                 }
                 action("Item Ledger Entries")
@@ -927,7 +932,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Item Ledger Entries';
                     Image = ItemLedger;
-                    RunObject = Page "Item Ledger Entries";
+                    RunObject = page "Item Ledger Entries";
                     ToolTip = 'View all item ledger entries.';
                 }
                 action("Value Entries")
@@ -935,7 +940,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Value Entries';
                     Image = ItemLedger;
-                    RunObject = Page "Value Entries";
+                    RunObject = page "Value Entries";
                     ToolTip = 'View all value entries.';
                 }
                 action("EET Entries")
@@ -943,7 +948,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'EET Entries';
                     Image = Entries;
-                    RunObject = Page "EET Entries CZL";
+                    RunObject = page "EET Entries CZL";
                     ToolTip = 'View all item ledger entries.';
                 }
             }
@@ -956,7 +961,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Adjust Exchange Rates';
                     Ellipsis = true;
                     Image = AdjustExchangeRates;
-                    RunObject = Codeunit "Exch. Rate Adjmt. Run Handler";
+                    RunObject = codeunit "Exch. Rate Adjmt. Run Handler";
                     ToolTip = 'Adjust general ledger, customer, vendor, and bank account entries to reflect a more updated balance if the exchange rate has changed since the entries were posted.';
                 }
                 action("Accounting Periods")
@@ -964,7 +969,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Accounting Periods';
                     Image = AccountingPeriods;
-                    RunObject = Page "Accounting Periods";
+                    RunObject = page "Accounting Periods";
                     ToolTip = 'Set up the number of accounting periods, such as 12 monthly periods, within the fiscal year and specify which period is the start of the new fiscal year.';
                 }
                 action("Close Income Statement")
@@ -1000,7 +1005,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Run Consolidation';
                     Ellipsis = true;
                     Image = ImportDatabase;
-                    RunObject = Report "Import Consolidation from DB";
+                    RunObject = report "Import Consolidation from DB";
                     ToolTip = 'Run the Consolidation report.';
                     Visible = false;
                 }
@@ -1017,7 +1022,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Turnover Report by Global Dimensions';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Turnover Rpt. by Gl. Dim. CZL";
+                    RunObject = report "Turnover Rpt. by Gl. Dim. CZL";
                     ToolTip = 'View, print, or send the turnover report by global dimensions.';
                 }
                 action("G/L Trial Balance")
@@ -1026,7 +1031,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'G/L Trial Balance';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Trial Balance";
+                    RunObject = report "Trial Balance";
                     ToolTip = 'View, print, or send a report that shows the balances for the general ledger accounts, including the debits and credits. You can use this report to ensure accurate accounting practices.';
                 }
                 action("Detail Trial Balance")
@@ -1035,7 +1040,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Detail Trial Balance';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Detail Trial Balance";
+                    RunObject = report "Detail Trial Balance";
                     ToolTip = 'View, print, or send a report that shows a detailed trial balance for general ledger accounts. You can use the report at the close of an accounting period or fiscal year.';
                 }
                 action("General Ledger")
@@ -1044,7 +1049,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'General Ledger';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "General Ledger CZL";
+                    RunObject = report "General Ledger CZL";
                     ToolTip = 'View, print, or send the general ledger report.';
                 }
                 action("General Journal")
@@ -1053,7 +1058,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'General Journal';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "General Journal CZL";
+                    RunObject = report "General Journal CZL";
                     ToolTip = 'View, print, or send the general journal report.';
                 }
                 action("General Ledger Document")
@@ -1062,7 +1067,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'General Ledger Document';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "General Ledger Document CZL";
+                    RunObject = report "General Ledger Document CZL";
                     ToolTip = 'View, print, or send the general ledger document report.';
                 }
                 action("Accounting Sheets")
@@ -1071,7 +1076,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Accounting Sheets';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Accounting Sheets CZL";
+                    RunObject = report "Accounting Sheets CZL";
                     ToolTip = 'View, print, or send the accounting sheets report.';
                     Visible = false;
                 }
@@ -1080,7 +1085,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Balance Sheet';
                     Image = Report;
-                    RunObject = Report "Balance Sheet CZL";
+                    RunObject = report "Balance Sheet CZL";
                     ToolTip = 'View a report that shows your company''s assets, liabilities, and equity.';
                     Visible = false;
                 }
@@ -1090,7 +1095,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Income Statement';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Income Statement CZL";
+                    RunObject = report "Income Statement CZL";
                     ToolTip = 'View a report that shows your company''s income and expenses.';
                     Visible = false;
                 }
@@ -1100,7 +1105,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Budget';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report Budget;
+                    RunObject = report Budget;
                     ToolTip = 'View or edit estimated amounts for a range of accounting periods.';
                     Visible = false;
                 }
@@ -1110,7 +1115,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Trial Balance/Budget';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Trial Balance/Budget";
+                    RunObject = report "Trial Balance/Budget";
                     ToolTip = 'View a trial balance in comparison to a budget. You can choose to see a trial balance for selected dimensions. You can use the report at the close of an accounting period or fiscal year.';
                     Visible = false;
                 }
@@ -1120,7 +1125,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Trial Balance by Period';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Trial Balance by Period";
+                    RunObject = report "Trial Balance by Period";
                     ToolTip = 'Show the opening balance by general ledger account, the movements in the selected period of month, quarter, or year, and the resulting closing balance.';
                     Visible = false;
                 }
@@ -1130,7 +1135,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Fiscal Year Balance';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Fiscal Year Balance";
+                    RunObject = report "Fiscal Year Balance";
                     ToolTip = 'View, print, or send a report that shows balance sheet movements for selected periods. The report shows the closing balance by the end of the previous fiscal year for the selected ledger accounts. It also shows the fiscal year until this date, the fiscal year by the end of the selected period, and the balance by the end of the selected period, excluding the closing entries. The report can be used at the close of an accounting period or fiscal year.';
                     Visible = false;
                 }
@@ -1140,7 +1145,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Balance Comp. - Prev. Year';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Balance Comp. - Prev. Year";
+                    RunObject = report "Balance Comp. - Prev. Year";
                     ToolTip = 'View a report that shows your company''s assets, liabilities, and equity compared to the previous year.';
                     Visible = false;
                 }
@@ -1150,7 +1155,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Closing Trial Balance';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Closing Trial Balance";
+                    RunObject = report "Closing Trial Balance";
                     ToolTip = 'View, print, or send a report that shows this year''s and last year''s figures as an ordinary trial balance. The closing of the income statement accounts is posted at the end of a fiscal year. The report can be used in connection with closing a fiscal year.';
                     Visible = false;
                 }
@@ -1159,7 +1164,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Dimensions;
                     Caption = 'Dimensions - Total';
                     Image = Report;
-                    RunObject = Report "Dimensions - Total";
+                    RunObject = report "Dimensions - Total";
                     ToolTip = 'View how dimensions or dimension sets are used on entries based on total amounts over a specified period and for a specified analysis view.';
                     Visible = false;
                 }
@@ -1173,7 +1178,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Reconcile Bank Account Entry';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Recon. Bank Account Entry CZL";
+                    RunObject = report "Recon. Bank Account Entry CZL";
                     ToolTip = 'View, print, or send the reconciliaion bank account entry report.';
                 }
                 action("Bank Detail Trial Balance")
@@ -1182,7 +1187,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Bank Detail Trial Balance';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Bank Acc. - Detail Trial Bal.";
+                    RunObject = report "Bank Acc. - Detail Trial Bal.";
                     ToolTip = 'View, print, or send a report that shows a detailed trial balance for selected bank accounts. You can use the report at the close of an accounting period or fiscal year.';
                     Visible = false;
                 }
@@ -1196,7 +1201,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Documentation for VAT';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Documentation for VAT CZL";
+                    RunObject = report "Documentation for VAT CZL";
                     ToolTip = 'View, print, or send the documentation for VAT report.';
                 }
                 action("VAT Documents List")
@@ -1205,7 +1210,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'VAT Documents List';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "VAT Documents List CZL";
+                    RunObject = report "VAT Documents List CZL";
                     ToolTip = 'View, print, or send the VAT documents list report.';
                 }
                 action("VAT Reconciliation")
@@ -1214,7 +1219,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'VAT Reconciliation';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "G/L VAT Reconciliation CZL";
+                    RunObject = report "G/L VAT Reconciliation CZL";
                     ToolTip = 'View, print, or send the G/L VAT reconciliation report.';
                 }
                 action("Unreliable Payer List")
@@ -1223,7 +1228,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Unreliable Payer List';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Unreliable Payer List CZL";
+                    RunObject = report "Unreliable Payer List CZL";
                     ToolTip = 'View, print, or send the list of unreliable VAT payers.';
                 }
                 action("VAT Registration No. Check")
@@ -1232,7 +1237,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'VAT Registration No. Check';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "VAT Registration No. Check";
+                    RunObject = report "VAT Registration No. Check";
                     ToolTip = 'Use an EU VAT number validation service to validated the VAT number of a business partner.';
                 }
                 action("VAT Statement")
@@ -1241,7 +1246,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'VAT Statement';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "VAT Statement CZL";
+                    RunObject = report "VAT Statement CZL";
                     ToolTip = 'View a statement of posted VAT and calculate the duty liable to the customs authorities for the selected period.';
                 }
                 action("VAT Exceptions")
@@ -1250,7 +1255,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'VAT Exceptions';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "VAT Exceptions";
+                    RunObject = report "VAT Exceptions";
                     ToolTip = 'View the VAT entries that were posted and placed in a general ledger register in connection with a VAT difference. The report is used to document adjustments made to VAT amounts that were calculated for use in internal or external auditing.';
                     Visible = false;
                 }
@@ -1260,7 +1265,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'VAT - VIES Declaration Tax Auth';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "VAT- VIES Declaration Tax Auth";
+                    RunObject = report "VAT- VIES Declaration Tax Auth";
                     ToolTip = 'View information to the customs and tax authorities for sales to other EU countries/regions. If the information must be printed to a file, you can use the VAT- VIES Declaration Disk report.';
                     Visible = false;
                 }
@@ -1270,7 +1275,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'EC Sales List';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "EC Sales List";
+                    RunObject = report "EC Sales List";
                     ToolTip = 'Calculate VAT amounts from sales, and submit the amounts to a tax authority.';
                     Visible = false;
                 }
@@ -1284,7 +1289,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Open Vendor Entries at Date';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Open Vend. Entries to Date CZL";
+                    RunObject = report "Open Vend. Entries to Date CZL";
                     ToolTip = 'View, print, or send the open vendor entries to date report.';
                 }
                 action("Vendor Balance Reconciliation")
@@ -1293,7 +1298,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Vendor Balance Reconciliation';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Vendor-Bal. Reconciliation CZL";
+                    RunObject = report "Vendor-Bal. Reconciliation CZL";
                     ToolTip = 'View, print, or send the vendor balance reconciliation report.';
                 }
                 action("Vendor - Top 10")
@@ -1302,7 +1307,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Vendor - Top 10';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Vendor - Top 10 List";
+                    RunObject = report "Vendor - Top 10 List";
                     ToolTip = 'View, print, or send the vendor - top 10 report.';
                 }
                 action("Quantity Received Check")
@@ -1311,7 +1316,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Quantity Received Check';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Quantity Received Check CZL";
+                    RunObject = report "Quantity Received Check CZL";
                     ToolTip = 'View, print, or send the quantity received check report.';
                 }
                 action("Aged Accounts Payable")
@@ -1320,7 +1325,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Aged Accounts Payable';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Aged Accounts Payable";
+                    RunObject = report "Aged Accounts Payable";
                     ToolTip = 'View an overview of when your payables to vendors are due or overdue (divided into four periods). You must specify the date you want aging calculated from and the length of the period that each column will contain data for.';
                     Visible = false;
                 }
@@ -1334,7 +1339,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Open Customer Entries at Date';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Open Cust. Entries to Date CZL";
+                    RunObject = report "Open Cust. Entries to Date CZL";
                     ToolTip = 'View, print, or send the open customer entries to date report.';
                 }
                 action("Customer Balance Reconciliation")
@@ -1343,7 +1348,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Customer Balance Reconciliation';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Cust.- Bal. Reconciliation CZL";
+                    RunObject = report "Cust.- Bal. Reconciliation CZL";
                     ToolTip = 'View, print, or send the customer balance reconciliation report.';
                 }
                 action("Customer - Top 10")
@@ -1352,7 +1357,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Customer - Top 10';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Customer - Top 10 List";
+                    RunObject = report "Customer - Top 10 List";
                     ToolTip = 'View, print, or send the customer - top 10 report.';
                 }
                 action("Quantity Shipped Check")
@@ -1361,7 +1366,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Quantity Shipped Check';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Quantity Shipped Check CZL";
+                    RunObject = report "Quantity Shipped Check CZL";
                     ToolTip = 'View, print, or send the quantity shipped check report.';
                 }
                 action("Aged Accounts Receivable")
@@ -1370,7 +1375,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Aged Accounts Receivable';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Aged Accounts Receivable";
+                    RunObject = report "Aged Accounts Receivable";
                     ToolTip = 'View an overview of when your receivables from customers are due or overdue (divided into four periods). You must specify the date you want aging calculated from and the length of the period that each column will contain data for.';
                     Visible = false;
                 }
@@ -1384,7 +1389,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Inventory Valuation';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Inventory Valuation";
+                    RunObject = report "Inventory Valuation";
                     ToolTip = 'View, print, or send the inventory valuation report.';
                 }
                 action("Posted Inventory Document")
@@ -1393,7 +1398,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Posted Inventory Document';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Posted Inventory Document CZL";
+                    RunObject = report "Posted Inventory Document CZL";
                     ToolTip = 'View, print, or send the posted inventory document report.';
                 }
                 action("Physical Inventory Document")
@@ -1402,7 +1407,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Physical Inventory Document';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Phys. Inventory Document CZL";
+                    RunObject = report "Phys. Inventory Document CZL";
                     ToolTip = 'View, print, or send the physical inventory document report.';
                 }
             }
@@ -1419,7 +1424,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Reconcile Cust. and Vend. Accs';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Reconcile Cust. and Vend. Accs";
+                    RunObject = report "Reconcile Cust. and Vend. Accs";
                     ToolTip = 'View if a certain general ledger account reconciles the balance on a certain date for the corresponding posting group. The report shows the accounts that are included in the reconciliation with the general ledger balance and the customer or the vendor ledger balance for each account and shows any differences between the general ledger balance and the customer or vendor ledger balance.';
                     Visible = false;
                 }
@@ -1429,7 +1434,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Statement of Cash Flows';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Statement of Cashflows";
+                    RunObject = report "Statement of Cashflows";
                     ToolTip = 'View a financial statement that shows how changes in balance sheet accounts and income affect the company''s cash holdings, displayed for operating, investing, and financing activities respectively.';
                 }
                 action("Cash Flow Date List")
@@ -1438,7 +1443,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Cash Flow Date List';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Cash Flow Date List";
+                    RunObject = report "Cash Flow Date List";
                     ToolTip = 'View forecast entries for a period of time that you specify. The registered cash flow forecast entries are organized by source types, such as receivables, sales orders, payables, and purchase orders. You specify the number of periods and their length.';
                 }
                 action("Statement of Retained Earnings")
@@ -1447,7 +1452,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Statement of Retained Earnings';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Retained Earnings Statement";
+                    RunObject = report "Retained Earnings Statement";
                     ToolTip = 'View a report that shows your company''s changes in retained earnings for a specified period by reconciling the beginning and ending retained earnings for the period, using information such as net income from the other financial statements.';
                 }
 #if not CLEAN22
@@ -1457,7 +1462,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Intrastat - Checklist';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Intrastat - Checklist";
+                    RunObject = report "Intrastat - Checklist";
                     ToolTip = 'View a checklist that you can use to find possible errors before printing and also as documentation for what is printed. You can use the report to check the Intrastat journal before you use the Intrastat - Make Disk Tax Auth batch job.';
                     ObsoleteState = Pending;
                     ObsoleteTag = '22.0';
@@ -1469,7 +1474,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Intrastat - Form';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Intrastat - Form";
+                    RunObject = report "Intrastat - Form";
                     ToolTip = 'View all the information that must be transferred to the printed Intrastat form.';
                     Visible = false;
                     ObsoleteState = Pending;
@@ -1483,7 +1488,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Cost Accounting P/L Statement';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Cost Acctg. Statement";
+                    RunObject = report "Cost Acctg. Statement";
                     ToolTip = 'View the credit and debit balances per cost type, together with the chart of cost types.';
                 }
                 action("CA P/L Statement per Period")
@@ -1492,7 +1497,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'CA P/L Statement per Period';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Cost Acctg. Stmt. per Period";
+                    RunObject = report "Cost Acctg. Stmt. per Period";
                     ToolTip = 'View profit and loss for cost types over two periods with the comparison as a percentage.';
                 }
                 action("CA P/L Statement with Budget")
@@ -1501,7 +1506,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'CA P/L Statement with Budget';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Cost Acctg. Statement/Budget";
+                    RunObject = report "Cost Acctg. Statement/Budget";
                     ToolTip = 'View a comparison of the balance to the budget figures and calculates the variance and the percent variance in the current accounting period, the accumulated accounting period, and the fiscal year.';
                 }
                 action("Cost Accounting Analysis")
@@ -1510,7 +1515,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'Cost Accounting Analysis';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = Report "Cost Acctg. Analysis";
+                    RunObject = report "Cost Acctg. Analysis";
                     ToolTip = 'View balances per cost type with columns for seven fields for cost centers and cost objects. It is used as the cost distribution sheet in Cost accounting. The structure of the lines is based on the chart of cost types. You define up to seven cost centers and cost objects that appear as columns in the report.';
                 }
             }

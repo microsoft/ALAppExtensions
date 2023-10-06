@@ -1,3 +1,7 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using System.Utilities;
+
 page 2682 "Data Search Result Records"
 {
     Caption = 'Search Result Records';

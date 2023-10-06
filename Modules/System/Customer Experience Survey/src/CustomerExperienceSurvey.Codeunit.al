@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Feedback;
+
 /// <summary>
 /// Provides methods to connect to CES.
 /// </summary>

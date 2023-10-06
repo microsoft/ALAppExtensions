@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.BC;
+
 table 4018 "Source Table Mapping"
 {
     DataPerCompany = false;
@@ -39,6 +41,7 @@ table 4018 "Source Table Mapping"
         }
     }
 
+#pragma warning disable AA0245
     procedure MapTable(SourceTableName: Text; CountryCode: Code[10]; DestinationTableName: Text; Staged: Boolean; SourceAppId: Guid; AppId: Guid)
     begin
         SourceTableName := SourceTableName + '$' + LowerCase(DelChr(SourceAppId, '<>', '{}'));
@@ -66,6 +69,7 @@ table 4018 "Source Table Mapping"
         else
             SourceTableMapping.Insert();
     end;
+#pragma warning restore AA0245
 
     procedure SqlTableName(PerCompany: Boolean) Name: Text
     begin

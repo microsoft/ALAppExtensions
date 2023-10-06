@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.Foundation.Company;
+
 codeunit 40016 "Hybrid Company Initialize"
 {
     TableNo = "Hybrid Company";

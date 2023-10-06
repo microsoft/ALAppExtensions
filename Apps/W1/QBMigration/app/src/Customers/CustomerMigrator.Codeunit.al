@@ -38,6 +38,11 @@ codeunit 1912 "MigrationQB Customer Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
     local procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
 #endif
+    begin
+        MigrateCustomerPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+
+    procedure MigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
     begin
@@ -143,7 +148,7 @@ codeunit 1912 "MigrationQB Customer Migrator"
             until MigrationQBCustTrans.Next() = 0;
     end;
 
-    local procedure MigrateCustomerDetails(MigrationQBCustomer: Record "MigrationQB Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
+    procedure MigrateCustomerDetails(MigrationQBCustomer: Record "MigrationQB Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
         CustomerName: Text[50];

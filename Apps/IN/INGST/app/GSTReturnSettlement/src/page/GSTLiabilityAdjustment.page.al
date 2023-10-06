@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Vendor;
+
 page 18320 "GST Liability Adjustment"
 {
     Caption = 'GST Liability Adjustment';

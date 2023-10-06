@@ -54,7 +54,7 @@ report 31194 "Service Order CZL"
         }
         dataitem("Service Header"; "Service Header")
         {
-            DataItemTableView = sorting("Document Type", "No.") WHERE("Document Type" = CONST(Order));
+            DataItemTableView = sorting("Document Type", "No.") where("Document Type" = const(Order));
             RequestFilterFields = "No.", "Customer No.";
             column(DocumentLbl; DocumentLbl)
             {
@@ -286,7 +286,7 @@ report 31194 "Service Order CZL"
                     dataitem("Fault Comment"; "Service Comment Line")
                     {
                         DataItemLink = "Table Subtype" = field("Document Type"), "No." = field("Document No."), "Table Line No." = field("Line No.");
-                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") WHERE("Table Name" = CONST("Service Header"), Type = CONST(Fault));
+                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") where("Table Name" = const("Service Header"), Type = const(Fault));
                         column(FaultCommentsLbl; FaultCommentsLbl)
                         {
                         }
@@ -305,7 +305,7 @@ report 31194 "Service Order CZL"
                     dataitem("Resolution Comment"; "Service Comment Line")
                     {
                         DataItemLink = "Table Subtype" = field("Document Type"), "No." = field("Document No."), "Table Line No." = field("Line No.");
-                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") WHERE("Table Name" = CONST("Service Header"), Type = CONST(Resolution));
+                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") where("Table Name" = const("Service Header"), Type = const(Resolution));
                         column(ResolutionCommentsLbl; ResolutionCommentsLbl)
                         {
                         }
@@ -452,7 +452,8 @@ report 31194 "Service Order CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Service Header");
                 FormatDocumentFields("Service Header");
@@ -484,7 +485,7 @@ report 31194 "Service Order CZL"
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";

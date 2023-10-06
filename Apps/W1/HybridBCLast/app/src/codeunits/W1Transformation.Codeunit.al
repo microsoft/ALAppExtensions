@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.BC;
+
 codeunit 4027 "W1 Transformation"
 {
     ObsoleteState = Pending;
@@ -136,12 +138,11 @@ codeunit 4027 "W1 Transformation"
     var
         StgIncomingDocument: Record "Stg Incoming Document";
     begin
-        with StgIncomingDocument do
-            if FindSet(true, false) then
-                repeat
-                    URL := URL1 + URL2 + URL3 + URL4;
-                    Modify();
-                until StgIncomingDocument.Next() = 0;
+        if StgIncomingDocument.FindSet(true) then
+            repeat
+                StgIncomingDocument.URL := StgIncomingDocument.URL1 + StgIncomingDocument.URL2 + StgIncomingDocument.URL3 + StgIncomingDocument.URL4;
+                StgIncomingDocument.Modify();
+            until StgIncomingDocument.Next() = 0;
     end;
 
     [IntegrationEvent(false, false)]

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// A pop-up window for creating a new security group.
 /// </summary>
@@ -29,7 +31,7 @@ page 9872 "New Security Group"
                     group(IntroAad)
                     {
                         ShowCaption = false;
-                        InstructionalText = 'Create a new Security Group in Business Central corresponding to an AAD security group.';
+                        InstructionalText = 'Create a new Security Group in Business Central corresponding to a Microsoft Entra security group.';
                         Visible = not IsWindowsAuthentication;
                     }
                     group(IntroWindows)
@@ -57,8 +59,8 @@ page 9872 "New Security Group"
                 field(NewAadSecurityGroupName; NewSecurityGroupNameValue)
                 {
                     ApplicationArea = All;
-                    Caption = 'AAD security group name';
-                    ToolTip = 'Specifies the name of the AAD security group.';
+                    Caption = 'Microsoft Entra security group name';
+                    ToolTip = 'Specifies the name of the Microsoft Entra security group.';
                     NotBlank = true;
                     Visible = not IsWindowsAuthentication;
 

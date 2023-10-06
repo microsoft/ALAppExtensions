@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Archive;
+
+using Microsoft.Finance.ChargeGroup.ChargeGroupBase;
+
 tableextension 18536 "Charge Purch. Header Arch. Ext" extends "Purchase Header Archive"
 {
     fields

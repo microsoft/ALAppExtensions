@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 codeunit 40017 "Hybrid Handle Comp Init Error"
 {
     TableNo = "Hybrid Company";

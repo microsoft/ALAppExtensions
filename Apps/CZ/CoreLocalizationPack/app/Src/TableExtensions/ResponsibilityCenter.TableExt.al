@@ -1,4 +1,4 @@
-tableextension 11794 "Responsibility Center CZL" extends "Responsibility Center" 
+tableextension 11794 "Responsibility Center CZL" extends "Responsibility Center"
 {
     fields
     {

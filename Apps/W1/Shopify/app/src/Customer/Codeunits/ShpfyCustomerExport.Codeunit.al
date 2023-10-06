@@ -1,3 +1,9 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Address;
+
 /// <summary>
 /// Codeunit Shpfy Customer Export (ID 30116).
 /// </summary>
@@ -14,7 +20,7 @@ codeunit 30116 "Shpfy Customer Export"
     begin
         CustomerAPI.FillInMissingShopIds();
         Customer.CopyFilters(Rec);
-        if Shop."Export Customer To Shopify" and Customer.FindSet(false, false) then begin
+        if Shop."Export Customer To Shopify" and Customer.FindSet(false) then begin
             CustomerMapping.SetShop(Shop);
             repeat
                 CustomerId := CustomerMapping.FindMapping(Customer);
@@ -31,6 +37,7 @@ codeunit 30116 "Shpfy Customer Export"
     var
         Shop: Record "Shpfy Shop";
         CustomerApi: Codeunit "Shpfy Customer API";
+        CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
 
     /// <summary> 
     /// Add Or Update Metadata.
@@ -110,6 +117,7 @@ codeunit 30116 "Shpfy Customer Export"
         xCustomerAddress: Record "Shpfy Customer Address" temporary;
 #pragma warning restore AA0073
         TaxArea: Record "Shpfy Tax Area";
+        CountyCodeTooLongErr: Text;
     begin
         xShopifyCustomer := ShopifyCustomer;
         xCustomerAddress := CustomerAddress;
@@ -144,10 +152,18 @@ codeunit 30116 "Shpfy Customer Export"
         CustomerAddress."Address 2" := Customer."Address 2";
         CustomerAddress.Zip := Customer."Post Code";
         CustomerAddress.City := Customer.City;
+
+        if (Customer."Country/Region Code" = '') and CompanyInformation.Get() then
+            Customer."Country/Region Code" := CompanyInformation."Country/Region Code";
+
         if Customer.County <> '' then
             case Shop."County Source" of
                 Shop."County Source"::Code:
                     begin
+                        if StrLen(Customer.County) > MaxStrLen(TaxArea."County Code") then begin
+                            CountyCodeTooLongErr := StrSubstNo(CountyCodeTooLongLbl, Customer."No.", Customer.Name, StrLen(Customer.County), MaxStrLen(TaxArea."County Code"), Customer.County, Customer.FieldCaption(County));
+                            Error(CountyCodeTooLongErr);
+                        end;
                         TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
                         TaxArea.SetRange("County Code", Customer.County);
                         if TaxArea.FindFirst() then begin
@@ -171,8 +187,6 @@ codeunit 30116 "Shpfy Customer Export"
                         end;
                     end;
             end;
-        if (Customer."Country/Region Code" = '') and CompanyInformation.Get() then
-            Customer."Country/Region Code" := CompanyInformation."Country/Region Code";
 
         if CountryRegion.Get(Customer."Country/Region Code") then begin
             CountryRegion.TestField("ISO Code");

@@ -3,13 +3,18 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Environment;
+using System.DataAdministration;
+
 codeunit 4509 "Email - Outlook API Helper"
 {
     Permissions = tabledata "Email - Outlook Account" = rimd;
 
     var
-        CannotConnectToMailServerErr: Label 'Client ID or Client secret is not set up on the Email Application AAD Registration page.';
-        SetupOutlookAPIQst: Label 'To connect to your email account you must create an App registration in Azure Active Directory and then enter information about the registration on the Email Application AAD Registration Page in Business Central. Do you want to do that now?';
+        CannotConnectToMailServerErr: Label 'Client ID or Client secret is not set up on the Email Microsoft Entra application registration page.';
+        SetupOutlookAPIQst: Label 'To connect to your email account you must create an App registration in Microsoft Entra and then enter information about the registration on the Email Microsoft Entra application registration page in Business Central. Do you want to do that now?';
         OnPremOnlyErr: Label 'Authentication using the Client ID and secret should only be used for Business Central on-premises.';
         AccountNotFoundErr: Label 'We could not find the account. Typically, this is because the account has been deleted.';
         EmailBodyTooLargeErr: Label 'The email is too large to send. The size limit is 4 MB, not including attachments.', Locked = true;

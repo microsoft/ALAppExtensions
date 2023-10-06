@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSOnPurchase;
+
+using Microsoft.Finance.TaxBase;
+using Microsoft.Purchases.Document;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Purchases.History;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 codeunit 18719 "TDS Statistics"
 {
     Access = Internal;

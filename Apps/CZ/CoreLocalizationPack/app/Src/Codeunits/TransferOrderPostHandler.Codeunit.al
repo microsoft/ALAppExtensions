@@ -38,16 +38,12 @@ codeunit 31048 "TransferOrder-Post Handler CZL"
     begin
         ItemJournalLine.CopyFromTransferLineCZL(TransferLine);
     end;
-#if not CLEAN22
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Transfer", 'OnInsertDirectTransHeaderOnBeforeDirectTransHeaderInsert', '', false, false)]
     local procedure CopyFieldsOnInsertDirectTransHeaderOnBeforeDirectTransHeaderInsert(TransferHeader: Record "Transfer Header"; var DirectTransHeader: Record "Direct Trans. Header")
     begin
-#pragma warning disable AL0432
         DirectTransHeader."Intrastat Exclude CZL" := TransferHeader."Intrastat Exclude CZL";
-#pragma warning restore AL0432
     end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Transfer", 'OnAfterCreateItemJnlLine', '', false, false)]
     local procedure CopyFieldsOnAfterCreateItemJnlLine(var ItemJnlLine: Record "Item Journal Line"; DirectTransHeader: Record "Direct Trans. Header"; DirectTransLine: Record "Direct Trans. Line")

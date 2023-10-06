@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Finance.TaxBase;
+
 report 18871 "Update TCS Challan Register"
 {
     Caption = 'Update TCS Challan Register';

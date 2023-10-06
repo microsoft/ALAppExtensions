@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSOnPayments;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Inventory.Location;
+using Microsoft.Finance.Currency;
+using Microsoft.Sales.Customer;
+using Microsoft.Bank.BankAccount;
+using Microsoft.FixedAssets.FixedAsset;
+
 table 18766 "Provisional Entry"
 {
     Caption = 'Provisional Entry';

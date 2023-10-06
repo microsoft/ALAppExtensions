@@ -1,3 +1,20 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.Utilities;
+using System.Apps;
+using System.Integration;
+using System.Security.User;
+using System.Security.AccessControl;
+using System.Upgrade;
+using System.Telemetry;
+using System.Reflection;
+using System.Environment.Configuration;
+using System.Threading;
+using System.Environment;
+using System.Azure.Identity;
+using System.Media;
+using System.Text;
+
 codeunit 4001 "Hybrid Cloud Management"
 {
     Permissions = tabledata "Published Application" = r,
@@ -73,13 +90,14 @@ codeunit 4001 "Hybrid Cloud Management"
         DataReplicationStartedLbl: Label 'Replication run started.', Locked = true;
         DataUpgradeScheduledLbl: Label 'Cloud Migration data upgrade scheduled.', Locked = true;
         UnblockedManuallyLbl: Label 'Unblocked manually';
+        SettingForUserPermissionsMsg: Label 'Setting for Keeping user permissions was set to: %1.', Comment = '%1 - true or false';
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
         ExpectedSubscriptionId: Text;
     begin
         ExpectedSubscriptionId := StrSubstNo(SubscriptionFormatTxt, ProductId);
-        exit((StrPos(SubscriptionId, ExpectedSubscriptionId) > 0) OR
+        exit((StrPos(SubscriptionId, ExpectedSubscriptionId) > 0) or
             CanHandleServiceNotification(SubscriptionId, ProductId));
     end;
 
@@ -514,7 +532,7 @@ codeunit 4001 "Hybrid Cloud Management"
     begin
         OnGetHybridProductName(ProductId, ProductName);
 
-        // If no product name is provided, then default to the product identifier
+        // if no product name is provided, then default to the product identifier
         if ProductName = '' then
             ProductName := ProductId;
     end;
@@ -622,6 +640,21 @@ codeunit 4001 "Hybrid Cloud Management"
         exit('');
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnBeforeResetUsersToIntelligentCloudPermissions', '', false, false)]
+    local procedure HandleBeforeResetUsersToIntelligentCloudPermissions(var Handled: Boolean)
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if Handled then
+            exit;
+
+        if not IntelligentCloudSetup.Get() then
+            exit;
+
+        if IntelligentCloudSetup."Keep User Permissions" then
+            Handled := true;
+    end;
+
     procedure HandleShowIRInstructionsStep(var HybridProductType: Record "Hybrid Product Type"; var IRName: Text; var PrimaryKey: Text)
     var
         HybridDeployment: Codeunit "Hybrid Deployment";
@@ -630,7 +663,7 @@ codeunit 4001 "Hybrid Cloud Management"
         Session.LogMessage('0000EV4', StrSubstNo(CreatingIntegrationRuntimeMsg, HybridProductType.ID), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
 
         OnBeforeShowIRInstructionsStep(HybridProductType, IRName, PrimaryKey, HandledExternally);
-        if HandledExternally OR (IRName <> '') then
+        if HandledExternally or (IRName <> '') then
             exit;
 
         HybridDeployment.Initialize(HybridProductType.ID);
@@ -744,6 +777,7 @@ codeunit 4001 "Hybrid Cloud Management"
         if ReplicationType = HybridReplicationSummary.ReplicationType::Full then
             HybridDeployment.ResetCloudData();
 
+        MarkTablesAsReplaceData();
         OnHandleRunReplication(Handled, RunId, ReplicationType);
         if not Handled then
             HybridDeployment.RunReplication(RunId, ReplicationType);
@@ -775,6 +809,15 @@ codeunit 4001 "Hybrid Cloud Management"
     internal procedure GetFeatureTelemetryName(): Text
     begin
         exit('Cloud Migration');
+    end;
+
+    local procedure MarkTablesAsReplaceData()
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    begin
+        IntelligentCloudStatus.Get('Upgrade Tags$63ca2fa4-4f03-4f2b-a480-172fef340d3f', '');
+        IntelligentCloudStatus."Preserve Cloud Data" := false;
+        IntelligentCloudStatus.Modify();
     end;
 
     procedure CheckFixDataOnReplicationCompleted(NotificationText: Text): Boolean
@@ -954,7 +997,7 @@ codeunit 4001 "Hybrid Cloud Management"
         if AllObj.FindFirst() then begin
             PublishedApplication.Reset();
             PublishedApplication.SetRange("Runtime Package ID", AllObj."App Runtime Package ID");
-            If PublishedApplication.FindFirst() then begin
+            if PublishedApplication.FindFirst() then begin
                 AppID := CopyStr(Lowercase(CopyStr(PublishedApplication.ID, 2, (StrLen(PublishedApplication.ID) - 2))), 1, 50);
                 TableName := CopyStr(TableName + '$' + AppID, 1, 250);
             end;
@@ -1083,6 +1126,16 @@ codeunit 4001 "Hybrid Cloud Management"
         CanReplicate := true;
         OnVerifyCanReplicateCompanies(Reason, CanReplicate);
         exit(CanReplicate);
+    end;
+
+    internal procedure ChangeRemovePermissionsFromUsers()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        IntelligentCloudSetup.Get();
+        IntelligentCloudSetup."Keep User Permissions" := not IntelligentCloudSetup."Keep User Permissions";
+        IntelligentCloudSetup.Modify();
+        Message(SettingForUserPermissionsMsg, IntelligentCloudSetup."Keep User Permissions");
     end;
 
     internal procedure VerifyCanCompleteCloudMigration()
@@ -1494,7 +1547,10 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
         LastHybridReplicationDetail: Record "Hybrid Replication Detail";
+        LastHybridReplicationSummary: Record "Hybrid Replication Summary";
+        RemainingFailedHybridReplicationDetails: Record "Hybrid Replication Detail";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        HybridReplicationStatistics: Codeunit "Hybrid Replication Statistics";
         StatusText: Text;
     begin
         IntelligentCloudStatus.SetFilter("Table Name", '%1|%2', '*$' + TableName, TableName);
@@ -1519,6 +1575,18 @@ codeunit 4001 "Hybrid Cloud Management"
         LastHybridReplicationDetail."Error Message" := CopyStr(StatusText, 1, MaxStrLen(HybridReplicationDetail."Error Message"));
         LastHybridReplicationDetail.Status := LastHybridReplicationDetail.Status::Successful;
         LastHybridReplicationDetail.Modify();
+
+        HybridReplicationStatistics.GetTotalFailedTables(RemainingFailedHybridReplicationDetails);
+        RemainingFailedHybridReplicationDetails.SetRange("Company Name", LastHybridReplicationDetail."Company Name");
+        if RemainingFailedHybridReplicationDetails.IsEmpty() then begin
+            GetLastReplicationSummary(LastHybridReplicationSummary);
+            LastHybridReplicationSummary.Status := LastHybridReplicationSummary.Status::UpgradePending;
+            LastHybridReplicationSummary.Modify();
+        end;
+
+        RemainingFailedHybridReplicationDetails.SetRange(Status, RemainingFailedHybridReplicationDetails.Status::Failed);
+        if RemainingFailedHybridReplicationDetails.IsEmpty() then
+            InsertOrUpdateHybridCompanyStatus(LastHybridReplicationDetail."Company Name");
 
         if GuiAllowed() then
             Message(TableWasUnblockedMsg);

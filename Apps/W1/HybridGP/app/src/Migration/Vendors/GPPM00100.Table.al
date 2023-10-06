@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40112 "GP PM00100"
 {
     Description = 'GP Vendor Class Master';

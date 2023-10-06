@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System;
+using System.Text;
+using System.Utilities;
+using System.Environment;
+
 codeunit 8905 "Email Message Impl."
 {
     Access = Internal;

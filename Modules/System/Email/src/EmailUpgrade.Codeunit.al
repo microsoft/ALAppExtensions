@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Environment.Configuration;
+using System.Upgrade;
+
 codeunit 1597 "Email Upgrade"
 {
     Subtype = Upgrade;

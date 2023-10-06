@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 enum 40905 "Hist. Inventory Doc. Type"
 {
     value(0; "Blank") { Caption = ''; }

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 codeunit 8930 "Email View Policy"
 {
     Access = Internal;
@@ -24,7 +26,7 @@ codeunit 8930 "Email View Policy"
         NullGuid: Guid;
     begin
         EmailViewPolicyRecord.SetRange("User Security ID", NullGuid);
-        If EmailViewPolicyRecord.IsEmpty() then
+        if EmailViewPolicyRecord.IsEmpty() then
             InsertDefault(EmailViewPolicy)
     end;
 

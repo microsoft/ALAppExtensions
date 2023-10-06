@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Currency;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using Microsoft.Service.History;
+using System.Globalization;
+using System.Utilities;
+
 table 11510 "Swiss QR-Bill Buffer"
 {
     Caption = 'QR-Bill Buffer';
@@ -112,6 +129,11 @@ table 11510 "Swiss QR-Bill Buffer"
         {
             Caption = 'Language Code';
             TableRelation = Language where("Windows Language ID" = filter(1033 | 2055 | 4108 | 2064));
+        }
+        field(16; "Format Region"; Text[80])
+        {
+            Caption = 'Format Region';
+            TableRelation = "Language Selection"."Language Tag";
         }
         field(20; "Creditor Address Type"; Enum "Swiss QR-Bill Address Type")
         {
@@ -394,6 +416,7 @@ table 11510 "Swiss QR-Bill Buffer"
         LoadLayout(QRBillLayoutCode);
         "File Name" := 'QR-Bill.pdf';
         "Language Code" := SwissQRBillMgt.GetLanguageCodeENU();
+        "Format Region" := '';
     end;
 
     internal procedure SetQRCodeImage(TempBlob: Codeunit "Temp Blob")
@@ -494,6 +517,7 @@ table 11510 "Swiss QR-Bill Buffer"
             else
                 "Language Code" := Language.GetLanguageCode(SwissQRBillMgt.GetLanguageIdENU());
         end;
+        "Format Region" := Customer."Format Region";
     end;
 
     procedure GetCreditorInfo(var Customer: Record Customer): Boolean

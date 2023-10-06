@@ -14,6 +14,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
         PermissionManager: Codeunit "Permission Manager";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(IsSaas);
         PermissionManager.SetTestabilityIntelligentCloud(true);
@@ -31,14 +32,16 @@ codeunit 139653 "Replication Mgt Page Tests"
         IntelligentCloudSetup."Latest Version" := 'V2.0';
         IntelligentCloudSetup.Insert();
 
-        if not Initialized then begin
-            HybridDeploymentSetup.DeleteAll();
-            HybridDeploymentSetup."Handler Codeunit ID" := Codeunit::"Library - Hybrid Management";
-            HybridDeploymentSetup.Insert();
-            BindSubscription(LibraryHybridManagement);
-            HybridDeploymentSetup.Get();
-        end else
+        if Initialized then
             exit;
+
+        HybridDeploymentSetup.DeleteAll();
+        HybridDeploymentSetup."Handler Codeunit ID" := Codeunit::"Library - Hybrid Management";
+        HybridDeploymentSetup.Insert();
+        BindSubscription(LibraryHybridManagement);
+        HybridDeploymentSetup.Get();
+        HybridCloudManagement.RefreshIntelligentCloudStatusTable();
+        Commit();
 
         Initialized := true;
     end;

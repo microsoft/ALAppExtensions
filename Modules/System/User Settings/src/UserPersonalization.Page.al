@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Globalization;
+using System.DateTime;
+
 /// <summary>
 /// Page that shows the settings of a given user.
 /// </summary>

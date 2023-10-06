@@ -1,3 +1,6 @@
+namespace Microsoft.Finance.Latepayment;
+
+using Microsoft.Sales.Receivables;
 pageextension 1959 "LP Activities" extends "O365 Activities"
 {
     ContextSensitiveHelpPage = 'ui-extensions-late-payment-prediction';

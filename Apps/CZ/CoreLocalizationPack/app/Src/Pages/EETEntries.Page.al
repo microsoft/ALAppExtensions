@@ -2,7 +2,7 @@ page 31145 "EET Entries CZL"
 {
     ApplicationArea = Basic, Suite;
     Caption = 'EET Entries';
-    CardPageID = "EET Entry Card CZL";
+    CardPageId = "EET Entry Card CZL";
     Editable = false;
     PageType = List;
     SourceTable = "EET Entry CZL";
@@ -216,7 +216,7 @@ page 31145 "EET Entries CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Simple EET Registration';
                 Image = ReverseRegister;
-                RunObject = Page "EET Simple Registration CZL";
+                RunObject = page "EET Simple Registration CZL";
                 ToolTip = 'Create simple EET entry.';
             }
         }
@@ -249,7 +249,6 @@ page 31145 "EET Entries CZL"
     end;
 
     var
-        [InDataSet]
         StatusStyleExpr: Text;
 
     local procedure SetStatusStyle()

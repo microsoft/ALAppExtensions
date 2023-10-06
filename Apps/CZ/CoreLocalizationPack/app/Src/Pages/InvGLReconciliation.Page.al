@@ -233,7 +233,6 @@ page 31196 "Inv. G/L Reconciliation CZL"
         IncomeStatementTxt: Label 'Income Statement';
         BalanceSheetTxt: Label 'Balance Sheet';
         ShowWarning: Boolean;
-        [InDataSet]
         ShowEditable: Boolean;
 
     local procedure DimCodeToOption(DimCode: Text[30]): Integer

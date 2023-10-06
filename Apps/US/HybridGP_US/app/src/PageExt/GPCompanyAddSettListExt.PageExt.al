@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 pageextension 41102 "GP Company Add. Sett. List Ext" extends "GP Company Add. Settings List"
 {
     layout

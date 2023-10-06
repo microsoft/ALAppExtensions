@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Integration.Excel;
+
+using System.Integration;
+using System;
+using System.Integration.Excel;
+
 codeunit 132524 "Edit in Excel Test Library"
 {
 #if not CLEAN22

@@ -1,3 +1,7 @@
+namespace Microsoft.Bank.PayPal;
+
+using System.Security.AccessControl;
+
 permissionsetextension 48840 "D365 FULL ACCESS - PayPal Payments Standard" extends "D365 FULL ACCESS"
 {
     Permissions = tabledata "MS - PayPal Standard Account" = RIMD,

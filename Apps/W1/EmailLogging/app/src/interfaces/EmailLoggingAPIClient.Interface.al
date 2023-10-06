@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 interface "Email Logging API Client"
 {
     Access = Internal;

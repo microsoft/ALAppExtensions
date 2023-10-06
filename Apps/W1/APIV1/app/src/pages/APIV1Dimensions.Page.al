@@ -1,3 +1,7 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Finance.Dimension;
+
 page 20021 "APIV1 - Dimensions"
 {
     APIVersion = 'v1.0';
@@ -20,20 +24,20 @@ page 20021 "APIV1 - Dimensions"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'id', Locked = true;
                     Editable = false;
                 }
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'code', Locked = true;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'displayName', Locked = true;
                 }
-                field(lastModifiedDateTime; "Last Modified Date Time")
+                field(lastModifiedDateTime; Rec."Last Modified Date Time")
                 {
                     Caption = 'lastModifiedDateTime', Locked = true;
                 }
@@ -42,7 +46,7 @@ page 20021 "APIV1 - Dimensions"
                     Caption = 'DimensionValues', Locked = true;
                     EntityName = 'dimensionValue';
                     EntitySetName = 'dimensionValues';
-                    SubPageLink = "Dimension Code" = FIELD(Code);
+                    SubPageLink = "Dimension Code" = field(Code);
                 }
             }
         }
@@ -52,4 +56,5 @@ page 20021 "APIV1 - Dimensions"
     {
     }
 }
+
 

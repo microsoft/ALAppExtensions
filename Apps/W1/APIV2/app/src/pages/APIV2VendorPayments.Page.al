@@ -1,3 +1,11 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Integration.Entity;
+using Microsoft.Purchases.History;
+using Microsoft.Integration.Graph;
+
 page 30060 "APIV2 - Vendor Payments"
 {
     APIVersion = 'v2.0';
@@ -18,12 +26,12 @@ page 30060 "APIV2 - Vendor Payments"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(journalId; "Journal Batch Id")
+                field(journalId; Rec."Journal Batch Id")
                 {
                     Caption = 'Journal Id';
 
@@ -33,7 +41,7 @@ page 30060 "APIV2 - Vendor Payments"
                             Error(CannotEditJournalIdErr);
                     end;
                 }
-                field(journalDisplayName; "Journal Batch Name")
+                field(journalDisplayName; Rec."Journal Batch Name")
                 {
                     Caption = 'Journal Display Name';
 
@@ -43,28 +51,28 @@ page 30060 "APIV2 - Vendor Payments"
                             Error(CannotEditBatchNameErr);
                     end;
                 }
-                field(lineNumber; "Line No.")
+                field(lineNumber; Rec."Line No.")
                 {
                     Caption = 'Line No.';
                 }
-                field(vendorId; "Vendor Id")
+                field(vendorId; Rec."Vendor Id")
                 {
                     Caption = 'Vendor Id';
 
                     trigger OnValidate()
                     begin
-                        if "Vendor Id" = BlankGUID then begin
-                            "Account No." := '';
+                        if Rec."Vendor Id" = BlankGUID then begin
+                            Rec."Account No." := '';
                             exit;
                         end;
 
-                        if not Vendor.GetBySystemId("Vendor Id") then
+                        if not Vendor.GetBySystemId(Rec."Vendor Id") then
                             Error(VendorIdDoesNotMatchAVendorErr);
 
-                        "Account No." := Vendor."No.";
+                        Rec."Account No." := Vendor."No.";
                     end;
                 }
-                field(vendorNumber; "Account No.")
+                field(vendorNumber; Rec."Account No.")
                 {
                     Caption = 'Vendor No.';
                     TableRelation = Vendor;
@@ -72,35 +80,35 @@ page 30060 "APIV2 - Vendor Payments"
                     trigger OnValidate()
                     begin
                         if Vendor."No." <> '' then begin
-                            if Vendor."No." <> "Account No." then
+                            if Vendor."No." <> Rec."Account No." then
                                 Error(VendorValuesDontMatchErr);
                             exit;
                         end;
 
-                        if "Account No." = '' then begin
-                            "Vendor Id" := BlankGUID;
+                        if Rec."Account No." = '' then begin
+                            Rec."Vendor Id" := BlankGUID;
                             exit;
                         end;
 
-                        if not Vendor.Get("Account No.") then
+                        if not Vendor.Get(Rec."Account No.") then
                             Error(VendorNumberDoesNotMatchAVendorErr);
 
-                        "Vendor Id" := Vendor.SystemId;
+                        Rec."Vendor Id" := Vendor.SystemId;
                     end;
                 }
-                field(postingDate; "Posting Date")
+                field(postingDate; Rec."Posting Date")
                 {
                     Caption = 'Posting Date';
                 }
-                field(documentNumber; "Document No.")
+                field(documentNumber; Rec."Document No.")
                 {
                     Caption = 'Document No.';
                 }
-                field(externalDocumentNumber; "External Document No.")
+                field(externalDocumentNumber; Rec."External Document No.")
                 {
                     Caption = 'External Document No.';
                 }
-                field(amount; Amount)
+                field(amount; Rec.Amount)
                 {
                     Caption = 'Amount';
                 }
@@ -112,8 +120,8 @@ page 30060 "APIV2 - Vendor Payments"
                     var
                         PurchaseInvoiceAggregator: Codeunit "Purch. Inv. Aggregator";
                     begin
-                        "Applies-to Invoice Id" := AppliesToInvoiceIdText;
-                        if "Applies-to Invoice Id" = BlankGUID then begin
+                        Rec."Applies-to Invoice Id" := AppliesToInvoiceIdText;
+                        if Rec."Applies-to Invoice Id" = BlankGUID then begin
                             AppliesToInvoiceNumberText := '';
                             exit;
                         end;
@@ -124,11 +132,11 @@ page 30060 "APIV2 - Vendor Payments"
 
                         AppliesToInvoiceNumberText := PurchInvHeader."No.";
 
-                        if "Account No." = '' then
+                        if Rec."Account No." = '' then
                             if PurchInvHeader."Pay-to Vendor No." <> '' then
-                                "Account No." := PurchInvHeader."Pay-to Vendor No."
+                                Rec."Account No." := PurchInvHeader."Pay-to Vendor No."
                             else
-                                "Account No." := PurchInvHeader."Buy-from Vendor No.";
+                                Rec."Account No." := PurchInvHeader."Buy-from Vendor No.";
                     end;
                 }
                 field(appliesToInvoiceNumber; AppliesToInvoiceNumberText)
@@ -140,7 +148,7 @@ page 30060 "APIV2 - Vendor Payments"
                         PurchaseInvoiceAggregator: Codeunit "Purch. Inv. Aggregator";
                         BlankGUID: Guid;
                     begin
-                        "Applies-to Doc. No." := AppliesToInvoiceNumberText;
+                        Rec."Applies-to Doc. No." := AppliesToInvoiceNumberText;
 
                         if PurchInvHeader."No." <> '' then begin
                             if PurchInvHeader."No." <> AppliesToInvoiceNumberText then
@@ -150,24 +158,24 @@ page 30060 "APIV2 - Vendor Payments"
 
                         if PurchInvHeader.Get(AppliesToInvoiceNumberText) then begin
                             AppliesToInvoiceIdText := PurchaseInvoiceAggregator.GetPurchaseInvoiceHeaderId(PurchInvHeader);
-                            if "Account No." = '' then
+                            if Rec."Account No." = '' then
                                 if PurchInvHeader."Pay-to Vendor No." <> '' then
-                                    "Account No." := PurchInvHeader."Pay-to Vendor No."
+                                    Rec."Account No." := PurchInvHeader."Pay-to Vendor No."
                                 else
-                                    "Account No." := PurchInvHeader."Buy-from Vendor No.";
+                                    Rec."Account No." := PurchInvHeader."Buy-from Vendor No.";
                         end else
                             AppliesToInvoiceIdText := BlankGUID;
                     end;
                 }
-                field(description; Description)
+                field(description; Rec.Description)
                 {
                     Caption = 'Description';
                 }
-                field(comment; Comment)
+                field(comment; Rec.Comment)
                 {
                     Caption = 'Comment';
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                     Editable = false;
@@ -177,7 +185,7 @@ page 30060 "APIV2 - Vendor Payments"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Journal Line");
+                    SubPageLink = "Parent Id" = field(SystemId), "Parent Type" = const("Journal Line");
                 }
                 part(applyVendorEntries; "APIV2 - Apply Vendor Entries")
                 {
@@ -199,14 +207,14 @@ page 30060 "APIV2 - Vendor Payments"
     var
         NextRecNotFound: Boolean;
     begin
-        if not Find(Which) then
+        if not Rec.Find(Which) then
             exit(false);
 
         if ShowRecord() then
             exit(true);
 
         repeat
-            NextRecNotFound := Next() <= 0;
+            NextRecNotFound := Rec.Next() <= 0;
             if ShowRecord() then
                 exit(true);
         until NextRecNotFound;
@@ -219,7 +227,7 @@ page 30060 "APIV2 - Vendor Payments"
         ResultSteps: Integer;
     begin
         repeat
-            ResultSteps := Next(Steps);
+            ResultSteps := Rec.Next(Steps);
         until (ResultSteps = 0) or ShowRecord();
         exit(ResultSteps);
     end;
@@ -243,7 +251,7 @@ page 30060 "APIV2 - Vendor Payments"
         JournalBatchId: Guid;
         JournalBatchIdFilter: Text;
     begin
-        if IsNullGuid("Journal Batch Id") then begin
+        if IsNullGuid(Rec."Journal Batch Id") then begin
             JournalBatchIdFilter := Rec.GetFilter("Journal Batch Id");
             if JournalBatchIdFilter = '' then
                 Error(FiltersNotSpecifiedErr);
@@ -252,10 +260,10 @@ page 30060 "APIV2 - Vendor Payments"
             JournalBatchIdFilter := Rec.GetFilter("Journal Batch Id");
             if (JournalBatchIdFilter <> '') then begin
                 JournalBatchId := JournalBatchIdFilter;
-                if (JournalBatchId <> "Journal Batch Id") then
+                if (JournalBatchId <> Rec."Journal Batch Id") then
                     Error(JournalBatchIdNameNotMatchErr)
             end else
-                JournalBatchId := "Journal Batch Id";
+                JournalBatchId := Rec."Journal Batch Id";
         end;
 
         ProcessAppliesToInvoiceNumberAndId();
@@ -281,14 +289,14 @@ page 30060 "APIV2 - Vendor Payments"
     begin
         ProcessAppliesToInvoiceNumberAndId();
 
-        GenJournalLine.GetBySystemId(SystemId);
+        GenJournalLine.GetBySystemId(Rec.SystemId);
 
-        if "Line No." = GenJournalLine."Line No." then
-            Modify(true)
+        if Rec."Line No." = GenJournalLine."Line No." then
+            Rec.Modify(true)
         else begin
             GenJournalLine.TransferFields(Rec, false);
-            GenJournalLine.Rename("Journal Template Name", "Journal Batch Name", "Line No.");
-            TransferFields(GenJournalLine, true);
+            GenJournalLine.Rename(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Line No.");
+            Rec.TransferFields(GenJournalLine, true);
         end;
 
         SetCalculatedFields();
@@ -300,9 +308,9 @@ page 30060 "APIV2 - Vendor Payments"
     begin
         ClearCalculatedFields();
 
-        "Document Type" := "Document Type"::Payment;
-        "Account Type" := "Account Type"::Vendor;
-        "Applies-to Doc. Type" := "Applies-to Doc. Type"::Invoice;
+        Rec."Document Type" := Rec."Document Type"::Payment;
+        Rec."Account Type" := Rec."Account Type"::Vendor;
+        Rec."Applies-to Doc. Type" := Rec."Applies-to Doc. Type"::Invoice;
     end;
 
     trigger OnOpenPage()
@@ -332,13 +340,13 @@ page 30060 "APIV2 - Vendor Payments"
     local procedure TransferGeneratedFieldsFromInitializeLine(var GenJournalLine: Record "Gen. Journal Line")
     begin
         if GenJournalLine."Document No." = '' then
-            GenJournalLine."Document No." := "Document No.";
+            GenJournalLine."Document No." := Rec."Document No.";
     end;
 
     local procedure SetCalculatedFields()
     begin
-        AppliesToInvoiceNumberText := "Applies-to Doc. No.";
-        AppliesToInvoiceIdText := "Applies-to Invoice Id";
+        AppliesToInvoiceNumberText := Rec."Applies-to Doc. No.";
+        AppliesToInvoiceIdText := Rec."Applies-to Invoice Id";
     end;
 
     local procedure ClearCalculatedFields()
@@ -350,20 +358,20 @@ page 30060 "APIV2 - Vendor Payments"
     local procedure ProcessAppliesToInvoiceNumberAndId()
     begin
         if AppliesToInvoiceNumberText <> '' then
-            "Applies-to Doc. No." := AppliesToInvoiceNumberText;
-        "Applies-to Invoice Id" := AppliesToInvoiceIdText;
+            Rec."Applies-to Doc. No." := AppliesToInvoiceNumberText;
+        Rec."Applies-to Invoice Id" := AppliesToInvoiceIdText;
     end;
 
     local procedure CheckFilters()
     begin
-        if (GetFilter("Journal Batch Id") = '') and
-           (GetFilter(SystemId) = '')
+        if (Rec.GetFilter("Journal Batch Id") = '') and
+           (Rec.GetFilter(SystemId) = '')
         then
             Error(FiltersNotSpecifiedErr);
     end;
 
     local procedure ShowRecord(): Boolean
     begin
-        exit(("Applies-to Doc. Type" = "Applies-to Doc. Type"::Invoice) or ("Applies-to ID" <> ''));
+        exit((Rec."Applies-to Doc. Type" = Rec."Applies-to Doc. Type"::Invoice) or (Rec."Applies-to ID" <> ''));
     end;
 }

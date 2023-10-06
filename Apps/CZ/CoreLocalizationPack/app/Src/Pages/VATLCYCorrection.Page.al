@@ -113,6 +113,7 @@ page 31025 "VAT LCY Correction CZL"
 
                     trigger OnValidate()
                     begin
+                        CheckMaxVATDifferenceAllowed();
                         Rec.Modify();
                         CalcTotals();
                         CurrPage.Update(false);
@@ -201,7 +202,7 @@ page 31025 "VAT LCY Correction CZL"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                ShortCutKey = 'F9';
+                ShortcutKey = 'F9';
                 ToolTip = 'Post value from field "VAT Correction Amount" to general and VAT ledger entries.';
 
                 trigger OnAction()
@@ -221,7 +222,7 @@ page 31025 "VAT LCY Correction CZL"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                ShortCutKey = 'Ctrl+Alt+F9';
+                ShortcutKey = 'Ctrl+Alt+F9';
                 ToolTip = 'Review the result of the posting lines before the actual posting.';
 
                 trigger OnAction()
@@ -238,7 +239,7 @@ page 31025 "VAT LCY Correction CZL"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                RunObject = Page "VAT Posting Setup Card";
+                RunObject = page "VAT Posting Setup Card";
                 RunPageLink = "VAT Bus. Posting Group" = field("VAT Bus. Posting Group"), "VAT Prod. Posting Group" = field("VAT Prod. Posting Group");
                 ToolTip = 'Open the VAT posting setup card for the selected record.';
             }
@@ -306,9 +307,9 @@ page 31025 "VAT LCY Correction CZL"
                         VendorLedgerEntry.GetTransactionNoCZL(PurchCrMemoHdr."Vendor Ledger Entry No."));
                 end;
             else begin
-                    IsHandled := false;
-                    OnInitGlobals(DocRecordRef, DocumentNo, PostingDate, TransactionNo, IsHandled);
-                end;
+                IsHandled := false;
+                OnInitGlobals(DocRecordRef, DocumentNo, PostingDate, TransactionNo, IsHandled);
+            end;
         end;
     end;
 
@@ -344,6 +345,18 @@ page 31025 "VAT LCY Correction CZL"
             until VATEntry.Next() = 0;
     end;
 
+    local procedure CheckMaxVATDifferenceAllowed()
+    var
+        TempVATLCYCorrectionBufferCZL: Record "VAT LCY Correction Buffer CZL" temporary;
+    begin
+        TempVATLCYCorrectionBufferCZL.Copy(Rec, true);
+        TempVATLCYCorrectionBufferCZL.SetRange("Source Code", SourceCodeSetup."VAT LCY Correction CZL");
+        TempVATLCYCorrectionBufferCZL.CalcSums("Corrected VAT Amount");
+        TempVATLCYCorrectionBufferCZL."Corrected VAT Amount" += Rec."Corrected VAT Amount";
+        TempVATLCYCorrectionBufferCZL."VAT Amount" := Rec."VAT Amount";
+        TempVATLCYCorrectionBufferCZL.CalcVATCorrectionAmount();
+    end;
+
     local procedure CalcTotals()
     var
         TempVATLCYCorrectionBufferCZL: Record "VAT LCY Correction Buffer CZL" temporary;
@@ -354,7 +367,7 @@ page 31025 "VAT LCY Correction CZL"
         TotalVATAmount := TempVATLCYCorrectionBufferCZL."VAT Amount";
         TotalCorrectedVATAmount := TempVATLCYCorrectionBufferCZL."Corrected VAT Amount";
         TotalVATCorrectionAmount := TempVATLCYCorrectionBufferCZL."VAT Correction Amount";
-        CurrPage."VAT Amount Summary FactBox CZL".Page.UpdateVATAmountTotals(Rec);
+        CurrPage."VAT Amount Summary FactBox CZL".Page.UpdateVATAmountTotals(TempVATLCYCorrectionBufferCZL);
     end;
 
     local procedure ShowPreview()

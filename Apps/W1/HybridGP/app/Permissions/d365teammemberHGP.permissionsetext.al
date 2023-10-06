@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Security.AccessControl;
+
 permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
 {
     Permissions = tabledata "GP Account" = RIMD,
@@ -105,5 +109,7 @@ permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
                   tabledata "GP POP10100" = RIMD,
                   tabledata "GP POP10110" = RIMD,
                   tabledata "GP PM00204" = RIMD,
+                  tabledata "GP Upgrade Settings" = RIMD,
+                  tabledata "GP Migration Error Overview" = RIMD,
                   tabledata "GP Known Countries" = RIMD;
 }

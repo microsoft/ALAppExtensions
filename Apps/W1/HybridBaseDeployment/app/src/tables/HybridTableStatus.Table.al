@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 table 40032 "Hybrid Table Status"
 {
     DataClassification = SystemMetadata;

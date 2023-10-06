@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Integration.Graph;
+
 page 30019 "APIV2 - Currencies"
 {
     APIVersion = 'v2.0';
@@ -17,58 +22,58 @@ page 30019 "APIV2 - Currencies"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'Code';
                     ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo(Code));
+                        RegisterFieldSet(Rec.FieldNo(Code));
                     end;
                 }
-                field(displayName; Description)
+                field(displayName; Rec.Description)
                 {
                     Caption = 'Description';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo(Description));
+                        RegisterFieldSet(Rec.FieldNo(Description));
                     end;
                 }
-                field(symbol; Symbol)
+                field(symbol; Rec.Symbol)
                 {
                     Caption = 'Symbol';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo(Symbol));
+                        RegisterFieldSet(Rec.FieldNo(Symbol));
                     end;
                 }
-                field(amountDecimalPlaces; "Amount Decimal Places")
+                field(amountDecimalPlaces; Rec."Amount Decimal Places")
                 {
                     Caption = 'Amount Decimal Places';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Amount Decimal Places"));
+                        RegisterFieldSet(Rec.FieldNo("Amount Decimal Places"));
                     end;
                 }
-                field(amountRoundingPrecision; "Invoice Rounding Precision")
+                field(amountRoundingPrecision; Rec."Invoice Rounding Precision")
                 {
                     Caption = 'Amount Rounding Precision';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Amount Rounding Precision"));
+                        RegisterFieldSet(Rec.FieldNo("Amount Rounding Precision"));
                     end;
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }
@@ -85,13 +90,13 @@ page 30019 "APIV2 - Currencies"
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         CurrencyRecordRef: RecordRef;
     begin
-        Insert(true);
+        Rec.Insert(true);
 
         CurrencyRecordRef.GetTable(Rec);
         GraphMgtGeneralTools.ProcessNewRecordFromAPI(CurrencyRecordRef, TempFieldSet, CurrentDateTime());
         CurrencyRecordRef.SetTable(Rec);
 
-        Modify(true);
+        Rec.Modify(true);
         exit(false);
     end;
 
@@ -99,12 +104,12 @@ page 30019 "APIV2 - Currencies"
     var
         Currency: Record "Currency";
     begin
-        Currency.GetBySystemId(SystemId);
+        Currency.GetBySystemId(Rec.SystemId);
 
-        if Code <> Currency.Code then begin
+        if Rec.Code <> Currency.Code then begin
             Currency.TransferFields(Rec, false);
-            Currency.Rename(Code);
-            TransferFields(Currency);
+            Currency.Rename(Rec.Code);
+            Rec.TransferFields(Currency);
         end;
     end;
 

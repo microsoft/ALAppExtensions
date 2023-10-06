@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.VoucherInterface;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using System.Utilities;
+
 report 18930 "Bank Book"
 {
     DefaultLayout = RDLC;
@@ -428,10 +441,10 @@ report 18930 "Bank Book"
                       "Global Dimension 2 Code", "Posting Date");
                     BankAccountLedgerEntry.SetRange("Bank Account No.", "No.");
                     BankAccountLedgerEntry.SetFilter("Posting Date", '%1..%2', 0D, NormalDate(GetRangeMin("Date Filter")) - 1);
-                    if "Global Dimension 1 Filter" <> '' then
-                        BankAccountLedgerEntry.SetFilter("Global Dimension 1 Code", "Global Dimension 1 Filter");
+                    if GetFilter("Global Dimension 1 Filter") <> '' then
+                        BankAccountLedgerEntry.SetFilter("Global Dimension 1 Code", GetFilter("Global Dimension 1 Filter"));
                     if "Global Dimension 2 Filter" <> '' then
-                        BankAccountLedgerEntry.SetFilter("Global Dimension 2 Code", "Global Dimension 2 Filter");
+                        BankAccountLedgerEntry.SetFilter("Global Dimension 2 Code", GetFilter("Global Dimension 2 Filter"));
 
                     BankAccountLedgerEntry.CalcSums("Amount (LCY)");
                     if BankAccountLedgerEntry."Amount (LCY)" > 0 then

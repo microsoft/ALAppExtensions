@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Purchase;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Utilities;
+
 codeunit 18153 "GST Canc Corr Purch Inv Credit"
 {
     var

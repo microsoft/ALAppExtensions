@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 permissionset 68 "System Execute - Basic"
 {
     Permissions = system "Edit, Find" = X,

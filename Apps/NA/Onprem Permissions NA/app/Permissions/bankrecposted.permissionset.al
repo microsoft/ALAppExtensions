@@ -9,7 +9,5 @@ permissionset 27005 "BANKREC-POSTED"
     Assignable = true;
     Caption = 'Read Posted Bank Recs';
 
-    Permissions = tabledata "Bank Comment Line" = Ri,
-                  tabledata "Posted Bank Rec. Header" = Ri,
-                  tabledata "Posted Bank Rec. Line" = Ri;
+    Permissions = tabledata "Bank Comment Line" = Ri;
 }

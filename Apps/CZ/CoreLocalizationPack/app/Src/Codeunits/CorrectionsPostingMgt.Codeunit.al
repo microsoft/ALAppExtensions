@@ -109,7 +109,13 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferPurchPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure InitInvtPostBufOnBeforeBufferPurchPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; ExpCostToPost: Decimal; ExpCostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         if IsHandled then
             exit;
@@ -153,7 +159,13 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferSalesPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif    
     local procedure InitInvtPostBufOnBeforeBufferSalesPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; ExpCostToPost: Decimal; ExpCostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif    
     begin
         InventorySetup.Get();
         if not InventorySetup."Post Exp.Cost Conv.As Corr.CZL" then
@@ -195,7 +207,13 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferOutputPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure InitInvtPostBufOnBeforeBufferOutputPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; ExpCostToPost: Decimal; ExpCostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         InventorySetup.Get();
         if not InventorySetup."Post Exp.Cost Conv.As Corr.CZL" then
@@ -248,8 +266,14 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
         end;
     end;
 
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     [EventSubscriber(ObjectType::Table, Database::"Invt. Posting Buffer", 'OnUseInvtPostSetup', '', false, false)]
     local procedure SetValueOnUseInvtPostSetup(var InvtPostingBuffer: Record "Invt. Posting Buffer"; var UseInventoryPostingSetup: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         if InvtPostingBuffer."Account Type" in
             [InvtPostingBuffer."Account Type"::"WIP Inventory Corr.CZL",
@@ -259,7 +283,13 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnSetAccNoOnBeforeCheckAccNo', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure SetAccountOnSetAccNoOnBeforeCheckAccNo(var InvtPostBuf: Record "Invt. Posting Buffer"; InvtPostingSetup: Record "Inventory Posting Setup"; GenPostingSetup: Record "General Posting Setup"; CalledFromItemPosting: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         if InvtPostBuf."Account No." <> '' then
             exit;
@@ -290,7 +320,13 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnPostInvtPostBufOnBeforeSetAmt', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif    
     local procedure SetCorrectionOnPostInvtPostBufOnBeforeSetAmt(var GenJournalLine: Record "Gen. Journal Line"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostingBuffer: Record "Invt. Posting Buffer")
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         // has amount to post
         if (GlobalInvtPostingBuffer.Amount <> 0) or (GlobalInvtPostingBuffer."Amount (ACY)" <> 0) then
@@ -353,7 +389,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
             ServiceLine."Negative CZL" := (ServiceLine.Quantity < 0);
     end;
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPrepareSales', '', false, false)]
     local procedure InvPostBufferSetCorrectionOnAfterInvPostBufferPrepareSales(var SalesLine: Record "Sales Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer")

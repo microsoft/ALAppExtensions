@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using System.Utilities;
+
 codeunit 5260 "Audit Mapping Helper"
 {
     TableNo = "G/L Account Mapping Header";

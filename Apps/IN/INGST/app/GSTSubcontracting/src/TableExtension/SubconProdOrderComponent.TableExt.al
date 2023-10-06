@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Manufacturing.Document;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+
 tableextension 18468 "Subcon Prod.Order Component" extends "Prod. Order Component"
 {
     fields

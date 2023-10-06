@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
+using System.Utilities;
+
 codeunit 9088 "Stor. Serv. Auth. Ready SAS" implements "Storage Service Authorization"
 {
     Access = Internal;

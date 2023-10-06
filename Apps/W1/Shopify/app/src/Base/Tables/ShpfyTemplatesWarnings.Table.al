@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 table 30140 "Shpfy Templates Warnings"
 {
     Access = Internal;

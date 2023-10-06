@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 table 1876 "Business Setup Icon"
 {
     Access = Internal;
@@ -10,13 +12,8 @@ table 1876 "Business Setup Icon"
     InherentPermissions = X;
     Caption = 'Business Setup Icon';
     DataPerCompany = false;
-#if CLEAN18
     ObsoleteState = Removed;
     ObsoleteTag = '23.0';
-#else
-    ObsoleteState = Pending;
-    ObsoleteTag = '18.0';
-#endif
     ObsoleteReason = 'The Manual Setup module and its objects have been consolidated in the Guided Experience module.';
     ReplicateData = false;
 
@@ -24,14 +21,17 @@ table 1876 "Business Setup Icon"
     {
         field(1; "Business Setup Name"; Text[50])
         {
+            DataClassification = CustomerContent;
             Caption = 'Business Setup Name';
         }
         field(2; Icon; Media)
         {
+            DataClassification = CustomerContent;
             Caption = 'Icon';
         }
         field(3; "Media Resources Ref"; Code[50])
         {
+            DataClassification = CustomerContent;
             Caption = 'Media Resources Ref';
         }
     }

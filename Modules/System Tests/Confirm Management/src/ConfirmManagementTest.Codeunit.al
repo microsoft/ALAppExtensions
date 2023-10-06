@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Utilities;
+
+using System.Utilities;
+using System.TestLibraries.Utilities;
+
 codeunit 132509 "Confirm Management Test"
 {
     Subtype = Test;
@@ -19,20 +24,20 @@ codeunit 132509 "Confirm Management Test"
     [Test]
     [HandlerFunctions('HandleConfirmDialogByClickingNo')]
     procedure TestGetResponseOrDefaultUserClicksDefaultButton();
-    VAR
+    var
         ConfirmManagement: Codeunit "Confirm Management";
         Result: Boolean;
     begin
         // [WHEN] User clicks FALSE when Confirm dialog is raised with FALSE as the default button
-        Result := ConfirmManagement.GetResponseOrDefault('Some Q', FALSE);
+        Result := ConfirmManagement.GetResponseOrDefault('Some Q', false);
 
         // [THEN] Default response is returned
-        LibraryAssert.AreEqual(FALSE, Result, 'Default response is not returned');
+        LibraryAssert.AreEqual(false, Result, 'Default response is not returned');
     end;
 
     [Test]
     procedure TestGetResponseOrDefaultWhenGuiNotAllowed();
-    VAR
+    var
         ConfirmTestLibrary: Codeunit "Confirm Test Library";
         ConfirmManagement: Codeunit "Confirm Management";
         Result: Boolean;
@@ -51,12 +56,12 @@ codeunit 132509 "Confirm Management Test"
     [Test]
     [HandlerFunctions('HandleConfirmDialogByClickingYes')]
     procedure TestGetResponseUserClicksNonDefaultButton();
-    VAR
+    var
         ConfirmManagement: Codeunit "Confirm Management";
         Result: Boolean;
     begin
         // [WHEN] User clicks true when Confirm dialog is raised with FALSE as the default button
-        Result := ConfirmManagement.GetResponse('Some Q', FALSE);
+        Result := ConfirmManagement.GetResponse('Some Q', false);
 
         // [THEN] User response is returned
         LibraryAssert.AreEqual(true, Result, 'User response is not returned');
@@ -64,7 +69,7 @@ codeunit 132509 "Confirm Management Test"
 
     [Test]
     procedure TestGetResponseWhenGuiNotAllowed();
-    VAR
+    var
         ConfirmTestLibrary: Codeunit "Confirm Test Library";
         ConfirmManagement: Codeunit "Confirm Management";
         Result: Boolean;

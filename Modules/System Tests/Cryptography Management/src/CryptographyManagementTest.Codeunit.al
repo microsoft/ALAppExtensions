@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Security.Encryption;
+
+using System.Security.Encryption;
+
 codeunit 132615 "Cryptography Management Test"
 {
     Subtype = Test;
@@ -15,7 +19,7 @@ codeunit 132615 "Cryptography Management Test"
     begin
 
         // [GIVEN] Normal input of size < 215
-        Input := CopyStr('ABCD',1,215);
+        Input := CopyStr('ABCD', 1, 215);
         if not CryptographyManagement.IsEncryptionPossible() then
             CryptographyManagement.EnableEncryption(true);
 

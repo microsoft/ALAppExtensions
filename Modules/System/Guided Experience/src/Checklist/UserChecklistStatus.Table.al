@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Security.AccessControl;
+using System.Reflection;
+
 table 1994 "User Checklist Status"
 {
     Access = Internal;

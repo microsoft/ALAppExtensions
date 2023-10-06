@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
+using Microsoft.Inventory.Item;
+
 pageextension 41020 "Item List Ext." extends "Item List"
 {
     actions

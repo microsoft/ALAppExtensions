@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 table 40904 "Hist. Receivables Document"
 {
     DataClassification = CustomerContent;

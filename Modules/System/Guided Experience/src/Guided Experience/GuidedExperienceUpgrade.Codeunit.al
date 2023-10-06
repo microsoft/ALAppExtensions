@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Globalization;
+using System.Upgrade;
+
 codeunit 1999 "Guided Experience Upgrade"
 {
     Subtype = Upgrade;

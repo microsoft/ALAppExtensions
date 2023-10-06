@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment.Configuration;
+
 codeunit 135004 "Feature Key Test Handler" implements "Feature Data Update"
 {
     EventSubscriberInstance = Manual;
@@ -30,7 +34,7 @@ codeunit 135004 "Feature Key Test Handler" implements "Feature Data Update"
 
     procedure GetTaskDescription() TaskDescription: Text;
     begin
-        Exit(IdImplemented + '...');
+        exit(IdImplemented + '...');
     end;
 
     var

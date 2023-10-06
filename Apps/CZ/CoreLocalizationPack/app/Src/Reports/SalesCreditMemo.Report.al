@@ -487,7 +487,8 @@ report 31190 "Sales Credit Memo CZL"
                 SalesCrMemoLine: Record "Sales Cr.Memo Line";
                 IsHandled: Boolean;
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Sales Cr.Memo Header");
                 FormatDocumentFields("Sales Cr.Memo Header");
@@ -600,12 +601,14 @@ report 31190 "Sales Credit Memo CZL"
         Currency: Record Currency;
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
         SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
@@ -653,12 +656,11 @@ report 31190 "Sales Credit Memo CZL"
         ClosingLbl: Label 'Sincerely';
         BodyLbl: Label 'Thank you for your business. Your credit memo is attached to this message.';
         DocumentNoLbl: Label 'No.';
-        [InDataSet]
         LogInteractionEnable: Boolean;
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(6) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Sales Cr. Memo") <> '';
     end;
 
     local procedure FormatDocumentFields(SalesCrMemoHeader: Record "Sales Cr.Memo Header")

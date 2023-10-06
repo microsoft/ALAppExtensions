@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy ToDraftProduct (ID 30187) implements Interface Shpfy IRemoveProductAction.
 /// </summary>

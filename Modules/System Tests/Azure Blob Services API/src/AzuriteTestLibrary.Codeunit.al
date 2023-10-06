@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Azure.Storage;
+
+using System.Azure.Storage;
+
 /// <summary>
 /// Provides common authorization functionality for using Azurite in tests for Azure Storage Services.
 /// See: https://go.microsoft.com/fwlink/?linkid=2212636

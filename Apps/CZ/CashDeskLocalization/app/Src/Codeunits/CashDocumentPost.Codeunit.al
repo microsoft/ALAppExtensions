@@ -137,6 +137,7 @@ codeunit 11729 "Cash Document-Post CZP"
 
     local procedure PostLines()
     var
+        GLEntryNo: Integer;
         LineCount: Integer;
         TableID: array[10] of Integer;
         No: array[10] of Code[20];
@@ -196,7 +197,8 @@ codeunit 11729 "Cash Document-Post CZP"
                         Error(DimensionManagement.GetDimValuePostingErr());
                     end;
                     OnBeforePostCashDocLine(TempGenJournalLine, CashDocumentLineCZP, GenJnlPostLine);
-                    GenJnlPostLine.RunWithCheck(TempGenJournalLine);
+                    GLEntryNo := GenJnlPostLine.RunWithCheck(TempGenJournalLine);
+                    OnAfterPostCashDocLine(TempGenJournalLine, CashDocumentLineCZP, GLEntryNo, GenJnlPostLine);
                 end;
             until CashDocumentLineCZP.Next() = 0;
 
@@ -473,6 +475,11 @@ codeunit 11729 "Cash Document-Post CZP"
 
     [IntegrationEvent(true, false)]
     local procedure OnInitGenJnlLineOnBeforeSetAccount(var GenJournalLine: Record "Gen. Journal Line"; CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterPostCashDocLine(var GenJournalLine: Record "Gen. Journal Line"; var CashDocumentLineCZP: Record "Cash Document Line CZP"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     begin
     end;
 }

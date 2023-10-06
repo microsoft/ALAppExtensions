@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Security.AccessControl;
+
 /// <summary>Holds information about the sent emails.</summary>
 table 8889 "Sent Email"
 {
@@ -65,7 +69,7 @@ table 8889 "Sent Email"
         {
             Access = Internal;
             FieldClass = FlowField;
-            CalcFormula = Lookup(User."User Name" where("User Security ID" = field("User Security Id")));
+            CalcFormula = lookup(User."User Name" where("User Security ID" = field("User Security Id")));
             Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 

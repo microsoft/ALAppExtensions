@@ -39,7 +39,7 @@ page 30115 "Shpfy Orders"
                 field(Closed; Rec.Closed)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specified if the Shopify order is archived by D365BC.';
+                    ToolTip = 'Specifies if the Shopify order is archived by D365BC.';
                 }
                 field(SellToCustomerNo; Rec."Sell-to Customer No.")
                 {
@@ -118,6 +118,12 @@ page 30115 "Shpfy Orders"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: fulfilled, in progress, open, pending fulfillment, restocked, unfulfilled, partially fulfilled.';
+                }
+                field(ReturnStatus; Rec."Return Status")
+                {
+                    ApplicationArea = All;
+                    Visible = false;
+                    ToolTip = 'Specifies the status or returns assocuated with the order. Valid values are: inspection complete, in progress, no return, returned, return failed, return requested.';
                 }
                 field(TotalAmount; Rec."Total Amount")
                 {

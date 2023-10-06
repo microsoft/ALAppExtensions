@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Sales.Customer;
+using System.Email;
+
 table 4048 "GP Customer Address"
 {
     Permissions = tabledata "Ship-to Address" = rim;

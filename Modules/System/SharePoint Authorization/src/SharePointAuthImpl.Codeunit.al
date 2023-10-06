@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Sharepoint;
+
 codeunit 9143 "SharePoint Auth. - Impl."
 {
     Access = Internal;
@@ -10,11 +12,11 @@ codeunit 9143 "SharePoint Auth. - Impl."
     InherentPermissions = X;
 
     [NonDebuggable]
-    procedure CreateAuthorizationCode(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "SharePoint Authorization";
+    procedure CreateAuthorizationCode(EntraTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "SharePoint Authorization";
     var
         SharePointAuthorizationCode: Codeunit "SharePoint Authorization Code";
     begin
-        SharePointAuthorizationCode.SetParameters(AadTenantId, ClientId, ClientSecret, Scopes);
+        SharePointAuthorizationCode.SetParameters(EntraTenantId, ClientId, ClientSecret, Scopes);
         exit(SharePointAuthorizationCode);
     end;
 }

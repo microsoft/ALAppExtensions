@@ -47,8 +47,8 @@ page 31143 "EET Business Premises CZL"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                RunObject = Page "EET Cash Registers CZL";
-                RunPageLink = "Business Premises Code" = FIELD(Code);
+                RunObject = page "EET Cash Registers CZL";
+                RunPageLink = "Business Premises Code" = field(Code);
                 ToolTip = 'Displays a list of POS devices assigned to the promises.';
             }
         }

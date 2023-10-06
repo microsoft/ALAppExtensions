@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40099 "GP Checkbook MSTR"
 {
     DataClassification = CustomerContent;

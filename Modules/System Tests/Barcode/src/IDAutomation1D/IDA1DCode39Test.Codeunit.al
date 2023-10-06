@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Text;
+
+using System.Text;
+
 codeunit 135044 "IDA 1D Code39 Test"
 {
     Subtype = Test;

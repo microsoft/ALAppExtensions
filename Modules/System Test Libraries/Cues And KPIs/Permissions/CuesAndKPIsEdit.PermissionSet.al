@@ -3,11 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Visualization;
+
+using System.Visualization;
+
 permissionset 135039 "Cues And KPIs Edit"
 {
     Assignable = true;
     IncludedPermissionSets = "Cues And KPIs - Edit";
-    
+
     // Include Test Tables
     Permissions =
         tabledata "Cues And KPIs Test 1 Cue" = RIMD,

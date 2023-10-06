@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using System.Integration;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Sales.Customer;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Inventory.Item;
+using Microsoft.Finance.GeneralLedger.Account;
+
 codeunit 1860 "C5 Data Migration Mgt."
 {
     var

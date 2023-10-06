@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Customer;
+
 /// <summary>
 /// Codeunit Shpfy Cust. By Bill-to (ID 30111) implements Interface Shpfy ICustomer Mapping.
 /// </summary>

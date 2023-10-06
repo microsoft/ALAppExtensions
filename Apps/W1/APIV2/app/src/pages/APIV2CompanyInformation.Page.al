@@ -1,3 +1,9 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Period;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 page 30011 "APIV2 - Company Information"
 {
     APIVersion = 'v2.0';
@@ -20,52 +26,52 @@ page 30011 "APIV2 - Company Information"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'Display Name';
                 }
-                field(addressLine1; Address)
+                field(addressLine1; Rec.Address)
                 {
                     Caption = 'Address Line 1';
                 }
-                field(addressLine2; "Address 2")
+                field(addressLine2; Rec."Address 2")
                 {
                     Caption = 'Address Line 2';
                 }
-                field(city; City)
+                field(city; Rec.City)
                 {
                     Caption = 'City';
                 }
-                field(state; County)
+                field(state; Rec.County)
                 {
                     Caption = 'State';
                 }
-                field(country; "Country/Region Code")
+                field(country; Rec."Country/Region Code")
                 {
                     Caption = 'Country/Region Code';
                 }
-                field(postalCode; "Post Code")
+                field(postalCode; Rec."Post Code")
                 {
                     Caption = 'Post Code';
                 }
-                field(phoneNumber; "Phone No.")
+                field(phoneNumber; Rec."Phone No.")
                 {
                     Caption = 'Phone No.';
                 }
-                field(faxNumber; "Fax No.")
+                field(faxNumber; Rec."Fax No.")
                 {
                     Caption = 'Fax No.';
                 }
-                field(email; "E-Mail")
+                field(email; Rec."E-Mail")
                 {
                     Caption = 'Email';
                 }
-                field(website; "Home Page")
+                field(website; Rec."Home Page")
                 {
                     Caption = 'Website';
                 }
@@ -94,16 +100,16 @@ page 30011 "APIV2 - Company Information"
                     Caption = 'Current Fiscal Year Start Date';
                     Editable = false;
                 }
-                field(industry; "Industrial Classification")
+                field(industry; Rec."Industrial Classification")
                 {
                     Caption = 'Industry';
                 }
-                field(picture; Picture)
+                field(picture; Rec.Picture)
                 {
                     Caption = 'Picture';
                     Editable = false;
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }
@@ -124,8 +130,8 @@ page 30011 "APIV2 - Company Information"
     var
         CompanyInformation: Record "Company Information";
     begin
-        CompanyInformation.GetBySystemId(SystemId);
-        Modify(true);
+        CompanyInformation.GetBySystemId(Rec.SystemId);
+        Rec.Modify(true);
 
         SetCalculatedFields();
     end;

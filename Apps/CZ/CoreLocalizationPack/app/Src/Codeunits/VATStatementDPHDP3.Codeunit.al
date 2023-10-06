@@ -1,7 +1,7 @@
 codeunit 11788 "VAT Statement DPHDP3 CZL" implements "VAT Statement Export CZL"
 {
     var
-        VATStmtXMLExportHelperCZL: codeunit "VAT Stmt XML Export Helper CZL";
+        VATStmtXMLExportHelperCZL: Codeunit "VAT Stmt XML Export Helper CZL";
 
     procedure ExportToXMLFile(VATStatementName: Record "VAT Statement Name"): Text
     var
@@ -18,7 +18,7 @@ codeunit 11788 "VAT Statement DPHDP3 CZL" implements "VAT Statement Export CZL"
     var
         VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL";
         ExportVATStmtDialogCZL: Report "Export VAT Stmt. Dialog CZL";
-        VATStatementDPHDP3CZL: XMLport "VAT Statement DPHDP3 CZL";
+        VATStatementDPHDP3CZL: XmlPort "VAT Statement DPHDP3 CZL";
         XmlParams: Text;
         DocumentOutStream: OutStream;
         AttachmentXPathTxt: Label 'DPHDP3/Prilohy/ObecnaPriloha', Locked = true;

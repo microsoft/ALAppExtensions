@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Text;
+
+using System.Privacy;
+using System.Globalization;
+using System.Environment;
+using System.Azure.KeyVault;
+using System.Azure.Identity;
+using System.Environment.Configuration;
+
 /// <summary>
 /// Implements functionality to call Azure OpenAI.
 /// </summary>

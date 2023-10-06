@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
+using System.Reflection;
+
 /// <summary>
 /// Holds information about entities that are related to a source entity of a Word Template.
 /// </summary>

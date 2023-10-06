@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Upgrade;
+
 /// <summary>
 /// Exposes functionality to retrieve the device upgrade tag.
 /// </summary>
@@ -25,6 +29,7 @@ codeunit 9058 "Plan Upgrade Tag"
         PerDatabaseUpgradeTags.Add(GetPlanfigurationsUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetMicrosoft365UpgradeTag());
         PerDatabaseUpgradeTags.Add(GetEssentialAttachUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetMD365AdminUpgradeTag());
     end;
 
     /// <summary>
@@ -89,7 +94,16 @@ codeunit 9058 "Plan Upgrade Tag"
     begin
         exit('MS-471088-AddAttachPlans-20230427');
     end;
-    
+
+    /// <summary>
+    /// Returns the Dynamics 365 Administrator upgrade tag.
+    /// </summary>
+    /// <returns>The Dynamics 365 Administrator upgrade tag.</returns>
+    internal procedure GetMD365AdminUpgradeTag(): Code[250]
+    begin
+        exit('MS-465490-AddD365Admin-20230103');
+    end;
+
     internal procedure GetPlanfigurationsUpgradeTag(): Code[250]
     begin
         exit('MS-430587-AddPlanConfigurations-20220321');

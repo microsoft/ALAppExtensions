@@ -139,14 +139,6 @@ page 31185 "VAT Document CZZ"
         DocumentNoEditable: Boolean;
         IsSalesDocument: Boolean;
 
-#if not CLEAN20
-    [Obsolete('Replaced by InitDocument function with NewOriginalDocumentVATDate parameter.', '20.0')]
-    procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewPostingDate: Date; NewVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
-    begin
-        InitDocument(NewNoSeriesCode, NewDocumentNo, NewPostingDate, NewPostingDate, NewVATDate, NewVATDate, NewCurrencyCode, NewCurrencyFactor, NewExternalDocumentNo, AdvancePostingBufferCZZ);
-    end;
-
-#endif
 #if not CLEAN21
     [Obsolete('Replaced by InitDocument function with NewDocumentDate parameter.', '21.0')]
     procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewPostingDate: Date; NewVATDate: Date; NewOriginalDocumentVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
@@ -234,19 +226,6 @@ page 31185 "VAT Document CZZ"
     end;
 #pragma warning restore AL0432
 #endif
-#if not CLEAN20
-    [Obsolete('Replaced by GetDocument function with NewOriginalDocumentVATDate parameter.', '20.0')]
-    procedure GetDocument(var NewDocumentNo: Code[20]; var NewPostingDate: Date; var NewDocumentDate: Date; var NewVATDate: Date; var NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
-    begin
-        NewDocumentNo := DocumentNo;
-        NewPostingDate := PostingDate;
-        NewDocumentDate := DocumentDate;
-        NewVATDate := VATDate;
-        NewExternalDocumentNo := ExternalDocumentNo;
-        CurrPage.Lines.Page.GetDocumentLines(AdvancePostingBufferCZZ);
-    end;
-#endif
-
     procedure GetDocument(var NewDocumentNo: Code[20]; var NewPostingDate: Date; var NewDocumentDate: Date; var NewVATDate: Date; var NewOriginalDocumentVATDate: Date; var NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     begin
         NewDocumentNo := DocumentNo;

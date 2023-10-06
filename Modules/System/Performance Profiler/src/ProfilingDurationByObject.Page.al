@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
 /// <summary>
 /// The list showing the breakdown of time spent by application object on the performance profiler page.
 /// </summary>
@@ -15,6 +17,8 @@ page 1923 "Profiling Duration By Object"
     DeleteAllowed = false;
     ModifyAllowed = false;
     Editable = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {
@@ -29,19 +33,19 @@ page 1923 "Profiling Duration By Object"
                 {
                     ApplicationArea = All;
                     Caption = 'Object Type';
-                    ToolTip = 'The type of the application object.';
+                    Tooltip = 'Specifies the type of the application object.';
                 }
                 field("Object Name"; Rec."Object Name")
                 {
                     ApplicationArea = All;
                     Caption = 'Object Name';
-                    ToolTip = 'The name of the application object.';
+                    Tooltip = 'Specifies the name of the application object.';
                 }
                 field("Time Spent"; Rec."Self Time")
                 {
                     ApplicationArea = All;
                     Caption = 'Time Spent';
-                    ToolTip = 'The amount of time spent in this application object.';
+                    Tooltip = 'Specifies the amount of time spent in this application object.';
 
                     trigger OnDrillDown()
                     var
@@ -55,7 +59,7 @@ page 1923 "Profiling Duration By Object"
                 {
                     ApplicationArea = All;
                     Caption = 'App Name';
-                    ToolTip = 'The name of the app that the application object belongs to.';
+                    Tooltip = 'Specifies the name of the app that the application object belongs to.';
                 }
             }
         }

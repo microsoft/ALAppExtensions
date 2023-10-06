@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40115 "GP RM00201"
 {
     Description = 'RM Class Master';

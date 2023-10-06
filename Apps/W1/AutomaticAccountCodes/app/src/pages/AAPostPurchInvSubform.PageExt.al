@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AutomaticAccounts;
+
+using Microsoft.Purchases.History;
+
 pageextension 4856 "AA Post. Purch. Inv. Subform" extends "Posted Purch. Invoice Subform"
 {
     layout

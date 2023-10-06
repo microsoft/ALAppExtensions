@@ -204,6 +204,7 @@ codeunit 4021 "Hybrid BC Last Management"
         HybridReplicationSummary.Modify();
     end;
 
+#pragma warning disable AA0245
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnBackupUpgradeTags', '', false, false)]
     local procedure BackupUpgradeTags(ProductID: Text[250]; var Handled: Boolean; var BackupUpgradeTags: Boolean)
     begin
@@ -216,6 +217,7 @@ codeunit 4021 "Hybrid BC Last Management"
         // Don't set handled to allow the others to override
         BackupUpgradeTags := true;
     end;
+#pragma warning restore AA0245
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnSetAllUpgradeTags', '', false, false)]
     local procedure HandleSetAllUpgradeTags(NewCompanyName: Text; var SkipSetAllUpgradeTags: Boolean)

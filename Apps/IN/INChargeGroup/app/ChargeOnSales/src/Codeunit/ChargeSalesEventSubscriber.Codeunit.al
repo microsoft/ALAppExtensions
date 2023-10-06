@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ChargeGroup.ChargeOnSales;
+
+using Microsoft.Finance.ChargeGroup.ChargeGroupBase;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Posting;
+
 codeunit 18600 "Charge Sales Event Sub"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostSalesDoc', '', false, false)]

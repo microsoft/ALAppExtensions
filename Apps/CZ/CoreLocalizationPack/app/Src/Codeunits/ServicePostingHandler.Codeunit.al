@@ -1,18 +1,18 @@
 codeunit 31040 "Service Posting Handler CZL"
 {
     var
-        VATPostingSetup: Record "VAT Posting Setup";
         SourceCodeSetup: Record "Source Code Setup";
         GLEntry: Record "G/L Entry";
         Currency: Record Currency;
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnAfterPostInvoicePostBuffer', '', false, false)]
     local procedure ServPostingVATCurrencyFactorOnAfterPostInvPostBuffer(var GenJournalLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; ServiceHeader: Record "Service Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
+        VATPostingSetup: Record "VAT Posting Setup";
         VATCurrFactor: Decimal;
     begin
         if ServiceHeader."Currency Factor" <> ServiceHeader."VAT Currency Factor CZL" then begin
@@ -108,6 +108,7 @@ codeunit 31040 "Service Posting Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnPostLinesOnAfterGenJnlLinePost', '', false, false)]
     local procedure ServicePostVATCurrencyFactorOnPostLinesOnAfterGenJnlLinePost(var GenJnlLine: Record "Gen. Journal Line"; TempInvoicePostingBuffer: Record "Invoice Posting Buffer"; ServiceHeader: Record "Service Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
+        VATPostingSetup: Record "VAT Posting Setup";
         VATCurrFactor: Decimal;
     begin
         if ServiceHeader."Currency Factor" <> ServiceHeader."VAT Currency Factor CZL" then begin
@@ -232,6 +233,7 @@ codeunit 31040 "Service Posting Handler CZL"
     var
         ServiceLine: Record "Service Line";
         TariffNumber: Record "Tariff Number";
+        VATPostingSetup: Record "VAT Posting Setup";
         IsHandled: Boolean;
     begin
         OnBeforeCheckTariffNo(ServiceHeader, IsHandled);
@@ -240,7 +242,7 @@ codeunit 31040 "Service Posting Handler CZL"
 
         ServiceLine.SetRange("Document Type", ServiceHeader."Document Type");
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
-        if ServiceLine.FindSet(false, false) then
+        if ServiceLine.FindSet(false) then
             repeat
                 if VATPostingSetup.Get(ServiceLine."VAT Bus. Posting Group", ServiceLine."VAT Prod. Posting Group") then
                     if VATPostingSetup."Reverse Charge Check CZL" = ReverseChargeCheckCZL::"Limit Check" then begin
@@ -252,7 +254,7 @@ codeunit 31040 "Service Posting Handler CZL"
             until ServiceLine.Next() = 0;
     end;
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnBeforePostCustomerEntry', '', false, false)]
 #pragma warning restore AL0432

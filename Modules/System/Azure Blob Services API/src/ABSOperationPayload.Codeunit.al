@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
+using System;
+
 codeunit 9042 "ABS Operation Payload"
 {
     Access = Internal;

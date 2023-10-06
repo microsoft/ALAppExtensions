@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using System.Security.AccessControl;
+using System.Environment;
+
 page 20004 "APIV1 - Aut. Users"
 {
     APIGroup = 'automation';
@@ -19,26 +24,26 @@ page 20004 "APIV1 - Aut. Users"
         {
             repeater(Group)
             {
-                field(userSecurityId; "User Security ID")
+                field(userSecurityId; Rec."User Security ID")
                 {
                     Caption = 'userSecurityId', Locked = true;
                     Editable = false;
                 }
-                field(userName; "User Name")
+                field(userName; Rec."User Name")
                 {
                     Caption = 'userName', Locked = true;
                     Editable = false;
                 }
-                field(displayName; "Full Name")
+                field(displayName; Rec."Full Name")
                 {
                     Caption = 'displayName', Locked = true;
                     Editable = false;
                 }
-                field(state; State)
+                field(state; Rec.State)
                 {
                     Caption = 'state', Locked = true;
                 }
-                field(expiryDate; "Expiry Date")
+                field(expiryDate; Rec."Expiry Date")
                 {
                     Caption = 'expiryDate', Locked = true;
                 }
@@ -48,7 +53,7 @@ page 20004 "APIV1 - Aut. Users"
                     Caption = 'userGroupMember', Locked = true;
                     EntityName = 'userGroupMember';
                     EntitySetName = 'userGroupMembers';
-                    SubPageLink = "User Security ID" = FIELD("User Security ID");
+                    SubPageLink = "User Security ID" = field("User Security ID");
                     Visible = LegacyUserGroupsVisible;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'The user groups functionality is deprecated.';
@@ -60,7 +65,7 @@ page 20004 "APIV1 - Aut. Users"
                     Caption = 'userPermission', Locked = true;
                     EntityName = 'userPermission';
                     EntitySetName = 'userPermissions';
-                    SubPageLink = "User Security ID" = FIELD("User Security ID");
+                    SubPageLink = "User Security ID" = field("User Security ID");
                 }
             }
         }
@@ -73,7 +78,9 @@ page 20004 "APIV1 - Aut. Users"
     trigger OnOpenPage()
     var
 #if not CLEAN22
+#pragma warning disable AL0432
         LegacyUserGroups: Codeunit "Legacy User Groups";
+#pragma warning restore AL0432
 #endif
         EnvironmentInformation: Codeunit "Environment Information";
     begin
@@ -81,8 +88,8 @@ page 20004 "APIV1 - Aut. Users"
         LegacyUserGroupsVisible := LegacyUserGroups.UiElementsVisible();
 #endif
         BindSubscription(AutomationAPIManagement);
-        IF EnvironmentInformation.IsSaaS() THEN
-            SetFilter("License Type", '<>%1', "License Type"::"External User");
+        if EnvironmentInformation.IsSaaS() then
+            Rec.SetFilter("License Type", '<>%1', Rec."License Type"::"External User");
     end;
 
     var
@@ -91,4 +98,5 @@ page 20004 "APIV1 - Aut. Users"
         LegacyUserGroupsVisible: Boolean;
 #endif
 }
+
 

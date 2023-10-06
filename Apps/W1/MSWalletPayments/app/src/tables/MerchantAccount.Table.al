@@ -1,16 +1,8 @@
 table 1080 "MS - Wallet Merchant Account"
 {
-#if not CLEAN20
-    ObsoleteState = Pending;
-    ObsoleteReason = 'MS Wallet have been deprecated';
-    ObsoleteTag = '20.0';
-    DrillDownPageID = 1080;
-    LookupPageID = 1080;
-#else
     ObsoleteState = Removed;
     ObsoleteReason = 'MS Wallet have been deprecated';
     ObsoleteTag = '23.0';
-#endif
     Caption = 'Microsoft Pay Payments Account';
     Permissions = TableData "Webhook Subscription" = rimd;
     ReplicateData = false;
@@ -42,18 +34,10 @@ table 1080 "MS - Wallet Merchant Account"
 
             trigger OnValidate();
             var
-#if not CLEAN20
-                MSWalletMerchantAccount: Record "MS - Wallet Merchant Account";
-#endif
                 SalesHeader: Record "Sales Header";
             begin
                 IF NOT "Always Include on Documents" THEN
                     EXIT;
-#if not CLEAN20
-                MSWalletMerchantAccount.SETRANGE("Always Include on Documents", TRUE);
-                MSWalletMerchantAccount.SETFILTER("Primary Key", '<>%1', "Primary Key");
-                MSWalletMerchantAccount.MODIFYALL("Always Include on Documents", FALSE, TRUE);
-#endif
                 IF NOT GUIALLOWED() THEN
                     EXIT;
 

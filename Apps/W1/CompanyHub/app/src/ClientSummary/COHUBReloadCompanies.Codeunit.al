@@ -1,3 +1,7 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using System.Telemetry;
+
 codeunit 1163 "COHUB Reload Companies"
 {
     trigger OnRun()

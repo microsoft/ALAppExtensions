@@ -3,8 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Azure.ActiveDirectory;
+
 permissionset 138458 "AAD Licensing Exec"
 {
     Assignable = true;
-    IncludedPermissionSets = "Azure AD Licensing - Exec";
+    // No permissions required.
 }

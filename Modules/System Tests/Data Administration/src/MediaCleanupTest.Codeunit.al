@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.DataAdministration;
+
+using System.DataAdministration;
+using System.Environment;
+using System.Utilities;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 135018 "Media Cleanup Test"
 {
     Subtype = Test;

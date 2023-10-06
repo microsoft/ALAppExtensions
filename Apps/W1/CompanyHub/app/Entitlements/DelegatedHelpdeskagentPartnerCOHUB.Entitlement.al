@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 entitlement "Delegated Helpdesk agent - Partner COHUB"
 {
     Type = Role;

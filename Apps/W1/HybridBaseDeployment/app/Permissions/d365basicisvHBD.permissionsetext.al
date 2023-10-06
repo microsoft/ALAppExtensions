@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Security.AccessControl;
+
 permissionsetextension 4001 "D365 BASIC ISV - HBD" extends "D365 BASIC ISV"
 {
     Permissions = tabledata "Hybrid Product Type" = RIMD,

@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 tableextension 30109 "Shpfy Sales Cr.Memo Line" extends "Sales Cr.Memo Line"
 {
     fields
