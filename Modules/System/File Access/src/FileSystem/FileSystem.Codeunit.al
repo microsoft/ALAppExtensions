@@ -25,11 +25,11 @@ codeunit 70004 "File System"
     /// List all files from the given path.
     /// </summary>
     /// <param name="Path">Folder to list</param>
+    /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="FileAccountContent">File account content.</param>
-    [TryFunction]
-    procedure ListFiles(Path: Text; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListFiles(Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
     begin
-        FileSystemImpl.ListFiles(Path, FileAccountContent);
+        FileSystemImpl.ListFiles(Path, FilePaginationData, FileAccountContent);
     end;
 
     /// <summary>
@@ -100,11 +100,12 @@ codeunit 70004 "File System"
     /// List all directories from the given path.
     /// </summary>
     /// <param name="Path">Folder to list</param>
+    /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="FileAccountContent">File account content.</param>
     [TryFunction]
-    procedure ListDirectories(Path: Text; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListDirectories(Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
     begin
-        FileSystemImpl.ListDirectories(Path, FileAccountContent);
+        FileSystemImpl.ListDirectories(Path, FilePaginationData, FileAccountContent);
     end;
 
     /// <summary>

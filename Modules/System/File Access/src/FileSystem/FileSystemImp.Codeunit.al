@@ -24,10 +24,10 @@ codeunit 70005 "File System Impl."
         Initialized := true;
     end;
 
-    internal procedure ListFiles(Path: Text; var FileAccountContent: Record "File Account Content" temporary)
+    internal procedure ListFiles(Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
     begin
         CheckInitialization();
-        IFileConnector.ListFiles(CurrFileAccount."Account Id", Path, FileAccountContent);
+        IFileConnector.ListFiles(CurrFileAccount."Account Id", Path, FilePaginationData, FileAccountContent);
     end;
 
     internal procedure GetFile(Path: Text; Stream: InStream)
@@ -67,10 +67,10 @@ codeunit 70005 "File System Impl."
         IFileConnector.DeleteFile(CurrFileAccount."Account Id", Path);
     end;
 
-    internal procedure ListDirectories(Path: Text; var FileAccountContent: Record "File Account Content" temporary)
+    internal procedure ListDirectories(Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
     begin
         CheckInitialization();
-        IFileConnector.ListDirectories(CurrFileAccount."Account Id", Path, FileAccountContent);
+        IFileConnector.ListDirectories(CurrFileAccount."Account Id", Path, FilePaginationData, FileAccountContent);
     end;
 
     internal procedure CreateDirectory(Path: Text)

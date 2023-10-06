@@ -18,8 +18,9 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     /// </summary>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
     /// <param name="Path">The file path to list.</param>
+    /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="Files">A list with all files stored in the path.</param>
-    procedure ListFiles(AccountId: Guid; Path: Text; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
     var
         ABSContainerContent: Record "ABS Container Content";
         ABSBlobClient: Codeunit "ABS Blob Client";
@@ -27,14 +28,11 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
         ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
         InitBlobClient(AccountId, ABSBlobClient);
-        if (Path <> '') and not Path.EndsWith('/') then
-            Path += '/';
-        ABSOptionalParameters.Prefix(Path);
+        CheckPath(Path);
+        InitOptionalParameters(Path, FilePaginationData, ABSOptionalParameters);
         ABSOptionalParameters.Delimiter('/');
         ABSOperationResponse := ABSBlobClient.ListBlobs(ABSContainerContent, ABSOptionalParameters);
-
-        if not ABSOperationResponse.IsSuccessful() then
-            Error(ABSOperationResponse.GetError());
+        ValidateListingResponse(FilePaginationData, ABSOperationResponse);
 
         ABSContainerContent.SetFilter("Blob Type", '<>%1', '');
         if not ABSContainerContent.FindSet() then
@@ -179,8 +177,9 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     /// </summary>
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
     /// <param name="Path">The file path to list.</param>
+    /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="Files">A list with all directories stored in the path.</param>
-    procedure ListDirectories(AccountId: Guid; Path: Text; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
     var
         ABSContainerContent: Record "ABS Container Content";
         ABSBlobClient: Codeunit "ABS Blob Client";
@@ -188,15 +187,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
         ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
         InitBlobClient(AccountId, ABSBlobClient);
-
-        if (Path <> '') and not Path.EndsWith('/') then
-            Path += '/';
-
-        ABSOptionalParameters.Prefix(Path);
+        CheckPath(Path);
+        InitOptionalParameters(Path, FilePaginationData, ABSOptionalParameters);
         ABSOperationResponse := ABSBlobClient.ListBlobs(ABSContainerContent, ABSOptionalParameters);
-
-        if not ABSOperationResponse.IsSuccessful() then
-            Error(ABSOperationResponse.GetError());
+        ValidateListingResponse(FilePaginationData, ABSOperationResponse);
 
         ABSContainerContent.SetRange("Parent Directory", Path);
         ABSContainerContent.SetRange("Blob Type", '');
@@ -275,13 +269,15 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
     var
         Account: Record "Blob Storage Account";
     begin
-        if Account.FindSet() then
-            repeat
-                Accounts."Account Id" := Account.Id;
-                Accounts.Name := Account.Name;
-                Accounts.Connector := Enum::"File Connector"::"Blob Storage";
-                Accounts.Insert();
-            until Account.Next() = 0;
+        if not Account.FindSet() then
+            exit;
+
+        repeat
+            Accounts."Account Id" := Account.Id;
+            Accounts.Name := Account.Name;
+            Accounts.Connector := Enum::"File Connector"::"Blob Storage";
+            Accounts.Insert();
+        until Account.Next() = 0;
     end;
 
     /// <summary>
@@ -410,5 +406,27 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File Connector"
         BlobStorageAccount.Get(AccountId);
         Authorization := StorageServiceAuthorization.CreateSharedKey(BlobStorageAccount.GetPassword(BlobStorageAccount."Password Key"));
         ABSBlobClient.Initialize(BlobStorageAccount."Storage Account Name", BlobStorageAccount."Container Name", Authorization);
+    end;
+
+    local procedure CheckPath(var Path: Text)
+    begin
+        if (Path <> '') and not Path.EndsWith('/') then
+            Path += '/';
+    end;
+
+    local procedure InitOptionalParameters(var Path: Text; var FilePaginationData: Codeunit "File Pagination Data"; var ABSOptionalParameters: Codeunit "ABS Optional Parameters")
+    begin
+        ABSOptionalParameters.Prefix(Path);
+        ABSOptionalParameters.MaxResults(500);
+        ABSOptionalParameters.NextMarker(FilePaginationData.GetMarker());
+    end;
+
+    local procedure ValidateListingResponse(var FilePaginationData: Codeunit "File Pagination Data"; var ABSOperationResponse: Codeunit "ABS Operation Response")
+    begin
+        if not ABSOperationResponse.IsSuccessful() then
+            Error(ABSOperationResponse.GetError());
+
+        FilePaginationData.SetMarker(ABSOperationResponse.GetNextMarker());
+        FilePaginationData.SetEndOfListing(ABSOperationResponse.GetNextMarker() = '');
     end;
 }

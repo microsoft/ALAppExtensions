@@ -178,14 +178,18 @@ page 70005 "File Account Browser"
     end;
 
     local procedure BrowseFolder(Path: Text)
+    var
+        FilePaginationData: Codeunit "File Pagination Data";
     begin
         CurrPath := Path;
         ParentFolderExists := Path <> '';
         Rec.DeleteAll();
 
-        FileSystem.ListDirectories(Path, Rec);
-        ListFiles(Path);
+        repeat
+            FileSystem.ListDirectories(Path, FilePaginationData, Rec);
+        until FilePaginationData.IsEndOfListing();
 
+        ListFiles(Path);
         if Rec.FindFirst() then;
     end;
 
@@ -212,11 +216,20 @@ page 70005 "File Account Browser"
     local procedure ListFiles(var Path: Text)
     var
         FileAccountContent: Record "File Account Content" temporary;
+        FilePaginationData: Codeunit "File Pagination Data";
     begin
         if DoNotLoadFields then
             exit;
 
-        FileSystem.ListFiles(Path, FileAccountContent);
+        repeat
+            FileSystem.ListFiles(Path, FilePaginationData, FileAccountContent);
+        until FilePaginationData.IsEndOfListing();
+
+        AddFiles(FileAccountContent);
+    end;
+
+    local procedure AddFiles(var FileAccountContent: Record "File Account Content" temporary)
+    begin
         if CurrFileFilter <> '' then
             FileAccountContent.SetFilter(Name, CurrFileFilter);
 
