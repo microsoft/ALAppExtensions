@@ -135,17 +135,18 @@ page 80101 "Blob Storage Account Wizard"
         MediaResources: Record "Media Resources";
         BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
         [NonDebuggable]
-        [InDataSet]
         Password: Text;
         IsNextEnabled: Boolean;
         TopBannerVisible: Boolean;
 
     trigger OnOpenPage()
+    var
+        AssistedSetupLogoTok: Label 'ASSISTEDSETUP-NOTEXT-400PX.PNG', Locked = true;
     begin
         Rec.Init();
         Rec.Insert();
 
-        if MediaResources.Get('ASSISTEDSETUP-NOTEXT-400PX.PNG') and (CurrentClientType() = ClientType::Web) then
+        if MediaResources.Get(AssistedSetupLogoTok) and (CurrentClientType() = ClientType::Web) then
             TopBannerVisible := MediaResources."Media Reference".HasValue();
     end;
 

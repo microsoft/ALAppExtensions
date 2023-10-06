@@ -59,19 +59,9 @@ page 80100 "Blob Storage Account"
         }
     }
 
-    actions
-    {
-        area(processing)
-        {
-            //TODO Add File Browser
-        }
-    }
-
     var
-        [InDataSet]
         PasswordEditable: Boolean;
         [NonDebuggable]
-        [InDataSet]
         Password: Text;
 
     trigger OnOpenPage()

@@ -119,6 +119,8 @@ codeunit 70005 "File System Impl."
         FileAccountContent: Record "File Account Content";
         FileAccountBrowser: Page "File Account Browser";
     begin
+        CheckInitialization();
+
         FileAccountBrowser.SetPageCaption(DialogTitle);
         FileAccountBrowser.SetFileAcconut(CurrFileAccount);
         FileAccountBrowser.EnableDirectoryLookupMode(Path);
@@ -137,6 +139,8 @@ codeunit 70005 "File System Impl."
         FileAccountContent: Record "File Account Content";
         FileAccountBrowser: Page "File Account Browser";
     begin
+        CheckInitialization();
+
         FileAccountBrowser.SetPageCaption(DialogTitle);
         FileAccountBrowser.SetFileAcconut(CurrFileAccount);
         FileAccountBrowser.EnableFileLookupMode(Path, FileFilter);
@@ -158,6 +162,8 @@ codeunit 70005 "File System Impl."
         PleaseProvideFileExtensionErr: Label 'Please provide a valid file extension.';
         FileNameTok: Label '%1.%2', Locked = true;
     begin
+        CheckInitialization();
+
         if FileExtension = '' then
             Error(PleaseProvideFileExtensionErr);
 
@@ -173,6 +179,14 @@ codeunit 70005 "File System Impl."
 
         FileNameWithExtenion := StrSubstNo(FileNameTok, FileName, FileExtension);
         exit(CombinePath(FileAccountBrowser.GetCurrentDirectory(), FileNameWithExtenion));
+    end;
+
+    internal procedure BrowseAccount()
+    var
+        FileAccountImpl: Codeunit "File Account Impl.";
+    begin
+        CheckInitialization();
+        FileAccountImpl.BrowseAccount(CurrFileAccount);
     end;
 
     local procedure CheckInitialization()

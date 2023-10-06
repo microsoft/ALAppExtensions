@@ -239,4 +239,12 @@ codeunit 70004 "File System"
     begin
         exit(FileSystemImpl.SaveFileUI(Path, FileExtension, DialogTitle));
     end;
+
+    /// <summary>
+    /// Opens a File Browser
+    /// </summary>
+    procedure BrowseAccount()
+    begin
+        FileSystemImpl.BrowseAccount();
+    end;
 }
