@@ -713,9 +713,9 @@ codeunit 132920 "ABS Blob Client Test"
         // [THEN] "ABS Container Content" contains two records with resource type "folder" and one record with resource type = "blob"
         Assert.RecordCount(ABSContainerContent, 3);
 
-        VerifyContainerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseRootDirName(), Enum::"ABS Blob Resource Type"::Directory);
-        VerifyContainerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseSubdirName(), Enum::"ABS Blob Resource Type"::Directory);
-        VerifyContainerContentType(ABSContainerContent, ABSTestLibrary.GetSampleResponseFileName(), Enum::"ABS Blob Resource Type"::File);
+        VerifyContainerContentType(ABSContainerContent, CopyStr(ABSTestLibrary.GetSampleResponseRootDirName(), 1, MaxStrLen(ABSContainerContent.Name)), Enum::"ABS Blob Resource Type"::Directory);
+        VerifyContainerContentType(ABSContainerContent, CopyStr(ABSTestLibrary.GetSampleResponseSubdirName(), 1, MaxStrLen(ABSContainerContent.Name)), Enum::"ABS Blob Resource Type"::Directory);
+        VerifyContainerContentType(ABSContainerContent, CopyStr(ABSTestLibrary.GetSampleResponseFileName(), 1, MaxStrLen(ABSContainerContent.Name)), Enum::"ABS Blob Resource Type"::File);
     end;
 
     local procedure VerifyContainerContentType(var ABSContainerContent: Record "ABS Container Content"; BlobName: Text[2048]; ExpectedResourceType: Enum "ABS Blob Resource Type")
@@ -725,6 +725,7 @@ codeunit 132920 "ABS Blob Client Test"
         ABSContainerContent.SetRange(Name, BlobName);
         ABSContainerContent.FindFirst();
         Assert.AreEqual(ExpectedResourceType, ABSContainerContent."Resource Type", IncorrectBlobPropertyErr);
+    end;
 
     local procedure GetBlobTagsFromABSContainerBlobList(BlobName: Text; BlobList: Dictionary of [Text, XmlNode]): Dictionary of [Text, Text]
     var
