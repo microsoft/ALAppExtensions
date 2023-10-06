@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
+using System.Integration;
+using System.Telemetry;
+
 /// <summary>
 /// Sampling-based in-client performance profiler
 /// </summary>
@@ -79,7 +84,7 @@ page 24 "Performance Profiler"
                     Editable = true;
                     Enabled = true;
                     Caption = 'Show technical information';
-                    ToolTip = 'Show details about the time each app took during the performance profiling.';
+                    ToolTip = 'Specifies details about the time each app took during the performance profiling.';
                 }
             }
             part("Profiling Self Time Chart"; "Profiling Self Time Chart")
@@ -107,9 +112,6 @@ page 24 "Performance Profiler"
             action(Start)
             {
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = Start;
                 Enabled = IsStartEnabled;
                 Caption = 'Start';
@@ -120,16 +122,13 @@ page 24 "Performance Profiler"
                 trigger OnAction()
                 begin
                     FeatureTelemetry.LogUptake('0000GMN', PerformanceProfilingFeatureTxt, Enum::"Feature Uptake Status"::"Set up");
-                    SamplingPerformanceProfiler.Start();
+                    SamplingPerformanceProfiler.Start(SamplingInterval);
                     UpdateControlProperties();
                 end;
             }
             action(Stop)
             {
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = Stop;
                 Enabled = IsRecordingInProgress;
                 Caption = 'Stop';
@@ -147,9 +146,6 @@ page 24 "Performance Profiler"
             action(Clear)
             {
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = ClearLog;
                 Enabled = IsClearEnabled;
                 Caption = 'Clear';
@@ -165,9 +161,6 @@ page 24 "Performance Profiler"
             action(Download)
             {
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = Download;
                 Enabled = IsDownloadEnabled;
                 Caption = 'Download';
@@ -186,9 +179,6 @@ page 24 "Performance Profiler"
             action(ShareToOneDrive)
             {
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = Share;
                 Enabled = IsDownloadEnabled;
                 Visible = IsShareVisible;
@@ -207,9 +197,6 @@ page 24 "Performance Profiler"
             action(Upload)
             {
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = Import;
                 Enabled = IsUploadEnabled;
                 Caption = 'Upload';
@@ -218,15 +205,72 @@ page 24 "Performance Profiler"
                 trigger OnAction()
                 var
                     UploadedFileName: Text;
-                    FileContentInstream: Instream;
+                    FileContentInStream: InStream;
                 begin
-                    if not UploadIntoStream(UploadProfileLbl, '', ProfileFileTypeTxt, UploadedFileName, FileContentInstream) then
+                    if not UploadIntoStream(UploadProfileLbl, '', ProfileFileTypeTxt, UploadedFileName, FileContentInStream) then
                         exit;
 
                     FeatureTelemetry.LogUptake('0000GMO', PerformanceProfilingFeatureTxt, Enum::"Feature Uptake Status"::"Set up");
-                    SamplingPerformanceProfiler.SetData(FileContentInstream);
+                    SamplingPerformanceProfiler.SetData(FileContentInStream);
                     UpdateData();
                 end;
+            }
+            action(Settings)
+            {
+                ApplicationArea = All;
+                Image = Setup;
+                Enabled = IsStartEnabled;
+                Caption = 'Settings';
+                ToolTip = 'Specify the configuration of the performance profiling recording.';
+
+                trigger OnAction()
+                var
+                    SelectedIntervalChoice: Integer;
+                    SelectedIntervalChoiceOrdinal: Integer;
+                begin
+                    SelectedIntervalChoice := StrMenu(GetSamplingIntervalOptionString(), 2, SamplingIntervalChoiceTxt);
+                    if SelectedIntervalChoice = 0 then
+                        exit;
+
+                    SelectedIntervalChoice += 1; // skip the None option
+
+                    SelectedIntervalChoiceOrdinal := Enum::"Sampling Interval".Ordinals().Get(SelectedIntervalChoice);
+                    SamplingInterval := Enum::"Sampling Interval".FromInteger(SelectedIntervalChoiceOrdinal);
+                end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(Start_Promoted; Start)
+                {
+                }
+                actionref(Stop_Promoted; Stop)
+                {
+                }
+                actionref(Clear_Promoted; Clear)
+                {
+                }
+                group(Sharing)
+                {
+                    ShowAs = SplitButton;
+
+                    actionref(Download_Promoted; Download)
+                    {
+                    }
+                    actionref(ShareToOneDrive_Promoted; ShareToOneDrive)
+                    {
+                    }
+                }
+                actionref(Upload_Promoted; Upload)
+                {
+                }
+                actionref(Settings_Promoted; Settings)
+                {
+                }
             }
         }
     }
@@ -276,10 +320,25 @@ page 24 "Performance Profiler"
         FeatureTelemetry.LogUsage('0000GMR', PerformanceProfilingFeatureTxt, 'Performance Profiling results shown');
     end;
 
+    local procedure GetSamplingIntervalOptionString(): Text
+    var
+        Ordinal: Integer;
+        Result: TextBuilder;
+    begin
+        foreach Ordinal in Enum::"Sampling Interval".Ordinals() do
+            if Ordinal <> 0 then begin
+                Result.Append(Format(Enum::"Sampling Interval".FromInteger(Ordinal)));
+                Result.Append(',');
+            end;
+
+        exit(Result.ToText().TrimEnd(','));
+    end;
+
     var
         SamplingPerformanceProfiler: Codeunit "Sampling Performance Profiler";
         ProfilingDataProcessor: Codeunit "Profiling Data Processor";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        SamplingInterval: Enum "Sampling Interval";
         IsDataPresent: Boolean;
         ShowTechnicalInformation: Boolean;
         IsStartEnabled: Boolean;
@@ -294,4 +353,5 @@ page 24 "Performance Profiler"
         ProfileFileExtensionTxt: Label '.alcpuprofile', Locked = true;
         PerformanceProfilingFeatureTxt: Label 'Performance Profiling', Locked = true;
         PrivacyNoticeMsg: Label 'The file might contain sensitive data, so be sure to handle it securely and according to privacy requirements. Do you want to continue?';
+        SamplingIntervalChoiceTxt: Label 'Choose the sampling interval of the performance profiler. Smaller intervals will result in more precise timings, but it might result in higher load of the system.';
 }

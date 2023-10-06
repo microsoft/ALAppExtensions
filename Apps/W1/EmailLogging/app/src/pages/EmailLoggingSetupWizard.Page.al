@@ -1,3 +1,13 @@
+namespace Microsoft.CRM.EmailLoggin;
+
+
+using Microsoft.CRM.Interaction;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Security.Authentication;
+using System.Security.Encryption;
+using System.Utilities;
+
 page 1681 "Email Logging Setup Wizard"
 {
     Caption = 'Set Up Email Logging';

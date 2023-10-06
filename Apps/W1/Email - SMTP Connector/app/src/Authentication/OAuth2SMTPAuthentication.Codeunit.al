@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Azure.Identity;
+using System.Text;
+
 codeunit 4516 "OAuth2 SMTP Authentication"
 {
     Access = Internal;

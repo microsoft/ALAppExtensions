@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Apps;
+
+using System.Globalization;
 
 /// <summary>
 /// Allows users to upload an extension and schedule its deployment.
@@ -23,7 +27,7 @@ page 2507 "Upload And Deploy Extension"
                 ApplicationArea = All;
                 Caption = 'Upload Extension';
                 Style = StrongAccent;
-                StyleExpr = TRUE;
+                StyleExpr = true;
             }
             field(FileName; FilePath)
             {
@@ -42,7 +46,7 @@ page 2507 "Upload And Deploy Extension"
                 ApplicationArea = All;
                 Caption = 'Deploy Extension';
                 Style = StrongAccent;
-                StyleExpr = TRUE;
+                StyleExpr = true;
             }
             field(DeployTo; DeployToValue)
             {
@@ -54,7 +58,7 @@ page 2507 "Upload And Deploy Extension"
             {
                 ApplicationArea = All;
                 Caption = 'Language';
-                ToolTip = 'Language';
+                ToolTip = 'Specifies the language of the extension.';
                 Editable = false;
 
                 trigger OnAssistEdit()

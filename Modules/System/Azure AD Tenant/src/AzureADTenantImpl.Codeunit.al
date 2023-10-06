@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Azure.Identity;
+
+using System;
 
 codeunit 3705 "Azure AD Tenant Impl."
 {
@@ -12,11 +16,11 @@ codeunit 3705 "Azure AD Tenant Impl."
 
     var
         NavTenantSettingsHelper: DotNet NavTenantSettingsHelper;
-        AADTenantDomainNameErr: Label 'Failed to retrieve the Azure Active Directory tenant domain name.';
+        TenantDomainNameErr: Label 'Failed to retrieve the Microsoft Entra tenant domain name.';
 
-    procedure GetAadTenantId() TenantAadIdValue: Text
+    procedure GetAadTenantId() TenantIdValue: Text
     begin
-        NavTenantSettingsHelper.TryGetStringTenantSetting('AADTENANTID', TenantAadIdValue);
+        NavTenantSettingsHelper.TryGetStringTenantSetting('AADTENANTID', TenantIdValue);
     end;
 
     procedure GetAadTenantDomainName(): Text;
@@ -28,7 +32,7 @@ codeunit 3705 "Azure AD Tenant Impl."
         if not IsNull(TenantInfo) then
             exit(TenantInfo.InitialDomain());
 
-        Error(AADTenantDomainNameErr);
+        Error(TenantDomainNameErr);
     end;
 }
 

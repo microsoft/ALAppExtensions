@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
+using System;
+
 /// <summary>
 /// Provides constants and static methods for trigonometric, logarithmic, and other common mathematical functions.
 /// </summary>

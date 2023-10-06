@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 dotnet
 {
     assembly("Microsoft.Dynamics.Nav.Ncl")

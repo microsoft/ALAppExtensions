@@ -3,6 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment;
+using System.Environment.Configuration;
+using System.TestLibraries.Environment.Configuration;
+using System.Globalization;
+using System.Media;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 132586 "Assisted Setup Test"
 {
     EventSubscriberInstance = Manual;
@@ -182,7 +192,7 @@ codeunit 132586 "Assisted Setup Test"
 
         // [THEN] The assisted setup should be been deleted
         LibraryAssert.IsFalse(GuidedExperience.Exists(GuidedExperienceType::"Assisted Setup", ObjectType::Page, NonExistingPageID), 'Assisted Setup exists!');
-    
+
         UnbindSubscription(AssistedSetupTest);
     end;
 

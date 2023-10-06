@@ -160,11 +160,9 @@ report 31108 "Batch Post Sales Orders CZL"
         ReplacePostingDateReq: Boolean;
         ReplaceDocumentDateReq: Boolean;
         ReplaceVATDateReq: Boolean;
-        [InDataSet]
         VATDateVisible: Boolean;
         CalcInvDiscReq: Boolean;
         PrintDocReq: Boolean;
-        [InDataSet]
         PrintDocVisible: Boolean;
         EnterVATDateErr: Label 'Enter the VAT date.';
 

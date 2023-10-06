@@ -3,14 +3,36 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Telemetry;
+
 /// <summary>
 /// A wrapper on top of Session.LogMessage that allows for having additional common custom dimensions emitted with every message.
 /// </summary>
 /// <remarks>
 /// Every publisher needs to have an implementation of the "Telemetry Logger" interface and a subscriber 
 /// to "Telemetry Loggers".OnRegisterTelemetryLogger event in one of their apps in order for this codeunit
-/// to work as expected (see "System Telemetry Logger" codeunit).
+/// to work as expected (see "System Telemetry Logger" codeunit or example below).
 /// </remarks>
+/// <example>
+/// codeunit 50000 "PTE Telemetry Logger" implements "Telemetry Logger"
+/// {
+///    Access = Internal;
+///
+///    procedure LogMessage(EventId: Text; Message: Text; Verbosity: Verbosity; DataClassification: DataClassification; TelemetryScope: TelemetryScope; CustomDimensions: Dictionary of [Text, Text])
+///    begin
+///        Session.LogMessage(EventId, Message, Verbosity, DataClassification, TelemetryScope, CustomDimensions);
+///    end;
+///
+///    // For the functionality to behave as expected, there should be exactly one implementation of the "Telemetry Logger" interface registered per app publisher
+///    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Telemetry Loggers", 'OnRegisterTelemetryLogger', '', true, true)]
+///    local procedure OnRegisterTelemetryLogger(var Sender: Codeunit "Telemetry Loggers")
+///    var
+///        TelemetryLogger: Codeunit "PTE Telemetry Logger";
+///    begin
+///        Sender.Register(TelemetryLogger);
+///    end;
+/// }
+/// </example>
 codeunit 8711 "Telemetry"
 {
     Access = Public;
@@ -47,8 +69,8 @@ codeunit 8711 "Telemetry"
     /// <param name="TelemetryScope">The telemetry scope of the message.</param>
     procedure LogMessage(EventId: Text; Message: Text; Verbosity: Verbosity; DataClassification: DataClassification; TelemetryScope: TelemetryScope)
     var
-        CallerModuleInfo: ModuleInfo;
         DummyCustomDimensions: Dictionary of [Text, Text];
+        CallerModuleInfo: ModuleInfo;
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
         TelemetryImpl.LogMessage(EventId, Message, Verbosity, DataClassification, TelemetryScope, DummyCustomDimensions, CallerModuleInfo);
@@ -63,8 +85,8 @@ codeunit 8711 "Telemetry"
     /// <param name="DataClassification">The data classification of the telemetry message.</param>
     procedure LogMessage(EventId: Text; Message: Text; Verbosity: Verbosity; DataClassification: DataClassification)
     var
-        CallerModuleInfo: ModuleInfo;
         DummyCustomDimensions: Dictionary of [Text, Text];
+        CallerModuleInfo: ModuleInfo;
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
         TelemetryImpl.LogMessage(EventId, Message, Verbosity, DataClassification, TelemetryScope::ExtensionPublisher, DummyCustomDimensions, CallerModuleInfo);

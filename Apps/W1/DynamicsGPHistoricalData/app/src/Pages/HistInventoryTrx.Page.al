@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41010 "Hist. Inventory Trx."
 {
     PageType = Card;

@@ -1,3 +1,14 @@
+namespace Microsoft.Utility.ImageAnalysis;
+
+using System.AI;
+using System.Environment.Configuration;
+using System.Environment;
+using Microsoft.Inventory.Item;
+using Microsoft.CRM.Contact;
+using Microsoft.Utilities;
+using System.Security.User;
+using System.Globalization;
+using System.Media;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 
 // Licensed under the MIT License. See License.txt in the project root for license information. 
@@ -17,8 +28,10 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         SetupNotificationDescriptionTxt: Label 'Notify me that the Image Analyzer extension can suggest attributes detected in imported images.';
         ContactQuestionnairePopulatedNameTxt: Label 'Image Analyzer profile questionnaire completed';
         ContactQuestionnairePopulatedNotificationDescriptionTxt: Label 'Notify me when Image Analyzer has been used in profile questionnaire to analyze a picture of a contact.';
+#if not CLEAN23
         AnalyzerDisabledMsg: Label 'Looks like the Image Analyzer extension is disabled. Do you want to learn more and enable it?';
         SetupActionTxt: Label 'Enable';
+#endif
         GotItTxt: Label 'Got it';
         NeverShowAgainTxt: Label 'Don''t tell me again';
         ImageAnalysisCategoryLbl: Label 'Image Analysis', Locked = true;

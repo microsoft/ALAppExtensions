@@ -1,9 +1,11 @@
+namespace Microsoft.DataMigration;
+
 query 4001 "Hybrid Enabled Co Rep. Details"
 {
     // Query for finding most recent completed run for only companies that have replication enabled
 
     QueryType = Normal;
-    OrderBy = descending (StartTime, RunID);
+    OrderBy = descending(StartTime, RunID);
 
     elements
     {
@@ -11,7 +13,7 @@ query 4001 "Hybrid Enabled Co Rep. Details"
         {
             filter(Replicate; Replicate)
             {
-                ColumnFilter = Replicate = const (true);
+                ColumnFilter = Replicate = const(true);
             }
             dataitem(Hybrid_Replication_Detail; "Hybrid Replication Detail")
             {

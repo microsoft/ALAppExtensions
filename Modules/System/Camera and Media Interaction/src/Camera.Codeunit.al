@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Device;
+
 /// <summary>
 /// Provides the functions for getting the data from a camera on the client device.
 /// </summary>
 codeunit 1907 Camera
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         CameraImpl: Codeunit "Camera Impl.";
@@ -39,29 +43,6 @@ codeunit 1907 Camera
     begin
         exit(CameraImpl.GetPicture(Quality, PictureInStream, PictureName));
     end;
-
-#if not CLEAN20
-    /// <summary>
-    /// Adds a picture from the camera to the field of type 'Media'or 'MediaSet' on the provided record. 
-    /// </summary>
-    /// <remarks>
-    /// If the record already has its Media/MediaSet field populated, the user will be shown a prompt whether they want to replace the existing image or not.
-    /// </remarks>
-    /// <remarks>
-    /// If the record variable has the primary key fields populated, and the corresponding record exists in the database,
-    /// then the record will be modified, otherwise a new record will be inserted.
-    /// </remarks>
-    /// <param name="RecordVariant">The record to which to add the picture to.</param>
-    /// <param name="FieldNo">The number of the field to write the image to. Must be of type 'Media' or 'MediaSet'.</param>
-    /// <error>The provided variant is not of type record.</error>
-    /// <error>Unsupported field type</error>
-    /// <returns>True if the camera is available, the user took a picture and decided to use it, false otherwise.</returns>
-    [Obsolete('This function does not populate the Media/MediaSet record correctly. Use GetPicture instead.', '20.0')]
-    procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
-    begin
-        exit(CameraImpl.AddPicture(RecordVariant, FieldNo));
-    end;
-#endif
 
     /// <summary>
     /// Checks whether the camera on the client device is available.

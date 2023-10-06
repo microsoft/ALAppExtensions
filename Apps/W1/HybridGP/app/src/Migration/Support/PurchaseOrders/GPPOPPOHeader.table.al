@@ -1,8 +1,15 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Purchases.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Document;
+using System.Integration;
+
 table 40102 "GP POPPOHeader"
 {
     DataClassification = CustomerContent;
     Extensible = false;
-    ObsoleteReason = 'Replaced by table GP POP10100.';    
+    ObsoleteReason = 'Replaced by table GP POP10100.';
 #if not CLEAN22
     ObsoleteState = Pending;
     ObsoleteTag = '22.0';
@@ -790,11 +797,12 @@ table 40102 "GP POPPOHeader"
         }
     }
 
+#if not CLEAN22
+#pragma warning disable AL0432
     var
         PostingDescriptionTxt: Label 'Migrated from GP';
         PostingGroupTxt: Label 'GP', Locked = true;
 
-#if not CLEAN22
     [Obsolete('Logic moved to GP PO Migrator codeunit', '22.0')]
     procedure MoveStagingData()
     var
@@ -802,6 +810,7 @@ table 40102 "GP POPPOHeader"
         CompanyInformation: Record "Company Information";
         PurchaseHeader: Record "Purchase Header";
         GPPOPPOLine: Record "GP POPPOLine";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
         CountryCode: Code[10];
@@ -809,6 +818,8 @@ table 40102 "GP POPPOHeader"
         if FindSet() then begin
             CountryCode := CompanyInformation."Country/Region Code";
             repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(Rec.RecordId));
+
                 if not PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, PONUMBER) then begin
                     PurchaseHeader.Init();
                     PurchaseHeader."Document Type" := PurchaseDocumentType::Order;
@@ -842,6 +853,7 @@ table 40102 "GP POPPOHeader"
             until Next() = 0;
         end;
     end;
+#pragma warning restore AL0432
 #endif
 
     local procedure UpdateShipToAddress(CountryCode: Code[10]; var PurchaseHeader: Record "Purchase Header")

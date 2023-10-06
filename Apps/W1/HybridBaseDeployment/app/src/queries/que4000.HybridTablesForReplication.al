@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 query 4000 "Hybrid Tables For Replication"
 {
     QueryType = Normal;
@@ -7,7 +9,7 @@ query 4000 "Hybrid Tables For Replication"
         {
             filter(Replicate; Replicate)
             {
-                ColumnFilter = Replicate = const (true);
+                ColumnFilter = Replicate = const(true);
             }
             dataitem(Hybrid_Replication_Detail; "Hybrid Replication Detail")
             {

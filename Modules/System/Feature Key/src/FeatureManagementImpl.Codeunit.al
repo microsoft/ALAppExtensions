@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.DateTime;
+using System.Utilities;
+using System.Environment;
+
 /// <summary>
 /// Provides functionality for feature management.
 /// </summary>
@@ -382,7 +388,7 @@ codeunit 2610 "Feature Management Impl."
     /// <returns>id of the scheduled task</returns>
     procedure CreateTask(var FeatureDataUpdateStatus: Record "Feature Data Update Status") TaskId: Guid
     begin
-        CancelTask(FeatureDataUpdateStatus, False);
+        CancelTask(FeatureDataUpdateStatus, false);
         AdjustStartDateTime(FeatureDataUpdateStatus);
         TaskId :=
             TaskScheduler.CreateTask(

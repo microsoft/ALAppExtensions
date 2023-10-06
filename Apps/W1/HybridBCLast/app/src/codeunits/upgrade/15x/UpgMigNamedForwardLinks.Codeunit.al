@@ -1,3 +1,9 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.Upgrade;
+using Microsoft.Utilities;
+using System.Upgrade;
+
 codeunit 4051 "Upg Mig Named Forward Links"
 {
     ObsoleteState = Pending;
@@ -26,7 +32,7 @@ codeunit 4051 "Upg Mig Named Forward Links"
         UpgradeTag: Codeunit "Upgrade Tag";
         UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
-        IF UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetLoadNamedForwardLinksUpgradeTag()) THEN
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetLoadNamedForwardLinksUpgradeTag()) then
             exit;
 
         NamedForwardLink.Load();

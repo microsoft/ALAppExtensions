@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30219 "Shpfy GQL AddProductImage" implements "Shpfy IGraphQL"
 {
     Access = Internal;
@@ -8,7 +10,7 @@ codeunit 30219 "Shpfy GQL AddProductImage" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "mutation { productAppendImages(input: {id: \"gid://shopify/Product/{{ProductId}}\", images: {src: \"{{ResourceUrl}}\"}}) { newImages { id }}}"}');
+        exit('{"query": "mutation { productCreateMedia(media: {mediaContentType: IMAGE, originalSource: \"{{ResourceUrl}}\"}, productId: \"gid://shopify/Product/{{ProductId}}\") { media { ...mediaFieldsByType }}} fragment mediaFieldsByType on Media { ... on MediaImage { id }}"}');
     end;
 
     /// <summary>

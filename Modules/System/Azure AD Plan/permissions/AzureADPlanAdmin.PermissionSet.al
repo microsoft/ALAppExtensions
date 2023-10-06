@@ -3,7 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 9004 "Azure AD Plan - Admin"
+namespace System.Azure.Identity;
+
+using System.Security.AccessControl;
+
+permissionset 9004 "Azure AD Plan - Admin"
 {
     Access = Public;
     Assignable = false;

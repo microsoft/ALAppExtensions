@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
 /// <summary>
 /// A page to view and edit related entities for Word templates.
 /// </summary>
@@ -18,6 +20,8 @@ page 9983 "Word Templates Related Edit"
                   tabledata "Word Template Field" = rimd,
                   tabledata "Word Templates Related Table" = rimd;
     Extensible = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {

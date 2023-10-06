@@ -294,7 +294,6 @@ report 11769 "VAT Statement CZL"
         DivideByZeroErr: Label 'Dividing by zero is not possible.';
         InvalidValueErr: Label 'You have entered an invalid value or a nonexistent row number.';
 
-        [InDataSet]
         RoundingDirectionCtrlVisible: Boolean;
 
     procedure CalcLineTotal(VATStatementLine: Record "VAT Statement Line"; var TotalAmount: Decimal; Level: Integer): Boolean

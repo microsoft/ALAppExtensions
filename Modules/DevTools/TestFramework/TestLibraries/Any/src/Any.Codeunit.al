@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Utilities;
+
 /// <summary>
 /// This library should be used to generate Pseudo-random values for tests
 /// This approach is needed to ensure that it is possible to reproduce the failures, since tests will be using the same values

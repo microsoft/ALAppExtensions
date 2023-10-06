@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy GQL OrderFulfillment (ID 30143) implements Interface Shpfy IGarphQL.
 /// </summary>

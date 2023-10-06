@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Upgrade;
+
 /// <summary>
 /// Upgrade email attachments to be of type Media instead of BLOB.
 /// </summary>

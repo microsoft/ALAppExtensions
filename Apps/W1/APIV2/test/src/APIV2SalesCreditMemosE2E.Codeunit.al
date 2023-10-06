@@ -344,7 +344,8 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         ResponseText: Text;
         TargetURL: Text;
         DiscountPct: Decimal;
-        DiscountAmt, InvDiscAmount : Decimal;
+        DiscountAmt: Decimal;
+        InvDiscAmount: Decimal;
     begin
         // [SCENARIO] When an credit memo is created, the GET Method should update the credit memo and assign a total
         // [GIVEN] 2 credit memos, one posted and one unposted with discount amount that should be redistributed

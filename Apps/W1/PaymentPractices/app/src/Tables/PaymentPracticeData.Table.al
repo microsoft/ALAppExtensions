@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Analysis;
+
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+
 table 686 "Payment Practice Data"
 {
     DataClassification = CustomerContent;

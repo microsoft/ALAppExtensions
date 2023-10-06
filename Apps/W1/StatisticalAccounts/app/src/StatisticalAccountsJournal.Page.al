@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Dimension;
+
 page 2633 "Statistical Accounts Journal"
 {
     Caption = 'Statistical Account Journal';

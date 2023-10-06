@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Document;
+
+using Microsoft.Finance.GST.Services;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 pageextension 18444 "GST Service Credit Memo" extends "Service Credit Memo"
 {
     layout

@@ -166,7 +166,7 @@ page 31116 "VAT Ctrl. Report Lines CZL"
                 ApplicationArea = VAT;
                 Caption = 'Show Document';
                 Image = View;
-                ShortCutKey = 'Shift+F7';
+                ShortcutKey = 'Shift+F7';
                 ToolTip = 'Shows related VAT Control Report.';
 
                 trigger OnAction()

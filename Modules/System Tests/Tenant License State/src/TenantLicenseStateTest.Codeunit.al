@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment;
+
+using System.Environment;
+using System.Security.AccessControl;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 138077 "Tenant License State Test"
 {
     // The tenant license table logic forbids us from inserting two entries at the same

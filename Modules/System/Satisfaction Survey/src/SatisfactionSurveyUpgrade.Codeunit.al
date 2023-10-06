@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Feedback;
+
+using System.Upgrade;
+
 codeunit 1435 "Satisfaction Survey Upgrade"
 {
     Subtype = Upgrade;

@@ -1,3 +1,9 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.BusinessRelation;
+
 /// <summary>
 /// Codeunit Shpfy Order Mapping (ID 30163).
 /// </summary>
@@ -41,7 +47,7 @@ codeunit 30163 "Shpfy Order Mapping"
         Result := MapHeaderFields(OrderHeader, Shop, Shop."Auto Create Unknown Customers" and (Shop."Customer Import From Shopify" <> "Shpfy Customer Import Range"::None));
 
         OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
-        if OrderLine.FindSet(true, false) then
+        if OrderLine.FindSet(true) then
             repeat
                 if OrderLine.Tip then
                     Result := Result and (Shop."Tip Account" <> '')
@@ -143,7 +149,7 @@ codeunit 30163 "Shpfy Order Mapping"
                 OrderTransaction.SetCurrentKey("Shopify Order Id", Amount);
                 OrderTransaction.SetRange(Status, "Shpfy Transaction Status"::Success);
                 OrderTransaction.SetAscending(Amount, false);
-                if OrderTransaction.FindSet(false, false) then begin
+                if OrderTransaction.FindSet(false) then begin
                     OrderHeader."Payment Method Code" := OrderTransaction."Payment Method";
                     Priority := OrderTransaction."Payment Priority";
                     repeat

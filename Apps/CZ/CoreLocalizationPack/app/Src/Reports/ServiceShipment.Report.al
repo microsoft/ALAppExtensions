@@ -386,7 +386,8 @@ report 31199 "Service Shipment CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddress.ServiceShptShipTo(ShipToAddr, "Service Shipment Header");
                 FormatAddress.ServiceShptBillTo(CustAddr, ShipToAddr, "Service Shipment Header");
@@ -433,7 +434,7 @@ report 31199 "Service Shipment CZL"
 
     var
         TempTrackingSpecification: Record "Tracking Specification" temporary;
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         ItemTrackingDocManagement: Codeunit "Item Tracking Doc. Management";

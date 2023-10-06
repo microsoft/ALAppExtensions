@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 tableextension 41103 "GP Company Add. Settings Ext." extends "GP Company Additional Settings"
 {
     fields

@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Utilities;
+
 /// <summary>
 /// Codeunit Shpfy Base64 (ID 30155).
 /// </summary>

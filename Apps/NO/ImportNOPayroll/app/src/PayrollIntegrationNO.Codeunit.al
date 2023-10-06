@@ -1,3 +1,10 @@
+namespace Microsoft.Payroll.Norway;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.IO;
+using System.Utilities;
+using System.Reflection;
+
 codeunit 10609 "Payroll Integration (NO)"
 {
 
@@ -34,14 +41,13 @@ codeunit 10609 "Payroll Integration (NO)"
     var
         TransformationRule: Record "Transformation Rule";
     begin
-        with TransformationRule do
-            if not get(RuleCode) then begin
-                Init();
-                Code := CopyStr(RuleCode, 1, MaxStrLen(Code));
-                Description := CopyStr(RuleDescription, 1, MaxStrLen(Description));
-                "Transformation Type" := "Transformation Type"::Custom;
-                Insert();
-            end;
+        if not TransformationRule.get(RuleCode) then begin
+            TransformationRule.Init();
+            TransformationRule.Code := CopyStr(RuleCode, 1, MaxStrLen(TransformationRule.Code));
+            TransformationRule.Description := CopyStr(RuleDescription, 1, MaxStrLen(TransformationRule.Description));
+            TransformationRule."Transformation Type" := TransformationRule."Transformation Type"::Custom;
+            TransformationRule.Insert();
+        end;
     end;
 
     local procedure ImportPayrollDataExchDef()
@@ -109,11 +115,11 @@ codeunit 10609 "Payroll Integration (NO)"
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         GeneralLedgerSetup.Get();
-        
+
         if not GeneralLedgerSetup."Import Dimension Codes" then
             exit(true);
 
-        If not GeneralLedgerSetup."Ignore Zeros-Only Values" then
+        if not GeneralLedgerSetup."Ignore Zeros-Only Values" then
             exit(false);
 
         exit(StrLen(DelChr(InputText, '<>', '0')) = 0);

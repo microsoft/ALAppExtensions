@@ -1,3 +1,16 @@
+namespace Microsoft.Inventory.InventoryForecast;
+
+using System.TestLibraries.Utilities;
+using System.AI;
+using Microsoft.Foundation.Period;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Setup;
+using System.Environment.Configuration;
+using System.Threading;
+using System.Privacy;
+
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.

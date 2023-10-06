@@ -13,6 +13,8 @@ codeunit 139561 "Shpfy Initialize Test"
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        LibraryERM: Codeunit "Library - ERM";
+        LibraryRandom: Codeunit "Library - Random";
         _AccessToken: Text;
 
     trigger OnRun()
@@ -23,13 +25,17 @@ codeunit 139561 "Shpfy Initialize Test"
     internal procedure CreateShop(): Record "Shpfy Shop"
     var
         GLAccount: Record "G/L Account";
+        RefundGLAccount: Record "G/L Account";
         Shop: Record "Shpfy Shop";
+        VATPostingSetup: Record "VAT Posting Setup";
+        Customer: Record Customer;
 #if not CLEAN22
         ShpfyTemplates: Codeunit "Shpfy Templates";
 #endif
         Code: Code[10];
         CustomerTemplateCode: Code[20];
         ItemTemplateCode: Code[20];
+        GenPostingType: Enum "General Posting Type";
         UrlTxt: Label 'https://%1.myshopify.com', Comment = '%1 = Shop name', Locked = true;
     begin
         if not TempShop.IsEmpty() then
@@ -39,6 +45,13 @@ codeunit 139561 "Shpfy Initialize Test"
         Code := Any.AlphabeticText(MaxStrLen(Code));
         GLAccount.SetRange("Direct Posting", true);
         GLAccount.FindLast();
+
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup,
+           VATPostingSetup."VAT Calculation Type"::"Normal VAT", LibraryRandom.RandDecInDecimalRange(10, 25, 0));
+
+        RefundGLAccount.get(LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GenPostingType::Sale));
+        RefundGLAccount."Direct Posting" := true;
+        RefundGLAccount.Modify();
 
         Shop.Init();
         Shop.Code := Code;
@@ -61,13 +74,15 @@ codeunit 139561 "Shpfy Initialize Test"
 #endif
         CreateVATPostingSetup(CustomerTemplateCode, ItemTemplateCode);
         CreateVATPostingSetup(CustomerTemplateCode, '');
+        Customer.FindFirst();
+        CreateVATPostingSetup(Customer."VAT Bus. Posting Group", RefundGLAccount."VAT Prod. Posting Group");
         Shop."Shipping Charges Account" := GLAccount."No.";
         Shop."Customer Posting Group" := CustomerTemplateCode;
         Shop."Gen. Bus. Posting Group" := CustomerTemplateCode;
         Shop."VAT Bus. Posting Group" := CustomerTemplateCode;
         CreateCountryRegionCode(CustomerTemplateCode);
         Shop."VAT Country/Region Code" := CustomerTemplateCode;
-
+        Shop."Refund Account" := RefundGLAccount."No.";
         Shop.Insert();
         Commit();
         CommunicationMgt.SetShop(Shop);
@@ -176,7 +191,6 @@ codeunit 139561 "Shpfy Initialize Test"
 
     local procedure CreateDummyItemFromTempl(ItemTemplCode: Code[20])
     var
-        Item: Record Item;
         ItemTempl: Record "Item Templ.";
         ItemTemplMgt: Codeunit "Item Templ. Mgt.";
         IsHandled: Boolean;
@@ -185,7 +199,7 @@ codeunit 139561 "Shpfy Initialize Test"
             exit;
         if not ItemTempl.Get(ItemTemplCode) then
             exit;
-        ItemTemplMgt.CreateItemFromTemplate(Item, IsHandled, ItemTemplCode);
+        ItemTemplMgt.CreateItemFromTemplate(DummyItem, IsHandled, ItemTemplCode);
     end;
 
     internal procedure GetDummyCustomer() Customer: Record Customer;
@@ -454,6 +468,7 @@ codeunit 139561 "Shpfy Initialize Test"
             Clear(VatPostingSetup);
             VatPostingSetup."VAT Bus. Posting Group" := BusinessPostingGroup;
             VatPostingSetup."VAT Prod. Posting Group" := ProductPostingGroup;
+            VatPostingSetup."VAT Identifier" := Any.AlphabeticText(MaxStrLen(VatPostingSetup."VAT Identifier"));
             VatPostingSetup."VAT Calculation Type" := "Tax Calculation Type"::"Normal VAT";
             VatPostingSetup."VAT %" := 10;
             VatPostingSetup.Insert();

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 table 40908 "Hist. Purchase Recv. Header"
 {
     DataClassification = CustomerContent;

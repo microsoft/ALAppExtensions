@@ -1,3 +1,18 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Group;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.VAT.Reporting;
+using System.Environment.Configuration;
+using System.Environment;
+using System.Security.Authentication;
+using System.Threading;
+using System.Utilities;
+
 page 4705 "VAT Group Setup Guide"
 {
     Caption = 'VAT Group Management';
@@ -101,7 +116,7 @@ page 4705 "VAT Group Setup Guide"
                     Caption = 'My company is the group representative';
                     InstructionalText = 'As the group representative you must define a list of approved group members who submit their VAT returns to you. You can manage group members on the VAT Report Setup page.';
                     label(RepresentativeSetupInfoMembers)
-                    {  
+                    {
                         ApplicationArea = Basic, Suite;
                         Caption = 'To add members, choose the number in the Approved Members field.';
                     }

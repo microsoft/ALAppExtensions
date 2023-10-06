@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Reflection;
+
 table 30121 "Shpfy Orders to Import"
 {
     Access = Internal;

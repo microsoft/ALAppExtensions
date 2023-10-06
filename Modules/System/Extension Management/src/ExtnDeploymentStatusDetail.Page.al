@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Apps;
 
 /// <summary>
 /// Displays details about the deployment status of the selected extension.
@@ -9,7 +11,7 @@
 page 2509 "Extn Deployment Status Detail"
 {
     Extensible = false;
-    DataCaptionExpression = Description;
+    DataCaptionExpression = Rec.Description;
     DelayedInsert = false;
     DeleteAllowed = false;
     Editable = false;
@@ -37,30 +39,30 @@ page 2509 "Extn Deployment Status Detail"
                         ApplicationArea = All;
                         Caption = 'App Name';
                         ToolTip = 'Specifies the name of the App.';
-                        Visible = NOT HideName;
+                        Visible = not HideName;
                     }
                     field("App Publisher"; Publisher)
                     {
                         ApplicationArea = All;
                         Caption = 'App Publisher';
                         ToolTip = 'Specifies the name of the App Publisher.';
-                        Visible = NOT HideName;
+                        Visible = not HideName;
                     }
                     field("App Version"; Version)
                     {
                         ApplicationArea = All;
                         Caption = 'App Version';
                         ToolTip = 'Specifies the version of the App.';
-                        Visible = NOT HideName;
+                        Visible = not HideName;
                     }
                     field(Schedule; DeploymentSchedule)
                     {
                         ApplicationArea = All;
                         Caption = 'Schedule';
                         ToolTip = 'Specifies the deployment Schedule.';
-                        Visible = NOT HideName;
+                        Visible = not HideName;
                     }
-                    field("Started On"; "Started On")
+                    field("Started On"; Rec."Started On")
                     {
                         ApplicationArea = All;
                         Caption = 'Started Date';
@@ -70,7 +72,7 @@ page 2509 "Extn Deployment Status Detail"
                 group(Control17)
                 {
                     ShowCaption = false;
-                    field(Status; Status)
+                    field(Status; Rec.Status)
                     {
                         ApplicationArea = All;
                         Caption = 'Status';
@@ -86,7 +88,7 @@ page 2509 "Extn Deployment Status Detail"
                     group(Control18)
                     {
                         ShowCaption = false;
-                        Visible = (ShowDetails) AND (NOT ShowDetailedMessage);
+                        Visible = (ShowDetails) and (not ShowDetailedMessage);
                         field(Details; DetailedMessageLbl)
                         {
                             ApplicationArea = All;
@@ -100,8 +102,8 @@ page 2509 "Extn Deployment Status Detail"
                                 ExtensionOperationImpl: Codeunit "Extension Operation Impl";
                                 DeployOperationJobId: Text;
                             begin
-                                DetailedMessageText := ExtensionOperationImpl.GetDeploymentDetailedStatusMessage("Operation ID");
-                                DeployOperationJobId := ExtensionOperationImpl.GetDeployOperationJobId("Operation ID");
+                                DetailedMessageText := ExtensionOperationImpl.GetDeploymentDetailedStatusMessage(Rec."Operation ID");
+                                DeployOperationJobId := ExtensionOperationImpl.GetDeployOperationJobId(Rec."Operation ID");
 
                                 DetailedMessageText := DetailedMessageText + ' - Job Id : ' + DeployOperationJobId;
                                 ShowDetailedMessage := true;
@@ -135,7 +137,7 @@ page 2509 "Extn Deployment Status Detail"
             {
                 ApplicationArea = All;
                 ToolTip = 'Refresh the deployment details.';
-                Enabled = NOT IsFinalStatus;
+                Enabled = not IsFinalStatus;
                 Image = Refresh;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -146,8 +148,8 @@ page 2509 "Extn Deployment Status Detail"
                 var
                     ExtensionOperationImpl: Codeunit "Extension Operation Impl";
                 begin
-                    ExtensionOperationImpl.RefreshStatus("Operation ID");
-                    NavAppTenantOperationTable.SetRange("Operation ID", "Operation ID");
+                    ExtensionOperationImpl.RefreshStatus(Rec."Operation ID");
+                    NavAppTenantOperationTable.SetRange("Operation ID", Rec."Operation ID");
                     if not NavAppTenantOperationTable.FindFirst() then
                         CurrPage.Close();
 
@@ -170,7 +172,7 @@ page 2509 "Extn Deployment Status Detail"
                 var
                     ExtensionOperationImpl: Codeunit "Extension Operation Impl";
                 begin
-                    ExtensionOperationImpl.DownloadDeploymentStatusDetails("Operation ID");
+                    ExtensionOperationImpl.DownloadDeploymentStatusDetails(Rec."Operation ID");
                 end;
             }
         }
@@ -180,19 +182,19 @@ page 2509 "Extn Deployment Status Detail"
     var
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
     begin
-        NavAppTenantOperationTable.SetRange("Operation ID", "Operation ID");
+        NavAppTenantOperationTable.SetRange("Operation ID", Rec."Operation ID");
         if not NavAppTenantOperationTable.FindFirst() then
             CurrPage.Close();
 
-        IsFinalStatus := NavAppTenantOperationTable.Status in [Status::Completed, Status::Failed];
+        IsFinalStatus := NavAppTenantOperationTable.Status in [Rec.Status::Completed, Rec.Status::Failed];
 
         if not IsFinalStatus then
-            ExtensionOperationImpl.RefreshStatus("Operation ID");
+            ExtensionOperationImpl.RefreshStatus(Rec."Operation ID");
 
         SetOperationRecord(NavAppTenantOperationTable);
 
-        ShowDetails := not (Status in [Status::InProgress, Status::Completed]);
-        ExtensionOperationImpl.GetDeployOperationInfo("Operation ID", Version, DeploymentSchedule, Publisher, Name, Description);
+        ShowDetails := not (Rec.Status in [Rec.Status::InProgress, Rec.Status::Completed]);
+        ExtensionOperationImpl.GetDeployOperationInfo(Rec."Operation ID", Version, DeploymentSchedule, Publisher, Name, Rec.Description);
         if Name = '' then
             HideName := true;
     end;
@@ -231,13 +233,13 @@ page 2509 "Extn Deployment Status Detail"
     var
         DetailsStream: InStream;
     begin
-        Status := NavAppTenantOperationTable.Status;
+        Rec.Status := NavAppTenantOperationTable.Status;
 
         NavAppTenantOperationTable.CalcFields(Details);
         NavAppTenantOperationTable.Details.CreateInStream(DetailsStream, TEXTENCODING::UTF8);
         DeploymentDetails.Read(DetailsStream);
 
         CurrPage.Update();
-        ShowDetails := Status <> Status::InProgress;
+        ShowDetails := Rec.Status <> Rec.Status::InProgress;
     end;
 }

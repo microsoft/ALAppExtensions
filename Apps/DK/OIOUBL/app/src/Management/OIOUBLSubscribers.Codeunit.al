@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.Foundation.Reporting;
+using Microsoft.Sales.History;
+using Microsoft.Service.History;
+using System.Environment.Configuration;
+using System.IO;
+using System.Reflection;
+using System.Telemetry;
+using System.Utilities;
+
 codeunit 13622 "OIOUBL-Subscribers"
 {
     var
@@ -153,28 +168,11 @@ codeunit 13622 "OIOUBL-Subscribers"
         RecRef.FindFirst();
         ClientZipFilePath := OIOUBLManagement.GetDocumentExportPath(RecRef);
         ClientZipFileName :=
-            ElectronicDocumentFormat.GetAttachmentFileName(
-                ElectronicDocumentFormat.GetDocumentNo(RecRef), OIOUBLManagement.GetDocumentType(RecRef), 'zip');
+            ElectronicDocumentFormat.GetAttachmentFileName(RecordVariant, ElectronicDocumentFormat.GetDocumentNo(RecRef), OIOUBLManagement.GetDocumentType(RecRef), 'zip');
 
         OIOUBLManagement.DownloadZipFile(ServerZipFilePath, ClientZipFilePath, ClientZipFileName);
     end;
 
-#if not CLEAN20
-    [Obsolete('Replaced by CancelDownloadWhenZipOnExportXMLBlobOnBeforeDownload.', '20.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"OIOUBL-Management", 'OnExportXMLFileOnBeforeDownload', '', false, false)]
-    procedure CancelDownloadWhenZipOnExportXMLFileOnBeforeDownload(var Sender: Codeunit "OIOUBL-Management"; DocNo: Code[20]; SourceFile: Text; FolderPath: Text; var IsHandled: Boolean)
-    var
-        RecordExportBuffer: Record "Record Export Buffer";
-    begin
-        if RecordExportBuffer.IsEmpty() then
-            exit;
-
-        RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
-        RecordExportBuffer.SetFilter(ServerFilePath, SourceFile);
-        if not RecordExportBuffer.IsEmpty() then
-            IsHandled := true;
-    end;
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"OIOUBL-Management", 'OnExportXMLFileOnBeforeBLOBExport', '', false, false)]
     local procedure CancelDownloadWhenZipOnExportXMLBlobOnBeforeDownload(var Sender: Codeunit "OIOUBL-Management"; DocNo: Code[20]; var TempBlob: Codeunit "Temp Blob"; FileName: Text; var IsHandled: Boolean)
     var

@@ -61,7 +61,7 @@ report 31188 "Sales Return Order Confirm CZL"
         }
         dataitem("Sales Header"; "Sales Header")
         {
-            DataItemTableView = WHERE("Document Type" = CONST("Return Order"));
+            DataItemTableView = where("Document Type" = const("Return Order"));
             column(DocumentLbl; DocumentLbl)
             {
             }
@@ -243,7 +243,7 @@ report 31188 "Sales Return Order Confirm CZL"
                 {
                     DataItemLink = "Document No." = field("No.");
                     DataItemLinkReference = "Sales Header";
-                    DataItemTableView = sorting("Document Type", "Document No.", "Line No.") WHERE("Document Type" = CONST("Return Order"));
+                    DataItemTableView = sorting("Document Type", "Document No.", "Line No.") where("Document Type" = const("Return Order"));
 
                     trigger OnPreDataItem()
                     begin
@@ -368,7 +368,8 @@ report 31188 "Sales Return Order Confirm CZL"
                 TempVATAmountLine: Record "VAT Amount Line" temporary;
                 SalesPost: Codeunit "Sales-Post";
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Sales Header");
                 FormatDocumentFields("Sales Header");
@@ -443,7 +444,7 @@ report 31188 "Sales Return Order Confirm CZL"
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
         TempSalesLine: Record "Sales Line" temporary;
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
@@ -455,7 +456,6 @@ report 31188 "Sales Return Order Confirm CZL"
         NoOfCopies: Integer;
         NoOfLoops: Integer;
         LogInteraction: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Return Order Confirmation';
         PageLbl: Label 'Page';
@@ -476,7 +476,7 @@ report 31188 "Sales Return Order Confirm CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(18) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Sales Return Order") <> '';
     end;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean)

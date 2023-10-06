@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Environment.Configuration;
+using System.Integration;
+
 page 4031 "Hybrid GP Errors Factbox"
 {
     Caption = 'GP Synchronization Errors';
@@ -32,6 +37,7 @@ page 4031 "Hybrid GP Errors Factbox"
                     end;
                 }
 
+#if not CLEAN23
                 field("Posting Errors"; Rec.PostingErrorCount)
                 {
                     Caption = 'Posting Errors';
@@ -39,12 +45,17 @@ page 4031 "Hybrid GP Errors Factbox"
                     Style = Unfavorable;
                     StyleExpr = (Rec.PostingErrorCount > 0);
                     ToolTip = 'Indicates the number of posting errors that occurred during the migration.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Removed functionality because of false positives and performance issues.';
+                    ObsoleteTag = '23.0';
 
                     trigger OnDrillDown()
                     begin
                         Page.RunModal(Page::"Data Sync Status");
                     end;
                 }
+#endif                
             }
         }
     }
@@ -67,7 +78,7 @@ page 4031 "Hybrid GP Errors Factbox"
 
         GPMigrationErrors.PostingErrorCount := PostingErrors;
         GPMigrationErrors.MigrationErrorCount := MigrationErrors;
-        if NOT GPMigrationErrors.Insert() then
+        if not GPMigrationErrors.Insert() then
             GPMigrationErrors.Modify();
     end;
 

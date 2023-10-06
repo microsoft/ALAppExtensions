@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Feedback;
+
+using System.Reflection;
+
 codeunit 1443 "Satisfaction Survey Viewer"
 {
     Access = Internal;

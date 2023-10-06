@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 /// <summary>
 /// ListPart page that contains all the plans.
 /// </summary>
@@ -15,6 +17,8 @@ page 9825 "Plans FactBox"
     ShowFilter = false;
     SourceTable = Plan;
     ContextSensitiveHelpPage = 'ui-how-users-permissions';
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata Plan = r;
 
     layout
@@ -23,7 +27,7 @@ page 9825 "Plans FactBox"
         {
             repeater(Group)
             {
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the record.';

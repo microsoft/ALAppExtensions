@@ -1,3 +1,5 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
 page 22206 "G/L Entry Review Setup"
 {
     AdditionalSearchTerms = 'review,apply,gl entries, review gl';

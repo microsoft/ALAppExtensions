@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Utilities;
+
+using System.Text;
+using System.Utilities;
+using System.TestLibraries.Utilities;
+
 codeunit 135135 "Image Tests"
 {
     Subtype = Test;

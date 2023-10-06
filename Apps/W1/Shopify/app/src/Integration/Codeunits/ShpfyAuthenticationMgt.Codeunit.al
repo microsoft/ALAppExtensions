@@ -1,3 +1,11 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Azure.KeyVault;
+using System.Environment;
+using System.Security.Authentication;
+using System.Utilities;
+using System.Apps;
+
 /// <summary>
 /// Codeunit Shpfy Authentication Mgt. (ID 30199).
 /// </summary>
@@ -16,14 +24,19 @@ codeunit 30199 "Shpfy Authentication Mgt."
         NoCallbackErr: Label 'No callback was received from Shopify. Make sure that you haven''t closed the page that says "Waiting for a response - do not close this page", and then try again.';
         HttpRequestBlockedErr: Label 'Shopify connector is not allowed to make HTTP requests when running in a non-production environment.';
         EnableHttpRequestActionLbl: Label 'Allow HTTP requests';
+        NotSupportedOnPremErr: Label 'Shopify connector is only supported in SaaS environments.';
 
     [NonDebuggable]
     [Scope('OnPrem')]
     local procedure GetApiKey(): Text
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        EnvironmentInformation: Codeunit "Environment Information";
         ApiKey: Text;
     begin
+        if not EnvironmentInformation.IsSaaS() then
+            Error(NotSupportedOnPremErr);
+
         if not AzureKeyVault.GetAzureKeyVaultSecret(ShopifyAPIKeyAKVSecretNameLbl, ApiKey) then
             Session.LogMessage('0000HCA', MissingAPIKeyTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok)
         else
@@ -35,8 +48,12 @@ codeunit 30199 "Shpfy Authentication Mgt."
     local procedure GetApiSecret(): Text
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        EnvironmentInformation: Codeunit "Environment Information";
         ApiSecret: Text;
     begin
+        if not EnvironmentInformation.IsSaaS() then
+            Error(NotSupportedOnPremErr);
+
         if not AzureKeyVault.GetAzureKeyVaultSecret(ShopifyAPISecretAKVSecretNameLbl, ApiSecret) then
             Session.LogMessage('0000HCB', MissingAPISecretTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok)
         else

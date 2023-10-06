@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Privacy;
+
 codeunit 1898 "C5 Install"
 {
     Subtype = install;

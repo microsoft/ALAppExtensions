@@ -1,4 +1,4 @@
-XmlPort 31106 "Import Tariff Numbers CZL"
+xmlport 31106 "Import Tariff Numbers CZL"
 {
     Caption = 'Import Tariff Numbers';
     Direction = Import;

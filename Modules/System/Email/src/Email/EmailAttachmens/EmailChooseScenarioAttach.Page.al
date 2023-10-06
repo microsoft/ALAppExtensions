@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Telemetry;
+
 /// <summary>
 /// Page is used to upload the attachments from the scenario.
 /// </summary>
@@ -41,7 +45,7 @@ page 8896 "Email Choose Scenario Attach"
                 {
                     ApplicationArea = All;
                     Caption = 'Email Scenario';
-                    ToolTip = 'Which Emails Scenario does the attachment come from';
+                    ToolTip = 'Specifies which Email Scenario the attachment comes from.';
                     Editable = false;
                 }
             }

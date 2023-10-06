@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30238 "Shpfy Fulfillment Orders API"
 {
     var
@@ -118,14 +120,18 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
         if JsonHelper.GetJsonObject(JFulfillmentOrder.AsObject(), JNode, 'node') then begin
             Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
 
-            FulfillmentOrderHeader.SetRange("Shopify Fulfillment Order Id", Id);
-            if not FulfillmentOrderHeader.FindFirst() then
+            if FulfillmentOrderHeader.Get(Id) then begin
+                if FulfillmentOrderHeader."Updated At" = JsonHelper.GetValueAsDateTime(JNode, 'updatedAt') then
+                    exit;
+            end else
                 Clear(FulfillmentOrderHeader);
             FulfillmentOrderHeader."Shopify Fulfillment Order Id" := Id;
             FulfillmentOrderHeader."Shop Id" := ShopifyShop."Shop Id";
             FulfillmentOrderHeader."Shop Code" := ShopifyShop.Code;
             FulfillmentOrderHeader."Shopify Order Id" := JsonHelper.GetValueAsBigInteger(JNode, 'order.legacyResourceId');
             FulfillmentOrderHeader."Shopify Location Id" := JsonHelper.GetValueAsBigInteger(JNode, 'assignedLocation.location.legacyResourceId');
+            FulfillmentOrderHeader."Updated At" := JsonHelper.GetValueAsDateTime(JNode, 'updatedAt');
+            FulfillmentOrderHeader.Status := CopyStr(JsonHelper.GetValueAsText(JNode, 'status'), 1, MaxStrLen(FulfillmentOrderHeader.Status));
             if not FulfillmentOrderHeader.Insert() then
                 FulfillmentOrderHeader.Modify();
             GetFulfillmentOrderLines(ShopifyShop, FulfillmentOrderHeader);

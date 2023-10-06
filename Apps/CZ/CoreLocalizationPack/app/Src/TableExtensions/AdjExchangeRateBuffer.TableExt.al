@@ -1,4 +1,10 @@
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
 tableextension 11784 "Adj. Exchange Rate Buffer CZL" extends "Adjust Exchange Rate Buffer"
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
 {
     fields
     {

@@ -1,3 +1,7 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Inventory.Item;
+
 page 20052 "APIV1 - Item Variants"
 {
     APIVersion = 'v1.0';
@@ -16,54 +20,54 @@ page 20052 "APIV1 - Item Variants"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'id', Locked = true;
                     Editable = false;
                 }
-                field(itemId; "Item Id")
+                field(itemId; Rec."Item Id")
                 {
                     Caption = 'itemId', Locked = true;
 
                     trigger OnValidate()
                     begin
                         if not IsNullGuid(Item.SystemId) then
-                            if Item.SystemId <> "Item Id" then
+                            if Item.SystemId <> Rec."Item Id" then
                                 Error(ItemValuesDontMatchErr);
 
-                        if GetFilter("Item Id") <> '' then
-                            if "Item Id" <> GetFilter("Item Id") then
+                        if Rec.GetFilter("Item Id") <> '' then
+                            if Rec."Item Id" <> Rec.GetFilter("Item Id") then
                                 Error(ItemValuesDontMatchErr);
 
-                        if "Item Id" = BlankGuid then
-                            "Item No." := ''
+                        if Rec."Item Id" = BlankGuid then
+                            Rec."Item No." := ''
                         else
-                            if not Item.GetBySystemId("Item Id") then
+                            if not Item.GetBySystemId(Rec."Item Id") then
                                 Error(ItemIdDoesNotMatchAnEmployeeErr);
                     end;
                 }
-                field(itemNumber; "Item No.")
+                field(itemNumber; Rec."Item No.")
                 {
                     Caption = 'itemNumber', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        if "Item No." = '' then
-                            "Item Id" := BlankGuid
+                        if Rec."Item No." = '' then
+                            Rec."Item Id" := BlankGuid
                         else
-                            if not Item.Get("Item No.") then
+                            if not Item.Get(Rec."Item No.") then
                                 Error(ItemNumberDoesNotMatchAnEmployeeErr);
 
-                        if GetFilter("Item Id") <> '' then
-                            if Item.SystemId <> GetFilter("Item Id") then
+                        if Rec.GetFilter("Item Id") <> '' then
+                            if Item.SystemId <> Rec.GetFilter("Item Id") then
                                 Error(ItemValuesDontMatchErr);
                     end;
                 }
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'code', Locked = true;
                 }
-                field(description; Description)
+                field(description; Rec.Description)
                 {
                     Caption = 'description', Locked = true;
                 }
@@ -78,8 +82,8 @@ page 20052 "APIV1 - Item Variants"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     begin
-        if HasFilter() then
-            Validate("Item Id", GetFilter("Item Id"));
+        if Rec.HasFilter() then
+            Rec.Validate("Item Id", Rec.GetFilter("Item Id"));
     end;
 
     trigger OnModifyRecord(): Boolean
@@ -87,12 +91,12 @@ page 20052 "APIV1 - Item Variants"
         ItemVariant: Record "Item Variant";
     begin
         ItemVariant.GetBySystemId(Rec.SystemId);
-        if "Item No." = ItemVariant."Item No." then
-            Modify(true)
+        if Rec."Item No." = ItemVariant."Item No." then
+            Rec.Modify(true)
         else begin
             ItemVariant.TransferFields(Rec, false);
-            ItemVariant.Rename("Item No.", "Code");
-            TransferFields(ItemVariant, true);
+            ItemVariant.Rename(Rec."Item No.", Rec."Code");
+            Rec.TransferFields(ItemVariant, true);
         end;
         exit(false);
     end;

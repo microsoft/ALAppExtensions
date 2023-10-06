@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 table 40901 "Hist. Gen. Journal Line"
 {
     DataClassification = CustomerContent;

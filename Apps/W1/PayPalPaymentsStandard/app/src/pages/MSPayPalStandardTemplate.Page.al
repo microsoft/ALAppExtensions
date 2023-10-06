@@ -1,3 +1,6 @@
+namespace Microsoft.Bank.PayPal;
+
+
 page 1071 "MS - PayPal Standard Template"
 {
     Caption = 'PayPal Payments Standard Template';
@@ -11,17 +14,17 @@ page 1071 "MS - PayPal Standard Template"
             group(General)
             {
                 Caption = 'General';
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the default name for the PayPal payment service.';
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the default description for the PayPal payment service.';
                 }
-                field(Logo; Logo)
+                field(Logo; Rec.Logo)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the default logo for the PayPal payment service.';
@@ -38,10 +41,10 @@ page 1071 "MS - PayPal Standard Template"
                         MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                     begin
                         MSPayPalStandardMgt.ValidateChangeTargetURL();
-                        SetTargetURL(ServiceTargetURL);
+                        Rec.SetTargetURL(ServiceTargetURL);
                     end;
                 }
-                field("Terms of Service"; "Terms of Service")
+                field("Terms of Service"; Rec."Terms of Service")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the terms of use for the PayPal payment service.';
@@ -55,10 +58,10 @@ page 1071 "MS - PayPal Standard Template"
 
                     trigger OnValidate();
                     begin
-                        SetLogoURL(ServiceLogoURL);
+                        Rec.SetLogoURL(ServiceLogoURL);
                     end;
                 }
-                field("Logo Update Frequency"; "Logo Update Frequency")
+                field("Logo Update Frequency"; Rec."Logo Update Frequency")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the frequency with which the logo is updated.';
@@ -95,8 +98,8 @@ page 1071 "MS - PayPal Standard Template"
 
     trigger OnAfterGetCurrRecord();
     begin
-        ServiceLogoURL := GetLogoURL();
-        ServiceTargetURL := GetTargetURL();
+        ServiceLogoURL := Rec.GetLogoURL();
+        ServiceTargetURL := Rec.GetTargetURL();
     end;
 
     trigger OnOpenPage();
@@ -104,11 +107,11 @@ page 1071 "MS - PayPal Standard Template"
         TempMSPayPalStandardTemplate: Record 1071 temporary;
         MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
-        IF NOT GET() THEN BEGIN
+        if not Rec.GET() then begin
             MSPayPalStandardMgt.GetTemplate(TempMSPayPalStandardTemplate);
-            TRANSFERFIELDS(TempMSPayPalStandardTemplate);
-            INSERT();
-        END;
+            Rec.TRANSFERFIELDS(TempMSPayPalStandardTemplate);
+            Rec.INSERT();
+        end;
     end;
 
     var
@@ -116,4 +119,6 @@ page 1071 "MS - PayPal Standard Template"
         ServiceTargetURL: Text;
         SetToDefaultMsg: Label 'Settings have been set to default.';
 }
+
+
 

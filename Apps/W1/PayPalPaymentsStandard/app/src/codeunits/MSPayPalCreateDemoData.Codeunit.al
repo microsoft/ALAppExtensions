@@ -1,3 +1,9 @@
+namespace Microsoft.Bank.PayPal;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Privacy;
+
 codeunit 1072 "MS - PayPal Create Demo Data"
 {
     Subtype = install;
@@ -56,8 +62,8 @@ codeunit 1072 "MS - PayPal Create Demo Data"
         MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
         MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
-        IF MSPayPalStandardTemplate.GET() THEN
-            EXIT;
+        if MSPayPalStandardTemplate.GET() then
+            exit;
 
         MSPayPalStandardTemplate.INIT();
         MSPayPalStandardTemplate.INSERT();

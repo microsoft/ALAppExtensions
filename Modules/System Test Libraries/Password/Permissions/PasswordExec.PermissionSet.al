@@ -4,6 +4,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Security.AccessControl;
+
 permissionset 135033 "Password Exec"
 {
     Assignable = true;

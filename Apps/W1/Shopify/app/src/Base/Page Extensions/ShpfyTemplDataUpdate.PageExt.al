@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Environment.Configuration;
+
 #if not CLEAN22
 pageextension 30105 "Shpfy Templ. Data Update" extends "Schedule Feature Data Update"
 {

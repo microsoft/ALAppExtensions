@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Finance.VAT.Reporting;
+using System.Telemetry;
+using System.Utilities;
+
 page 4812 "Intrastat Report"
 {
     Caption = 'Intrastat Report';
@@ -310,8 +320,10 @@ page 4812 "Intrastat Report"
         IntrastatReportTok: Label 'Intrastat Report', Locked = true;
 
     local procedure FindVATReportsConfiguration(var VATReportsConfiguration: Record "VAT Reports Configuration"): Boolean
+    var
+        VATReportConfiguration: Enum "VAT Report Configuration";
     begin
-        VATReportsConfiguration.SetRange("VAT Report Type", "VAT Report Configuration"::"Intrastat Report");
+        VATReportsConfiguration.SetRange("VAT Report Type", VATReportConfiguration::"Intrastat Report");
         OnBeforeFindVATReportsConfiguration(Rec, VATReportsConfiguration);
         exit(VATReportsConfiguration.FindFirst());
     end;

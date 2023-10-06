@@ -2,12 +2,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Email;
+
+using System.Environment;
+using System.Security.Authentication;
+using System.Utilities;
+
 page 4509 "Email - Outlook API Setup"
 {
     PageType = NavigatePage;
     UsageCategory = Administration;
     SourceTable = "Email - Outlook API Setup";
-    Caption = 'Email Application AAD Registration';
+    Caption = 'Email Microsoft Entra application registration';
     DataCaptionExpression = ' ';
     InsertAllowed = false;
     DeleteAllowed = false;
@@ -32,7 +39,7 @@ page 4509 "Email - Outlook API Setup"
             }
             group(Info)
             {
-                InstructionalText = 'You must already have registered your application in Azure Active Directory and granted certain permissions. Use the client ID and secret from that registration to authenticate the email account.';
+                InstructionalText = 'You must already have registered your application in Microsoft Entra and granted certain permissions. Use the client ID and secret from that registration to authenticate the email account.';
                 ShowCaption = false;
                 Visible = 1 > 0;
 
@@ -169,7 +176,7 @@ page 4509 "Email - Outlook API Setup"
             {
                 ApplicationArea = All;
                 Image = FaultDefault;
-                ToolTip = 'Delete the Azure Active Directory app registration information in Business Central.';
+                ToolTip = 'Delete the Microsoft Entra app registration information in Business Central.';
                 InFooterBar = true;
                 Caption = 'Clear';
 

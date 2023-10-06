@@ -70,6 +70,8 @@ codeunit 130630 "No Transactions Subscriber"
                 exit(true);
             'Cue Setup':
                 exit(true);
+            'Deposits Page Setup':
+                exit(true);
             'Isolated Storage':
                 exit(true);
             'Purchases & Payables Setup':

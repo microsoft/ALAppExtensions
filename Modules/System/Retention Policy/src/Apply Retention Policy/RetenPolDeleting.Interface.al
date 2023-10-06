@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
 /// <summary>
 /// The Reten. Pol. Deleting interface is used to set filters on the table for which a retention policy is applied.
 /// </summary>

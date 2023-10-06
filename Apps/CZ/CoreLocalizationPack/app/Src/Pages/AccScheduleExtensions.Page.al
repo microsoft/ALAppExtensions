@@ -71,19 +71,6 @@ page 31201 "Acc. Schedule Extensions CZL"
                     ToolTip = 'Specifies the type of the entry.';
                     Visible = EntryTypeVisible;
                 }
-#if not CLEAN20
-#pragma warning disable AL0432
-                field(Prepayment; Rec.Prepayment)
-                {
-                    ApplicationArea = Prepayments;
-                    ToolTip = 'Specifies if line of sales journal is prepayment';
-                    Visible = PrepaymentVisible;
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '20.0';
-                    ObsoleteReason = 'Replaced by Advance Payments field in Advance Payments Localization for Czech app';
-                }
-#pragma warning restore AL0432
-#endif                
                 field("VAT Amount Type"; Rec."VAT Amount Type")
                 {
                     ApplicationArea = All;
@@ -154,9 +141,6 @@ page 31201 "Acc. Schedule Extensions CZL"
         VATBusPostGroupFilterVisible := true;
         VATAmtTypeVisible := true;
         ReverseSignVisible := true;
-#if not CLEAN20
-        PrepaymentVisible := true;
-#endif
         EntryTypeVisible := true;
         AmtSignVisible := true;
         GLAmtTypeVisible := true;
@@ -173,46 +157,26 @@ page 31201 "Acc. Schedule Extensions CZL"
     end;
 
     protected var
-        LedgEntryType: enum "Acc. Schedule Source Table CZL";
+        LedgEntryType: Enum "Acc. Schedule Source Table CZL";
 
     var
-        HiddenLedgEntryType: enum "Acc. Schedule Source Table CZL";
+        HiddenLedgEntryType: Enum "Acc. Schedule Source Table CZL";
         HiddenParameters: Boolean;
-        [InDataSet]
         SrcTypeVisible: Boolean;
-        [InDataSet]
         SrcFilterVisible: Boolean;
-        [InDataSet]
         GLAccFilterVisible: Boolean;
-        [InDataSet]
         GLAmtTypeVisible: Boolean;
-        [InDataSet]
         AmtSignVisible: Boolean;
-        [InDataSet]
         EntryTypeVisible: Boolean;
-#if not CLEAN20
-        [InDataSet]
-        PrepaymentVisible: Boolean;
-#endif
-        [InDataSet]
         ReverseSignVisible: Boolean;
-        [InDataSet]
         VATAmtTypeVisible: Boolean;
-        [InDataSet]
         VATBusPostGroupFilterVisible: Boolean;
-        [InDataSet]
         VATProdPostGroupFilterVisible: Boolean;
-        [InDataSet]
         LocFilterVisible: Boolean;
-        [InDataSet]
         BinFilterVisible: Boolean;
-        [InDataSet]
         PostingGrFilterVisible: Boolean;
-        [InDataSet]
         PostingDateFilterVisible: Boolean;
-        [InDataSet]
         DueDateFilterVisible: Boolean;
-        [InDataSet]
         DocumentTypeFilterVisible: Boolean;
 
     procedure UpdateControls()
@@ -225,9 +189,6 @@ page 31201 "Acc. Schedule Extensions CZL"
         GLAmtTypeVisible := false;
         AmtSignVisible := false;
         EntryTypeVisible := false;
-#if not CLEAN20
-        PrepaymentVisible := false;
-#endif
         ReverseSignVisible := false;
         VATAmtTypeVisible := false;
         VATBusPostGroupFilterVisible := false;
@@ -260,16 +221,13 @@ page 31201 "Acc. Schedule Extensions CZL"
                     PostingDateFilterVisible := true;
                     DueDateFilterVisible := true;
                     DocumentTypeFilterVisible := true;
-#if not CLEAN20
-                    PrepaymentVisible := true;
-#endif
                     AmtSignVisible := true;
                     ReverseSignVisible := true;
                 end;
         end;
     end;
 
-    procedure SetLedgType(NewLedgType: enum "Acc. Schedule Source Table CZL")
+    procedure SetLedgType(NewLedgType: Enum "Acc. Schedule Source Table CZL")
     begin
         HiddenLedgEntryType := NewLedgType;
         HiddenParameters := true;

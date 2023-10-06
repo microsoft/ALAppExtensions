@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestTools.TestRunner;
+
+using System.Reflection;
+using System.Environment;
+
 codeunit 130457 "Test Profile Management"
 {
     // Used to insert a profile into blank database
@@ -22,7 +27,7 @@ codeunit 130457 "Test Profile Management"
             exit;
 
         AllProfile.SetRange("Default Role Center", true);
-        if NOT AllProfile.IsEmpty() then
+        if not AllProfile.IsEmpty() then
             exit;
 
         ID := Page::"Test Role Center";

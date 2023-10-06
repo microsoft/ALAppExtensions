@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.NoSeries;
+using System.IO;
+using System.Telemetry;
+using System.Text;
+using System.Utilities;
+
 report 5314 "Import SIE"
 {
     ApplicationArea = Basic, Suite;
@@ -122,7 +137,6 @@ report 5314 "Import SIE"
         GenJnlLine: Record "Gen. Journal Line";
         ConfirmMgt: Codeunit "Confirm Management";
         GenJnlMgt: Codeunit GenJnlManagement;
-        GeneralJournalPage: Page "General Journal";
     begin
         FeatureTelemetry.LogUptake('0000JPO', SieImportTok, Enum::"Feature Uptake Status"::"Set up");
 
@@ -133,12 +147,8 @@ report 5314 "Import SIE"
         if GenJnlLine.IsEmpty() then
             Message(ImportSuccessTxt)
         else
-            if ConfirmMgt.GetResponseOrDefault(ImportSuccessTxt + OpenGenJournalQst, false) then begin
-                GenJnlMgt.OpenJnl(GenJournalBatch.Name, GenJnlLine);
-                GeneralJournalPage.SetTableView(GenJnlLine);
-                GeneralJournalPage.Run();
-            end;
-
+            if ConfirmMgt.GetResponseOrDefault(ImportSuccessTxt + OpenGenJournalQst, false) then
+                GenJnlMgt.TemplateSelectionFromBatch(GenJournalBatch);
     end;
 
     trigger OnPreReport()

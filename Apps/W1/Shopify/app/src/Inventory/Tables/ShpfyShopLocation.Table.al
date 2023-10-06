@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Location;
+
 /// <summary>
 /// Table Shpfy Shop Location (ID 30113).
 /// </summary>

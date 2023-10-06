@@ -8,20 +8,6 @@ pageextension 11753 "Posted Serv. Credit Memo CZL" extends "Posted Service Credi
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-        addlast(General)
-        {
-            field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Editable = false;
-                ToolTip = 'Specifies the type of credit memo (corrective tax document, internal correction, insolvency tax document).';
-            }
-        }
-#pragma warning restore AL0432
-#else
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -38,7 +24,6 @@ pageextension 11753 "Posted Serv. Credit Memo CZL" extends "Posted Service Credi
                 ToolTip = 'Specifies the type of credit memo (corrective tax document, internal correction, insolvency tax document).';
             }
         }
-#endif
         addbefore("Customer Posting Group")
         {
             field("VAT Bus. Posting Group CZL"; Rec."VAT Bus. Posting Group")
@@ -284,7 +269,9 @@ pageextension 11753 "Posted Serv. Credit Memo CZL" extends "Posted Service Credi
     end;
 
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;

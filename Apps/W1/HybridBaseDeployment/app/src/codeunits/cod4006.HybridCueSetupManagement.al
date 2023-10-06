@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.RoleCenters;
+using System.Visualization;
+
 codeunit 4006 "Hybrid Cue Setup Management"
 {
     procedure GetReplicationSuccessRateCueValue() ReplicationSuccessRate: Decimal

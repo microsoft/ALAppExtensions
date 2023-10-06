@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Apps;
+
 permissionset 7210 "D365 ATTACH DEBUG"
 {
     Access = Public;

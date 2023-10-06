@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Codeunit Shpfy Sync Products (ID 30185).
 /// </summary>
@@ -88,7 +92,7 @@ codeunit 30185 "Shpfy Sync Products"
             Dialog.Update(2, Skipped);
         end;
         Clear(TempProduct);
-        if TempProduct.FindSet(false, false) then begin
+        if TempProduct.FindSet(false) then begin
             ProductImport.SetShop(Shop);
             repeat
                 ProductImport.SetProduct(TempProduct);

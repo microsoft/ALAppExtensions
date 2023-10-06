@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1888 "C5 InvenPrice"
 {
     PageType = Card;
@@ -17,14 +19,14 @@ page 1888 "C5 InvenPrice"
             group(General)
             {
 #pragma warning disable AA0218
-                field(ItemNumber; ItemNumber) { ApplicationArea = All; }
-                field(Price; Price) { ApplicationArea = All; }
-                field(PriceUnit; PriceUnit) { ApplicationArea = All; }
-                field(Currency; Currency) { ApplicationArea = All; }
-                field(PriceGroup; PriceGroup) { ApplicationArea = All; }
-                field(ContributionRatio; ContributionRatio) { ApplicationArea = All; }
-                field(Date_; Date_) { ApplicationArea = All; }
-                field(SalesVat; SalesVat) { ApplicationArea = All; }
+                field(ItemNumber; Rec.ItemNumber) { ApplicationArea = All; }
+                field(Price; Rec.Price) { ApplicationArea = All; }
+                field(PriceUnit; Rec.PriceUnit) { ApplicationArea = All; }
+                field(Currency; Rec.Currency) { ApplicationArea = All; }
+                field(PriceGroup; Rec.PriceGroup) { ApplicationArea = All; }
+                field(ContributionRatio; Rec.ContributionRatio) { ApplicationArea = All; }
+                field(Date_; Rec.Date_) { ApplicationArea = All; }
+                field(SalesVat; Rec.SalesVat) { ApplicationArea = All; }
 #pragma warning restore
             }
         }
@@ -54,3 +56,4 @@ page 1888 "C5 InvenPrice"
         }
     }
 }
+

@@ -110,46 +110,6 @@ page 2650 "Email Printer Settings"
                 Caption = 'Email Body (Optional)';
                 ToolTip = 'Specifies the body of the sent email. Some printers may print the body of the email along with the attachment(s).';
             }
-#if not CLEAN20
-            group(SMTPSetup)
-            {
-                ShowCaption = false;
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteReason = 'Replaced with the Email Module';
-                ObsoleteTag = '17.0';
-                group(SMTPSetupInner)
-                {
-                    ShowCaption = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Replaced with the Email Module';
-                    ObsoleteTag = '20.0';
-                    field(SMTPSetupRequired; SMTPSetupRequiredLbl)
-                    {
-                        ApplicationArea = All;
-                        Editable = false;
-                        ShowCaption = false;
-                        Style = Attention;
-                        Caption = 'This printer requires SMTP mail setup to print the jobs.';
-                        ToolTip = 'Specifies the requirement for the printer.';
-                        ObsoleteState = Pending;
-                        ObsoleteReason = 'Replaced with the Email Module';
-                        ObsoleteTag = '20.0';
-                    }
-                    field(SetupSMTP; SetupSMTPLbl)
-                    {
-                        ApplicationArea = All;
-                        Editable = false;
-                        ShowCaption = false;
-                        Caption = 'Set up SMTP';
-                        ToolTip = 'Open SMTP mail setup page.';
-                        ObsoleteState = Pending;
-                        ObsoleteReason = 'Replaced with the Email Module';
-                        ObsoleteTag = '20.0';
-                    }
-                }
-            }
-#endif
             group(EmailSetup)
             {
                 ShowCaption = false;
@@ -248,10 +208,6 @@ page 2650 "Email Printer Settings"
         NewMode: Boolean;
         DeleteMode: Boolean;
         SetupEmailAccountLbl: Label 'Set up email account';
-#if not CLEAN20
-        SetupSMTPLbl: Label 'Set up SMTP';
-        SMTPSetupRequiredLbl: Label 'This printer requires SMTP mail setup to print the jobs.';
-#endif
         EmailAccountRequiredLbl: Label 'For this printer to work, set up an email account in Business Central to use for sending print jobs to the email printers.';
         EmailAccountPermissionsRequiredLbl: Label 'For this printer to work, a user with respective permissions needs to set up an email account in Business Central.';
         LearnMoreActionLbl: Label 'Learn more';

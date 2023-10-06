@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.ScriptHandler;
+
+using Microsoft.Finance.TaxEngine.Core;
+
 page 20162 "Action Extract DateTime Dialog"
 {
     Caption = 'Extract Date Part';

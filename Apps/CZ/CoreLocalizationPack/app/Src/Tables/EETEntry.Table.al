@@ -2,8 +2,8 @@ table 31128 "EET Entry CZL"
 {
     Caption = 'EET Entry';
     DataCaptionFields = "Receipt Serial No.", "Entry No.";
-    DrillDownPageID = "EET Entries CZL";
-    LookupPageID = "EET Entries CZL";
+    DrillDownPageId = "EET Entries CZL";
+    LookupPageId = "EET Entries CZL";
 
     fields
     {
@@ -33,7 +33,7 @@ table 31128 "EET Entry CZL"
         {
             Caption = 'Cash Register Code';
             NotBlank = true;
-            TableRelation = "EET Cash Register CZL".Code WHERE("Business Premises Code" = FIELD("Business Premises Code"));
+            TableRelation = "EET Cash Register CZL".Code where("Business Premises Code" = field("Business Premises Code"));
             DataClassification = CustomerContent;
         }
         field(30; "Document No."; Code[20])
@@ -83,7 +83,7 @@ table 31128 "EET Entry CZL"
             Caption = 'Message UUID';
             DataClassification = CustomerContent;
         }
-        field(76; "Taxpayer's Signature Code"; BLOB)
+        field(76; "Taxpayer's Signature Code"; Blob)
         {
             Caption = 'Taxpayer''s Signature Code';
             DataClassification = CustomerContent;
@@ -554,9 +554,9 @@ table 31128 "EET Entry CZL"
             VATPostingSetup."Supplies Mode Code CZL"::"par. 90":
                 AmountArt90 := Base + Amount;
             else begin
-                    VATBase := Base;
-                    VATAmount := Amount;
-                end;
+                VATBase := Base;
+                VATAmount := Amount;
+            end;
         end;
 
         "Amount - Art.89" += -AmountArt89;

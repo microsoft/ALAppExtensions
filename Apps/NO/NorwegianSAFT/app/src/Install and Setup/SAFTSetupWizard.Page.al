@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Company;
+using Microsoft.HumanResources.Employee;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Telemetry;
+using System.Utilities;
+
 page 10674 "SAF-T Setup Wizard"
 {
     Caption = 'SAF-T Setup Guide';
@@ -374,12 +388,12 @@ page 10674 "SAF-T Setup Wizard"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean;
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
         if GetLastErrorText() <> '' then
             exit(true);
         if CloseAction = CloseAction::OK then
-            If not AssistedSetup.IsComplete(PAGE::"SAF-T Setup Wizard") then
+            If not GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"SAF-T Setup Wizard") then
                 if not Confirm(SetupNotCompletedQst) then
                     Error('');
     end;
@@ -470,10 +484,10 @@ page 10674 "SAF-T Setup Wizard"
 
     local procedure FinishAction();
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: codeunit "Guided Experience";
     begin
         FeatureTelemetry.LogUptake('1000HT6', NOValueAddedTaxTok, Enum::"Feature Uptake Status"::"Set up");
-        AssistedSetup.Complete(PAGE::"SAF-T Setup Wizard");
+        GuidedExperience.CompleteAssistedSetup(ObjectType::Page, PAGE::"SAF-T Setup Wizard");
         CurrPage.Close();
     end;
 

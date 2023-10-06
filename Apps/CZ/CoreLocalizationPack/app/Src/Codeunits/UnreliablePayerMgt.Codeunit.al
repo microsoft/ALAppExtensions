@@ -109,9 +109,9 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         exit(true);
     end;
 
-    local procedure GetUnrPayerStatus(VATRegNoList: List of [Code[20]]; var ResponseTempBlob: Codeunit "Temp Blob"): Boolean
+    local procedure GetUnrPayerStatus(LocalVATRegNoList: List of [Code[20]]; var ResponseTempBlob: Codeunit "Temp Blob"): Boolean
     begin
-        exit(UnreliablePayerWSCZL.GetStatus(VATRegNoList, ResponseTempBlob));
+        exit(UnreliablePayerWSCZL.GetStatus(LocalVATRegNoList, ResponseTempBlob));
     end;
 
     local procedure GetUnrPayerList(var ResponseTempBlob: Codeunit "Temp Blob"): Boolean
@@ -121,7 +121,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
 
     local procedure ImportUnrPayerStatusResponse(var ResponseTempBlob: Codeunit "Temp Blob"): Integer
     var
-        UnreliablePayerStatusCZL: XMLport "Unreliable Payer Status CZL";
+        UnreliablePayerStatusCZL: XmlPort "Unreliable Payer Status CZL";
         ResponseInStream: InStream;
     begin
         ResponseTempBlob.CreateInStream(ResponseInStream);
@@ -132,7 +132,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
 
     local procedure ImportUnrPayerListResponse(var ResponseTempBlob: Codeunit "Temp Blob"): Integer
     var
-        UnreliablePayerListCZL: XMLport "Unreliable Payer List CZL";
+        UnreliablePayerListCZL: XmlPort "Unreliable Payer List CZL";
         ResponseInStream: InStream;
     begin
         ResponseTempBlob.CreateInStream(ResponseInStream);
@@ -278,8 +278,14 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         exit(not VendorBankAccount.IsStandardFormatBankAccountCZL() and VendorBankAccount.IsForeignBankAccountCZL());
     end;
 
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure HandleUnrelPayerServiceConnection(var ServiceConnection: Record "Service Connection")
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         if not UnrelPayerServiceSetupCZL.Get() then begin
             if not UnrelPayerServiceSetupCZL.WritePermission then

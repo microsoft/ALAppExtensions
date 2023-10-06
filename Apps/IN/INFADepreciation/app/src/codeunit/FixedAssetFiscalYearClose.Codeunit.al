@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.FADepreciation;
+
 codeunit 18635 "Fixed Asset Fiscal Year-Close"
 {
     TableNo = "FA Accounting Period Inc. Tax";

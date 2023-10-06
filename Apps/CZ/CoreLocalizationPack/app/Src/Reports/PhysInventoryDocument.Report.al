@@ -137,14 +137,14 @@ report 31073 "Phys. Inventory Document CZL"
                                 ChangeCost := ItemLedgerEntry."Cost Amount (Actual)";
                             end;
                         else begin
-                                ItemLedgerEntry.FindSet();
-                                repeat
-                                    ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
-                                    ChangeCost += ItemLedgerEntry."Cost Amount (Actual)";
-                                    ChangeQty += ItemLedgerEntry.Quantity;
-                                until ItemLedgerEntry.Next() = 0;
-                                ChangeCost := Round(ChangeCost / ChangeQty * ("Qty. (Phys. Inventory)" - "Qty. (Calculated)"), 0.01);
-                            end;
+                            ItemLedgerEntry.FindSet();
+                            repeat
+                                ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
+                                ChangeCost += ItemLedgerEntry."Cost Amount (Actual)";
+                                ChangeQty += ItemLedgerEntry.Quantity;
+                            until ItemLedgerEntry.Next() = 0;
+                            ChangeCost := Round(ChangeCost / ChangeQty * ("Qty. (Phys. Inventory)" - "Qty. (Calculated)"), 0.01);
+                        end;
                     end;
                 end;
             }

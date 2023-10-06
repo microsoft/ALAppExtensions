@@ -1,3 +1,7 @@
+namespace System.Security.AccessControl;
+
+using Microsoft.DataMigration.GP;
+
 permissionset 4715 "HybridGPUS - Read"
 {
     Assignable = false;

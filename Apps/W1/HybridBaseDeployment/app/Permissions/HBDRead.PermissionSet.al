@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 permissionset 4007 "HBD - Read"
 {
     Assignable = false;

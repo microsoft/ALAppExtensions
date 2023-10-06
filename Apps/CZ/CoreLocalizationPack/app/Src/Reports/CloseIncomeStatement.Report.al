@@ -10,12 +10,12 @@ report 11753 "Close Income Statement CZL"
     {
         dataitem("G/L Account"; "G/L Account")
         {
-            DataItemTableView = SORTING("No.") WHERE("Account Type" = CONST(Posting), "Income/Balance" = CONST("Income Statement"));
+            DataItemTableView = sorting("No.") where("Account Type" = const(Posting), "Income/Balance" = const("Income Statement"));
             RequestFilterFields = "G/L Account Group CZL";
             dataitem("G/L Entry"; "G/L Entry")
             {
-                DataItemLink = "G/L Account No." = FIELD("No.");
-                DataItemTableView = SORTING("G/L Account No.", "Posting Date");
+                DataItemLink = "G/L Account No." = field("No.");
+                DataItemTableView = sorting("G/L Account No.", "Posting Date");
 
                 trigger OnAfterGetRecord()
                 var
@@ -278,9 +278,9 @@ report 11753 "Close Income Statement CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Retained Earnings Acc.';
-                        TableRelation = "G/L Account" WHERE("Account Type" = CONST(Posting),
-                                                             "Account Category" = FILTER(" " | Equity),
-                                                             "Income/Balance" = CONST("Balance Sheet"));
+                        TableRelation = "G/L Account" where("Account Type" = const(Posting),
+                                                             "Account Category" = filter(" " | Equity),
+                                                             "Income/Balance" = const("Balance Sheet"));
                         ToolTip = 'Specifies the retained earnings account that the batch job posts to. This account should be the same as the account that is used by the Close Income Statement batch job.';
 
                         trigger OnValidate()

@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Apps;
+
+using System.Utilities;
 
 /// <summary>
 /// Provides features for installing and uninstalling, downloading and uploading, configuring and publishing extensions and their dependencies.
@@ -126,20 +130,6 @@ codeunit 2504 "Extension Management"
         exit(ExtensionInstallationImpl.IsInstalledByAppId(AppId));
     end;
 
-#if not CLEAN17
-#pragma warning disable AL0432
-    /// <summary>
-    /// Retrieves a list of all the Deployment Status Entries
-    /// </summary>
-    /// <param name="NavAppTenantOperation">Gets the list of all the Deployment Status Entries.</param>
-    [Obsolete('Required parameter is not accessible for Cloud development', '17.0')]
-    procedure GetAllExtensionDeploymentStatusEntries(var NavAppTenantOperation: Record "NAV App Tenant Operation")
-    begin
-        ExtensionOperationImpl.GetAllExtensionDeploymentStatusEntries(NavAppTenantOperation);
-    end;
-#pragma warning restore
-#endif
-
     /// <summary>
     /// Retrieves a list of all the Deployment Status Entries
     /// </summary>
@@ -253,73 +243,6 @@ codeunit 2504 "Extension Management"
     begin
         ExtensionOperationImpl.DeployAndUploadExtension(FileInStream, lcid, DeployTo, SyncMode);
     end;
-
-#if not CLEAN17
-    /// <summary>
-    /// Returns a link to appsource market page
-    /// </summary>
-    /// <returns></returns>
-    [Obsolete('Replaced by "Extension Marketplace".GetMarketplaceEmbeddedUrl procedure.', '17.0')]
-    PROCEDURE GetMarketplaceEmbeddedUrl(): Text;
-    begin
-        exit(ExtensionMarketplace.GetMarketplaceEmbeddedUrl());
-    end;
-
-    /// <summary>
-    /// Extraxts the message type from appsource response.
-    /// </summary>
-    /// <param name="JObject">Appsourece response payload as a json object</param>
-    /// <returns></returns>
-    [Obsolete('Replaced by "Extension Marketplace".GetMessageType procedure.', '17.0')]
-    procedure GetMessageType(JObject: DotNet JObject): Text;
-    begin
-        exit(ExtensionMarketplace.GetMessageType(JObject));
-    end;
-
-    /// <summary>
-    /// Extraxts the appsource application ID from appsource response.
-    /// </summary>
-    /// <param name="JObject">Appsourece response payload as a json object</param>
-    /// <returns>Application Id in text format</returns>
-    [Obsolete('Replaced by "Extension Marketplace".GetApplicationIdFromData procedure.', '17.0')]
-    procedure GetApplicationIdFromData(JObject: DotNet JObject): Text;
-    begin
-        exit(ExtensionMarketplace.GetApplicationIdFromData(JObject));
-    end;
-
-    /// <summary>
-    /// Extraxts the package ID from appsource response.
-    /// </summary>
-    /// <param name="ApplicationId">Appsource market application ID</param>
-    /// <returns>Package ID as a GUID</returns>
-    [Obsolete('Replaced by "Extension Marketplace".MapMarketplaceIdToPackageId procedure.', '17.0')]
-    procedure MapMarketplaceIdToPackageId(ApplicationId: Text): GUID;
-    begin
-        exit(ExtensionMarketplace.MapMarketplaceIdToPackageId(ApplicationId));
-    end;
-
-    /// <summary>
-    /// Extracts the telemetry URL from appsource response.
-    /// </summary>
-    /// <param name="JObject">Appsourece response payload as a json object</param>
-    /// <returns></returns>
-    [Obsolete('Replaced by "Extension Marketplace".GetTelementryUrlFromData procedure.', '17.0')]
-    procedure GetTelementryUrlFromData(JObject: DotNet JObject): Text;
-    begin
-        exit(ExtensionMarketplace.GetTelementryUrlFromData(JObject));
-    end;
-
-    /// <summary>
-    /// Extracts the app ID from appsource response.
-    /// </summary>
-    /// <param name="ApplicationId">Appsource market application ID</param>
-    /// <returns></returns>
-    [Obsolete('Replaced by "Extension Marketplace".MapMarketplaceIdToAppId procedure.', '17.0')]
-    procedure MapMarketplaceIdToAppId(ApplicationId: Text): GUID;
-    begin
-        exit(ExtensionMarketplace.MapMarketplaceIdToAppId(ApplicationId));
-    end;
-#endif
 
     /// <summary>
     /// Installs an extension, based on its extension id.

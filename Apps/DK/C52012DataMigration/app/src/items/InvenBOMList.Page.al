@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1898 "C5 InvenBOM List"
 {
     PageType = List;
@@ -16,19 +18,19 @@ page 1898 "C5 InvenBOM List"
             repeater(General)
             {
 #pragma warning disable AA0218
-                field(BOMItemNumber; BOMItemNumber) { ApplicationArea = All; }
-                field(ItemNumber; ItemNumber) { ApplicationArea = All; }
-                field(Qty; Qty)
+                field(BOMItemNumber; Rec.BOMItemNumber) { ApplicationArea = All; }
+                field(ItemNumber; Rec.ItemNumber) { ApplicationArea = All; }
+                field(Qty; Rec.Qty)
                 {
                     Caption = 'Quantity';
                     ApplicationArea = All;
                 }
-                field(Position; Position) { ApplicationArea = All; }
-                field(LeadTime; LeadTime) { ApplicationArea = All; }
-                field(Resource; Resource) { ApplicationArea = All; }
-                field(InvenLocation; InvenLocation) { ApplicationArea = All; }
-                field(Comment; Comment) { ApplicationArea = All; }
-                field(PriceGroup; PriceGroup) { ApplicationArea = All; }
+                field(Position; Rec.Position) { ApplicationArea = All; }
+                field(LeadTime; Rec.LeadTime) { ApplicationArea = All; }
+                field(Resource; Rec.Resource) { ApplicationArea = All; }
+                field(InvenLocation; Rec.InvenLocation) { ApplicationArea = All; }
+                field(Comment; Rec.Comment) { ApplicationArea = All; }
+                field(PriceGroup; Rec.PriceGroup) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

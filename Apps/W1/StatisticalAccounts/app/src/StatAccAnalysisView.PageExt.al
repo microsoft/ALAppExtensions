@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Analysis;
+
 pageextension 2625 StatAccAnalysisView extends "Analysis View Card"
 {
     layout

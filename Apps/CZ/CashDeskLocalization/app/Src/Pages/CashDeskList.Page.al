@@ -323,6 +323,11 @@ page 31150 "Cash Desk List CZP"
                 Visible = false;
                 actionref(CashDocumentPromoted; "Cash &Document")
                 {
+#pragma warning disable AS0072
+                    ObsoleteTag = '22.0';
+#pragma warning restore AS0072
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
             }
 #endif

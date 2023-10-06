@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
 /// <summary>
 /// A single-record table that can be used to handle contention between multiple subscribers of the events for the SmartList Designer.
 /// Consumers of the events should check this record to see if another extension is registered as the handler and then decide if they
@@ -15,13 +17,8 @@ table 2888 "SmartList Designer Handler"
     DataClassification = SystemMetadata;
     Extensible = false;
     ReplicateData = false;
-#if not CLEAN19
-    ObsoleteState = Pending;
-    ObsoleteTag = '19.0';
-#else
     ObsoleteState = Removed;
-    ObsoleteTag = '22.0';
-#endif
+    ObsoleteTag = '23.0';
     ObsoleteReason = 'The SmartList Designer is not supported in Business Central.';
 
     fields
@@ -54,15 +51,4 @@ table 2888 "SmartList Designer Handler"
             Clustered = true;
         }
     }
-
-#if not CLEAN19
-    trigger OnInsert()
-    begin
-        if PrimaryKey <> '' then
-            Error(SingleValueOnlyErr);
-    end;
-
-    var
-        SingleValueOnlyErr: Label 'The table only supports a single record whose primary key is the empty string';
-#endif
 }

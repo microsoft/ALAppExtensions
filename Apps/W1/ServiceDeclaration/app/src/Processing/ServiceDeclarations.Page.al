@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Reports;
+
 page 5022 "Service Declarations"
 {
     CardPageID = "Service Declaration";
@@ -32,18 +38,5 @@ page 5022 "Service Declarations"
         }
     }
 
-    actions
-    {
-    }
-
-    trigger OnOpenPage()
-    var
-        ServiceDeclarationMgt: Codeunit "Service Declaration Mgt.";
-    begin
-        if not ServiceDeclarationMgt.IsFeatureEnabled() then begin
-            ServiceDeclarationMgt.ShowNotEnabledMessage(CurrPage.Caption());
-            Error('');
-        end;
-    end;
 }
 

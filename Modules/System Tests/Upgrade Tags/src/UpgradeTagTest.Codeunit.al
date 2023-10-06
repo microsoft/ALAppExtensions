@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Upgrade;
+
+using System.Integration;
+using System.Upgrade;
+using System.TestLibraries.Upgrade;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 135092 "Upgrade Tag Test"
 {
     Subtype = Test;
@@ -399,10 +407,10 @@ codeunit 135092 "Upgrade Tag Test"
         Any: Codeunit Any;
         I: Integer;
     begin
-        for I := 1 To 10 do
+        for I := 1 to 10 do
             MockedPerCompanyUpgradeTags.Add(CopyStr(Any.AlphanumericText(250), 1, 250));
 
-        for I := 1 To 10 do
+        for I := 1 to 10 do
             MockedPerDatabaseUpgradeTags.Add(CopyStr(Any.AlphanumericText(250), 1, 250));
 
         SetAllUpgradeTagsMock.SetPerCompanyUpgradeTags(MockedPerCompanyUpgradeTags);

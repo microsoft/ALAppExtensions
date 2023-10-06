@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Telemetry;
+
 /// <summary>
 /// Card page for the permission set.
 /// </summary>
@@ -248,7 +252,6 @@ page 9855 "Permission Set"
     var
         LogTablePermissions: Codeunit "Log Activity Permissions";
         PermissionSetRelationImpl: Codeunit "Permission Set Relation Impl.";
-        [InDataSet]
         IsTenant: Boolean;
         ComposablePermissionSetsTok: Label 'Composable Permission Sets', Locked = true;
         StartRecordingQst: Label 'Do you want to start the recording now?';

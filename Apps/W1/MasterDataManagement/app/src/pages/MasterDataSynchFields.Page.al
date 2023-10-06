@@ -1,3 +1,9 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+using System.Reflection;
+
+
 page 7236 "Master Data Synch. Fields"
 {
     Caption = 'Synchronization Fields';
@@ -15,7 +21,7 @@ page 7236 "Master Data Synch. Fields"
         {
             repeater(Group)
             {
-                field(Status; Status)
+                field(Status; Rec.Status)
                 {
                     ApplicationArea = Suite;
                     ToolTip = 'Specifies if field synchronization is enabled or disabled.';
@@ -42,7 +48,7 @@ page 7236 "Master Data Synch. Fields"
                     ToolTip = 'Specifies the number of the field in the source company.';
                     Visible = false;
                 }
-                field(Direction; Direction)
+                field(Direction; Rec.Direction)
                 {
                     ApplicationArea = Suite;
                     ToolTip = 'Specifies the direction of the synchronization.';
@@ -64,7 +70,7 @@ page 7236 "Master Data Synch. Fields"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the direction of the transformation.';
-                    Editable = "Direction" = "Direction"::Bidirectional;
+                    Editable = Rec."Direction" = Rec."Direction"::Bidirectional;
                     Visible = false;
                 }
                 field("Validate Field"; Rec."Validate Field")
@@ -250,4 +256,6 @@ page 7236 "Master Data Synch. Fields"
         FieldsRemovedTxt: label '%1 fields removed.', Comment = '%1 - an integer';
         FieldsAddedAndRemovedTxt: label '%1 fields added, %2 fields removed.', Comment = '%1 - an integer, %2 - an integer';
 }
+
+
 

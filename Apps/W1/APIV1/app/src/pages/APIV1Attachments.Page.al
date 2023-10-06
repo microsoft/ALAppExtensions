@@ -1,3 +1,10 @@
+namespace Microsoft.API.V1;
+
+using System.IO;
+using Microsoft.Integration.Graph;
+using System.Reflection;
+using System.Utilities;
+
 page 20039 "APIV1 - Attachments"
 {
     APIVersion = 'v1.0';
@@ -17,37 +24,37 @@ page 20039 "APIV1 - Attachments"
         {
             repeater(Group)
             {
-                field(id; Id)
+                field(id; Rec.Id)
                 {
                     Caption = 'id', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        GraphMgtAttachmentBuffer.RegisterFieldSet(FIELDNO(Id), TempFieldBuffer);
+                        GraphMgtAttachmentBuffer.RegisterFieldSet(Rec.FieldNo(Id), TempFieldBuffer);
                     end;
                 }
-                field(parentId; "Document Id")
+                field(parentId; Rec."Document Id")
                 {
                     Caption = 'parentId', Locked = true;
                     ShowMandatory = true;
                 }
-                field(fileName; "File Name")
+                field(fileName; Rec."File Name")
                 {
                     Caption = 'fileName', Locked = true;
                     ToolTip = 'Specifies the Description for the Item.';
 
                     trigger OnValidate()
                     begin
-                        GraphMgtAttachmentBuffer.RegisterFieldSet(FIELDNO("File Name"), TempFieldBuffer);
+                        GraphMgtAttachmentBuffer.RegisterFieldSet(Rec.FieldNo("File Name"), TempFieldBuffer);
                     end;
                 }
-                field(byteSize; "Byte Size")
+                field(byteSize; Rec."Byte Size")
                 {
                     Caption = 'byteSize', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        GraphMgtAttachmentBuffer.RegisterFieldSet(FIELDNO("Byte Size"), TempFieldBuffer);
+                        GraphMgtAttachmentBuffer.RegisterFieldSet(Rec.FieldNo("Byte Size"), TempFieldBuffer);
                     end;
                 }
 #pragma warning disable AL0273
@@ -58,12 +65,12 @@ page 20039 "APIV1 - Attachments"
 
                     trigger OnValidate()
                     begin
-                        IF AttachmentsLoaded THEN
-                            MODIFY();
-                        GraphMgtAttachmentBuffer.RegisterFieldSet(FIELDNO(Content), TempFieldBuffer);
+                        if AttachmentsLoaded then
+                            Rec.Modify();
+                        GraphMgtAttachmentBuffer.RegisterFieldSet(Rec.FieldNo(Content), TempFieldBuffer);
                     end;
                 }
-                field(lastModifiedDateTime; "Created Date-Time")
+                field(lastModifiedDateTime; Rec."Created Date-Time")
                 {
                     Caption = 'lastModifiedDateTime', Locked = true;
                     Editable = false;
@@ -79,7 +86,7 @@ page 20039 "APIV1 - Attachments"
     trigger OnDeleteRecord(): Boolean
     begin
         GraphMgtAttachmentBuffer.PropagateDeleteAttachment(Rec);
-        EXIT(FALSE);
+        exit(false);
     end;
 
     trigger OnFindRecord(Which: Text): Boolean
@@ -89,25 +96,25 @@ page 20039 "APIV1 - Attachments"
         FilterView: Text;
         DocumentId: Guid;
     begin
-        IF NOT AttachmentsLoaded THEN BEGIN
-            FilterView := GETVIEW();
-            DocumentIdFilter := GETFILTER("Document Id");
-            AttachmentIdFilter := GETFILTER(Id);
-            IF (AttachmentIdFilter <> '') AND (DocumentIdFilter = '') THEN BEGIN
+        if not AttachmentsLoaded then begin
+            FilterView := Rec.GetView();
+            DocumentIdFilter := Rec.GetFilter("Document Id");
+            AttachmentIdFilter := Rec.GetFilter(Id);
+            if (AttachmentIdFilter <> '') and (DocumentIdFilter = '') then begin
                 DocumentId := GraphMgtAttachmentBuffer.GetDocumentIdFromAttachmentId(AttachmentIdFilter);
-                DocumentIdFilter := FORMAT(DocumentId);
-            END;
-            IF DocumentIdFilter = '' THEN
-                ERROR(MissingParentIdErr);
+                DocumentIdFilter := format(DocumentId);
+            end;
+            if DocumentIdFilter = '' then
+                error(MissingParentIdErr);
 
             GraphMgtAttachmentBuffer.LoadAttachments(Rec, DocumentIdFilter, AttachmentIdFilter);
-            SETVIEW(FilterView);
-            AttachmentsFound := FINDFIRST();
-            IF NOT AttachmentsFound THEN
-                EXIT(FALSE);
-            AttachmentsLoaded := TRUE;
-        END;
-        EXIT(AttachmentsFound);
+            Rec.SetView(FilterView);
+            AttachmentsFound := Rec.FindFirst();
+            if not AttachmentsFound then
+                exit(false);
+            AttachmentsLoaded := true;
+        end;
+        exit(AttachmentsFound);
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
@@ -116,39 +123,39 @@ page 20039 "APIV1 - Attachments"
         DocumentIdFilter: Text;
         FilterView: Text;
     begin
-        IF ISNULLGUID("Document Id") THEN BEGIN
-            FilterView := GETVIEW();
-            DocumentIdFilter := GETFILTER("Document Id");
-            IF DocumentIdFilter <> '' THEN
-                VALIDATE("Document Id", DocumentIdFilter);
-            SETVIEW(FilterView);
-        END;
-        IF ISNULLGUID("Document Id") THEN
-            ERROR(MissingParentIdErr);
+        if IsNullGuid(Rec."Document Id") then begin
+            FilterView := Rec.GetView();
+            DocumentIdFilter := Rec.GetFilter("Document Id");
+            if DocumentIdFilter <> '' then
+                Rec.Validate("Document Id", DocumentIdFilter);
+            Rec.SetView(FilterView);
+        end;
+        if IsNullGuid(Rec."Document Id") then
+            error(MissingParentIdErr);
 
-        IF NOT FileManagement.IsValidFileName("File Name") THEN
-            VALIDATE("File Name", 'filename.txt');
+        if not FileManagement.IsValidFileName(Rec."File Name") then
+            Rec.Validate("File Name", 'filename.txt');
 
-        VALIDATE("Created Date-Time", ROUNDDATETIME(CURRENTDATETIME(), 1000));
-        GraphMgtAttachmentBuffer.RegisterFieldSet(FIELDNO("Created Date-Time"), TempFieldBuffer);
+        Rec.Validate("Created Date-Time", RoundDateTime(CurrentDateTime(), 1000));
+        GraphMgtAttachmentBuffer.RegisterFieldSet(Rec.FieldNo("Created Date-Time"), TempFieldBuffer);
 
         ByteSizeFromContent();
 
         GraphMgtAttachmentBuffer.PropagateInsertAttachmentSafe(Rec, TempFieldBuffer);
 
-        EXIT(FALSE);
+        exit(false);
     end;
 
     trigger OnModifyRecord(): Boolean
     begin
-        IF xRec.Id <> Id THEN
-            ERROR(CannotModifyKeyFieldErr, 'id');
-        IF xRec."Document Id" <> "Document Id" THEN
-            ERROR(CannotModifyKeyFieldErr, 'parentId');
+        if xRec.Id <> Rec.Id then
+            error(CannotModifyKeyFieldErr, 'id');
+        if xRec."Document Id" <> Rec."Document Id" then
+            error(CannotModifyKeyFieldErr, 'parentId');
 
         GraphMgtAttachmentBuffer.PropagateModifyAttachment(Rec, TempFieldBuffer);
         ByteSizeFromContent();
-        EXIT(FALSE);
+        exit(false);
     end;
 
     var
@@ -163,10 +170,11 @@ page 20039 "APIV1 - Attachments"
     var
         TempBlob: Codeunit "Temp Blob";
     begin
-        TempBlob.FromRecord(Rec, FieldNo(Content));
-        "Byte Size" := GraphMgtAttachmentBuffer.GetContentLength(TempBlob);
+        TempBlob.FromRecord(Rec, Rec.FieldNo(Content));
+        Rec."Byte Size" := GraphMgtAttachmentBuffer.GetContentLength(TempBlob);
     end;
 }
+
 
 
 

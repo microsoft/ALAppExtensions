@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 codeunit 4012 "Handle Create Company Failure"
 {
 

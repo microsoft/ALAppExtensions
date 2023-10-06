@@ -1,3 +1,9 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Telemetry;
+using System.Text;
+using System.DateTime;
+
 /// <summary>
 /// Page Shpfy Shop Card (ID 30101).
 /// </summary>
@@ -40,7 +46,7 @@ page 30101 "Shpfy Shop Card"
                         CurrPage.SaveRecord();
                     end;
                 }
-                field(Enabled; Enabled)
+                field(Enabled; Rec.Enabled)
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
@@ -51,10 +57,15 @@ page 30101 "Shpfy Shop Card"
                     trigger OnValidate()
                     var
                         FeatureTelemetry: Codeunit "Feature Telemetry";
+                        BulkOperationMgt: Codeunit "Shpfy Bulk Operation Mgt.";
                     begin
-                        if not Enabled then
+                        if not Rec.Enabled then
                             exit;
                         Rec.RequestAccessToken();
+#if not CLEAN23
+                        if BulkOperationMgt.IsBulkOperationFeatureEnabled() then
+#endif
+                            BulkOperationMgt.EnableBulkOperations(Rec);
                         FeatureTelemetry.LogUptake('0000HUT', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
                     end;
                 }
@@ -78,7 +89,19 @@ page 30101 "Shpfy Shop Card"
                     Importance = Additional;
                     ToolTip = 'Specifies the language of the Shopify Shop.';
                 }
+#if not CLEAN23
                 field(LogActivated; Rec."Log Enabled")
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    ToolTip = 'Specifies whether the log is activated.';
+                    Visible = false;
+                    ObsoleteReason = 'Replaced with field "Logging Mode"';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '23.0';
+                }
+#endif
+                field(LoggingMode; Rec."Logging Mode")
                 {
                     ApplicationArea = All;
                     Importance = Additional;
@@ -96,6 +119,14 @@ page 30101 "Shpfy Shop Card"
                     Importance = Additional;
                     Caption = 'Allow Data Sync to Shopify';
                     ToolTip = 'Specifices whether syncing data to Shopify is enabled.';
+                }
+                field("API Version Expiry Date"; ApiVersionExpiryDate)
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    Caption = 'End of Support';
+                    ToolTip = 'Specifies end of support date for the current version. After this date Shopify connector will stop working.';
+                    Editable = false;
                 }
             }
             group(ItemSync)
@@ -216,8 +247,8 @@ page 30101 "Shpfy Shop Card"
                 }
                 field(RemoveProductAction; Rec."Action for Removed Products")
                 {
-                    ApplicationArea = all;
-                    ToolTip = 'Specifies the status of a product in Shopify when an item is removed in Shopify via the sync.';
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the status of a product in Shopify via the sync when an item is removed in Shopify or an item is blocked in Business Central.';
                 }
             }
             group(PriceSynchronization)
@@ -282,6 +313,11 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies if Tax Liable is used to calculate the prices in Shopify.';
                     Visible = false;
                 }
+                field("Sync Prices"; Rec."Sync Prices")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if prices are synchronized to Shopify with product sync.';
+                }
             }
 #if not CLEAN21
             group(InventorySync)
@@ -301,7 +337,7 @@ page 30101 "Shpfy Shop Card"
                 field(CustomerImportFromShopify; Rec."Customer Import From Shopify")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specified how Shopify customers are synced to Business Central. If you choose none and there exists no mapping for that customer, the default customer will be used if exists.';
+                    ToolTip = 'Specifies how Shopify customers are synced to Business Central. If you choose none and there exists no mapping for that customer, the default customer will be used if exists.';
                 }
                 field(CustomerMappingType; Rec."Customer Mapping Type")
                 {
@@ -386,16 +422,15 @@ page 30101 "Shpfy Shop Card"
                 field(AutoSyncOrders; Rec."Order Created Webhooks")
                 {
                     ApplicationArea = All;
+                    Editable = Rec.Enabled;
                     Caption = 'Auto Sync Orders';
                     ToolTip = 'Specifies whether to automatically synchronize orders when they’re created in Shopify. Shopify will notify Business Central that orders are ready. Business Central will schedule the Sync Orders from Shopify job on the Job Queue Entries page. The user account of the person who turns on this toggle will be used to run the job. That user must have permission to create background tasks in the job queue.';
-                    Visible = false;
                 }
                 field(SyncOrderJobQueueUser; Rec."Order Created Webhook User")
                 {
                     ApplicationArea = All;
                     Caption = 'Sync Order Job Queue User';
                     ToolTip = 'Specifies the user who will run the Sync Orders from Shopify job on the Job Queue Entries page. This is the user who turned on the Auto Import Orders from Shopify toggle.';
-                    Visible = false;
                 }
                 field(ShippingCostAccount; Rec."Shipping Charges Account")
                 {
@@ -674,6 +709,35 @@ page 30101 "Shpfy Shop Card"
                         Rec.RequestAccessToken();
                     end;
                 }
+                action(TestConnection)
+                {
+                    ApplicationArea = All;
+                    Image = Setup;
+                    Caption = 'Test Connection';
+                    ToolTip = 'Test connection to your Shopify store.';
+                    Enabled = Rec.Enabled;
+
+                    trigger OnAction()
+                    begin
+                        if Rec.TestConnection() then
+                            Message('Connection successful.');
+                    end;
+                }
+                action(ClearApiVersionExpiryDateCache)
+                {
+                    ApplicationArea = All;
+                    Image = ClearLog;
+                    Caption = 'Clear API Version Expiry Date Cache';
+                    ToolTip = 'Clears the API version expiry date cache for this Shopify Shop. This will force the API version to be re-evaluated the next time the API is called.';
+                    Enabled = Rec.Enabled;
+
+                    trigger OnAction()
+                    var
+                        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+                    begin
+                        CommunicationMgt.ClearApiVersionCache();
+                    end;
+                }
             }
             group(Sync)
             {
@@ -904,6 +968,10 @@ page 30101 "Shpfy Shop Card"
 #endif
         EntityTextEnabled: Boolean;
         IsReturnRefundsVisible: Boolean;
+        ApiVersionExpiryDate: Date;
+        ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
+        BlockedNotificationTxt: Label 'Shopify API version expired notification sent.', Locked = true;
+        CategoryTok: Label 'Shopify Integration', Locked = true;
 
     trigger OnOpenPage()
     var
@@ -912,12 +980,27 @@ page 30101 "Shpfy Shop Card"
         ShpfyTemplates: Codeunit "Shpfy Templates";
 #endif
         EntityText: Codeunit "Entity Text";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ShopMgt: Codeunit "Shpfy Shop Mgt.";
+        ApiVersionExpiryDateTime: DateTime;
     begin
         FeatureTelemetry.LogUptake('0000HUU', 'Shopify', Enum::"Feature Uptake Status"::Discovered);
 #if not CLEAN22
         NewTemplatesEnabled := ShpfyTemplates.NewTemplatesEnabled();
 #endif
         EntityTextEnabled := EntityText.IsEnabled();
+        if Rec.Enabled then begin
+            ApiVersionExpiryDateTime := CommunicationMgt.GetApiVersionExpiryDate();
+            ApiVersionExpiryDate := DT2Date(ApiVersionExpiryDateTime);
+            if CurrentDateTime() > ApiVersionExpiryDateTime then begin
+                ShopMgt.SendBlockedNotification();
+                Session.LogMessage('0000KNZ', BlockedNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+            end else
+                if Round((ApiVersionExpiryDateTime - CurrentDateTime()) / 1000 / 3600 / 24, 1) <= 30 then begin
+                    ShopMgt.SendExpirationNotification(ApiVersionExpiryDate);
+                    Session.LogMessage('0000KO0', ExpirationNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+                end;
+        end;
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -943,3 +1026,4 @@ page 30101 "Shpfy Shop Card"
         IsReturnRefundsVisible := Rec."Return and Refund Process" <> "Shpfy ReturnRefund ProcessType"::" ";
     end;
 }
+

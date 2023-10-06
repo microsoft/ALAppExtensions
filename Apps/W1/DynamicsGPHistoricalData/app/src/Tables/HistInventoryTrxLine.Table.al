@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 table 40907 "Hist. Inventory Trx. Line"
 {
     DataClassification = CustomerContent;

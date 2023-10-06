@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30229 "Shpfy GQL RefundHeader" implements "Shpfy IGraphQL"
 {
 

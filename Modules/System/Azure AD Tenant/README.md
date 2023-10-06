@@ -1,4 +1,4 @@
-This module provides methods for retrieving information about the Azure Active Directory tenant.
+This module provides methods for retrieving information about the Microsoft Entra tenant.
 
 Use this module to do the following:
 
@@ -13,7 +13,7 @@ Use this module to do the following:
 
 ### GetAadTenantId (Method) <a name="GetAadTenantId"></a> 
 
- Gets the tenant AAD ID.
+ Gets the Microsoft Entra tenant ID.
  
 
 #### Syntax
@@ -25,10 +25,10 @@ procedure GetAadTenantId(): Text
 
 If it cannot be found, an empty string is returned.
 ### GetAadTenantDomainName (Method) <a name="GetAadTenantDomainName"></a> 
-Cannot retrieve the Azure Active Directory tenant domain name.
+Cannot retrieve the Microsoft Entra tenant domain name.
 
 
- Gets the Azure Active Directory tenant domain name.
+ Gets the Microsoft Entra tenant domain name.
  If the Microsoft Graph API cannot be reached, the error is displayed.
  
 
@@ -39,4 +39,4 @@ procedure GetAadTenantDomainName(): Text
 #### Return Value
 *[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
-The AAD Tenant Domain Name.
+The Microsoft Entra tenant Domain Name.

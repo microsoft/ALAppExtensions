@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Functions;
+
+using System.Utilities;
+using System.Security.Authentication;
+using System.Telemetry;
+
 codeunit 7802 "Azure Functions OAuth2" implements "Azure Functions Authentication"
 {
     Access = Internal;

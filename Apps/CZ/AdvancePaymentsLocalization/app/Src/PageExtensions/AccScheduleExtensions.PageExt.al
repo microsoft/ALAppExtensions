@@ -2,14 +2,6 @@ pageextension 31216 "Acc. Schedule Extensions CZZ" extends "Acc. Schedule Extens
 {
     layout
     {
-#if not CLEAN20
-#pragma warning disable AL0432
-        modify(Prepayment)
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter("Entry Type")
         {
             field("Advance Payments CZZ"; Rec."Advance Payments CZZ")

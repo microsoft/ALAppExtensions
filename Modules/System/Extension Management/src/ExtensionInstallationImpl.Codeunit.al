@@ -1,7 +1,12 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Apps;
+
+using System.Utilities;
+using System.Environment.Configuration;
 
 codeunit 2500 "Extension Installation Impl"
 {
@@ -28,6 +33,7 @@ codeunit 2500 "Extension Installation Impl"
         RestartActivityUninstallMsg: Label 'The %1 extension was successfully uninstalled. All active users must sign out and sign in again to see the navigation changes.', Comment = 'Indicates that users need to restart their activity to pick up new menusuite items. %1=Name of Extension';
         ClearExtensionSchemaQst: Label 'Enabling Delete Extension Data will delete the tables that contain data for the %1 extension and all of its dependents on uninstall. This action cannot be undone. Do you want to continue?', Comment = '%1=name of app';
         ClearExtensionSchemaMsg: Label 'You have selected to delete extension data for the %1 extension and all of its dependents: %2. Continuing uninstall will delete the tables that contain data for the %1 extension and all of its dependents. This action cannot be undone. Do you want to continue?', Comment = '%1=name of app ,%2= all dependent extensions';
+        ClearExtensionSchemaOrphanMsg: Label 'You have selected to delete extension data for the %1 extension. Continuing deletion will delete the tables that contain data for the %1 extension and all of its dependents. This action cannot be undone. Do you want to continue?', Comment = '%1=name of app';
         NotSufficientPermissionErr: Label 'You do not have sufficient permissions to manage extensions. Please contact your administrator.';
         InstallationBestPracticesUrlLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2138922', comment = 'link to the best practices and tips about the installing and publishing a new extension.', Locked = true;
         DisclaimerUrlLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2193002&clcid=0x409', comment = 'link to the Business Central PTE disclaimer.', Locked = true;
@@ -109,8 +115,7 @@ codeunit 2500 "Extension Installation Impl"
         Dependencies := GetNonExcludedApps(Dependencies);
         CanChange := true;
         if StrLen(Dependencies) <> 0 then
-            CanChange := ConfirmManagement.GetResponse(StrSubstNo(DependenciesFoundQst,
-                  PublishedApplication.Name, Dependencies), false);
+            CanChange := ConfirmManagement.GetResponse(StrSubstNo(DependenciesFoundQst, PublishedApplication.Name, Dependencies), false);
 
         if CanChange then
             InstallExtensionSilently(PackageId, Lcid);
@@ -167,7 +172,7 @@ codeunit 2500 "Extension Installation Impl"
         end;
     end;
 
-    local procedure CheckPermissions()
+    procedure CheckPermissions()
     begin
         if not CanManageExtensions() then
             Error(NotSufficientPermissionErr);
@@ -201,6 +206,26 @@ codeunit 2500 "Extension Installation Impl"
 
         exit(UninstallExtensionSilently(PackageID, ClearSchema, ClearSchema));
     end;
+
+    procedure DeleteOrphanData(PackageID: Guid; ExtensionName: Text): Boolean
+    var
+        ConfirmManagement: Codeunit "Confirm Management";
+    begin
+        CheckPermissions();
+
+        if not ConfirmManagement.GetResponse(StrSubstNo(ClearExtensionSchemaOrphanMsg, ExtensionName), false) then exit(false);
+
+        exit(UninstallExtensionSilently(PackageID, false, true));
+    end;
+
+    procedure RunOrphanDeletion(OrphanedApplication: Record "Extension Database Snapshot"): Boolean
+    var
+        OrphanedExtensionDetails: Page "Extn. Orphaned App Details";
+    begin
+        OrphanedExtensionDetails.SetRecord(OrphanedApplication);
+        exit(OrphanedExtensionDetails.RunModal() = Action::OK);
+    end;
+
 
     local procedure UninstallExtensionSilently(PackageID: Guid; ClearData: Boolean; ClearSchema: Boolean): Boolean
     begin

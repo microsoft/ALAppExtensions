@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4028 "GP Segments"
 {
     ReplicateData = false;

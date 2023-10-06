@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4027 "GP Posting Accounts"
 {
     ReplicateData = false;

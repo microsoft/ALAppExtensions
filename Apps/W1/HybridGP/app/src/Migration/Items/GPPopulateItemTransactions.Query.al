@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 query 40100 "GP Populate Item Transactions"
 {
     QueryType = Normal;
@@ -46,7 +48,7 @@ query 40100 "GP Populate Item Transactions"
             column(QTYTYPE; QTYTYPE)
             {
             }
-            
+
             dataitem(GPIV00101; "GP IV00101")
             {
                 SqlJoinType = InnerJoin;

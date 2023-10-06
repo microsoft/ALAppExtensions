@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
+using System;
+using System.Text;
+
 codeunit 3970 "Image Impl."
 {
     Access = Internal;

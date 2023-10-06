@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 permissionset 4006 "HBD - Objects"
 {
     Assignable = false;

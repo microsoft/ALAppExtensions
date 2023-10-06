@@ -109,7 +109,7 @@ page 11756 "Registration Log CZL"
                 field("Detail Status"; Rec."Detail Status")
                 {
                     ApplicationArea = Basic, Suite;
-                    Tooltip = 'Specifies the status of the detail.';
+                    ToolTip = 'Specifies the status of the detail.';
                     Enabled = DetailExist;
                 }
             }
@@ -128,7 +128,7 @@ page 11756 "Registration Log CZL"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                RunObject = Codeunit "Reg. Lookup Ext. Data CZL";
+                RunObject = codeunit "Reg. Lookup Ext. Data CZL";
                 ToolTip = 'Verify a Registration number. If the number is verified the Status field contains the value Valid.';
             }
             action(ValidationDetail)

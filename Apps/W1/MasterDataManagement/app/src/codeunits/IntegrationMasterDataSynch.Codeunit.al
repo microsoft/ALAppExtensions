@@ -1,3 +1,11 @@
+namespace Microsoft.Integration.MDM;
+
+using System.Threading;
+using Microsoft.Integration.SyncEngine;
+using System.Utilities;
+using Microsoft.CRM.Contact;
+
+
 codeunit 7231 "Integration Master Data Synch."
 {
     TableNo = "Integration Table Mapping";
@@ -14,23 +22,23 @@ codeunit 7231 "Integration Master Data Synch."
         MappingName: Code[20];
     begin
         OnBeforeRun(Rec, IsHandled);
-        If IsHandled then
+        if IsHandled then
             exit;
 
         Rec.SetOriginalJobQueueEntryOnHold(OriginalJobQueueEntry, PrevStatus);
-        if Direction in [Direction::ToIntegrationTable, Direction::Bidirectional] then
+        if Rec.Direction in [Rec.Direction::ToIntegrationTable, Rec.Direction::Bidirectional] then
             LatestModifiedOn[DateType::Local] := PerformScheduledSynchToIntegrationTable(Rec);
-        if Direction in [Direction::FromIntegrationTable, Direction::Bidirectional] then
+        if Rec.Direction in [Rec.Direction::FromIntegrationTable, Rec.Direction::Bidirectional] then
             LatestModifiedOn[DateType::Integration] := PerformScheduledSynchFromIntegrationTable(Rec);
-        MappingName := Name;
-        if not Find() then
+        MappingName := Rec.Name;
+        if not Rec.Find() then
             Session.LogMessage('0000J8M', StrSubstNo(UnableToFindMappingErr, MappingName), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory())
         else begin
             Rec.UpdateTableMappingModifiedOn(LatestModifiedOn);
             Rec.SetOriginalJobQueueEntryStatus(OriginalJobQueueEntry, PrevStatus);
         end;
 
-	OnAfterRun(Rec);
+        OnAfterRun(Rec);
     end;
 
     var
@@ -376,21 +384,25 @@ codeunit 7231 "Integration Master Data Synch."
         IgnoreRecord: Boolean;
         ForceModify: Boolean;
         LocalModifiedOn: DateTime;
+        RecordSynchSucceeded: Boolean;
     begin
         ForceModify := IntegrationTableMapping."Delete After Synchronization";
         IgnoreRecord := false;
+        RecordSynchSucceeded := false;
         OnQueryPostFilterIgnoreRecord(SourceRecordRef, IgnoreRecord);
         if not IgnoreRecord then begin
             SystemIdFieldRef := SourceRecordRef.Field(SourceRecordRef.SystemIdNo);
             if not TempMasterDataMgtCoupling.IsLocalSystemIdCoupled(SystemIdFieldRef.Value()) then
                 IgnoreRecord := IntegrationTableMapping."Synch. Only Coupled Records";
             if not IgnoreRecord then
-                IntegrationTableSynch.Synchronize(SourceRecordRef, DestinationRecordRef, ForceModify, false);
+                RecordSynchSucceeded := IntegrationTableSynch.Synchronize(SourceRecordRef, DestinationRecordRef, ForceModify, false);
         end;
-        // collect latest modified time across all local records including not synched
-        LocalModifiedOn := IntegrationTableSynch.GetRowLastModifiedOn(IntegrationTableMapping, SourceRecordRef);
-        if LocalModifiedOn > LatestLocalModifiedOn then
-            LatestLocalModifiedOn := LocalModifiedOn;
+        // collect latest modified time across all synched local records
+        if RecordSynchSucceeded then begin
+            LocalModifiedOn := IntegrationTableSynch.GetRowLastModifiedOn(IntegrationTableMapping, SourceRecordRef);
+            if LocalModifiedOn > LatestLocalModifiedOn then
+                LatestLocalModifiedOn := LocalModifiedOn;
+        end;
     end;
 
     local procedure SynchIntegrationTableToLocalTable(IntegrationTableMapping: Record "Integration Table Mapping"; var IntegrationTableSynch: Codeunit "Integration Table Synch."; var SourceRecordRef: RecordRef) LatestIntegrationModifiedOn: DateTime
@@ -404,6 +416,7 @@ codeunit 7231 "Integration Master Data Synch."
         IntegrationModifiedOn: DateTime;
         IgnoreRecord: Boolean;
         ForceModify: Boolean;
+        RecordSynchSucceeded: Boolean;
     begin
         BindSubscription(IntTableManualSubscribers);
         LatestIntegrationModifiedOn := 0DT;
@@ -416,6 +429,7 @@ codeunit 7231 "Integration Master Data Synch."
                 CloneSourceRecordRef.Open(IntegrationTableMapping."Integration Table ID", true, MasterDataManagementSetup."Company Name");
                 CopyRecordReference(IntegrationTableMapping, SourceRecordRef, CloneSourceRecordRef, false);
                 IgnoreRecord := false;
+                RecordSynchSucceeded := false;
                 OnQueryPostFilterIgnoreRecord(CloneSourceRecordRef, IgnoreRecord);
                 if not IgnoreRecord then begin
                     if TempMasterDataMgtCoupling.IsIntegrationRecordRefCoupled(CloneSourceRecordRef) then
@@ -423,12 +437,14 @@ codeunit 7231 "Integration Master Data Synch."
                     else
                         IgnoreRecord := IntegrationTableMapping."Synch. Only Coupled Records";
                     if not IgnoreRecord then
-                        IntegrationTableSynch.Synchronize(CloneSourceRecordRef, DestinationRecordRef, ForceModify, false);
+                        RecordSynchSucceeded := IntegrationTableSynch.Synchronize(CloneSourceRecordRef, DestinationRecordRef, ForceModify, false);
                 end;
-                // collect latest modified time across all integration records including not synched
-                IntegrationModifiedOn := MasterDataMgtSubscribers.GetRowLastModifiedOn(IntegrationTableMapping, CloneSourceRecordRef);
-                if IntegrationModifiedOn > LatestIntegrationModifiedOn then
-                    LatestIntegrationModifiedOn := IntegrationModifiedOn;
+                // collect latest modified time across all synched integration records
+                if RecordSynchSucceeded then begin
+                    IntegrationModifiedOn := MasterDataMgtSubscribers.GetRowLastModifiedOn(IntegrationTableMapping, CloneSourceRecordRef);
+                    if IntegrationModifiedOn > LatestIntegrationModifiedOn then
+                        LatestIntegrationModifiedOn := IntegrationModifiedOn;
+                end;
                 CloneSourceRecordRef.Close();
             until SourceRecordRef.Next() = 0;
         UnbindSubscription(IntTableManualSubscribers);
@@ -575,4 +591,6 @@ codeunit 7231 "Integration Master Data Synch."
     begin
     end;
 }
+
+
 

@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Text;
+
+using System.Environment;
 
 codeunit 59 "Auto Format Impl."
 {
@@ -23,12 +27,12 @@ codeunit 59 "Auto Format Impl."
             EnumType::DefaultFormat:
                 begin
                     Result := '';
-                    Resolved := TRUE;
+                    Resolved := true;
                 end;
             EnumType::CustomFormatExpr:
                 begin
                     Result := AutoFormatExpr;
-                    Resolved := TRUE;
+                    Resolved := true;
                 end;
             else
                 AutoFormat.OnResolveAutoFormat(AutoFormatType, AutoFormatExpr, Result, Resolved);

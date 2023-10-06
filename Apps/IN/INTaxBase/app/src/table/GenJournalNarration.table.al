@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Utilities;
+
 table 18550 "Gen. Journal Narration"
 {
     Caption = 'Gen. Journal Narration';

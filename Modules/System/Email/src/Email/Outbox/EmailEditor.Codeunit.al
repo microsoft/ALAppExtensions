@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Telemetry;
+using System.IO;
+using System.Utilities;
+using System.Integration.Word;
+using System.Environment;
+
 codeunit 8906 "Email Editor"
 {
     Access = Internal;
@@ -274,7 +282,7 @@ codeunit 8906 "Email Editor"
         RelatedId: Integer;
     begin
         // If there is only one key in the dict, then there is no need to use DB resources.
-        If RelatedIds.Count = 1 then begin
+        if RelatedIds.Count = 1 then begin
             PrimarySource := RelatedIds.Get(1);
             exit(true);
         end;

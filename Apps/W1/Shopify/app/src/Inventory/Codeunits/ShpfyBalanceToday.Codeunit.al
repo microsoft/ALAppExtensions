@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Availability;
+
 codeunit 30212 "Shpfy Balance Today" implements "Shpfy Stock Calculation"
 {
     procedure GetStock(var Item: Record Item): decimal;

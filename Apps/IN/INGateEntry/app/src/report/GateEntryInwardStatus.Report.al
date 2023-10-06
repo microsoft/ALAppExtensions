@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Warehouse.GateEntry;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
+
 report 18602 "Gate Entry Inward Status"
 {
     ApplicationArea = Basic, Suite;

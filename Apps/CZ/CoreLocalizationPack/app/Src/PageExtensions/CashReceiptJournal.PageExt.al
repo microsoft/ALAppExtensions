@@ -9,11 +9,7 @@ pageextension 11723 "Cash Receipt Journal CZL" extends "Cash Receipt Journal"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the posting group that will be used in posting the journal line.The field is used only if the account type is either customer or vendor.';
-#if not CLEAN20
-                Visible = not AllowMultiplePostingGroupsEnabled;
-#else
                 Visible = false;
-#endif
                 ObsoleteState = Pending;
                 ObsoleteTag = '22.0';
                 ObsoleteReason = 'Replaced by standard Posting Group field.';
@@ -48,9 +44,6 @@ pageextension 11723 "Cash Receipt Journal CZL" extends "Cash Receipt Journal"
     }
     trigger OnOpenPage()
     begin
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
-#endif
         VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
 #if not CLEAN22
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
@@ -58,18 +51,12 @@ pageextension 11723 "Cash Receipt Journal CZL" extends "Cash Receipt Journal"
     end;
 
     var
-#if not CLEAN20
-#pragma warning disable AL0432
-        PostingGroupManagement: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
         ReplaceVATDateEnabled: Boolean;
+#pragma warning restore AL0432
 #endif
         VATDateEnabled: Boolean;
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled: Boolean;
-#endif
 }

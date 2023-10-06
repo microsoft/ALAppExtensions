@@ -1,3 +1,10 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.CRM.Outlook;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Period;
+using Microsoft.Inventory.Setup;
+
 codeunit 40107 FiscalPeriods
 {
 

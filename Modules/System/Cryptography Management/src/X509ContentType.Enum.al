@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
 /// <summary>Specifies the format of an X.509 certificate.</summary>
 enum 1286 "X509 Content Type"
 {

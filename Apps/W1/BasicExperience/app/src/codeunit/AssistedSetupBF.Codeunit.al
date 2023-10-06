@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Environment.Configuration;
+
+using Microsoft.Utilities;
+using System.Media;
+
 codeunit 20605 "Assisted Setup BF"
 {
     Access = Internal;
@@ -27,12 +36,16 @@ codeunit 20605 "Assisted Setup BF"
         );
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnReRunOfCompletedSetup', '', false, false)]
-    local procedure OnReRunOfCompletedSetup(ExtensionId: Guid; PageID: Integer; var Handled: Boolean)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnReRunOfCompletedAssistedSetup', '', false, false)]
+    local procedure OnReRunOfCompletedSetup(ExtensionId: Guid; ObjectType: ObjectType; ObjectID: Integer; var Handled: Boolean)
     begin
         if ExtensionId <> GetAppId() then
             exit;
-        case PageID of
+
+        if ObjectType <> ObjectType::Page then
+            exit;
+
+        case ObjectID of
             Page::"Assisted Company Setup Wizard":
                 begin
                     if Confirm(AlreadySetUpQst, true) then

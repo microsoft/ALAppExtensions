@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40114 "GP RM00101"
 {
     Description = 'RM Customer Master';

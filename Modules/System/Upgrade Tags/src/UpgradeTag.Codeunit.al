@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Upgrade;
+
 /// <summary>
 /// The interface for registering upgrade tags.
 /// Format of the upgrade tag is:

@@ -125,7 +125,6 @@ report 31104 "Export VAT Ctrl. Dialog CZL"
         DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL";
         FilledByEmployeeNo: Code[20];
         PrintInIntegers: Boolean;
-        [InDataSet]
         ReasonsObservedOnCtrlEditable: Boolean;
         ReasonsObservedOn: Date;
         XMLFormat: Enum "VAT Ctrl. Report Format CZL";

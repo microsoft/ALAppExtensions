@@ -1,4 +1,10 @@
-﻿pageextension 18014 "Source Code Setup Ext" extends "Source Code Setup"
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.AuditCodes;
+
+pageextension 18014 "Source Code Setup Ext" extends "Source Code Setup"
 {
     layout
     {

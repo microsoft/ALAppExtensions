@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
+using System.Security.AccessControl;
+
 permissionsetextension 40900 "D365 Basic Ext." extends "D365 BASIC"
 {
     Permissions = tabledata "Hist. Gen. Journal Line" = R,

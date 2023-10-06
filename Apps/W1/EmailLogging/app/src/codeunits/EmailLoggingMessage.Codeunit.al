@@ -1,3 +1,7 @@
+namespace Microsoft.CRM.EmailLoggin;
+
+using System.Email;
+
 codeunit 1687 "Email Logging Message"
 {
     Access = Internal;

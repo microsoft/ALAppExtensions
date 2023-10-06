@@ -6,6 +6,12 @@
 /// <summary>
 /// Exports the contents one or more "Data Archive Table" records and pack them into a zip file for download.
 /// </summary>
+
+namespace System.DataAdministration;
+
+using System.Utilities;
+using System.IO;
+
 codeunit 609 "Data Archive Export to CSV"
 {
     Access = Internal;

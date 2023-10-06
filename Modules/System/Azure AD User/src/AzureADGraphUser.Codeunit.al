@@ -3,8 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System;
+using System.Security.AccessControl;
+
 /// <summary>
-/// Exposes functionality to retrieve and update Azure AD users.
+/// Exposes functionality to retrieve and update Microsoft Entra users.
 /// </summary>
 codeunit 9024 "Azure AD Graph User"
 {
@@ -21,10 +26,10 @@ codeunit 9024 "Azure AD Graph User"
         AzureADGraphUserImpl: Codeunit "Azure AD Graph User Impl.";
 
     /// <summary>    
-    /// Gets the Azure AD user with the given security ID.
+    /// Gets the Microsoft Entra user with the given security ID.
     /// </summary>
     /// <param name="UserSecurityId">The user's security ID.</param>
-    /// <param name="User">The Azure AD user.</param>
+    /// <param name="User">The Microsoft Entra user.</param>
     [Scope('OnPrem')]
     [TryFunction]
     [NonDebuggable]
@@ -34,11 +39,11 @@ codeunit 9024 "Azure AD Graph User"
     end;
 
     /// <summary>    
-    /// Gets the Azure AD user with the given security ID.
+    /// Gets the Microsoft Entra user with the given security ID.
     /// </summary>
     /// <param name="UserSecurityId">The user's security ID.</param>
     /// <param name="ForceFetchFromGraph">Forces a graph call to get the latest details for the user.</param>
-    /// <param name="User">The Azure AD user.</param>
+    /// <param name="User">The Microsoft Entra user.</param>
     [Scope('OnPrem')]
     [TryFunction]
     [NonDebuggable]
@@ -48,11 +53,11 @@ codeunit 9024 "Azure AD Graph User"
     end;
 
     /// <summary>
-    /// Retrieves the user’s unique identifier, which is its object ID, from Azure AD.
+    /// Retrieves the user’s unique identifier, which is its object ID, from Microsoft Entra.
     /// </summary>
     /// <param name="UserSecurityId">The user's security ID.</param>
     /// <returns>
-    /// The object ID of the Azure AD user, or an empty string if the user cannot be found.
+    /// The object ID of the Microsoft Entra user, or an empty string if the user cannot be found.
     /// </returns>
     [Scope('OnPrem')]
     [NonDebuggable]
@@ -123,10 +128,10 @@ codeunit 9024 "Azure AD Graph User"
     end;
 
     /// <summary>    
-    /// Updates the user record with information from Azure AD.
+    /// Updates the user record with information from Microsoft Entra.
     /// </summary>
     /// <param name="User">The user record to update.</param>
-    /// <param name="AzureADUser">The Azure AD user.</param>
+    /// <param name="AzureADUser">The Microsoft Entra user.</param>
     /// <returns>True if the user record has been updated. Otherwise, false.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
@@ -139,7 +144,7 @@ codeunit 9024 "Azure AD Graph User"
     /// Gets the authentication email of the provided Graph user.
     /// </summary>
     /// <remarks>Authentication email corresponds to userPrincipalName property on the Graph user.</remarks>
-    /// <param name="GraphUserInfo">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Microsoft Entra user.</param>
     /// <returns>The authentication email of the provided Graph user. Can be used to assign to "Authentication Email" field on the User table.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
@@ -152,7 +157,7 @@ codeunit 9024 "Azure AD Graph User"
     /// Gets the display name of the provided Graph user.
     /// </summary>
     /// <remarks>Display name corresponds to displayName property on the Graph user.</remarks>
-    /// <param name="GraphUserInfo">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Microsoft Entra user.</param>
     /// <returns>The display name of the provided Graph user. Can be used to assign to "User Name" field on the User table.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
@@ -165,7 +170,7 @@ codeunit 9024 "Azure AD Graph User"
     /// Gets the contact email of the provided Graph user.
     /// </summary>
     /// <remarks>Contact email corresponds to Mail property on the Graph user.</remarks>
-    /// <param name="GraphUserInfo">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Microsoft Entra user.</param>
     /// <returns>The contact email of the provided Graph user. Can be used to assign to "Contact Email" field on the User table.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
@@ -178,7 +183,7 @@ codeunit 9024 "Azure AD Graph User"
     /// Gets the full name of the provided Graph user.
     /// </summary>
     /// <remarks>Full name is composed from the combination of givenName and surname properties on the Graph user.</remarks>
-    /// <param name="GraphUserInfo">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Microsoft Entra user.</param>
     /// <returns>The full name of the provided Graph user. Can be used to assign to "Full Name" field on the User table.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
@@ -194,7 +199,7 @@ codeunit 9024 "Azure AD Graph User"
     /// Preferred language ID is derived from preferredLanguage property on the Graph user. 
     /// If the preferred language is not set or it is set to a language that is not supported in Business Central, the function returns 0.
     /// </remarks>
-    /// <param name="GraphUserInfo">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Microsoft Entra user.</param>
     /// <returns>The preferred language ID of the provided Graph user. Can be used to set the preferred language using the Language module.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
@@ -206,7 +211,7 @@ codeunit 9024 "Azure AD Graph User"
     /// <summary>    
     /// Ensures that an email address specified for authorization is not already in use by another database user.
     /// If it is, all the database users with this authentication email address are updated and their email 
-    /// addresses are updated the ones that are specified in Azure AD.
+    /// addresses are updated the ones that are specified in Microsoft Entra.
     /// </summary>
     /// <param name="AuthenticationEmail">The authentication email address.</param>
     [Scope('OnPrem')]

@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30104 "Shpfy Filter Mgt."
 {
     Access = Internal;

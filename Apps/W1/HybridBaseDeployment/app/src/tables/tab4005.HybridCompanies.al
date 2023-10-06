@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 table 4005 "Hybrid Company"
 {
     DataPerCompany = false;

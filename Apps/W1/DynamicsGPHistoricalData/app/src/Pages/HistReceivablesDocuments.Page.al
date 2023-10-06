@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41016 "Hist. Receivables Documents"
 {
     ApplicationArea = All;

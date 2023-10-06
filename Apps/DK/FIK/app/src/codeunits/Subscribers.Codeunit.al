@@ -3,6 +3,22 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.Statement;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using System.IO;
+
 codeunit 13657 FIKSubscribers
 {
     var
@@ -17,7 +33,7 @@ codeunit 13657 FIKSubscribers
     //cod11
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnAfterCheckGenJnlLine', '', false, false)]
     procedure OnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line");
-    VAR
+    var
         Vendor: Record Vendor;
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         FIKMgt: Codeunit FIKManagement;
@@ -30,30 +46,30 @@ codeunit 13657 FIKSubscribers
 
     //cod 113
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vend. Entry-Edit", 'OnBeforeVendLedgEntryModify', '', false, false)]
-    procedure OnBeforeVendLedgEntryModify(VAR VendLedgEntry: Record "Vendor Ledger Entry"; FromVendLedgEntry: Record "Vendor Ledger Entry");
+    procedure OnBeforeVendLedgEntryModify(var VendLedgEntry: Record "Vendor Ledger Entry"; FromVendLedgEntry: Record "Vendor Ledger Entry");
     begin
         VendLedgEntry.VALIDATE(GiroAccNo, FromVendLedgEntry.GiroAccNo);
     end;
 
     //cod1206
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Gen. Jnl Line", 'OnBeforeInsertPmtExportDataJnlFromGenJnlLine', '', false, false)]
-    procedure OnBeforeInsertPmtExportDataJnlFromGenJnlLine(VAR PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; GeneralLedgerSetup: Record "General Ledger Setup");
+    procedure OnBeforeInsertPmtExportDataJnlFromGenJnlLine(var PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; GeneralLedgerSetup: Record "General Ledger Setup");
     begin
-        IF GenJournalLine.GiroAccNo <> '' THEN BEGIN
+        if GenJournalLine.GiroAccNo <> '' then begin
             PaymentExportData.Amount := GenJournalLine."Amount (LCY)";
             PaymentExportData."Currency Code" := GeneralLedgerSetup."LCY Code";
-        END;
+        end;
         PaymentExportData.RecipientGiroAccNo := GenJournalLine.GiroAccNo;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Gen. Jnl Line", 'OnBeforeCreateGenJnlDataExchLine', '', false, false)]
-    procedure OnBeforeCreateGenJnlDataExchLine(DataExch: Record "Data Exch."; GenJournalLine: Record "Gen. Journal Line"; LineNo: Integer; var LineAmount: Decimal; var TotalAmount: Decimal; var TransferDate: Date; VAR Handled: Boolean);
+    procedure OnBeforeCreateGenJnlDataExchLine(DataExch: Record "Data Exch."; GenJournalLine: Record "Gen. Journal Line"; LineNo: Integer; var LineAmount: Decimal; var TotalAmount: Decimal; var TransferDate: Date; var Handled: Boolean);
     var
         PaymentExportManagement: Codeunit PaymentExportManagement;
     begin
         PaymentExportManagement.CreateGenJnlDataExchLine(DataExch."Entry No.", GenJournalLine, LineNo, LineAmount, TransferDate);
         TotalAmount += LineAmount;
-        Handled := TRUE;
+        Handled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Gen. Jnl Line", 'OnBeforePaymentExport', '', false, false)]
@@ -74,24 +90,24 @@ codeunit 13657 FIKSubscribers
 
     //cod1207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Vend Ledg Entry", 'OnBeforeInsertPmtExportDataJnlFromVendorLedgerEntry', '', false, false)]
-    procedure OnBeforeInsertPmtExportDataJnlFromVendorLedgerEntry(VAR PaymentExportData: Record "Payment Export Data"; VendorLedgerEntry: Record "Vendor Ledger Entry"; GeneralLedgerSetup: Record "General Ledger Setup");
+    procedure OnBeforeInsertPmtExportDataJnlFromVendorLedgerEntry(var PaymentExportData: Record "Payment Export Data"; VendorLedgerEntry: Record "Vendor Ledger Entry"; GeneralLedgerSetup: Record "General Ledger Setup");
     begin
-        IF VendorLedgerEntry.GiroAccNo <> '' THEN BEGIN
+        if VendorLedgerEntry.GiroAccNo <> '' then begin
             VendorLedgerEntry.CALCFIELDS("Amount (LCY)");
             PaymentExportData.Amount := VendorLedgerEntry."Amount (LCY)";
             PaymentExportData."Currency Code" := GeneralLedgerSetup."LCY Code";
-        END;
+        end;
         PaymentExportData.RecipientGiroAccNo := VendorLedgerEntry.GiroAccNo;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Vend Ledg Entry", 'OnBeforeCreateVendLedgerDataExchLine', '', false, false)]
-    procedure OnBeforeCreateVendLedgerDataExchLine(DataExch: Record "Data Exch."; VendorLedgerEntry: Record "Vendor Ledger Entry"; LineNo: Integer; var LineAmount: Decimal; var TotalAmount: Decimal; var TransferDate: Date; VAR Handled: Boolean);
+    procedure OnBeforeCreateVendLedgerDataExchLine(DataExch: Record "Data Exch."; VendorLedgerEntry: Record "Vendor Ledger Entry"; LineNo: Integer; var LineAmount: Decimal; var TotalAmount: Decimal; var TransferDate: Date; var Handled: Boolean);
     var
         PaymentExportManagement: Codeunit PaymentExportManagement;
     begin
         PaymentExportManagement.CreateVendLedgerDataExchLine(DataExch."Entry No.", VendorLedgerEntry, LineNo, LineAmount, TransferDate);
         TotalAmount += LineAmount;
-        Handled := TRUE;
+        Handled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Vend Ledg Entry", 'OnBeforePaymentExportVendorLedgerEntry', '', false, false)]
@@ -104,13 +120,13 @@ codeunit 13657 FIKSubscribers
 
     //cod1208
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Cust Ledg Entry", 'OnBeforeCreateCustLedgerDataExchLine', '', false, false)]
-    procedure OnBeforeCreateCustLedgerDataExchLine(DataExch: Record "Data Exch."; CustLedgerEntry: Record "Cust. Ledger Entry"; LineNo: Integer; var LineAmount: Decimal; var TotalAmount: Decimal; var TransferDate: Date; VAR Handled: Boolean);
+    procedure OnBeforeCreateCustLedgerDataExchLine(DataExch: Record "Data Exch."; CustLedgerEntry: Record "Cust. Ledger Entry"; LineNo: Integer; var LineAmount: Decimal; var TotalAmount: Decimal; var TransferDate: Date; var Handled: Boolean);
     var
         PaymentExportManagement: Codeunit PaymentExportManagement;
     begin
         PaymentExportManagement.CreateCustLedgerDataExchLine(DataExch."Entry No.", CustLedgerEntry, LineNo, LineAmount, TransferDate);
         TotalAmount += LineAmount;
-        Handled := TRUE;
+        Handled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Cust Ledg Entry", 'OnBeforePaymentExportCustLedgerEntry', '', false, false)]
@@ -123,7 +139,7 @@ codeunit 13657 FIKSubscribers
 
     //cod1211
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Payment Export Gen. Jnl Check", 'OnPaymentExportGenJnlCheck', '', false, false)]
-    procedure OnPaymentExportGenJnlCheck(VAR GenJournalLine: Record "Gen. Journal Line"; var Handled: Boolean);
+    procedure OnPaymentExportGenJnlCheck(var GenJournalLine: Record "Gen. Journal Line"; var Handled: Boolean);
     var
         PaymentMethod: Record "Payment Method";
         VendBankAcc: Record "Vendor Bank Account";
@@ -131,51 +147,51 @@ codeunit 13657 FIKSubscribers
         PaymentExportManagement: Codeunit PaymentExportManagement;
         PaymentExportGenJnlCheck: Codeunit "Payment Export Gen. Jnl Check";
     begin
-        Handled := TRUE;
+        Handled := true;
 
-        IF NOT (GenJournalLine."Account Type" IN [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor, GenJournalLine."Account Type"::Employee]) THEN
+        if not (GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor, GenJournalLine."Account Type"::Employee]) then
             GenJournalLine.InsertPaymentFileError(MustBeVendorOrCustomerErr);
 
-        IF ((GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) AND (GenJournalLine."Document Type" <> GenJournalLine."Document Type"::Payment)) OR
-            ((GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) AND (GenJournalLine."Document Type" <> GenJournalLine."Document Type"::Refund)) OR
-            ((GenJournalLine."Account Type" = GenJournalLine."Account Type"::Employee) AND (GenJournalLine."Document Type" <> GenJournalLine."Document Type"::Payment))
-            THEN
+        if ((GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and (GenJournalLine."Document Type" <> GenJournalLine."Document Type"::Payment)) or
+            ((GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) and (GenJournalLine."Document Type" <> GenJournalLine."Document Type"::Refund)) or
+            ((GenJournalLine."Account Type" = GenJournalLine."Account Type"::Employee) and (GenJournalLine."Document Type" <> GenJournalLine."Document Type"::Payment))
+            then
             GenJournalLine.InsertPaymentFileError(MustBeVendPmtOrCustRefundErr);
-        IF NOT (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Employee) AND (GenJournalLine."Recipient Bank Account" = '') AND
-            (GenJournalLine."Creditor No." = '') AND (GenJournalLine.GiroAccNo = '')
-            THEN
+        if not (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Employee) and (GenJournalLine."Recipient Bank Account" = '') and
+            (GenJournalLine."Creditor No." = '') and (GenJournalLine.GiroAccNo = '')
+            then
             GenJournalLine.InsertPaymentFileError(STRSUBSTNO(EmptyPaymentDetailsErr,
                 GenJournalLine.FIELDCAPTION("Recipient Bank Account"), GenJournalLine.FIELDCAPTION("Creditor No."), GenJournalLine.FIELDCAPTION(GiroAccNo)));
 
-        IF (GenJournalLine."Recipient Bank Account" <> '') AND (GenJournalLine.GiroAccNo <> '') THEN
+        if (GenJournalLine."Recipient Bank Account" <> '') and (GenJournalLine.GiroAccNo <> '') then
             GenJournalLine.InsertPaymentFileError(STRSUBSTNO(SimultaneousPaymentDetailsErr,
                 GenJournalLine.FIELDCAPTION("Recipient Bank Account"), GenJournalLine.FIELDCAPTION(GiroAccNo)));
 
-        IF (GenJournalLine."Creditor No." <> '') AND (GenJournalLine."Payment Reference" = '') THEN
-            IF PaymentMethod.GET(GenJournalLine."Payment Method Code") THEN
-                IF PaymentMethod.PaymentTypeValidation = PaymentMethod.PaymentTypeValidation::"FIK 71" THEN
+        if (GenJournalLine."Creditor No." <> '') and (GenJournalLine."Payment Reference" = '') then
+            if PaymentMethod.GET(GenJournalLine."Payment Method Code") then
+                if PaymentMethod.PaymentTypeValidation = PaymentMethod.PaymentTypeValidation::"FIK 71" then
                     PaymentExportGenJnlCheck.AddFieldEmptyError(GenJournalLine, GenJournalLine.TABLECAPTION(), GenJournalLine.FIELDCAPTION("Payment Reference"), '');
 
-        IF (GenJournalLine.GiroAccNo <> '') AND (GenJournalLine."Payment Reference" = '') THEN
-            IF PaymentMethod.GET(GenJournalLine."Payment Method Code") THEN
-                IF PaymentMethod.PaymentTypeValidation = PaymentMethod.PaymentTypeValidation::"FIK 04" THEN
+        if (GenJournalLine.GiroAccNo <> '') and (GenJournalLine."Payment Reference" = '') then
+            if PaymentMethod.GET(GenJournalLine."Payment Method Code") then
+                if PaymentMethod.PaymentTypeValidation = PaymentMethod.PaymentTypeValidation::"FIK 04" then
                     PaymentExportGenJnlCheck.AddFieldEmptyError(GenJournalLine, GenJournalLine.TABLECAPTION(), GenJournalLine.FIELDCAPTION("Payment Reference"), '');
 
-        CASE GenJournalLine."Account Type" OF
+        case GenJournalLine."Account Type" of
             GenJournalLine."Account Type"::Vendor:
-                IF VendBankAcc.GET(GenJournalLine."Account No.", GenJournalLine."Recipient Bank Account") THEN
+                if VendBankAcc.GET(GenJournalLine."Account No.", GenJournalLine."Recipient Bank Account") then
                     PaymentExportManagement.CheckBankTransferCountryRegion(GenJournalLine, VendBankAcc."Country/Region Code");
 
             GenJournalLine."Account Type"::Customer:
-                IF CustomerBankAcc.GET(GenJournalLine."Account No.", GenJournalLine."Recipient Bank Account") THEN
+                if CustomerBankAcc.GET(GenJournalLine."Account No.", GenJournalLine."Recipient Bank Account") then
                     PaymentExportManagement.CheckBankTransferCountryRegion(GenJournalLine, CustomerBankAcc."Country/Region Code");
 
-        END;
+        end;
     end;
 
     //cod1212
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt. Export Vend. Ledger Check", 'OnPmtExportVendorLedgerCheck', '', false, false)]
-    procedure OnPmtExportVendorLedgerCheck(VAR VendorLedgerEntry: Record "Vendor Ledger Entry");
+    procedure OnPmtExportVendorLedgerCheck(var VendorLedgerEntry: Record "Vendor Ledger Entry");
     var
         PaymentExportManagement: Codeunit PaymentExportManagement;
     begin
@@ -189,19 +205,19 @@ codeunit 13657 FIKSubscribers
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt. Export Vend. Ledger Check", 'OnCheckEmptyPmtInfoVendorLedgerEntry', '', false, false)]
-    procedure OnCheckEmptyPmtInfoVendorLedgerEntry(VAR VendorLedgerEntry: Record "Vendor Ledger Entry"; VAR Handled: Boolean);
+    procedure OnCheckEmptyPmtInfoVendorLedgerEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var Handled: Boolean);
     begin
-        Handled := TRUE;
+        Handled := true;
         VendorLedgerEntry.SETRANGE(GiroAccNo, '');
 
-        IF NOT VendorLedgerEntry.ISEMPTY() THEN
+        if not VendorLedgerEntry.ISEMPTY() then
             ERROR(EmptyPaymentDetailsErr,
             VendorLedgerEntry.FIELDCAPTION("Recipient Bank Account"), VendorLedgerEntry.FIELDCAPTION("Creditor No."), VendorLedgerEntry.FIELDCAPTION(GiroAccNo));
     end;
 
     //cod1213
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt. Export Cust. Ledger Check", 'OnPmtExportCustLedgerCheck', '', false, false)]
-    procedure OnPmtExportCustLedgerCheck(VAR CustLedgerEntry: Record "Cust. Ledger Entry");
+    procedure OnPmtExportCustLedgerCheck(var CustLedgerEntry: Record "Cust. Ledger Entry");
     var
         PaymentExportManagement: Codeunit PaymentExportManagement;
     begin
@@ -211,9 +227,9 @@ codeunit 13657 FIKSubscribers
     end;
 
     //cod 1247
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Process Gen. Journal  Lines", 'OnBeforeUpdateGenJnlLines', '', false, false)]
-    procedure OnBeforeUpdateGenJnlLines(VAR GenJournalLineTemplate: Record "Gen. Journal Line");
-    VAR
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Process Gen. Journal  Lines", 'OnBeforeUpdateGenJnlLinesProcedure', '', false, false)]
+    procedure OnBeforeUpdateGenJnlLines(var GenJournalLineTemplate: Record "Gen. Journal Line");
+    var
         FIKMgt: Codeunit FIKManagement;
     begin
         FIKMgt.UpdateGenJournalLines(GenJournalLineTemplate);
@@ -221,55 +237,55 @@ codeunit 13657 FIKSubscribers
 
     //cod1273
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Exp. Pre-Mapping Gen. Jnl.", 'OnBeforeInsertPaymentExoprtData', '', false, false)]
-    procedure OnBeforeInsertPaymentExoprtData(VAR PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; GeneralLedgerSetup: Record "General Ledger Setup");
+    procedure OnBeforeInsertPaymentExoprtData(var PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; GeneralLedgerSetup: Record "General Ledger Setup");
     var
         VendorBankAccount: Record "Vendor Bank Account";
     begin
-        IF NOT VendorBankAccount.GET(GenJournalLine."Account No.", GenJournalLine."Recipient Bank Account") THEN
-            IF (GenJournalLine."Creditor No." <> '') OR (GenJournalLine.GiroAccNo <> '') THEN BEGIN
+        if not VendorBankAccount.GET(GenJournalLine."Account No.", GenJournalLine."Recipient Bank Account") then
+            if (GenJournalLine."Creditor No." <> '') or (GenJournalLine.GiroAccNo <> '') then begin
                 PaymentExportData.Amount := GenJournalLine."Amount (LCY)";
                 PaymentExportData."Currency Code" := GeneralLedgerSetup."LCY Code";
-            END;
+            end;
         PaymentExportData.RecipientGiroAccNo := GenJournalLine.GiroAccNo;
     end;
 
     //cod1295
     [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Get Bank Stmt. Line Candidates", 'OnBeforeTransferCandidatestoAppliedPmtEntries', '', false, false)]
-    procedure OnBeforeTransferCandidatestoAppliedPmtEntries(BankAccReconLine: Record "Bank Acc. Reconciliation Line"; VAR TempBankStmtMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; var Handled: Boolean);
+    procedure OnBeforeTransferCandidatestoAppliedPmtEntries(BankAccReconLine: Record "Bank Acc. Reconciliation Line"; var TempBankStmtMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; var Handled: Boolean);
     var
         MatchBankPayments: Codeunit "Match Bank Payments";
         MatchFIKBankRecLines: Codeunit FIK_MatchBankRecLines;
     begin
-        Handled := TRUE;
+        Handled := true;
         BankAccReconLine.SETRECFILTER();
-        IF BankAccReconLine.PaymentReference = '' THEN BEGIN
-            MatchBankPayments.SetApplyEntries(FALSE);
+        if BankAccReconLine.PaymentReference = '' then begin
+            MatchBankPayments.SetApplyEntries(false);
             MatchBankPayments.RUN(BankAccReconLine);
             MatchBankPayments.GetBankStatementMatchingBuffer(TempBankStmtMatchingBuffer);
-        End ELSE
+        end else
             MatchFIKBankRecLines.GetBankStatementMatchingBuffer(TempBankStmtMatchingBuffer, BankAccReconLine."Statement Line No.");
     end;
 
     //report 206 - Obsolete
-    procedure SetReferenceTextOnGetReferenceText(SalesInvoiceHeader: Record "Sales Invoice Header"; VAR DocumentReference: Text; VAR DocumentReferenceText: Text; VAR Handled: Boolean);
-    VAR
+    procedure SetReferenceTextOnGetReferenceText(SalesInvoiceHeader: Record "Sales Invoice Header"; var DocumentReference: Text; var DocumentReferenceText: Text; var Handled: Boolean);
+    var
         FIKMgt: Codeunit FIKManagement;
     begin
-        IF Handled THEN
-            EXIT;
+        if Handled then
+            exit;
 
         DocumentReferenceText := '';
         DocumentReference := FIKMgt.GetFIK71String(SalesInvoiceHeader."No.");
-        IF DocumentReference <> '' THEN
+        if DocumentReference <> '' then
             DocumentReferenceText := DocumentReferenceCaptionTxt;
-        Handled := TRUE;
+        Handled := true;
     end;
 
 #if not CLEAN22
     //rep 393
     [Obsolete('Replaced by OnBeforeUpdateGnlJnlLineDimensionsFromTempVendorPaymentBuffer.', '22.0')]
     [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnBeforeUpdateGnlJnlLineDimensionsFromTempBuffer', '', false, false)]
-    procedure OnBeforeUpdateGnlJnlLineDimensionsFromTempBuffer(VAR GenJournalLine: Record "Gen. Journal Line"; TempPaymentBuffer: Record "Payment Buffer" temporary);
+    procedure OnBeforeUpdateGnlJnlLineDimensionsFromTempBuffer(var GenJournalLine: Record "Gen. Journal Line"; TempPaymentBuffer: Record "Payment Buffer" temporary);
     begin
         GenJournalLine.GiroAccNo := TempPaymentBuffer.GiroAccNo;
         GenJournalLine.UpdateVendorPaymentDetails();
@@ -277,7 +293,7 @@ codeunit 13657 FIKSubscribers
 #endif
 
     [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnBeforeUpdateGnlJnlLineDimensionsFromVendorPaymentBuffer', '', false, false)]
-    procedure OnBeforeUpdateGnlJnlLineDimensionsFromTempVendorPaymentBuffer(VAR GenJournalLine: Record "Gen. Journal Line"; TempVendorPaymentBuffer: Record "Vendor Payment Buffer" temporary);
+    procedure OnBeforeUpdateGnlJnlLineDimensionsFromTempVendorPaymentBuffer(var GenJournalLine: Record "Gen. Journal Line"; TempVendorPaymentBuffer: Record "Vendor Payment Buffer" temporary);
     begin
         GenJournalLine.GiroAccNo := TempVendorPaymentBuffer.GiroAccNo;
         GenJournalLine.UpdateVendorPaymentDetails();
@@ -287,21 +303,21 @@ codeunit 13657 FIKSubscribers
     //rep 393
     [Obsolete('Replaced by OnUpdateTempVendorPaymentBufferFromVendorLedgerEntry.', '22.0')]
     [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnUpdateTempBufferFromVendorLedgerEntry', '', false, false)]
-    procedure OnUpdateTempBufferFromVendorLedgerEntry(VAR TempPaymentBuffer: Record "Payment Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry");
+    procedure OnUpdateTempBufferFromVendorLedgerEntry(var TempPaymentBuffer: Record "Payment Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry");
     begin
         TempPaymentBuffer.GiroAccNo := VendorLedgerEntry.GiroAccNo;
     end;
 #endif
 
     [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnUpdateVendorPaymentBufferFromVendorLedgerEntry', '', false, false)]
-    procedure OnUpdateTempVendorPaymentBufferFromVendorLedgerEntry(VAR TempVendorPaymentBuffer: Record "Vendor Payment Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry");
+    procedure OnUpdateTempVendorPaymentBufferFromVendorLedgerEntry(var TempVendorPaymentBuffer: Record "Vendor Payment Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry");
     begin
         TempVendorPaymentBuffer.GiroAccNo := VendorLedgerEntry.GiroAccNo;
     end;
 
     //table 25
     [EventSubscriber(ObjectType::Table, DATABASE::"Vendor Ledger Entry", 'OnAfterCopyVendLedgerEntryFromGenJnlLine', '', false, false)]
-    procedure OnAfterCopyVendLedgerEntryFromGenJnlLine(VAR VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line");
+    procedure OnAfterCopyVendLedgerEntryFromGenJnlLine(var VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line");
     begin
         VendorLedgerEntry.GiroAccNo := GenJournalLine.GiroAccNo;
     end;
@@ -310,7 +326,7 @@ codeunit 13657 FIKSubscribers
 #if not CLEAN22
     [EventSubscriber(ObjectType::Table, DATABASE::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNo', '', false, false)]
     [Obsolete('Replaced by event OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '22.0')]
-    procedure OnValidatePurchaseHeaderPayToVendorNo(VAR Sender: Record "Purchase Header"; Vendor: Record Vendor);
+    procedure OnValidatePurchaseHeaderPayToVendorNo(var Sender: Record "Purchase Header"; Vendor: Record Vendor);
     begin
         Sender.VALIDATE(GiroAccNo, Vendor.GiroAccNo);
     end;
@@ -324,27 +340,27 @@ codeunit 13657 FIKSubscribers
 
     //table81
     [EventSubscriber(ObjectType::Table, DATABASE::"Gen. Journal Line", 'OnGenJnlLineGetVendorAccount', '', false, false)]
-    procedure OnGenJnlLineGetVendorAccount(VAR Sender: Record "Gen. Journal Line"; Vendor: Record Vendor);
+    procedure OnGenJnlLineGetVendorAccount(var Sender: Record "Gen. Journal Line"; Vendor: Record Vendor);
     begin
         Sender.GiroAccNo := Vendor.GiroAccNo;
     end;
 
     [EventSubscriber(ObjectType::Table, DATABASE::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeaderPayment', '', false, false)]
-    procedure OnAfterCopyGenJnlLineFromPurchHeaderPayment(PurchaseHeader: Record "Purchase Header"; VAR GenJournalLine: Record "Gen. Journal Line");
+    procedure OnAfterCopyGenJnlLineFromPurchHeaderPayment(PurchaseHeader: Record "Purchase Header"; var GenJournalLine: Record "Gen. Journal Line");
     begin
         GenJournalLine.GiroAccNo := PurchaseHeader.GiroAccNo;
     end;
 
     //table112
     [EventSubscriber(ObjectType::Table, DATABASE::"Sales Invoice Header", 'OnGetPaymentReferenceLbl', '', false, false)]
-    procedure OnGetPaymentReferenceLbl(VAR PaymentReferenceLbl: Text);
+    procedure OnGetPaymentReferenceLbl(var PaymentReferenceLbl: Text);
     begin
         PaymentReferenceLbl := PaymentRefrenceLblTxt;
     end;
 
     [EventSubscriber(ObjectType::Table, DATABASE::"Sales Invoice Header", 'OnGetPaymentReference', '', false, false)]
-    procedure OnGetPaymentReference(VAR Sender: Record "Sales Invoice Header"; VAR PaymentReference: Text);
-    VAR
+    procedure OnGetPaymentReference(var Sender: Record "Sales Invoice Header"; var PaymentReference: Text);
+    var
         FIKMgt: Codeunit FIKManagement;
     begin
         PaymentReference := FIKMgt.GetFIK71String(Sender."No.");
@@ -358,22 +374,22 @@ codeunit 13657 FIKSubscribers
     begin
         SubscriberInvoked := true;
         PaymentReconciliationJournalFikExt.UpdateFIKStatus();
-        IF BankAccReconciliation.FIKPaymentReconciliation THEN
+        if BankAccReconciliation.FIKPaymentReconciliation then
             CODEUNIT.RUN(CODEUNIT::FIK_MatchBankRecLines, BankAccReconciliation)
-        ELSE
+        else
             CODEUNIT.RUN(CODEUNIT::"Match Bank Pmt. Appl.", BankAccReconciliation);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Payment Reconciliation Journal", 'OnUpdateSorting', '', false, false)]
-    local procedure OnUpdateSorting(VAR Sender: Page "Payment Reconciliation Journal"; BankAccReconciliation: Record "Bank Acc. Reconciliation"; VAR SubscriberInvoked: Boolean);
+    local procedure OnUpdateSorting(var Sender: Page "Payment Reconciliation Journal"; BankAccReconciliation: Record "Bank Acc. Reconciliation"; var SubscriberInvoked: Boolean);
     var
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
     begin
         SubscriberInvoked := true;
         Sender.GetRecord(BankAccReconciliationLine);
-        IF BankAccReconciliation.FIKPaymentReconciliation THEN
+        if BankAccReconciliation.FIKPaymentReconciliation then
             BankAccReconciliationLine.SETCURRENTKEY("Sorting Order", "Transaction Text")
-        ELSE
+        else
             BankAccReconciliationLine.SETCURRENTKEY("Sorting Order");
     end;
 
@@ -385,12 +401,12 @@ codeunit 13657 FIKSubscribers
 
     //page1292
     [EventSubscriber(ObjectType::Page, Page::"Payment Application", 'OnSetBankAccReconcLine', '', false, false)]
-    local procedure OnSetBankAccReconcLine(VAR Sender: Page "Payment Application"; BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line");
+    local procedure OnSetBankAccReconcLine(var Sender: Page "Payment Application"; BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line");
     begin
-        IF BankAccReconciliationLine.PaymentReference = '' THEN
-            Sender.SetMatchConfidence(TRUE)
-        ELSE
-            Sender.SetMatchConfidence(FALSE);
+        if BankAccReconciliationLine.PaymentReference = '' then
+            Sender.SetMatchConfidence(true)
+        else
+            Sender.SetMatchConfidence(false);
     end;
 }
 

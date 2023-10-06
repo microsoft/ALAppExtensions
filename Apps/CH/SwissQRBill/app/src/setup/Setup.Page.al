@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+
 page 11514 "Swiss QR-Bill Setup"
 {
     Caption = 'QR-Bill Setup';
@@ -161,7 +171,9 @@ page 11514 "Swiss QR-Bill Setup"
                     field(OpenGLSetup; OpenGLSetupLbl)
                     {
                         ApplicationArea = All;
+#pragma warning disable AA0219
                         ToolTip = 'Opens the General Ledger Setup page.';
+#pragma warning restore AA0219
                         Caption = ' ';
                         ShowCaption = false;
                         StyleExpr = true;

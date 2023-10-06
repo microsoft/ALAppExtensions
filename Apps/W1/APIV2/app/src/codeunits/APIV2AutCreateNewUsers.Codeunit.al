@@ -1,3 +1,7 @@
+namespace Microsoft.API.V2;
+
+using System.Azure.Identity;
+
 codeunit 30004 "APIV2 - Aut. Create New Users"
 {
     trigger OnRun()

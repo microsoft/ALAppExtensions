@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Sharepoint;
+
+using System.Security.Authentication;
+
 codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorization"
 {
     Access = Internal;
@@ -17,16 +21,16 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
         [NonDebuggable]
         AuthCodeErr: Text;
         [NonDebuggable]
-        AadTenantId: Text;
+        EntraTenantId: Text;
         [NonDebuggable]
         Scopes: List of [Text];
-        AuthorityTxt: Label 'https://login.microsoftonline.com/%1/oauth2/v2.0/authorize', Comment = '%1 = AAD tenant ID', Locked = true;
+        AuthorityTxt: Label 'https://login.microsoftonline.com/%1/oauth2/v2.0/authorize', Comment = '%1 = Microsoft Entra tenant ID', Locked = true;
         BearerTxt: Label 'Bearer %1', Comment = '%1 - Token', Locked = true;
 
     [NonDebuggable]
-    procedure SetParameters(NewAadTenantId: Text; NewClientId: Text; NewClientSecret: Text; NewScopes: List of [Text])
+    procedure SetParameters(NewEntraTenantId: Text; NewClientId: Text; NewClientSecret: Text; NewScopes: List of [Text])
     begin
-        AadTenantId := NewAadTenantId;
+        EntraTenantId := NewEntraTenantId;
         ClientId := NewClientId;
         ClientSecret := NewClientSecret;
         Scopes := NewScopes;
@@ -62,8 +66,8 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
         OnBeforeGetToken(IsHandled, IsSuccess, ErrorText, AccessToken);
 
         if not IsHandled then begin
-            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, '', StrSubstNo(AuthorityTxt, AadTenantId), Scopes, AccessToken)) or (AccessToken = '') then
-                OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(AuthorityTxt, AadTenantId), '', Scopes, "Prompt Interaction"::None, AccessToken, AuthCodeErr);
+            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, '', StrSubstNo(AuthorityTxt, EntraTenantId), Scopes, AccessToken)) or (AccessToken = '') then
+                OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(AuthorityTxt, EntraTenantId), '', Scopes, "Prompt Interaction"::None, AccessToken, AuthCodeErr);
 
             IsSuccess := AccessToken <> '';
 

@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
 pageextension 5314 "Audit Export Doc. Card SIE" extends "Audit File Export Doc. Card"
 {
     layout
@@ -93,11 +99,11 @@ pageextension 5314 "Audit Export Doc. Card SIE" extends "Audit File Export Doc. 
     local procedure IsSIEFormat(): Boolean
     var
         AuditFileExportSetup: Record "Audit File Export Setup";
-        AuditFileExportFormat: enum "Audit File Export Format";
+        AuditFileExportFormat: Enum "Audit File Export Format";
         IsSIEFormatSelected: Boolean;
     begin
         AuditFileExportFormat := Rec."Audit File Export Format";
-        if AuditFileExportFormat = 0 then begin     // if not initialized yet
+        if AuditFileExportFormat = Enum::"Audit File Export Format"::None then begin
             AuditFileExportSetup.Get();
             AuditFileExportFormat := AuditFileExportSetup."Audit File Export Format";
         end;

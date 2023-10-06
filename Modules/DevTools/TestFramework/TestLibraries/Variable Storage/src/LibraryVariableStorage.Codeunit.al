@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Utilities;
+
 /// <summary>
 /// Library - Variable Storage" provides functions that pass values from test methods to page and message handler methods that are called out of context and cannot be called directly.
 /// This provides a flexible way to store values when running tests because you do not need to have specific global variables for each scenario.

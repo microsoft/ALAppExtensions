@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Apps;
+
+using System.Globalization;
 
 /// <summary>
 /// Provides an interface for installing extensions from AppSource.
@@ -29,7 +33,7 @@ page 2510 "Marketplace Extn Deployment"
             {
                 ApplicationArea = All;
                 Caption = 'Language';
-                ToolTip = 'Choose the language of the extension.';
+                ToolTip = 'Specifies the language of the extension.';
                 Editable = false;
 
                 trigger OnAssistEdit()

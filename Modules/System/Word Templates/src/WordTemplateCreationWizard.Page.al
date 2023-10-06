@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
+using System.Globalization;
+using System.Telemetry;
+using System.Reflection;
+
 /// <summary>
 /// Wizard to create a Word template.
 /// </summary>
@@ -165,7 +171,7 @@ page 9995 "Word Template Creation Wizard"
                         ApplicationArea = All;
                         Editable = false;
                         Caption = 'Uploaded file';
-                        ToolTip = 'The name of the file that was uploaded.';
+                        Tooltip = 'Specifies the name of the file that was uploaded.';
                     }
 
                     field(TemplateEntity; WordTemplate."Table Caption")

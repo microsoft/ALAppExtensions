@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 /// <summary>
 /// Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together
 /// </summary>

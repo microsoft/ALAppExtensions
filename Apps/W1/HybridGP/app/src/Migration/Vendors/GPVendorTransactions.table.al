@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Purchases.Vendor;
+
 table 4097 "GP Vendor Transactions"
 {
     ReplicateData = false;

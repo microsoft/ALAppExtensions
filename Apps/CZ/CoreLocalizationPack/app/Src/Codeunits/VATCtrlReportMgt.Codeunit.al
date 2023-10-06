@@ -14,7 +14,9 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempErrorBuffer: Record "Error Buffer" temporary;
         TempGlobalVATEntry: Record "VAT Entry" temporary;
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         WindowDialog: Dialog;
@@ -59,7 +61,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         VATStatementLine.SetRange("Statement Template Name", VATStmTemplCode);
         VATStatementLine.SetRange("Statement Name", VATStmName);
         VATStatementLine.SetFilter("VAT Ctrl. Report Section CZL", '<>%1', '');
-        if VATStatementLine.FindSet(false, false) then
+        if VATStatementLine.FindSet(false) then
             repeat
                 if ShowMessage then begin
                     WindowDialog.Update(1, VATStatementLine."Statement Template Name");
@@ -541,7 +543,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         SalesInvoiceLine.SetFilter(SalesInvoiceLine.Type, '<>%1', SalesInvoiceLine.Type::" ");
         SalesInvoiceLine.SetFilter(SalesInvoiceLine.Quantity, '<>0');
         SalesInvoiceLine.SetRange("Prepayment Line", false);
-        if SalesInvoiceLine.FindSet(false, false) then begin
+        if SalesInvoiceLine.FindSet(false) then begin
             if SalesInvoiceHeader."No." <> SalesInvoiceLine."Document No." then
                 SalesInvoiceHeader.Get(SalesInvoiceLine."Document No.");
             repeat
@@ -573,7 +575,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         SalesCrMemoLine.SetRange(SalesCrMemoLine."VAT Prod. Posting Group", VATEntry."VAT Prod. Posting Group");
         SalesCrMemoLine.SetFilter(SalesCrMemoLine.Type, '<>%1', SalesCrMemoLine.Type::" ");
         SalesCrMemoLine.SetFilter(SalesCrMemoLine.Quantity, '<>0');
-        if SalesCrMemoLine.FindSet(false, false) then begin
+        if SalesCrMemoLine.FindSet(false) then begin
             if SalesCrMemoHeader."No." <> SalesCrMemoLine."Document No." then
                 SalesCrMemoHeader.Get(SalesCrMemoLine."Document No.");
             repeat
@@ -606,7 +608,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         PurchInvLine.SetFilter(PurchInvLine.Type, '<>%1', PurchInvLine.Type::" ");
         PurchInvLine.SetFilter(PurchInvLine.Quantity, '<>0');
         PurchInvLine.SetRange("Prepayment Line", false);
-        if PurchInvLine.FindSet(false, false) then begin
+        if PurchInvLine.FindSet(false) then begin
             if PurchInvHeader."No." <> PurchInvLine."Document No." then
                 PurchInvHeader.Get(PurchInvLine."Document No.");
             repeat
@@ -638,7 +640,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         PurchCrMemoLine.SetRange(PurchCrMemoLine."VAT Prod. Posting Group", VATEntry."VAT Prod. Posting Group");
         PurchCrMemoLine.SetFilter(PurchCrMemoLine.Type, '<>%1', PurchCrMemoLine.Type::" ");
         PurchCrMemoLine.SetFilter(PurchCrMemoLine.Quantity, '<>0');
-        if PurchCrMemoLine.FindSet(false, false) then begin
+        if PurchCrMemoLine.FindSet(false) then begin
             if PurchCrMemoHdr."No." <> PurchCrMemoLine."Document No." then
                 PurchCrMemoHdr.Get(PurchCrMemoLine."Document No.");
             repeat
@@ -1250,7 +1252,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 
         DeleteVATEntryBuffer(TempVATEntry);
         VATEntry.SetDateFilterCZL(StartDate, EndDate, VATReportingDateMgt.IsVATDateEnabled());
-        if VATEntry.FindSet(false, false) then
+        if VATEntry.FindSet(false) then
             repeat
                 TempVATEntry.Init();
                 TempVATEntry := VATEntry;

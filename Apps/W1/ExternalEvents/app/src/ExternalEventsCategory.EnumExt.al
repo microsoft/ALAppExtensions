@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.ExternalEvents;
+
+using System.Integration;
+
 enumextension 38500 "External Events Category" extends EventCategory
 /// <summary>
 /// enum extension MyEventCategory exten EventCategory. This enum extensions will define the eventcategories used in this project

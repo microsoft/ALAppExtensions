@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reminder;
+using Microsoft.Service.History;
+using System.Globalization;
+
 report 11510 "Swiss QR-Bill Print"
 {
     Caption = 'Swiss QR-Bill';
@@ -143,6 +158,7 @@ report 11510 "Swiss QR-Bill Print"
                 Language: Codeunit Language;
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
                 PrepareForPrint();
                 SwissQRBillMgt.GenerateImage(SwissQRBillBuffer);
                 AccountPayableTo := ReportAccountPayableToInfo(SwissQRBillBuffer);

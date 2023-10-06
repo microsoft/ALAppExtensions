@@ -1,7 +1,7 @@
 table 31099 "Acc. Schedule Result Hdr. CZL"
 {
     Caption = 'Acc. Schedule Result Header';
-    LookupPageID = "Acc. Sched. Res. Hdr. List CZL";
+    LookupPageId = "Acc. Sched. Res. Hdr. List CZL";
 
     fields
     {

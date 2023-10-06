@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Integration.Graph;
+
 page 30034 "APIV2 - Trial Balance"
 {
     APIVersion = 'v2.0';
@@ -22,39 +27,39 @@ page 30034 "APIV2 - Trial Balance"
         {
             repeater(Group)
             {
-                field(number; "No.")
+                field(number; Rec."No.")
                 {
                     Caption = 'No.';
                 }
-                field(accountId; "Account Id")
+                field(accountId; Rec."Account Id")
                 {
                     Caption = 'Account Id';
                 }
-                field(accountType; "Account Type")
+                field(accountType; Rec."Account Type")
                 {
                     Caption = 'Account Type';
                 }
-                field(display; Name)
+                field(display; Rec.Name)
                 {
                     Caption = 'Name';
                 }
-                field(totalDebit; "Total Debit")
+                field(totalDebit; Rec."Total Debit")
                 {
                     Caption = 'Total Debit';
                 }
-                field(totalCredit; "Total Credit")
+                field(totalCredit; Rec."Total Credit")
                 {
                     Caption = 'Total Credit';
                 }
-                field(balanceAtDateDebit; "Balance at Date Debit")
+                field(balanceAtDateDebit; Rec."Balance at Date Debit")
                 {
                     Caption = 'Balance At Date Debit';
                 }
-                field(balanceAtDateCredit; "Balance at Date Credit")
+                field(balanceAtDateCredit; Rec."Balance at Date Credit")
                 {
                     Caption = 'Balance At Date Credit';
                 }
-                field(dateFilter; "Date Filter")
+                field(dateFilter; Rec."Date Filter")
                 {
                     Caption = 'Date Filter';
                 }

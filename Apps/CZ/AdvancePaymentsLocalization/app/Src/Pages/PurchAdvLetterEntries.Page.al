@@ -191,10 +191,21 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                     ToolTip = 'Post payment VAT.';
 
                     trigger OnAction()
-                    var
-                        PurchAdvLetterManagement: Codeunit "PurchAdvLetterManagement CZZ";
                     begin
-                        PurchAdvLetterManagement.PostAdvancePaymentVAT(Rec, 0D);
+                        PurchPostAdvanceLetterCZZ.PostPaymentVAT(Rec, false);
+                    end;
+                }
+                action(PostPaymentVATPreview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Payment VAT Preview';
+                    Enabled = ("Entry Type" = "Entry Type"::Payment) and (not IsClosed) and (not Cancelled);
+                    Image = ViewPostedOrder;
+                    ToolTip = 'Review the result of the posting lines before the actual posting.';
+
+                    trigger OnAction()
+                    begin
+                        PurchPostAdvanceLetterCZZ.PostPaymentVAT(Rec, true);
                     end;
                 }
                 action(PostPaymentVATUsage)
@@ -206,10 +217,21 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                     ToolTip = 'Post payment VAT usage.';
 
                     trigger OnAction()
-                    var
-                        PurchAdvLetterManagement: Codeunit "PurchAdvLetterManagement CZZ";
                     begin
-                        PurchAdvLetterManagement.PostAdvancePaymentUsageVAT(Rec);
+                        PurchPostAdvanceLetterCZZ.PostPaymentUsageVAT(Rec, false);
+                    end;
+                }
+                action(PostPaymentVATUsagePreview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Payment VAT Usage Preview';
+                    Enabled = ("Entry Type" = "Entry Type"::Usage) and (not IsClosed) and (not Cancelled);
+                    Image = ViewPostedOrder;
+                    ToolTip = 'Review the result of the posting lines before the actual posting.';
+
+                    trigger OnAction()
+                    begin
+                        PurchPostAdvanceLetterCZZ.PostPaymentUsageVAT(Rec, true);
                     end;
                 }
                 action(PostCreditMemoVAT)
@@ -221,10 +243,21 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                     ToolTip = 'Post credit memo VAT.';
 
                     trigger OnAction()
-                    var
-                        PurchAdvLetterManagement: Codeunit "PurchAdvLetterManagement CZZ";
                     begin
-                        PurchAdvLetterManagement.PostAdvanceCreditMemoVAT(Rec);
+                        PurchPostAdvanceLetterCZZ.PostCreditMemoVAT(Rec, false);
+                    end;
+                }
+                action(PostCreditMemoVATPreview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Credit Memo VAT Preview';
+                    Enabled = ("Entry Type" = "Entry Type"::"VAT Payment") and (not IsClosed) and (not Cancelled);
+                    Image = ViewPostedOrder;
+                    ToolTip = 'Post credit memo VAT.';
+
+                    trigger OnAction()
+                    begin
+                        PurchPostAdvanceLetterCZZ.PostCreditMemoVAT(Rec, true);
                     end;
                 }
                 action(PostCancelUsageVAT)
@@ -236,10 +269,21 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                     ToolTip = 'Post cancel usage VAT.';
 
                     trigger OnAction()
-                    var
-                        PurchAdvLetterManagement: Codeunit "PurchAdvLetterManagement CZZ";
                     begin
-                        PurchAdvLetterManagement.PostCancelUsageVAT(Rec);
+                        PurchPostAdvanceLetterCZZ.PostCancelUsageVAT(Rec, false);
+                    end;
+                }
+                action(PostCancelUsageVATPreview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Cancel Usage VAT Preview';
+                    Enabled = ("Entry Type" = "Entry Type"::"VAT Usage") and (not IsClosed) and (not Cancelled);
+                    Image = ViewPostedOrder;
+                    ToolTip = 'Post cancel usage VAT.';
+
+                    trigger OnAction()
+                    begin
+                        PurchPostAdvanceLetterCZZ.PostCancelUsageVAT(Rec, true);
                     end;
                 }
             }
@@ -322,6 +366,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
 
     var
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchPostAdvanceLetterCZZ: Codeunit "Purch. Post Advance Letter CZZ";
         IsClosed: Boolean;
 
     trigger OnAfterGetRecord()

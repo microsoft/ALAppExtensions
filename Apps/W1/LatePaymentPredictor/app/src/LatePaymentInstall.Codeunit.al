@@ -1,3 +1,10 @@
+namespace Microsoft.Finance.Latepayment;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Upgrade;
+using System.Privacy;
+
 codeunit 1955 "Late Payment Install"
 {
     Subtype = install;

@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSOnSales;
+
+using Microsoft.Sales.Document;
+using Microsoft.Finance.TCS.TCSBase;
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Sales.Posting;
+using Microsoft.Utilities;
+
 codeunit 18838 "TCS Sales Subscribers"
 {
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterValidateEvent', 'No.', false, false)]
@@ -38,7 +54,7 @@ codeunit 18838 "TCS Sales Subscribers"
             SalesHeader."Assessee Code" := '';
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
     local procedure PostCustEntry(
         var GenJnlLine: Record "Gen. Journal Line";

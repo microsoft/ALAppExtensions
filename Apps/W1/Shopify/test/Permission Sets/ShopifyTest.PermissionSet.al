@@ -35,7 +35,9 @@ permissionset 139560 "Shopify Test"
         codeunit "Shpfy Payments Test" = X,
         codeunit "Shpfy Product Init Test" = X,
         codeunit "Shpfy Product Mapping Test" = X,
+#if not CLEAN23
         codeunit "Shpfy Product Price Calc. Test" = X,
+#endif
         codeunit "Shpfy Shipping Test" = X,
         codeunit "Shpfy Test Locations" = X,
         codeunit "Shpfy Test Shopify" = X;

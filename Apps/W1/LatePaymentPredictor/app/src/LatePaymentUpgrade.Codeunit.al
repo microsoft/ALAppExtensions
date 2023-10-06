@@ -1,3 +1,6 @@
+namespace Microsoft.Finance.Latepayment;
+
+using System.Upgrade;
 codeunit 1958 "Late Payment Upgrade"
 {
     Subtype = Upgrade;

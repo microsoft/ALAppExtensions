@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 entitlement "Dynamics 365 Business Central Premium - Embedded Email Logging"
 {
     Type = PerUserServicePlan;

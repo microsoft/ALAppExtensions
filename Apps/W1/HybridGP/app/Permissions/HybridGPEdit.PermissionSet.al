@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 permissionset 4031 "HybridGP - Edit"
 {
     Assignable = false;
@@ -116,5 +118,7 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GP POP10100" = IMD,
                     tabledata "GP POP10110" = IMD,
                     tabledata "GP PM00204" = IMD,
+                    tabledata "GP Upgrade Settings" = IMD,
+                    tabledata "GP Migration Error Overview" = IMD,
                     tabledata "GP Known Countries" = IMD;
 }

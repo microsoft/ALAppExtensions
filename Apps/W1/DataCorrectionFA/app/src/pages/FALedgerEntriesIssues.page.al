@@ -1,3 +1,8 @@
+namespace Microsoft.FixedAssets.Repair;
+
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Finance.Currency;
+
 page 6090 "FA Ledger Entries Issues"
 {
     Caption = 'FA Ledger Entries with rounding issues';
@@ -5,7 +10,7 @@ page 6090 "FA Ledger Entries Issues"
     Editable = false;
     PageType = List;
     SourceTable = "FA Ledg. Entry w. Issue";
-    SourceTableView = where(Corrected = FILTER(false));
+    SourceTableView = where(Corrected = filter(false));
     Permissions = tabledata "FA Ledg. Entry w. Issue" = rimd,
                   tabledata "FA Ledger Entry" = rimd;
 
@@ -144,7 +149,7 @@ page 6090 "FA Ledger Entries Issues"
                             FALedgEntrywIssue.Corrected := true;
                             FaLedgEntrywIssue.modify();
                         until FALedgEntrywIssue.next() = 0;
-                    If Rec.FindFirst() then;
+                    if Rec.FindFirst() then;
                     Message(EntryHaveBeenCorrectedMsg);
                 end;
             }

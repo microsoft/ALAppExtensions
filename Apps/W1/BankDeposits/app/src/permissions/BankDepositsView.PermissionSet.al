@@ -3,6 +3,8 @@
 /// do not include this permission set in any other permission set
 /// and do not change the Access and Assignable properties
 /// </summary>
+namespace Microsoft.Bank.Deposit;
+
 permissionset 1702 "Bank Deposits - View"
 {
     Assignable = false;

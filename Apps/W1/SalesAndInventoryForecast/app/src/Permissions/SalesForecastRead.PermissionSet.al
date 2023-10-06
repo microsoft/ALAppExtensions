@@ -1,3 +1,7 @@
+namespace System.Security.AccessControl;
+
+using Microsoft.Inventory.InventoryForecast;
+
 permissionset 48059 "SalesForecast - Read"
 {
     Assignable = false;

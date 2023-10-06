@@ -1,3 +1,4 @@
+#if not CLEAN22
 pageextension 13409 "Obs. Intrastat - File Setup" extends "Intrastat - File Setup"
 {
     trigger OnOpenPage()
@@ -13,3 +14,4 @@ pageextension 13409 "Obs. Intrastat - File Setup" extends "Intrastat - File Setu
             IntrastatReportMgt.NotifyUserAboutIntrastatFeature();
     end;
 }
+#endif

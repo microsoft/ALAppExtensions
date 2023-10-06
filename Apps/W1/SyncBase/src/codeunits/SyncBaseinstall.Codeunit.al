@@ -1,3 +1,9 @@
+namespace Microsoft.Integration.SyncBase;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Privacy;
+
 codeunit 2399 "Sync Base install"
 {
     Subtype = Install;

@@ -128,10 +128,10 @@
       <DataExchColumnDef ColumnNo="5" Name="goodsDescription" Show="false" DataType="0" Path="/Item/goodsDescription" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="6" Name="MSConsDestCode" Show="false" DataType="0" Path="/Item/MSConsDestCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="7" Name="countryOfOriginCode" Show="false" DataType="0" Path="/Item/countryOfOriginCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="8" Name="netMass" Show="false" DataType="2" Path="/Item/netMass" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="9" Name="quantityInSU" Show="false" DataType="2" Path="/Item/quantityInSU" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="10" Name="invoicedAmount" Show="false" DataType="2" Path="/Item/invoicedAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="11" Name="statisticalValue" Show="false" DataType="2" Path="/Item/statisticalValue" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="8" Name="netMass" Show="false" DataType="0" Path="/Item/netMass" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="9" Name="quantityInSU" Show="false" DataType="0" Path="/Item/quantityInSU" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="10" Name="invoicedAmount" Show="false" DataType="0" Path="/Item/invoicedAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="11" Name="statisticalValue" Show="false" DataType="0" Path="/Item/statisticalValue" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="12" Name="invoiceNumber" Show="false" DataType="0" Path="/Item/invoiceNumber" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="13" Name="partnerId" Show="false" DataType="0" Path="/Item/partnerId" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="14" Name="NatureOfTransaction" Show="false" DataType="0" Path="/Item/NatureOfTransaction" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
@@ -141,13 +141,13 @@
       <DataExchColumnDef ColumnNo="18" Name="regionCode" Show="false" DataType="0" Path="/Item/regionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269" PreMappingCodeunit="11031" PostMappingCodeunit="11033">
         <DataExchFieldMapping ColumnNo="2" FieldID="23" Optional="true" />
-        <DataExchFieldMapping ColumnNo="4" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="5" Optional="true" TransformationRule="ALPHANUM_ONLY" />
         <DataExchFieldMapping ColumnNo="5" FieldID="6" Optional="true" />
         <DataExchFieldMapping ColumnNo="6" FieldID="7" Optional="true" />
         <DataExchFieldMapping ColumnNo="7" FieldID="24" Optional="true" />
         <DataExchFieldMapping ColumnNo="8" FieldID="21" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -174,7 +174,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -185,7 +185,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="9" FieldID="35" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -212,7 +212,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -223,7 +223,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="10" FieldID="13" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -250,7 +250,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -261,7 +261,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="11" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -288,7 +288,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -358,10 +358,10 @@
       <DataExchColumnDef ColumnNo="5" Name="goodsDescription" Show="false" DataType="0" Path="/Item/goodsDescription" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="6" Name="MSConsDestCode" Show="false" DataType="0" Path="/Item/MSConsDestCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="7" Name="countryOfOriginCode" Show="false" DataType="0" Path="/Item/countryOfOriginCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="8" Name="netMass" Show="false" DataType="2" Path="/Item/netMass" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="9" Name="quantityInSU" Show="false" DataType="2" Path="/Item/quantityInSU" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="10" Name="invoicedAmount" Show="false" DataType="2" Path="/Item/invoicedAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
-      <DataExchColumnDef ColumnNo="11" Name="statisticalValue" Show="false" DataType="2" Path="/Item/statisticalValue" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="8" Name="netMass" Show="false" DataType="0" Path="/Item/netMass" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="9" Name="quantityInSU" Show="false" DataType="0" Path="/Item/quantityInSU" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="10" Name="invoicedAmount" Show="false" DataType="0" Path="/Item/invoicedAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="11" Name="statisticalValue" Show="false" DataType="0" Path="/Item/statisticalValue" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="12" Name="invoiceNumber" Show="false" DataType="0" Path="/Item/invoiceNumber" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="13" Name="partnerId" Show="false" DataType="0" Path="/Item/partnerId" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchColumnDef ColumnNo="14" Name="NatureOfTransaction" Show="false" DataType="0" Path="/Item/NatureOfTransaction" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
@@ -371,13 +371,13 @@
       <DataExchColumnDef ColumnNo="18" Name="regionCode" Show="false" DataType="0" Path="/Item/regionCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269" PreMappingCodeunit="11032" PostMappingCodeunit="11033">
         <DataExchFieldMapping ColumnNo="2" FieldID="23" Optional="true" />
-        <DataExchFieldMapping ColumnNo="4" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="5" Optional="true" TransformationRule="ALPHANUM_ONLY" />
         <DataExchFieldMapping ColumnNo="5" FieldID="6" Optional="true" />
         <DataExchFieldMapping ColumnNo="6" FieldID="7" Optional="true" />
         <DataExchFieldMapping ColumnNo="7" FieldID="24" Optional="true" />
         <DataExchFieldMapping ColumnNo="8" FieldID="21" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -404,7 +404,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -415,7 +415,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="9" FieldID="35" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -442,7 +442,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -453,7 +453,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="10" FieldID="13" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -480,7 +480,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -491,7 +491,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="11" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -518,7 +518,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>

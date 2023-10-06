@@ -380,7 +380,8 @@ report 31182 "Reminder CZL"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddress.IssuedReminder(CustAddr, "Issued Reminder Header");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
@@ -447,7 +448,7 @@ report 31182 "Reminder CZL"
     end;
 
     var
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
@@ -464,7 +465,6 @@ report 31182 "Reminder CZL"
         NoOfCopies: Integer;
         NoOfLoops: Integer;
         LogInteraction: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         TotalLbl: Label 'Total';
         ShowNotDueAmounts: Boolean;
@@ -487,7 +487,7 @@ report 31182 "Reminder CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(8) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Sales Rmdr.") <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

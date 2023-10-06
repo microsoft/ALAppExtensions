@@ -4,6 +4,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.KeyVault;
+
 permissionset 2200 "Azure Key Vault - Objects"
 {
     Assignable = false;

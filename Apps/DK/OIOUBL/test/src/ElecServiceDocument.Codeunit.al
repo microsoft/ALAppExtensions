@@ -1809,8 +1809,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     local procedure GetFileName(DocumentNo: Code[20]; DocumentType: Text; Extension: Code[3]): Text[250]
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
+        RecordVariant: Variant;
     begin
-        exit(ElectronicDocumentFormat.GetAttachmentFileName(DocumentNo, DocumentType, Extension));
+        exit(ElectronicDocumentFormat.GetAttachmentFileName(RecordVariant, DocumentNo, DocumentType, Extension));
     end;
 
     local procedure GetAmountsServiceInvoiceLines(ServiceInvHeaderNo: Code[20]; var LineExtensionAmounts: List of [Decimal]; var PriceAmounts: List of [Decimal]; var TotalAllowanceChargeAmount: Decimal)
@@ -2048,7 +2049,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         XMLInStream: InStream;
         ZipEntryList: List of [Text];
         ZipEntry: Text;
-        ZipEntryLength: Integer;
         i: Integer;
     begin
         for i := 1 to DocumentNoLst.Count() do // dequeue unused XML files names
@@ -2064,7 +2064,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
             i += 1;
             Clear(TempBlob);
             TempBlob.CreateOutStream(ZipEntryOutStream);
-            DataCompression.ExtractEntry(ZipEntry, ZipEntryOutStream, ZipEntryLength);
+            DataCompression.ExtractEntry(ZipEntry, ZipEntryOutStream);
             TempBlob.CreateInStream(XMLInStream);
             LibraryXMLReadOnServer.LoadXMLDocFromInStream(XMLInStream);
             LibraryXMLReadOnServer.VerifyNodeValue(IDCapTxt, DocumentNoLst.Get(i));

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DateTime;
+
 codeunit 9199 "Time Zone Selection Impl."
 {
     Access = Internal;

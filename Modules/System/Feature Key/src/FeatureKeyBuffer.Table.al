@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// This temporary table extends the "Feature Key" virtual table. The fields must be in sync across both tables. 
 /// New fields are added from id = 100 upwards.
@@ -117,7 +119,7 @@ table 2609 "Feature Key Buffer"
 
     internal procedure CancelDataUpdateTask()
     begin
-        FeatureManagementFacade.CancelTask(FeatureDataUpdateStatus, True);
+        FeatureManagementFacade.CancelTask(FeatureDataUpdateStatus, true);
     end;
 
     internal procedure GetDataUpdateSessionId(): Integer

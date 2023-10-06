@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ChargeGroup.ChargeOnPurchase;
+
+using Microsoft.Finance.ChargeGroup.ChargeGroupBase;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+
 codeunit 18518 "Third Party Purchase Mgmt."
 {
     procedure GenerateThirdPartyInvoice(PurchaseHeader: Record "Purchase Header")

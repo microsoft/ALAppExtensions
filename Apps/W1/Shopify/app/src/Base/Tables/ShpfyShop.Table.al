@@ -1,3 +1,22 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using System.Globalization;
+using System.IO;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Pricing;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Item;
+using System.Security.AccessControl;
+using System.DataAdministration;
+using System.Privacy;
+using System.Threading;
+using Microsoft.Inventory.Location;
+
 /// <summary>
 /// Table Shpfy Shop (ID 30102).
 /// </summary>
@@ -44,10 +63,16 @@ table 30102 "Shpfy Shop"
             trigger OnValidate()
             var
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                WebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
             begin
                 if Rec."Enabled" then begin
                     Rec.TestField("Shopify URL");
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+                end else begin
+                    Rec.Enabled := true;
+                    Rec.Validate("Order Created Webhooks", false);
+                    WebhooksMgt.DisableBulkOperationsWebhook(Rec);
+                    Rec.Enabled := false;
                 end;
             end;
         }
@@ -55,6 +80,14 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Log Enabled';
             DataClassification = SystemMetadata;
+            ObsoleteReason = 'Replaced with field "Logging Mode"';
+#if not CLEAN23
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
         }
         field(6; "Customer Price Group"; Code[10])
         {
@@ -370,7 +403,7 @@ table 30102 "Shpfy Shop"
         }
         field(51; "Action for Removed Products"; Enum "Shpfy Remove Product Action")
         {
-            Caption = 'Action for Removed Products';
+            Caption = 'Action for Removed Products and Blocked Items';
             DataClassification = CustomerContent;
         }
         field(52; "Currency Code"; Code[10])
@@ -588,6 +621,16 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Order Created Webhooks';
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                ShpfyWebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
+            begin
+                if "Order Created Webhooks" then
+                    ShpfyWebhooksMgt.EnableOrderCreatedWebhook(Rec)
+                else
+                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+            end;
         }
         field(109; "Order Created Webhook User"; Code[50])
         {
@@ -601,6 +644,57 @@ table 30102 "Shpfy Shop"
             Caption = 'Fulfillment Service Activated';
             DataClassification = SystemMetadata;
             Description = 'Indicates whether the Shopify Fulfillment Service is activated.';
+        }
+        field(111; "Order Created Webhook User Id"; Guid)
+        {
+            Caption = 'Order Created Webhook User Id';
+            DataClassification = EndUserIdentifiableInformation;
+            Editable = false;
+            TableRelation = User;
+
+            trigger OnValidate()
+            var
+                User: Record User;
+            begin
+                if User.Get("Order Created Webhook User Id") then
+                    "Order Created Webhook User" := User."User Name";
+            end;
+        }
+        field(112; "Order Created Webhook Id"; Text[500])
+        {
+            Caption = 'Order Created Webhook Id';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(113; "Logging Mode"; Enum "Shpfy Logging Mode")
+        {
+            Caption = 'Logging Mode';
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if "Logging Mode" = "Logging Mode"::All then
+                    EnableShopifyLogRetentionPolicySetup();
+            end;
+        }
+        field(114; "Bulk Operation Webhook User Id"; Guid)
+        {
+            Caption = 'Bulk Operation Webhook User Id';
+            DataClassification = EndUserIdentifiableInformation;
+            Editable = false;
+            TableRelation = User;
+        }
+        field(115; "Bulk Operation Webhook Id"; Text[500])
+        {
+            Caption = 'Bulk Operation Webhook Id';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(116; "Sync Prices"; Boolean)
+        {
+            Caption = 'Sync Prices with Products';
+            DataClassification = SystemMetadata;
+            InitValue = true;
         }
         field(200; "Shop Id"; Integer)
         {
@@ -616,6 +710,13 @@ table 30102 "Shpfy Shop"
         }
         key(Idx1; "Shop Id") { }
     }
+
+    trigger OnDelete()
+    var
+        ShpfyWebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
+    begin
+        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+    end;
 
     var
         InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
@@ -657,6 +758,15 @@ table 30102 "Shpfy Shop"
             exit(AuthenticationMgt.AccessTokenExist(Store));
     end;
 
+    internal procedure TestConnection(): Boolean
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+    begin
+        CommunicationMgt.SetShop(Rec);
+        CommunicationMgt.ExecuteGraphQL('{"query":"query { app { id } }"}');
+        exit(true);
+    end;
+
     local procedure GetStoreName() Store: Text
     begin
         Store := "Shopify URL".ToLower();
@@ -665,7 +775,7 @@ table 30102 "Shpfy Shop"
         Store := Store.TrimStart('/').TrimEnd('/');
     end;
 
-    /// <summary> 
+    /// <summary>
     /// Calc Shop Id.
     /// </summary>
     internal procedure CalcShopId()
@@ -788,4 +898,25 @@ table 30102 "Shpfy Shop"
             exit(ConfigTemplateLine."Default Value");
     end;
 #endif
+
+    local procedure EnableShopifyLogRetentionPolicySetup()
+    var
+        RetentionPolicySetup: Record "Retention Policy Setup";
+        JobQueueEntry: Record "Job Queue Entry";
+    begin
+        if not TaskScheduler.CanCreateTask() then
+            exit;
+
+        if not (JobQueueEntry.ReadPermission() and JobQueueEntry.WritePermission()) then
+            exit;
+
+        if not RetentionPolicySetup.Get(Database::"Shpfy Log Entry") then
+            exit;
+
+        if RetentionPolicySetup.Enabled then
+            exit;
+
+        RetentionPolicySetup.Validate(Enabled, true);
+        RetentionPolicySetup.Modify(true);
+    end;
 }

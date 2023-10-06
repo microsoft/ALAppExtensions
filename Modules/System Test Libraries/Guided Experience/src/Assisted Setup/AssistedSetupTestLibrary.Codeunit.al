@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Environment.Configuration;
+
+using System.Environment.Configuration;
+
 codeunit 132585 "Assisted Setup Test Library"
 {
     Permissions = tabledata "Guided Experience Item" = rmd;
@@ -57,14 +61,8 @@ codeunit 132585 "Assisted Setup Test Library"
     procedure CallOnRegister()
     var
         GuidedExperienceItem: Codeunit "Guided Experience";
-#if not CLEAN18
-        AssistedSetup: Codeunit "Assisted Setup";
-#endif
     begin
         GuidedExperienceItem.OnRegisterAssistedSetup();
-#if not CLEAN18
-        AssistedSetup.OnRegister();
-#endif
     end;
 
     /// <summary>Has any assisted setup records.</summary>

@@ -1,3 +1,5 @@
+namespace Microsoft.Payroll.Ceridian;
+
 xmlport 1661 "Import Ceridian Payroll"
 {
     Direction = Import;
@@ -88,12 +90,12 @@ xmlport 1661 "Import Ceridian Payroll"
 
     procedure GetTemporaryRecords(var TempImportGLTransaction: Record 1661 temporary);
     begin
-        IF "Import G/L Transaction".FINDSET() THEN
-            REPEAT
+        if "Import G/L Transaction".FINDSET() then
+            repeat
                 TempImportGLTransaction := "Import G/L Transaction";
                 TempImportGLTransaction.VALIDATE("External Account");
                 TempImportGLTransaction.INSERT();
-            UNTIL "Import G/L Transaction".NEXT() = 0;
+            until "Import G/L Transaction".NEXT() = 0;
     end;
 }
 

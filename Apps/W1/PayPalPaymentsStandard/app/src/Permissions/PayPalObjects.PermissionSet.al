@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.PayPal;
+
 permissionset 45616 "PayPal - Objects"
 {
     Assignable = false;

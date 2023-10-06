@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.History;
+
+using Microsoft.Finance.GST.Services;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 pageextension 18451 "GST Posted Service Invoice" extends "Posted Service Invoice"
 {
     layout

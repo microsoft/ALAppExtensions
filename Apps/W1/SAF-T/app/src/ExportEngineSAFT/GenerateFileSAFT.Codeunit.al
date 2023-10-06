@@ -1,3 +1,43 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Enums;
+using Microsoft.Foundation.UOM;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Attribute;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using System.Environment;
+using System.Telemetry;
+using System.Utilities;
+
 codeunit 5289 "Generate File SAF-T"
 {
     Access = Internal;
@@ -54,17 +94,17 @@ codeunit 5289 "Generate File SAF-T"
         ExportHeader(AuditFileExportHeader);
 
         case AuditFileExportLine."Data Class" of
-            "Audit File Export Data Class"::MasterData:
+            Enum::"Audit File Export Data Class"::MasterData:
                 begin
                     ExportMasterFiles(AuditFileExportHeader);
                     XmlHelper.AfterAppendXmlNode('MasterFiles');
                 end;
-            "Audit File Export Data Class"::GeneralLedgerEntries:
+            Enum::"Audit File Export Data Class"::GeneralLedgerEntries:
                 begin
                     ExportGeneralLedgerEntries(AuditFileExportHeader);
                     XmlHelper.AfterAppendXmlNode('GeneralLedgerEntries');
                 end;
-            "Audit File Export Data Class"::SourceDocuments:
+            Enum::"Audit File Export Data Class"::SourceDocuments:
                 begin
                     ExportSourceDocuments(AuditFileExportHeader);
                     XmlHelper.AfterAppendXmlNode('SourceDocuments');
@@ -83,7 +123,7 @@ codeunit 5289 "Generate File SAF-T"
     var
         AuditExportDataTypeSetup: Record "Audit Export Data Type Setup";
     begin
-        AuditExportDataTypeSetup.SetRange("Audit File Export Format", "Audit File Export Format"::SAFT);
+        AuditExportDataTypeSetup.SetRange("Audit File Export Format", Enum::"Audit File Export Format"::SAFT);
         AuditExportDataTypeSetup.SetRange("Export Enabled", true);
         if AuditExportDataTypeSetup.IsEmpty() then
             exit;
@@ -94,25 +134,25 @@ codeunit 5289 "Generate File SAF-T"
         repeat
             XmlHelper.SetNodeModificationAllowed(AuditExportDataTypeSetup."Export Data Type");
             case AuditExportDataTypeSetup."Export Data Type" of
-                "Audit File Export Data Type"::GeneralLedgerAccounts:
+                Enum::"Audit File Export Data Type"::GeneralLedgerAccounts:
                     ExportGeneralLedgerAccounts(AuditFileExportHeader);
-                "Audit File Export Data Type"::Customers:
+                Enum::"Audit File Export Data Type"::Customers:
                     ExportCustomers(AuditFileExportHeader);
-                "Audit File Export Data Type"::Suppliers:
+                Enum::"Audit File Export Data Type"::Suppliers:
                     ExportVendors(AuditFileExportHeader);
-                "Audit File Export Data Type"::TaxTable:
+                Enum::"Audit File Export Data Type"::TaxTable:
                     ExportTaxTable();
-                "Audit File Export Data Type"::UOMTable:
+                Enum::"Audit File Export Data Type"::UOMTable:
                     ExportUOMTable();
-                "Audit File Export Data Type"::AnalysisTypeTable:
+                Enum::"Audit File Export Data Type"::AnalysisTypeTable:
                     ExportAnalysisTypeTable();
-                "Audit File Export Data Type"::MovementTypeTable:
+                Enum::"Audit File Export Data Type"::MovementTypeTable:
                     ExportMovementTypeTable();
-                "Audit File Export Data Type"::Products:
+                Enum::"Audit File Export Data Type"::Products:
                     ExportProducts();
-                "Audit File Export Data Type"::PhysicalStock:
+                Enum::"Audit File Export Data Type"::PhysicalStock:
                     ExportPhysicalStock(AuditFileExportHeader);
-                "Audit File Export Data Type"::Assets:
+                Enum::"Audit File Export Data Type"::Assets:
                     ExportAssets(AuditFileExportHeader);
             end;
             XmlHelper.AfterAppendXmlNode(Format(AuditExportDataTypeSetup."Export Data Type"));
@@ -125,7 +165,7 @@ codeunit 5289 "Generate File SAF-T"
     var
         AuditExportDataTypeSetup: Record "Audit Export Data Type Setup";
     begin
-        AuditExportDataTypeSetup.SetRange("Audit File Export Format", "Audit File Export Format"::SAFT);
+        AuditExportDataTypeSetup.SetRange("Audit File Export Format", Enum::"Audit File Export Format"::SAFT);
         AuditExportDataTypeSetup.SetRange("Export Enabled", true);
         if AuditExportDataTypeSetup.IsEmpty() then
             exit;
@@ -136,15 +176,15 @@ codeunit 5289 "Generate File SAF-T"
         repeat
             XmlHelper.SetNodeModificationAllowed(AuditExportDataTypeSetup."Export Data Type");
             case AuditExportDataTypeSetup."Export Data Type" of
-                "Audit File Export Data Type"::SalesInvoices:
+                Enum::"Audit File Export Data Type"::SalesInvoices:
                     ExportSalesInvoicesAndCreditMemos(AuditFileExportHeader);
-                "Audit File Export Data Type"::PurchaseInvoices:
+                Enum::"Audit File Export Data Type"::PurchaseInvoices:
                     ExportPurchaseInvoicesAndCreditMemos(AuditFileExportHeader);
-                "Audit File Export Data Type"::Payments:
+                Enum::"Audit File Export Data Type"::Payments:
                     ExportPayments(AuditFileExportHeader);
-                "Audit File Export Data Type"::MovementOfGoods:
+                Enum::"Audit File Export Data Type"::MovementOfGoods:
                     ExportMovementOfGoods(AuditFileExportHeader);
-                "Audit File Export Data Type"::AssetTransactions:
+                Enum::"Audit File Export Data Type"::AssetTransactions:
                     ExportAssetTransactions(AuditFileExportHeader);
             end;
             XmlHelper.AfterAppendXmlNode(Format(AuditExportDataTypeSetup."Export Data Type"));

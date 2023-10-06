@@ -24,7 +24,7 @@ report 11722 "General Journal - Test CZL"
             }
             dataitem("Integer"; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = CONST(1));
+                DataItemTableView = sorting(Number) where(Number = const(1));
                 PrintOnlyIfDetail = true;
                 column(JnlTemplateName_GenJnlBatch; "Gen. Journal Batch"."Journal Template Name")
                 {
@@ -113,7 +113,7 @@ report 11722 "General Journal - Test CZL"
                     column(AccountNo_GenJnlLine; "Account No.")
                     {
                     }
-                    column(AccName; AccName)
+                    column(AccName; AccNameGlobal)
                     {
                     }
                     column(Description_GenJnlLine; Description)
@@ -163,7 +163,7 @@ report 11722 "General Journal - Test CZL"
                     }
                     dataitem(DimensionLoop; "Integer")
                     {
-                        DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                        DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                         column(DimText; DimText)
                         {
                         }
@@ -176,21 +176,21 @@ report 11722 "General Journal - Test CZL"
                         trigger OnAfterGetRecord()
                         begin
                             if Number = 1 then begin
-                                if not DimensionSetEntry.FindSet() then
+                                if not DimensionSetEntryGlobal.FindSet() then
                                     CurrReport.Break();
                             end else
                                 if not Continue then
                                     CurrReport.Break();
 
-                            DimText := GetDimensionText(DimensionSetEntry);
+                            DimText := GetDimensionText(DimensionSetEntryGlobal);
                         end;
 
                         trigger OnPreDataItem()
                         begin
                             if not ShouldShowDim then
                                 CurrReport.Break();
-                            DimensionSetEntry.Reset();
-                            DimensionSetEntry.SetRange("Dimension Set ID", "Gen. Journal Line"."Dimension Set ID")
+                            DimensionSetEntryGlobal.Reset();
+                            DimensionSetEntryGlobal.SetRange("Dimension Set ID", "Gen. Journal Line"."Dimension Set ID")
                         end;
                     }
                     dataitem("Gen. Jnl. Allocation"; "Gen. Jnl. Allocation")
@@ -241,7 +241,7 @@ report 11722 "General Journal - Test CZL"
                         }
                         dataitem(DimensionLoopAllocations; "Integer")
                         {
-                            DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                            DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                             column(AllocationDimText; AllocationDimText)
                             {
                             }
@@ -254,21 +254,21 @@ report 11722 "General Journal - Test CZL"
                             trigger OnAfterGetRecord()
                             begin
                                 if Number = 1 then begin
-                                    if not DimensionSetEntry.FindFirst() then
+                                    if not DimensionSetEntryGlobal.FindFirst() then
                                         CurrReport.Break();
                                 end else
                                     if not Continue then
                                         CurrReport.Break();
 
-                                AllocationDimText := GetDimensionText(DimensionSetEntry);
+                                AllocationDimText := GetDimensionText(DimensionSetEntryGlobal);
                             end;
 
                             trigger OnPreDataItem()
                             begin
                                 if not ShouldShowDim then
                                     CurrReport.Break();
-                                DimensionSetEntry.Reset();
-                                DimensionSetEntry.SetRange("Dimension Set ID", "Gen. Jnl. Allocation"."Dimension Set ID")
+                                DimensionSetEntryGlobal.Reset();
+                                DimensionSetEntryGlobal.SetRange("Dimension Set ID", "Gen. Jnl. Allocation"."Dimension Set ID")
                             end;
                         }
                     }
@@ -303,7 +303,7 @@ report 11722 "General Journal - Test CZL"
 
                         UpdateLineBalance();
 
-                        AccName := '';
+                        AccNameGlobal := '';
                         BalAccName := '';
 
                         if not EmptyLine() then begin
@@ -616,7 +616,7 @@ report 11722 "General Journal - Test CZL"
                             if ("Account Type" <> "Account Type"::"Bank Account") and
                                ("Bal. Account Type" <> "Bal. Account Type"::"Bank Account")
                             then
-                                if GenJournalLine."Bank Payment Type" <> GenJournalLine."Bank Payment Type"::" " then
+                                if GenJournalLineGlobal."Bank Payment Type" <> GenJournalLineGlobal."Bank Payment Type"::" " then
                                     AddError(StrSubstNo(CannotBeSpecifiedErr, FieldCaption("Bank Payment Type")));
 
                             if ("Account No." <> '') and ("Bal. Account No." <> '') then begin
@@ -624,7 +624,7 @@ report 11722 "General Journal - Test CZL"
                                 SalesPostingType := false;
                             end;
                             if "Account No." <> '' then
-                                CheckAccountTypes("Account Type", AccName);
+                                CheckAccountTypes("Account Type", AccNameGlobal);
                             if "Bal. Account No." <> '' then begin
                                 Codeunit.Run(Codeunit::"Exchange Acc. G/L Journal Line", "Gen. Journal Line");
                                 CheckAccountTypes("Account Type", BalAccName);
@@ -678,8 +678,8 @@ report 11722 "General Journal - Test CZL"
                         TempCustVendICGenJournalLine.DeleteAll();
                         VATEntryCreated := false;
 
-                        GenJournalLine.Reset();
-                        GenJournalLine.CopyFilters("Gen. Journal Line");
+                        GenJournalLineGlobal.Reset();
+                        GenJournalLineGlobal.CopyFilters("Gen. Journal Line");
 
                         TempGLAccountNetChange.DeleteAll();
                     end;
@@ -781,7 +781,7 @@ report 11722 "General Journal - Test CZL"
         BankAccountPostingGroup: Record "Bank Account Posting Group";
         BankAccount: Record "Bank Account";
         GenJournalTemplate: Record "Gen. Journal Template";
-        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalLineGlobal: Record "Gen. Journal Line";
         TempGenJournalLine: Record "Gen. Journal Line" temporary;
         TempCustVendICGenJournalLine: Record "Gen. Journal Line" temporary;
         GenJnlAllocation: Record "Gen. Jnl. Allocation";
@@ -797,7 +797,7 @@ report 11722 "General Journal - Test CZL"
 #pragma warning disable AL0432
         TempGLAccountNetChange: Record "G/L Account Net Change" temporary;
 #pragma warning restore AL0432
-        DimensionSetEntry: Record "Dimension Set Entry";
+        DimensionSetEntryGlobal: Record "Dimension Set Entry";
         Employee: Record Employee;
         GenJnlManagement: Codeunit GenJnlManagement;
         CannotBeFilteredWhenRecurringErr: Label '%1 cannot be filtered when you post recurring journals.', Comment = '%1 = Filtered Field Caption';
@@ -870,7 +870,7 @@ report 11722 "General Journal - Test CZL"
         DocBalanceReverse: Decimal;
         DateBalanceReverse: Decimal;
         TotalBalanceReverse: Decimal;
-        AccName: Text[100];
+        AccNameGlobal: Text[100];
         LastLineNo: Integer;
         Day: Integer;
         Week: Integer;
@@ -1942,8 +1942,8 @@ report 11722 "General Journal - Test CZL"
                 else
                     CurrentICPartner := '';
             end;
-                CheckICAccountNo();
-            end;
+            CheckICAccountNo();
+        end;
     end;
 
     local procedure TestJobFields(var GenJournalLine: Record "Gen. Journal Line")
@@ -2136,82 +2136,82 @@ report 11722 "General Journal - Test CZL"
         ICBankAccount: Record "IC Bank Account";
     begin
 #if not CLEAN22
-        with "Gen. Journal Line" do
-            if (CurrentICPartner <> '') and ("IC Direction" = "IC Direction"::Outgoing) then begin
-                if ("Account Type" in ["Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
-                   ("Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
-                   ("Account No." <> '') and
-                   ("Bal. Account No." <> '')
+#pragma warning disable AL0432
+        if (CurrentICPartner <> '') and ("Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Outgoing) then begin
+            if ("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+               ("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+               ("Gen. Journal Line"."Account No." <> '') and
+               ("Gen. Journal Line"."Bal. Account No." <> '')
+            then
+                AddError(StrSubstNo(CannotEnterGLBankAccErr, "Gen. Journal Line".FieldCaption("Account No."), "Gen. Journal Line".FieldCaption("Bal. Account No.")))
+            else
+                if (("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and ("Gen. Journal Line"."Account No." <> '')) xor
+                   (("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+                    ("Gen. Journal Line"."Bal. Account No." <> ''))
                 then
-                    AddError(StrSubstNo(CannotEnterGLBankAccErr, FieldCaption("Account No."), FieldCaption("Bal. Account No.")))
+                    if "Gen. Journal Line"."IC Partner G/L Acc. No." = '' then
+                        AddError(StrSubstNo(FieldMustBeSpecifiedErr, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No.")))
+                    else begin
+                        if ICGLAccount.Get("Gen. Journal Line"."IC Partner G/L Acc. No.") then
+                            if ICGLAccount.Blocked then
+                                AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
+                                    "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No."), "Gen. Journal Line"."IC Partner G/L Acc. No."));
+
+                        if "Gen. Journal Line"."IC Account Type" = "IC Journal Account Type"::"Bank Account" then
+                            if ICBankAccount.Get("Gen. Journal Line"."IC Account No.", CurrentICPartner) then
+                                if ICBankAccount.Blocked then
+                                    AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
+                                        "Gen. Journal Line".FieldCaption("IC Account No."), "Gen. Journal Line"."IC Account No."));
+                    end
                 else
-                    if (("Account Type" in ["Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and ("Account No." <> '')) xor
-                       (("Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
-                        ("Bal. Account No." <> ''))
-                    then
-                        if "IC Partner G/L Acc. No." = '' then
-                            AddError(StrSubstNo(FieldMustBeSpecifiedErr, FieldCaption("IC Partner G/L Acc. No.")))
-                        else begin
-                            if ICGLAccount.Get("IC Partner G/L Acc. No.") then
+                    if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then
+                        AddError(StrSubstNo(CannotBeSpecifiedErr, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No.")));
+        end else
+            if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then begin
+                if "Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Incoming then
+                    AddError(StrSubstNo(MustNotBeSpecifiedWhenIsErr, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No."), "Gen. Journal Line".FieldCaption("IC Direction"), Format("Gen. Journal Line"."IC Direction")));
+                if CurrentICPartner = '' then
+                    AddError(StrSubstNo(MustNotBeSpecifiedWhenInterDocErr, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No.")));
+            end;
+#pragma warning restore AL0432
+#else
+        if (CurrentICPartner <> '') and ("Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Outgoing) then begin
+            if ("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+               ("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+               ("Gen. Journal Line"."Account No." <> '') and
+               ("Gen. Journal Line"."Bal. Account No." <> '')
+            then
+                AddError(StrSubstNo(CannotEnterGLBankAccErr, "Gen. Journal Line".FieldCaption("Account No."), "Gen. Journal Line".FieldCaption("Bal. Account No.")))
+            else
+                if (("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and ("Gen. Journal Line"."Account No." <> '')) xor
+                   (("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
+                    ("Gen. Journal Line"."Bal. Account No." <> ''))
+                then
+                    if "Gen. Journal Line"."IC Account No." = '' then
+                        AddError(StrSubstNo(FieldMustBeSpecifiedErr, "Gen. Journal Line".FieldCaption("IC Account No.")))
+                    else begin
+                        if "Gen. Journal Line"."IC Account Type" = "IC Journal Account Type"::"G/L Account" then
+                            if ICGLAccount.Get("Gen. Journal Line"."IC Account No.") then
                                 if ICGLAccount.Blocked then
                                     AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
-                                        FieldCaption("IC Partner G/L Acc. No."), "IC Partner G/L Acc. No."));
+                                        "Gen. Journal Line".FieldCaption("IC Account No."), "Gen. Journal Line"."IC Account No."));
 
-                            if "IC Account Type" = "IC Journal Account Type"::"Bank Account" then
-                                if ICBankAccount.Get("IC Account No.", CurrentICPartner) then
-                                    if ICBankAccount.Blocked then
-                                        AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
-                                            FieldCaption("IC Account No."), "IC Account No."));
-                        end
-                    else
-                        if "IC Partner G/L Acc. No." <> '' then
-                            AddError(StrSubstNo(CannotBeSpecifiedErr, FieldCaption("IC Partner G/L Acc. No.")));
-            end else
-                if "IC Partner G/L Acc. No." <> '' then begin
-                    if "IC Direction" = "IC Direction"::Incoming then
-                        AddError(StrSubstNo(MustNotBeSpecifiedWhenIsErr, FieldCaption("IC Partner G/L Acc. No."), FieldCaption("IC Direction"), Format("IC Direction")));
-                    if CurrentICPartner = '' then
-                        AddError(StrSubstNo(MustNotBeSpecifiedWhenInterDocErr, FieldCaption("IC Partner G/L Acc. No.")));
-                end;
-#else
-        with "Gen. Journal Line" do
-            if (CurrentICPartner <> '') and ("IC Direction" = "IC Direction"::Outgoing) then begin
-                if ("Account Type" in ["Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
-                   ("Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
-                   ("Account No." <> '') and
-                   ("Bal. Account No." <> '')
-                then
-                    AddError(StrSubstNo(CannotEnterGLBankAccErr, FieldCaption("Account No."), FieldCaption("Bal. Account No.")))
+                        if "Gen. Journal Line"."IC Account Type" = "IC Journal Account Type"::"Bank Account" then
+                            if ICBankAccount.Get("Gen. Journal Line"."IC Account No.", CurrentICPartner) then
+                                if ICBankAccount.Blocked then
+                                    AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
+                                        "Gen. Journal Line".FieldCaption("IC Account No."), "Gen. Journal Line"."IC Account No."));
+                    end
                 else
-                    if (("Account Type" in ["Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and ("Account No." <> '')) xor
-                       (("Bal. Account Type" in ["Bal. Account Type"::"G/L Account", "Account Type"::"Bank Account"]) and
-                        ("Bal. Account No." <> ''))
-                    then
-                        if "IC Account No." = '' then
-                            AddError(StrSubstNo(FieldMustBeSpecifiedErr, FieldCaption("IC Account No.")))
-                        else begin
-                            if "IC Account Type" = "IC Journal Account Type"::"G/L Account" then
-                                if ICGLAccount.Get("IC Account No.") then
-                                    if ICGLAccount.Blocked then
-                                        AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
-                                            FieldCaption("IC Account No."), "IC Account No."));
-
-                            if "IC Account Type" = "IC Journal Account Type"::"Bank Account" then
-                                if ICBankAccount.Get("IC Account No.", CurrentICPartner) then
-                                    if ICBankAccount.Blocked then
-                                        AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
-                                            FieldCaption("IC Account No."), "IC Account No."));
-                        end
-                    else
-                        if "IC Account No." <> '' then
-                            AddError(StrSubstNo(CannotBeSpecifiedErr, FieldCaption("IC Account No.")));
-            end else
-                if "IC Account No." <> '' then begin
-                    if "IC Direction" = "IC Direction"::Incoming then
-                        AddError(StrSubstNo(MustNotBeSpecifiedWhenIsErr, FieldCaption("IC Account No."), FieldCaption("IC Direction"), Format("IC Direction")));
-                    if CurrentICPartner = '' then
-                        AddError(StrSubstNo(MustNotBeSpecifiedWhenInterDocErr, FieldCaption("IC Account No.")));
-                end;
+                    if "Gen. Journal Line"."IC Account No." <> '' then
+                        AddError(StrSubstNo(CannotBeSpecifiedErr, "Gen. Journal Line".FieldCaption("IC Account No.")));
+        end else
+            if "Gen. Journal Line"."IC Account No." <> '' then begin
+                if "Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Incoming then
+                    AddError(StrSubstNo(MustNotBeSpecifiedWhenIsErr, "Gen. Journal Line".FieldCaption("IC Account No."), "Gen. Journal Line".FieldCaption("IC Direction"), Format("Gen. Journal Line"."IC Direction")));
+                if CurrentICPartner = '' then
+                    AddError(StrSubstNo(MustNotBeSpecifiedWhenInterDocErr, "Gen. Journal Line".FieldCaption("IC Account No.")));
+            end;
 #endif
     end;
 
@@ -2220,12 +2220,12 @@ report 11722 "General Journal - Test CZL"
     begin
     end;
 
-    [IntegrationEvent(TRUE, false)]
+    [IntegrationEvent(true, false)]
     local procedure OnAfterCheckGLAcc(GenJournalLine: Record "Gen. Journal Line"; GLAccount: Record "G/L Account"; var ErrorCounter: Integer; var ErrorText: array[50] of Text[250])
     begin
     end;
 
-    [IntegrationEvent(TRUE, false)]
+    [IntegrationEvent(true, false)]
     local procedure OnAfterCheckGenJnlLine(GenJournalLine: Record "Gen. Journal Line"; var ErrorCounter: Integer; var ErrorText: array[50] of Text[250])
     begin
     end;
@@ -2236,7 +2236,7 @@ report 11722 "General Journal - Test CZL"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeTestJobFields(var GenJournalLine: Record "Gen. Journal Line"; var ErrorCounter: Integer; var ErrorText: Array[50] of Text[250]; var IsHandled: Boolean)
+    local procedure OnBeforeTestJobFields(var GenJournalLine: Record "Gen. Journal Line"; var ErrorCounter: Integer; var ErrorText: array[50] of Text[250]; var IsHandled: Boolean)
     begin
     end;
 

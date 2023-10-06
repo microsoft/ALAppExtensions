@@ -1,3 +1,11 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.Currency;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Integration.Graph;
+
 page 30010 "APIV2 - Vendors"
 {
     APIVersion = 'v2.0';
@@ -18,103 +26,103 @@ page 30010 "APIV2 - Vendors"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(number; "No.")
+                field(number; Rec."No.")
                 {
                     Caption = 'No.';
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'Display Name';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo(Name));
+                        RegisterFieldSet(Rec.FieldNo(Name));
                     end;
                 }
-                field(addressLine1; Address)
+                field(addressLine1; Rec.Address)
                 {
                     Caption = 'Address Line 1';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Address"));
+                        RegisterFieldSet(Rec.FieldNo("Address"));
                     end;
                 }
-                field(addressLine2; "Address 2")
+                field(addressLine2; Rec."Address 2")
                 {
                     Caption = 'Address Line 2';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Address 2"));
+                        RegisterFieldSet(Rec.FieldNo("Address 2"));
                     end;
                 }
-                field(city; City)
+                field(city; Rec.City)
                 {
                     Caption = 'City';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("City"));
+                        RegisterFieldSet(Rec.FieldNo("City"));
                     end;
                 }
-                field(state; County)
+                field(state; Rec.County)
                 {
                     Caption = 'State';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("County"));
+                        RegisterFieldSet(Rec.FieldNo("County"));
                     end;
                 }
-                field(country; "Country/Region Code")
+                field(country; Rec."Country/Region Code")
                 {
                     Caption = 'Country/Region Code';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Country/Region Code"));
+                        RegisterFieldSet(Rec.FieldNo("Country/Region Code"));
                     end;
                 }
-                field(postalCode; "Post Code")
+                field(postalCode; Rec."Post Code")
                 {
                     Caption = 'Post Code';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Post Code"));
+                        RegisterFieldSet(Rec.FieldNo("Post Code"));
                     end;
                 }
-                field(phoneNumber; "Phone No.")
+                field(phoneNumber; Rec."Phone No.")
                 {
                     Caption = 'Phone No.';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Phone No."));
+                        RegisterFieldSet(Rec.FieldNo("Phone No."));
                     end;
                 }
-                field(email; "E-Mail")
+                field(email; Rec."E-Mail")
                 {
                     Caption = 'Email';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("E-Mail"));
+                        RegisterFieldSet(Rec.FieldNo("E-Mail"));
                     end;
                 }
-                field(website; "Home Page")
+                field(website; Rec."Home Page")
                 {
                     Caption = 'Website';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Home Page"));
+                        RegisterFieldSet(Rec.FieldNo("Home Page"));
                     end;
                 }
                 field(taxRegistrationNumber; TaxRegistrationNumber)
@@ -128,35 +136,35 @@ page 30010 "APIV2 - Vendors"
                         if IsEnterpriseNumber(EnterpriseNoFieldRef) then begin
                             if (Rec."Country/Region Code" <> BECountryCodeLbl) and (Rec."Country/Region Code" <> '') then begin
                                 Rec.Validate("VAT Registration No.", TaxRegistrationNumber);
-                                RegisterFieldSet(FieldNo("VAT Registration No."));
+                                RegisterFieldSet(Rec.FieldNo("VAT Registration No."));
                             end else begin
                                 EnterpriseNoFieldRef.Validate(TaxRegistrationNumber);
                                 EnterpriseNoFieldRef.Record().SetTable(Rec);
-                                RegisterFieldSet(FieldNo("VAT Registration No."));
+                                RegisterFieldSet(Rec.FieldNo("VAT Registration No."));
                             end;
                         end else begin
                             Rec.Validate("VAT Registration No.", TaxRegistrationNumber);
-                            RegisterFieldSet(FieldNo("VAT Registration No."));
+                            RegisterFieldSet(Rec.FieldNo("VAT Registration No."));
                         end;
                     end;
                 }
-                field(currencyId; "Currency Id")
+                field(currencyId; Rec."Currency Id")
                 {
                     Caption = 'Currency Id';
 
                     trigger OnValidate()
                     begin
-                        if "Currency Id" = BlankGUID then
-                            "Currency Code" := ''
+                        if Rec."Currency Id" = BlankGUID then
+                            Rec."Currency Code" := ''
                         else begin
-                            if not Currency.GetBySystemId("Currency Id") then
+                            if not Currency.GetBySystemId(Rec."Currency Id") then
                                 Error(CurrencyIdDoesNotMatchACurrencyErr);
 
-                            "Currency Code" := Currency.Code;
+                            Rec."Currency Code" := Currency.Code;
                         end;
 
-                        RegisterFieldSet(FieldNo("Currency Id"));
-                        RegisterFieldSet(FieldNo("Currency Code"));
+                        RegisterFieldSet(Rec.FieldNo("Currency Id"));
+                        RegisterFieldSet(Rec.FieldNo("Currency Code"));
                     end;
                 }
                 field(currencyCode; CurrencyCodeTxt)
@@ -165,94 +173,94 @@ page 30010 "APIV2 - Vendors"
 
                     trigger OnValidate()
                     begin
-                        "Currency Code" :=
+                        Rec."Currency Code" :=
                           GraphMgtGeneralTools.TranslateCurrencyCodeToNAVCurrencyCode(
                             LCYCurrencyCode, COPYSTR(CurrencyCodeTxt, 1, MAXSTRLEN(LCYCurrencyCode)));
 
                         if Currency.Code <> '' then begin
-                            if Currency.Code <> "Currency Code" then
+                            if Currency.Code <> Rec."Currency Code" then
                                 Error(CurrencyValuesDontMatchErr);
                             exit;
                         end;
 
-                        if "Currency Code" = '' then
-                            "Currency Id" := BlankGUID
+                        if Rec."Currency Code" = '' then
+                            Rec."Currency Id" := BlankGUID
                         else begin
-                            if not Currency.Get("Currency Code") then
+                            if not Currency.Get(Rec."Currency Code") then
                                 Error(CurrencyCodeDoesNotMatchACurrencyErr);
 
-                            "Currency Id" := Currency.SystemId;
+                            Rec."Currency Id" := Currency.SystemId;
                         end;
 
-                        RegisterFieldSet(FieldNo("Currency Id"));
-                        RegisterFieldSet(FieldNo("Currency Code"));
+                        RegisterFieldSet(Rec.FieldNo("Currency Id"));
+                        RegisterFieldSet(Rec.FieldNo("Currency Code"));
                     end;
                 }
                 field(irs1099Code; IRS1099VendorCode)
                 {
                     Caption = 'IRS1099 Code';
                 }
-                field(paymentTermsId; "Payment Terms Id")
+                field(paymentTermsId; Rec."Payment Terms Id")
                 {
                     Caption = 'Payment Terms Id';
 
                     trigger OnValidate()
                     begin
-                        if "Payment Terms Id" = BlankGUID then
-                            "Payment Terms Code" := ''
+                        if Rec."Payment Terms Id" = BlankGUID then
+                            Rec."Payment Terms Code" := ''
                         else begin
-                            if not PaymentTerms.GetBySystemId("Payment Terms Id") then
+                            if not PaymentTerms.GetBySystemId(Rec."Payment Terms Id") then
                                 Error(PaymentTermsIdDoesNotMatchAPaymentTermsErr);
 
-                            "Payment Terms Code" := PaymentTerms.Code;
+                            Rec."Payment Terms Code" := PaymentTerms.Code;
                         end;
 
-                        RegisterFieldSet(FieldNo("Payment Terms Id"));
-                        RegisterFieldSet(FieldNo("Payment Terms Code"));
+                        RegisterFieldSet(Rec.FieldNo("Payment Terms Id"));
+                        RegisterFieldSet(Rec.FieldNo("Payment Terms Code"));
                     end;
                 }
-                field(paymentMethodId; "Payment Method Id")
+                field(paymentMethodId; Rec."Payment Method Id")
                 {
                     Caption = 'Payment Method Id';
 
                     trigger OnValidate()
                     begin
-                        if "Payment Method Id" = BlankGUID then
-                            "Payment Method Code" := ''
+                        if Rec."Payment Method Id" = BlankGUID then
+                            Rec."Payment Method Code" := ''
                         else begin
-                            if not PaymentMethod.GetBySystemId("Payment Method Id") then
+                            if not PaymentMethod.GetBySystemId(Rec."Payment Method Id") then
                                 Error(PaymentMethodIdDoesNotMatchAPaymentMethodErr);
 
-                            "Payment Method Code" := PaymentMethod.Code;
+                            Rec."Payment Method Code" := PaymentMethod.Code;
                         end;
 
-                        RegisterFieldSet(FieldNo("Payment Method Id"));
-                        RegisterFieldSet(FieldNo("Payment Method Code"));
+                        RegisterFieldSet(Rec.FieldNo("Payment Method Id"));
+                        RegisterFieldSet(Rec.FieldNo("Payment Method Code"));
                     end;
                 }
-                field(taxLiable; "Tax Liable")
+                field(taxLiable; Rec."Tax Liable")
                 {
                     Caption = 'Tax Liable';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Tax Liable"));
+                        RegisterFieldSet(Rec.FieldNo("Tax Liable"));
                     end;
                 }
-                field(blocked; Blocked)
+                field(blocked; Rec.Blocked)
                 {
                     Caption = 'Blocked';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo(Blocked));
+                        RegisterFieldSet(Rec.FieldNo(Blocked));
                     end;
                 }
-                field(balance; "Balance (LCY)")
+                field(balance; Rec."Balance (LCY)")
                 {
                     Caption = 'Balance';
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }
@@ -262,14 +270,14 @@ page 30010 "APIV2 - Vendors"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
-                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(Vendor);
+                    SubPageLink = Id = field(SystemId), "Parent Type" = const(Vendor);
                 }
                 part(defaultDimensions; "APIV2 - Default Dimensions")
                 {
                     Caption = 'Default Dimensions';
                     EntityName = 'defaultDimension';
                     EntitySetName = 'defaultDimensions';
-                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(Vendor);
+                    SubPageLink = ParentId = field(SystemId), "Parent Type" = const(Vendor);
                 }
                 part(agedAccountsPayable; "APIV2 - Aged AP")
                 {
@@ -277,7 +285,7 @@ page 30010 "APIV2 - Vendors"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'agedAccountsPayable';
                     EntitySetName = 'agedAccountsPayables';
-                    SubPageLink = AccountId = Field(SystemId);
+                    SubPageLink = AccountId = field(SystemId);
                 }
                 part(contactsInformation; "APIV2 - Contacts Information")
                 {
@@ -291,7 +299,7 @@ page 30010 "APIV2 - Vendors"
                     Caption = 'Document Attachments';
                     EntityName = 'documentAttachment';
                     EntitySetName = 'documentAttachments';
-                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Vendor);
+                    SubPageLink = "Document Id" = field(SystemId), "Document Type" = const(Vendor);
                 }
             }
         }
@@ -311,17 +319,17 @@ page 30010 "APIV2 - Vendors"
         Vendor: Record Vendor;
         VendorRecordRef: RecordRef;
     begin
-        Vendor.SetRange("No.", "No.");
+        Vendor.SetRange("No.", Rec."No.");
         if not Vendor.IsEmpty() then
-            Insert();
+            Rec.Insert();
 
-        Insert(true);
+        Rec.Insert(true);
 
         VendorRecordRef.GetTable(Rec);
         GraphMgtGeneralTools.ProcessNewRecordFromAPI(VendorRecordRef, TempFieldSet, CurrentDateTime());
         VendorRecordRef.SetTable(Rec);
 
-        Modify(true);
+        Rec.Modify(true);
         SetCalculatedFields();
         exit(false);
     end;
@@ -330,14 +338,14 @@ page 30010 "APIV2 - Vendors"
     var
         Vendor: Record Vendor;
     begin
-        Vendor.GetBySystemId(SystemId);
+        Vendor.GetBySystemId(Rec.SystemId);
 
-        if "No." = Vendor."No." then
-            Modify(true)
+        if Rec."No." = Vendor."No." then
+            Rec.Modify(true)
         else begin
             Vendor.TransferFields(Rec, false);
-            Vendor.Rename("No.");
-            TransferFields(Vendor);
+            Vendor.Rename(Rec."No.");
+            Rec.TransferFields(Vendor);
         end;
 
         SetCalculatedFields();
@@ -370,7 +378,7 @@ page 30010 "APIV2 - Vendors"
     var
         EnterpriseNoFieldRef: FieldRef;
     begin
-        CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
+        CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, Rec."Currency Code");
 
         if IsEnterpriseNumber(EnterpriseNoFieldRef) then begin
             if (Rec."Country/Region Code" <> BECountryCodeLbl) and (Rec."Country/Region Code" <> '') then
@@ -383,7 +391,7 @@ page 30010 "APIV2 - Vendors"
 
     local procedure ClearCalculatedFields()
     begin
-        Clear(SystemId);
+        Clear(Rec.SystemId);
         Clear(IRS1099VendorCode);
         Clear(TaxRegistrationNumber);
         TempFieldSet.DeleteAll();

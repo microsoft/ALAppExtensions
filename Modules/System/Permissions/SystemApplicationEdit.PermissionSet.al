@@ -3,7 +3,17 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 22 "System Application - Edit"
+namespace System.Security.AccessControl;
+
+using System.Visualization;
+using System.Privacy;
+using System.Email;
+using System.Text;
+using System.Environment.Configuration;
+using System.Globalization;
+using System.Integration.Word;
+
+permissionset 22 "System Application - Edit"
 {
     Access = Internal;
     Assignable = false;
@@ -15,11 +25,6 @@ PermissionSet 22 "System Application - Edit"
                              "Entity Text - Edit",
                              "Guided Experience - Edit",
                              "Language - Edit",
-#if not CLEAN19
-#pragma warning disable AL0432
-                             "SL Designer Subscribers - Edit",
-#pragma warning restore AL0432
-#endif
                              "Translation - Edit",
                              "Word Templates - Edit";
 }

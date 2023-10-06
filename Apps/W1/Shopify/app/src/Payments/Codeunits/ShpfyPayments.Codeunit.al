@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy Payments (ID 30169).
 /// </summary>
@@ -8,7 +10,7 @@ codeunit 30169 "Shpfy Payments"
 
     trigger OnRun()
     begin
-        if Rec.FindSet(false, false) then
+        if Rec.FindSet(false) then
             repeat
                 SetShop(Rec);
                 ImportPaymentTransactions();
@@ -159,6 +161,7 @@ codeunit 30169 "Shpfy Payments"
         Math: Codeunit "Shpfy Math";
         RecordRef: RecordRef;
         Id: BigInteger;
+        PayoutId: BigInteger;
     begin
         Id := JsonHelper.GetValueAsBigInteger(JTransaction, 'id');
         Clear(PaymentTransaction);
@@ -189,6 +192,15 @@ codeunit 30169 "Shpfy Payments"
             else
                 if PaymentTransaction."Payout Id" > 0 then
                     SinceId := Math.Min(SinceId, PaymentTransaction."Payout Id");
+        end else begin
+            PaymentTransaction.Get(Id);
+            if PaymentTransaction."Payout Id" = 0 then begin
+                PayoutId := JsonHelper.GetValueAsBigInteger(JTransaction, 'payout_id');
+                if PayoutId <> 0 then begin
+                    PaymentTransaction."Payout Id" := PayoutId;
+                    PaymentTransaction.Modify();
+                end;
+            end;
         end;
     end;
 }

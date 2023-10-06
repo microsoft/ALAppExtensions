@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
 /// <summary>
 /// Provides helper functions for the Data Encryption Standard (DES)
 /// </summary>
@@ -43,34 +45,6 @@ codeunit 1379 DESCryptoServiceProvider
     begin
         DecryptedText := DESCryptoServiceProviderImpl.DecryptText(EncryptedText, Password, Salt);
     end;
-
-#if not CLEAN18
-    /// <summary>
-    /// Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
-    /// </summary>
-    /// <param name="Password">Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes</param>
-    /// <param name="InputInstream">Represents the input instream data to encrypt</param>
-    /// <param name="OutputOutstream">Represents the output instream encrypted data</param>
-    [NonDebuggable]
-    [Obsolete('Replaced, add the salt parameter to continue using this function', '18.0')]
-    procedure EncryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
-    begin
-        DESCryptoServiceProviderImpl.EncryptStream(Password, Password, InputInstream, OutputOutstream);
-    end;
-
-    /// <summary>
-    /// Decrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider
-    /// </summary>
-    /// <param name="Password">Represents the password to be used to initialize a new instance of Rfc2898DeriveBytes</param>
-    /// <param name="InputInstream">Represents the input instream data to decrypt</param>
-    /// <param name="OutputOutstream">Represents the output instream decrypted data</param>
-    [NonDebuggable]
-    [Obsolete('Replaced, add the salt parameter to continue using this function', '18.0')]
-    procedure DecryptStream(Password: Text; InputInstream: InStream; var OutputOutstream: Outstream)
-    begin
-        DESCryptoServiceProviderImpl.DecryptStream(Password, Password, InputInstream, OutputOutstream);
-    end;
-#endif
 
     /// <summary>
     /// Encrypts data in stream with DotNet Cryptography.DESCryptoServiceProvider

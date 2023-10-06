@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Utilities;
+
 codeunit 5285 "Audit Data Check SAF-T" implements "Audit File Export Data Check"
 {
     Access = Internal;
@@ -19,12 +31,12 @@ codeunit 5285 "Audit Data Check SAF-T" implements "Audit File Export Data Check"
         DataCheckStatusForModification := DataCheckSAFT.CheckAuditDocReadyToExport(AuditFileExportHeader);
 
         AuditFileExportHeader.Get(AuditFileExportHeader.ID);
-        if (AuditFileExportHeader."Data check status" = "Audit Data Check Status"::Failed) or
-           (DataCheckStatusForModification = "Audit Data Check Status"::Failed)
+        if (AuditFileExportHeader."Data check status" = Enum::"Audit Data Check Status"::Failed) or
+           (DataCheckStatusForModification = Enum::"Audit Data Check Status"::Failed)
         then
-            exit("Audit Data Check Status"::Failed);
+            exit(Enum::"Audit Data Check Status"::Failed);
 
-        DataCheckStatus := "Audit Data Check Status"::Passed;
+        DataCheckStatus := Enum::"Audit Data Check Status"::Passed;
     end;
 
     procedure CheckAuditDocReadyToExport(var AuditFileExportHeader: Record "Audit File Export Header") DataCheckStatus: enum "Audit Data Check Status"
@@ -54,11 +66,11 @@ codeunit 5285 "Audit Data Check SAF-T" implements "Audit File Export Data Check"
         DataCheckStatusForModification := DataCheckSAFT.CheckAuditDocReadyToExport(AuditFileExportHeader);
 
         if (ErrorMessageManagement.GetLastErrorID() <> 0) or
-           (DataCheckStatusForModification = "Audit Data Check Status"::Failed)
+           (DataCheckStatusForModification = Enum::"Audit Data Check Status"::Failed)
         then
-            exit("Audit Data Check Status"::Failed);
+            exit(Enum::"Audit Data Check Status"::Failed);
 
-        DataCheckStatus := "Audit Data Check Status"::Passed;
+        DataCheckStatus := Enum::"Audit Data Check Status"::Passed;
     end;
 
     procedure TestRequiredFields(var RecRef: RecordRef): enum "Audit Data Check status"
@@ -73,7 +85,7 @@ codeunit 5285 "Audit Data Check SAF-T" implements "Audit File Export Data Check"
         ErrorsFound: Boolean;
     begin
         if RecRef.IsEmpty() then
-            exit("Audit Data Check Status"::" ");
+            exit(Enum::"Audit Data Check Status"::" ");
 
         case RecRef.Number of
             Database::"Company Information":
@@ -109,8 +121,8 @@ codeunit 5285 "Audit Data Check SAF-T" implements "Audit File Export Data Check"
         end;
 
         if ErrorsFound then
-            exit("Audit Data Check status"::Failed);
+            exit(Enum::"Audit Data Check Status"::Failed);
 
-        exit("Audit Data Check status"::Passed);
+        exit(Enum::"Audit Data Check Status"::Passed);
     end;
 }

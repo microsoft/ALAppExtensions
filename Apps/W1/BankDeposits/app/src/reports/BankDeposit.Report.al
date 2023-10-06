@@ -1,3 +1,17 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Sales.Customer;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Sales.Receivables;
+using Microsoft.Purchases.Payables;
+using System.Globalization;
+using System.Utilities;
+
 report 1690 "Bank Deposit"
 {
     DefaultLayout = RDLC;
@@ -18,7 +32,7 @@ report 1690 "Bank Deposit"
             }
             dataitem(PageHeader; "Integer")
             {
-                DataItemTableView = SORTING(Number) WHERE(Number = CONST(1));
+                DataItemTableView = sorting(Number) where(Number = const(1));
                 column(USERID; UserId)
                 {
                 }
@@ -114,9 +128,9 @@ report 1690 "Bank Deposit"
                 }
                 dataitem("Posted Bank Deposit Line"; "Posted Bank Deposit Line")
                 {
-                    DataItemLink = "Bank Deposit No." = FIELD("No.");
+                    DataItemLink = "Bank Deposit No." = field("No.");
                     DataItemLinkReference = "Posted Bank Deposit Header";
-                    DataItemTableView = SORTING("Bank Deposit No.", "Line No.");
+                    DataItemTableView = sorting("Bank Deposit No.", "Line No.");
                     column(Posted_Bank_Deposit_Line__Account_Type_; "Account Type")
                     {
                     }
@@ -155,7 +169,7 @@ report 1690 "Bank Deposit"
                     }
                     dataitem(CustApplication; "Integer")
                     {
-                        DataItemTableView = SORTING(Number);
+                        DataItemTableView = sorting(Number);
                         column(TempAppliedCustLedgerEntry__Document_Date_; TempAppliedCustLedgerEntry."Document Date")
                         {
                         }
@@ -226,7 +240,7 @@ report 1690 "Bank Deposit"
                     }
                     dataitem(VendApplication; "Integer")
                     {
-                        DataItemTableView = SORTING(Number);
+                        DataItemTableView = sorting(Number);
                         column(TempAppliedVendorLedgerEntry__Document_Date_; TempAppliedVendorLedgerEntry."Document Date")
                         {
                         }
@@ -383,7 +397,8 @@ report 1690 "Bank Deposit"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := GlobalLanguage.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
 
                 if not BankAccount.Get("Bank Account No.") then
                     BankAccount.Name := StrSubstNo(InvalidAccountTxt, BankAccount.TableCaption);
@@ -450,7 +465,7 @@ report 1690 "Bank Deposit"
         TempAppliedCustLedgerEntry: Record "Cust. Ledger Entry" temporary;
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempAppliedVendorLedgerEntry: Record "Vendor Ledger Entry" temporary;
-        Language: Codeunit Language;
+        GlobalLanguage: Codeunit Language;
         BankDepositPrinted: Codeunit "Bank Deposit-Printed";
         EntryApplicationMgt: Codeunit "Entry Application Mgt";
         AccountName: Text[100];

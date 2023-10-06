@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Security.User;
 
 table 9008 "User Login"
 {
@@ -18,6 +20,7 @@ table 9008 "User Login"
         }
         field(2; "First Login Date"; Date)
         {
+            DataClassification = SystemMetadata;
         }
         field(3; "Penultimate Login Date"; DateTime)
         {

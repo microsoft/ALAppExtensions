@@ -1,6 +1,10 @@
+#if not CLEAN23
 codeunit 1360 "MS - WorldPay Standard Mgt."
 {
     TableNo = "Payment Reporting Argument";
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     trigger OnRun()
     begin
@@ -324,3 +328,4 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
 
 }
 
+#endif

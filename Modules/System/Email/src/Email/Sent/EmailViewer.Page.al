@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// A page to view sent emails.
 /// </summary>
@@ -92,6 +94,7 @@ page 12 "Email Viewer"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the content of the email.';
                     MultiLine = true;
+                    ExtendedDatatype = RichContent;
                     Editable = false;
                 }
             }
@@ -231,7 +234,6 @@ page 12 "Email Viewer"
         EmailSubject: Text;
         EmailBody: Text;
         HasSourceRecord: Boolean;
-        [InDataSet]
         IsHTMLFormatted, HasAttachments : Boolean;
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
         PageCaptionTxt: Label 'Sent Email';

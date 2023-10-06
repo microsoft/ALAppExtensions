@@ -3,6 +3,18 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Azure.ActiveDirectory;
+
+using System.TestLibraries.Environment;
+using System.TestLibraries.Azure.ActiveDirectory;
+using System.TestLibraries.Mocking;
+using System.Security.AccessControl;
+using System.Azure.Identity;
+using System;
+using System.Environment.Configuration;
+using System.Globalization;
+using System.TestLibraries.Utilities;
+
 codeunit 132928 "Azure AD User Sync Test"
 {
     Subtype = Test;
@@ -26,6 +38,7 @@ codeunit 132928 "Azure AD User Sync Test"
         TeamMemberEmailTxt: Label 'team.member@microsoft.com';
         TeamsUserEmailTxt: Label 'teams.user@microsoft.com';
         InternalAdminEmailTxt: Label 'internal.admin@microsoft.com';
+        D365AdminEmailTxt: Label 'd365.admin@microsoft.com';
         DeviceEmailTxt: Label 'device@microsoft.com';
         NonBcEmailTxt: Label 'nonbc@microsoft.com';
 #pragma warning restore AA0240
@@ -100,7 +113,7 @@ codeunit 132928 "Azure AD User Sync Test"
         AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
 
         // [THEN] The licenses are correctly assigned
-        LibraryAssert.AreEqual(5, User.Count(), UnexpectedNumberOfUsersErr);
+        LibraryAssert.AreEqual(6, User.Count(), UnexpectedNumberOfUsersErr);
         // Verify Essential user
         User.SetRange("Authentication Email", EssentialEmailTxt);
         LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
@@ -124,7 +137,12 @@ codeunit 132928 "Azure AD User Sync Test"
         // Verify Internal admin user
         User.SetRange("Authentication Email", InternalAdminEmailTxt);
         LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
-        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId(), User."User Security ID"), IncorrectPlanErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetGlobalAdminPlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        // Verify D365 admin user
+        User.SetRange("Authentication Email", D365AdminEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetD365AdminPlanId(), User."User Security ID"), IncorrectPlanErr);
 
         TearDown();
     end;
@@ -211,10 +229,10 @@ codeunit 132928 "Azure AD User Sync Test"
         AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
         AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
 
-        // [THEN] Five users are created: Essential, Team Member, Teams, Internal admin and Device (only non-BC user is skipped)
-        // Even though Teams users and Internal admins are normally skipped during sync, here we bring them in
+        // [THEN] Six users are created: Essential, Team Member, Teams, Internal admin, D365 admin and Device (only non-BC user is skipped)
+        // Even though Teams users, Internal admins and D365 admins are normally skipped during sync, here we bring them in
         // because they were explicitly added to the environemnt group by the admin.
-        LibraryAssert.AreEqual(5, User.Count(), UnexpectedNumberOfUsersErr);
+        LibraryAssert.AreEqual(6, User.Count(), UnexpectedNumberOfUsersErr);
 
         // Verify Essential user
         User.SetRange("Authentication Email", EssentialEmailTxt);
@@ -249,7 +267,14 @@ codeunit 132928 "Azure AD User Sync Test"
         LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
         LibraryAssert.AreEqual(InternalAdminEmailTxt, User."Contact Email", UnexpectedContactEmailErr);
         LibraryAssert.AreEqual('Internal Admin User', User."Full Name", UnexpectedFullNameErr);
-        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId(), User."User Security ID"), IncorrectPlanErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetGlobalAdminPlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        // Verify D365 admin user
+        User.SetRange("Authentication Email", D365AdminEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.AreEqual(D365AdminEmailTxt, User."Contact Email", UnexpectedContactEmailErr);
+        LibraryAssert.AreEqual('D365 Admin User', User."Full Name", UnexpectedFullNameErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetD365AdminPlanId(), User."User Security ID"), IncorrectPlanErr);
 
         TearDown();
     end;
@@ -279,8 +304,8 @@ codeunit 132928 "Azure AD User Sync Test"
         AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
         AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
 
-        // [THEN] Four users are created: Essential, Team Member, Internal admin and Device (Teams and non-BC users are skipped)
-        LibraryAssert.AreEqual(4, User.Count(), UnexpectedNumberOfUsersErr);
+        // [THEN] Five users are created: Essential, Team Member, Internal admin, D365 admin and Device (Teams and non-BC users are skipped)
+        LibraryAssert.AreEqual(5, User.Count(), UnexpectedNumberOfUsersErr);
 
         // Verify Teams user is not created
         User.SetRange("Authentication Email", TeamsUserEmailTxt);
@@ -361,7 +386,7 @@ codeunit 132928 "Azure AD User Sync Test"
 
         // [GIVEN] A user who is global admin in Azure AD who has a corresponding user in BC and is not a member of the environment security group
         MockGraphQueryTestLibrary.AddAndReturnGraphUser(GraphUserInternalAdmin, CreateGuid(), 'Internal Admin', CommonLastNameTxt, InternalAdminEmailTxt);
-        MockGraphQueryTestLibrary.AddUserRole(GraphUserInternalAdmin.ObjectId, PlanIds.GetInternalAdminPlanId(), '', '', true);
+        MockGraphQueryTestLibrary.AddUserRole(GraphUserInternalAdmin.ObjectId, PlanIds.GetGlobalAdminPlanId(), '', '', true);
         AzureADUserMgtTestLibrary.CreateUser(GraphUserInternalAdmin);
 
         // [WHEN] The information from M365 is fetched and applied
@@ -372,7 +397,44 @@ codeunit 132928 "Azure AD User Sync Test"
         // Verify Internal Admin user plan
         User.SetRange("Authentication Email", InternalAdminEmailTxt);
         LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
-        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId(), User."User Security ID"), IncorrectPlanErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetGlobalAdminPlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        TearDown();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [CommitBehavior(CommitBehavior::Ignore)]
+    procedure TestUpdateD365AdminNotMemberOfEnvironmentGroup()
+    var
+        User: Record User;
+        TempAzureADUserUpdateBuffer: Record "Azure AD User Update Buffer" temporary;
+        AzureADUserSyncImpl: Codeunit "Azure AD User Sync Impl.";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        PlanIds: Codeunit "Plan Ids";
+        GraphUserD365Admin: DotNet UserInfo;
+        // NullIEnumerable: DotNet GenericList1;
+        GroupNameTxt: Label 'Group with members';
+    begin
+        Initialize();
+
+        // [GIVEN] The environment directory group is defined
+        MockGraphQueryTestLibrary.SetEnvironmentDirectoryGroup(GroupNameTxt);
+
+        // [GIVEN] A user who is d365 admin in Azure AD who has a corresponding user in BC and is not a member of the environment security group
+        MockGraphQueryTestLibrary.AddAndReturnGraphUser(GraphUserD365Admin, CreateGuid(), 'D365 Admin', CommonLastNameTxt, D365AdminEmailTxt);
+        MockGraphQueryTestLibrary.AddUserRole(GraphUserD365Admin.ObjectId, PlanIds.GetD365AdminPlanId(), '', '', true);
+        AzureADUserMgtTestLibrary.CreateUser(GraphUserD365Admin);
+
+        // [WHEN] The information from M365 is fetched and applied
+        // [THEN] Only one update is applied - the user plan
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        LibraryAssert.AreEqual(1, AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer), UnexpectedNoOfChangesErr);
+
+        // Verify Internal Admin user plan
+        User.SetRange("Authentication Email", D365AdminEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetD365AdminPlanId(), User."User Security ID"), IncorrectPlanErr);
 
         TearDown();
     end;
@@ -446,7 +508,7 @@ codeunit 132928 "Azure AD User Sync Test"
         AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
 
         // [THEN] User pans are cleared
-        LibraryAssert.AreEqual(5, User.Count(), UnexpectedNumberOfUsersErr);
+        LibraryAssert.AreEqual(6, User.Count(), UnexpectedNumberOfUsersErr);
         User.FindSet();
         repeat
             LibraryAssert.IsFalse(AzureADPlan.DoesUserHavePlans(User."User Security ID"), 'Expected the user to not have any plans assigned.');
@@ -766,7 +828,7 @@ codeunit 132928 "Azure AD User Sync Test"
         AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
 
         // [THEN] The expected number of successful updates is returned (5 plans are assigned in BC)
-        LibraryAssert.AreEqual(5, AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer), UnexpectedNoOfChangesErr);
+        LibraryAssert.AreEqual(6, AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer), UnexpectedNoOfChangesErr);
 
         // [GIVEN] An error will happen when creating a new user
         UnbindSubscription(AzureADUserMgtTestLibrary);
@@ -804,7 +866,7 @@ codeunit 132928 "Azure AD User Sync Test"
     local procedure CreateUsers(AzureAdOnly: Boolean; EnvironmentGroup: Text)
     var
         PlanIds: Codeunit "Plan Ids";
-        GraphUserEssential, GraphUserTeams, GraphUserTeamMember, GraphUserInternalAdmin, GraphUserDevice, GraphUserNonBC : DotNet UserInfo;
+        GraphUserEssential, GraphUserTeams, GraphUserTeamMember, GraphUserInternalAdmin, GraphUserD365Admin, GraphUserDevice, GraphUserNonBC : DotNet UserInfo;
         CapabilityStatusEnabledTxt: Label 'Enabled';
         ServicePlanNameTxt: Label '';
     begin
@@ -824,7 +886,11 @@ codeunit 132928 "Azure AD User Sync Test"
 
         // A user who is internal admin
         MockGraphQueryTestLibrary.AddAndReturnGraphUser(GraphUserInternalAdmin, CreateGuid(), 'Internal Admin', CommonLastNameTxt, InternalAdminEmailTxt);
-        MockGraphQueryTestLibrary.AddUserRole(GraphUserInternalAdmin.ObjectId, PlanIds.GetInternalAdminPlanId(), '', '', true);
+        MockGraphQueryTestLibrary.AddUserRole(GraphUserInternalAdmin.ObjectId, PlanIds.GetGlobalAdminPlanId(), '', '', true);
+
+        // A user who is D365 admin
+        MockGraphQueryTestLibrary.AddAndReturnGraphUser(GraphUserD365Admin, CreateGuid(), 'D365 Admin', CommonLastNameTxt, D365AdminEmailTxt);
+        MockGraphQueryTestLibrary.AddUserRole(GraphUserD365Admin.ObjectId, PlanIds.GetD365AdminPlanId(), '', '', true);
 
         // A user who is a part of the Device group
         MockGraphQueryTestLibrary.AddAndReturnGraphUser(GraphUserDevice, CreateGuid(), 'Device', CommonLastNameTxt, DeviceEmailTxt);
@@ -838,6 +904,7 @@ codeunit 132928 "Azure AD User Sync Test"
             MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserTeamMember, EnvironmentGroup);
             MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserTeams, EnvironmentGroup);
             MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserInternalAdmin, EnvironmentGroup);
+            MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserD365Admin, EnvironmentGroup);
             MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserDevice, EnvironmentGroup);
             MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserNonBC, EnvironmentGroup);
         end;
@@ -850,6 +917,7 @@ codeunit 132928 "Azure AD User Sync Test"
         AzureADUserMgtTestLibrary.CreateUser(GraphUserTeams);
         AzureADUserMgtTestLibrary.CreateUser(GraphUserTeamMember);
         AzureADUserMgtTestLibrary.CreateUser(GraphUserInternalAdmin);
+        AzureADUserMgtTestLibrary.CreateUser(GraphUserD365Admin);
         AzureADUserMgtTestLibrary.CreateUser(GraphUserDevice);
     end;
 

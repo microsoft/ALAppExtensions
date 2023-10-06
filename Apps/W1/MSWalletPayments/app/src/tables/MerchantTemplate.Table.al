@@ -1,16 +1,8 @@
 table 1081 "MS - Wallet Merchant Template"
 {
-#if not CLEAN20
-    ObsoleteState = Pending;
-    ObsoleteReason = 'MS Wallet have been deprecated';
-    ObsoleteTag = '20.0';
-    DrillDownPageID = 1081;
-    LookupPageID = 1081;
-#else
     ObsoleteState = Removed;
     ObsoleteReason = 'MS Wallet have been deprecated';
     ObsoleteTag = '23.0';
-#endif 
     Caption = 'Microsoft Pay Payments Account Template';
     ReplicateData = false;
 

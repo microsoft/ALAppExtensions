@@ -1,3 +1,7 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using System.Security.AccessControl;
+
 permissionsetextension 2680 "Data Search Setup" extends "D365 Bus Full Access"
 {
     Permissions =
@@ -11,6 +15,7 @@ permissionsetextension 2680 "Data Search Setup" extends "D365 Bus Full Access"
         tabledata "Data Search Source Temp" = RIMD,
         codeunit "Data Search Defaults" = X,
         codeunit "Data Search In Table" = X,
+        codeunit "Data Search Invocation" = X,
         page "Data Search" = X,
         page "Data Search Lines" = X,
         page "Data Search Result Records" = X,

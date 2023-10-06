@@ -1,7 +1,14 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Team;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.PaymentTerms;
 
 codeunit 13648 "OIOUBL-Common Logic"
 {
@@ -613,6 +620,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         XmlNameSpaceCBC := DocNameSpaceCBC;
         XmlNameSpaceCAC := DocNameSpaceCAC;
     end;
+
 
     [IntegrationEvent(true, false)]
     local procedure OnInsertCustomerPartyOnBeforeInsertPartyIdentification(var PartyElement: XmlElement; VATRegNo: Text[20]; CountryRegionCode: Code[10]; GLN: Code[13]; DocNameSpaceCAC: Text[250]; DocNameSpaceCBC: Text[250]; var IsHandled: Boolean)

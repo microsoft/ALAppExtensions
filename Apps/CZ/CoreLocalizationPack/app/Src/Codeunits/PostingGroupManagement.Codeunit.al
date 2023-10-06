@@ -144,13 +144,7 @@ codeunit 31034 "Posting Group Management CZL"
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
     begin
         SalesReceivablesSetup.Get();
-#if not CLEAN20
-#pragma warning disable AL0432
-        SalesReceivablesSetup.TestField("Allow Alter Posting Groups CZL");
-#pragma warning restore AL0432
-#else
         SalesReceivablesSetup.TestField("Allow Multiple Posting Groups");
-#endif
     end;
 
     procedure CheckAllowChangeServiceSetup()
@@ -158,13 +152,7 @@ codeunit 31034 "Posting Group Management CZL"
         ServiceMgtSetup: Record "Service Mgt. Setup";
     begin
         ServiceMgtSetup.Get();
-#if not CLEAN20
-#pragma warning disable AL0432
-        ServiceMgtSetup.TestField("Allow Alter Posting Groups CZL");
-#pragma warning restore AL0432
-#else
         ServiceMgtSetup.TestField("Allow Multiple Posting Groups");
-#endif
     end;
 
     procedure CheckAllowChangePurchaseSetup()
@@ -172,13 +160,7 @@ codeunit 31034 "Posting Group Management CZL"
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
         PurchasesPayablesSetup.Get();
-#if not CLEAN20
-#pragma warning disable AL0432
-        PurchasesPayablesSetup.TestField("Allow Alter Posting Groups CZL");
-#pragma warning restore AL0432
-#else
         PurchasesPayablesSetup.TestField("Allow Multiple Posting Groups");
-#endif
     end;
 
     procedure HasCustomerSamePostingGroup(NewPostingGroup: Code[20]; CustomerNo: Code[20]): Boolean
@@ -198,15 +180,6 @@ codeunit 31034 "Posting Group Management CZL"
             exit(NewPostingGroup = Vendor."Vendor Posting Group");
         exit(false);
     end;
-#if not CLEAN20
-    internal procedure IsAllowMultipleCustVendPostingGroupsEnabled(): Boolean
-    var
-        FeatureManagementFacade: Codeunit "Feature Management Facade";
-        AllowMultipleCustVendPostingGroupsLbl: Label 'AllowMultipleCustVendPostingGroups', Locked = true;
-    begin
-        exit(FeatureManagementFacade.IsEnabled(AllowMultipleCustVendPostingGroupsLbl));
-    end;
-#endif  
 
     [IntegrationEvent(false, false)]
     local procedure OnCheckPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20]; SourceRecordRef: RecordRef; var CheckedPostingGroup: Option "None",Customer,CustomerInService,Vendor; var CustomerVendorNo: Code[20])

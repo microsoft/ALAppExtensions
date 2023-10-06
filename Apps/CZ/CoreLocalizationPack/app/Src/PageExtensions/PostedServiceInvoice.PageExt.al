@@ -8,11 +8,6 @@ pageextension 11751 "Posted Service Invoice CZL" extends "Posted Service Invoice
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -23,7 +18,6 @@ pageextension 11751 "Posted Service Invoice CZL" extends "Posted Service Invoice
                 Visible = false;
             }
         }
-#endif
         addbefore("Customer Posting Group")
         {
             field("VAT Bus. Posting Group CZL"; Rec."VAT Bus. Posting Group")
@@ -247,7 +241,9 @@ pageextension 11751 "Posted Service Invoice CZL" extends "Posted Service Invoice
     end;
 
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;

@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSForCustomer;
+
+using Microsoft.Sales.Posting;
+using Microsoft.Sales.Receivables;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Sales.Document;
+using System.Utilities;
+
 codeunit 18661 "TDS For Customer Subscribers"
 {
     var
@@ -27,7 +40,7 @@ codeunit 18661 "TDS For Customer Subscribers"
         end;
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
     local procedure PostCustEntry(
         var GenJnlLine: Record "Gen. Journal Line";

@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Reflection;
+using System.Environment;
+
 /// <summary>
 /// Temporary table that combines the settings defined by platform and application
 /// </summary>

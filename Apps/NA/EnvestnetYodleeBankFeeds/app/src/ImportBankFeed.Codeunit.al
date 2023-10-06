@@ -1,3 +1,10 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using System.IO;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 codeunit 1451 "MS - Yodlee Import Bank Feed"
 {
     TableNo = "Bank Acc. Reconciliation Line";
@@ -42,7 +49,7 @@ codeunit 1451 "MS - Yodlee Import Bank Feed"
     begin
         DataExch.GET(BankAccReconciliationLine."Data Exch. Entry No.");
 
-        IF PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", BalanceAmountPathTxt) THEN
+        if PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", BalanceAmountPathTxt) then
             SetClosingBalance(BankAccReconciliationLine, DataExchFieldDetails.FieldValue);
     end;
 
@@ -58,18 +65,18 @@ codeunit 1451 "MS - Yodlee Import Bank Feed"
 
         // Check currency code match
         DataExchFieldDetails.SETFILTER(FieldValue, '<>%1&<>%2&<>%3', '', GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code"), BankAccount."Currency Code");
-        IF PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", TransactionCurrencyPathTxt) THEN
+        if PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", TransactionCurrencyPathTxt) then
             ERROR(BankAccCurrErr, BankAccount.FIELDCAPTION("Currency Code"),
               GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code"), BankAccount."No.");
-        IF PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", BalanceCurrencyPathTxt) THEN
+        if PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", BalanceCurrencyPathTxt) then
             ERROR(BankAccCurrErr, BankAccount.FIELDCAPTION("Currency Code"),
               GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code"), BankAccount."No.");
 
         // check online bank account ID
-        IF NOT MSYodleeBankAccLink.GET(BankAccount."No.") THEN
+        if not MSYodleeBankAccLink.GET(BankAccount."No.") then
             ERROR(BankAccNotLinkedErr);
         DataExchFieldDetails.SETFILTER(FieldValue, '<>%1', MSYodleeBankAccLink."Online Bank Account ID");
-        IF PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", BankAccountIDPathTxt) THEN
+        if PrePostProcessXMLImport.HasDataExchFieldValue(DataExchFieldDetails, DataExch."Entry No.", BankAccountIDPathTxt) then
             ERROR(BankAccIDErr);
     end;
 
@@ -86,8 +93,8 @@ codeunit 1451 "MS - Yodlee Import Bank Feed"
           BankAccReconciliationLine."Statement No.");
         AuxRecordRef.GETTABLE(BankAccReconciliation);
         FieldRef := AuxRecordRef.FIELD(BankAccReconciliation.FIELDNO("Statement Ending Balance"));
-        ConfigValidateManagement.EvaluateValueWithValidate(FieldRef, COPYSTR(Value, 1, 250), TRUE);
-        AuxRecordRef.MODIFY(TRUE);
+        ConfigValidateManagement.EvaluateValueWithValidate(FieldRef, COPYSTR(Value, 1, 250), true);
+        AuxRecordRef.MODIFY(true);
     end;
 }
 

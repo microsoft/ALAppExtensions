@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Integration.Word;
+
+using System.Integration.Word;
+
 permissionset 130443 "Word Templates Edit"
 {
     Assignable = true;

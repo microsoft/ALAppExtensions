@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using Microsoft.Purchases.Vendor;
+
 table 1861 "C5 VendTable"
 {
     ReplicateData = false;

@@ -45,7 +45,7 @@ page 31206 "Acc. Sched. Res. Overview CZL"
             part(SubForm; "Acc. Sch. Res. Sub. Matrix CZL")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "Result Code" = FIELD("Result Code");
+                SubPageLink = "Result Code" = field("Result Code");
             }
             group("Dimension Filters")
             {

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40107 "GP SY40100"
 {
     DataClassification = CustomerContent;

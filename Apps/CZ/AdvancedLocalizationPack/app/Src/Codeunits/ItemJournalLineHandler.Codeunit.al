@@ -182,12 +182,6 @@ codeunit 31253 "Item Journal Line Handler CZA"
     [EventSubscriber(ObjectType::Table, Database::"Standard Item Journal", 'OnAfterCopyItemJnlFromStdJnl', '', false, false)]
     local procedure NewLocationCodeOnAfterCopyItemJnlFromStdJnl(var ItemJournalLine: Record "Item Journal Line"; var StandardItemJournalLine: Record "Standard Item Journal Line")
     begin
-#if not CLEAN20
-#pragma warning disable AL0432
-        ItemJournalLine."New Location Code" := StandardItemJournalLine."New Location Code";
-#pragma warning restore AL0432
-#else
         ItemJournalLine."New Location Code" := StandardItemJournalLine."New Location Code CZA";
-#endif
     end;
 }

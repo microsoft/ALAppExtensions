@@ -1,3 +1,9 @@
+namespace Microsoft.API.V1;
+
+using System.Apps;
+using System.Environment;
+using System.Environment.Configuration;
+
 page 20002 "APIV1 - Aut. Extensions"
 {
     APIGroup = 'automation';
@@ -13,10 +19,10 @@ page 20002 "APIV1 - Aut. Extensions"
     ODataKeyFields = "Package ID";
     PageType = API;
     SourceTable = "Published Application";
-    SourceTableView = SORTING(Name)
-                      WHERE(Name = FILTER(<> '_Exclude_*'),
-                            "Tenant Visible" = CONST(true),
-                            "Package Type" = FILTER(= Extension | Designer));
+    SourceTableView = sorting(Name)
+                      where(Name = filter(<> '_Exclude_*'),
+                            "Tenant Visible" = const(true),
+                            "Package Type" = filter(= Extension | Designer));
     Extensible = false;
 
     layout
@@ -25,35 +31,35 @@ page 20002 "APIV1 - Aut. Extensions"
         {
             repeater(Group)
             {
-                field(packageId; "Package ID")
+                field(packageId; Rec."Package ID")
                 {
                     Caption = 'packageId', Locked = true;
                 }
-                field(id; ID)
+                field(id; Rec.ID)
                 {
                     Caption = 'id', Locked = true;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'displayName', Locked = true;
                 }
-                field(publisher; Publisher)
+                field(publisher; Rec.Publisher)
                 {
                     Caption = 'publisher', Locked = true;
                 }
-                field(versionMajor; "Version Major")
+                field(versionMajor; Rec."Version Major")
                 {
                     Caption = 'versionMajor', Locked = true;
                 }
-                field(versionMinor; "Version Minor")
+                field(versionMinor; Rec."Version Minor")
                 {
                     Caption = 'versionMinor', Locked = true;
                 }
-                field(versionBuild; "Version Build")
+                field(versionBuild; Rec."Version Build")
                 {
                     Caption = 'versionBuild', Locked = true;
                 }
-                field(versionRevision; "Version Revision")
+                field(versionRevision; Rec."Version Revision")
                 {
                     Caption = 'versionRevision', Locked = true;
                 }
@@ -62,7 +68,7 @@ page 20002 "APIV1 - Aut. Extensions"
                     Caption = 'isInstalled', Locked = true;
                     Editable = false;
                 }
-                field(publishedAs; "Published As")
+                field(publishedAs; Rec."Published As")
                 {
                     Caption = 'publishedAs', Locked = true;
                     Editable = false;
@@ -78,7 +84,7 @@ page 20002 "APIV1 - Aut. Extensions"
 
     trigger OnAfterGetCurrRecord()
     begin
-        isExtensionInstalled := ExtensionManagement.IsInstalledByPackageId("Package ID");
+        isExtensionInstalled := ExtensionManagement.IsInstalledByPackageId(Rec."Package ID");
     end;
 
     trigger OnOpenPage()
@@ -88,12 +94,12 @@ page 20002 "APIV1 - Aut. Extensions"
 
         BINDSUBSCRIPTION(AutomationAPIManagement);
 
-        FILTERGROUP(2);
-        IF EnvironmentInformation.IsSaas() THEN
-            SETFILTER("PerTenant Or Installed", '%1', TRUE)
-        ELSE
-            SETFILTER("Tenant Visible", '%1', TRUE);
-        FILTERGROUP(0);
+        Rec.FilterGroup(2);
+        if EnvironmentInformation.IsSaas() then
+            Rec.SetFilter("PerTenant Or Installed", '%1', true)
+        else
+            Rec.SetFilter("Tenant Visible", '%1', true);
+        Rec.FilterGroup(0);
     end;
 
     var
@@ -107,14 +113,14 @@ page 20002 "APIV1 - Aut. Extensions"
     [Scope('Cloud')]
     procedure install(var ActionContext: WebServiceActionContext)
     begin
-        IF ExtensionManagement.IsInstalledByPackageId("Package ID") THEN
-            ERROR(IsInstalledErr, Name);
+        if ExtensionManagement.IsInstalledByPackageId(Rec."Package ID") then
+            error(IsInstalledErr, Rec.Name);
 
-        ExtensionManagement.InstallExtension("Package ID", GLOBALLANGUAGE(), FALSE);
+        ExtensionManagement.InstallExtension(Rec."Package ID", GlobalLanguage(), false);
 
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV1 - Aut. Extensions");
-        ActionContext.AddEntityKey(FieldNo(ID), ID);
+        ActionContext.AddEntityKey(Rec.FieldNo(ID), Rec.ID);
         ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
     end;
 
@@ -122,14 +128,14 @@ page 20002 "APIV1 - Aut. Extensions"
     [Scope('Cloud')]
     procedure uninstall(var ActionContext: WebServiceActionContext)
     begin
-        IF NOT ExtensionManagement.IsInstalledByPackageId("Package ID") THEN
-            ERROR(IsNotInstalledErr, Name);
+        if not ExtensionManagement.IsInstalledByPackageId(Rec."Package ID") then
+            error(IsNotInstalledErr, Rec.Name);
 
-        ExtensionManagement.UninstallExtension("Package ID", FALSE);
+        ExtensionManagement.UninstallExtension(Rec."Package ID", false);
 
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV1 - Aut. Extensions");
-        ActionContext.AddEntityKey(FieldNo(ID), ID);
+        ActionContext.AddEntityKey(Rec.FieldNo(ID), Rec.ID);
         ActionContext.SetResultCode(WebServiceActionResultCode::Updated);
     end;
 
@@ -137,4 +143,5 @@ page 20002 "APIV1 - Aut. Extensions"
         ExtensionManagement: Codeunit "Extension Management";
 
 }
+
 

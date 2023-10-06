@@ -1,6 +1,14 @@
 table 1367 "MS - WorldPay Transaction"
 {
     ReplicateData = false;
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+#if not CLEAN23
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '26.0';
+#endif
 
     fields
     {
@@ -33,7 +41,7 @@ table 1367 "MS - WorldPay Transaction"
     fieldgroups
     {
     }
-
+#if not CLEAN23
     procedure SetDetails(DetailsText: Text)
     var
         OutStream: OutStream;
@@ -61,5 +69,6 @@ table 1367 "MS - WorldPay Transaction"
         FeatureTelemetry.LogUptake('0000H7U', 'WorldPay Payments Standard', Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000H7V', 'WorldPay Payments Standard', 'Transaction details set');
     end;
+#endif
 }
 

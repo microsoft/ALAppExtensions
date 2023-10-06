@@ -10,7 +10,7 @@ report 31069 "Create Stockkeeping Unit CZL"
     {
         dataitem(Item; Item)
         {
-            DataItemTableView = SORTING("No.");
+            DataItemTableView = sorting("No.");
             RequestFilterFields = "No.", "Inventory Posting Group", "Location Filter", "Variant Filter";
 
             trigger OnAfterGetRecord()

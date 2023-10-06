@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
 
 /// <summary>
 /// Interface defines methods which all implementations of symmetric algorithms must inherit.

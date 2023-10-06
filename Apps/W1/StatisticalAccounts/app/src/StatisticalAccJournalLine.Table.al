@@ -1,3 +1,8 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.AuditCodes;
+
 table 2631 "Statistical Acc. Journal Line"
 {
     Caption = 'Statistical Account Journal';

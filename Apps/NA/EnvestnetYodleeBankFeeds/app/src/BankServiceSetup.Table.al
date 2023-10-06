@@ -1,6 +1,16 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using Microsoft.Bank.Setup;
+using Microsoft.Foundation.Company;
+using System.Integration;
+using System.Telemetry;
+using System.Security.Encryption;
+using System.Privacy;
+
 table 1450 "MS - Yodlee Bank Service Setup"
 {
     ReplicateData = false;
+    DataClassification = CustomerContent;
 
     fields
     {
@@ -17,16 +27,16 @@ table 1450 "MS - Yodlee Bank Service Setup"
                 MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
                 YodleeServiceUrlValue: Text;
             begin
-                IF "Service URL" <> '' THEN
+                if "Service URL" <> '' then
                     WebRequestHelper.IsSecureHttpUrl("Service URL");
 
                 // If we have a service URL in our AKV
                 // it must match otherwise we will not use our built in cobrand.
                 // Notify the user so they know why things stopped working when it is changed.
-                IF GUIALLOWED() AND MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceUrlValue) THEN
-                    IF (xRec."Service URL" = YodleeServiceUrlValue) AND
+                if GUIALLOWED() and MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceUrlValue) then
+                    if (xRec."Service URL" = YodleeServiceUrlValue) and
                        ("Service URL" <> YodleeServiceUrlValue)
-                    THEN
+                    then
                         MESSAGE(CobrandMustBeSpecifiedMsg);
             end;
         }
@@ -38,7 +48,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
             var
                 WebRequestHelper: Codeunit "Web Request Helper";
             begin
-                IF "Bank Acc. Linking URL" <> '' THEN
+                if "Bank Acc. Linking URL" <> '' then
                     WebRequestHelper.IsSecureHttpUrl("Bank Acc. Linking URL");
             end;
         }
@@ -70,13 +80,13 @@ table 1450 "MS - Yodlee Bank Service Setup"
 
                 if Rec.Enabled then begin
                     TESTFIELD("Bank Feed Import Format");
-                    IF NOT MSYodleeServiceMgt.HasCustomCredentialsInAzureKeyVault() THEN BEGIN
+                    if not MSYodleeServiceMgt.HasCustomCredentialsInAzureKeyVault() then begin
                         HasCobrandEnvironmentName("Cobrand Environment Name");
                         HasCobrandName("Cobrand Name");
                         HasCobrandPassword("Cobrand Password");
                         TESTFIELD("Service URL");
                         TESTFIELD("Bank Acc. Linking URL");
-                    END;
+                    end;
                     TESTFIELD("User Profile Email Address");
                     FeatureTelemetry.LogUptake('0000GY2', 'Yodlee', Enum::"Feature Uptake Status"::"Set up");
                 end;
@@ -87,7 +97,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
         }
         field(30; "Bank Feed Import Format"; Code[20])
         {
-            TableRelation = "Bank Export/Import Setup".Code WHERE(Direction = CONST(Import));
+            TableRelation = "Bank Export/Import Setup".Code where(Direction = const(Import));
         }
         field(40; "Cobrand Session Token"; BLOB)
         {
@@ -162,29 +172,29 @@ table 1450 "MS - Yodlee Bank Service Setup"
         CobrandValue: Text;
     begin
         // do not return Cobrand name if Encryption is disabled
-        IF NOT CryptographyManagement.IsEncryptionEnabled() THEN
-            EXIT('');
+        if not CryptographyManagement.IsEncryptionEnabled() then
+            exit('');
 
-        IF NOT ISNULLGUID(NameKey) THEN
-            IF IsolatedStorage.Get(NameKey, DataScope::Company, CobrandValue) THEN
-                EXIT(CobrandValue);
+        if not ISNULLGUID(NameKey) then
+            if IsolatedStorage.Get(NameKey, DataScope::Company, CobrandValue) then
+                exit(CobrandValue);
 
         // If we are CRONUS don't use our cobrand
-        IF CompanyInformationMgt.IsDemoCompany() THEN
-            EXIT('');
+        if CompanyInformationMgt.IsDemoCompany() then
+            exit('');
 
         // Only hand out the username if our service url is not modified or Service URL is empty
-        IF "Service URL" <> '' THEN BEGIN
-            IF NOT MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceUrlValue) THEN
-                EXIT('');
-            IF "Service URL" <> YodleeServiceUrlValue THEN
-                EXIT('');
-        END;
+        if "Service URL" <> '' then begin
+            if not MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceUrlValue) then
+                exit('');
+            if "Service URL" <> YodleeServiceUrlValue then
+                exit('');
+        end;
 
-        IF MSYodleeServiceMgt.GetYodleeCobrandEnvironmentNameFromAzureKeyVault(YodleeNameValue) THEN
-            EXIT(YodleeNameValue);
+        if MSYodleeServiceMgt.GetYodleeCobrandEnvironmentNameFromAzureKeyVault(YodleeNameValue) then
+            exit(YodleeNameValue);
 
-        EXIT('');
+        exit('');
     end;
 
     procedure GetCobrandName(NameKey: Guid): Text;
@@ -196,30 +206,30 @@ table 1450 "MS - Yodlee Bank Service Setup"
         CobrandValue: Text;
     begin
         // do not return Cobrand name if Encryption is disabled
-        IF NOT CryptographyManagement.IsEncryptionEnabled() THEN
-            EXIT('');
+        if not CryptographyManagement.IsEncryptionEnabled() then
+            exit('');
 
-        IF NOT ISNULLGUID(NameKey) THEN
-            IF IsolatedStorage.Get(NameKey, DataScope::Company, CobrandValue) THEN
-                EXIT(CobrandValue);
+        if not ISNULLGUID(NameKey) then
+            if IsolatedStorage.Get(NameKey, DataScope::Company, CobrandValue) then
+                exit(CobrandValue);
 
         // If we are CRONUS don't use our cobrand
-        IF CompanyInformationMgt.IsDemoCompany() THEN
-            EXIT('');
+        if CompanyInformationMgt.IsDemoCompany() then
+            exit('');
 
         // Only hand out the username if our service url is not modified or Service URL is empty
-        IF "Service URL" <> '' THEN BEGIN
-            IF NOT MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceUrlValue) THEN
-                EXIT('');
-            IF "Service URL" <> YodleeServiceUrlValue THEN
-                EXIT('');
-        END;
+        if "Service URL" <> '' then begin
+            if not MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceUrlValue) then
+                exit('');
+            if "Service URL" <> YodleeServiceUrlValue then
+                exit('');
+        end;
 
-        IF MSYodleeServiceMgt.GetYodleeCobrandNameFromAzureKeyVault(YodleeNameValue) THEN
-            IF NOT HasPassword("Cobrand Password") THEN
-                EXIT(YodleeNameValue);
+        if MSYodleeServiceMgt.GetYodleeCobrandNameFromAzureKeyVault(YodleeNameValue) then
+            if not HasPassword("Cobrand Password") then
+                exit(YodleeNameValue);
 
-        EXIT('');
+        exit('');
     end;
 
     [NonDebuggable]
@@ -232,30 +242,30 @@ table 1450 "MS - Yodlee Bank Service Setup"
         CobrandPassword: Text;
     begin
         // do not return Cobrand password if Encryption is disabled
-        IF NOT CryptographyManagement.IsEncryptionEnabled() THEN
-            EXIT('');
+        if not CryptographyManagement.IsEncryptionEnabled() then
+            exit('');
 
-        IF NOT ISNULLGUID(PasswordKey) THEN
-            IF IsolatedStorage.Get(PasswordKey, DataScope::Company, CobrandPassword) THEN
-                IF CobrandPassword <> '' THEN
-                    EXIT(CobrandPassword);
+        if not ISNULLGUID(PasswordKey) then
+            if IsolatedStorage.Get(PasswordKey, DataScope::Company, CobrandPassword) then
+                if CobrandPassword <> '' then
+                    exit(CobrandPassword);
 
         // If we are CRONUS don't use our cobrand
-        IF CompanyInformationMgt.IsDemoCompany() THEN
-            EXIT('');
+        if CompanyInformationMgt.IsDemoCompany() then
+            exit('');
 
         // Only hand out the password if our service url is present and not modified
-        IF NOT MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceURL) THEN
-            EXIT('');
+        if not MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceURL) then
+            exit('');
 
-        IF "Service URL" <> YodleeServiceURL THEN
-            EXIT('');
+        if "Service URL" <> YodleeServiceURL then
+            exit('');
 
-        IF MSYodleeServiceMgt.GetYodleeCobrandPassFromAzureKeyVault(YodleePasswordValue) THEN
-            IF NOT HasPassword("Cobrand Name") THEN
-                EXIT(YodleePasswordValue);
+        if MSYodleeServiceMgt.GetYodleeCobrandPassFromAzureKeyVault(YodleePasswordValue) then
+            if not HasPassword("Cobrand Name") then
+                exit(YodleePasswordValue);
 
-        EXIT('');
+        exit('');
     end;
 
     [NonDebuggable]
@@ -263,17 +273,17 @@ table 1450 "MS - Yodlee Bank Service Setup"
     var
         PasswordValue: Text;
     begin
-        IF NOT IsolatedStorage.Get(PasswordKey, DataScope::Company, PasswordValue) THEN
-            EXIT('');
+        if not IsolatedStorage.Get(PasswordKey, DataScope::Company, PasswordValue) then
+            exit('');
 
-        EXIT(PasswordValue);
+        exit(PasswordValue);
     end;
 
     [Scope('OnPrem')]
     procedure DeletePassword(PasswordKey: Guid);
     var
     begin
-        IF IsolatedStorage.Contains(PasswordKey, DataScope::Company) THEN
+        if IsolatedStorage.Contains(PasswordKey, DataScope::Company) then
             IsolatedStorage.Delete(PasswordKey, DataScope::Company);
     end;
 
@@ -282,26 +292,26 @@ table 1450 "MS - Yodlee Bank Service Setup"
     var
         PasswordValue: Text;
     begin
-        IF ISNULLGUID(PasswordKey) OR (NOT IsolatedStorage.Get(PasswordKey, DataScope::Company, PasswordValue)) THEN
-            EXIT(FALSE);
+        if ISNULLGUID(PasswordKey) or (not IsolatedStorage.Get(PasswordKey, DataScope::Company, PasswordValue)) then
+            exit(false);
 
-        EXIT(PasswordValue <> '');
+        exit(PasswordValue <> '');
     end;
 
     procedure HasCobrandEnvironmentName(NameKey: Guid): Boolean;
     begin
-        EXIT(GetCobrandEnvironmentName(NameKey) <> '');
+        exit(GetCobrandEnvironmentName(NameKey) <> '');
     end;
 
     procedure HasCobrandName(NameKey: Guid): Boolean;
     begin
-        EXIT(GetCobrandName(NameKey) <> '');
+        exit(GetCobrandName(NameKey) <> '');
     end;
 
     [NonDebuggable]
     procedure HasCobrandPassword(PasswordKey: Guid): Boolean;
     begin
-        EXIT(GetCobrandPassword(PasswordKey) <> '');
+        exit(GetCobrandPassword(PasswordKey) <> '');
     end;
 
     procedure HasDefaultCredentials(): Boolean;
@@ -310,17 +320,17 @@ table 1450 "MS - Yodlee Bank Service Setup"
         HasCredentials: Boolean;
         HasCobrandEnvName: Boolean;
     begin
-        IF MSYodleeServiceMgt.HasCustomCredentialsInAzureKeyVault() THEN
-            EXIT(TRUE);
+        if MSYodleeServiceMgt.HasCustomCredentialsInAzureKeyVault() then
+            exit(true);
 
-        HasNoCustomCredentials := ISNULLGUID("Cobrand Environment Name") AND ISNULLGUID("Cobrand Name") AND ISNULLGUID("Cobrand Password");
-        HasCredentials := HasCobrandName("Cobrand Name") AND HasCobrandPassword("Cobrand Password");
+        HasNoCustomCredentials := ISNULLGUID("Cobrand Environment Name") and ISNULLGUID("Cobrand Name") and ISNULLGUID("Cobrand Password");
+        HasCredentials := HasCobrandName("Cobrand Name") and HasCobrandPassword("Cobrand Password");
         HasCobrandEnvName := HasCobrandEnvironmentName("Cobrand Environment Name");
 
         if GetServiceURL().Contains('ysl') then
-            exit(HasNoCustomCredentials AND HasCredentials AND HasCobrandEnvName);
+            exit(HasNoCustomCredentials and HasCredentials and HasCobrandEnvName);
 
-        exit(HasNoCustomCredentials AND HasCredentials);
+        exit(HasNoCustomCredentials and HasCredentials);
     end;
 
     procedure SetValuesToDefault();
@@ -330,8 +340,8 @@ table 1450 "MS - Yodlee Bank Service Setup"
 
     local procedure CheckEncryption();
     begin
-        IF NOT ENCRYPTIONENABLED() THEN
-            IF CONFIRM(EncryptionIsNotActivatedQst) THEN
+        if not ENCRYPTIONENABLED() then
+            if CONFIRM(EncryptionIsNotActivatedQst) then
                 PAGE.RUN(PAGE::"Data Encryption Management");
     end;
 
@@ -345,10 +355,10 @@ table 1450 "MS - Yodlee Bank Service Setup"
     var
         MSYodleeBankSession: Record "MS - Yodlee Bank Session";
     begin
-        IF MSYodleeBankSession.GET() THEN BEGIN
+        if MSYodleeBankSession.GET() then begin
             MSYodleeBankSession.LOCKTABLE();
             MSYodleeBankSession.DELETE();
-        END;
+        end;
     end;
 
     procedure ResetDefaultBankStatementImportFormat();
@@ -364,8 +374,8 @@ table 1450 "MS - Yodlee Bank Service Setup"
         BankExportImportSetup: Record "Bank Export/Import Setup";
     begin
         BankExportImportSetup.SetRange(Code, 'YODLEE11BANKFEED');
-        IF BankExportImportSetup.IsEmpty() THEN
-            EXIT;
+        if BankExportImportSetup.IsEmpty() then
+            exit;
 
         VALIDATE("Bank Feed Import Format", 'YODLEE11BANKFEED');
     end;
@@ -375,12 +385,12 @@ table 1450 "MS - Yodlee Bank Service Setup"
     begin
         CobrandEnvironmentNameValue := DELCHR(CobrandEnvironmentNameValue, '=', ' ');
 
-        IF ISNULLGUID(CobrandEnvironmentNameKey) OR NOT IsolatedStorage.Contains(CobrandEnvironmentNameKey, DataScope::Company) THEN
+        if ISNULLGUID(CobrandEnvironmentNameKey) or not IsolatedStorage.Contains(CobrandEnvironmentNameKey, DataScope::Company) then
             CobrandEnvironmentNameKey := FORMAT(CreateGuid());
 
         SetSecretIntoIsolatedStorage(CobrandEnvironmentNameKey, CobrandEnvironmentNameValue);
 
-        IF CobrandEnvironmentNameValue <> '' THEN
+        if CobrandEnvironmentNameValue <> '' then
             CheckEncryption();
     end;
 
@@ -389,12 +399,12 @@ table 1450 "MS - Yodlee Bank Service Setup"
     begin
         CobrandNameValue := DELCHR(CobrandNameValue, '=', ' ');
 
-        IF ISNULLGUID(CobrandNameKey) OR NOT IsolatedStorage.Contains(CobrandNameKey, DataScope::Company) THEN
+        if ISNULLGUID(CobrandNameKey) or not IsolatedStorage.Contains(CobrandNameKey, DataScope::Company) then
             CobrandNameKey := FORMAT(CreateGuid());
 
         SetSecretIntoIsolatedStorage(CobrandNameKey, CobrandNameValue);
 
-        IF CobrandNameValue <> '' THEN
+        if CobrandNameValue <> '' then
             CheckEncryption();
     end;
 
@@ -403,11 +413,11 @@ table 1450 "MS - Yodlee Bank Service Setup"
     begin
         CobrandPasswordValue := DELCHR(CobrandPasswordValue, '=', ' ');
 
-        IF ISNULLGUID(CobrandPasswordKey) OR NOT IsolatedStorage.Contains(CobrandPasswordKey, DataScope::Company) THEN
+        if ISNULLGUID(CobrandPasswordKey) or not IsolatedStorage.Contains(CobrandPasswordKey, DataScope::Company) then
             CobrandPasswordKey := FORMAT(CreateGuid());
         SetSecretIntoIsolatedStorage(CobrandPasswordKey, CobrandPasswordValue);
 
-        IF CobrandPasswordValue <> '' THEN
+        if CobrandPasswordValue <> '' then
             CheckEncryption();
     end;
 
@@ -416,42 +426,42 @@ table 1450 "MS - Yodlee Bank Service Setup"
     begin
         ConsumerPasswordValue := DELCHR(ConsumerPasswordValue, '=', ' ');
 
-        IF ISNULLGUID(ConsumerPasswordKey) OR NOT IsolatedStorage.Contains(ConsumerPasswordKey, DataScope::Company) THEN
+        if ISNULLGUID(ConsumerPasswordKey) or not IsolatedStorage.Contains(ConsumerPasswordKey, DataScope::Company) then
             ConsumerPasswordKey := FORMAT(CreateGuid());
 
         SetSecretIntoIsolatedStorage(ConsumerPasswordKey, ConsumerPasswordValue);
 
-        IF ConsumerPasswordValue <> '' THEN
+        if ConsumerPasswordValue <> '' then
             CheckEncryption();
     end;
 
     local procedure SetSecretIntoIsolatedStorage(SecretKey: Text; SecretValue: Text): Boolean
     var
     begin
-        IF NOT EncryptionEnabled() THEN
-            EXIT(IsolatedStorage.Set(COPYSTR(SecretKey, 1, 200), SecretValue, Datascope::Company));
+        if not EncryptionEnabled() then
+            exit(IsolatedStorage.Set(COPYSTR(SecretKey, 1, 200), SecretValue, Datascope::Company));
 
-        EXIT(IsolatedStorage.SetEncrypted(SecretKey, SecretValue, Datascope::Company));
+        exit(IsolatedStorage.SetEncrypted(SecretKey, SecretValue, Datascope::Company));
     end;
 
     [Scope('OnPrem')]
     procedure DeleteFromIsolatedStorage(SecretKey: Text): Boolean
     var
     begin
-        IF NOT IsolatedStorage.Contains(COPYSTR(SecretKey, 1, 200), Datascope::Company) THEN
-            EXIT(FALSE);
+        if not IsolatedStorage.Contains(COPYSTR(SecretKey, 1, 200), Datascope::Company) then
+            exit(false);
 
-        EXIT(IsolatedStorage.Delete(COPYSTR(SecretKey, 1, 200), Datascope::Company));
+        exit(IsolatedStorage.Delete(COPYSTR(SecretKey, 1, 200), Datascope::Company));
     end;
 
     procedure GetServiceURL(): Text;
     var
         SecretValue: Text;
     begin
-        IF MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(SecretValue) THEN
-            EXIT(DELCHR(SecretValue, '>', ' '));
+        if MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(SecretValue) then
+            exit(DELCHR(SecretValue, '>', ' '));
 
-        EXIT(DELCHR("Service URL", '>', ' '));
+        exit(DELCHR("Service URL", '>', ' '));
     end;
 }
 

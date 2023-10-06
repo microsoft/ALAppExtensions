@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.GST.Application;
+
 pageextension 18102 "GST Purchase Invoice Stats." extends "Purchase Statistics"
 {
     layout
@@ -14,7 +22,7 @@ pageextension 18102 "GST Purchase Invoice Stats." extends "Purchase Statistics"
         }
     }
 
-     trigger OnAfterGetRecord()
+    trigger OnAfterGetRecord()
     begin
         FormatLine();
     end;

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using System.Integration;
+
 codeunit 1866 "C5 CustTable Migrator"
 {
     TableNo = "C5 CustTable";

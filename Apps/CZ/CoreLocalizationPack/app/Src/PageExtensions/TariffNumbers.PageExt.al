@@ -56,8 +56,8 @@ pageextension 11785 "Tariff Numbers CZL" extends "Tariff Numbers"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 Ellipsis = true;
-                ToolTip = 'Launch importing data from the list of codes published by the Customs Administration of the Czech Republic: https://www.celnisprava.cz/cz/aplikace/Stranky/ciselniky.aspx. 51 - KN Kombinovaná nomenklatura.';
-                RunObject = Report "Import Tariff Numbers XML CZL";
+                ToolTip = 'Launch importing data from the list of codes published by the Customs Administration of the Czech Republic: https://www.celnisprava.cz/cz/aplikace/Stranky/ciselniky.aspx. Kombinovaná nomenklatura (pro Intrastat).';
+                RunObject = report "Import Tariff Numbers XML CZL";
             }
         }
     }

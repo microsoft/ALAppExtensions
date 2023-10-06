@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Utilities;
+
 codeunit 5291 "Mapping Helper SAF-T"
 {
     Access = Internal;
@@ -192,11 +203,9 @@ codeunit 5291 "Mapping Helper SAF-T"
 
     procedure UpdateMasterDataWithNoSeries()
     var
-        AuditFileExportSetup: Record "Audit File Export Setup";
         Dimension: Record Dimension;
         VATPostingSetup: Record "VAT Posting Setup";
     begin
-        AuditFileExportSetup.Get();
         Dimension.SetRange("Analysis Type SAF-T", '');
         if Dimension.FindSet() then
             repeat

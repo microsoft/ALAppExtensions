@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Provides an overview of all e-mail that were sent out.
 /// </summary>
 page 8883 "Sent Emails"
 {
-    PageType = Worksheet;
+#pragma warning disable AS0035 // Changed from Worksheet to List
+    PageType = List;
+#pragma warning restore AS0035
     Caption = 'Sent Emails';
     ApplicationArea = All;
     UsageCategory = Administration;
@@ -16,7 +20,6 @@ page 8883 "Sent Emails"
     SourceTableTemporary = true;
     Permissions = tabledata "Sent Email" = rd;
     InsertAllowed = false;
-    ModifyAllowed = false;
     Extensible = true;
 
     layout
@@ -42,6 +45,7 @@ page 8883 "Sent Emails"
             }
             repeater(SentEmails)
             {
+                Editable = false;
                 field(Desc; Rec.Description)
                 {
                     ApplicationArea = All;
@@ -234,7 +238,6 @@ page 8883 "Sent Emails"
         NewerThanDate: DateTime;
         EmailAccountId, SourceSystemID : Guid;
         SourceTableID: Integer;
-        [InDataSet]
         HasSourceRecord: Boolean;
         NoSentEmails: Boolean;
         EmailConnectorHasBeenUninstalledMsg: Label 'The email extension that was used to send this email has been uninstalled. To view information about the email account, you must reinstall the extension.';

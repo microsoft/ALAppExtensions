@@ -376,4 +376,10 @@ codeunit 31072 "User Setup Adv. Management CZL"
         GetUserSetup();
         UserSetup.TestField("Allow Complete Job CZL");
     end;
+
+    procedure CheckVATDateChanging()
+    begin
+        GetUserSetup();
+        UserSetup.TestField("Allow VAT Date Changing CZL");
+    end;
 }

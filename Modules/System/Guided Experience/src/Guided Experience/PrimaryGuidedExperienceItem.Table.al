@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 table 1998 "Primary Guided Experience Item"
 {
     Caption = 'Primary Guided Experience Item';

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.JsonExchange;
+
+using Microsoft.Finance.GST.Base;
+
 codeunit 18005 "GST Tax Type Data"
 {
     procedure GetJObject(): JsonObject
@@ -637,18 +645,18 @@ codeunit 18005 "GST Tax Type Data"
         "{1C3087C6-66E1-4D66-8133-DF7F13FDB0D5}Lbl": Label 'GST Use Cases';
         "{A4C57AB8-DBFF-473C-B2A3-739975737950}Lbl": Label 'GST Use Cases';
         "{D187D562-E011-4879-839D-A3CB824D11EC}Lbl": Label 'GST Use Cases';
-        "{1DE560C5-73C9-4476-9447-80FC42CD492C}Lbl": Label 'GST Use Cases';
-        "{13217522-8F07-4C15-9787-8B1840E8CC40}Lbl": Label 'GST Use Cases';
-        "{C6AFDFC6-874B-4B14-BCC9-8FC5B4992157}Lbl": Label 'GST Use Cases';
-        "{8153E2CA-FD9A-4A9F-A0E4-A657636F83DB}Lbl": Label 'GST Use Cases';
-        "{8139E94E-D43E-4C24-B6B3-C59F55737321}Lbl": Label 'GST Use Cases';
-        "{5043629A-E2D7-4E0D-AD7F-C9D505507D01}Lbl": Label 'GST Use Cases';
-        "{C447C36E-72FA-4FEA-A49C-F976FE57275D}Lbl": Label 'GST Use Cases';
-        "{FA8E63F5-19A9-4940-AD59-DB7067BE069A}Lbl": Label 'GST Use Cases';
-        "{A18E31F4-0E06-42B6-B8E0-282B42CA2A28}Lbl": Label 'GST Use Cases';
-        "{A744EF89-44A8-4CE0-81F8-3D8094623CD1}Lbl": Label 'GST Use Cases';
-        "{58789CA5-0F23-4972-B1FE-3EE6E8BC19A1}Lbl": Label 'GST Use Cases';
-        "{1DD8BB1A-1AA9-4B82-9F6A-80F26AA8675D}Lbl": Label 'GST Use Cases';
+        "{1DE560C5-73C9-4476-9447-80FC42CD492C}Lbl": Label 'GST Use Cases';
+        "{13217522-8F07-4C15-9787-8B1840E8CC40}Lbl": Label 'GST Use Cases';
+        "{C6AFDFC6-874B-4B14-BCC9-8FC5B4992157}Lbl": Label 'GST Use Cases';
+        "{8153E2CA-FD9A-4A9F-A0E4-A657636F83DB}Lbl": Label 'GST Use Cases';
+        "{8139E94E-D43E-4C24-B6B3-C59F55737321}Lbl": Label 'GST Use Cases';
+        "{5043629A-E2D7-4E0D-AD7F-C9D505507D01}Lbl": Label 'GST Use Cases';
+        "{C447C36E-72FA-4FEA-A49C-F976FE57275D}Lbl": Label 'GST Use Cases';
+        "{FA8E63F5-19A9-4940-AD59-DB7067BE069A}Lbl": Label 'GST Use Cases';
+        "{A18E31F4-0E06-42B6-B8E0-282B42CA2A28}Lbl": Label 'GST Use Cases';
+        "{A744EF89-44A8-4CE0-81F8-3D8094623CD1}Lbl": Label 'GST Use Cases';
+        "{58789CA5-0F23-4972-B1FE-3EE6E8BC19A1}Lbl": Label 'GST Use Cases';
+        "{1DD8BB1A-1AA9-4B82-9F6A-80F26AA8675D}Lbl": Label 'GST Use Cases';
     begin
         Handled := true;
 

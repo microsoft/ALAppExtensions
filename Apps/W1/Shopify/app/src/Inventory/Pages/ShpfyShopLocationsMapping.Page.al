@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Location;
+
 /// <summary>
 /// Page Shpfy Shop Locations Mapping (ID 30117).
 /// </summary>

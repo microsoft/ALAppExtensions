@@ -9,8 +9,6 @@ permissionset 10701 "CAR-BANK ACC, EDIT"
     Assignable = true;
     Caption = 'Cartera - Bank Account, Edit';
 
-    IncludedPermissionSets = "Language - Read";
-
     Permissions = tabledata "Bank Account" = RIMD,
                   tabledata "Bank Account Ledger Entry" = Rm,
                   tabledata "Bank Account Posting Group" = R,

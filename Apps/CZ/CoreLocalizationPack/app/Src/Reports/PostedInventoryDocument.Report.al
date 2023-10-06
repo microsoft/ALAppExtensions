@@ -11,7 +11,7 @@ report 31079 "Posted Inventory Document CZL"
     {
         dataitem("Item Register"; "Item Register")
         {
-            DataItemTableView = SORTING("No.");
+            DataItemTableView = sorting("No.");
 
             trigger OnAfterGetRecord()
             begin
@@ -27,7 +27,7 @@ report 31079 "Posted Inventory Document CZL"
         }
         dataitem(ItemLedgerEntry; "Item Ledger Entry")
         {
-            DataItemTableView = SORTING("Document No.", "Document Type", "Document Line No.") WHERE(Quantity = FILTER(<> 0));
+            DataItemTableView = sorting("Document No.", "Document Type", "Document Line No.") where(Quantity = filter(<> 0));
             RequestFilterFields = "Document No.", "Posting Date";
             column(CompanyName; StrSubstNo(CompanyInfoTok, CompanyInformation.Name, CompanyInformation."Name 2"))
             {

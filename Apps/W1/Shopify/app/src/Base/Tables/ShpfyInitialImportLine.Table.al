@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Threading;
+
 table 30137 "Shpfy Initial Import Line"
 {
     Access = Internal;

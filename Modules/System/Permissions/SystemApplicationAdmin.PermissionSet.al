@@ -3,6 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.DataAdministration;
+using System.Email;
+using System.Environment.Configuration;
+using System.Integration.Excel;
+using System.Privacy;
+using System.Integration;
+using System.Apps;
+
 permissionset 154 "System Application - Admin"
 {
     Access = Internal;
@@ -16,11 +26,6 @@ permissionset 154 "System Application - Admin"
                              "Data Cleanup - Admin",
                              "Email - Admin",
                              "Exten. Mgt. - Admin",
-#if not CLEAN20
-#pragma warning disable AL0432
-                             "SMARTLIST DESIGNER",
-#pragma warning restore
-#endif
                              "Edit in Excel-Admin",
                              "Feature Key - Admin",
                              "Permissions & Licenses - Edit",

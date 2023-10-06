@@ -1,4 +1,10 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN26
+namespace Microsoft.Bank.Payment;
+
 enum 11513 "Swiss QR-Bill Umlaut Encoding"
 {
     Extensible = false;

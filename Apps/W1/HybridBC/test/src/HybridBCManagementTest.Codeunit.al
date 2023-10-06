@@ -214,6 +214,8 @@ codeunit 139654 "HybridBC Management Test"
         InnerMessage: Text;
         i: Integer;
     begin
+        Initialize();
+
         for i := 50001 to 50007 do begin
             Message := HybridMessageManagement.ResolveMessageCode(CopyStr(Format(i), 1, 10), '');
             Assert.AreNotEqual('', Message, StrSubstNo('No message provided for code %1', i));

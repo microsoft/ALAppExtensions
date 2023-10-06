@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Subcontracting;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+
 page 18467 "Create GST Liability"
 {
     Caption = 'Create GST Liability';
@@ -204,7 +213,7 @@ page 18467 "Create GST Liability"
                 field("Job Work Return Period"; Rec."Job Work Return Period")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specified job work return period of GST';
+                    ToolTip = 'Specifies job work return period of GST';
                     Editable = false;
                 }
             }

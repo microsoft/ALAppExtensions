@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.BC;
+
 table 4037 "Stg Incoming Document"
 {
     ReplicateData = false;

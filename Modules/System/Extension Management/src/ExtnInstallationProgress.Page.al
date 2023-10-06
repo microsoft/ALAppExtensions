@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Apps;
+
 /// <summary>
 /// Displays the deployment status for extensions that are deployed or are scheduled for deployment.
 /// </summary>

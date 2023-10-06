@@ -1,8 +1,13 @@
+#if not CLEAN21
 codeunit 31086 "Advance Payments Mgt. CZZ"
 {
     Permissions = tabledata "NAV App Installed App" = r;
+    ObsoleteReason = 'Advance Payments will be enabled so this code is no longer used.';
+    ObsoleteState = Pending;
+#pragma warning disable AS0072
+    ObsoleteTag = '21.0';
+#pragma warning restore AS0072
 
-#if not CLEAN21
     var
         AdvancePaymentsFeatureIdTok: Label 'AdvancePaymentsLocalizationForCzech', Locked = true, MaxLength = 50;
 
@@ -32,5 +37,5 @@ codeunit 31086 "Advance Payments Mgt. CZZ"
     begin
     end;
 
-#endif
 }
+#endif

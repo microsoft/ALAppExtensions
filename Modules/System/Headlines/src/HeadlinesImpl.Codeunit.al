@@ -1,7 +1,13 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Visualization;
+
+using System;
+using System.Security.User;
+using System.Security.AccessControl;
 
 codeunit 1470 "Headlines Impl."
 {
@@ -120,7 +126,7 @@ codeunit 1470 "Headlines Impl."
         end;
 
         // check if the UserName is empty or contains only spaces
-        if (UserName = '') OR (DelChr(UserName, '=') = '') then
+        if (UserName = '') or (DelChr(UserName, '=') = '') then
             exit(GreetingTextWithoutUsername);
 
         GreetingTextWithUsername := StrSubstNo(GreetingTextWithUsername, UserName);

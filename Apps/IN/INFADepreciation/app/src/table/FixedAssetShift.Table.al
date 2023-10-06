@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.FADepreciation;
+
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Maintenance;
+
 table 18633 "Fixed Asset Shift"
 {
     Caption = 'Fixed Asset Shift';

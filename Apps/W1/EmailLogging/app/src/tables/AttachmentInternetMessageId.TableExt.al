@@ -1,3 +1,7 @@
+namespace Microsoft.CRM.EmailLoggin;
+
+using Microsoft.CRM.Interaction;
+
 tableextension 1680 "Attachment Internet Message Id" extends Attachment
 {
     fields

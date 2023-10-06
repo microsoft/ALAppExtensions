@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
+using Microsoft.Finance.GeneralLedger.Account;
+
 pageextension 41004 "Chart of Accounts Ext." extends "Chart of Accounts"
 {
     actions

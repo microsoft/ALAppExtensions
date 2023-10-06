@@ -51,4 +51,13 @@ tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
             exit(CountryRegion.IsIntrastatCZL("Trsf.-from Country/Region Code", false));
         exit(false);
     end;
+
+    procedure GetRegisterUserIDCZL(): Code[50]
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        ItemLedgerEntry.SetFilterFromDirectTransHeaderCZL(Rec);
+        if ItemLedgerEntry.FindFirst() then
+            exit(ItemLedgerEntry.GetRegisterUserIDCZL());
+    end;
 }

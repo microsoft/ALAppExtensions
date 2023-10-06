@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Apps;
+
+using System.Environment;
+
 codeunit 2505 "Data Out Of Geo. App Impl."
 {
     Access = Internal;
@@ -28,7 +32,7 @@ codeunit 2505 "Data Out Of Geo. App Impl."
 
     procedure Contains(AppID: Guid): Boolean
     begin
-        Exit(IsolatedStorage.Contains(AppID, DataScope::Module));
+        exit(IsolatedStorage.Contains(AppID, DataScope::Module));
     end;
 
     procedure AlreadyInstalled(): Boolean

@@ -144,11 +144,9 @@ report 31114 "Batch Post Sales Cr. Memos CZL"
         ReplacePostingDateReq: Boolean;
         ReplaceDocumentDateReq: Boolean;
         ReplaceVATDateReq: Boolean;
-        [InDataSet]
         VATDateVisible: Boolean;
         PostingDateReq: Date;
         PrintDocReq: Boolean;
-        [InDataSet]
         PrintDocVisible: Boolean;
         VATDateReq: Date;
 }

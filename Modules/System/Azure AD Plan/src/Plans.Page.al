@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 /// <summary>
 /// List page that contains all plans that can be assigned to users.
 /// </summary>
@@ -16,6 +18,8 @@ page 9824 Plans
     ShowFilter = false;
     SourceTable = Plan;
     ContextSensitiveHelpPage = 'ui-how-users-permissions';
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Permissions = tabledata Plan = r;
 
     layout

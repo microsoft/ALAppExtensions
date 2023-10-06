@@ -89,7 +89,7 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
         }
         dataitem(EntryBuffer; "Integer")
         {
-            DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+            DataItemTableView = sorting(Number) where(Number = filter(1 ..));
             column(EntryBuffer_DocumentNo; TempBankAccAdjustBufferCZL."Document No.")
             {
             }
@@ -183,7 +183,7 @@ report 11713 "Joining Bank. Acc. Adj. CZL"
         }
         dataitem(CurrencyBuffer; "Integer")
         {
-            DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+            DataItemTableView = sorting(Number) where(Number = filter(1 ..));
             column(CurrencyBuffer_TotalAmount; TempEnhancedCurrencyBufferCZL."Total Amount")
             {
             }

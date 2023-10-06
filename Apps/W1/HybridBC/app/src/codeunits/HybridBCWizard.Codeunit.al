@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.DataMigration;
+
 codeunit 4005 "Hybrid BC Wizard"
 {
     var
@@ -140,6 +144,7 @@ codeunit 4005 "Hybrid BC Wizard"
         end;
     end;
 
+#pragma warning disable AA0245
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductDescription', '', false, false)]
     local procedure HandleGetHybridProductDescription(ProductId: Text; var ProductDescription: Text)
     begin
@@ -169,5 +174,6 @@ codeunit 4005 "Hybrid BC Wizard"
     begin
         exit(ProductId = ProductIdTxt);
     end;
+#pragma warning restore AA0245
 
 }

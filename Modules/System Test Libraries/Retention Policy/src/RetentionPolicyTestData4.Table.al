@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.DataAdministration;
+
 table 138703 "Retention Policy Test Data 4"
 {
     DataClassification = SystemMetadata;

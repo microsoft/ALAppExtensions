@@ -1,3 +1,5 @@
+namespace Microsoft.API.V1;
+
 entitlement "D365 Business Central Infrastructure APIV1"
 {
     Type = Application;

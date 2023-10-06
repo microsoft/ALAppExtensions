@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Table Shpfy Order Fulfillment (ID 30111).
 /// </summary>
@@ -120,5 +122,21 @@ table 30111 "Shpfy Order Fulfillment"
             Clustered = true;
         }
     }
+
+    trigger OnDelete()
+    var
+        FulfillmentLine: Record "Shpfy FulFillment Line";
+        DataCapture: Record "Shpfy Data Capture";
+    begin
+        FulfillmentLine.Reset();
+        FulfillmentLine.SetRange("Fulfillment Id", Rec."Shopify Fulfillment Id");
+        FulfillmentLine.DeleteAll(true);
+
+        DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
+        DataCapture.SetRange("Linked To Table", Database::"Shpfy Order Fulfillment");
+        DataCapture.SetRange("Linked To Id", Rec.SystemId);
+        if not DataCapture.IsEmpty then
+            DataCapture.DeleteAll(false);
+    end;
 }
 

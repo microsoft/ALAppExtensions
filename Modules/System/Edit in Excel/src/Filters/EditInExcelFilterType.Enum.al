@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Excel;
+
 /// <summary>
 /// This enum specifies the type of filter comparison to perform with the given value. Ex. Field &lt; 1000 is "Less Than".
 /// </summary>

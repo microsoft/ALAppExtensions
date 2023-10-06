@@ -15,21 +15,6 @@ codeunit 31097 "Substitute Report Handler CZL"
         if IsTestingEnvironment() then
             exit;
 
-#if not CLEAN20
-        if not IsReplaceMulIntRateEnabled() then
-            case ReportId of
-                Report::"Finance Charge Memo CZL":
-                    begin
-                        NewReportId := Report::"Finance Charge Memo MIR CZL";
-                        exit;
-                    end;
-                Report::"Reminder CZL":
-                    begin
-                        NewReportId := Report::"Reminder MIR CZL";
-                        exit;
-                    end;
-            end;
-#endif
         if not InstructionMgt.IsEnabled(GetSubstituteGeneralReportsNotificationId()) then begin
             // "Use standard general reports substitution" in My Notifications is disabled
             case ReportId of
@@ -122,20 +107,6 @@ codeunit 31097 "Substitute Report Handler CZL"
             end;
     end;
 
-#if not CLEAN20
-    local procedure IsReplaceMulIntRateEnabled(): Boolean
-    var
-        FeatureDataUpdateStatus: Record "Feature Data Update Status";
-#pragma warning disable AL0432
-        ReplaceMulIntRateMgt: Codeunit "Replace Mul. Int. Rate Mgt.";
-    begin
-        if not FeatureDataUpdateStatus.Get(ReplaceMulIntRateMgt.GetFeatureKey(), CompanyName()) then
-            exit(false);
-        exit(ReplaceMulIntRateMgt.IsEnabled());
-#pragma warning restore AL0432
-    end;
-
-#endif
     local procedure IsTestingEnvironment(): Boolean
     var
         NAVAppInstalledApp: Record "NAV App Installed App";

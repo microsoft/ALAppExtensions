@@ -1,3 +1,12 @@
+namespace Microsoft.CRM.EmailLoggin;
+
+using Microsoft.Utilities;
+using System.Environment;
+using System.Threading;
+using System.Security.Encryption;
+using System.Email;
+using System.Security.Authentication;
+
 page 1680 "Email Logging Setup"
 {
     Caption = 'Email Logging';
@@ -97,7 +106,7 @@ page 1680 "Email Logging Setup"
 
                     trigger OnValidate()
                     begin
-                        SetClientSecret(ClientSecretTemp);
+                        Rec.SetClientSecret(ClientSecretTemp);
                     end;
                 }
                 field("Redirect URL"; Rec."Redirect URL")
@@ -128,7 +137,7 @@ page 1680 "Email Logging Setup"
                 begin
                     Commit(); // Make sure all data is committed before we run the wizard
                     Page.RunModal(Page::"Email Logging Setup Wizard");
-                    if Find() then;
+                    if Rec.Find() then;
                     CurrPage.Update(false);
                 end;
 
@@ -258,17 +267,17 @@ page 1680 "Email Logging Setup"
         Rec.Reset();
         if not Rec.Get() then begin
             Rec.Init();
-            Rec."Redirect URL" := GetDefaultRedirectUrl();
-            Rec."Email Batch Size" := GetDefaultEmailBatchSize();
+            Rec."Redirect URL" := Rec.GetDefaultRedirectUrl();
+            Rec."Email Batch Size" := Rec.GetDefaultEmailBatchSize();
             Rec.Insert();
         end else
             if Rec."Redirect URL" = '' then begin
-                Rec."Redirect URL" := GetDefaultRedirectUrl();
+                Rec."Redirect URL" := Rec.GetDefaultRedirectUrl();
                 Rec.Modify();
             end;
 
         ClientSecretTemp := '';
-        if ("Client Id" <> '') and (not IsNullGuid("Client Secret Key")) then
+        if (Rec."Client Id" <> '') and (not IsNullGuid(Rec."Client Secret Key")) then
             ClientSecretTemp := '**********';
 
         IsEmailLoggingEnabled := Rec.Enabled;
@@ -334,7 +343,8 @@ page 1680 "Email Logging Setup"
     var
         EmailLoggingAPIHelper: Codeunit "Email Logging API Helper";
     begin
-        if not EmailLoggingAPIHelper.IsSharedMailboxAvailable("Email Address") then
+        if not EmailLoggingAPIHelper.IsSharedMailboxAvailable(Rec."Email Address") then
             Error(CannotAccessMailboxErr);
     end;
 }
+

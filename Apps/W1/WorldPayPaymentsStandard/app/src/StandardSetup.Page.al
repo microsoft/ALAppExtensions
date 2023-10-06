@@ -1,3 +1,4 @@
+#if not CLEAN23
 page 1360 "MS - WorldPay Standard Setup"
 {
     Caption = 'WorldPay Payments Standard Setup';
@@ -7,6 +8,9 @@ page 1360 "MS - WorldPay Standard Setup"
     ApplicationArea = Basic, Suite;
     PageType = Card;
     SourceTable = "MS - WorldPay Standard Account";
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     layout
     {
@@ -142,10 +146,16 @@ page 1360 "MS - WorldPay Standard Setup"
     trigger OnOpenPage()
     var
         MSWorldPayStandardMgt: Codeunit "MS - WorldPay Standard Mgt.";
+        DeprecationNotification: Notification;
+        DeprecationMsg: Label 'WorldPay Payments Standard extension will be discontinued.';
     begin
         FeatureTelemetry.LogUptake('0000H7X', 'WorldPay Payments Standard', Enum::"Feature Uptake Status"::Discovered);
         MSWorldPayStandardMgt.GetTemplate(MSWorldPayStdTemplate);
         MSWorldPayStdTemplate.RefreshLogoIfNeeded();
+
+        DeprecationNotification.Message := DeprecationMsg;
+        DeprecationNotification.Scope := NotificationScope::LocalScope;
+        DeprecationNotification.Send();
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -167,3 +177,4 @@ page 1360 "MS - WorldPay Standard Setup"
         ThirdPartyNoticeMsg: Label 'This extension uses the WorldPay, a third-party provider. By enabling this extension, you will be subject to the applicable terms, conditions, and privacy policies that WorldPay may make available.\\When you establish a connection through the WorldPay Payments Standard extension, customer data from the invoice, such as invoice number, due date, amount, and currency, as well as your WorldPay account ID, will be inserted into the WorldPay payment link on invoices and sent to WorldPay when the customer chooses the link to pay. This data is used to ensure that the link contains enough information for your customers to pay the invoice, as well as for WorldPay to identify you as the recipient of a payment using the link.\\By installing this solution, you agree for this limited set of data to be sent to the WorldPay. Note that you can disable or uninstall the WorldPay Payments Standard extension at any time to discontinue the functionality.';
 }
 
+#endif

@@ -4,6 +4,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment;
+
 permissionset 4030 "Client Type Mgt. - Objects"
 {
     Assignable = false;

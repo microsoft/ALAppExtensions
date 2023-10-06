@@ -1,3 +1,9 @@
+namespace Microsoft.API.V2;
+
+using System.Apps;
+using System.Environment;
+using System.Environment.Configuration;
+
 page 30002 "APIV2 - Aut. Extensions"
 {
     APIGroup = 'automation';
@@ -14,10 +20,10 @@ page 30002 "APIV2 - Aut. Extensions"
     ODataKeyFields = "Package ID";
     PageType = API;
     SourceTable = "Published Application";
-    SourceTableView = Sorting(Name)
-                      Where(Name = Filter(<> '_Exclude_*'),
-                            "Tenant Visible" = Const(true),
-                            "Package Type" = Filter(= Extension | Designer));
+    SourceTableView = sorting(Name)
+                      where(Name = filter(<> '_Exclude_*'),
+                            "Tenant Visible" = const(true),
+                            "Package Type" = filter(= Extension | Designer));
     Extensible = false;
 
     layout
@@ -26,35 +32,35 @@ page 30002 "APIV2 - Aut. Extensions"
         {
             repeater(Group)
             {
-                field(packageId; "Package ID")
+                field(packageId; Rec."Package ID")
                 {
                     Caption = 'Package Id';
                 }
-                field(id; ID)
+                field(id; Rec.ID)
                 {
                     Caption = 'Id';
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'DisplayName';
                 }
-                field(publisher; Publisher)
+                field(publisher; Rec.Publisher)
                 {
                     Caption = 'Publisher';
                 }
-                field(versionMajor; "Version Major")
+                field(versionMajor; Rec."Version Major")
                 {
                     Caption = 'Version Major';
                 }
-                field(versionMinor; "Version Minor")
+                field(versionMinor; Rec."Version Minor")
                 {
                     Caption = 'Version Minor';
                 }
-                field(versionBuild; "Version Build")
+                field(versionBuild; Rec."Version Build")
                 {
                     Caption = 'Version Build';
                 }
-                field(versionRevision; "Version Revision")
+                field(versionRevision; Rec."Version Revision")
                 {
                     Caption = 'Version Revision';
                 }
@@ -63,7 +69,7 @@ page 30002 "APIV2 - Aut. Extensions"
                     Caption = 'Is Installed';
                     Editable = false;
                 }
-                field(publishedAs; "Published As")
+                field(publishedAs; Rec."Published As")
                 {
                     Caption = 'Published As';
                     Editable = false;
@@ -78,7 +84,7 @@ page 30002 "APIV2 - Aut. Extensions"
 
     trigger OnAfterGetCurrRecord()
     begin
-        isExtensionInstalled := ExtensionManagement.IsInstalledByPackageId("Package ID");
+        isExtensionInstalled := ExtensionManagement.IsInstalledByPackageId(Rec."Package ID");
     end;
 
     trigger OnOpenPage()
@@ -88,12 +94,12 @@ page 30002 "APIV2 - Aut. Extensions"
 
         BindSubscription(AutomationAPIManagement);
 
-        FilterGroup(2);
+        Rec.FilterGroup(2);
         if EnvironmentInformation.IsSaas() then
-            SetFilter("PerTenant Or Installed", '%1', true)
+            Rec.SetFilter("PerTenant Or Installed", '%1', true)
         else
-            SetFilter("Tenant Visible", '%1', true);
-        FilterGroup(0);
+            Rec.SetFilter("Tenant Visible", '%1', true);
+        Rec.FilterGroup(0);
     end;
 
     var
@@ -107,14 +113,14 @@ page 30002 "APIV2 - Aut. Extensions"
     [Scope('Cloud')]
     procedure install(var ActionContext: WebServiceActionContext)
     begin
-        if ExtensionManagement.IsInstalledByPackageId("Package ID") then
-            Error(IsInstalledErr, Name);
+        if ExtensionManagement.IsInstalledByPackageId(Rec."Package ID") then
+            Error(IsInstalledErr, Rec.Name);
 
-        ExtensionManagement.InstallExtension("Package ID", GLOBALLANGUAGE(), false);
+        ExtensionManagement.InstallExtension(Rec."Package ID", GLOBALLANGUAGE(), false);
 
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV2 - Aut. Extensions");
-        ActionContext.AddEntityKey(FieldNo(ID), ID);
+        ActionContext.AddEntityKey(Rec.FieldNo(ID), Rec.ID);
         ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
     end;
 
@@ -122,14 +128,14 @@ page 30002 "APIV2 - Aut. Extensions"
     [Scope('Cloud')]
     procedure uninstall(var ActionContext: WebServiceActionContext)
     begin
-        if not ExtensionManagement.IsInstalledByPackageId("Package ID") then
-            Error(IsNotInstalledErr, Name);
+        if not ExtensionManagement.IsInstalledByPackageId(Rec."Package ID") then
+            Error(IsNotInstalledErr, Rec.Name);
 
-        ExtensionManagement.UninstallExtension("Package ID", false);
+        ExtensionManagement.UninstallExtension(Rec."Package ID", false);
 
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV2 - Aut. Extensions");
-        ActionContext.AddEntityKey(FieldNo(ID), ID);
+        ActionContext.AddEntityKey(Rec.FieldNo(ID), Rec.ID);
         ActionContext.SetResultCode(WebServiceActionResultCode::Updated);
     end;
 
@@ -137,14 +143,14 @@ page 30002 "APIV2 - Aut. Extensions"
     [Scope('Cloud')]
     procedure uninstallAndDeleteExtensionData(var ActionContext: WebServiceActionContext)
     begin
-        if not ExtensionManagement.IsInstalledByPackageId("Package ID") then
-            Error(IsNotInstalledErr, Name);
+        if not ExtensionManagement.IsInstalledByPackageId(Rec."Package ID") then
+            Error(IsNotInstalledErr, Rec.Name);
 
-        ExtensionManagement.UninstallExtensionAndDeleteExtensionData("Package ID", false);
+        ExtensionManagement.UninstallExtensionAndDeleteExtensionData(Rec."Package ID", false);
 
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV2 - Aut. Extensions");
-        ActionContext.AddEntityKey(FieldNo(ID), ID);
+        ActionContext.AddEntityKey(Rec.FieldNo(ID), Rec.ID);
         ActionContext.SetResultCode(WebServiceActionResultCode::Updated);
     end;
 

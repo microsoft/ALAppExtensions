@@ -106,7 +106,7 @@ table 2751 "Universal Printer Settings"
             ObsoleteTag = '18.0';
 #else
             ObsoleteState = Removed;
-            ObsoleteTag = '21.0';
+            ObsoleteTag = '23.0';
 #endif
             ObsoleteReason = 'Replaced with Paper Tray';
         }

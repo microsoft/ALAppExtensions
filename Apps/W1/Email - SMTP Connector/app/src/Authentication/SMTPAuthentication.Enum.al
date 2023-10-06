@@ -3,18 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// The SMTP authentication types
 /// </summary>
 enum 4511 "SMTP Authentication" implements "SMTP Authentication"
 {
-#if not CLEAN20
-    ObsoleteReason = 'Use SMTP Authentication Types from the SMTP API app.';
-    ObsoleteState = Pending;
-    ObsoleteTag = '20.0';
-#else
     Access = Internal;
-#endif
     Extensible = false;
 
     /// <summary>

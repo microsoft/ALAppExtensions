@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 page 30146 "Shpfy Refund Lines"
 {
     Caption = 'Refund Lines';
@@ -78,13 +80,13 @@ page 30146 "Shpfy Refund Lines"
                 Caption = 'Retrieved Shopify Data';
                 Image = Entry;
                 ToolTip = 'View the data retrieved from Shopify.';
+
                 trigger OnAction();
                 var
                     DataCapture: Record "Shpfy Data Capture";
                 begin
                     DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
                     DataCapture.SetRange("Linked To Table", Database::"Shpfy Refund Line");
-
                     DataCapture.SetRange("Linked To Id", Rec.SystemId);
                     Page.Run(Page::"Shpfy Data Capture List", DataCapture);
                 end;

@@ -1,8 +1,8 @@
 table 4033 "Stg SII Setup"
 {
-    ObsoleteState = Pending;
+    ObsoleteState = Removed;
     ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
-    ObsoleteTag = '17.0';
+    ObsoleteTag = '23.0';
     ReplicateData = false;
 
     fields

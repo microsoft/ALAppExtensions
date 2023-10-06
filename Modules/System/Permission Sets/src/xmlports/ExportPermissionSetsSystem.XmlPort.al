@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// Xmlport for exporting system permission sets.
 /// </summary>
@@ -49,7 +51,7 @@ xmlport 9862 "Export Permission Sets System"
                 tableelement("Metadata Permission Set Rel."; "Metadata Permission Set Rel.")
                 {
                     LinkTable = "Metadata Permission Set";
-                    LinkFields = "App ID" = Field("App ID"), "Role ID" = field("Role ID");
+                    LinkFields = "App ID" = field("App ID"), "Role ID" = field("Role ID");
                     MinOccurs = Zero;
                     XmlName = 'PermissionSetRel';
                     SourceTableView = sorting("App ID", "Role ID", "Related App ID", "Related Role ID");
@@ -65,11 +67,11 @@ xmlport 9862 "Export Permission Sets System"
                 }
                 tableelement("Metadata Permission"; "Metadata Permission")
                 {
-                    LinkFields = "Role ID" = FIELD("Role ID");
+                    LinkFields = "Role ID" = field("Role ID");
                     LinkTable = "Metadata Permission Set";
                     MinOccurs = Zero;
                     XmlName = 'Permission';
-                    SourceTableView = SORTING("Role ID", "Object Type", "Object ID");
+                    SourceTableView = sorting("Role ID", "Object Type", "Object ID");
                     fieldelement(ObjectType; "Metadata Permission"."Object Type")
                     {
                     }

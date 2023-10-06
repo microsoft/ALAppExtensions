@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+
 codeunit 18550 "Tax Base Library"
 {
     procedure GetTotalTDSIncludingSheCess(DocumentNo: Code[20]; var TotalTDSEncludingSheCess: Decimal; var AccountNo: Code[20]; var EntryNo: Integer)

@@ -1,3 +1,11 @@
+namespace Microsoft.Bank.PayPal;
+
+using System.Integration;
+using Microsoft.Sales.History;
+using System.Reflection;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Period;
+
 codeunit 1075 "MS - PayPal Transactions Mgt."
 {
 
@@ -59,21 +67,21 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         Session.LogMessage('00008GR', VerifyNotificationContentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
 
         JsonString := GetNotificationJsonString(WebhookNotification);
-        IF JsonString = '' THEN BEGIN
+        if JsonString = '' then begin
             Session.LogMessage('00008GS', TelemetryEmptyNotificationErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(EmptyNotificationErr);
-        END;
+        end;
 
         GetTransactionDetailsFromNotification(
           JsonString, AccountID, TransactionID, PayPalTransactionType, TransactionDate, TransactionStatus,
           InvoiceNo, CurrencyCode, GrossAmount, FeeAmount, PayerEmail, PayerName, PayerAddress, Custom);
 
-        IF NOT ValidateTransactionDetails(
+        if not ValidateTransactionDetails(
              AccountID, TransactionID, TransactionStatus, InvoiceNo, CurrencyCode, GrossAmount)
-        THEN BEGIN
+        then begin
             Session.LogMessage('00008GT', IgnoreNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
-            EXIT(FALSE);
-        END;
+            exit(false);
+        end;
 
         Session.LogMessage('00008GU', NotificationContentVerifiedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
 
@@ -81,7 +89,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
           AccountID, TransactionID, PayPalTransactionType, TransactionDate, TransactionStatus, InvoiceNo, CurrencyCode,
           GrossAmount, GrossAmount - FeeAmount, FeeAmount, PayerEmail, PayerName, PayerAddress, Custom, '', JsonString);
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure ValidateTransactionDetails(AccountID: Text; TransactionID: Text; TransactionStatus: Text; InvoiceNo: Text; CurrencyCode: Text; GrossAmount: Decimal): Boolean;
@@ -93,45 +101,45 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
     begin
         Session.LogMessage('00008GV', VerifyTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
 
-        IF UPPERCASE(TransactionStatus) <> CompletedTok THEN BEGIN
+        if UPPERCASE(TransactionStatus) <> CompletedTok then begin
             Session.LogMessage('00008GW', TransactionNotCompletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
-            EXIT(FALSE);
-        END;
+            exit(false);
+        end;
 
         MSPayPalStandardAccount.SETRANGE("Account ID", AccountID);
-        IF MSPayPalStandardAccount.IsEmpty() THEN BEGIN
+        if MSPayPalStandardAccount.IsEmpty() then begin
             Session.LogMessage('0000166', TelemetryUnexpectedAccountErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedAccountErr, AccountID, TransactionID);
-        END;
+        end;
 
-        IF NOT SalesInvoiceHeader.GET(InvoiceNo) THEN BEGIN
+        if not SalesInvoiceHeader.GET(InvoiceNo) then begin
             Session.LogMessage('0000167', TelemetryUnexpectedInvoiceNumberErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedInvoiceNumberErr, InvoiceNo, TransactionID);
-        END;
+        end;
 
         InvoiceCurrencyCode := SalesInvoiceHeader."Currency Code";
-        IF InvoiceCurrencyCode = '' THEN
+        if InvoiceCurrencyCode = '' then
             InvoiceCurrencyCode := GetDefaultCurrencyCode();
-        IF InvoiceCurrencyCode <> UPPERCASE(CurrencyCode) THEN BEGIN
+        if InvoiceCurrencyCode <> UPPERCASE(CurrencyCode) then begin
             Session.LogMessage('0000168', STRSUBSTNO(TelemetryUnexpectedCurrencyCodeErr, CurrencyCode), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedCurrencyCodeErr, CurrencyCode, TransactionID);
-        END;
+        end;
 
-        IF GrossAmount <= 0 THEN BEGIN
+        if GrossAmount <= 0 then begin
             Session.LogMessage('00008GX', GrossAmountLessOrEqualToZeroTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedAmountErr, GrossAmount, TransactionID);
-        END;
+        end;
 
         MSPayPalTransaction.SETFILTER("Account ID", AccountID);
         MSPayPalTransaction.SETFILTER("Transaction ID", TransactionID);
         MSPayPalTransaction.SETFILTER("Transaction Status", TransactionStatus);
-        IF NOT MSPayPalTransaction.IsEmpty() THEN BEGIN
+        if not MSPayPalTransaction.IsEmpty() then begin
             Session.LogMessage('0000169', STRSUBSTNO(TelemetryAlreadyProcessedErr, TransactionStatus), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(AlreadyProcessedErr, TransactionID, TransactionStatus);
-        END;
+        end;
 
         Session.LogMessage('00008GY', TransactionDetailsVerifiedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure SaveTransactionDetails(AccountID: Text; TransactionID: Text; PayPalTransactionType: Text; TransactionDate: DateTime; TransactionStatus: Text; InvoiceNo: Text; CurrencyCode: Text; GrossAmount: Decimal; NetAmount: Decimal; FeeAmount: Decimal; PayerEmail: Text; PayerName: Text; PayerAddress: Text; Custom: Text; Note: Text; Details: Text);
@@ -140,13 +148,13 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
     begin
         MSPayPalTransaction.SETRANGE("Account ID", AccountID);
         MSPayPalTransaction.SETRANGE("Transaction ID", TransactionID);
-        IF NOT MSPayPalTransaction.FINDFIRST() THEN BEGIN
+        if not MSPayPalTransaction.FINDFIRST() then begin
             Session.LogMessage('00008GZ', InsertTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             MSPayPalTransaction.INIT();
             MSPayPalTransaction."Account ID" := COPYSTR(AccountID, 1, MAXSTRLEN(MSPayPalTransaction."Account ID"));
             MSPayPalTransaction."Transaction ID" := COPYSTR(TransactionID, 1, MAXSTRLEN(MSPayPalTransaction."Transaction ID"));
             MSPayPalTransaction.INSERT();
-        END ELSE
+        end else
             Session.LogMessage('00008H0', UpdateTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         MSPayPalTransaction."Transaction Type" := COPYSTR(PayPalTransactionType, 1, MAXSTRLEN(MSPayPalTransaction."Transaction Type"));
         MSPayPalTransaction."Transaction Status" := COPYSTR(TransactionStatus, 1, MAXSTRLEN(MSPayPalTransaction."Transaction Status"));
@@ -199,9 +207,9 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         GetPropertyValueFromJObject(JObject, 'address_state', PayerState);
         GetPropertyValueFromJObject(JObject, 'address_country', PayerCountry);
         TransactionDate := GetPaymentDate(TransactionDateStr);
-        IF NOT EVALUATE(GrossAmount, GrossAmountStr, 9) THEN
+        if not EVALUATE(GrossAmount, GrossAmountStr, 9) then
             Session.LogMessage('00008H2', CannotParseGrossAmountTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
-        IF NOT EVALUATE(FeeAmount, FeeAmountStr, 9) THEN
+        if not EVALUATE(FeeAmount, FeeAmountStr, 9) then
             Session.LogMessage('00008H3', CannotParseFeeAmountTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         PayerAddress := STRSUBSTNO(PayerAddressFormatTxt, PayerStreet, PayerCity, PayerZip, PayerState, PayerCountry);
     end;
@@ -252,7 +260,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         PreparedDateTimeText := DateTimeText.Replace(PdtTimeZoneNameTxt, PdtTimeZoneValueTxt); // PDT -> -07:00
         PreparedDateTimeText := PreparedDateTimeText.Replace(PstTimeZoneNameTxt, PstTimeZoneValueTxt); // PST -> -08:00
         PreparedDateTimeText := PreparedDateTimeText.Replace(CommaTxt, '');
-        EXIT(PreparedDateTimeText);
+        exit(PreparedDateTimeText);
     end;
 
     procedure GetNotificationJsonString(var WebhookNotification: Record "Webhook Notification"): Text;
@@ -262,18 +270,18 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
     begin
         NotificationString := '';
         WebhookNotification.CALCFIELDS(Notification);
-        IF WebhookNotification.Notification.HASVALUE() THEN BEGIN
+        if WebhookNotification.Notification.HASVALUE() then begin
             WebhookNotification.Notification.CREATEINSTREAM(NotificationInStream);
             NotificationInStream.READ(NotificationString);
-        END;
-        EXIT(NotificationString);
+        end;
+        exit(NotificationString);
     end;
 
     local procedure GetUtcNow(): DateTime;
     var
         DateFilterCalc: Codeunit "DateFilter-Calc";
     begin
-        EXIT(DateFilterCalc.ConvertToUtcDateTime(CURRENTDATETIME()));
+        exit(DateFilterCalc.ConvertToUtcDateTime(CURRENTDATETIME()));
     end;
 
     local procedure GetDefaultCurrencyCode(): Code[10];
@@ -283,7 +291,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
     begin
         GeneralLedgerSetup.GET();
         CurrencyCode := GeneralLedgerSetup.GetCurrencyCode(CurrencyCode);
-        EXIT(CurrencyCode);
+        exit(CurrencyCode);
     end;
 
 }

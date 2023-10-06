@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration.GP.HistoricalData;
+
 page 4101 "Hist. Migration Status Factbox"
 {
     Caption = 'GP Detail Snapshot Migration Status';

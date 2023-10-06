@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Reflection;
+
+using System.Reflection;
+
 permissionset 135036 "Field Selection Read"
 {
     Assignable = true;

@@ -37,10 +37,10 @@ page 31045 "Certificate Code List CZL"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
-                RunObject = Page "Certificate List";
-                RunPageLink = "Certificate Code CZL" = FIELD(Code);
+                RunObject = page "Certificate List";
+                RunPageLink = "Certificate Code CZL" = field(Code);
                 RunPageMode = View;
-                RunPageView = ORDER(Descending);
+                RunPageView = order(descending);
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'View or edit the certificates that are set up for the certificate code.';
             }

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Security.AccessControl;
+
 /// <summary>Holds information about draft emails and email that are about to be sent.</summary>
 table 8888 "Email Outbox"
 {
@@ -73,7 +77,7 @@ table 8888 "Email Outbox"
         {
             Access = Internal;
             FieldClass = FlowField;
-            CalcFormula = Lookup(User."User Name" where("User Security ID" = field("User Security Id")));
+            CalcFormula = lookup(User."User Name" where("User Security ID" = field("User Security Id")));
             Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
 

@@ -215,9 +215,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
         NoTax: Boolean;
         PrintInIntegers: Boolean;
         UseAmtsInAddCurr: Boolean;
-        [InDataSet]
         ReasonsObservedOnCtrlEditable: Boolean;
-        [InDataSet]
         RoundingDirectionCtrlVisible: Boolean;
         FilledByEmployeeNo: Code[20];
         VATStatementTemplateName: Code[10];

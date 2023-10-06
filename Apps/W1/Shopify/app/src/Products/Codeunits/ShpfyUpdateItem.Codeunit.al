@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+
 /// <summary>
 /// Codeunit Shpfy Update Item (ID 30188).
 /// </summary>

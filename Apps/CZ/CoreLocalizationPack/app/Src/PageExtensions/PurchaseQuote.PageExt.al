@@ -2,20 +2,8 @@ pageextension 11737 "Purchase Quote CZL" extends "Purchase Quote"
 {
     layout
     {
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#endif
         addlast(General)
         {
-#if CLEAN20
-            field("Posting Description CZL"; Rec."Posting Description")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies a description of the document. The posting description also appers on vendor and G/L entries.';
-            }
-#endif
             field("Your Reference CZL"; Rec."Your Reference")
             {
                 ApplicationArea = Basic, Suite;

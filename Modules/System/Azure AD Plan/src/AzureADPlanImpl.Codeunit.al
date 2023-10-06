@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System;
+using System.Security.User;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Security.AccessControl;
+
 codeunit 9018 "Azure AD Plan Impl."
 {
     Access = Internal;
@@ -418,7 +426,7 @@ codeunit 9018 "Azure AD Plan Impl."
             exit;
 
         repeat
-            TempNavUserPlan.COPY(NavUserPlan, FALSE);
+            TempNavUserPlan.COPY(NavUserPlan, false);
             TempNavUserPlan.Insert();
         until NavUserPlan.Next() = 0;
 
@@ -441,7 +449,9 @@ codeunit 9018 "Azure AD Plan Impl."
                     NavUserPlan.Delete();
                     if RemovePermissionsOnDeletePlan then begin
 #if not CLEAN22
+#pragma warning disable AL0432
                         AzureADPlan.OnRemoveUserGroupsForUserAndPlan(NavUserPlan."Plan ID", NavUserPlan."User Security ID");
+#pragma warning restore AL0432
 #endif
                         IsCustomized := PlanConfiguration.IsCustomized(NavUserPlan."Plan ID");
                         if IsCustomized then
@@ -474,7 +484,7 @@ codeunit 9018 "Azure AD Plan Impl."
                 if not IsInternalAdmin(GraphUserInfo) then
                     exit;
 
-        // Loop through assigned Azure AD Plans
+        // Loop through assigned Microsoft Entra Plans
         if not IsNull(GraphUserInfo.AssignedPlans()) then
             foreach AssignedPlan in GraphUserInfo.AssignedPlans() do begin
                 ServicePlanIdValue := AssignedPlan.ServicePlanId();
@@ -489,7 +499,7 @@ codeunit 9018 "Azure AD Plan Impl."
                     Session.LogMessage('0000I95', StrSubstNo(PlanNotEnabledMsg, Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             end;
 
-        // Loop through Azure AD Roles
+        // Loop through Microsoft Entra Roles
         if not IsNull(GraphUserInfo.Roles()) then
             foreach DirectoryRole in GraphUserInfo.Roles() do
                 if IsBCServicePlan(DirectoryRole.RoleTemplateId()) then begin
@@ -500,7 +510,7 @@ codeunit 9018 "Azure AD Plan Impl."
         // Check if the user is a member of the Device group
         if IsDeviceRole(GraphUserInfo) then begin
             // Only assign the device plan if the user doesn't have any other plans (except possibly Internal Admin or M365 Collaboration)
-            TempPlan.SetFilter("Plan ID", '<>%1&<>%2', PlanIDs.GetInternalAdminPlanId(), PlanIDs.GetMicrosoft365PlanId());
+            TempPlan.SetFilter("Plan ID", '<>%1&<>%2&<>%3', PlanIDs.GetGlobalAdminPlanId(), PlanIds.GetD365AdminPlanId(), PlanIDs.GetMicrosoft365PlanId());
 
             if TempPlan.IsEmpty() then begin
                 // Remove the Internal Admin and M365 Collaboration plans, if assigned
@@ -536,7 +546,7 @@ codeunit 9018 "Azure AD Plan Impl."
         if not IsNull(GraphUserInfo.Roles()) then
             foreach DirectoryRole in GraphUserInfo.Roles() do begin
                 RoleId := DirectoryRole.RoleTemplateId();
-                if DirectoryRole.RoleTemplateId() = PlanIds.GetInternalAdminPlanId() then
+                if RoleId in [PlanIds.GetGlobalAdminPlanId(), PlanIds.GetD365AdminPlanId()] then
                     exit(true);
             end;
 
@@ -628,7 +638,7 @@ codeunit 9018 "Azure AD Plan Impl."
     This procedure can be moved to app AzureADGraphUser when usage of UserPlans is no longer needed.
     */
     [NonDebuggable]
-    local procedure IsUserExternalAccountant(): Boolean
+    procedure IsUserExternalAccountant(): Boolean
     var
         UserPlan: Record "User Plan";
         PlanIds: Codeunit "Plan Ids";
@@ -781,20 +791,19 @@ codeunit 9018 "Azure AD Plan Impl."
         Plan: Record "Plan";
         Handled: Boolean;
     begin
-        WITH TempPlan do begin
-            if GET(ServicePlanId) then
-                exit;
+        if TempPlan.GET(ServicePlanId) then
+            exit;
 
-            if Plan.GET(ServicePlanId) then;
+        if Plan.GET(ServicePlanId) then;
 
-            Init();
-            "Plan ID" := ServicePlanId;
-            Name := CopyStr(ServicePlanName, 1, MaxStrLen(Name));
-            OnInitializeRoleCenter("Role Center ID", Handled);
-            if not Handled then
-                "Role Center ID" := Plan."Role Center ID";
-            Insert();
-        end;
+        TempPlan.Init();
+        TempPlan."Plan ID" := ServicePlanId;
+        TempPlan.Name := CopyStr(ServicePlanName, 1, MaxStrLen(TempPlan.Name));
+        OnInitializeRoleCenter(TempPlan."Role Center ID", Handled);
+        if not Handled then
+            TempPlan."Role Center ID" := Plan."Role Center ID";
+        TempPlan.Insert();
+
     end;
 
     [NonDebuggable]
@@ -803,8 +812,9 @@ codeunit 9018 "Azure AD Plan Impl."
         PlanIds: Codeunit "Plan Ids";
     begin
         exit(
-            IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId(), SecurityID)
-            or IsPlanAssignedToUser(PlanIds.GetDelegatedAdminPlanId(), SecurityID));
+            IsPlanAssignedToUser(PlanIds.GetGlobalAdminPlanId(), SecurityID)
+            or IsPlanAssignedToUser(PlanIds.GetDelegatedAdminPlanId(), SecurityID)
+            or IsPlanAssignedToUser(PlanIds.GetD365AdminPlanId(), SecurityID));
     end;
 
     [NonDebuggable]
@@ -887,6 +897,18 @@ codeunit 9018 "Azure AD Plan Impl."
             until TempPlan.Next() = 0;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::User, OnAfterDeleteEvent, '', true, true)]
+    local procedure OnAfterDeleteUser(var Rec: Record User; RunTrigger: Boolean)
+    var
+        UserPlan: Record "User Plan";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        UserPlan.SetRange("User Security ID", Rec."User Security ID");
+        UserPlan.DeleteAll();
+    end;
+
     [InternalEvent(false)]
     local procedure OnBeforeIsBcServicePlan(var Skip: Boolean)
     begin
@@ -896,6 +918,5 @@ codeunit 9018 "Azure AD Plan Impl."
     local procedure OnInitializeRoleCenter(var RoleCenterId: Integer; var Handled: Boolean)
     begin
     end;
-
 }
 

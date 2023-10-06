@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Telemetry;
+
+using System.Environment;
+using System.Globalization;
+
 codeunit 8704 "Feature Telemetry Impl."
 {
     Access = Internal;

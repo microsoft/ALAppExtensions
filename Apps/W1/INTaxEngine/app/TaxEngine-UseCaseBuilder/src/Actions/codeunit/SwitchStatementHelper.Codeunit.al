@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
 codeunit 20284 "Switch Statement Helper"
 {
     procedure OpenSwitchStatements(CaseID: Guid; ID: Guid; SwitchCaseActionType: Enum "Switch Case Action Type");
