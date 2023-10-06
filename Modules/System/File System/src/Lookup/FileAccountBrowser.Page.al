@@ -52,6 +52,13 @@ page 70005 "File Account Browser"
 
     actions
     {
+        area(Promoted)
+        {
+            actionref(UpRef; Up) { }
+            actionref(UploadRef; Upload) { }
+            actionref(CreateDirectoryRef; "Create Directory") { }
+            actionref(DeleteRef; Delete) { }
+        }
         area(Processing)
         {
             action(Up)
@@ -59,9 +66,6 @@ page 70005 "File Account Browser"
                 Caption = 'Up';
                 ApplicationArea = All;
                 Image = MoveUp;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Enabled = ParentFolderExists;
 
                 trigger OnAction()
@@ -80,9 +84,6 @@ page 70005 "File Account Browser"
                 Caption = 'Upload';
                 ApplicationArea = All;
                 Image = Import;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Ellipsis = true;
                 Visible = not IsInLookupMode;
                 Enabled = not IsInLookupMode;
@@ -98,9 +99,6 @@ page 70005 "File Account Browser"
                 Caption = 'Create Directory';
                 ApplicationArea = All;
                 Image = Bin;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Ellipsis = true;
                 Visible = not IsInLookupMode;
                 Enabled = not IsInLookupMode;
@@ -116,9 +114,6 @@ page 70005 "File Account Browser"
                 Caption = 'Delete';
                 ApplicationArea = All;
                 Image = Delete;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Ellipsis = true;
                 Visible = not IsInLookupMode;
                 Enabled = not IsInLookupMode;
