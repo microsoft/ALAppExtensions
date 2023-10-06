@@ -317,9 +317,7 @@ page 70000 "File Accounts"
     var
         DefaultFileAccount: Record "File Account";
         FileAccountImpl: Codeunit "File Account Impl.";
-        [InDataSet]
         IsDefault: Boolean;
-        [InDataSet]
         CanUserManageFileSetup: Boolean;
         DefaultTxt: Text;
         UpdateAccounts: Boolean;

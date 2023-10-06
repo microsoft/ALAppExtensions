@@ -501,9 +501,7 @@ page 70001 "File Account Wizard"
         AccountCreationSuccessfullyCompletedDurationLbl: Label 'Successful creation of account completed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         AccountCreationFailureDurationLbl: Label 'Creation of account failed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         FileConnectorHasBeenUninstalledMsg: Label 'The selected file extension has been uninstalled. You must reinstall the extension to add an account with it.';
-        [InDataSet]
         AppSourceAvailable: Boolean;
-        [InDataSet]
         TopBannerVisible: Boolean;
         BackActionVisible: Boolean;
         BackActionEnabled: Boolean;
