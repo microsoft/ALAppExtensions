@@ -4,7 +4,7 @@ tableextension 11749 "VAT Statement Name CZL" extends "VAT Statement Name"
     {
         field(11770; "Comments CZL"; Integer)
         {
-            CalcFormula = Count("VAT Statement Comment Line CZL" where("VAT Statement Template Name" = field("Statement Template Name"),
+            CalcFormula = count("VAT Statement Comment Line CZL" where("VAT Statement Template Name" = field("Statement Template Name"),
                                                                     "VAT Statement Name" = field(Name)));
             Caption = 'Comments';
             Editable = false;
@@ -12,7 +12,7 @@ tableextension 11749 "VAT Statement Name CZL" extends "VAT Statement Name"
         }
         field(11771; "Attachments CZL"; Integer)
         {
-            CalcFormula = Count("VAT Statement Attachment CZL" where("VAT Statement Template Name" = field("Statement Template Name"),
+            CalcFormula = count("VAT Statement Attachment CZL" where("VAT Statement Template Name" = field("Statement Template Name"),
                                                                   "VAT Statement Name" = field(Name)));
             Caption = 'Attachments';
             Editable = false;

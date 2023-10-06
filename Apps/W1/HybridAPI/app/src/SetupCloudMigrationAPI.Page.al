@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.API;
+
+using Microsoft.DataMigration;
+using System.Telemetry;
+
 page 40023 "Setup Cloud Migration API"
 {
     PageType = API;

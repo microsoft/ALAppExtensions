@@ -1,7 +1,12 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Azure.Identity;
+
+using System;
+using System.Environment;
 
 codeunit 9014 "Azure AD Graph Impl."
 {
@@ -137,6 +142,14 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
+    procedure GetMemberIdsPageForGroupId(GroupId: Text; NumberOfUsers: Integer; var UserIdsPage: DotNet UserIdsPage)
+    begin
+        // AzureAdGraphQuery will throw an exception if the group does not exist.
+        // Ignoring this exception, and letting the caller to only check for IsNull(GroupMembers)
+        if TryGetMemberIdsPageForGroupId(GroupId, NumberOfUsers, UserIdsPage) then;
+    end;
+
+    [NonDebuggable]
     [TryFunction]
     local procedure TryGetGroupMembers(GroupDisplayName: Text; var GroupMembers: DotNet IEnumerable)
     begin
@@ -150,6 +163,14 @@ codeunit 9014 "Azure AD Graph Impl."
     begin
         if CanQueryGraph() then
             UserInfoPage := GraphQuery.GetMembersPageForGroupId(GroupId, NumberOfUsers);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    local procedure TryGetMemberIdsPageForGroupId(GroupId: Text; NumberOfUsers: Integer; var UserIdsPage: DotNet UserIdsPage)
+    begin
+        if CanQueryGraph() then
+            UserIdsPage := GraphQuery.GetMemberIdsPageForGroupId(GroupId, NumberOfUsers);
     end;
 
     [NonDebuggable]
@@ -181,6 +202,20 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
+    procedure GetGroupName(GroupId: Text): Text
+    begin
+        if CanQueryGraph() then
+            exit(GraphQuery.GetGroupInfo(GroupId).DisplayName());
+    end;
+
+    [NonDebuggable]
+    procedure GetFirstGroupIdWithName(GroupName: Text): Text
+    begin
+        if CanQueryGraph() then
+            exit(GraphQuery.FindFirstGroupInfoForDisplayName(GroupName).ObjectId());
+    end;
+
+    [NonDebuggable]
     procedure GetGroups(): Dictionary of [Text, Text];
     var
         GroupInfoPage: DotNet GroupInfoPage;
@@ -191,7 +226,7 @@ codeunit 9014 "Azure AD Graph Impl."
         if not CanQueryGraph() then
             exit;
 
-        NumberOfGroupsPerPage := 50;
+        NumberOfGroupsPerPage := 500;
         GroupInfoPage := GraphQuery.GetGroupPage(NumberOfGroupsPerPage);
 
         if IsNull(GroupInfoPage) then

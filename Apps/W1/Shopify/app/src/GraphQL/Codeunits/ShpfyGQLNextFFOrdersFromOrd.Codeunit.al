@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30268 "Shpfy GQL NextFFOrdersFromOrd" implements "Shpfy IGraphQL"
 {
     Access = Internal;
@@ -8,7 +10,7 @@ codeunit 30268 "Shpfy GQL NextFFOrdersFromOrd" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{order(id: \"gid:\/\/shopify\/Order\/{{OrderId}}\") { legacyResourceId fulfillmentOrders(first: 25, after:\"{{After}}\") { pageInfo { hasNextPage } edges { cursor node { id assignedLocation {location {legacyResourceId}} order {legacyResourceId}}}}}}"}');
+        exit('{"query":"{order(id: \"gid:\/\/shopify\/Order\/{{OrderId}}\") { legacyResourceId fulfillmentOrders(first: 25, after:\"{{After}}\") { pageInfo { hasNextPage } edges { cursor node { id updatedAt assignedLocation {location {legacyResourceId}} order {legacyResourceId}}}}}}"}');
     end;
 
     /// <summary>
@@ -17,6 +19,6 @@ codeunit 30268 "Shpfy GQL NextFFOrdersFromOrd" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(78);
+        exit(128);
     end;
 }

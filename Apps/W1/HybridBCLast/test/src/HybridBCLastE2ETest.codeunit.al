@@ -23,6 +23,7 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         IntelligentCloud: Record "Intelligent Cloud";
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         WebhookNotification: Record "Webhook Notification";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         HybridCompany.DeleteAll();
         HybridCompanyStatus.DeleteAll();
@@ -37,6 +38,7 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         if Initialized then
             exit;
 
+        HybridCloudManagement.RefreshIntelligentCloudStatusTable();
         Initialized := true;
         Commit();
     end;

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
 /// <summary>
 /// A list part page to view, add and remove tables for Word templates.
 /// </summary>
@@ -16,6 +18,8 @@ page 9997 "Word Templates Tables Part"
     DeleteAllowed = true;
     Extensible = false;
     Permissions = tabledata "Word Templates Table" = rmd;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {

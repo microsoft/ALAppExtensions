@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.RoleCenters;
+
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 pageextension 18563 "Business Manager Role Center" extends "Business Manager Role Center"
 {
     actions

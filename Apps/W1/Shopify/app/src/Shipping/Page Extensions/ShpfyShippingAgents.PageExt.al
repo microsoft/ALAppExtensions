@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Foundation.Shipping;
+
 /// <summary>
 /// PageExtension Shpfy Shipping Agents (ID 30118) extends Record Shipping Agents.
 /// </summary>

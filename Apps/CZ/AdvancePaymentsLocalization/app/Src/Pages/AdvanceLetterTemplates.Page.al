@@ -58,51 +58,49 @@ page 31179 "Advance Letter Templates CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies automatic post VAT document.';
                 }
-#if not CLEAN20
-#pragma warning disable AL0432,AS0072
-                field("Document Report ID"; Rec."Document Report ID")
+#if not CLEAN23
+#pragma warning disable AL0432,AS0074
+                field("Document Report ID"; '')
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies document report ID.';
+                    Visible = false;
+                    Enabled = false;
                     ObsoleteReason = 'Replaced by standard report selection.';
                     ObsoleteState = Pending;
-                    ObsoleteTag = '20.0';
-
-                    trigger OnValidate()
-                    begin
-                        Rec.CalcFields("Document Report Caption");
-                    end;
+                    ObsoleteTag = '23.0';
                 }
-                field("Document Report Caption"; Rec."Document Report Caption")
+                field("Document Report Caption"; '')
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies document report caption.';
+                    Visible = false;
+                    Enabled = false;
                     ObsoleteReason = 'Replaced by standard report selection.';
                     ObsoleteState = Pending;
-                    ObsoleteTag = '20.0';
+                    ObsoleteTag = '23.0';
                 }
-                field("Invoice/Cr. Memo Report ID"; Rec."Invoice/Cr. Memo Report ID")
+                field("Invoice/Cr. Memo Report ID"; '')
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies invoice/credit memo report ID';
+                    Visible = false;
+                    Enabled = false;
                     ObsoleteReason = 'Replaced by standard report selection.';
                     ObsoleteState = Pending;
-                    ObsoleteTag = '20.0';
-
-                    trigger OnValidate()
-                    begin
-                        Rec.CalcFields("Invoice/Cr. Memo Rep. Caption");
-                    end;
+                    ObsoleteTag = '23.0';
                 }
-                field("Invoice/Cr. Memo Rep. Caption"; Rec."Invoice/Cr. Memo Rep. Caption")
+                field("Invoice/Cr. Memo Rep. Caption"; '')
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies invoice/credit memo report caption.';
+                    Visible = false;
+                    Enabled = false;
                     ObsoleteReason = 'Replaced by standard report selection.';
                     ObsoleteState = Pending;
-                    ObsoleteTag = '20.0';
+                    ObsoleteTag = '23.0';
                 }
-#pragma warning restore AL0432,AS0072
+#pragma warning restore AL0432,AS0074
 #endif
             }
         }

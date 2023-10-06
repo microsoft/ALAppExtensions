@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Sales.Customer;
+
 table 4094 "GP Customer Transactions"
 {
     ReplicateData = false;

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
 /// <summary>
 /// Provides an interface to define custom field values for Word Templates
 /// </summary>

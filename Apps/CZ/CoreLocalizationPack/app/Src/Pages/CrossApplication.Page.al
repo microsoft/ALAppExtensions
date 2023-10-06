@@ -61,7 +61,7 @@ page 31115 "Cross Application CZL"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
-                ShortCutKey = 'Ctrl+F7';
+                ShortcutKey = 'Ctrl+F7';
                 ToolTip = 'Displays related applied document line.';
 
                 trigger OnAction()

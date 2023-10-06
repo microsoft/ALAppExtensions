@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Telemetry;
+using System.Integration;
+
 page 8889 "Email Attachments"
 {
     PageType = ListPart;
@@ -70,9 +75,6 @@ page 8889 "Email Attachments"
             action(UploadFromScenario)
             {
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 Image = Attach;
                 Caption = 'Add files from default selection';
                 ToolTip = 'Add additional attachments from default email attachments. These files are not attached by default.';
@@ -230,13 +232,6 @@ page 8889 "Email Attachments"
         CurrPage.Update();
     end;
 
-#if not CLEAN20
-    internal procedure UpdateDeleteEnablement()
-    begin
-        UpdateDeleteActionEnablement();
-    end;
-#endif
-
     internal procedure UpdateValues(SourceEmailMessageImpl: Codeunit "Email Message Impl."; EmailEditable: Boolean)
     begin
         EmailMessageId := SourceEmailMessageImpl.GetId();
@@ -251,14 +246,15 @@ page 8889 "Email Attachments"
         EmailScenario := Scenario;
     end;
 
-    var
-        EmailMessageImpl: Codeunit "Email Message Impl.";
-        [InDataSet]
+    protected var
         DeleteActionEnabled: Boolean;
-        IsEmailEditable: Boolean;
         EditOptionVisible: Boolean;
+        IsEmailEditable: Boolean;
         AttachmentFileSize: Text;
         EmailMessageId: Guid;
         EmailScenario: Enum "Email Scenario";
+
+    var
+        EmailMessageImpl: Codeunit "Email Message Impl.";
         DeleteQst: Label 'Go ahead and delete?';
 }

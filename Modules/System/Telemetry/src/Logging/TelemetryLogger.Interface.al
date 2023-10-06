@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Telemetry;
+
 /// <summary>
 /// The interface that allows 3d party extensions to emit telemetry to their own telemetry stores when the Telemetry codeunit is used.
 /// </summary>

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41012 "Hist. Inventory Trx. Headers"
 {
     ApplicationArea = All;

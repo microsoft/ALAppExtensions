@@ -2,12 +2,6 @@ pageextension 11727 "Sales Order CZL" extends "Sales Order"
 {
     layout
     {
-#if not CLEAN20
-        modify("Customer Posting Group")
-        {
-            Visible = AllowMultiplePostingGroupsEnabled;
-        }
-#endif
 #if not CLEAN22
         modify("VAT Reporting Date")
         {
@@ -50,13 +44,8 @@ pageextension 11727 "Sales Order CZL" extends "Sales Order"
             field("Customer Posting Group CZL"; Rec."Customer Posting Group")
             {
                 ApplicationArea = Basic, Suite;
-#if not CLEAN20
-                Editable = IsPostingGroupEditableCZL;
-                Visible = not AllowMultiplePostingGroupsEnabled;
-#else
                 Editable = false;
                 Visible = false;
-#endif
                 Importance = Additional;
                 ToolTip = 'Specifies the customer''s market type to link business transactions to.';
                 ObsoleteState = Pending;
@@ -231,35 +220,16 @@ pageextension 11727 "Sales Order CZL" extends "Sales Order"
 
     trigger OnOpenPage()
     begin
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
-        if not AllowMultiplePostingGroupsEnabled then begin
-            SalesReceivablesSetupCZL.GetRecordOnce();
-#pragma warning disable AL0432
-            IsPostingGroupEditableCZL := SalesReceivablesSetupCZL."Allow Alter Posting Groups CZL";
-#pragma warning restore AL0432
-        end;
-#endif
         VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
     end;
 
     var
-#if not CLEAN20
-        SalesReceivablesSetupCZL: Record "Sales & Receivables Setup";
-#pragma warning disable AL0432
-        PostingGroupManagement: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 #pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled: Boolean;
-        IsPostingGroupEditableCZL: Boolean;
-#endif
 #endif
 }

@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Utilities;
+
+using System.Utilities;
+using System.TestLibraries.Utilities;
+
 codeunit 135070 "Uri Test"
 {
     Subtype = Test;
@@ -185,14 +190,12 @@ codeunit 135070 "Uri Test"
         LibraryAssert.IsTrue(Segments.Get(1, Segment), 'The segments should contain a first element');
         LibraryAssert.AreEqual('/', Segment, 'Wrong first segment');
 
-
         LibraryAssert.IsTrue(Segments.Get(2, Segment), 'The segments should contain a second element');
         LibraryAssert.AreEqual('segment2/', Segment, 'Wrong second segment');
 
         LibraryAssert.IsTrue(Segments.Get(3, Segment), 'The segments should contain a thrird element');
         LibraryAssert.AreEqual('segment3/', Segment, 'Wrong third segment');
     end;
-
 
     [Test]
     [Scope('OnPrem')]
@@ -204,13 +207,13 @@ codeunit 135070 "Uri Test"
         NotBaseOfTxt: Label 'Uri: "%1" should be base of uri "%2".', Comment = '%1 = Base Uri, %2 = Uri to test';
         UriToTestTxt: Label 'http://www.contoso.com/index.htm?date=today', Locked = true;
     begin
-        // [Given] A base Uri
+        // [Given] A uri where contoso is the base uri
         BaseUri.Init(BaseUriTxt);
 
-        // [Given] A another Uri
+        // [Given] A uri with contoso
         Uri.Init(UriToTestTxt);
 
-        // [Then] The http://www.contoso.com/ should be the base uri
+        // [Then] Contoso is the base uri.
         LibraryAssert.IsTrue(BaseUri.IsBaseOf(Uri), StrSubstNo(NotBaseOfTxt, BaseUriTxt, UriToTestTxt));
     end;
 

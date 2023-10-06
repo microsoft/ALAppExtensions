@@ -3,7 +3,10 @@ codeunit 11753 "Vendor Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterInsertEvent', '', false, false)]
     local procedure InitValueOnAfterInsertEvent(var Rec: Record Vendor)
     begin
-        Rec."Allow Multiple Posting Groups" := true;
+        if not Rec."Allow Multiple Posting Groups" then begin
+            Rec."Allow Multiple Posting Groups" := true;
+            Rec.Modify();
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterDeleteEvent', '', false, false)]
@@ -30,19 +33,6 @@ codeunit 11753 "Vendor Handler CZL"
             (Vendor."Registration Number" <> xVendor."Registration Number") or
             (Vendor."Tax Registration No. CZL" <> xVendor."Tax Registration No. CZL");
     end;
-#if not CLEAN20
-    [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnBeforeCheckAllowMultiplePostingGroups', '', false, false)]
-    local procedure SuppressCheckAllowMultiplePostingGroupsOnBeforeCheckAllowMultiplePostingGroups(var IsHandled: Boolean)
-    var
-#pragma warning disable AL0432
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-    begin
-        if IsHandled then
-            exit;
-        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterCopyVendLedgerEntryFromGenJnlLine', '', false, false)]
     local procedure UpdateEntryOnAfterCopyVendorLedgerEntryFromGenJnlLine(var VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")

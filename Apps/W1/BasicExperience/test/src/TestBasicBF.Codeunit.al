@@ -183,7 +183,6 @@ codeunit 139502 "Test Basic BF"
                     ApplicationAreaSetup.FieldName(Planning),
                     ApplicationAreaSetup.FieldName(Dimensions),
                     ApplicationAreaSetup.FieldName(Prepayments),
-                    ApplicationAreaSetup.FieldName(XBRL),
                     ApplicationAreaSetup.FieldName(Comments),
                     ApplicationAreaSetup.FieldName("Record Links"),
                     ApplicationAreaSetup.FieldName(Notes),

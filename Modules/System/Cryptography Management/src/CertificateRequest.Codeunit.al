@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
 /// <summary> 
 /// Provides helper functionality for creating Certificate Signing Requests (CSR:s) and Self Signed Certificates.
 /// </summary>

@@ -1,3 +1,10 @@
+namespace Microsoft.Payroll.Ceridian;
+
+using Microsoft.Finance.Payroll;
+using Microsoft.Utilities;
+using System.Utilities;
+using System.IO;
+
 codeunit 1666 "MS Ceridian Payroll import"
 {
 
@@ -15,14 +22,14 @@ codeunit 1666 "MS Ceridian Payroll import"
     var
         MSCeridianPayrollSetup: Record "MS Ceridian Payroll Setup";
     begin
-        if not MSCeridianPayrollSetup.ReadPermission then 
+        if not MSCeridianPayrollSetup.ReadPermission then
             exit;
-        IF NOT MSCeridianPayrollSetup.GET() THEN BEGIN
-            if not MSCeridianPayrollSetup.WritePermission then 
+        if not MSCeridianPayrollSetup.GET() then begin
+            if not MSCeridianPayrollSetup.WritePermission then
                 exit;
-            MSCeridianPayrollSetup.INSERT(TRUE);
+            MSCeridianPayrollSetup.INSERT(true);
             COMMIT();
-        END;
+        end;
         TempServiceConnection."Record ID" := MSCeridianPayrollSetup.RECORDID();
         TempServiceConnection."No." := FORMAT(TempServiceConnection."Record ID");
         TempServiceConnection.Name := CeridianPayrollTok;
@@ -35,8 +42,8 @@ codeunit 1666 "MS Ceridian Payroll import"
     var
         PayrollImportTransactions: Page "Payroll Import Transactions";
     begin
-        IF NOT AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) THEN
-            EXIT;
+        if not AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) then
+            exit;
         PayrollImportTransactions.Set(TempServiceConnection, GenJournalLine);
         PayrollImportTransactions.RUNMODAL();
     end;
@@ -46,8 +53,8 @@ codeunit 1666 "MS Ceridian Payroll import"
     var
         ImportCeridianPayroll: XMLport "Import Ceridian Payroll";
     begin
-        IF NOT AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) THEN
-            EXIT;
+        if not AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) then
+            exit;
         TempImportGLTransaction.DELETEALL();
         ImportCeridianPayroll.RUN();
         ImportCeridianPayroll.GetTemporaryRecords(TempImportGLTransaction);
@@ -61,8 +68,8 @@ codeunit 1666 "MS Ceridian Payroll import"
         FileMgt: Codeunit "File Management";
         OutStream: OutStream;
     begin
-        IF NOT AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) THEN
-            EXIT;
+        if not AMSCeridanRequest(FORMAT(TempServiceConnection."Record ID")) then
+            exit;
 
         TempBlob.CreateOutStream(OutStream);
 
@@ -93,12 +100,12 @@ codeunit 1666 "MS Ceridian Payroll import"
         OutStream.WRITETEXT('920-4000' + ',' + GetDate() + ',' + '392.31' + ',' + EmployeeTaxTok);
         OutStream.WRITETEXT();
 
-        FileMgt.BLOBExport(TempBlob, 'CeridianSample.csv', TRUE);
+        FileMgt.BLOBExport(TempBlob, 'CeridianSample.csv', true);
     end;
 
     local procedure GetDate(): Code[8];
     begin
-        EXIT(FORMAT(WORKDATE(), 0, '<Month,2><Day,2><Year4>'))
+        exit(FORMAT(WORKDATE(), 0, '<Month,2><Day,2><Year4>'))
     end;
 
     local procedure GetRecordID(): Text;
@@ -106,12 +113,12 @@ codeunit 1666 "MS Ceridian Payroll import"
         MSCeridianPayrollSetup: Record "MS Ceridian Payroll Setup";
     begin
         MSCeridianPayrollSetup.GET();
-        EXIT(FORMAT(MSCeridianPayrollSetup.RECORDID()));
+        exit(FORMAT(MSCeridianPayrollSetup.RECORDID()));
     end;
 
     local procedure AMSCeridanRequest(CallingRecordID: Text): Boolean;
     begin
-        EXIT(CallingRecordID = GetRecordID());
+        exit(CallingRecordID = GetRecordID());
     end;
 }
 

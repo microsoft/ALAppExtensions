@@ -380,7 +380,8 @@ report 31183 "Finance Charge Memo CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddress.IssuedFinanceChargeMemo(CustAddr, "Issued Fin. Charge Memo Header");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
@@ -445,7 +446,7 @@ report 31183 "Finance Charge Memo CZL"
 
     var
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
@@ -456,7 +457,6 @@ report 31183 "Finance Charge Memo CZL"
         NoOfCopies: Integer;
         NoOfLoops: Integer;
         LogInteraction: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         ShowCaptions: Boolean;
         PrevDetailedInterestRatesEntry: Boolean;
@@ -483,7 +483,7 @@ report 31183 "Finance Charge Memo CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(19) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Sales Finance Charge Memo") <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSBase;
+
+using Microsoft.Foundation.Navigate;
+
 codeunit 18686 "TDS Navigate Handler"
 {
     var

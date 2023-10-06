@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy Transactions (ID 30194).
 /// </summary>

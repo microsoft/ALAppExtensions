@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine;
+
+using Microsoft.Finance.TaxEngine.Core;
+using Microsoft.Finance.TaxEngine.JsonExchange;
+using Microsoft.Finance.TaxEngine.PostingHandler;
+using Microsoft.Finance.TaxEngine.ScriptHandler;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
 permissionset 20138 "D365 Access - IN Tax Engine"
 {
     Access = Internal;

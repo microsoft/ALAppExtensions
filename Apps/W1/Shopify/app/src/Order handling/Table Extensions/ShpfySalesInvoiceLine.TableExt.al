@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 /// <summary>
 /// TableExtension Shpfy Sales Invoice Line (ID 30103) extends Record Sales Invoice Line.
 /// </summary>

@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 pageextension 22204 "General Ledger Entries Review" extends "General Ledger Entries"
 {
     actions

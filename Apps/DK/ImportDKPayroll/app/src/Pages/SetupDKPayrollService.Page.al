@@ -1,7 +1,12 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Payroll;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Telemetry;
 
 page 13640 "Setup DK Payroll Service"
 {

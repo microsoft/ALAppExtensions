@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4098 "GP Item Transaction"
 {
     ReplicateData = false;

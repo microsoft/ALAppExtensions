@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41015 "Hist. Purchase Recv. Lines"
 {
     Caption = 'Historical Purchase Recv. Trx. Lines';

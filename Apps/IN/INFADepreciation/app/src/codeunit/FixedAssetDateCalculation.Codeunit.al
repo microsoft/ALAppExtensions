@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.FADepreciation;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Period;
+
 codeunit 18634 "Fixed Asset Date Calculation"
 {
     procedure GetFiscalYearStartDate(EndingDate: Date): Date

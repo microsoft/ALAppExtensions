@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Sales;
+
+using Microsoft.Finance.TaxBase;
+using Microsoft.Sales.Document;
+using Microsoft.Utilities;
+
 codeunit 18142 "GST Sales Posting No. Series"
 {
     var

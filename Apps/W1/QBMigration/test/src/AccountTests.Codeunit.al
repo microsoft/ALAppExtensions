@@ -76,7 +76,7 @@ codeunit 139532 "MigrationQB Account Tests"
     var
         MigrationQBAccountMigrator: Codeunit "MigrationQB Account Migrator";
     begin
-        MigrationQBAccountMigrator.OnMigrateGlAccount(GLAccDataMigrationFacade, MigrationQBAccount.RecordId());
+        MigrationQBAccountMigrator.MigrateAccountDetails(MigrationQBAccount, GLAccDataMigrationFacade);
     end;
 
     local procedure CreateStagingTableEntries(var MigrationQBAccount: Record "MigrationQB Account")

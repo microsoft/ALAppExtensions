@@ -3,6 +3,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.History;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Inventory.Item;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.Currency;
+using System.Reflection;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 codeunit 1437 "Essential Bus. Headline Mgt."
 {
     var

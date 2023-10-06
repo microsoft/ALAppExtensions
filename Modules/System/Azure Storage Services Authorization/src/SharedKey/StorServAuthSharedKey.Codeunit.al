@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
+using System;
+using System.Utilities;
+
 /// <summary>
 /// Exposes functionality to handle the creation of a signature to sign requests to the Storage Services REST API
 /// More Information: 

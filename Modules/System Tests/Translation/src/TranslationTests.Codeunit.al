@@ -1,7 +1,14 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Test.Globalization;
+
+using System.Globalization;
+using System.TestLibraries.Globalization;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 137121 "Translation Tests"
 {
@@ -136,7 +143,7 @@ codeunit 137121 "Translation Tests"
         TranslationTestPage.TextField.AssistEdit();
 
         // [THEN] Page caption is set to Record ID
-        Assert.AreEqual('Edit - Translation - ' + Format(TranslationTestTable.RecordId()), TranslationPage.Caption(), 'Custom caption is to be shown');
+        Assert.AreEqual('Translation - ' + Format(TranslationTestTable.RecordId()), TranslationPage.Caption(), 'Custom caption is to be shown');
 
         // [THEN] Two records show up
         TranslationPage.First();
@@ -164,13 +171,12 @@ codeunit 137121 "Translation Tests"
         Assert.AreEqual(Text4Txt, Translation4, 'Incorrect translation stored for FRA language');
     end;
 
-
     [Test]
     [Scope('OnPrem')]
     procedure TestRetrivalAndStorageThroughUIWithFieldLengthCheck()
     var
         TranslationTestTable: Record "Translation Test Table";
-        ExpectedErr: Label 'The provided translation "%1" must not exceeds', Comment = '%1 = Translation Value';
+        ExpectedErr: Label 'The provided translation "%1" must not exceed', Comment = '%1 = Translation Value';
         TranslationPage: TestPage Translation;
         NewTranslationValueWithToLongValue: Text;
     begin
@@ -282,7 +288,7 @@ codeunit 137121 "Translation Tests"
         Translation.ShowForAllRecords(TranslationTestTableA.RecordId().TableNo(), TranslationTestTableA.FieldNo(TextField));
 
         // [THEN] No custom caption
-        if TranslationPage.Caption() <> 'Edit - Translation' then
+        if TranslationPage.Caption() <> 'Translation' then
             Error('Custom caption is not to be shown');
 
         // [THEN] Verify the content of the page as all the translations for the 3 records

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
+using System.Reflection;
+
 /// <summary>
 /// Represents the available tables that could be used in a Word template.
 /// </summary>
@@ -19,12 +23,10 @@ table 9987 "Word Templates Table"
         {
             DataClassification = SystemMetadata;
         }
-#pragma warning disable AL0685
         field(2; "Table Caption"; Text[80])
-#pragma warning restore AL0685
         {
             FieldClass = FlowField;
-            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Table), "Object ID" = field("Table ID")));
+            CalcFormula = lookup("Table Metadata".Caption where(ID = field("Table ID")));
         }
     }
 

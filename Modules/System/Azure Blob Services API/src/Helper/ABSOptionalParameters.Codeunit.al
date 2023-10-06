@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
+using System.Security.Authentication;
+
 /// <summary>
 /// Holder for the optional Azure Blob Storage HTTP headers and URL parameters.
 /// </summary>
@@ -387,6 +391,16 @@ codeunit 9047 "ABS Optional Parameters"
     procedure BlockId("Value": Text)
     begin
         SetParameter('blockid', "Value");
+    end;
+
+    /// <summary>
+    /// Specifies one or more datasets to include in the response.
+    /// </summary>
+    /// see: https://learn.microsoft.com/en-us/rest/api/storageservices/list-blobs?tabs=azure-ad#uri-parameters
+    /// <param name="Value">The dataset(s) to include in text</param>
+    procedure Include("Value": Text)
+    begin
+        SetParameter('include', "Value");
     end;
 
     local procedure SetParameter(Header: Text; HeaderValue: Text)

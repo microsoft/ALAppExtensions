@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using System.Security.Encryption;
+
 codeunit 11422 "Submit Elec. Tax Declaration"
 {
     TableNo = "VAT Report Header";

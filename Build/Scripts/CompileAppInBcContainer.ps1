@@ -36,13 +36,5 @@ if($app)
 
 $appFile = Compile-AppInBcContainer @parameters
 
-# Determine whether the current build is a CICD build
-$CICDBuild = $env:GITHUB_WORKFLOW -and ($($env:GITHUB_WORKFLOW).Trim() -eq 'CI/CD')
-
-if($CICDBuild) {
-    # Create the artifacts folder for the app to place in the package
-    . $PSScriptRoot\Package\CreateAppPackageOutput.ps1 -AppProjectFolder $parameters["appProjectFolder"] -BuildMode $appBuildMode -AppFile $appFile -ALGoProjectFolder $currentProjectFolder -IsTestApp:$(!$app)
-}
-
-# Return the app file path 
+# Return the app file path
 $appFile

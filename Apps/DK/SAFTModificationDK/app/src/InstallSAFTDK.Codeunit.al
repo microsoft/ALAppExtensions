@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Foundation.Company;
+
 codeunit 13688 "Install SAF-T DK"
 {
     Access = Internal;
@@ -26,7 +34,7 @@ codeunit 13688 "Install SAF-T DK"
     begin
         if not AuditFileExportSetup.Get() then
             AuditFileExportSetup.InitSetup(Enum::"Audit File Export Format"::SAFT);
-        AuditFileExportSetup.Validate("SAF-T Modification", "SAF-T Modification"::DK);
+        AuditFileExportSetup.Validate("SAF-T Modification", Enum::"SAF-T Modification"::DK);
         AuditFileExportSetup.Modify(true);
     end;
 }

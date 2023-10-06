@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 41100 "Supported Tax Year"
 {
     DataPerCompany = false;

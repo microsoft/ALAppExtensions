@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 /// <summary>
 /// Report Shpfy Sync Shipm. to Shopify (ID 30109).
 /// </summary>

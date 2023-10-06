@@ -6,6 +6,12 @@
 /// <summary>
 /// Exports the contents one or more "Data Archive Table" records into an Excel book with one sheet per table.
 /// </summary>
+
+namespace System.DataAdministration;
+
+using System.IO;
+using System.Utilities;
+
 codeunit 608 "Data Archive Export To Excel"
 {
     Access = Internal;

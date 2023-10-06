@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 /// <summary>
 /// Exposes methods to create different kinds of authorizations for HTTP Request made to Azure Storage Services.
 /// </summary>
 codeunit 9062 "Storage Service Authorization"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Creates an account SAS (Shared Access Signature) for authorizing HTTP request to Azure Storage Services.

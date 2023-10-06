@@ -2,23 +2,12 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
 {
     layout
     {
-#if not CLEAN20
-        modify("Customer Posting Group")
-        {
-            Visible = AllowMultiplePostingGroupsEnabled;
-        }
-#endif
 #if not CLEAN22
         modify("VAT Reporting Date")
         {
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -28,7 +17,6 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
                 Visible = false;
             }
         }
-#endif
         addbefore("Location Code")
         {
             field("Reason Code CZL"; Rec."Reason Code")
@@ -56,13 +44,8 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
             field("Customer Posting Group CZL"; Rec."Customer Posting Group")
             {
                 ApplicationArea = Basic, Suite;
-#if not CLEAN20
-                Editable = IsPostingGroupEditableCZL;
-                Visible = not AllowMultiplePostingGroupsEnabled;
-#else
                 Editable = false;
                 Visible = false;
-#endif
                 Importance = Additional;
                 ToolTip = 'Specifies the customer''s market type to link business transactions to.';
                 ObsoleteState = Pending;
@@ -228,35 +211,16 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
 #if not CLEAN22
     trigger OnOpenPage()
     begin
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
-        if not AllowMultiplePostingGroupsEnabled then begin
-            ServiceMgtSetup.GetRecordOnce();
-#pragma warning disable AL0432
-            IsPostingGroupEditableCZL := ServiceMgtSetup."Allow Alter Posting Groups CZL";
-#pragma warning restore AL0432
-        end;
-#endif
         VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
     end;
 
     var
-#if not CLEAN20
-        ServiceMgtSetup: Record "Service Mgt. Setup";
-#pragma warning disable AL0432
-        PostingGroupManagement: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 #pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled: Boolean;
-        IsPostingGroupEditableCZL: Boolean;
-#endif
 #endif
 }

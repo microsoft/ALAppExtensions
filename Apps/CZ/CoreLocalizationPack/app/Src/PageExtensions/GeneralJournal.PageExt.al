@@ -106,7 +106,9 @@ pageextension 11722 "General Journal CZL" extends "General Journal"
     end;
 
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;

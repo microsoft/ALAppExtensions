@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 codeunit 1156 "COHUB Url Error Handler"
 {
     TableNo = "COHUB Enviroment";

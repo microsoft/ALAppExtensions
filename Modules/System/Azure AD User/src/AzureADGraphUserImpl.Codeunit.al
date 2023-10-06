@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System;
+using System.Globalization;
+using System.Security.AccessControl;
+
 codeunit 9011 "Azure AD Graph User Impl."
 {
     Access = Internal;
@@ -18,8 +24,8 @@ codeunit 9011 "Azure AD Graph User Impl."
     var
         AzureADGraph: Codeunit "Azure AD Graph";
         GraphUserInfo: DotNet UserInfo;
-        UserDoesNotObjectIdSetErr: Label 'The user with the security ID %1 does not have a valid object ID in Azure Active Directory.', Comment = '%1 =  The specified User Security ID';
-        CouldNotFindGraphUserErr: Label 'An Azure Active Directory user with the object ID %1 was not found.', Comment = '%1 = The specified object id';
+        UserDoesNotObjectIdSetErr: Label 'The user with the security ID %1 does not have a valid object ID in Microsoft Entra.', Comment = '%1 =  The specified User Security ID';
+        CouldNotFindGraphUserErr: Label 'A Microsoft Entra user with the object ID %1 was not found.', Comment = '%1 = The specified object id';
 
     [TryFunction]
     [NonDebuggable]

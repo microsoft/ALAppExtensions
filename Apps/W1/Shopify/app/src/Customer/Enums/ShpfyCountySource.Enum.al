@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Enum Shpfy County Source (ID 30104) implements Interface Shpfy ICounty.
 /// </summary>

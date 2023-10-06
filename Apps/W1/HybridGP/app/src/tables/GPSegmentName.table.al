@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4040 "GP Segment Name"
 {
     DataClassification = SystemMetadata;

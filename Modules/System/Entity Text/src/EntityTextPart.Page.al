@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Text;
+
 /// <summary>
 /// A reusable component to modify entity texts with a rich text editor.
 /// See the "Entity Text" page for an example implementation.
@@ -29,6 +31,7 @@ page 2012 "Entity Text Part"
                 {
                     ApplicationArea = All;
                     MultiLine = true;
+                    ExtendedDatatype = RichContent;
                     CaptionClass = ContentCaption;
                     ToolTip = 'Specifies the rich text content of the text.';
                     Style = Attention;
@@ -43,6 +46,7 @@ page 2012 "Entity Text Part"
         }
     }
 
+#pragma warning disable AL0482
     actions
     {
         area(Processing)
@@ -184,6 +188,7 @@ page 2012 "Entity Text Part"
             }
         }
     }
+#pragma warning restore AL0482
 
     trigger OnInit()
     begin

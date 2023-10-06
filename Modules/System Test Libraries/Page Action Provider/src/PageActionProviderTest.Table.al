@@ -3,8 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Integration;
+
 table 132616 "Page Action Provider Test"
 {
+    DataClassification = SystemMetadata;
+
     fields
     {
         field(1; TestInteger; Integer)

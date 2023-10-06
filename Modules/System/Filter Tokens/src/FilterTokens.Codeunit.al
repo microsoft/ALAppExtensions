@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Text;
 
 /// <summary>
 /// Exposes functionality that allow users to specify pre-defined filter tokens that get converted to the correct values for various data types when filtering records.

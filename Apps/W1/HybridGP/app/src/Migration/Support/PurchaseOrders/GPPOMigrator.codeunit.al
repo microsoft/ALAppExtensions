@@ -1,3 +1,18 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Inventory.Journal;
+using Microsoft.Purchases.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.UOM;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Posting;
+using Microsoft.Inventory.Posting;
+using System.Integration;
+
 codeunit 40108 "GP PO Migrator"
 {
     var
@@ -18,6 +33,7 @@ codeunit 40108 "GP PO Migrator"
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         Vendor: Record Vendor;
         HelperFunctions: Codeunit "Helper Functions";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
         CountryCode: Code[10];
@@ -38,6 +54,7 @@ codeunit 40108 "GP PO Migrator"
 
         repeat
             if Vendor.Get(GPPOP10100.VENDORID) then begin
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPPOP10100.RecordId));
                 CurrencyCode := CopyStr(GPPOP10100.CURNCYID.Trim(), 1, MaxStrLen(CurrencyCode));
                 HelperFunctions.CreateCurrencyIfNeeded(CurrencyCode);
 
@@ -126,6 +143,7 @@ codeunit 40108 "GP PO Migrator"
     var
         GPPOP10110: Record "GP POP10110";
         GPPOPReceiptApply: Record GPPOPReceiptApply;
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         LineQuantityRemaining: Decimal;
         LineNo: Integer;
         LocationCode: Code[10];
@@ -139,6 +157,7 @@ codeunit 40108 "GP PO Migrator"
         repeat
             LineQuantityRemaining := GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE;
             if LineQuantityRemaining > 0 then begin
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPPOP10110.RecordId));
                 GPPOPReceiptApply.SetRange(PONUMBER, GPPOP10110.PONUMBER);
                 GPPOPReceiptApply.SetRange(POLNENUM, GPPOP10110.ORD);
                 GPPOPReceiptApply.SetRange(Status, GPPOPReceiptApply.Status::Posted);
@@ -363,6 +382,7 @@ codeunit 40108 "GP PO Migrator"
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         Item: Record Item;
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         ItemNo: Code[20];
         ItemTrackingCode: Code[10];
         PurchaseOrderNo: Text;
@@ -370,6 +390,7 @@ codeunit 40108 "GP PO Migrator"
     begin
         foreach PurchaseOrderNo in PostPurchaseOrderNoList do
             if PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, PurchaseOrderNo) then begin
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(PurchaseHeader.RecordId));
                 PurchaseHeader.Receive := true;
                 PurchaseHeader.Modify();
 

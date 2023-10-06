@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment.Configuration;
+using System.Media;
+using System.Reflection;
+using System.Security.AccessControl;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 132602 "Checklist Administration Test"
 {
     Subtype = Test;
@@ -1082,7 +1091,7 @@ codeunit 132602 "Checklist Administration Test"
     local procedure PopulateSetupFields(var Title: Text[2048]; var ExpectedDuration: Integer; var OrderID: Integer)
     begin
         Title := CopyStr(Any.AlphanumericText(MaxStrLen(Title)), 1, MaxStrLen(Title));
-        ExpectedDuration := Any.IntegerInRange(50000);
+        ExpectedDuration := Any.IntegerInRange(29999);
         OrderID := any.IntegerInRange(100000);
     end;
 

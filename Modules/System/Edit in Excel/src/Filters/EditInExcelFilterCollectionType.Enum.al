@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Excel;
+
 /// <summary>
 /// This enum specifies whether filters for the given field are connected or disconnected
 /// In other words if the filter being added specifies "Field = a&amp;b" (and) or "Field = a|b" (or).

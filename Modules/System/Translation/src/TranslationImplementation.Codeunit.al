@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Globalization;
+
+using System.Reflection;
 
 codeunit 3712 "Translation Implementation"
 {
@@ -15,6 +19,7 @@ codeunit 3712 "Translation Implementation"
         DifferentTableErr: Label 'The records cannot belong to different tables.';
         NoRecordIdErr: Label 'The variant passed is not a record.';
         NotAValidRecordForTranslationErr: Label 'Translations cannot be added for the record on table %1.', Comment = '%1 - Table number';
+        MaxLenghtErr: Label 'The provided translation "%1" must not exceed %2 characters (Current Length: %3).', Comment = '%1 = Translation, %2 = Max Length for translation, %3 = Current Length of Translation';
 
     procedure Any(): Boolean
     var
@@ -172,7 +177,6 @@ codeunit 3712 "Translation Implementation"
     procedure CheckLengthOfTranslationValue(var Translation: Record Translation)
     var
         Field: Record Field;
-        MaxLenghtErr: Label 'The provided translation "%1" must not exceeds %2 characters (Current Length: %3).', Comment = '%1 = Translation, %2 = Max Length for translation, %3 = Current Length of Translation';
     begin
         Field.Get(Translation."Table ID", Translation."Field ID");
         if StrLen(Translation.Value) > Field.Len then

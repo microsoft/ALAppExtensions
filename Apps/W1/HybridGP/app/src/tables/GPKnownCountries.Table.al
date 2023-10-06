@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40140 "GP Known Countries"
 {
     Caption = 'GP Known Countries';

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
+using Microsoft.Purchases.Vendor;
+
 pageextension 41019 "Vendor List Ext." extends "Vendor List"
 {
     actions

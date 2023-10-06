@@ -1,3 +1,7 @@
+namespace Microsoft.Payroll.Ceridian;
+
+using System.Environment.Configuration;
+
 codeunit 1668 "MS Ceridian Payroll Mgt."
 {
     var

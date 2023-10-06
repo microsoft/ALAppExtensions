@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using System.Utilities;
+
 report 18543 "Create Tax Accounting Period"
 {
     Caption = 'Create Tax Accounting Period';

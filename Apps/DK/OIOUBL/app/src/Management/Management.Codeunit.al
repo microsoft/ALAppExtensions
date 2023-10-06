@@ -1,7 +1,19 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Segment;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Setup;
+using Microsoft.Service.History;
+using Microsoft.Service.Setup;
+using System.IO;
+using System.Utilities;
 
 codeunit 13646 "OIOUBL-Management"
 {
@@ -10,7 +22,6 @@ codeunit 13646 "OIOUBL-Management"
         OIOUBLFormatNameTxt: Label 'OIOUBL', Locked = true;
         InvoiceDocTypeTxt: Label 'Invoice';
         CrMemoDocTypeTxt: Label 'Credit Memo';
-        XmlFilterTxt: Label 'XML File(*.xml)|*.xml', Locked = true;
         ZipArchiveFilterTxt: Label 'Zip File (*.zip)|*.zip', Locked = true;
         ZipArchiveSaveDialogTxt: Label 'Export OIOUBL archive';
         NonExistingDocumentFormatErr: Label 'The electronic document format %1 does not exist for the document type %2.', Comment = '%1 - OIOUBL, %2 - Enum "Electronic Document Format Usage"';
@@ -48,29 +59,6 @@ codeunit 13646 "OIOUBL-Management"
         FileManagement.BLOBExport(TempBlob, FileName, true);
     end;
 
-#if not CLEAN20
-    [Obsolete('Replaced by ExportXMLFile with TempBlob parameter.', '20.0')]
-    procedure ExportXMLFile(DocNo: Code[20]; SourceFile: Text[1024]; FolderPath: Text);
-    var
-        OIOUBLFileEvents: Codeunit "OIOUBL-File Events";
-        FileName: Text;
-        IsHandled: Boolean;
-    begin
-        FileName := STRSUBSTNO(AddXMLExtensionLbl, DocNo);
-        OnExportXMLFileOnAfterSetFileName(FileName, DocNo);
-        if (FileName = '') or (StrPos(FileName, '\') > 0) then
-            Error(WrongFileNameErr);
-        FolderPath := DelChr(FolderPath, '>', '\');
-
-        OIOUBLFileEvents.FileCreated(SourceFile);
-
-        OnExportXMLFileOnBeforeDownload(DocNo, SourceFile, FolderPath, IsHandled);
-        if IsHandled then
-            exit;
-
-        Download(SourceFile, '', FolderPath, XmlFilterTxt, FileName);
-    end;
-#endif
     procedure GetOIOUBLElectronicDocumentFormatCode(): Code[20];
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
@@ -126,7 +114,7 @@ codeunit 13646 "OIOUBL-Management"
         if ElectronicDocumentFormat.FindFirst() then
             exit(ElectronicDocumentFormat."Codeunit ID")
         else begin
-            ElectronicDocumentFormat.Usage := "Electronic Document Format Usage".FromInteger(DocumentUsage);
+            ElectronicDocumentFormat.Usage := Enum::"Electronic Document Format Usage".FromInteger(DocumentUsage);
             Error(NonExistingDocumentFormatErr, OIOUBLFormatNameTxt, Format(ElectronicDocumentFormat.Usage));
         end;
     end;
@@ -206,26 +194,6 @@ codeunit 13646 "OIOUBL-Management"
         end;
     end;
 
-#if not CLEAN20
-    [Obsolete('Replaced by UpdateRecordExportBuffer with TempBlob parameter.', '20.0')]
-    procedure UpdateRecordExportBuffer(RecID: RecordID; ServerFilePath: Text[250]; ClientFileName: Text[250]);
-    var
-        RecordExportBuffer: Record "Record Export Buffer";
-    begin
-        if RecordExportBuffer.IsEmpty() then
-            exit;
-
-        RecordExportBuffer.SetRange(RecordID, RecID);
-        RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
-        RecordExportBuffer.SetFilter("Electronic Document Format", '');
-        if RecordExportBuffer.FindFirst() then begin
-            RecordExportBuffer.ServerFilePath := ServerFilePath;
-            RecordExportBuffer.ClientFileName := ClientFileName;
-            RecordExportBuffer."Electronic Document Format" := GetOIOUBLElectronicDocumentFormatCode();
-            RecordExportBuffer.Modify();
-        end;
-    end;
-#endif
     procedure WriteLogSalesInvoice(SalesInvoiceHeader: Record "Sales Invoice Header")
     var
         SegManagement: Codeunit SegManagement;
@@ -303,13 +271,6 @@ codeunit 13646 "OIOUBL-Management"
     begin
     end;
 
-#if not CLEAN20
-    [Obsolete('Replaced by OnExportXMLFileOnBeforeBLOBExport with TempBlob parameter.', '20.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnExportXMLFileOnBeforeDownload(DocNo: Code[20]; SourceFile: Text; FolderPath: Text; var IsHandled: Boolean)
-    begin
-    end;
-#endif
     [IntegrationEvent(true, false)]
     local procedure OnExportXMLFileOnBeforeBLOBExport(DocNo: Code[20]; var TempBlob: Codeunit "Temp Blob"; FileName: Text; var IsHandled: Boolean)
     begin

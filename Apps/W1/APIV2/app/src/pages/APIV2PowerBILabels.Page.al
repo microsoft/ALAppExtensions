@@ -1,3 +1,7 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Integration.PowerBI;
+
 page 30078 "APIV2 - Power BI Labels"
 {
 
@@ -25,11 +29,11 @@ page 30078 "APIV2 - Power BI Labels"
         {
             repeater(Group)
             {
-                field(labelId; "Label ID")
+                field(labelId; Rec."Label ID")
                 {
                     Caption = 'Label Id';
                 }
-                field(displayName; "Text Value")
+                field(displayName; Rec."Text Value")
                 {
                     Caption = 'Text Value';
                 }
@@ -48,4 +52,3 @@ page 30078 "APIV2 - Power BI Labels"
         PowerBILabelMgt.GetReportLabelsForUserLanguage(Rec, UserSecurityId());
     end;
 }
-

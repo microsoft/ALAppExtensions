@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
+
+using Microsoft.Finance.TCS.TCSBase;
+using Microsoft.Foundation.AuditCodes;
+using System.Reflection;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Sales.Customer;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Bank.BankAccount;
+
 table 18871 "TCS Journal Template"
 {
     Caption = 'TCS Journal Template';

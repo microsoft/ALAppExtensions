@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Telemetry;
+using System.Security.AccessControl;
+using System.Environment;
+
 codeunit 9087 "Microsoft 365 License Impl."
 {
     Access = Internal;

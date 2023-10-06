@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Sales.Customer;
+
 tableextension 4814 "Intrastat Report Customer" extends Customer
 {
     fields

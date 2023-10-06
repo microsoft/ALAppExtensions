@@ -3,35 +3,44 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Reflection;
+
 /// <summary>
 /// This table stores the filter used to apply retention policies to subsets of records in a table.
 /// </summary>
 table 3902 "Retention Policy Setup Line"
 {
+
     fields
     {
         field(1; "Table ID"; Integer)
         {
+            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(2; "Table Name"; Text[30])
         {
             FieldClass = FlowField;
-            CalcFormula = lookup(AllObjWithCaption."Object Name" where("Object Type" = const(Table), "Object ID" = Field("Table Id")));
+            CalcFormula = lookup(AllObjWithCaption."Object Name" where("Object Type" = const(Table), "Object ID" = field("Table Id")));
             Editable = false;
         }
         field(3; "Table Caption"; Text[249])
         {
             FieldClass = FlowField;
-            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Table), "Object ID" = Field("Table Id")));
+            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Table), "Object ID" = field("Table Id")));
             Editable = false;
         }
         field(4; "Line No."; Integer)
         {
+            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(5; Enabled; Boolean)
         {
+            DataClassification = SystemMetadata;
+
             trigger OnValidate()
             begin
                 if Rec.Enabled then
@@ -40,6 +49,7 @@ table 3902 "Retention Policy Setup Line"
         }
         field(6; "Retention Period"; Code[20])
         {
+            DataClassification = SystemMetadata;
             TableRelation = "Retention Period".Code;
 
             trigger OnValidate()
@@ -53,6 +63,7 @@ table 3902 "Retention Policy Setup Line"
         }
         field(7; "Date Field No."; Integer)
         {
+            DataClassification = SystemMetadata;
             TableRelation = Field."No." where(TableNo = field("Table ID"), "Type" = filter(Date | DateTime));
 
             trigger OnLookup()
@@ -66,21 +77,23 @@ table 3902 "Retention Policy Setup Line"
         {
             FieldClass = FlowField;
             CalcFormula = lookup(Field.FieldName where(TableNo = field("Table ID"), "No." = field("Date Field No.")));
-            Editable = False;
+            Editable = false;
         }
         field(9; "Date Field Caption"; Text[80])
         {
             FieldClass = FlowField;
             CalcFormula = lookup(Field."Field Caption" where(TableNo = field("Table ID"), "No." = field("Date Field No.")));
-            Editable = False;
+            Editable = false;
         }
 
         field(10; "Table Filter"; Blob)
         {
+            DataClassification = CustomerContent;
             Access = Internal;
         }
         field(11; "Table Filter Text"; Text[2048])
         {
+            DataClassification = CustomerContent;
             Access = Internal;
         }
         field(12; Locked; Boolean)

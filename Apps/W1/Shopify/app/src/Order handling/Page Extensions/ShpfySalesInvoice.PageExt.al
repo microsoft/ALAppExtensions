@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+
 /// <summary>
 /// PageExtension Shpfy Sales Invoice (ID 30113) extends Record Sales Invoice.
 /// </summary>

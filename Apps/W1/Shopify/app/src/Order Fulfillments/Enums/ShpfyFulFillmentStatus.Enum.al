@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Enum Shpfy FulFillment Status (ID 30112).
 /// </summary>

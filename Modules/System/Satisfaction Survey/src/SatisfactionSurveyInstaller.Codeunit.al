@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Feedback;
+
 codeunit 1434 "Satisfaction Survey Installer"
 {
     Subtype = Install;

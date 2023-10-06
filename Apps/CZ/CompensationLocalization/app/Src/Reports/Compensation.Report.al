@@ -360,6 +360,7 @@ report 31270 "Compensation CZC"
                 end;
 
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
             end;
 
             trigger OnPreDataItem()

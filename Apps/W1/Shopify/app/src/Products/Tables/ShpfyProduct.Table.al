@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+using System.Reflection;
+
 /// <summary>
 /// Table Shpfy Product (ID 30127).
 /// </summary>

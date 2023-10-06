@@ -504,6 +504,11 @@ page 31151 "Cash Desk Card CZP"
 
                 actionref(CashDocumentPromoted; "Cash &Document")
                 {
+#pragma warning disable AS0072
+                    ObsoleteTag = '22.0';
+#pragma warning restore AS0072
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
             }
 #endif

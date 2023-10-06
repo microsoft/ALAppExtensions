@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+using System.Apps;
+
 /// <summary>This page shows all the registered entries in the advanced settings page.</summary>
 page 9202 "Advanced Settings"
 {

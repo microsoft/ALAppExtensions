@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.Dimension;
+
 tableextension 5282 "Dimension SAF-T" extends Dimension
 {
     fields

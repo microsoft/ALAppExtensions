@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Inventory.Item;
+
 tableextension 11029 "Intrastat Report Line DE" extends "Intrastat Report Line"
 {
     fields

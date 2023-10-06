@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.Utilities;
+using System.Environment;
+
 codeunit 4004 "Create Companies IC"
 {
     TableNo = "Hybrid Company";

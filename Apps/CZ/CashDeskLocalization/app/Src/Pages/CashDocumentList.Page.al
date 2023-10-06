@@ -411,6 +411,7 @@ page 31162 "Cash Document List CZP"
                 }
             }
 #if not CLEAN22
+#pragma warning disable AS0072
             group(Category_Report)
             {
                 Caption = 'Report';
@@ -421,11 +422,18 @@ page 31162 "Cash Document List CZP"
 
                 actionref(PrintToAttachmentPromoted; PrintToAttachment)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
                 actionref(PrintPromoted; "&Print")
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
             }
+#pragma warning restore AS0072
 #endif
             group(Category_Category8)
             {

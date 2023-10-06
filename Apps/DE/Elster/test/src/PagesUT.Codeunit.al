@@ -20,25 +20,6 @@ codeunit 148166 "Elster Pages UT"
         LibraryApplicationArea: Codeunit "Library - Application Area";
 
     [Test]
-    [HandlerFunctions('CreateXMLFileVATAdvNotifRequestPageHandler,MessageHandler')]
-    procedure CreateXMLFileSalesVATAdvNotifList()
-    var
-        SalesVATAdvNotifList: TestPage "Sales VAT Adv. Notif. List";
-    begin
-        // [SCENARIO 283574] Purpose of the test is to validate CreateXMLFile Action of Page ID 11017 - Sales VAT Adv. Notif. List.
-        // Setup.
-        OpenSalesVATAdvNotifList(SalesVATAdvNotifList, 0D);  // XML-File Creation Date as 0D.
-        Commit();  // Commit required as it is called explicitly from Report - Create XML-File VAT Adv.Notif. - OnPostDataItem of Sales VAT Advance Notification.
-
-        // Exercise: Invoke CreateXMLFile Action of Page - Sales VAT Adv. Notif. List.
-        SalesVATAdvNotifList.CreateXMLFile.Invoke();  // Invokes CreateXMLFileVATAdvNotifRequestPageHandler.
-
-        // Verify: Verify XML-File Creation Date updated from UpdateSalesVATAdvNotif function of Report Create XML File VAT Adv. Notif. as TODAY on Sales VAT Adv. Notif. List.
-        SalesVATAdvNotifList."XML-File Creation Date".AssertEquals(Today());
-        SalesVATAdvNotifList.Close();
-    end;
-
-    [Test]
     [HandlerFunctions('VATStatementGermanyRequestPageHandler')]
     procedure PrintSalesVATAdvNotifListSalesVATAdvNotifList()
     var
@@ -51,24 +32,6 @@ codeunit 148166 "Elster Pages UT"
 
         // Exercise & verify: Action Print opens VAT Statement Germany Request Page handled in VATStatementGermanyRequestPageHandler.
         SalesVATAdvNotifList.Print.Invoke();
-        SalesVATAdvNotifList.Close();
-    end;
-
-    [Test]
-    [HandlerFunctions('ConfirmHandler')]
-    procedure DeleteXMLFileSalesVATAdvNotifList()
-    var
-        SalesVATAdvNotifList: TestPage "Sales VAT Adv. Notif. List";
-    begin
-        // [SCENARIO 283574] Purpose of the test is to validate Delete XML File Action of Page ID 11017 - Sales VAT Adv. Notif. List.
-        // Setup.
-        OpenSalesVATAdvNotifList(SalesVATAdvNotifList, WorkDate());  // XML-File Creation Date as WORKDATE.
-
-        // Exercise.
-        SalesVATAdvNotifList.DeleteXMLFile.Invoke(); // Invokes ConfirmHandler.
-
-        // Verify: Verify XML-File Creation Date is deleted on Page Sales VAT Adv. Notif. List.
-        SalesVATAdvNotifList."XML-File Creation Date".AssertEquals('');
         SalesVATAdvNotifList.Close();
     end;
 

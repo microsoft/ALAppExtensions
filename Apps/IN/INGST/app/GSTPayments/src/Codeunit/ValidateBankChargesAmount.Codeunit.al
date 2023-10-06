@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Payments;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Check;
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Deferral;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using Microsoft.Inventory.Location;
+
 codeunit 18247 "Validate Bank Charges Amount"
 {
     var

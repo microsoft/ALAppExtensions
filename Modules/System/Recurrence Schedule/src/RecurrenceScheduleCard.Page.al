@@ -3,13 +3,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DateTime;
+
+using System.Utilities;
+
 /// <summary>
 /// Allows users to view and edit existing recurrence schedules.
 /// </summary>
 page 4690 "Recurrence Schedule Card"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Extensible = false;
-    DataCaptionExpression = FORMAT(Pattern);
+    DataCaptionExpression = FORMAT(Rec.Pattern);
     InsertAllowed = false;
     LinksAllowed = false;
     PageType = Card;
@@ -24,20 +30,20 @@ page 4690 "Recurrence Schedule Card"
             group(General)
             {
                 Caption = 'General';
-                field(ID; ID)
+                field(ID; Rec.ID)
                 {
                     ApplicationArea = All;
                     Visible = false;
                     ToolTip = 'Specifies the ID of the recurrence schedule.';
                 }
-                field(RecurrenceStartTime; "Start Time")
+                field(RecurrenceStartTime; Rec."Start Time")
                 {
                     ApplicationArea = All;
                     Caption = 'Recurrence Start Time';
                     Importance = Promoted;
                     ToolTip = 'Specifies the time of day when the recurrence takes effect. This is also the time of day for each occurrence.';
                 }
-                field(RecurrencePattern; Pattern)
+                field(RecurrencePattern; Rec.Pattern)
                 {
                     ApplicationArea = All;
                     Caption = 'Recurrence Pattern';
@@ -47,15 +53,15 @@ page 4690 "Recurrence Schedule Card"
 
                     trigger OnValidate()
                     begin
-                        CurrPage.UPDATE(TRUE);
+                        CurrPage.Update(true);
                     end;
                 }
-                field("Start Date"; "Start Date")
+                field("Start Date"; Rec."Start Date")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date when the recurrence takes effect.';
                 }
-                field("End Date"; "End Date")
+                field("End Date"; Rec."End Date")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies when the recurrence will stop.';
@@ -64,8 +70,8 @@ page 4690 "Recurrence Schedule Card"
             group(Daily)
             {
                 Caption = 'Daily';
-                Visible = "Pattern" = RecurrencePatterns::Daily;
-                field(DailyFrequency; "Recurs Every")
+                Visible = Rec."Pattern" = RecurrencePatterns::Daily;
+                field(DailyFrequency; Rec."Recurs Every")
                 {
                     ApplicationArea = All;
                     Caption = 'Days Between';
@@ -76,51 +82,51 @@ page 4690 "Recurrence Schedule Card"
             group(Weekly)
             {
                 Caption = 'Weekly';
-                Visible = "Pattern" = "Pattern"::Weekly;
-                field(WeeklyFrequency; "Recurs Every")
+                Visible = Rec."Pattern" = Rec."Pattern"::Weekly;
+                field(WeeklyFrequency; Rec."Recurs Every")
                 {
                     ApplicationArea = All;
                     Caption = 'Weeks Between';
                     Importance = Promoted;
                     ToolTip = 'Specifies the interval between occurrences.';
                 }
-                field(RecurOnMonday; "Recurs on Monday")
+                field(RecurOnMonday; Rec."Recurs on Monday")
                 {
                     ApplicationArea = All;
                     Caption = 'Recur on Monday';
                     ToolTip = 'Specifies that Monday is the day of the week for the recurrence.';
                 }
-                field(RecurOnTuesday; "Recurs on Tuesday")
+                field(RecurOnTuesday; Rec."Recurs on Tuesday")
                 {
                     ApplicationArea = All;
                     Caption = 'Recur on Tuesday';
                     ToolTip = 'Specifies that Tuesday is the day of the week for the recurrence.';
                 }
-                field(RecurOnWednesday; "Recurs on Wednesday")
+                field(RecurOnWednesday; Rec."Recurs on Wednesday")
                 {
                     ApplicationArea = All;
                     Caption = 'Recur on Wednesday';
                     ToolTip = 'Specifies that Wednesday is the day of the week for the recurrence.';
                 }
-                field(RecurOnThursday; "Recurs on Thursday")
+                field(RecurOnThursday; Rec."Recurs on Thursday")
                 {
                     ApplicationArea = All;
                     Caption = 'Recur on Thursday';
                     ToolTip = 'Specifies that Thursday is the day of the week for the recurrence.';
                 }
-                field(RecurOnFriday; "Recurs on Friday")
+                field(RecurOnFriday; Rec."Recurs on Friday")
                 {
                     ApplicationArea = All;
                     Caption = 'Recur on Friday';
                     ToolTip = 'Specifies that Friday is the day of the week for the recurrence.';
                 }
-                field(RecurOnSaturday; "Recurs on Saturday")
+                field(RecurOnSaturday; Rec."Recurs on Saturday")
                 {
                     ApplicationArea = All;
                     Caption = 'Recur on Saturday';
                     ToolTip = 'Specifies that Saturday is the day of the week for the recurrence.';
                 }
-                field(RecurOnSunday; "Recurs on Sunday")
+                field(RecurOnSunday; Rec."Recurs on Sunday")
                 {
                     ApplicationArea = All;
                     Caption = 'Recur on Sunday';
@@ -130,15 +136,15 @@ page 4690 "Recurrence Schedule Card"
             group(Monthly)
             {
                 Caption = 'Monthly';
-                Visible = "Pattern" = RecurrencePatterns::Monthly;
-                field(MonthlyFrequency; "Recurs Every")
+                Visible = Rec."Pattern" = RecurrencePatterns::Monthly;
+                field(MonthlyFrequency; Rec."Recurs Every")
                 {
                     ApplicationArea = All;
                     Caption = 'Months Between';
                     Importance = Promoted;
                     ToolTip = 'Specifies the interval between occurrences.';
                 }
-                field("MonthlyRecurrencePattern>"; "Monthly Pattern")
+                field("MonthlyRecurrencePattern>"; Rec."Monthly Pattern")
                 {
                     ApplicationArea = All;
                     Caption = 'Recurrence Pattern';
@@ -147,30 +153,30 @@ page 4690 "Recurrence Schedule Card"
                 }
                 group(MonthlySpecificDay)
                 {
-                    Visible = "Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day";
-                    field(MRecurOnDay; "Recurs on Day")
+                    Visible = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day";
+                    field(MRecurOnDay; Rec."Recurs on Day")
                     {
                         ApplicationArea = All;
                         Caption = 'Recur on Day';
-                        Enabled = "Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day";
+                        Enabled = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day";
                         ToolTip = 'Specifies the day of the month for the recurrence.';
                     }
                 }
                 group(MonthlyByWeekday)
                 {
-                    Visible = "Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
-                    field(MRecurInWeek; "Ordinal Recurrence No.")
+                    Visible = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
+                    field(MRecurInWeek; Rec."Ordinal Recurrence No.")
                     {
                         ApplicationArea = All;
                         Caption = 'Recur in Week in Month';
-                        Enabled = "Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
+                        Enabled = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
                         ToolTip = 'Specifies the week of the month for the recurrence.';
                     }
-                    field(MWeekday; Weekday)
+                    field(MWeekday; Rec.Weekday)
                     {
                         ApplicationArea = All;
                         Caption = 'Weekday';
-                        Enabled = "Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
+                        Enabled = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
                         ToolTip = 'Specifies the day of the week for the recurrence.';
                     }
                 }
@@ -178,22 +184,22 @@ page 4690 "Recurrence Schedule Card"
             group(Yearly)
             {
                 Caption = 'Yearly';
-                Visible = "Pattern" = RecurrencePatterns::Yearly;
-                field(YearlyFrequency; "Recurs Every")
+                Visible = Rec."Pattern" = RecurrencePatterns::Yearly;
+                field(YearlyFrequency; Rec."Recurs Every")
                 {
                     ApplicationArea = All;
                     Caption = 'Years Between';
                     Importance = Promoted;
                     ToolTip = 'Specifies the interval between occurrences.';
                 }
-                field(YearlyRecurrencePattern; "Monthly Pattern")
+                field(YearlyRecurrencePattern; Rec."Monthly Pattern")
                 {
                     ApplicationArea = All;
                     Caption = 'Recurrence Pattern';
                     Importance = Promoted;
                     ToolTip = 'Specifies the frequency of the recurrence. For example, a recurrence pattern might be set up for a day in the first week of every month.';
                 }
-                field(Month; Month)
+                field(Month; Rec.Month)
                 {
                     ApplicationArea = All;
                     Importance = Promoted;
@@ -201,30 +207,30 @@ page 4690 "Recurrence Schedule Card"
                 }
                 group(YearlySpecificDay)
                 {
-                    Visible = "Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day";
-                    field(YRecurOnDay; "Recurs on Day")
+                    Visible = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day";
+                    field(YRecurOnDay; Rec."Recurs on Day")
                     {
                         ApplicationArea = All;
                         Caption = 'Recur on Day';
-                        Editable = "Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day";
+                        Editable = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day";
                         ToolTip = 'Specifies the day of the month for the recurrence.';
                     }
                 }
                 group(YearlyByWeekday)
                 {
-                    Visible = "Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
-                    field(YRecurInWeek; "Ordinal Recurrence No.")
+                    Visible = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
+                    field(YRecurInWeek; Rec."Ordinal Recurrence No.")
                     {
                         ApplicationArea = All;
                         Caption = 'Recur in Week in Month';
-                        Enabled = "Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
+                        Enabled = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
                         ToolTip = 'Specifies the week of the month for the recurrence.';
                     }
-                    field(YWeekday; Weekday)
+                    field(YWeekday; Rec.Weekday)
                     {
                         ApplicationArea = All;
                         Caption = 'Weekday';
-                        Enabled = "Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
+                        Enabled = Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"By Weekday";
                         ToolTip = 'Specifies the day of the week for the recurrence.';
                     }
                 }
@@ -240,7 +246,7 @@ page 4690 "Recurrence Schedule Card"
             {
                 ApplicationArea = All;
                 Caption = 'Daily';
-                Enabled = "Pattern" <> RecurrencePatterns::Daily;
+                Enabled = Rec."Pattern" <> RecurrencePatterns::Daily;
                 Image = DueDate;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -250,14 +256,14 @@ page 4690 "Recurrence Schedule Card"
 
                 trigger OnAction()
                 begin
-                    VALIDATE(Pattern, RecurrencePatterns::Daily);
+                    Rec.Validate(Pattern, RecurrencePatterns::Daily);
                 end;
             }
             action("Weekly Recurrence")
             {
                 ApplicationArea = All;
                 Caption = 'Weekly';
-                Enabled = "Pattern" <> RecurrencePatterns::Weekly;
+                Enabled = Rec."Pattern" <> RecurrencePatterns::Weekly;
                 Image = Workdays;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -267,14 +273,14 @@ page 4690 "Recurrence Schedule Card"
 
                 trigger OnAction()
                 begin
-                    VALIDATE(Pattern, RecurrencePatterns::Weekly);
+                    Rec.Validate(Pattern, RecurrencePatterns::Weekly);
                 end;
             }
             action("Monthly Recurrence")
             {
                 ApplicationArea = All;
                 Caption = 'Monthly';
-                Enabled = "Pattern" <> RecurrencePatterns::Monthly;
+                Enabled = Rec."Pattern" <> RecurrencePatterns::Monthly;
                 Image = Workdays;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -284,14 +290,14 @@ page 4690 "Recurrence Schedule Card"
 
                 trigger OnAction()
                 begin
-                    VALIDATE(Pattern, RecurrencePatterns::Monthly);
+                    Rec.Validate(Pattern, RecurrencePatterns::Monthly);
                 end;
             }
             action("Yearly Recurrence")
             {
                 ApplicationArea = All;
                 Caption = 'Yearly';
-                Enabled = "Pattern" <> RecurrencePatterns::Yearly;
+                Enabled = Rec."Pattern" <> RecurrencePatterns::Yearly;
                 Image = Period;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -301,7 +307,7 @@ page 4690 "Recurrence Schedule Card"
 
                 trigger OnAction()
                 begin
-                    VALIDATE(Pattern, RecurrencePatterns::Yearly);
+                    Rec.Validate(Pattern, RecurrencePatterns::Yearly);
                 end;
             }
         }
@@ -312,20 +318,17 @@ page 4690 "Recurrence Schedule Card"
         ConfirmManagement: Codeunit "Confirm Management";
     begin
         if CloseAction = Action::LookupOK then
-            if Pattern in [RecurrencePatterns::Monthly, RecurrencePatterns::Yearly] then
-                if "Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day" then
-                    if "Recurs on Day" >= 29 then
-                        exit(ConfirmManagement.GetResponseOrDefault(StrSubstNo(ConfirmLbl, "Recurs on Day"), true));
+            if Rec.Pattern in [RecurrencePatterns::Monthly, RecurrencePatterns::Yearly] then
+                if Rec."Monthly Pattern" = RecurrenceMonthlyPattern::"Specific Day" then
+                    if Rec."Recurs on Day" >= 29 then
+                        exit(ConfirmManagement.GetResponseOrDefault(StrSubstNo(ConfirmLbl, Rec."Recurs on Day"), true));
         exit(true);
     end;
 
     var
-        [InDataSet]
         RecurrenceMonthlyPattern: Enum "Recurrence - Monthly Pattern";
-        [InDataSet]
         RecurrencePatterns: Enum "Recurrence - Pattern";
         ConfirmLbl: Label 'Some months have fewer than %1 days. These months will not be included in the recurrence.\\Do you want to continue?', Comment = '%1 - Number of days in month';
-
-
 }
+
 

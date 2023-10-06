@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Codeunit Shpfy GQL NextInvEntries (ID 30136) implements Interface Shpfy IGarphQL.
 /// </summary>

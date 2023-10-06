@@ -1,9 +1,13 @@
+#if not CLEAN23
 codeunit 139505 "MS - WorldPay Standard Tests"
 {
     // version Test,ERM,W1,AT,AU,BE,CA,CH,DE,DK,ES,FI,FR,GB,IS,IT,MX,NL,NO,NZ,SE,US
 
     Subtype = Test;
     TestPermissions = Disabled;
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     trigger OnRun()
     begin
@@ -779,21 +783,21 @@ codeunit 139505 "MS - WorldPay Standard Tests"
 
     local procedure SetupReportSelections()
     var
-        CustomReportLayout: Record "Custom Report Layout";
+        ReportLayoutList: Record "Report Layout List";
         ReportSelections: Record "Report Selections";
     begin
         ReportSelections.DELETEALL();
         CreateDefaultReportSelection();
 
-        GetCustomBodyLayout(CustomReportLayout);
+        GetEmailBodyLayout(ReportLayoutList);
 
         ReportSelections.Reset();
         ReportSelections.SetRange(Usage, ReportSelections.Usage::"S.Invoice");
         ReportSelections.FINDFIRST();
         ReportSelections.VALIDATE("Use for Email Attachment", TRUE);
         ReportSelections.VALIDATE("Use for Email Body", TRUE);
-        ReportSelections.VALIDATE("Email Body Layout Code", CustomReportLayout.Code);
-        ReportSelections.MODIFY(TRUE);
+        ReportSelections.VALIDATE("Email Body Layout Name", ReportLayoutList.Name);
+        ReportSelections.MODIFY();
     end;
 
     local procedure CreateDefaultReportSelection()
@@ -812,12 +816,12 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         EXIT(REPORT::"Standard Sales - Invoice");
     end;
 
-    local procedure GetCustomBodyLayout(var CustomReportLayout: Record "Custom Report Layout")
+    local procedure GetEmailBodyLayout(var ReportLayoutList: Record "Report Layout List")
     begin
-        CustomReportLayout.SETRANGE("Report ID", GetReportID());
-        CustomReportLayout.SETRANGE(Type, CustomReportLayout.Type::Word);
-        CustomReportLayout.SETFILTER(Description, '''@*Email Body*''');
-        CustomReportLayout.FINDLAST();
+        ReportLayoutList.SETRANGE("Report ID", GetReportID());
+        ReportLayoutList.SETRANGE("Layout Format", ReportLayoutList."Layout Format"::Word);
+        ReportLayoutList.SETFILTER(Name, '''@*Email*''');
+        ReportLayoutList.FINDLAST();
     end;
 
     local procedure CreateSalesInvoice(var SalesHeader: Record "Sales Header"; PaymentMethod: Record "Payment Method")
@@ -1084,3 +1088,4 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     end;
 }
 
+#endif

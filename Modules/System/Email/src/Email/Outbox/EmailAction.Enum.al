@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Defines the action that the user can take when open an email message in the editor modally.
 /// </summary>

@@ -1,3 +1,9 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Telemetry;
+using System.Azure.KeyVault;
+using System.Environment;
+
 /// <summary>
 /// Codeunit Shpfy Communication Mgt. (ID 30103).
 /// </summary>
@@ -11,10 +17,22 @@ codeunit 30103 "Shpfy Communication Mgt."
         CommunicationEvents: Codeunit "Shpfy Communication Events";
         GraphQLQueries: Codeunit "Shpfy GraphQL Queries";
         NextExecutionTime: DateTime;
-        VersionTok: Label '2023-01', Locked = true;
+        VersionTok: Label '2023-04', Locked = true;
         OutgoingRequestsNotEnabledConfirmLbl: Label 'Importing data to your Shopify shop is not enabled, do you want to go to shop card to enable?';
         OutgoingRequestsNotEnabledErr: Label 'Importing data to your Shopify shop is not enabled, navigate to shop card to enable.';
         IsTestInProgress: Boolean;
+        CategoryTok: Label 'Shopify Integration', Locked = true;
+        QueryParamTooLongTxt: Label 'Query param length exceeded 50000.', Locked = true;
+        QueryParamTooLongErr: Label 'Request length exceeded Shopify API limit.';
+        ProductCreateQueryParamTooLongErr: Label 'Request length exceeded Shopify API limit. This may be due to longer marketing text or embed images.';
+        RequestTelemetryLbl: Label '%1 request with ID %2 has been made to Shopify.', Comment = '%1 - method, %2 - request ID', Locked = true;
+        ApiVersionOutOfSupportErr: Label 'The Shopify API used by your current Shopify connector is no longer supported. To continue using the Shopify connector, please upgrade the Shopify connector and your Business Central environment.';
+        ApiVersionOutOfSupportTxt: Label 'Shopify API version %1 is out of support, expiry date was %2', Comment = '%1 - api version, %2 - expiry date', Locked = true;
+        MissingApiVersionExpiryDateTxt: Label 'The api version expiry date has not been initialized.', Locked = true;
+        ApiVersionExpiryDateAKVSecretNameLbl: Label 'ShopifyApiVersionExpiryDate', Locked = true;
+        CannotParseParametersTxt: Label 'Cannot parse parameters.', Locked = true;
+
+        ApiVersionNotFoundTxt: Label 'Api version %1 is not found.', Comment = '%1 - api version', Locked = true;
 
     /// <summary> 
     /// Create Web Request URL.
@@ -123,6 +141,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         ErrorOnShopifyErr: Label 'Error(s) on Shopify:\ \%1', Comment = '%1 = Errors from json structure.';
         NoJsonErr: Label 'The response from Shopify contains no JSON. \Requested: %1 \Response: %2', Comment = '%1 = The request = %2 = Received data';
     begin
+        CheckQueryLength(GraphQLQuery);
         ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
         ReceivedData := ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 3);
         if JResponse.ReadFrom(ReceivedData) then begin
@@ -264,7 +283,7 @@ codeunit 30103 "Shpfy Communication Mgt."
                 while (not HttpResponseMessage.IsBlockedByEnvironment) and (EvaluateResponse(HttpResponseMessage)) and (RetryCounter < MaxRetries) do begin
                     RetryCounter += 1;
                     Sleep(1000);
-                    CreateShopifyLogEntry(Url, Method, Request, HttpResponseMessage, Response);
+                    LogShopifyRequest(Url, Method, Request, HttpResponseMessage, Response, RetryCounter);
                     Clear(HttpClient);
                     Clear(HttpRequestMessage);
                     Clear(HttpResponseMessage);
@@ -274,8 +293,23 @@ codeunit 30103 "Shpfy Communication Mgt."
             end;
         if GetContent(HttpResponseMessage, Response) then;
         ResponseHeaders := HttpResponseMessage.Headers();
-        CreateShopifyLogEntry(Url, Method, Request, HttpResponseMessage, Response);
+        LogShopifyRequest(Url, Method, Request, HttpResponseMessage, Response, RetryCounter);
         Commit();
+    end;
+
+    [NonDebuggable]
+    internal procedure Post(var Client: HttpClient; Url: Text; Content: HttpContent; var Response: HttpResponseMessage)
+    begin
+        if IsTestInProgress then
+            CommunicationEvents.OnClientPost(Url, Content, Response)
+        else
+            Client.Post(Url, Content, Response);
+    end;
+
+    [NonDebuggable]
+    internal procedure Get(var Client: HttpClient; Url: Text; var Response: HttpResponseMessage)
+    begin
+        Client.Get(Url, Response);
     end;
 
     [TryFunction]
@@ -317,6 +351,8 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <returns>Return value of type Text.</returns>
     local procedure ApiVersion(): Text
     begin
+        if not IsTestInProgress then
+            CheckApiVersion();
         exit(VersionTok);
     end;
 
@@ -387,25 +423,76 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="Request">Parameter of type Text.</param>
     /// <param name="HttpResponseMessage">Parameter of type HttpResponseMessage.</param>
     /// <param name="Response">Parameter of type text.</param>
-    local procedure CreateShopifyLogEntry(Url: text; Method: text; Request: Text; var HttpResponseMessage: HttpResponseMessage; Response: text)
+    local procedure LogShopifyRequest(Url: Text; Method: Text; Request: Text; var HttpResponseMessage: HttpResponseMessage; Response: Text; RetryCount: Integer)
+    begin
+        case Shop."Logging Mode" of
+            Shop."Logging Mode"::All:
+                CreateShopifyLogEntry(Url, Method, Request, HttpResponseMessage, Response, RetryCount);
+            Shop."Logging Mode"::"Error Only":
+                if not HttpResponseMessage.IsSuccessStatusCode or Response.Contains('"errors":') or ResponseHasUserError(Response) then
+                    CreateShopifyLogEntry(Url, Method, Request, HttpResponseMessage, Response, RetryCount);
+        end;
+
+        LogShopifyRequestTelemetry(Url, Method, HttpResponseMessage, RetryCount);
+    end;
+
+    local procedure CreateShopifyLogEntry(Url: text; Method: Text; Request: Text; var HttpResponseMessage: HttpResponseMessage; Response: Text; RetryCount: Integer)
     var
         ShopifyLogEntry: Record "Shpfy Log Entry";
+        Values: array[10] of Text;
     begin
-        if Shop."Log Enabled" then begin
-            ShopifyLogEntry.Init();
-            ShopifyLogEntry."Date and Time" := CurrentDateTime;
-            ShopifyLogEntry.Time := TIME;
-            ShopifyLogEntry."User ID" := CopyStr(UserId, 1, MaxStrLen(ShopifyLogEntry."User ID"));
-            ShopifyLogEntry.URL := CopyStr(Url, 1, MaxStrLen(ShopifyLogEntry.URL));
-            ShopifyLogEntry.Method := CopyStr(Method, 1, MaxStrLen(ShopifyLogEntry.Method));
-            ShopifyLogEntry."Status Code" := CopyStr(Format(HttpResponseMessage.HttpStatusCode), 1, MaxStrLen(ShopifyLogEntry."Status Code"));
-            ShopifyLogEntry."Status Description" := CopyStr(HttpResponseMessage.ReasonPhrase, 1, MaxStrLen(ShopifyLogEntry."Status Description"));
-            ShopifyLogEntry.Insert();
-            if Request <> '' then
-                ShopifyLogEntry.SetRequest(Request);
-            if Response <> '' then
-                ShopifyLogEntry.SetResponse(Response);
-        end;
+        ShopifyLogEntry.Init();
+        ShopifyLogEntry."Date and Time" := CurrentDateTime;
+        ShopifyLogEntry.Time := TIME;
+        ShopifyLogEntry."User ID" := CopyStr(UserId, 1, MaxStrLen(ShopifyLogEntry."User ID"));
+        ShopifyLogEntry.URL := CopyStr(Url, 1, MaxStrLen(ShopifyLogEntry.URL));
+        ShopifyLogEntry.Method := CopyStr(Method, 1, MaxStrLen(ShopifyLogEntry.Method));
+        ShopifyLogEntry."Status Code" := CopyStr(Format(HttpResponseMessage.HttpStatusCode), 1, MaxStrLen(ShopifyLogEntry."Status Code"));
+        ShopifyLogEntry."Status Description" := CopyStr(HttpResponseMessage.ReasonPhrase, 1, MaxStrLen(ShopifyLogEntry."Status Description"));
+        ShopifyLogEntry."Has Error" := not HttpResponseMessage.IsSuccessStatusCode or Response.Contains('"errors":') or ResponseHasUserError(Response);
+        ShopifyLogEntry."Retry Count" := RetryCount;
+        ShopifyLogEntry."Query Cost" := GetQueryCost(Response);
+        if HttpResponseMessage.Headers().GetValues('X-Request-ID', Values) then
+            if Evaluate(ShopifyLogEntry."Request Id", Values[1]) then;
+        ShopifyLogEntry.Insert();
+        if Request <> '' then
+            ShopifyLogEntry.SetRequest(Request);
+        if Response <> '' then
+            ShopifyLogEntry.SetResponse(Response);
+    end;
+
+    local procedure ResponseHasUserError(Response: Text): Boolean;
+    begin
+        if Response.Contains('"userErrors":') then
+            if not Response.Contains('"userErrors":[]') then
+                exit(true);
+    end;
+
+    local procedure LogShopifyRequestTelemetry(Url: Text; Method: Text; var HttpResponseMessage: HttpResponseMessage; RetryCount: Integer)
+    var
+        CustomDimensions: Dictionary of [Text, Text];
+        Values: array[10] of Text;
+        RequestId: Text;
+    begin
+        CustomDimensions.Add('Category', CategoryTok);
+        CustomDimensions.Add('Url', Url);
+        CustomDimensions.Add('Response Code', Format(HttpResponseMessage.HttpStatusCode));
+        CustomDimensions.Add('Retry Count', Format(RetryCount));
+        if HttpResponseMessage.Headers().GetValues('X-Request-ID', Values) then
+            RequestId := Values[1];
+        Session.LogMessage('0000K8W', StrSubstNo(RequestTelemetryLbl, Method, RequestId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+    end;
+
+    local procedure GetQueryCost(Response: Text): Integer
+    var
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        JResponse: JsonToken;
+        Cost: Integer;
+    begin
+        if JResponse.ReadFrom(Response) then
+            Cost := JsonHelper.GetValueAsDecimal(JsonHelper.GetJsonToken(JResponse, 'extensions.cost'), 'actualQueryCost');
+
+        exit(Cost);
     end;
 
     internal procedure EscapeGrapQLData(Data: Text): Text
@@ -494,12 +581,6 @@ codeunit 30103 "Shpfy Communication Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure GetVersion(): Text
-    begin
-        exit(VersionTok);
-    end;
-
-    [NonDebuggable]
     internal procedure GetShopRecord() ShopifyShop: Record "Shpfy Shop";
     begin
         if not ShopifyShop.Get(Shop.Code) then
@@ -521,6 +602,128 @@ codeunit 30103 "Shpfy Communication Mgt."
                 end else
                     Error(OutgoingRequestsNotEnabledErr);
         end;
+    end;
+
+    local procedure CheckQueryLength(GraphQLQuery: Text)
+    begin
+        if StrLen(GraphQLQuery) > 50000 then begin
+            Session.LogMessage('0000K18', QueryParamTooLongTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+            if GraphQLQuery.Contains('productCreate') then
+                Error(ProductCreateQueryParamTooLongErr);
+            Error(QueryParamTooLongErr);
+        end;
+    end;
+
+    [NonDebuggable]
+    local procedure CheckApiVersion()
+    var
+        ApiVersionExpiryDate: DateTime;
+    begin
+        ApiVersionExpiryDate := GetApiVersionExpiryDate();
+
+        if CurrentDateTime() > ApiVersionExpiryDate then begin
+            Session.LogMessage('0000KO1', StrSubstNo(ApiVersionOutOfSupportTxt, VersionTok, ApiVersionExpiryDate), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+            Error(ApiVersionOutOfSupportErr);
+        end;
+    end;
+
+    [NonDebuggable]
+    internal procedure GetApiVersionExpiryDate(): DateTime
+    var
+        Day: Integer;
+        Month: Integer;
+        Year: Integer;
+        ApiVersionExpiryDate: DateTime;
+        Result: List of [Text];
+    begin
+        if not GetApiVersionCache(ApiVersionExpiryDate) then begin
+            Result := GetApiVersionExpiryDateFromAKV().Split('-');
+            if Result.Count <> 3 then
+                ApiVersionExpiryDate := CreateDateTime(CalcDate('<+1Y>', Today()), 0T)
+            else begin
+                Evaluate(Day, Result.Get(3));
+                Evaluate(Month, Result.Get(2));
+                Evaluate(Year, Result.Get(1));
+                ApiVersionExpiryDate := CreateDateTime(DMY2Date(Day, Month, Year), 0T);
+            end;
+            SetApiVersionCache(Format(ApiVersionExpiryDate));
+        end;
+
+        exit(ApiVersionExpiryDate);
+    end;
+
+    [NonDebuggable]
+    [Scope('OnPrem')]
+    internal procedure SetApiVersionCache(ApiVersionExpiryDate: Text)
+    begin
+        IsolatedStorage.Set('ApiVersionExpiryDate(' + VersionTok + ')', ApiVersionExpiryDate, DataScope::Module);
+        IsolatedStorage.Set('ApiVersionCache(' + VersionTok + ')', Format(CurrentDateTime()), DataScope::Module);
+    end;
+
+    [NonDebuggable]
+    [Scope('OnPrem')]
+    internal procedure GetApiVersionCache(var ApiVersionExpiryDate: DateTime): Boolean
+    var
+        Result: Text;
+        ApiVersionCache: DateTime;
+    begin
+        if IsolatedStorage.Get('ApiVersionExpiryDate(' + VersionTok + ')', DataScope::Module, Result) then
+            if Evaluate(ApiVersionExpiryDate, Result) then
+                if IsolatedStorage.Get('ApiVersionCache(' + VersionTok + ')', DataScope::Module, Result) then
+                    if Evaluate(ApiVersionCache, Result) then
+                        if Round((CurrentDateTime() - ApiVersionCache) / 1000 / 3600 / 24, 1) <= 30 then // 30 days lifetime for cache
+                            exit(true);
+    end;
+
+    [NonDebuggable]
+    internal procedure ClearApiVersionCache()
+    begin
+        if IsolatedStorage.Contains('ApiVersionExpiryDate(' + VersionTok + ')', DataScope::Module) then
+            IsolatedStorage.Delete('ApiVersionExpiryDate(' + VersionTok + ')', DataScope::Module);
+
+        if IsolatedStorage.Contains('ApiVersionCache(' + VersionTok + ')', DataScope::Module) then
+            IsolatedStorage.Delete('ApiVersionCache(' + VersionTok + ')', DataScope::Module);
+    end;
+
+    [NonDebuggable]
+    local procedure GetApiVersionExpiryDateFromAKV(): Text
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        EnvironmentInformation: Codeunit "Environment Information";
+        ApiVersionJsonTxt: Text;
+        Result: Text;
+        JObject: JsonObject;
+    begin
+        if not EnvironmentInformation.IsSaaS() then
+            exit(Format(CalcDate('<+1M>', Today()), 0, 9));
+
+        if not AzureKeyVault.GetAzureKeyVaultSecret(ApiVersionExpiryDateAKVSecretNameLbl, ApiVersionJsonTxt) then begin
+            Session.LogMessage('0000KO2', MissingApiVersionExpiryDateTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+            exit;
+        end;
+
+        if not JObject.ReadFrom(ApiVersionJsonTxt) then begin
+            Session.LogMessage('0000KO3', CannotParseParametersTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+            exit;
+        end;
+
+        if not GetJsonPropertyValue(JObject, VersionTok, Result) then begin
+            Session.LogMessage('0000KO4', StrSubstNo(ApiVersionNotFoundTxt, VersionTok), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+            exit;
+        end;
+
+        exit(Result);
+    end;
+
+    local procedure GetJsonPropertyValue(JObject: JsonObject; PropertyPath: Text; var PropertyValue: Text): Boolean
+    var
+        JToken: JsonToken;
+    begin
+        if not JObject.SelectToken(PropertyPath, JToken) then
+            exit(false);
+
+        PropertyValue := JToken.AsValue().AsText();
+        exit(true);
     end;
 }
 

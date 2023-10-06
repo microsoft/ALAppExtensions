@@ -70,7 +70,7 @@ page 31141 "VIES Declaration Lines CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Show Document';
                     Image = View;
-                    ShortCutKey = 'Shift+F7';
+                    ShortcutKey = 'Shift+F7';
                     ToolTip = 'Open the document that the selected line exists on.';
 
                     trigger OnAction()

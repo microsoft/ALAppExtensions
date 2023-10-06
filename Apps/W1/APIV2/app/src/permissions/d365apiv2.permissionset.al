@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.API.V2;
+
 // This permission set should always be internal
 permissionset 2145 "D365 APIV2"
 {

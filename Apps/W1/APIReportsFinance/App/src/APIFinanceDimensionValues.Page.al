@@ -1,3 +1,7 @@
+namespace Microsoft.API.FinancialManagement;
+
+using Microsoft.Finance.Dimension;
+
 page 30302 "API Finance - Dimension Values"
 {
     PageType = API;

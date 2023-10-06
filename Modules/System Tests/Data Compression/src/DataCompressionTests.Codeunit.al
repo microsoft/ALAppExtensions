@@ -1,7 +1,14 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Test.IO;
+
+using System.IO;
+using System.Utilities;
+using System;
+using System.TestLibraries.Utilities;
 
 codeunit 139036 "Data Compression Tests"
 {
@@ -303,7 +310,7 @@ codeunit 139036 "Data Compression Tests"
         foreach EntryKey in EntryList do begin
             Clear(TempBlob);
             TempBlob.CreateOutStream(OutStream);
-            DataCompressionLocal.ExtractEntry(EntryKey, OutStream, EntryLength);
+            EntryLength := DataCompressionLocal.ExtractEntry(EntryKey, OutStream);
             TempBlob.CreateInStream(InStream);
             InStream.ReadText(FileText);
             Assert.AreEqual(FileContent[Index], FileText, 'wrong content extracted');

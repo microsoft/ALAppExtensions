@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Visualization;
+
+using System.Visualization;
+using System.TestLibraries.Security.AccessControl;
+using System.TestLibraries.Utilities;
+
 codeunit 139481 "Headlines Test"
 {
     Subtype = Test;

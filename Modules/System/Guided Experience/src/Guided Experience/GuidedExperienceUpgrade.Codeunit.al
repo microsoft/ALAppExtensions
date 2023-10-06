@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Globalization;
+using System.Upgrade;
+
 codeunit 1999 "Guided Experience Upgrade"
 {
     Subtype = Upgrade;
@@ -21,14 +26,6 @@ codeunit 1999 "Guided Experience Upgrade"
         InsertSpotlightTour();
         UpdateTourDescriptions();
         UpdateTranslations();
-        CleanUpGuidedExperienceItems();
-    end;
-
-    local procedure CleanUpGuidedExperienceItems()
-    var
-        GuidedExperience: Codeunit "Guided Experience";
-    begin
-        GuidedExperience.CleanupOldGuidedExperienceItems(true, 100);
     end;
 
     local procedure UpdateTourDescriptions()

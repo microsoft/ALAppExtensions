@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Base;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Payments;
+using Microsoft.Finance.TaxBase;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Sales.Customer;
+
 table 18016 "Detailed GST Ledger Entry Info"
 {
     Caption = 'Detailed GST Ledger Entry Information';

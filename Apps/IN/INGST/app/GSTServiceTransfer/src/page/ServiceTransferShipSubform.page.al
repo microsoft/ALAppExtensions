@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ServicesTransfer;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
 page 18360 "Service Transfer Ship Subform"
 {
     AutoSplitKey = true;

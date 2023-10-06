@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
+using System;
+using System.Security.Encryption;
+
 codeunit 9060 "Auth. Format Helper"
 {
     Access = Internal;

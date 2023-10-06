@@ -1,3 +1,7 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using System.Security.Encryption;
+
 table 1453 "MS - Yodlee Bank Session"
 {
     ReplicateData = false;
@@ -46,24 +50,24 @@ table 1453 "MS - Yodlee Bank Session"
         AuxInStream: InStream;
         Token: Text;
     begin
-        IF NOT GET() THEN
-            EXIT('');
+        if not GET() then
+            exit('');
 
-        IF "Cob. Token Last Date Updated" = 0DT THEN
-            EXIT('');
+        if "Cob. Token Last Date Updated" = 0DT then
+            exit('');
 
         // Cobrand token is valid for 100 minutes. Provide a 20 minutes buffer till it becomes "invalid" (empty)
-        IF CURRENTDATETIME() - "Cob. Token Last Date Updated" >= 1000 * 60 * 80 THEN // duration is milliseconds
-            EXIT('');
+        if CURRENTDATETIME() - "Cob. Token Last Date Updated" >= 1000 * 60 * 80 then // duration is milliseconds
+            exit('');
 
         CALCFIELDS("Cobrand Session Token");
         "Cobrand Session Token".CREATEINSTREAM(AuxInStream);
         AuxInStream.READ(Token);
 
-        IF CryptographyManagement.IsEncryptionEnabled() THEN
-            EXIT(CryptographyManagement.Decrypt(Token));
+        if CryptographyManagement.IsEncryptionEnabled() then
+            exit(CryptographyManagement.Decrypt(Token));
 
-        EXIT(Token);
+        exit(Token);
     end;
 
     procedure GeConsumerSessionToken(): Text;
@@ -72,26 +76,26 @@ table 1453 "MS - Yodlee Bank Session"
         AuxInStream: InStream;
         Token: Text;
     begin
-        IF GetCobrandSessionToken() = '' THEN
-            EXIT('');
+        if GetCobrandSessionToken() = '' then
+            exit('');
 
         GET();
 
-        IF "Cons. Token Last Date Updated" = 0DT THEN
-            EXIT('');
+        if "Cons. Token Last Date Updated" = 0DT then
+            exit('');
 
         // Consumer token is valid for 30 minutes. Provide a 10 minutes buffer till it becomes "invalid" (empty)
-        IF CURRENTDATETIME() - "Cons. Token Last Date Updated" >= 1000 * 60 * 20 THEN // duration is milliseconds
-            EXIT('');
+        if CURRENTDATETIME() - "Cons. Token Last Date Updated" >= 1000 * 60 * 20 then // duration is milliseconds
+            exit('');
 
         CALCFIELDS("Consumer Session Token");
         "Consumer Session Token".CREATEINSTREAM(AuxInStream);
         AuxInStream.READ(Token);
 
-        IF CryptographyManagement.IsEncryptionEnabled() THEN
-            EXIT(CryptographyManagement.Decrypt(Token));
+        if CryptographyManagement.IsEncryptionEnabled() then
+            exit(CryptographyManagement.Decrypt(Token));
 
-        EXIT(Token);
+        exit(Token);
     end;
 
     procedure UpdateCobrandSessionToken(NewToken: Text; LastDateUpdated: DateTime);
@@ -100,15 +104,15 @@ table 1453 "MS - Yodlee Bank Session"
     begin
         LOCKTABLE();
 
-        IsNew := NOT GET();
-        IF IsNew THEN
+        IsNew := not GET();
+        if IsNew then
             INIT();
 
         SetCobrandSessionToken(CopyStr(NewToken, 1, 215), LastDateUpdated);
 
-        IF IsNew THEN
+        if IsNew then
             INSERT()
-        ELSE
+        else
             MODIFY();
 
         COMMIT();
@@ -120,15 +124,15 @@ table 1453 "MS - Yodlee Bank Session"
     begin
         LOCKTABLE();
 
-        IsNew := NOT GET();
-        IF IsNew THEN
+        IsNew := not GET();
+        if IsNew then
             INIT();
 
         SetConsumerSessionToken(CopyStr(NewToken, 1, 215), LastDateUpdated);
 
-        IF IsNew THEN
+        if IsNew then
             INSERT()
-        ELSE
+        else
             MODIFY();
 
         COMMIT();
@@ -140,16 +144,16 @@ table 1453 "MS - Yodlee Bank Session"
     begin
         LOCKTABLE();
 
-        IsNew := NOT GET();
-        IF IsNew THEN
+        IsNew := not GET();
+        if IsNew then
             INIT();
 
         SetCobrandSessionToken(CopyStr(NewCobrandToken, 1, 215), CobrandTokenLastDateUpdated);
         SetConsumerSessionToken(CopyStr(NewConsumerToken, 1, 215), ConsumerTokenLastDateUpdated);
 
-        IF IsNew THEN
+        if IsNew then
             INSERT()
-        ELSE
+        else
             MODIFY();
 
         COMMIT();
@@ -161,16 +165,16 @@ table 1453 "MS - Yodlee Bank Session"
     begin
         LOCKTABLE();
 
-        IsNew := NOT GET();
-        IF IsNew THEN
+        IsNew := not GET();
+        if IsNew then
             INIT();
 
         SetCobrandSessionToken('', 0DT);
         SetConsumerSessionToken('', 0DT);
 
-        IF IsNew THEN
+        if IsNew then
             INSERT()
-        ELSE
+        else
             MODIFY();
 
         COMMIT();
@@ -181,17 +185,17 @@ table 1453 "MS - Yodlee Bank Session"
         CryptographyManagement: Codeunit "Cryptography Management";
         AuxOutStream: OutStream;
     begin
-        IF NewToken <> '' THEN BEGIN
+        if NewToken <> '' then begin
             "Cob. Token Last Date Updated" := LastDateUpdated;
             "Cobrand Session Token".CREATEOUTSTREAM(AuxOutStream);
-            IF CryptographyManagement.IsEncryptionEnabled() THEN
+            if CryptographyManagement.IsEncryptionEnabled() then
                 AuxOutStream.WRITE(CryptographyManagement.EncryptText(NewToken))
-            ELSE
+            else
                 AuxOutStream.WRITE(NewToken);
-        END ELSE BEGIN
+        end else begin
             "Cob. Token Last Date Updated" := 0DT;
             CLEAR("Cobrand Session Token");
-        END;
+        end;
     end;
 
     local procedure SetConsumerSessionToken(NewToken: Text[215]; LastDateUpdated: DateTime);
@@ -199,17 +203,17 @@ table 1453 "MS - Yodlee Bank Session"
         CryptographyManagement: Codeunit "Cryptography Management";
         AuxOutStream: OutStream;
     begin
-        IF NewToken <> '' THEN BEGIN
+        if NewToken <> '' then begin
             "Cons. Token Last Date Updated" := LastDateUpdated;
             "Consumer Session Token".CREATEOUTSTREAM(AuxOutStream);
-            IF CryptographyManagement.IsEncryptionEnabled() THEN
+            if CryptographyManagement.IsEncryptionEnabled() then
                 AuxOutStream.WRITE(CryptographyManagement.EncryptText(NewToken))
-            ELSE
+            else
                 AuxOutStream.WRITE(NewToken);
-        END ELSE BEGIN
+        end else begin
             "Cons. Token Last Date Updated" := 0DT;
             CLEAR("Consumer Session Token");
-        END;
+        end;
     end;
 }
 

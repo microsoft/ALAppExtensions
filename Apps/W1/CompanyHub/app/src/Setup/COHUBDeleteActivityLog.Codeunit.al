@@ -1,3 +1,6 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using Microsoft.Utilities;
 codeunit 1159 "COHUB Delete Activity Log"
 {
     Access = Internal;

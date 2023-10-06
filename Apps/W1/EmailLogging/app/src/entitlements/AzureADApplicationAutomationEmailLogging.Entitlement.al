@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 entitlement "Azure AD Application Automation Email Logging"
 {
     Type = ApplicationScope;

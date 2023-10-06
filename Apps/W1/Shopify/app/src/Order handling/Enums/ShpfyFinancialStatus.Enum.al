@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Enum Shpfy Financial Status (ID 30117).
 /// </summary>

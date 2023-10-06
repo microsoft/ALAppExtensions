@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.Reflection;
+
 codeunit 5314 "Standard Account SIE"
 {
     procedure GetStandardAccountsCSV(): Text

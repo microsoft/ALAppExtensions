@@ -165,7 +165,7 @@ page 31138 "VIES Declaration CZL"
             part(Lines; "VIES Declaration Subform CZL")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "VIES Declaration No." = FIELD("No.");
+                SubPageLink = "VIES Declaration No." = field("No.");
                 UpdatePropagation = Both;
             }
             group(Address)
@@ -308,7 +308,7 @@ page 31138 "VIES Declaration CZL"
                     Promoted = true;
                     PromotedCategory = Process;
                     PromotedOnly = true;
-                    ShortCutKey = 'Ctrl+F9';
+                    ShortcutKey = 'Ctrl+F9';
                     ToolTip = 'Release the document to the next stage of processing. When a document is released, it will be possible to print or export declaration. You must reopen the document before you can make changes to it.';
 
                     trigger OnAction()
@@ -444,19 +444,12 @@ page 31138 "VIES Declaration CZL"
     var
         ReleaseVIESDeclarationCZL: Codeunit "Release VIES Declaration CZL";
         DocumentNoVisibility: Codeunit DocumentNoVisibility;
-        [InDataSet]
         CorrectedDeclarationNoEditable: Boolean;
-        [InDataSet]
         PeriodNoEditable: Boolean;
-        [InDataSet]
         YearEditable: Boolean;
-        [InDataSet]
         TradeTypeEditable: Boolean;
-        [InDataSet]
         EUGoodsServicesEditable: Boolean;
-        [InDataSet]
         CompanyTradeNameAppendixEditable: Boolean;
-        [InDataSet]
         IndividualEmployeeNoEditable: Boolean;
         NoFieldVisible: Boolean;
 

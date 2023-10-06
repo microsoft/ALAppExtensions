@@ -1,7 +1,12 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Apps;
+
+using System;
+using System.Utilities;
 
 /// <summary>
 /// Shows the Extension Marketplace.
@@ -18,49 +23,70 @@ page 2502 "Extension Marketplace"
     {
         area(Content)
         {
-            usercontrol(Marketplace; "Microsoft.Dynamics.Nav.Client.WebPageViewer")
+            usercontrol(Marketplace; WebPageViewerExtMgmt)
             {
                 ApplicationArea = Basic, Suite;
                 trigger ControlAddInReady(callbackUrl: Text)
                 var
+                    Uri: Codeunit Uri;
+                    UriBuilder: Codeunit "Uri Builder";
                     MarketplaceUrl: Text;
-                BEGIN
+                begin
                     if AppsourceUrl <> '' then
                         MarketplaceUrl := AppsourceUrl
                     else
                         MarketplaceUrl := ExtensionMarketplace.GetMarketplaceEmbeddedUrl();
+
+                    if SearchText <> '' then begin
+                        UriBuilder.Init(MarketplaceUrl);
+                        UriBuilder.AddQueryParameter('search', SearchText);
+                        UriBuilder.AddQueryParameter('page', '1');
+                        UriBuilder.GetUri(Uri);
+                        MarketplaceUrl := Uri.GetAbsoluteUri();
+                    end;
+
                     CurrPage.Marketplace.SubscribeToEvent('message', MarketplaceUrl);
                     CurrPage.Marketplace.Navigate(MarketplaceUrl);
-                END;
+                end;
 
                 trigger DocumentReady()
-                BEGIN
-                END;
+                begin
+                end;
 
                 trigger Callback(data: Text);
-                BEGIN
-                    IF TryGetMsgType(data) THEN
+                begin
+                    if TryGetMsgType(data) then
                         PerformAction(MessageType);
-                END;
+                end;
 
                 trigger Refresh(callbackUrl: Text);
-                VAR
+                var
                     MarketplaceUrl: Text;
-                BEGIN
+                begin
                     MarketplaceUrl := ExtensionMarketplace.GetMarketplaceEmbeddedUrl();
                     CurrPage.Marketplace.SubscribeToEvent('message', MarketplaceUrl);
                     CurrPage.Marketplace.Navigate(MarketplaceUrl);
-                END;
+                end;
             }
 
         }
     }
 
-    LOCAL PROCEDURE PerformAction(ActionName: Text);
-    VAR
+    procedure SetSearchText(Text: Text)
+    begin
+        SearchText := Text;
+    end;
+
+    internal procedure SetAppsourceUrl(Url: Text)
+    begin
+        AppsourceUrl := Url;
+    end;
+
+    local procedure PerformAction(ActionName: Text);
+    var
         applicationId: Text;
         ActionOption: Option acquireApp;
-    BEGIN
+    begin
         if EVALUATE(ActionOption, ActionName) then
             if ActionOption = ActionOption::acquireApp then begin
                 TelemetryUrl := ExtensionMarketplace.GetTelementryUrlFromData(JObject);
@@ -76,14 +102,10 @@ page 2502 "Extension Marketplace"
         MessageType := ExtensionMarketplace.GetMessageType(JObject);
     end;
 
-    internal procedure SetAppsourceUrl(Url: Text)
-    begin
-        AppsourceUrl := Url;
-    end;
-
     var
         ExtensionMarketplace: Codeunit "Extension Marketplace";
         JObject: DotNet JObject;
+        SearchText: Text;
         MessageType: Text;
         TelemetryUrl: Text;
         AppsourceUrl: Text;

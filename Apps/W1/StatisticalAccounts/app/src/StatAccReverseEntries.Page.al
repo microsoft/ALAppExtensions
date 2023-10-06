@@ -1,4 +1,8 @@
-#pragma implicitwith disable
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.GeneralLedger.Reversal;
+
+
 page 2629 "Stat. Acc. Reverse Entries"
 {
     Caption = 'Reverse Entries';
@@ -189,5 +193,5 @@ page 2629 "Stat. Acc. Reverse Entries"
     end;
 }
 
-#pragma implicitwith restore
+
 

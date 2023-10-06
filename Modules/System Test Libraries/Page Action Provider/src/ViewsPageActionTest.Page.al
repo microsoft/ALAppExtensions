@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Integration;
+
 page 132618 "Views Page Action Test"
 {
     PageType = List;
@@ -17,17 +19,17 @@ page 132618 "Views Page Action Test"
                 field(TestBoolean; Rec.TestBoolean)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Test boolean field';
+                    ToolTip = 'Specifies a boolean field';
                 }
                 field(TestDecimal; Rec.TestDecimal)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Test decimal field';
+                    ToolTip = 'Specifies a decimal field';
                 }
                 field("Test Spaces"; Rec."Field With Spaces")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Field with spaces';
+                    ToolTip = 'Specifies a with spaces';
                 }
             }
         }
@@ -38,7 +40,7 @@ page 132618 "Views Page Action Test"
         view(BooleanView)
         {
             Caption = 'TestBoolean';
-            Filters = where(TestBoolean = Const(true));
+            Filters = where(TestBoolean = const(true));
         }
         view(BooleanDecimalView)
         {

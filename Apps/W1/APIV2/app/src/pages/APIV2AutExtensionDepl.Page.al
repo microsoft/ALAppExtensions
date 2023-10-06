@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using System.Apps;
+using System.Environment.Configuration;
+
 page 30007 "APIV2 - Aut. Extension Depl."
 {
     APIGroup = 'automation';
@@ -35,7 +40,7 @@ page 30007 "APIV2 - Aut. Extension Depl."
                 {
                     Caption = 'Operation Type';
                 }
-                field(status; Status)
+                field(status; Rec.Status)
                 {
                     Caption = 'Status';
                 }
@@ -49,7 +54,7 @@ page 30007 "APIV2 - Aut. Extension Depl."
                     Caption = 'App Version';
                     Width = 6;
                 }
-                field(startedOn; "Started On")
+                field(startedOn; Rec."Started On")
                 {
                     Caption = 'Started On';
                 }
@@ -66,20 +71,20 @@ page 30007 "APIV2 - Aut. Extension Depl."
 
     trigger OnAfterGetRecord()
     begin
-        if "Operation Type" = 0 then
+        if Rec."Operation Type" = 0 then
             OperationTypeOption := OperationTypeOption::Install
         else
             OperationTypeOption := OperationTypeOption::Upload;
 
-        ExtensionManagement.GetDeployOperationInfo("Operation ID", Version, ExtensionSchedule, ExtensionPublisher, AppName, Description);
-        if Status = Status::InProgress then
-            ExtensionManagement.RefreshStatus("Operation ID");
+        ExtensionManagement.GetDeployOperationInfo(Rec."Operation ID", Version, ExtensionSchedule, ExtensionPublisher, AppName, Rec.Description);
+        if Rec.Status = Rec.Status::InProgress then
+            ExtensionManagement.RefreshStatus(Rec."Operation ID");
     end;
 
     trigger OnOpenPage()
     begin
-        SetCurrentKey("Started On");
-        Ascending(false);
+        Rec.SetCurrentKey("Started On");
+        Rec.Ascending(false);
     end;
 
     var

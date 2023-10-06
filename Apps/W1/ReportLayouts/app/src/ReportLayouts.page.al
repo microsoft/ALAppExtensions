@@ -16,7 +16,7 @@ page 9660 "Report Layouts"
     AdditionalSearchTerms = 'Custom Report Layouts, Report Layout Selection';
     PageType = List;
     SourceTable = "Report Layout List";
-    SourceTableView = Sorting("Report ID", "Layout Format");
+    SourceTableView = sorting("Report ID", "Layout Format");
     UsageCategory = Administration;
     Extensible = true;
     Permissions = tabledata "Tenant Report Layout" = rd;
@@ -54,6 +54,28 @@ page 9660 "Report Layouts"
                     Caption = 'Description';
                     ToolTip = 'Specifies a description of the report layout.';
                 }
+
+                field(IsDefaultLayout; IsDefaultLayout)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = not IsDefaultLayout;
+                    Caption = 'Default';
+                    ToolTip = 'Specifies whether this is the default layout selected for the report.';
+                    trigger OnValidate()
+                    begin
+                        ReportLayoutsImpl.SetDefaultReportLayoutSelection(Rec, false);
+                        IsDefaultLayout := true;
+
+                        // Update the default layout list.
+                        DefaultReportLayoutList.Init();
+                        DefaultReportLayoutList.SetRange("Name", Rec."Name");
+                        DefaultReportLayoutList.SetRange("Application ID", Rec."Application ID");
+                        DefaultReportLayoutList.SetRange("Report ID", Rec."Report ID");
+                        DefaultReportLayoutList.FindFirst();
+                        CurrPage.Update(false);
+                    end;
+                }
+
                 field("Layout Publisher"; Rec."Layout Publisher")
                 {
                     ApplicationArea = Basic, Suite;
@@ -100,7 +122,7 @@ page 9660 "Report Layouts"
             action(NewLayout)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'New Layout';
+                Caption = 'New';
                 Image = NewDocument;
                 Promoted = true;
                 PromotedOnly = true;
@@ -136,7 +158,7 @@ page 9660 "Report Layouts"
                 var
                     NewEditedLayoutName: Text;
                 begin
-                    if not "User Defined" then begin
+                    if not Rec."User Defined" then begin
                         if Dialog.Confirm(EditInfoExtensionLayoutTxt, false) then
                             ReportLayoutsImpl.EditReportLayout(Rec, NewEditedLayoutName);
                     end else
@@ -174,10 +196,10 @@ page 9660 "Report Layouts"
                 PromotedCategory = Process;
                 Enabled = LayoutIsSelected;
                 ToolTip = 'Set the current layout as the default layout for the specified report.';
-
                 trigger OnAction()
                 begin
-                    ReportLayoutsImpl.SetDefaultReportLayoutSelection(Rec);
+                    ReportLayoutsImpl.SetDefaultReportLayoutSelection(Rec, true);
+                    CurrPage.Update(false);
                 end;
             }
 
@@ -216,11 +238,55 @@ page 9660 "Report Layouts"
                     ReturnReportID: Integer;
                     ReturnLayoutName: Text;
                 begin
-                    if not "User Defined" then
+                    if not Rec."User Defined" then
                         Error(ModifyNonUserLayoutErr);
 
                     if Dialog.Confirm(StrSubstNo(ReplaceConfirmationTxt, Rec."Name"), false) then
-                        ReportLayoutsImpl.ReplaceLayout("Report ID", "Name", "Description", "Layout Format", ReturnReportID, ReturnLayoutName);
+                        ReportLayoutsImpl.ReplaceLayout(Rec."Report ID", Rec."Name", Rec."Description", Rec."Layout Format", ReturnReportID, ReturnLayoutName);
+                end;
+            }
+
+            action(OpenInOneDrive)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Open in OneDrive';
+                ToolTip = 'Copy the file to your Business Central folder in OneDrive and open it in a new window so you can manage or share the file.', Comment = 'OneDrive should not be translated';
+                Image = Cloud;
+                Visible = ShareOptionsVisible;
+                Enabled = ShareOptionsEnabled;
+                Scope = Repeater;
+                trigger OnAction()
+                begin
+                    ReportLayoutsImpl.OpenInOneDrive(Rec);
+                end;
+            }
+            action(EditInOneDrive)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Edit in OneDrive';
+                ToolTip = 'Copy the file to your Business Central folder in OneDrive and open it in a new window so you can edit the file.', Comment = 'OneDrive should not be translated';
+                Image = Cloud;
+                Visible = ShareOptionsVisible;
+                Enabled = ShareOptionsEnabled;
+                Scope = Repeater;
+
+                trigger OnAction()
+                begin
+                    ReportLayoutsImpl.EditInOneDrive(Rec);
+                end;
+            }
+            action(ShareWithOneDrive)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Share';
+                ToolTip = 'Copy the file to your Business Central folder in OneDrive and share the file. You can also see who it''s already shared with.', Comment = 'OneDrive should not be translated';
+                Image = Share;
+                Visible = ShareOptionsVisible;
+                Enabled = ShareOptionsEnabled;
+                Scope = Repeater;
+                trigger OnAction()
+                begin
+                    ReportLayoutsImpl.ShareWithOneDrive(Rec);
                 end;
             }
         }
@@ -248,7 +314,6 @@ page 9660 "Report Layouts"
     trigger OnDeleteRecord(): Boolean
     var
         TenantReportLayout: Record "Tenant Report Layout";
-        TenantReportLayoutSelection: Record "Tenant Report Layout Selection";
     begin
         TenantReportLayout.Init();
         if Rec."User Defined" then begin
@@ -259,9 +324,7 @@ page 9660 "Report Layouts"
                     // selected layout is the default layout. In this case we confirm the deletion.
                     if not ReportLayoutsImpl.ConfirmDeleteDefaultLayoutSelection(Rec, TenantReportLayoutSelection) then
                         exit(false);
-
             TenantReportLayout.Delete(true);
-
         end else
             Error(ModifyNonUserLayoutErr);
 
@@ -270,14 +333,36 @@ page 9660 "Report Layouts"
     end;
 
     trigger OnAfterGetCurrRecord()
+    var
+        SelectedReportLayoutList: Record "Report Layout List";
+        DocumentSharing: Codeunit "Document Sharing";
     begin
         LayoutIsSelected := not ((Rec."Report ID" = 0) and (Rec.Name = ''));
+
+        CurrPage.SetSelectionFilter(SelectedReportLayoutList);
+        IsMultiSelect := SelectedReportLayoutList.Count() > 1;
+        ShareOptionsVisible := DocumentSharing.ShareEnabled(Enum::"Document Sharing Source"::System);
+        ShareOptionsEnabled := LayoutIsSelected and (not IsMultiSelect) and Rec."User Defined" and (Rec."Layout Format" <> Rec."Layout Format"::RDLC);
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        if DefaultReportLayoutList."Report ID" <> Rec."Report ID" then
+            ReportLayoutsImpl.GetDefaultReportLayoutSelection(Rec."Report ID", DefaultReportLayoutList);
+
+        IsDefaultLayout := (DefaultReportLayoutList."Report ID" = Rec."Report ID") and (DefaultReportLayoutList.Name = Rec.Name) and (DefaultReportLayoutList."Application ID" = Rec."Application ID");
     end;
 
     var
+        DefaultReportLayoutList: Record "Report Layout List";
+        TenantReportLayoutSelection: Record "Tenant Report Layout Selection";
         ReportLayoutsImpl: Codeunit "Report Layouts Impl.";
         EmptyGuid: Guid;
+        IsDefaultLayout: Boolean;
+        IsMultiSelect: Boolean;
         LayoutIsSelected: Boolean;
+        ShareOptionsVisible: Boolean;
+        ShareOptionsEnabled: Boolean;
         ModifyNonUserLayoutErr: Label 'Only user-defined layouts can be modified or removed.';
         EditInfoExtensionLayoutTxt: Label 'It is not possible to modify the layout info for this layout because it is provided by an extension. Do you want to edit a copy of the layout instead ?';
         ReplaceConfirmationTxt: Label 'This action will replace the layout file of the currently selected layout "%1". Do you want to continue ?', Comment = '%1 = LayoutName';

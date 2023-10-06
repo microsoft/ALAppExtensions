@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
 page 5315 "Dimensions SIE"
 {
     ApplicationArea = Basic, Suite;
@@ -92,9 +98,12 @@ page 5315 "Dimensions SIE"
         LookupModeActive: Boolean;
         CannotEditInLookupModeErr: label 'SIE dimension cannot be added or deleted when the page is opened in lookup mode. To add, remove or edit SIE dimensions, search for the page Dimensions SIE and open it.';
 #if not CLEAN22
+#pragma warning disable AS0072
+    [Obsolete('Feature will be enabled by default.', '22.0')]
     procedure SetRunFromWizard(RunFromWizard: Boolean)
     begin
         IsRunFromWizard := RunFromWizard;
     end;
+#pragma warning restore AS0072
 #endif
 }

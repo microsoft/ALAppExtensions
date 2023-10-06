@@ -1,12 +1,17 @@
+#if not CLEAN21
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-
 codeunit 148089 "MTD Test Fraud Prevention Hdrs"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    ObsoleteReason = 'Not used anymore.';
+    ObsoleteState = Pending;
+#pragma warning disable AS0072
+    ObsoleteTag = '21.0';
+#pragma warning restore AS0072
 
     trigger OnRun()
     begin
@@ -55,3 +60,4 @@ codeunit 148089 "MTD Test Fraud Prevention Hdrs"
         Commit();
     end;
 }
+#endif

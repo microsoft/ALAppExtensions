@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Reports;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using System.IO;
+using System.Utilities;
+
 report 18050 "GSTR_2 File Format"
 {
     Caption = 'GSTR-2 File Format';

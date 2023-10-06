@@ -1,3 +1,10 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Feedback;
+
 page 9260 "Customer Experience Survey"
 {
     Extensible = false;
@@ -8,6 +15,8 @@ page 9260 "Customer Experience Survey"
     LinksAllowed = false;
     ModifyAllowed = false;
     PageType = Card;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {

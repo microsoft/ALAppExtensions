@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Reports;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+
 table 5024 "Service Declaration Line"
 {
 

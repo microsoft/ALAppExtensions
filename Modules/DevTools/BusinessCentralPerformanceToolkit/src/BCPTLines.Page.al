@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Tooling;
+
 page 149004 "BCPT Lines"
 {
     Caption = 'BCPT Suite Lines';
@@ -180,7 +183,9 @@ page 149004 "BCPT Lines"
                     // Missing implementation for very first record
                     NextBCPTLine := Rec;
                     Rec.init();
+#pragma warning disable AA0181
                     if NextBCPTLine.Next() <> 0 then
+#pragma warning restore AA0181
                         Rec."Line No." := (NextBCPTLine."Line No." - Rec."Line No.") div 2
                     else
                         Rec."Line No." += 10000;

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSBase;
+
+using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.TaxBase;
+
 table 18688 "TDS Concessional Code"
 {
     Caption = 'TDS Concessional Code';

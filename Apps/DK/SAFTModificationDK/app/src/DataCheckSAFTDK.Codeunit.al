@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Foundation.Company;
+using System.Utilities;
+
 codeunit 13697 "Data Check SAF-T DK" implements DataCheckSAFT
 {
     Access = Internal;
@@ -7,7 +16,7 @@ codeunit 13697 "Data Check SAF-T DK" implements DataCheckSAFT
 
     procedure CheckDataToExport(var AuditFileExportHeader: Record "Audit File Export Header") DataCheckStatus: enum "Audit Data Check status"
     begin
-        DataCheckStatus := "Audit Data Check Status"::" ";
+        DataCheckStatus := Enum::"Audit Data Check Status"::" ";
     end;
 
     procedure CheckAuditDocReadyToExport(var AuditFileExportHeader: Record "Audit File Export Header") DataCheckStatus: enum "Audit Data Check Status"
@@ -37,8 +46,8 @@ codeunit 13697 "Data Check SAF-T DK" implements DataCheckSAFT
         end;
 
         if (ErrorMessageManagement.GetLastErrorID() <> 0) then
-            exit("Audit Data Check Status"::Failed);
+            exit(Enum::"Audit Data Check Status"::Failed);
 
-        DataCheckStatus := "Audit Data Check Status"::Passed;
+        DataCheckStatus := Enum::"Audit Data Check Status"::Passed;
     end;
 }

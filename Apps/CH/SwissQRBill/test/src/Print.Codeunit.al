@@ -806,6 +806,69 @@ codeunit 148092 "Swiss QR-Bill Test Print"
     end;
 
     [Test]
+    procedure PrintUmlautsUsingUTF8CodepageECIModeOn()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        OutStream: OutStream;
+        UmlautChars: Text;
+        i: Integer;
+    begin
+        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with enabled ECI mode.
+        UmlautChars := PadStr('', 64, ' ');
+        for i := 192 to 255 do
+            UmlautChars[i - 191] := i;
+
+        TempBlob.CreateOutStream(OutStream);
+        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
+        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, false, true);
+    end;
+
+    [Test]
+    procedure PrintUmlautsUsingUTF8CodepageECIModeOff()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        OutStream: OutStream;
+        UmlautChars: Text;
+        i: Integer;
+    begin
+        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with disabled ECI mode.
+        UmlautChars := PadStr('', 64, ' ');
+        for i := 192 to 255 do
+            UmlautChars[i - 191] := i;
+
+        TempBlob.CreateOutStream(OutStream);
+        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
+        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, false, false);
+    end;
+
+    [Test]
+    procedure PrintUmlautsUsingUTF8CodepageBOMOnECIModeOn()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        OutStream: OutStream;
+        UmlautChars: Text;
+        i: Integer;
+    begin
+        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with enabled ECI mode and byte-order-mark set.
+        UmlautChars := PadStr('', 64, ' ');
+        for i := 192 to 255 do
+            UmlautChars[i - 191] := i;
+
+        TempBlob.CreateOutStream(OutStream);
+        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
+        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, true, true);
+    end;
+
+    [Test]
     [HandlerFunctions('QRBillPrintRPH')]
     procedure TenantMediaWhenPrintPostedSalesInvoice()
     var
@@ -880,69 +943,6 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         VerifyReportDatasetCreditorInfo(GetReportCompanyInfo(IBANType::"QR-IBAN"));
         Assert.IsTrue(TenantMedia.IsEmpty(), 'Tenant Media was not removed');
         Assert.IsTrue(TenantMediaThumbnails.IsEmpty(), 'Tenant Media Thumbnails were not removed');
-    end;
-
-    [Test]
-    procedure PrintUmlautsUsingUTF8CodepageECIModeOn()
-    var
-        TempBlob: Codeunit "Temp Blob";
-        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
-        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
-        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
-        OutStream: OutStream;
-        UmlautChars: Text;
-        i: Integer;
-    begin
-        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with enabled ECI mode.
-        UmlautChars := PadStr('', 64, ' ');
-        for i := 192 to 255 do
-            UmlautChars[i - 191] := i;
-
-        TempBlob.CreateOutStream(OutStream);
-        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
-        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, false, true);
-    end;
-
-    [Test]
-    procedure PrintUmlautsUsingUTF8CodepageECIModeOff()
-    var
-        TempBlob: Codeunit "Temp Blob";
-        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
-        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
-        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
-        OutStream: OutStream;
-        UmlautChars: Text;
-        i: Integer;
-    begin
-        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with disabled ECI mode.
-        UmlautChars := PadStr('', 64, ' ');
-        for i := 192 to 255 do
-            UmlautChars[i - 191] := i;
-
-        TempBlob.CreateOutStream(OutStream);
-        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
-        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, false, false);
-    end;
-
-    [Test]
-    procedure PrintUmlautsUsingUTF8CodepageBOMOnECIModeOn()
-    var
-        TempBlob: Codeunit "Temp Blob";
-        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
-        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
-        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
-        OutStream: OutStream;
-        UmlautChars: Text;
-        i: Integer;
-    begin
-        // [SCENARIO 440686] QR Bills can be printed with umlaut symbols within the QR Code using UTF-8 codepage with enabled ECI mode and byte-order-mark set.
-        UmlautChars := PadStr('', 64, ' ');
-        for i := 192 to 255 do
-            UmlautChars[i - 191] := i;
-
-        TempBlob.CreateOutStream(OutStream);
-        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
-        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 65001, true, true);
     end;
 
     local procedure Initialize()

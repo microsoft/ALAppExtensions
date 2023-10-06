@@ -3,15 +3,17 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
+using System.Reflection;
+
 permissionset 9986 "Word Templates - Read"
 {
     Access = Internal;
     Assignable = false;
 
     IncludedPermissionSets = "Word Templates - Objects",
-                             "Language - Read",
-                             "Object Selection - Read",
-                             "Telemetry - Exec";
+                             "Object Selection - Read";
 
     Permissions = tabledata "Word Template" = R,
                   tabledata "Word Template Field" = r,

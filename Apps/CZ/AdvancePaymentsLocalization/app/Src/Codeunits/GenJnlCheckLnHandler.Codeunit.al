@@ -19,4 +19,10 @@ codeunit 31109 "Gen.Jnl.-Check Ln. Handler CZZ"
     begin
         Handled := true;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCreateGLEntryGainLossInsertGLEntry', '', false, false)]
+    local procedure SuppressCorrectionOnBeforeCreateGLEntryGainLossInsertGLEntry(var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        GenJnlLine.Correction := false;
+    end;
 }

@@ -1,8 +1,8 @@
 table 11775 "VAT Statement Comment Line CZL"
 {
     Caption = 'VAT Statement Comment Line';
-    DrillDownPageID = "VAT Statement Comments CZL";
-    LookupPageID = "VAT Statement Comments CZL";
+    DrillDownPageId = "VAT Statement Comments CZL";
+    LookupPageId = "VAT Statement Comments CZL";
 
     fields
     {

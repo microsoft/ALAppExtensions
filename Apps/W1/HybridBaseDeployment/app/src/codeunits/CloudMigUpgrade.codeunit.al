@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Upgrade;
+
 codeunit 40010 "Cloud Mig. Upgrade"
 {
     Subtype = Upgrade;

@@ -1,3 +1,11 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.DataMigration;
+using Microsoft.EServices.EDocument;
+using System.Environment;
+using System.Upgrade;
+using System.Text;
+
 codeunit 4026 "W1 Management"
 {
     Description = 'This codeunit manages the W1 data transformation and loading via event subscribers.';
@@ -91,7 +99,7 @@ codeunit 4026 "W1 Management"
 
         if not HybridBCLastManagement.GetBCLastProductEnabled() then
             exit;
-
+        Clear(BlankDateTime);
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
         if not HybridCompanyStatus.IsEmpty() then
             Error(CannotStartUpgradeCompanyUpgradeCompletedErr);
@@ -296,12 +304,9 @@ codeunit 4026 "W1 Management"
             exit;
 
         NavApp.GetCurrentModuleInfo(ExtensionInfo);
-
         // Provide table mappings here to assist upgrading from 14x -> 15x
-        with SourceTableMapping do begin
-            MapTable(IncomingDocument.TableName(), W1CountryCodeTxt, StgIncomingDocument.TableName(), true, BaseAppExtensionIdTxt, ExtensionInfo.Id());
-            MapTable(IncomingDocument.TableName(), W1CountryCodeTxt, IncomingDocument.TableName(), false, BaseAppExtensionIdTxt, BaseAppExtensionIdTxt);
-        end;
+        SourceTableMapping.MapTable(IncomingDocument.TableName(), W1CountryCodeTxt, StgIncomingDocument.TableName(), true, BaseAppExtensionIdTxt, ExtensionInfo.Id());
+        SourceTableMapping.MapTable(IncomingDocument.TableName(), W1CountryCodeTxt, IncomingDocument.TableName(), false, BaseAppExtensionIdTxt, BaseAppExtensionIdTxt);
     end;
 
     procedure TelemetryCategory(): Text
@@ -469,6 +474,8 @@ codeunit 4026 "W1 Management"
     end;
 
 #if not CLEAN21
+#pragma warning disable AS0072
+    [Obsolete('No longer supported.', '21.0')]
     procedure ChangeUpgradeEngine()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
@@ -493,6 +500,7 @@ codeunit 4026 "W1 Management"
         IntelligentCloudSetup.Modify();
         Session.LogMessage('0000IG9', StrSubstNo(UseLegacyUpgradeEngineWasChangedTxt, Format(IntelligentCloudSetup."Use Legacy Upgrade Engine", 0, 9)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
     end;
+#pragma warning restore AS0072
 #endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnHandleVerifyCanStartUpgrade', '', false, false)]

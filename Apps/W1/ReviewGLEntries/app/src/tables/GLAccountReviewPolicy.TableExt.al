@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
+using Microsoft.Finance.GeneralLedger.Account;
+
 tableextension 22210 "G/L Account Review Policy" extends "G/L Account"
 {
     fields

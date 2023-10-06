@@ -2,7 +2,7 @@ page 31140 "VIES Declarations CZL"
 {
     ApplicationArea = Basic, Suite;
     Caption = 'VIES Declarations';
-    CardPageID = "VIES Declaration CZL";
+    CardPageId = "VIES Declaration CZL";
     Editable = false;
     PageType = List;
     SourceTable = "VIES Declaration Header CZL";
@@ -87,7 +87,7 @@ page 31140 "VIES Declarations CZL"
                     Promoted = true;
                     PromotedCategory = Process;
                     PromotedOnly = true;
-                    ShortCutKey = 'Ctrl+F9';
+                    ShortcutKey = 'Ctrl+F9';
                     ToolTip = 'Release the document to the next stage of processing. When a document is released, it will be possible to print or export declaration. You must reopen the document before you can make changes to it.';
 
                     trigger OnAction()

@@ -13,9 +13,9 @@ codeunit 11778 "Transformation Rule Mgt. CZL"
     var
         TransformationRule: Record "Transformation Rule";
     begin
-        TransformationRule.InsertRec(CZDATEFORMATTxt, CZDATEFORMATDescTxt, TransformationRule."Transformation Type"::"Date Formatting", 0, 0, '', 'cs-CZ');
-        TransformationRule.InsertRec(CZDATETIMEFORMATTxt, CZDATETIMEFORMATDescTxt, TransformationRule."Transformation Type"::"Date and Time Formatting", 0, 0, '', 'cs-CZ');
-        TransformationRule.InsertRec(CZNUMBERFORMATTxt, CZNUMBERFORMATDescTxt, TransformationRule."Transformation Type"::"Decimal Formatting", 0, 0, '', 'cs-CZ');
+        TransformationRule.InsertRec(CZDATEFORMATTxt, CZDATEFORMATDescTxt, TransformationRule."Transformation Type"::"Date Formatting".AsInteger(), 0, 0, '', 'cs-CZ');
+        TransformationRule.InsertRec(CZDATETIMEFORMATTxt, CZDATETIMEFORMATDescTxt, TransformationRule."Transformation Type"::"Date and Time Formatting".AsInteger(), 0, 0, '', 'cs-CZ');
+        TransformationRule.InsertRec(CZNUMBERFORMATTxt, CZNUMBERFORMATDescTxt, TransformationRule."Transformation Type"::"Decimal Formatting".AsInteger(), 0, 0, '', 'cs-CZ');
     end;
 
     procedure GetCZDateFormatCode(): Code[20]

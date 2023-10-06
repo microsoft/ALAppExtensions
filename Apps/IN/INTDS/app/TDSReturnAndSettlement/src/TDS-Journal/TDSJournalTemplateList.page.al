@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
+
+using System.Reflection;
+
 page 18749 "TDS Journal Template List"
 {
     Caption = 'TDS Journal Template List';

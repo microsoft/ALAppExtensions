@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Finance.SalesTax;
+using Microsoft.Finance.VAT.Setup;
+
 /// <summary>
 /// Table Shpfy Tax Area (ID 30109).
 /// </summary>

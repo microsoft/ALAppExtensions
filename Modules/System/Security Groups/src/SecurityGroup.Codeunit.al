@@ -3,9 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// Exposes functionality for working with security groups.
-/// Security groups correspond to either Windows groups or AAD security groups depending on the authentication type.
+/// Security groups correspond to either Windows groups or Microsoft Entra security groups depending on the authentication type.
 /// </summary>
 codeunit 9031 "Security Group"
 {
@@ -18,7 +20,7 @@ codeunit 9031 "Security Group"
     /// Creates a new security group.
     /// </summary>
     /// <param name="GroupCode">The code of the newly created group.</param>
-    /// <param name="GroupId">The SID of a Windows group or AAD object ID of the AAD security group.</param>
+    /// <param name="GroupId">The SID of a Windows group or object ID of the Microsoft Entra security group.</param>
     procedure Create(GroupCode: Code[20]; GroupId: Text)
     begin
         SecurityGroupImpl.Create(GroupCode, GroupId);
@@ -103,17 +105,17 @@ codeunit 9031 "Security Group"
     /// <summary>
     /// Validates the group ID that can be used for a security group.
     /// </summary>
-    /// <param name="GroupId">The SID of a Windows group or AAD object ID of the AAD security group.</param>
+    /// <param name="GroupId">The SID of a Windows group or object ID of the Microsoft Entra security group.</param>
     procedure ValidateGroupId(GroupId: Text)
     begin
         SecurityGroupImpl.ValidateGroupId(GroupId);
     end;
 
     /// <summary>
-    /// Gets the user security ID of a special user record that corresponds to an AAD security group or Windows group.
+    /// Gets the user security ID of a special user record that corresponds to a Microsoft Entra security group or Windows group.
     /// </summary>
     /// <param name="GroupCode">The code of the security group for which to get the group user security ID.</param>
-    /// <returns>The user security ID of a special user record that corresponds to an AAD security group or Windows group.</returns>
+    /// <returns>The user security ID of a special user record that corresponds to a Microsoft Entra security group or Windows group.</returns>
     procedure GetGroupUserSecurityId(GroupCode: Code[20]): Guid
     begin
         exit(SecurityGroupImpl.GetGroupUserSecurityId(GroupCode));
@@ -131,7 +133,7 @@ codeunit 9031 "Security Group"
     end;
 
     /// <summary>
-    /// Gets the SID of a Windows group or an AAD object ID of an AAD security group by group code.
+    /// Gets the SID of a Windows group or an object ID of a Microsoft Entra security group by group code.
     /// </summary>
     /// <param name="GroupCode">The code of the security group.</param>
     /// <returns>The ID of the security group.</returns>
@@ -141,9 +143,9 @@ codeunit 9031 "Security Group"
     end;
 
     /// <summary>
-    /// Gets the SID of a Windows group or an AAD object ID of an AAD security group by group name.
+    /// Gets the SID of a Windows group or an object ID of a Microsoft Entra security group by group name.
     /// </summary>
-    /// <param name="GroupName">The name of a Windows group or AAD security group.</param>
+    /// <param name="GroupName">The name of a Windows group or Microsoft Entra security group.</param>
     /// <returns>The ID of the security group.</returns>
     internal procedure GetIdByName(GroupName: Text): Text
     begin
@@ -151,7 +153,7 @@ codeunit 9031 "Security Group"
     end;
 
     /// <summary>
-    /// Shows the notification listing groups deleted Windows / AAD groups.
+    /// Shows the notification listing groups deleted Windows / Microsoft Entra groups.
     /// </summary>
     /// <param name="SecurityGroupBuffer">The table containing all security group records.</param>
     internal procedure SendNotificationForDeletedGroups(var SecurityGroupBuffer: Record "Security Group Buffer")

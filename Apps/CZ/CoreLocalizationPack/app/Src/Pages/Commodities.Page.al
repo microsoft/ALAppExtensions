@@ -47,9 +47,9 @@ page 31076 "Commodities CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Commodity Setup';
                 Image = SetupLines;
-                RunObject = Page "Commodity Setup CZL";
-                RunPageLink = "Commodity Code" = FIELD(Code);
-                RunPageView = SORTING("Commodity Code", "Valid From");
+                RunObject = page "Commodity Setup CZL";
+                RunPageLink = "Commodity Code" = field(Code);
+                RunPageView = sorting("Commodity Code", "Valid From");
                 ToolTip = 'The function opens the page for commodity limit amount setup.';
             }
         }

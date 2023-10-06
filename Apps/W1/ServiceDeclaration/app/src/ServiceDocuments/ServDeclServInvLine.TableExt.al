@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.History;
+
+using Microsoft.Service.Reports;
+
 tableextension 5033 "Serv. Decl. Serv. Inv. Line" extends "Service Invoice Line"
 {
     fields

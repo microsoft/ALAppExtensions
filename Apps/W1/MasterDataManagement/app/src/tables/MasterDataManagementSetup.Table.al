@@ -1,3 +1,12 @@
+namespace Microsoft.Integration.MDM;
+
+using System.Threading;
+using System.Environment;
+using Microsoft.Foundation.Company;
+using System.Telemetry;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Utilities;
+
 table 7230 "Master Data Management Setup"
 {
     Caption = 'Master Data Management Setup';

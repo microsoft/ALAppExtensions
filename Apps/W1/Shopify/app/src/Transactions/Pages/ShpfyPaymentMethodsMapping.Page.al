@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Page Shpfy Payment Methods Mapping(ID 30132).
 /// </summary>

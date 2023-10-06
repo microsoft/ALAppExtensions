@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Environment;
+
 codeunit 4011 "Hybrid Message Management"
 {
     var

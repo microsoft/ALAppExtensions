@@ -140,8 +140,10 @@ report 11776 "Acc. Schedule Export File CZL"
                             AccSchedManagement.CheckName(AccSchedName);
                             AccScheduleName.Get(AccSchedName);
 #if not CLEAN21
+#pragma warning disable AL0432
                             if AccScheduleName."Default Column Layout" <> '' then
                                 ColumnLayoutName := AccScheduleName."Default Column Layout";
+#pragma warning restore AL0432
 #endif
                             if AccScheduleName."Analysis View Name" <> '' then
                                 AnalysisView.Get(AccScheduleName."Analysis View Name")
@@ -233,7 +235,7 @@ report 11776 "Acc. Schedule Export File CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Business Unit Filter';
-                        LookupPageID = "Business Unit List";
+                        LookupPageId = "Business Unit List";
                         TableRelation = "Business Unit";
                         ToolTip = 'Specifies a business unit filter for the report.';
 
@@ -366,16 +368,12 @@ report 11776 "Acc. Schedule Export File CZL"
         GLBudgetFilter: Text;
         BusinessUnitFilter: Text;
         Dim1Filter: Text;
-        [InDataSet]
         Dim1FilterEnable: Boolean;
         Dim2Filter: Text;
-        [InDataSet]
         Dim2FilterEnable: Boolean;
         Dim3Filter: Text;
-        [InDataSet]
         Dim3FilterEnable: Boolean;
         Dim4Filter: Text;
-        [InDataSet]
         Dim4FilterEnable: Boolean;
         ColumnValuesDisplayed: array[100] of Decimal;
         ColumnValuesAsText: array[100] of Text[30];
@@ -389,7 +387,6 @@ report 11776 "Acc. Schedule Export File CZL"
         ExcelExtensionTok: Label '.xlsx', Locked = true;
         SelectWorksheetErr: Label 'Select Worksheet to update';
         SelectSheetErr: Label 'Select Sheet to update';
-        [InDataSet]
         TemplateIsVisible: Boolean;
         ExportAction: Option CreateNew,UpdateExisting,FromTemplate;
 
@@ -532,7 +529,7 @@ report 11776 "Acc. Schedule Export File CZL"
            (ColumnLayout2."Column Type" = ColumnLayout2."Column Type"::Formula) and
            (StrPos(ColumnLayout2.Formula, '%') > 1)
         then
-            ValueAsText := ValueAsText + '%';
+            ValueAsText := CopyStr(ValueAsText + '%', 1, 30);
     end;
 
     local procedure FormatAmount(Value: Decimal; RoundingFactor: Enum "Analysis Rounding Factor"; AddCurrency: Boolean): Text[30]

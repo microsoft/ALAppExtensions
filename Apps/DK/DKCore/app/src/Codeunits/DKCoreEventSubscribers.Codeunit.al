@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Finance.Core;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Environment.Configuration;
+using System.IO;
+using System.Security.AccessControl;
+
 codeunit 13601 "DK Core Event Subscribers"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade User Groups", 'OnBeforeUpgradeUserGroups', '', false, false)]

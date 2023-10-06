@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
 /// <summary>
 /// Contains settings for page summary card.
 /// </summary>
@@ -13,6 +15,8 @@ table 2718 "Page Summary Settings"
     DataPerCompany = false;
     ReplicateData = false;
     Extensible = false;
+    InherentEntitlements = RX;
+    InherentPermissions = RX;
 
     fields
     {

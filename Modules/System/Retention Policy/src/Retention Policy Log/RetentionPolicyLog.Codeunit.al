@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
 /// <summary>
 /// This codeunit provides functions for logging error, warning, and informational messages to the Retention Policy Log Entry table.
 /// </summary>

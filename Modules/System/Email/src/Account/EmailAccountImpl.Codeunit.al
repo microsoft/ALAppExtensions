@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System;
+using System.Utilities;
+using System.Text;
+
 codeunit 8889 "Email Account Impl."
 {
     Access = Internal;
@@ -11,6 +17,13 @@ codeunit 8889 "Email Account Impl."
     Permissions = tabledata "Email Connector Logo" = rimd,
                   tabledata "Email Scenario" = imd,
                   tabledata "Email Rate Limit" = rd;
+
+    var
+        ConfirmDeleteQst: Label 'Go ahead and delete?';
+        ChooseNewDefaultTxt: Label 'Choose a Default Account';
+        InvalidEmailAddressErr: Label 'The email address "%1" is not valid.', Comment = '%1=The email address';
+        EmptyEmailAddressErr: Label 'The email address cannot be empty.';
+        CannotManageSetupErr: Label 'Your user account does not give you permission to set up email. Please contact your administrator.';
 
     procedure GetAllAccounts(LoadLogos: Boolean; var TempEmailAccount: Record "Email Account" temporary)
     var
@@ -168,6 +181,21 @@ codeunit 8889 "Email Account Impl."
         exit(not EmailAccount.IsEmpty());
     end;
 
+    procedure IsAccountRegistered(EmailAccountId: Guid; EmailConnector: Enum "Email Connector"): Boolean
+    var
+        EmailAccount: Record "Email Account";
+    begin
+        if IsNullGuid(EmailAccountId) then
+            exit(false);
+
+        if not IsValidConnector(EmailConnector) then
+            exit(false);
+
+        GetAllAccounts(false, EmailAccount);
+
+        exit(EmailAccount.Get(EmailAccountId, EmailConnector));
+    end;
+
     internal procedure IsUserEmailAdmin(): Boolean
     var
         EmailScenario: Record "Email Scenario";
@@ -198,7 +226,12 @@ codeunit 8889 "Email Account Impl."
 
     procedure IsValidConnector(Connector: Enum "Email Connector"): Boolean
     begin
-        exit("Email Connector".Ordinals().Contains(Connector.AsInteger()));
+        exit(IsValidConnector(Connector.AsInteger()));
+    end;
+
+    procedure IsValidConnector(Connector: Integer): Boolean
+    begin
+        exit("Email Connector".Ordinals().Contains(Connector));
     end;
 
     procedure MakeDefault(var EmailAccount: Record "Email Account")
@@ -278,11 +311,4 @@ codeunit 8889 "Email Account Impl."
     internal procedure OnAfterSetSelectionFilter(var EmailAccount: Record "Email Account")
     begin
     end;
-
-    var
-        CannotManageSetupErr: Label 'Your user account does not give you permission to set up email. Please contact your administrator.';
-        ChooseNewDefaultTxt: Label 'Choose a Default Account';
-        ConfirmDeleteQst: Label 'Go ahead and delete?';
-        EmptyEmailAddressErr: Label 'The email address cannot be empty.';
-        InvalidEmailAddressErr: Label 'The email address "%1" is not valid.', Comment = '%1=The email address';
 }

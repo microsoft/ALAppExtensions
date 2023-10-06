@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.User;
+
 codeunit 9013 "User Login Time Tracker Impl."
 {
     Access = Internal;

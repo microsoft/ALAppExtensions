@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.Core;
+
 codeunit 20134 "Script Symbol Store"
 {
     procedure InitSymbols(CaseID: Guid; ScriptID: Guid; var Symbols: Record "Script Symbol Value" Temporary);

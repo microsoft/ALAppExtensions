@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
+using System;
+
 /// <summary>
 /// Provides an object representation of a uniform resource identifier (URI) and easy access to the parts of the URI.
 /// </summary>

@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Text;
+
+using System.Privacy;
+using System.Globalization;
+using System.Environment;
+using System.Azure.KeyVault;
+using System.Azure.Identity;
+using System.Environment.Configuration;
+
 /// <summary>
 /// Implements functionality to call Azure OpenAI.
 /// </summary>
@@ -162,6 +171,7 @@ codeunit 2011 "Azure OpenAi Impl."
     local procedure SendCompletionRequest(Payload: JsonObject; CallerModuleInfo: ModuleInfo): Text
     var
         AzureOpenAiSettings: Record "Azure OpenAi Settings";
+        CrossGeoOption: JsonObject;
         PayloadText: Text;
         Secret: Text;
         Endpoint: Text;
@@ -190,8 +200,11 @@ codeunit 2011 "Azure OpenAi Impl."
             Error(NoSecretErr);
 
         if AzureOpenAiSettings.IncludeSource(CallerModuleInfo) then begin
+            CrossGeoOption.Add('enableCrossGeoCall', true);
+
             Payload.Add('source', 'businesscentral');
             Payload.Add('n', 1);
+            Payload.Add('crossGeoOptions', CrossGeoOption);
         end;
 
         Payload.WriteTo(PayloadText);

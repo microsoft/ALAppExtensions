@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Azure.KeyVault;
+
+using System.Azure.KeyVault;
+
 codeunit 135210 "Azure Key Vault Test Library"
 {
     SingleInstance = true;

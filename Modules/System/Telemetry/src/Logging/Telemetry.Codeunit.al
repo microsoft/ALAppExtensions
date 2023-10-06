@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Telemetry;
+
 /// <summary>
 /// A wrapper on top of Session.LogMessage that allows for having additional common custom dimensions emitted with every message.
 /// </summary>

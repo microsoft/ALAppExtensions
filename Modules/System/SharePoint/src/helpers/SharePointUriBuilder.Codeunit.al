@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Sharepoint;
+
+using System.Utilities;
+
 codeunit 9110 "SharePoint Uri Builder"
 {
     Access = Internal;
@@ -17,6 +21,7 @@ codeunit 9110 "SharePoint Uri Builder"
         SetMethodTxt: Label '/%1(''%2'')', Comment = '%1 - method name, %2 - method parameter', Locked = true;
         SetMethodRawTxt: Label '/%1(%2)', Comment = '%1 - method name, %2 - method parameter', Locked = true;
         SetMethodGuidTxt: Label '/%1(guid''%2'')', Comment = '%1 - method name, %2 - method parameter', Locked = true;
+        QueryParameters: Dictionary of [Text, Text];
 
     procedure GetHost(): Text
     var
@@ -24,6 +29,11 @@ codeunit 9110 "SharePoint Uri Builder"
     begin
         NewUri.Init(GetUri());
         exit(NewUri.GetHost());
+    end;
+
+    procedure AddQueryParameter(ParameterName: Text; ParameterValue: Text)
+    begin
+        QueryParameters.Add(ParameterName, ParameterValue);
     end;
 
     procedure Initialize(NewServerName: Text; NewNamespace: Text)
@@ -106,25 +116,37 @@ codeunit 9110 "SharePoint Uri Builder"
     procedure GetUri(): Text
     var
         FullUri: Text;
+        ParameterName, ParameterValue : Text;
     begin
         FullUri := UriLbl + Uri + '/';
         FullUri := FullUri.Replace('{server_name}', ServerName.TrimStart('/').TrimEnd('/')).Replace('{namespace}', Namespace.TrimStart('/').TrimEnd('/'));
+        if QueryParameters.Count() > 0 then begin
+            FullUri += '?';
+            foreach ParameterName in QueryParameters.Keys() do begin
+                QueryParameters.Get(ParameterName, ParameterValue);
+                FullUri += EscapeDataString(ParameterName) + '=' + EscapeDataString(ParameterValue) + '&';
+            end;
+            FullUri := FullUri.TrimEnd('&');
+        end;
         exit(FullUri);
     end;
 
     procedure ResetPath()
     begin
         Uri := '';
+        Clear(QueryParameters);
     end;
 
     procedure SetPath(NewPath: Text)
     begin
         Uri := NewPath;
+        Clear(QueryParameters);
     end;
 
     procedure ResetPath(Id: Text)
     begin
         Uri := UriLbl;
+        Clear(QueryParameters);
         Uri := Uri.Replace('{server_name}', ServerName.TrimStart('/').TrimEnd('/')).Replace('{namespace}', Namespace.TrimStart('/').TrimEnd('/'));
         Uri := Id.Replace(Uri, '');
     end;

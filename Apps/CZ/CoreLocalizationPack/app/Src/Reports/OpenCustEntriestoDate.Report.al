@@ -108,7 +108,7 @@ report 11715 "Open Cust. Entries to Date CZL"
             }
             dataitem("Integer"; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 PrintOnlyIfDetail = true;
                 column(greCustomer_Name; SecondCustomer.Name)
                 {
@@ -121,7 +121,7 @@ report 11715 "Open Cust. Entries to Date CZL"
                 }
                 dataitem("Cust. Ledger Entry"; "Cust. Ledger Entry")
                 {
-                    DataItemTableView = sorting("Customer No.", "Posting Date") ORDER(Ascending);
+                    DataItemTableView = sorting("Customer No.", "Posting Date") order(ascending);
                     RequestFilterFields = "Document Type";
                     column(Cust__Ledger_Entry__Original_Amt___LCY__; "Original Amt. (LCY)")
                     {
@@ -261,9 +261,9 @@ report 11715 "Open Cust. Entries to Date CZL"
                                         BalanceT[6] += "Remaining Amt. (LCY)";
                                     end;
                                 else begin
-                                        Balance[7] += "Remaining Amt. (LCY)";
-                                        BalanceT[7] += "Remaining Amt. (LCY)";
-                                    end;
+                                    Balance[7] += "Remaining Amt. (LCY)";
+                                    BalanceT[7] += "Remaining Amt. (LCY)";
+                                end;
                             end;
 
                         // buffer for total sumary by G/L account;
@@ -286,7 +286,7 @@ report 11715 "Open Cust. Entries to Date CZL"
                 }
                 dataitem(CustomerByCurrency; "Integer")
                 {
-                    DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(> 0));
+                    DataItemTableView = sorting(Number) order(ascending) where(Number = filter(> 0));
                     column(greTCurrencyBuffer__Net_Change_in_Jnl__; TempCurrencyGLAccountNetChange."Net Change in Jnl.")
                     {
                     }
@@ -349,7 +349,7 @@ report 11715 "Open Cust. Entries to Date CZL"
             }
             dataitem(TotalByCurrency; "Integer")
             {
-                DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(> 0));
+                DataItemTableView = sorting(Number) order(ascending) where(Number = filter(> 0));
                 column(greTTotalCurrencyBuffer__Net_Change_in_Jnl__; TempTotalCurrencyGLAccountNetChange."Net Change in Jnl.")
                 {
                 }
@@ -659,14 +659,12 @@ report 11715 "Open Cust. Entries to Date CZL"
         CustCount: Integer;
         CustActual: Integer;
         Days: array[5] of Integer;
-        [InDataSet]
         SkipBalance: Boolean;
         PrintCurrency: Boolean;
         SkipDetail: Boolean;
         SkipTotal: Boolean;
         SkipGLAcc: Boolean;
         CustPerPage: Boolean;
-        [InDataSet]
         CurrencyAllowed: Boolean;
         PeriodLbl: Label 'Period: %1', Comment = '%1 = Date Filter';
         ToLbl: Label 'To %1', Comment = '%1 = Date';

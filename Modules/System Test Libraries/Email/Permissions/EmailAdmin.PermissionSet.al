@@ -3,13 +3,17 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Email;
+
+using System.Email;
+
 permissionset 134687 "Email Admin"
 {
     Assignable = true;
     IncludedPermissionSets = "Email - Admin";
 
     // Include Test Tables
-    Permissions = 
+    Permissions =
         tabledata "Test Email Connector Setup" = RIMD,
         tabledata "Test Email Account" = RIMD;
 }

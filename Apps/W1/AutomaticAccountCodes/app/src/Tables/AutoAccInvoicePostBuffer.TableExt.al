@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AutomaticAccounts;
+
+using Microsoft.Finance.ReceivablesPayables;
+
 tableextension 4853 "AutoAcc. Invoice Post. Buffer" extends "Invoice Post. Buffer"
 {
     fields
@@ -8,7 +16,7 @@ tableextension 4853 "AutoAcc. Invoice Post. Buffer" extends "Invoice Post. Buffe
             DataClassification = SystemMetadata;
             TableRelation = "Automatic Account Header";
             ObsoleteReason = 'This table will be replaced by table Invoice Posting Buffer in new Invoice Posting implementation.';
-#if CLEAN20
+#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '23.0';
 #else

@@ -1,7 +1,9 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4021 "GP Migration Settings List"
 {
     SourceTable = "GP Company Migration Settings";
-    SourceTableView = where(Replicate = CONST(true));
+    SourceTableView = where(Replicate = const(true));
     PageType = ListPart;
     InsertAllowed = false;
     DeleteAllowed = false;
@@ -178,7 +180,7 @@ page 4021 "GP Migration Settings List"
                     ToolTip = 'Specifies which Historical year to start with.';
                     Visible = false;
                     ObsoleteState = Pending;
-                    ObsoleteReason = 'Replaced by page GP Migration Configuration';		    
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
                     Width = 8;
                     ObsoleteTag = '22.0';
 
@@ -196,7 +198,7 @@ page 4021 "GP Migration Settings List"
                         end;
                     end;
                 }
-		#endif
+#endif
             }
         }
     }

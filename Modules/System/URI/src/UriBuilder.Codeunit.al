@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
 /// <summary>
 /// Provides a custom constructor for uniform resource identifiers (URIs) and modifies URIs for the Uri codeunit.
 /// </summary>

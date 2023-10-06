@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 41002 "GP GL30000"
 {
     Description = 'Historical Year Transactions';

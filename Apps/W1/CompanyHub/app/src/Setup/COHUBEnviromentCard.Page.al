@@ -1,3 +1,7 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using System.Telemetry;
+
 page 1165 "COHUB Enviroment Card"
 {
     PageType = Card;

@@ -1,4 +1,9 @@
 #if not CLEAN22
+namespace Microsoft.API.V1;
+
+using System.Environment;
+using System.Security.AccessControl;
+
 page 20059 "APIV1 - Aut. User Group Member"
 {
     Caption = 'userGroupMember', Locked = true;
@@ -16,19 +21,19 @@ page 20059 "APIV1 - Aut. User Group Member"
         {
             repeater(Group)
             {
-                field("code"; "User Group Code")
+                field("code"; Rec."User Group Code")
                 {
                     ApplicationArea = All;
                     Caption = 'code', Locked = true;
                     ToolTip = 'Specifies the user group code';
                 }
-                field(displayName; "User Group Name")
+                field(displayName; Rec."User Group Name")
                 {
                     ApplicationArea = All;
                     Caption = 'displayName', Locked = true;
                     ToolTip = 'Specifies the user group name';
                 }
-                field(companyName; "Company Name")
+                field(companyName; Rec."Company Name")
                 {
                     ApplicationArea = All;
                     Caption = 'companyName', Locked = true;
@@ -47,10 +52,10 @@ page 20059 "APIV1 - Aut. User Group Member"
         UserSecurityIDFilter: Text;
     begin
         if not LinesLoaded then begin
-            UserSecurityIDFilter := GetFilter("User Security ID");
+            UserSecurityIDFilter := Rec.GetFilter("User Security ID");
             if UserSecurityIDFilter = '' then
                 Error(UserIDNotSpecifiedForLinesErr);
-            if not FindFirst() then
+            if not Rec.FindFirst() then
                 exit(false);
             LinesLoaded := true;
         end;
@@ -68,5 +73,6 @@ page 20059 "APIV1 - Aut. User Group Member"
         UserIDNotSpecifiedForLinesErr: Label 'You must specify a User Security ID to access user groups members.';
         LinesLoaded: Boolean;
 }
+
 
 #endif

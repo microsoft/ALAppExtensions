@@ -17,7 +17,7 @@ table 11750 "Excel Template CZL"
             Caption = 'Description';
             DataClassification = CustomerContent;
         }
-        field(20; Template; BLOB)
+        field(20; Template; Blob)
         {
             Caption = 'Template';
             DataClassification = CustomerContent;

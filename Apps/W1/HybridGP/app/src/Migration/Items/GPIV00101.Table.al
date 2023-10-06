@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40116 "GP IV00101"
 {
     Description = 'Item Master';
@@ -91,7 +93,7 @@ table 40116 "GP IV00101"
 
     procedure GetRoundingPrecision(GPDecimalPlaceId: Integer): Decimal
     begin
-        Case GPDecimalPlaceId of
+        case GPDecimalPlaceId of
             6:
                 exit(0.00001);
             5:
@@ -104,6 +106,6 @@ table 40116 "GP IV00101"
                 exit(0.1);
             else
                 exit(0);
-        End;
+        end;
     end;
 }

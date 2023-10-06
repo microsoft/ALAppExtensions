@@ -169,6 +169,7 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         PurchAdvLetterHeaderCZZ."Pay-to County" := PurchaseHeader."Pay-to County";
         PurchAdvLetterHeaderCZZ."Pay-to Post Code" := PurchaseHeader."Pay-to Post Code";
         PurchAdvLetterHeaderCZZ."Language Code" := PurchaseHeader."Language Code";
+        PurchAdvLetterHeaderCZZ."Format Region" := PurchaseHeader."Format Region";
         PurchAdvLetterHeaderCZZ."Purchaser Code" := PurchaseHeader."Purchaser Code";
         PurchAdvLetterHeaderCZZ."Shortcut Dimension 1 Code" := PurchaseHeader."Shortcut Dimension 1 Code";
         PurchAdvLetterHeaderCZZ."Shortcut Dimension 2 Code" := PurchaseHeader."Shortcut Dimension 2 Code";

@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Report Shpfy Sync Images (ID 30107).
 /// </summary>

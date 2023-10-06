@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
+using System;
+
 /// <summary>
 /// Provides methods for creating and modifying web services, accessing web service URLs, and getting and setting web service filters and clauses.
 /// </summary>

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
+using Microsoft.Sales.History;
+
 pageextension 20286 "Posted Sales Stats Ext" extends "Sales Invoice Statistics"
 {
     layout

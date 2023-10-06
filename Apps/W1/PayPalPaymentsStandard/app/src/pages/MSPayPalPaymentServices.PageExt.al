@@ -1,3 +1,8 @@
+namespace Microsoft.Bank.PayPal;
+
+using System.Azure.Identity;
+using System.Environment;
+
 #if not CLEAN21
 pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Services"
 {
@@ -78,15 +83,14 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
             exit;
         end;
 
-        with MSPayPalStandardAccount do
-            if IsEmpty() then begin
-                MSPayPalStandardMgt.RegisterPayPalStandardTemplate(TempPaymentServiceSetup);
+        if MSPayPalStandardAccount.IsEmpty() then begin
+            MSPayPalStandardMgt.RegisterPayPalStandardTemplate(TempPaymentServiceSetup);
 
-                MSPayPalStandardMgt.GetTemplate(MSPayPalStandardTemplate);
-                MSPayPalStandardTemplate.RefreshLogoIfNeeded();
-                TransferFields(MSPayPalStandardTemplate, false);
-                Insert(true);
-            end;
+            MSPayPalStandardMgt.GetTemplate(MSPayPalStandardTemplate);
+            MSPayPalStandardTemplate.RefreshLogoIfNeeded();
+            MSPayPalStandardAccount.TransferFields(MSPayPalStandardTemplate, false);
+            MSPayPalStandardAccount.Insert(true);
+        end;
     end;
 
     trigger OnAfterGetCurrRecord()

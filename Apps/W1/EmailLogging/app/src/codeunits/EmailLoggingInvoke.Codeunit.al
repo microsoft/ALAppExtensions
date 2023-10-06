@@ -1,3 +1,10 @@
+namespace Microsoft.CRM.EmailLoggin;
+
+using Microsoft.CRM.Segment;
+using Microsoft.CRM.Interaction;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Team;
+
 codeunit 1685 "Email Logging Invoke"
 {
     trigger OnRun()

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+
 page 4052 "GP Set All Dimensions Dialog"
 {
     Caption = 'Set All Company Dimensions';

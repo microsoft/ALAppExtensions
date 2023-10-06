@@ -3,16 +3,32 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Feedback;
+
+using System.Security.AccessControl;
+using System.Environment.Configuration;
+using System.Feedback;
+using System.Reflection;
+using System.TestLibraries.Environment;
+using System.TestLibraries.Reflection;
+using System.TestLibraries.Azure.KeyVault;
+using System.TestLibraries.Feedback;
+using System.Test.Library;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 138074 "Satisfaction Survey Tests"
 {
     // [FEATURE] [Satisfaction Survey] [UT]
 
     Subtype = Test;
-    Permissions = tabledata "User Property" = r;
+    Permissions = tabledata "User Property" = r,
+                tabledata "User Personalization" = rim;
 
     var
         LibraryAssert: Codeunit "Library Assert";
         SatisfactionSurveyMgt: Codeunit "Satisfaction Survey Mgt.";
+        SatSurveyTestLibrary: Codeunit "Sat. Survey Test Library";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         TestClientTypeSubscriber: Codeunit "Test Client Type Subscriber";
         PermissionsMock: Codeunit "Permissions Mock";
@@ -486,6 +502,28 @@ codeunit 138074 "Satisfaction Survey Tests"
         LibraryAssert.IsFalse(Result2, 'Survey is already deactivated.');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestCustomDimensions()
+    var
+        RenderUrl: Text;
+        ProfileId: Code[30];
+        CustomDimensionsLbl: Label 'custom={"profileName":"%1"}', Comment = '%1 - profile name';
+    begin
+        // Setup
+        Initialize();
+        SimulatePuidNotEmpty();
+        InsertProfile(ProfileId);
+        SetCurrentProfile(ProfileId);
+        PermissionsMock.Set('Satisfaction View');
+
+        // Execute
+        RenderUrl := SatSurveyTestLibrary.GetRenderUrl();
+
+        // Verify
+        LibraryAssert.IsTrue(RenderUrl.Contains(StrSubstNo(CustomDimensionsLbl, ProfileId).Replace(' ', '%20')), 'Render does not contain custom dimensions. Render Url: ' + RenderUrl + 'Custom dimensions: ' + StrSubstNo(CustomDimensionsLbl, ProfileId));
+    end;
+
     local procedure Initialize()
     begin
         ClearLastError();
@@ -623,6 +661,29 @@ codeunit 138074 "Satisfaction Survey Tests"
     begin
         Result := SatisfactionSurveyMgt.ResetCache();
         LibraryAssert.IsTrue(Result, 'Cache is not reset.');
+    end;
+
+    local procedure SetCurrentProfile(ProfileID: Code[30])
+    var
+        UserPersonalization: Record "User Personalization";
+    begin
+        UserPersonalization.Get(UserSecurityId());
+
+        UserPersonalization."Profile ID" := ProfileID;
+        UserPersonalization.Modify();
+    end;
+
+    local procedure InsertProfile(var ProfileID: Code[30])
+    var
+        AllProfile: Record "All Profile";
+        Any: Codeunit Any;
+        ModuleInfo: ModuleInfo;
+    begin
+        ProfileID := CopyStr(Any.AlphanumericText(30), 1, MaxStrLen(ProfileID));
+        AllProfile."Profile ID" := ProfileID;
+        AllProfile.Scope := AllProfile.Scope::Tenant;
+        AllProfile."App ID" := ModuleInfo.Id();
+        AllProfile.Insert();
     end;
 
     [ModalPageHandler]

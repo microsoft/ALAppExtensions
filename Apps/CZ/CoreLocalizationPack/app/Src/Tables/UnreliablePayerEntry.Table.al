@@ -1,8 +1,8 @@
 table 11753 "Unreliable Payer Entry CZL"
 {
     Caption = 'Unreliable Payer Entry';
-    DrillDownPageID = "Unreliable Payer Entries CZL";
-    LookupPageID = "Unreliable Payer Entries CZL";
+    DrillDownPageId = "Unreliable Payer Entries CZL";
+    LookupPageId = "Unreliable Payer Entries CZL";
     DataClassification = CustomerContent;
 
     fields
@@ -72,7 +72,7 @@ table 11753 "Unreliable Payer Entry CZL"
         }
         field(70; "Vendor Name"; Text[100])
         {
-            CalcFormula = Lookup(Vendor.Name where("No." = field("Vendor No.")));
+            CalcFormula = lookup(Vendor.Name where("No." = field("Vendor No.")));
             Caption = 'Vendor Name';
             FieldClass = FlowField;
             Editable = false;

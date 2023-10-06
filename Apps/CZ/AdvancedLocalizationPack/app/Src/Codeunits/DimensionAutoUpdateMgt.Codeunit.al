@@ -121,7 +121,11 @@ codeunit 31395 "Dimension Auto.Update Mgt. CZA"
     end;
 
     local procedure CheckChangeSetupRead()
+    var
+        SystemInitialization: Codeunit "System Initialization";
     begin
+        if SystemInitialization.IsInProgress() then
+            exit;
         if not DimChangeSetupRead then begin
             ReadSetup();
             DimChangeSetupRead := true;

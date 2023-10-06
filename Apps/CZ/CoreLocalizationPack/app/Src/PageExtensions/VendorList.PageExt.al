@@ -61,7 +61,7 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
                 ApplicationArea = Basic, Suite;
                 Caption = 'All Payments on Hold';
                 Image = Report;
-                RunObject = Report "All Payments on Hold CZL";
+                RunObject = report "All Payments on Hold CZL";
                 ToolTip = 'View a list of all vendor ledger entries on which the On Hold field is marked. ';
             }
         }
@@ -74,7 +74,7 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
                 Image = Balance;
                 Promoted = true;
                 PromotedCategory = "Report";
-                RunObject = Report "Vendor-Bal. Reconciliation CZL";
+                RunObject = report "Vendor-Bal. Reconciliation CZL";
                 ToolTip = 'Open the report for vendor''s balance reconciliation.';
             }
         }

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Sharepoint;
+
+using System;
+
 codeunit 9107 "SharePoint Http Content"
 {
     Access = Internal;
@@ -14,6 +18,8 @@ codeunit 9107 "SharePoint Http Content"
         ContentLength: Integer;
         ContentType: Text;
         RequestDigest: Text;
+        XHttpMethod: Text;
+        IfMatch: Text;
 
     procedure FromFileInStream(var FileInStream: Instream)
     begin
@@ -55,6 +61,26 @@ codeunit 9107 "SharePoint Http Content"
     procedure GetRequestDigest(): Text;
     begin
         exit(RequestDigest);
+    end;
+
+    procedure SetXHttpMethod(XHttpMethodValue: Text)
+    begin
+        XHttpMethodValue := XHttpMethodValue;
+    end;
+
+    procedure GetXHttpMethod(): Text;
+    begin
+        exit(XHttpMethod);
+    end;
+
+    procedure SetIfMatch(IfMatchValue: Text)
+    begin
+        IfMatch := IfMatchValue;
+    end;
+
+    procedure GetIfMatch(): Text;
+    begin
+        exit(IfMatch);
     end;
 
     local procedure GetContentLength(var SourceInStream: InStream) Length: Integer

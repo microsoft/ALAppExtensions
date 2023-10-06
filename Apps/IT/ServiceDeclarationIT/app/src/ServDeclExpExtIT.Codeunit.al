@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Reports;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Vendor;
+using System.IO;
+using System.Utilities;
+
 codeunit 12214 "Serv. Decl. Exp. Ext. IT"
 {
     TableNo = "Data Exch.";

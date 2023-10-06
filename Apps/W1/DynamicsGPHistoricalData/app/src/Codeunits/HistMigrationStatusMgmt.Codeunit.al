@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 codeunit 40902 "Hist. Migration Status Mgmt."
 {
     local procedure GetDeleteBatchSize(): Integer

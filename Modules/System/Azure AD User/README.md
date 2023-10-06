@@ -1,10 +1,10 @@
-This module provides functionality for retrieving and updating user information from Azure AD.
+This module provides functionality for retrieving and updating user information from Microsoft Entra.
 
 Use this module to do the following:
-- retrieve a user with a specified security ID from Azure AD
-- retrieve a user's object ID from Azure AD
-- retrieve a user's authentication object ID from Azure AD
-- update a User record with information from Azure AD
+- retrieve a user with a specified security ID from Microsoft Entra
+- retrieve a user's object ID from Microsoft Entra
+- retrieve a user's authentication object ID from Microsoft Entra
+- update a User record with information from Microsoft Entra
 - ensure an authentication email is not in use
 
 This module is meant for on-premises use only.
@@ -12,12 +12,12 @@ This module is meant for on-premises use only.
 # Public Objects
 ## Azure AD Graph User (Codeunit 9024)
 
- Exposes functionality to retrieve and update Azure AD users.
+ Exposes functionality to retrieve and update Microsoft Entra users.
  
 
 ### GetGraphUser (Method) <a name="GetGraphUser"></a> 
 
- Gets the Azure AD user with the given security ID.
+ Gets the Microsoft Entra user with the given security ID.
  
 
 #### Syntax
@@ -34,11 +34,11 @@ The user's security ID.
 
 *User ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 ### GetGraphUser (Method) <a name="GetGraphUser"></a> 
 
- Gets the Azure AD user with the given security ID.
+ Gets the Microsoft Entra user with the given security ID.
  
 
 #### Syntax
@@ -59,11 +59,11 @@ Forces a graph call to get the latest details for the user.
 
 *User ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 ### GetObjectId (Method) <a name="GetObjectId"></a> 
 
- Retrieves the user’s unique identifier, which is its object ID, from Azure AD.
+ Retrieves the user’s unique identifier, which is its object ID, from Microsoft Entra.
  
 
 #### Syntax
@@ -81,7 +81,7 @@ The user's security ID.
 *[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 
- The object ID of the Azure AD user, or an empty string if the user cannot be found.
+ The object ID of the Microsoft Entra user, or an empty string if the user cannot be found.
  
 ### GetUserAuthenticationObjectId (Method) <a name="GetUserAuthenticationObjectId"></a> 
 User with Security ID UserSecurityId does not exist.
@@ -170,7 +170,7 @@ procedure IsUserDelegatedAdmin(): Boolean
 True if the current user is Delegated Admin, false otherwise.
 ### UpdateUserFromAzureGraph (Method) <a name="UpdateUserFromAzureGraph"></a> 
 
- Updates the user record with information from Azure AD.
+ Updates the user record with information from Microsoft Entra.
  
 
 #### Syntax
@@ -186,7 +186,7 @@ The user record to update.
 
 *AzureADUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 #### Return Value
 *[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
@@ -208,7 +208,7 @@ procedure GetAuthenticationEmail(GraphUser: DotNet UserInfo): Text[250]
 #### Parameters
 *GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 #### Return Value
 *[Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031)*
@@ -230,7 +230,7 @@ procedure GetDisplayName(GraphUser: DotNet UserInfo): Text[50]
 #### Parameters
 *GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 #### Return Value
 *[Text[50]](https://go.microsoft.com/fwlink/?linkid=2210031)*
@@ -252,7 +252,7 @@ procedure GetContactEmail(GraphUser: DotNet UserInfo): Text[250]
 #### Parameters
 *GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 #### Return Value
 *[Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031)*
@@ -274,7 +274,7 @@ procedure GetFullName(GraphUser: DotNet UserInfo): Text[80]
 #### Parameters
 *GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 #### Return Value
 *[Text[80]](https://go.microsoft.com/fwlink/?linkid=2210031)*
@@ -299,7 +299,7 @@ procedure GetPreferredLanguageID(GraphUser: DotNet UserInfo): Integer
 #### Parameters
 *GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 #### Return Value
 *[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
@@ -309,7 +309,7 @@ The preferred language ID of the provided Graph user. Can be used to set the pre
 
  Ensures that an email address specified for authorization is not already in use by another database user.
  If it is, all the database users with this authentication email address are updated and their email
- addresses are updated the ones that are specified in Azure AD.
+ addresses are updated the ones that are specified in Microsoft Entra.
  
 
 #### Syntax

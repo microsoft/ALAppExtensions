@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Security.AccessControl;
+
 /// <summary>
 /// Displays a list of the plans assigned to users.
 /// </summary>
@@ -25,24 +29,25 @@ table 9005 "User Plan"
         }
         field(2; "Plan ID"; Guid)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Plan ID';
             TableRelation = Plan."Plan ID";
         }
         field(10; "User Name"; Code[50])
         {
-            CalcFormula = Lookup(User."User Name" WHERE("User Security ID" = FIELD("User Security ID")));
+            CalcFormula = lookup(User."User Name" where("User Security ID" = field("User Security ID")));
             Caption = 'User Name';
             FieldClass = FlowField;
         }
         field(11; "User Full Name"; Text[80])
         {
-            CalcFormula = Lookup(User."Full Name" WHERE("User Security ID" = FIELD("User Security ID")));
+            CalcFormula = lookup(User."Full Name" where("User Security ID" = field("User Security ID")));
             Caption = 'Full Name';
             FieldClass = FlowField;
         }
         field(12; "Plan Name"; Text[50])
         {
-            CalcFormula = Lookup(Plan.Name WHERE("Plan ID" = FIELD("Plan ID")));
+            CalcFormula = lookup(Plan.Name where("Plan ID" = field("Plan ID")));
             Caption = 'Plan Name';
             FieldClass = FlowField;
         }

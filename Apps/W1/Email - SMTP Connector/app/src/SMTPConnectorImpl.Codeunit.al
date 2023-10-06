@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Security.AccessControl;
+using System.Utilities;
+using System.DataAdministration;
+
 codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 {
     Access = Internal;

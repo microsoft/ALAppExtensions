@@ -1,3 +1,30 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Reports;
+
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Segment;
+using Microsoft.CRM.Team;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Inventory.Location;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Posting;
+using Microsoft.Sales.Setup;
+using Microsoft.Utilities;
+using System.Globalization;
+using System.Utilities;
+
 report 18017 "Sales - Quote GST"
 {
     DefaultLayout = RDLC;
@@ -804,6 +831,7 @@ report 18017 "Sales - Quote GST"
                 "Sell-to Country": Text[50];
             begin
                 CurrReport.Language := Language.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
                 CompanyInfo.Get();
 
                 IsGSTApplicable := CheckGSTDoc("Sales Line");
@@ -901,11 +929,14 @@ report 18017 "Sales - Quote GST"
                 MarkedOnly := true;
                 Commit();
                 CurrReport.LANGUAGE := ReportLanguage;
+                if ReportFormatRegion <> '' then
+                    CurrReport.FormatRegion := ReportFormatRegion;
             end;
 
             trigger OnPreDataItem()
             begin
                 ReportLanguage := CurrReport.Language();
+                ReportFormatRegion := CurrReport.FormatRegion();
                 Print := Print or not CurrReport.Preview;
             end;
         }
@@ -1076,6 +1107,7 @@ report 18017 "Sales - Quote GST"
         IsGSTApplicable: Boolean;
         GSTCompNo: Integer;
         j: Integer;
+        ReportFormatRegion: Text[80];
         ReportLanguage: Integer;
         VatAmtLbl: Label 'VAT Amount Specification in ';
         LocalCurrLbl: Label 'Local Currency';

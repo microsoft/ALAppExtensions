@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4091 "GP GLTransactions"
 {
     PageType = List;

@@ -1,3 +1,53 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Base;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Application;
+using Microsoft.Finance.GST.Distribution;
+using Microsoft.Finance.GST.Payments;
+using Microsoft.Finance.GST.Reconcilation;
+using Microsoft.Finance.GST.ReturnSettlement;
+using Microsoft.Finance.GST.ServicesTransfer;
+using Microsoft.Finance.GST.StockTransfer;
+using Microsoft.Finance.GST.Subcontracting;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.TaxBase;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Archive;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Archive;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Pricing;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Setup;
+using Microsoft.Service.Contract;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Service.Pricing;
+using Microsoft.Service.Setup;
+using Microsoft.Utilities;
+using System.Privacy;
+
 codeunit 18020 "GST Data Senstivity Mgmt."
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]
@@ -149,7 +199,7 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"GST Journal Batch");
         SetTableFieldsToNormal(Database::"GST Journal Line");
         SetTableFieldsToNormal(Database::"GST Adjustment Buffer");
-#if not CLEAN20
+#if not CLEAN23
         SetTableFieldsToNormal(Database::"Invoice Post. Buffer");
 #endif
         SetTableFieldsToNormal(Database::"Invoice Posting Buffer");

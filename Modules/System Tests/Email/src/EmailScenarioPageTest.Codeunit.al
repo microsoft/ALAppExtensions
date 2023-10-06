@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Email;
+
+using System.TestLibraries.Email;
+using System.Email;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 134695 "Email Scenario Page Test"
 {
     Subtype = Test;
@@ -165,7 +172,7 @@ codeunit 134695 "Email Scenario Page Test"
     begin
         // [Scenario] The "Email Scenario Setup" shows three entries when there are two accounts - one with the default scenario and one with a non-default scenario
         PermissionsMock.Set('Email Admin');
-    
+
         // [Given] Two email accounts are registered. One is set as default.
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(FirstEmailAccount);

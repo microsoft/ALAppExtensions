@@ -9,7 +9,7 @@ table 4043 "Stg Data Exch Def US"
 #else
     ObsoleteState = Removed;
     ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
-    ObsoleteTag = '23.0';
+    ObsoleteTag = '24.0';
 #endif
     fields
     {

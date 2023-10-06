@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.StockTransfer;
+
+using Microsoft.Inventory.Transfer;
+
 pageextension 18395 "GST Transfer Order Ext" extends "Transfer Order"
 {
     layout

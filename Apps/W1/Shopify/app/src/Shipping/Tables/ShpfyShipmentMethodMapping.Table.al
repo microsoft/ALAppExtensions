@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Foundation.Shipping;
+
 /// <summary>
 /// Table Shpfy Shipment Method Mapping (ID 30131).
 /// </summary>

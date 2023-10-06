@@ -1,3 +1,11 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Customer;
+using System.IO;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.Foundation.Address;
+using Microsoft.Finance.Dimension;
+
 /// <summary>
 /// Codeunit Shpfy Update Customer (ID 30124).
 /// </summary>
@@ -71,13 +79,12 @@ codeunit 30124 "Shpfy Update Customer"
     begin
         IName := Shop."Name Source";
         Customer.Validate(Name, IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company));
-        IName := Shop."Name 2 Source";
-        Customer.Validate("Name 2", IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company));
 
-        if Customer.Name = '' then begin
-            Customer.Validate(Name, Customer."Name 2");
-            Customer.Validate("Name 2", '');
-        end;
+        IName := Shop."Name 2 Source";
+        if Customer.Name = '' then
+            Customer.Validate(Name, IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company))
+        else
+            Customer.Validate("Name 2", IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company));
 
         IName := Shop."Contact Source";
         Customer.Validate(Contact, IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company));

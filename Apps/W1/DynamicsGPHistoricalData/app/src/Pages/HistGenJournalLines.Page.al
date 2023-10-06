@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41001 "Hist. Gen. Journal Lines"
 {
     ApplicationArea = All;

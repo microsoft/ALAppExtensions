@@ -1,6 +1,11 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using System.Environment.Configuration;
+using System.Reflection;
+
 page 2683 "Data Search Setup (Table) List"
 {
-    Caption = 'Search Setup (Table) List';
+    Caption = 'Data Search Setup';
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = true;
@@ -120,7 +125,7 @@ page 2683 "Data Search Setup (Table) List"
             action(ShowFilteredTables)
             {
                 ApplicationArea = All;
-                Caption = 'Filter to selected tables';
+                Caption = 'Show selected tables';
                 ToolTip = 'Compacts the view, so you only see the tables that have been selected for search.';
                 Image = FilterLines;
                 Enabled = not TableFilterIsSet;
@@ -129,6 +134,18 @@ page 2683 "Data Search Setup (Table) List"
                 begin
                     SetEnabledTablesFilter(RoleCenterID);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            actionref(ShowAllTables_Promoted; ShowAllTables)
+            {
+            }
+            actionref(ShowFilteredTables_Promoted; ShowFilteredTables)
+            {
+            }
+            actionref(ResetSetup_Promoted; ResetSetup)
+            {
             }
         }
     }
@@ -162,7 +179,6 @@ page 2683 "Data Search Setup (Table) List"
         DataSearchSetupTable: Record "Data Search Setup (Table)";
         TempDataSearchSetupTable: Record "Data Search Setup (Table)" temporary;
         AllProfile: Record "All Profile";
-        [InDataSet]
         TableIsEnabled: Boolean;
         TableFilterIsSet: Boolean;
         ProfileID: Code[30];

@@ -111,7 +111,7 @@ report 11716 "Open Vend. Entries to Date CZL"
             }
             dataitem("Integer"; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 PrintOnlyIfDetail = true;
                 column(greVendor_Name; SecondVendor.Name)
                 {
@@ -124,7 +124,7 @@ report 11716 "Open Vend. Entries to Date CZL"
                 }
                 dataitem("Vendor Ledger Entry"; "Vendor Ledger Entry")
                 {
-                    DataItemTableView = sorting("Vendor No.", "Posting Date") ORDER(Ascending);
+                    DataItemTableView = sorting("Vendor No.", "Posting Date") order(ascending);
                     RequestFilterFields = "Document Type";
                     column(Vendor_Ledger_Entry__Original_Amt___LCY__; "Original Amt. (LCY)")
                     {
@@ -267,9 +267,9 @@ report 11716 "Open Vend. Entries to Date CZL"
                                         BalanceT[6] += "Remaining Amt. (LCY)";
                                     end;
                                 else begin
-                                        Balance[7] += "Remaining Amt. (LCY)";
-                                        BalanceT[7] += "Remaining Amt. (LCY)";
-                                    end;
+                                    Balance[7] += "Remaining Amt. (LCY)";
+                                    BalanceT[7] += "Remaining Amt. (LCY)";
+                                end;
                             end;
 
                         // buffer for total sumary by G/L account;
@@ -292,7 +292,7 @@ report 11716 "Open Vend. Entries to Date CZL"
                 }
                 dataitem(VendorByCurrency; "Integer")
                 {
-                    DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(> 0));
+                    DataItemTableView = sorting(Number) order(ascending) where(Number = filter(> 0));
                     column(greTCurrencyBuffer__Net_Change_in_Jnl__; TempCurrencyGLAccountNetChange."Net Change in Jnl.")
                     {
                     }
@@ -355,7 +355,7 @@ report 11716 "Open Vend. Entries to Date CZL"
             }
             dataitem(TotalByCurrency; "Integer")
             {
-                DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(> 0));
+                DataItemTableView = sorting(Number) order(ascending) where(Number = filter(> 0));
                 column(greTTotalCurrencyBuffer__Net_Change_in_Jnl__; TempTotalCurrencyGLAccountNetChange."Net Change in Jnl.")
                 {
                 }
@@ -679,9 +679,7 @@ report 11716 "Open Vend. Entries to Date CZL"
         SkipTotal: Boolean;
         SkipGLAcc: Boolean;
         VendPerPage: Boolean;
-        [InDataSet]
         CurrencyAllowed: Boolean;
-        [InDataSet]
         SkipBalance: Boolean;
         PeriodLbl: Label 'Period: %1', Comment = '%1 = Date Filter';
         ToLbl: Label 'To %1', Comment = '%1 = Date';

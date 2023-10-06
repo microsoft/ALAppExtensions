@@ -1,3 +1,7 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Bank.BankAccount;
+
 page 20051 "APIV1 - Bank Accounts"
 {
     APIVersion = 'v1.0';
@@ -16,16 +20,16 @@ page 20051 "APIV1 - Bank Accounts"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'id', Locked = true;
                     Editable = false;
                 }
-                field(number; "No.")
+                field(number; Rec."No.")
                 {
                     Caption = 'number', Locked = true;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'displayName', Locked = true;
                 }

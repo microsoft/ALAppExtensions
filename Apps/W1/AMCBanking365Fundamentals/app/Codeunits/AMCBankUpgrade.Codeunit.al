@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using System.Upgrade;
+
 codeunit 20119 "AMC Bank Upgrade"
 {
     Subtype = Upgrade;

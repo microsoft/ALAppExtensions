@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
 codeunit 20295 "Use Case Object Helper"
 {
     procedure GetUseCaseID(UseCaseName: Text[2000]): Guid;

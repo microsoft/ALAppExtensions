@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Integration.Entity;
+using Microsoft.Integration.Graph;
+
 page 30026 "APIV2 - Cash Flow Statement"
 {
     APIVersion = 'v2.0';
@@ -22,34 +27,34 @@ page 30026 "APIV2 - Cash Flow Statement"
         {
             repeater(Group)
             {
-                field(id; Id)
+                field(id; Rec.Id)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(lineNumber; "Line No.")
+                field(lineNumber; Rec."Line No.")
                 {
                     Caption = 'Line No.';
                 }
-                field(display; Description)
+                field(display; Rec.Description)
                 {
                     Caption = 'Description';
                 }
-                field(netChange; "Net Change")
+                field(netChange; Rec."Net Change")
                 {
                     AutoFormatType = 0;
                     BlankZero = true;
                     Caption = 'Net Change';
                 }
-                field(lineType; "Line Type")
+                field(lineType; Rec."Line Type")
                 {
                     Caption = 'Line Type';
                 }
-                field(indentation; Indentation)
+                field(indentation; Rec.Indentation)
                 {
                     Caption = 'Indentation';
                 }
-                field(dateFilter; "Date Filter")
+                field(dateFilter; Rec."Date Filter")
                 {
                     Caption = 'Date Filter';
                 }

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 4005 "Hybrid Companies"
 {
     SourceTable = "Hybrid Company";

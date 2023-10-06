@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.JsonExchange;
+
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using System.Reflection;
+using System.Utilities;
+
 codeunit 20365 "Use Case Archival Mgmt."
 {
     procedure ShowConfigurationFile(UseCaseArchivalLogEntry: Record "Use Case Archival Log Entry")

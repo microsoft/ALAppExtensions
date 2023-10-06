@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Telemetry;
+
+using System.Globalization;
+using System.Environment.Configuration;
+using System.Environment;
+
 codeunit 8712 "Telemetry Impl."
 {
     Access = Internal;
@@ -54,11 +60,15 @@ codeunit 8712 "Telemetry Impl."
         CustomDimensions.Add('CallerAppVersionMinor', Format(CallerModuleInfo.AppVersion.Minor));
         CustomDimensions.Add('ClientType', Format(CurrentClientType()));
         CustomDimensions.Add('Company', CompanyName());
-        if Company.Get(CompanyName()) then
-            CustomDimensions.Add('IsEvaluationCompany', Language.ToDefaultLanguage(Company."Evaluation Company"));
-        if UserPersonalization.Get(UserSecurityId()) then
-            if not IsNullGuid(UserPersonalization."App ID") then
-                CustomDimensions.Add('UserRole', UserPersonalization."Profile ID");
+
+        if Company.ReadPermission() then
+            if Company.Get(CompanyName()) then
+                CustomDimensions.Add('IsEvaluationCompany', Language.ToDefaultLanguage(Company."Evaluation Company"));
+
+        if UserPersonalization.ReadPermission() then
+            if UserPersonalization.Get(UserSecurityId()) then
+                if not IsNullGuid(UserPersonalization."App ID") then
+                    CustomDimensions.Add('UserRole', UserPersonalization."Profile ID");
 
         GlobalLanguage(CurrentLanguage);
     end;

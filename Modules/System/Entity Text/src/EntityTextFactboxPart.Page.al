@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Text;
+
 /// <summary>
 /// A card part to use on a factbox to display the entity text.
 /// Ensure the SetContext procedure is called OnAfterGetCurrentRecord on the parent page.
@@ -92,7 +94,9 @@ page 2011 "Entity Text Factbox Part"
                 ApplicationArea = All;
                 Caption = 'Create with Copilot';
                 Visible = CanCreate;
+#pragma warning disable AL0482
                 Image = Sparkle;
+#pragma warning restore AL0482
                 ToolTip = 'Let Copilot create a new draft';
 
                 trigger OnAction()

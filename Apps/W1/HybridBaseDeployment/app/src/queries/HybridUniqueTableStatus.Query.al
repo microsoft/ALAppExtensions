@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 query 4002 "Hybrid Unique Table Status"
 {
     QueryType = Normal;

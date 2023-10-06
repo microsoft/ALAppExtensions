@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 table 1864 "C5 CN8Code"
 {
     ReplicateData = false;

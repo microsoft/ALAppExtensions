@@ -10,12 +10,12 @@ report 11754 "Close Balance Sheet CZL"
     {
         dataitem("G/L Account"; "G/L Account")
         {
-            DataItemTableView = SORTING("No.") WHERE("Account Type" = CONST(Posting), "Income/Balance" = CONST("Balance Sheet"));
+            DataItemTableView = sorting("No.") where("Account Type" = const(Posting), "Income/Balance" = const("Balance Sheet"));
             RequestFilterFields = "G/L Account Group CZL";
             dataitem("G/L Entry"; "G/L Entry")
             {
-                DataItemLink = "G/L Account No." = FIELD("No.");
-                DataItemTableView = SORTING("G/L Account No.", "Posting Date");
+                DataItemLink = "G/L Account No." = field("No.");
+                DataItemTableView = sorting("G/L Account No.", "Posting Date");
 
                 trigger OnAfterGetRecord()
                 var

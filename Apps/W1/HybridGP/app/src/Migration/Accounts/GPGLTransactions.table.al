@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4091 "GP GLTransactions"
 {
     ReplicateData = false;

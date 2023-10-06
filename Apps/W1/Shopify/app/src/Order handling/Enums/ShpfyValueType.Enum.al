@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Enum Shpfy Value Type (ID 30123).
 /// </summary>

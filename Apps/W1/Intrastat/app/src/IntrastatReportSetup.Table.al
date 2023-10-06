@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.CRM.Contact;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Vendor;
+using System.IO;
+
 table 4810 "Intrastat Report Setup"
 {
     Caption = 'Intrastat Report Setup';
@@ -147,6 +159,10 @@ table 4810 "Intrastat Report Setup"
         field(30; "Get Partner VAT For"; Enum "Intrastat Report Line Type Sel")
         {
             Caption = 'Get VAT Reg. No. For';
+        }
+        field(31; "Include Drop Shipment"; Boolean)
+        {
+            Caption = 'Include Drop Shipment';
         }
     }
     keys

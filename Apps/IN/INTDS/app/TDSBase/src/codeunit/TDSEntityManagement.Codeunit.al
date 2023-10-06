@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSBase;
+
+using Microsoft.Finance.TaxEngine.PostingHandler;
+using Microsoft.Purchases.Payables;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.TaxBase;
+
 codeunit 18685 "TDS Entity Management"
 {
     procedure AddTDSSubSection(TDSSection: Record "TDS Section")

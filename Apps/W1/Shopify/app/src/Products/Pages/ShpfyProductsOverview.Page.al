@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 page 30143 "Shpfy Products Overview"
 {
     PageType = List;

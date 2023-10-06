@@ -1,8 +1,14 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.Finance.VAT.Reporting;
+
+using System.Telemetry;
+#if not CLEAN22
+using Microsoft.Inventory.Intrastat;
+#endif
 codeunit 13691 "Setup VAT Reports Config DK"
 {
     var
@@ -32,6 +38,7 @@ codeunit 13691 "Setup VAT Reports Config DK"
         AddECSLConfiguration();
     end;
 
+#if not CLEAN22
     [EventSubscriber(ObjectType::Page, Page::"Intrastat Journal", 'OnOpenPageEvent', '', false, false)]
     local procedure ConfigureIntrastat();
     var
@@ -40,7 +47,7 @@ codeunit 13691 "Setup VAT Reports Config DK"
         IF NOT VATReportsConfiguration.Get(VATReportsConfiguration."VAT Report Type"::"Intrastat Report", 'CURRENT') then
             AddIntrastatConfiguration();
     end;
-
+#endif
     procedure OpenVATReportConfig(Notification: Notification)
     begin
         FeatureTelemetry.LogUptake('0000H8U', VATTok, Enum::"Feature Uptake Status"::"Set up");
@@ -60,6 +67,7 @@ codeunit 13691 "Setup VAT Reports Config DK"
             Insert();
         end;
     end;
+#if not CLEAN22
 
     local procedure AddIntrastatConfiguration();
     var
@@ -74,4 +82,5 @@ codeunit 13691 "Setup VAT Reports Config DK"
             Insert();
         end;
     end;
+#endif
 }

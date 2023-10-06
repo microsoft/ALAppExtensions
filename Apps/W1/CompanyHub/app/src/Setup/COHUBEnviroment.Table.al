@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 table 1152 "COHUB Enviroment"
 {
     Access = Internal;

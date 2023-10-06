@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using System.Security.AccessControl;
+
 permissionsetextension 18543 "D365 BASIC - India Tax Base" extends "D365 BASIC"
 {
     Permissions = tabledata "Assessee Code" = RIMD,

@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
+using System.Reflection;
+using System.Integration;
+
 /// <summary>
 /// Exposes functionality to create and consume Word templates.
 /// </summary>

@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Enum Shpfy SKU Mapping (ID 30132).
 /// </summary>

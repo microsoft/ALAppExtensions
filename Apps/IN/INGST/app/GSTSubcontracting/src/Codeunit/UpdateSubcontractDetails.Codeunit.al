@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Subcontracting;
+
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Requisition;
+using Microsoft.Inventory.Setup;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+
 codeunit 18471 "Update Subcontract Details"
 {
     var

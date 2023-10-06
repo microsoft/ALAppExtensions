@@ -33,7 +33,7 @@ pageextension 11712 "Phys. Inventory Journal CZL" extends "Phys. Inventory Journ
     {
         addlast("F&unctions")
         {
-            Action("CreateNewEmptyLineCZL")
+            action("CreateNewEmptyLineCZL")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'C&reate New Empty Line';

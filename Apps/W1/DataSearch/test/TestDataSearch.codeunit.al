@@ -259,7 +259,7 @@ codeunit 139507 "Test Data Search"
     [PageHandler]
     procedure DataSearchPageHandler(var DataSearch: TestPage "Data Search")
     begin
-        LibraryAssert.AreEqual('Hello World', DataSearch.SearchString.Value, 'Start-up parameter not specified correctly.');
+        LibraryAssert.AreEqual('Searching for "Hello World"...', DataSearch.SearchString.Value, 'Start-up parameter not specified correctly.');
         DataSearch.Close();
     end;
 

@@ -1,8 +1,12 @@
+#if not CLEAN23
 codeunit 139506 "MS - WorldPay Std Mock Events"
 {
     // version Test,ERM,W1,AT,AU,BE,CA,CH,DE,DK,ES,FI,FR,GB,IS,IT,MX,NL,NO,NZ,SE,US
 
     EventSubscriberInstance = Manual;
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     var
         LibraryUtility: Codeunit "Library - Utility";
@@ -26,4 +30,4 @@ codeunit 139506 "MS - WorldPay Std Mock Events"
         PaymentServiceSetup.INSERT(TRUE);
     end;
 }
-
+#endif

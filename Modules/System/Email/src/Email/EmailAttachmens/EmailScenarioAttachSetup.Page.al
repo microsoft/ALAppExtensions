@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Telemetry;
+
 /// <summary>
 /// Page is used to set the attachments for the scenario.
 /// </summary>
@@ -49,7 +53,7 @@ page 8897 "Email Scenario Attach Setup"
                 {
                     ApplicationArea = All;
                     Caption = 'Email Scenario';
-                    ToolTip = 'The email scenario that the attachment came from. Attachments set as default for email scenarios are automatically attached to emails that are sent from processes related to the scenario.';
+                    Tooltip = 'Specifies the email scenario that the attachment came from. Attachments set as default for email scenarios are automatically attached to emails that are sent from processes related to the scenario.';
                     Editable = false;
                     Visible = not (IsVisible);
                 }

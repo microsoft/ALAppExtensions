@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Security.AccessControl;
+
 pageextension 4009 "Hybrid O365 Activities" extends "O365 Activities"
 {
     layout

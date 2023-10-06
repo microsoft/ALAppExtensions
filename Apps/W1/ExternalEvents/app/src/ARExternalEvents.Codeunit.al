@@ -1,4 +1,15 @@
-Codeunit 38502 "AR External Events"
+namespace Microsoft.Integration.ExternalEvents;
+
+using System.Integration;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Sales.Posting;
+
+codeunit 38502 "AR External Events"
 {
     var
         ExternalEventsHelper: Codeunit "External Events Helper";
@@ -11,7 +22,9 @@ Codeunit 38502 "AR External Events"
         var ReturnReceiptHeader: Record "Return Receipt Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         CommitIsSuppressed: Boolean; PreviewMode: Boolean)
     var
+        APIId: Guid;
         Url: Text[250];
+        WebClientUrl: Text[250];
         SalesInvoiceApiUrlTok: Label 'v2.0/companies(%1)/salesInvoices(%2)', Locked = true;
         SalesCreditMemoApiUrlTok: Label 'v2.0/companies(%1)/salesCreditMemos(%2)', Locked = true;
         SalesShipmentApiUrlTok: Label 'v2.0/companies(%1)/salesShipments(%2)', Locked = true;
@@ -19,31 +32,71 @@ Codeunit 38502 "AR External Events"
         if PreviewMode then
             exit;
         if SalesInvoiceHeader."No." <> '' then begin
-            Url := ExternalEventsHelper.CreateLink(CopyStr(SalesInvoiceApiUrlTok, 1, 250), SalesInvoiceHeader."Draft Invoice SystemId");
-            SalesInvoicePosted(SalesInvoiceHeader."Draft Invoice SystemId", Url);
+            if not IsNullGuid(SalesInvoiceHeader."Draft Invoice SystemId") then
+                APIId := SalesInvoiceHeader."Draft Invoice SystemId"
+            else
+                APIId := SalesInvoiceHeader.SystemId;
+            Url := ExternalEventsHelper.CreateLink(CopyStr(SalesInvoiceApiUrlTok, 1, 250), APIId);
+            WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Posted Sales Invoice", SalesInvoiceHeader), 1, MaxStrLen(WebClientUrl));
+#if not CLEAN23
+            SalesInvoicePosted(APIId, Url);
+#endif
+            SalesInvoicePosted(APIId, SalesInvoiceHeader.SystemId, Url, WebClientUrl);
         end;
         if SalesCrMemoHeader."No." <> '' then begin
-            Url := ExternalEventsHelper.CreateLink(CopyStr(SalesCreditMemoApiUrlTok, 1, 250), SalesCrMemoHeader."Draft Cr. Memo SystemId");
-            SalesCreditMemoPosted(SalesCrMemoHeader."Draft Cr. Memo SystemId", Url);
+            if not IsNullGuid(SalesCrMemoHeader."Draft Cr. Memo SystemId") then
+                APIId := SalesCrMemoHeader."Draft Cr. Memo SystemId"
+            else
+                APIId := SalesCrMemoHeader.SystemId;
+            Url := ExternalEventsHelper.CreateLink(CopyStr(SalesCreditMemoApiUrlTok, 1, 250), APIId);
+            WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Posted Sales Credit Memo", SalesCrMemoHeader), 1, MaxStrLen(WebClientUrl));
+#if not CLEAN23
+            SalesCreditMemoPosted(APIId, Url);
+#endif
+            SalesCreditMemoPosted(APIId, SalesCrMemoHeader.SystemId, Url, WebClientUrl);
         end;
         if SalesShipmentHeader."No." <> '' then begin
             Url := ExternalEventsHelper.CreateLink(CopyStr(SalesShipmentApiUrlTok, 1, 250), SalesShipmentHeader.SystemId);
+            WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Posted Sales Shipment", SalesShipmentHeader), 1, MaxStrLen(WebClientUrl));
+#if not CLEAN23
             SalesShipmentPosted(SalesShipmentHeader.SystemId, Url);
+#endif
+            SalesShipmentPosted(SalesShipmentHeader.SystemId, Url, WebClientUrl);
         end;
     end;
 
+#if not CLEAN23
+    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
     [ExternalBusinessEvent('SalesInvoicePosted', 'Sales invoice posted ', 'This business event is triggered when a sales invoice is posted as part of the Quote to Cash process.', EventCategory::"Accounts Receivable")]
-    procedure SalesInvoicePosted(SalesInvoiceId: Guid; Url: text[250])
+    procedure SalesInvoicePosted(SalesInvoiceId: Guid; Url: Text[250])
     begin
     end;
 
+    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
     [ExternalBusinessEvent('SalesCreditMemoPosted', 'Sales credit memo posted', 'This business event is triggered when a sales credit memo is posted.', EventCategory::"Accounts Receivable")]
-    procedure SalesCreditMemoPosted(SalesCreditMemoId: Guid; Url: text[250])
+    procedure SalesCreditMemoPosted(SalesCreditMemoId: Guid; Url: Text[250])
     begin
     end;
 
+    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
     [ExternalBusinessEvent('SalesShipmentPosted', 'Sales shipment posted', 'This business event is triggered when goods from a sales order are shipped by the internal warehouse/external logistics company. This can trigger Finance Department to post a sales invoice.', EventCategory::"Accounts Receivable")]
-    procedure SalesShipmentPosted(SalesShipmentId: Guid; Url: text[250])
+    procedure SalesShipmentPosted(SalesShipmentId: Guid; Url: Text[250])
+    begin
+    end;
+#endif
+
+    [ExternalBusinessEvent('SalesInvoicePosted', 'Sales invoice posted ', 'This business event is triggered when a sales invoice is posted as part of the Quote to Cash process.', EventCategory::"Accounts Receivable", '1.0')]
+    procedure SalesInvoicePosted(SalesInvoiceAPIId: Guid; SalesInvoiceSystemId: Guid; Url: Text[250]; WebClientUrl: Text[250])
+    begin
+    end;
+
+    [ExternalBusinessEvent('SalesCreditMemoPosted', 'Sales credit memo posted', 'This business event is triggered when a sales credit memo is posted.', EventCategory::"Accounts Receivable", '1.0')]
+    procedure SalesCreditMemoPosted(SalesCreditMemoAPIId: Guid; SalesCreditMemoSystemId: Guid; Url: Text[250]; WebClientUrl: Text[250])
+    begin
+    end;
+
+    [ExternalBusinessEvent('SalesShipmentPosted', 'Sales shipment posted', 'This business event is triggered when goods from a sales order are shipped by the internal warehouse/external logistics company. This can trigger Finance Department to post a sales invoice.', EventCategory::"Accounts Receivable", '1.0')]
+    procedure SalesShipmentPosted(SalesShipmentId: Guid; Url: Text[250]; WebClientUrl: Text[250])
     begin
     end;
 
@@ -52,52 +105,110 @@ Codeunit 38502 "AR External Events"
     var
         Blocked: enum "Customer Blocked";
         Url: Text[250];
+        WebClientUrl: Text[250];
         CustomerApiUrlTok: Label 'v2.0/companies(%1)/customers(%2)', Locked = true;
     begin
         Url := ExternalEventsHelper.CreateLink(CopyStr(CustomerApiUrlTok, 1, 250), Rec.SystemId);
+        WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Customer Card", Rec), 1, MaxStrLen(WebClientUrl));
 
-        if Rec.Blocked <> Blocked::" " then
-            CustomerBlocked(Rec.SystemId, Rec.Blocked, Url)
-        else
+#if not CLEAN23
+        if Rec.Blocked <> Blocked::" " then begin
+            CustomerBlocked(Rec.SystemId, Rec.Blocked, Url);
+            CustomerBlocked(Rec.SystemId, Rec.Blocked, Url, WebClientUrl);
+        end else begin
             CustomerUnBlocked(Rec.SystemId, Rec.Blocked, Url);
+            CustomerUnBlocked(Rec.SystemId, Rec.Blocked, Url, WebClientUrl);
+        end;
+#else
+        if Rec.Blocked <> Blocked::" " then
+            CustomerBlocked(Rec.SystemId, Rec.Blocked, Url, WebClientUrl)
+        else
+            CustomerUnBlocked(Rec.SystemId, Rec.Blocked, Url, WebClientUrl);
+#endif
     end;
 
+#if not CLEAN23
+    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
     [ExternalBusinessEvent('CustomerBlocked', 'Customer blocked', 'This business event is triggered when a customer is blocked for shipping/invoicing.', EventCategory::"Accounts Receivable")]
-    local procedure CustomerBlocked(CustomerId: Guid; Blocked: enum "Customer Blocked"; Url: text[250])
+    local procedure CustomerBlocked(CustomerId: Guid; Blocked: enum "Customer Blocked"; Url: Text[250])
     begin
     end;
 
+    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
     [ExternalBusinessEvent('CustomerUnBlocked', 'Customer unblocked', 'This business event is triggered when a customer is unblocked for shipping/invoicing.', EventCategory::"Accounts Receivable")]
-    local procedure CustomerUnBlocked(CustomerId: Guid; Blocked: enum "Customer Blocked"; Url: text[250])
+    local procedure CustomerUnBlocked(CustomerId: Guid; Blocked: enum "Customer Blocked"; Url: Text[250])
+    begin
+    end;
+#endif
+
+    [ExternalBusinessEvent('CustomerBlocked', 'Customer blocked', 'This business event is triggered when a customer is blocked for shipping/invoicing.', EventCategory::"Accounts Receivable", '1.0')]
+    local procedure CustomerBlocked(CustomerId: Guid; Blocked: enum "Customer Blocked"; Url: Text[250]; WebClientUrl: Text[250])
     begin
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterCustLedgEntryInsert', '', true, true)]
-    local procedure OnAfterCustLedgEntryInsert(var CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line"; DtldLedgEntryInserted: Boolean)
+    [ExternalBusinessEvent('CustomerUnBlocked', 'Customer unblocked', 'This business event is triggered when a customer is unblocked for shipping/invoicing.', EventCategory::"Accounts Receivable", '1.0')]
+    local procedure CustomerUnBlocked(CustomerId: Guid; Blocked: enum "Customer Blocked"; Url: Text[250]; WebClientUrl: Text[250])
+    begin
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterCustLedgEntryInsertInclPreviewMode', '', true, true)]
+    local procedure OnAfterCustLedgEntryInsertInclPreviewMode(var CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line"; DtldLedgEntryInserted: Boolean; PreviewMode: Boolean)
     var
         Customer: Record Customer;
         Url: Text[250];
+        WebClientUrl: Text[250];
         CustomerApiUrlTok: Label 'v2.0/companies(%1)/customers(%2)', Locked = true;
     begin
-        if not Customer.get(CustLedgerEntry."Customer No.") then
+        if not Customer.Get(CustLedgerEntry."Customer No.") then
+            exit;
+        if not PreviewMode then
             exit;
         Url := ExternalEventsHelper.CreateLink(CopyStr(CustomerApiUrlTok, 1, 250), Customer.SystemId);
-        if CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Payment then
+        WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Customer Card", Customer), 1, MaxStrLen(WebClientUrl));
+#if not CLEAN23
+        if CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Payment then begin
             EventSalesPaymentPosted(Customer.SystemId, Url);
+            EventSalesPaymentPosted(Customer.SystemId, Url, WebClientUrl);
+        end;
+#else
+        if CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Payment then
+            EventSalesPaymentPosted(Customer.SystemId, Url, WebClientUrl);
+#endif
         if Customer."Credit Limit (LCY)" <= 0 then
             exit;
         Customer.CalcFields("Balance (LCY)");
+#if not CLEAN23
+        if Customer."Balance (LCY)" > Customer."Credit Limit (LCY)" then begin
+            EventSalesCreditLimitExceeded(Customer.SystemId, Url);
+            EventSalesCreditLimitExceeded(Customer.SystemId, Url, WebClientUrl);
+        end;
+#else
         if Customer."Balance (LCY)" > Customer."Credit Limit (LCY)" then
-            EventSalesCreditLimitExceeded(Customer.SystemId, Url)
+            EventSalesCreditLimitExceeded(Customer.SystemId, Url, WebClientUrl)
+#endif
     end;
 
+#if not CLEAN23
+    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
     [ExternalBusinessEvent('SalesPaymentPosted', 'Sales payment posted', 'This business event is triggered when a customer payment is posted as part of the Quote to Cash process.', EventCategory::"Accounts Receivable")]
-    local procedure EventSalesPaymentPosted(CustomerId: Guid; Url: text[250])
+    local procedure EventSalesPaymentPosted(CustomerId: Guid; Url: Text[250])
     begin
     end;
 
+    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
     [ExternalBusinessEvent('SalesCreditLimitExceeded', 'Sales credit limit exceeded', 'This business event is triggered when the credit limit for a customer is exceeded due to a posted sales invoice/changed credit limit for that customer.', EventCategory::"Accounts Receivable")]
-    local procedure EventSalesCreditLimitExceeded(CustomerId: Guid; Url: text[250])
+    local procedure EventSalesCreditLimitExceeded(CustomerId: Guid; Url: Text[250])
+    begin
+    end;
+#endif
+
+    [ExternalBusinessEvent('SalesPaymentPosted', 'Sales payment posted', 'This business event is triggered when a customer payment is posted as part of the Quote to Cash process.', EventCategory::"Accounts Receivable", '1.0')]
+    local procedure EventSalesPaymentPosted(CustomerId: Guid; Url: Text[250]; WebClientUrl: Text[250])
+    begin
+    end;
+
+    [ExternalBusinessEvent('SalesCreditLimitExceeded', 'Sales credit limit exceeded', 'This business event is triggered when the credit limit for a customer is exceeded due to a posted sales invoice/changed credit limit for that customer.', EventCategory::"Accounts Receivable", '1.0')]
+    local procedure EventSalesCreditLimitExceeded(CustomerId: Guid; Url: Text[250]; WebClientUrl: Text[250])
     begin
     end;
 }

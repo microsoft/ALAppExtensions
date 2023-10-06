@@ -1,3 +1,13 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Foundation.Company;
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Email;
+using Microsoft.Purchases.Remittance;
+using Microsoft.Bank.Setup;
+
 codeunit 4022 "GP Vendor Migrator"
 {
     TableNo = "GP Vendor";
@@ -782,7 +792,10 @@ codeunit 4022 "GP Vendor Migrator"
             PayablesAccountNo := DefaultPayablesAccountNo;
     end;
 
+#if not CLEAN23
+    [Obsolete('Updated to use the OnMigrateVendorPostingGroups event subscriber.', '23.0')]
     procedure MigrateVendorClasses()
     begin
     end;
+#endif
 }

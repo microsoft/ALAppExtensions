@@ -1,3 +1,9 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+using System.Integration;
+using System.Text;
+
 codeunit 4016 "Hybrid GP Management"
 {
     var
@@ -11,7 +17,7 @@ codeunit 4016 "Hybrid GP Management"
         StartingHandleInitializationofGPSynchronizationTelemetryMsg: Label 'Starting HandleInitializationofGPSynchronization', Locked = true;
         StartingInstallGPSmartlistsTelemetryMsg: Label 'Starting Handle Initialization of GP Synchronization', Locked = true;
         UpgradeWasScheduledMsg: Label 'Upgrade was succesfully scheduled';
-        GPCloudMigrationDoesNotSupportNewUIErr: Label 'GP Cloud migration does not support the new UI';
+        GPCloudMigrationDoesNotSupportNewUIMsg: Label 'GP Cloud migration does not support the new UI, please switch back to the previous UI page.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnReplicationRunCompleted', '', false, false)]
     local procedure HandleGPOnReplicationRunCompleted(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
@@ -61,9 +67,9 @@ codeunit 4016 "Hybrid GP Management"
 
             // Wrapping these in if/then pairs to ensure backward-compatibility
             if j = 1 then
-                if (not JsonManagement.GetArrayPropertyValueAsStringByName('IncrementalTables', Value)) then EXIT;
+                if (not JsonManagement.GetArrayPropertyValueAsStringByName('IncrementalTables', Value)) then exit;
             if j = 2 then
-                if (not JsonManagement.GetArrayPropertyValueAsStringByName('GPHistoryTables', Value)) then EXIT;
+                if (not JsonManagement.GetArrayPropertyValueAsStringByName('GPHistoryTables', Value)) then exit;
             JsonManagement.InitializeCollection(Value);
             IncrementalTableCount := JsonManagement.GetCollectionCount();
 
@@ -224,7 +230,7 @@ codeunit 4016 "Hybrid GP Management"
         HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
         if HybridGPWizard.GetGPMigrationEnabled() then
-            Error(GPCloudMigrationDoesNotSupportNewUIErr);
+            Message(GPCloudMigrationDoesNotSupportNewUIMsg);
     end;
 
     procedure InvokeCompanyUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50])
@@ -246,7 +252,7 @@ codeunit 4016 "Hybrid GP Management"
             Session.StartSession(SesssionID, Codeunit::"GP Cloud Migration", CompanyName, HybridReplicationSummary, GetDefaultJobTimeout())
     end;
 
-    local procedure GetDefaultJobTimeout(): Duration
+    internal procedure GetDefaultJobTimeout(): Duration
     begin
         exit(48 * 60 * 60 * 1000); // 48 hours
     end;

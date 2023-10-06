@@ -253,7 +253,7 @@ codeunit 31236 "FA Acquisition Handler CZF"
         IsHandled := true;
     end;
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
     local procedure FAPostingTypeCustom2OnAfterCopyToGenJnlLineFAObsolete(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer")

@@ -27,7 +27,7 @@ pageextension 11798 "Acc. Schedule Overview CZL" extends "Acc. Schedule Overview
                     ApplicationArea = Suite;
                     Caption = 'Results';
                     Image = ViewDetails;
-                    RunObject = Page "Acc. Sched. Res. Hdr. List CZL";
+                    RunObject = page "Acc. Sched. Res. Hdr. List CZL";
                     RunPageLink = "Acc. Schedule Name" = field("Schedule Name");
                     ToolTip = 'Opens account schedule result header list';
                 }

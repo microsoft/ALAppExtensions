@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
 /// <summary>
 /// Codeunit to invoke document sharing flow.
 /// </summary>

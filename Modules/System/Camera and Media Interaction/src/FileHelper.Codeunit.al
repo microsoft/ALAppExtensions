@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Device;
+
+using System.Utilities;
+
 codeunit 1910 "File Helper"
 {
     Access = Internal;

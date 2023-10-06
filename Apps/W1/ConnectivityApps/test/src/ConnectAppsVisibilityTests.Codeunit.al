@@ -74,7 +74,7 @@ codeunit 139534 "Connect. Apps Visibility Tests"
         // [GIVEN] Banking Apps exist
         Initialize();
 
-        // [GIVEN] Country Code on Company Inormation is set to NL
+        // [GIVEN] Country Code on Company Information is set to NL
         CompanyInformation."Country/Region Code" := 'NL';
         CompanyInformation.Modify();
 

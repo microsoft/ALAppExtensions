@@ -1,7 +1,20 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Setup;
+using System.IO;
+using System.Utilities;
 
 codeunit 13636 "OIOUBL-Export Sales Invoice"
 {
@@ -53,7 +66,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
         SalesSetup.Get();
 
-        FileName := ElectronicDocumentFormat.GetAttachmentFileName(SalesInvoiceHeader."No.", 'Invoice', 'xml');
+        FileName := ElectronicDocumentFormat.GetAttachmentFileName(SalesInvoiceHeader, SalesInvoiceHeader."No.", 'Invoice', 'xml');
         OIOUBLManagement.UpdateRecordExportBuffer(SalesInvoiceHeader.RecordId(), TempBlob, FileName);
 
         OIOUBLManagement.ExportXMLFile(SalesInvoiceHeader."No.", TempBlob, SalesSetup."OIOUBL-Invoice Path", FileName);

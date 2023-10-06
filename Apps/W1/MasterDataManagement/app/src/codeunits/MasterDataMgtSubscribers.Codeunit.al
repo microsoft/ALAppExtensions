@@ -1,3 +1,22 @@
+namespace Microsoft.Integration.MDM;
+
+using System.Threading;
+using System.Telemetry;
+using System.Environment;
+using System.Reflection;
+using System.IO;
+using System.Environment.Configuration;
+using Microsoft.Integration.Dataverse;
+using Microsoft.CRM.Contact;
+using Microsoft.Sales.Customer;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.Purchases.Vendor;
+using Microsoft.CRM.Setup;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Inventory.Item;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Utilities;
+
 codeunit 7237 "Master Data Mgt. Subscribers"
 {
     Access = Internal;
@@ -333,6 +352,9 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeModifyRecord', '', false, false)]
     local procedure OnBeforeModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     begin
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
         RenameIfNeededOnBeforeModifyRecord(IntegrationTableMapping, SourceRecordRef, DestinationRecordRef);
     end;
 
@@ -344,6 +366,9 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         IsHandled: Boolean;
     begin
         if not MasterDataManagement.IsEnabled() then
+            exit;
+
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
             exit;
 
         MasterDataManagementSetup.Get();
@@ -514,6 +539,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         ContactBusinessRelation: Record "Contact Business Relation";
         Company: Record COmpany;
         LocalContact: Record Contact;
+        IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
     begin
         if not MasterDataManagement.IsEnabled() then
@@ -525,7 +551,17 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not Company.Get(MasterDataManagementSetup."Company Name") then
             exit;
 
-        ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name");
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Table ID", Database::Customer);
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::Customer);
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        if IntegrationTableMapping.IsEmpty() then
+            exit;
+
+        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+            exit;
+
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
         ContactBusinessRelation.SetRange("No.", Customer."No.");
         if ContactBusinessRelation.FindFirst() then
@@ -543,6 +579,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         ContactBusinessRelation: Record "Contact Business Relation";
         Company: Record COmpany;
         LocalContact: Record Contact;
+        IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
     begin
         if not MasterDataManagement.IsEnabled() then
@@ -554,7 +591,17 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not Company.Get(MasterDataManagementSetup."Company Name") then
             exit;
 
-        ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name");
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Table ID", Database::Vendor);
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::Vendor);
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        if IntegrationTableMapping.IsEmpty() then
+            exit;
+
+        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+            exit;
+
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Vendor);
         ContactBusinessRelation.SetRange("No.", Vendor."No.");
         if ContactBusinessRelation.FindFirst() then
@@ -572,6 +619,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         ContactBusinessRelation: Record "Contact Business Relation";
         Company: Record COmpany;
         LocalContact: Record Contact;
+        IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
     begin
         if not MasterDataManagement.IsEnabled() then
@@ -583,7 +631,17 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not Company.Get(MasterDataManagementSetup."Company Name") then
             exit;
 
-        ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name");
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Table ID", Database::"Bank Account");
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::"Bank Account");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        if IntegrationTableMapping.IsEmpty() then
+            exit;
+
+        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+            exit;
+
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::"Bank Account");
         ContactBusinessRelation.SetRange("No.", BankAccount."No.");
         if ContactBusinessRelation.FindFirst() then

@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Purchase;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Posting;
+
 codeunit 18082 "GST Vendor Ledger Entry"
 {
 
@@ -31,7 +44,7 @@ codeunit 18082 "GST Vendor Ledger Entry"
         end;
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
     local procedure CopyInfortoVendorEntry(var PurchHeader: Record "Purchase Header"; var GenJnlLine: Record "Gen. Journal Line")
     var
@@ -137,5 +150,5 @@ codeunit 18082 "GST Vendor Ledger Entry"
                     VendorLedgerEntry."GST Reverse Charge" := true
                 else
                     VendorLedgerEntry."GST Reverse Charge" := GenJournalLine."GST Group Type" = GenJournalLine."GST Group Type"::Service;
-    end; 
+    end;
 }

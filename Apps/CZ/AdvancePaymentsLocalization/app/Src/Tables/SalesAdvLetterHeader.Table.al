@@ -610,8 +610,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
             trigger OnValidate()
             var
-                ResponsibilityCenter: Record "Responsibility Center";
-                UserSetupManagement: Codeunit "User Setup Management";
                 IdentSetUpErr: Label 'Your identification is set up to process from %1 %2 only.', Comment = '%1 = Responsibility center table caption, %2 = Responsibility center filter';
             begin
                 TestStatusOpen();
@@ -679,6 +677,12 @@ table 31004 "Sales Adv. Letter Header CZZ"
         field(85; "Automatic Post VAT Document"; Boolean)
         {
             Caption = 'Automatic Post VAT Document';
+            DataClassification = CustomerContent;
+        }
+        field(96; "Format Region"; Text[80])
+        {
+            Caption = 'Format Region';
+            TableRelation = "Language Selection"."Language Tag";
             DataClassification = CustomerContent;
         }
 #pragma warning disable AA0232
@@ -791,6 +795,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         DocumentAttachment: Record "Document Attachment";
     begin
+        if not UserSetupManagement.CheckRespCenter(0, "Responsibility Center") then
+            Error(
+              DocumentDeleteErr,
+              ResponsibilityCenter.TableCaption(), UserSetupManagement.GetSalesFilter());
+
         SalesAdvLetterLineCZZ.SetRange("Document No.", "No.");
         if not SalesAdvLetterLineCZZ.IsEmpty() then
             SalesAdvLetterLineCZZ.DeleteAll(true);
@@ -820,6 +829,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         GeneralLedgerSetup: Record "General Ledger Setup";
         Customer: Record Customer;
         SalespersonPurchaser: Record "Salesperson/Purchaser";
+        ResponsibilityCenter: Record "Responsibility Center";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
@@ -834,6 +844,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         HasSalesSetup: Boolean;
         ConfirmChangeQst: Label 'Do you want to change %1?', Comment = '%1 = a Field Caption like Currency Code';
         DocumentResetErr: Label 'You cannot reset %1 because the document still has one or more lines.', Comment = '%1 = a Field Caption like Bill-to Contact No.';
+        DocumentDeleteErr: Label 'You cannot delete this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = table caption of responsibility center, %2 = code of responsibility center';
 
     procedure AssistEdit(): Boolean
     begin
@@ -1074,6 +1085,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         "VAT Registration No." := BillToCustomer."VAT Registration No.";
         "Currency Code" := BillToCustomer."Currency Code";
         "Language Code" := BillToCustomer."Language Code";
+        "Format Region" := BillToCustomer."Format Region";
         SetSalespersonCode(BillToCustomer."Salesperson Code", "Salesperson Code");
         "Registration No." := BillToCustomer.GetRegistrationNoTrimmedCZL();
         "Tax Registration No." := BillToCustomer."Tax Registration No. CZL";
@@ -1412,8 +1424,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
     procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
         OldDimSetID: Integer;
         IsHandled: Boolean;
     begin
@@ -1423,25 +1434,45 @@ table 31004 "Sales Adv. Letter Header CZZ"
             exit;
 
         SourceCodeSetup.Get();
-        TableID[1] := Type1;
-        No[1] := No1;
-        TableID[2] := Type2;
-        No[2] := No2;
-        TableID[3] := Type3;
-        No[3] := No3;
-        OnAfterCreateDimTableIDs(Rec, CurrFieldNo, TableID, No);
+        DimensionManagement.AddDimSource(DefaultDimSource, Type1, No1);
+        DimensionManagement.AddDimSource(DefaultDimSource, Type2, No2);
+        DimensionManagement.AddDimSource(DefaultDimSource, Type3, No3);
+        RunEventOnAfterCreateDimTableIDs(DefaultDimSource);
 
         "Shortcut Dimension 1 Code" := '';
         "Shortcut Dimension 2 Code" := '';
         OldDimSetID := "Dimension Set ID";
         "Dimension Set ID" :=
           DimensionManagement.GetRecDefaultDimID(
-            Rec, CurrFieldNo, TableID, No, SourceCodeSetup.Sales, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+            Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup.Sales, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
 
         if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
             Modify();
     end;
 
+    local procedure RunEventOnAfterCreateDimTableIDs(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    var
+        TableID: array[10] of Integer;
+        No: array[10] of Code[20];
+    begin
+        CreateDimTableIDs(DefaultDimSource, TableID, No);
+        OnAfterCreateDimTableIDs(Rec, CurrFieldNo, TableID, No);
+        CreateDefaultDimSourcesFromDimArray(DefaultDimSource, TableID, No);
+    end;
+
+    local procedure CreateDimTableIDs(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; var TableID: array[10] of Integer; var No: array[10] of Code[20])
+    var
+        DimArrayConversionHelper: Codeunit "Dim. Array Conversion Helper";
+    begin
+        DimArrayConversionHelper.CreateDimTableIDs(Database::"FA Journal Line", DefaultDimSource, TableID, No);
+    end;
+
+    local procedure CreateDefaultDimSourcesFromDimArray(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; TableID: array[10] of Integer; No: array[10] of Code[20])
+    var
+        DimArrayConversionHelper: Codeunit "Dim. Array Conversion Helper";
+    begin
+        DimArrayConversionHelper.CreateDefaultDimSourcesFromDimArray(Database::"FA Journal Line", DefaultDimSource, TableID, No);
+    end;
 #pragma warning restore AL0432
 #endif
     procedure CreateDimFromDefaultDim(FieldNo: Integer)
@@ -1481,6 +1512,22 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
         if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
             Modify();
+    end;
+
+    procedure SetSecurityFilterOnRespCenter()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeSetSecurityFilterOnRespCenter(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        if UserSetupManagement.GetSalesFilter() <> '' then begin
+            FilterGroup(2);
+            SetRange("Responsibility Center", UserSetupManagement.GetSalesFilter());
+            FilterGroup(0);
+        end;
     end;
 
     procedure TestStatusOpen()
@@ -1842,6 +1889,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeDoPrintToDocumentAttachment(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeSetSecurityFilterOnRespCenter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
     begin
     end;
 }

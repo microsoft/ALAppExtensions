@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4039 "GPIVTrxAmountsHist"
 {
     DataClassification = CustomerContent;

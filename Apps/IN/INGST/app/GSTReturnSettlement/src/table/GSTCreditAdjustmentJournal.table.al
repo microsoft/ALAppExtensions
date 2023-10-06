@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Purchases.Vendor;
+
 table 18318 "GST Credit Adjustment Journal"
 {
     Caption = 'GST Credit Adjustment Journal';
@@ -287,36 +299,6 @@ table 18318 "GST Credit Adjustment Journal"
             UpdateAllLineDim("Dimension Set ID", OldDimSetID);
         end;
     end;
-
-#if not CLEAN20
-    [Obsolete('Replaced by CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])', '20.0')]
-    procedure CreateDim(Type1: Integer; No1: Code[20])
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
-    begin
-        SourceCodeSetup.Get();
-        TableID[1] := Type1;
-        No[1] := No1;
-        "Shortcut Dimension 1 Code" := '';
-        "Shortcut Dimension 2 Code" := '';
-        "Dimension Set ID" :=
-          DimMgt.GetDefaultDimID(
-              TableID,
-              No,
-              SourceCodeSetup.Purchases,
-              "Shortcut Dimension 1 Code",
-              "Shortcut Dimension 2 Code",
-              "Dimension Set ID",
-              0);
-
-        DimMgt.UpdateGlobalDimFromDimSetID(
-            "Dimension Set ID",
-            "Shortcut Dimension 1 Code",
-            "Shortcut Dimension 2 Code");
-    end;
-#endif
 
     procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
     var

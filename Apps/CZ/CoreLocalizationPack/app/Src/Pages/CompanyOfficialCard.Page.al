@@ -227,7 +227,7 @@ page 11766 "Company Official Card CZL"
                     Promoted = true;
                     PromotedCategory = Category4;
                     PromotedOnly = true;
-                    RunObject = Page "Company Official Picture CZL";
+                    RunObject = page "Company Official Picture CZL";
                     RunPageLink = "No." = field("No.");
                     ToolTip = 'View or add a picture of the employee or, for example, the company''s logo.';
                 }

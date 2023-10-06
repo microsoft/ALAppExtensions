@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Functions;
+
+using System.Security.Authentication;
+using System.Utilities;
+using System.Telemetry;
+
 codeunit 7803 "Azure Functions Impl"
 {
     Access = Internal;

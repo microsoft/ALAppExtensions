@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 // See: https://go.microsoft.com/fwlink/?linkid=2210594
 codeunit 9051 "ABS Client Impl."
 {

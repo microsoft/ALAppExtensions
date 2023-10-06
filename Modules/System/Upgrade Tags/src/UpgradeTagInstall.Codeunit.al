@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Upgrade;
+
 #pragma warning disable AA0235
 codeunit 9993 "Upgrade Tag Install"
 #pragma warning restore AA0235

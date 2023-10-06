@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
 codeunit 3900 "Retention Period Impl." implements "Retention Period"
 {
     Access = Internal;
@@ -43,9 +45,9 @@ codeunit 3900 "Retention Period Impl." implements "Retention Period"
         end;
 
         if Translated then
-            Exit(Format(PeriodDateFormula, 0, 1))
+            exit(Format(PeriodDateFormula, 0, 1))
         else
-            Exit(Format(PeriodDateFormula, 0, 2))
+            exit(Format(PeriodDateFormula, 0, 2))
     end;
 
     procedure RetentionPeriodDateFormula(RetentionPeriod: Record "Retention Period"): Text
@@ -64,12 +66,12 @@ codeunit 3900 "Retention Period Impl." implements "Retention Period"
 
     procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"): Date
     begin
-        Exit(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), Today()))
+        exit(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), Today()))
     end;
 
     procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"; UseDate: Date): Date
     begin
-        Exit(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), UseDate))
+        exit(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), UseDate))
     end;
 
     procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"; UseDateTime: DateTime): DateTime
@@ -80,7 +82,7 @@ codeunit 3900 "Retention Period Impl." implements "Retention Period"
             UseTime := 235959.999T
         else
             UseTime := DT2Time(UseDateTime);
-        Exit(CreateDateTime(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), DT2Date(UseDateTime)), UseTime))
+        exit(CreateDateTime(CalcDate(RetentionPeriodDateFormula(RetentionPeriod), DT2Date(UseDateTime)), UseTime))
     end;
 
     procedure ValidateRetentionPeriodDateFormula(DateFormula: DateFormula)
@@ -94,12 +96,12 @@ codeunit 3900 "Retention Period Impl." implements "Retention Period"
 
     local procedure IsFutureDateFormula(DateFormula: DateFormula): Boolean
     begin
-        Exit(CalcDate(DateFormula, Today()) >= Yesterday());
+        exit(CalcDate(DateFormula, Today()) >= Yesterday());
     end;
 
     local procedure Yesterday(): Date
     begin
-        Exit(CalcDate('<-1D>', Today()))
+        exit(CalcDate('<-1D>', Today()))
     end;
 
     local procedure LogCategory(): Enum "Retention Policy Log Category"

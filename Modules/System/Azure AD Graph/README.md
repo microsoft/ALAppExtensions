@@ -1,7 +1,7 @@
-This module provides functionality for retrieving user and tenant information from Azure AD.
+This module provides functionality for retrieving user and tenant information from Microsoft Entra.
 
 Use this module to retrieve the following:
-- User information from Azure AD
+- User information from Microsoft Entra
 - A user's assigned plans
 - A user's roles
 - The list of subscriptions owned by the current tenant
@@ -16,12 +16,12 @@ Azure Active Directory Graph is being retired, and we recommend that you start u
 # Public Objects
 ## Azure AD Graph (Codeunit 9012)
 
- Exposes functionality to query Azure AD.
+ Exposes functionality to query Microsoft Entra.
  
 
 ### GetUser (Method) <a name="GetUser"></a> 
 
- Gets the user with the specified user principal name from Azure AD.
+ Gets the user with the specified user principal name from Microsoft Entra.
  
 
 #### Syntax
@@ -41,7 +41,7 @@ The user to return.
 
 ### GetCurrentUser (Method) <a name="GetCurrentUser"></a> 
 
- Gets the current user from Azure AD.
+ Gets the current user from Microsoft Entra.
  
 
 #### Syntax
@@ -57,7 +57,7 @@ The user to return.
 
 ### GetUserByAuthorizationEmail (Method) <a name="GetUserByAuthorizationEmail"></a> 
 
- Gets the user with the specified authorization email from Azure AD.
+ Gets the user with the specified authorization email from Microsoft Entra.
  
 
 #### Syntax
@@ -77,7 +77,7 @@ The user to return.
 
 ### GetUserByObjectId (Method) <a name="GetUserByObjectId"></a> 
 
- Gets the user with the specified object ID from Azure AD.
+ Gets the user with the specified object ID from Microsoft Entra.
  
 
 #### Syntax
@@ -97,7 +97,7 @@ The user to return.
 
 ### TryGetUserByObjectId (Method) <a name="TryGetUserByObjectId"></a> 
 
- Tries to return the user with the specified object ID from Azure AD.
+ Tries to return the user with the specified object ID from Microsoft Entra.
  
 
 #### Syntax
@@ -121,7 +121,7 @@ The user to return.
 A boolean that indicates whether the user was retrieved.
 ### GetUserAssignedPlans (Method) <a name="GetUserAssignedPlans"></a> 
 
- Gets the assigned plans for the specified user from Azure AD.
+ Gets the assigned plans for the specified user from Microsoft Entra.
  
 
 If the provided user is null, the output parameter holding the assigned plans remains unchanged.
@@ -143,7 +143,7 @@ The assigned plans for the user.
 
 ### GetUserRoles (Method) <a name="GetUserRoles"></a> 
 
- Gets the roles assigned to the user from Azure AD.
+ Gets the roles assigned to the user from Microsoft Entra.
  
 
 If the provided user is null, the output parameter holding the user roles remains unchanged.
@@ -181,7 +181,7 @@ The list of subscriptions to return.
 
 ### GetDirectoryRoles (Method) <a name="GetDirectoryRoles"></a> 
 
- Gets the directory roles from Azure AD.
+ Gets the directory roles from Microsoft Entra.
  
 
 #### Syntax
@@ -197,7 +197,7 @@ The directory roles to return.
 
 ### GetTenantDetail (Method) <a name="GetTenantDetail"></a> 
 
- Gets details about the tenant from Azure AD.
+ Gets details about the tenant from Microsoft Entra.
  
 
 #### Syntax

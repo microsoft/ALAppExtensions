@@ -1,14 +1,8 @@
 table 1085 "MS - Wallet Payment"
 {
-#if not CLEAN20
-    ObsoleteState = Pending;
-    ObsoleteReason = 'MS Wallet have been deprecated';
-    ObsoleteTag = '20.0';
-#else
     ObsoleteState = Removed;
     ObsoleteReason = 'MS Wallet have been deprecated';
     ObsoleteTag = '23.0';
-#endif
     ReplicateData = false;
 
     fields

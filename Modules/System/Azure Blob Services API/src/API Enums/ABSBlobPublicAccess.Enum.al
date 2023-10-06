@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 /// <summary>
 /// Indicator of whether data in the container may be accessed publicly and the level of access.
 /// </summary>

@@ -1,3 +1,22 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Reports;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Distribution;
+using Microsoft.Finance.GST.Payments;
+using Microsoft.Finance.GST.ReturnSettlement;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using System.Utilities;
+
 report 18042 "GSTR-3B"
 {
     DefaultLayout = RDLC;
@@ -561,7 +580,7 @@ report 18042 "GSTR-3B"
 
                 Month := Date2DMY(PeriodDate, 2) - 1;
                 Year := Format(Date2DMY(PeriodDate, 3));
-                StartingDate := CalcDate('<CM-1M+1D>', PeriodDate);
+                StartingDate := CalcDate('<-CM>', PeriodDate);
                 EndingDate := CalcDate('<CM>', PeriodDate);
                 CompanyInformation.Get();
                 CalculateValues();
@@ -934,7 +953,7 @@ report 18042 "GSTR-3B"
         CESSLbl: Label 'Cess', Locked = true;
         CESSCompLbl: Label 'CESS', Locked = true;
         InstructionsLbl: Label 'Instructions:', Locked = true;
-        Instruction1Lbl: Label '1) Value of Taxable Supplies = Value of invoices + value of Debit Notes – value of credit Notes + value of advances received for which invoices have not been issued in the same month – value of advances adjusted against invoices.', Locked = true;
+        Instruction1Lbl: Label '1) Value of Taxable Supplies = Value of invoices + value of Debit Notes â€“ value of credit Notes + value of advances received for which invoices have not been issued in the same month â€“ value of advances adjusted against invoices.', Locked = true;
         Instruction2Lbl: Label '2) Details of advances as well as adjustment of same against invoices to be adjusted and not shown separately.', Locked = true;
         Instruction3Lbl: Label '3) Amendment in any details to be adjusted and not shown separately.', Locked = true;
 

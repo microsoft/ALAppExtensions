@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 entitlement "Delegated Admin agent - Partner COHUB"
 {
     Type = Role;

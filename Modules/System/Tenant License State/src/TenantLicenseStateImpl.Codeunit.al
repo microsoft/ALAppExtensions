@@ -1,7 +1,12 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Environment;
+
+using System.Telemetry;
+using System.Security.AccessControl;
 
 codeunit 2301 "Tenant License State Impl."
 {

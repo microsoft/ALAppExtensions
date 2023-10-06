@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Functions;
+
+using System.Utilities;
+
 codeunit 7801 "Azure Functions Code Auth" implements "Azure Functions Authentication"
 {
     Access = Internal;

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSOnReceipt;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TCS.TCSBase;
+
 codeunit 18900 "Pay-TCS"
 {
     procedure PayTCS(var GenJournalLine: Record "Gen. Journal Line")

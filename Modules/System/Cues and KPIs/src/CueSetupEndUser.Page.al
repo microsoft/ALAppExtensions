@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
 /// <summary>
 /// List page that contains settings that define the appearance of cues for the current user and page.
 /// </summary>
@@ -23,7 +25,7 @@ page 9702 "Cue Setup End User"
         {
             repeater(Group)
             {
-                field("Field Name"; "Field Name")
+                field("Field Name"; Rec."Field Name")
                 {
                     ApplicationArea = All;
                     Editable = false;
@@ -32,10 +34,10 @@ page 9702 "Cue Setup End User"
 
                     trigger OnValidate()
                     begin
-                        Personalized := true;
+                        Rec.Personalized := true;
                     end;
                 }
-                field("Low Range Style"; "Low Range Style")
+                field("Low Range Style"; Rec."Low Range Style")
                 {
                     ApplicationArea = All;
                     StyleExpr = LowRangeStyleExpr;
@@ -43,21 +45,21 @@ page 9702 "Cue Setup End User"
 
                     trigger OnValidate()
                     begin
-                        LowRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("Low Range Style");
-                        Personalized := true;
+                        LowRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."Low Range Style");
+                        Rec.Personalized := true;
                     end;
                 }
-                field("Threshold 1"; "Threshold 1")
+                field("Threshold 1"; Rec."Threshold 1")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value in the Cue below which the indicator has the color that is specified by the Low Range Style field.';
 
                     trigger OnValidate()
                     begin
-                        Personalized := true;
+                        Rec.Personalized := true;
                     end;
                 }
-                field("Middle Range Style"; "Middle Range Style")
+                field("Middle Range Style"; Rec."Middle Range Style")
                 {
                     ApplicationArea = All;
                     StyleExpr = MiddleRangeStyleExpr;
@@ -65,21 +67,21 @@ page 9702 "Cue Setup End User"
 
                     trigger OnValidate()
                     begin
-                        MiddleRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("Middle Range Style");
-                        Personalized := true;
+                        MiddleRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."Middle Range Style");
+                        Rec.Personalized := true;
                     end;
                 }
-                field("Threshold 2"; "Threshold 2")
+                field("Threshold 2"; Rec."Threshold 2")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value in the Cue above which the indicator has the color that is specified by the High Range Style field.';
 
                     trigger OnValidate()
                     begin
-                        Personalized := true;
+                        Rec.Personalized := true;
                     end;
                 }
-                field("High Range Style"; "High Range Style")
+                field("High Range Style"; Rec."High Range Style")
                 {
                     ApplicationArea = All;
                     StyleExpr = HighRangeStyleExpr;
@@ -87,11 +89,11 @@ page 9702 "Cue Setup End User"
 
                     trigger OnValidate()
                     begin
-                        HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("High Range Style");
-                        Personalized := true;
+                        HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."High Range Style");
+                        Rec.Personalized := true;
                     end;
                 }
-                field(Personalized; Personalized)
+                field(Personalized; Rec.Personalized)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether the colored indicator settings for the Cue have been modified to differ from the company default settings. You also use this field to revert to the default settings.';
@@ -138,8 +140,9 @@ page 9702 "Cue Setup End User"
 
     local procedure UpdateThresholdStyles()
     begin
-        LowRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("Low Range Style");
-        MiddleRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("Middle Range Style");
-        HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("High Range Style");
+        LowRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."Low Range Style");
+        MiddleRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."Middle Range Style");
+        HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."High Range Style");
     end;
 }
+

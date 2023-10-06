@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4035 "GPIVBinQtyTransferHist"
 {
     DataClassification = CustomerContent;

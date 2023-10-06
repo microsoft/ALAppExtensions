@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 table 4010 "Intelligent Cloud Table Status"
 {
     DataPerCompany = false;

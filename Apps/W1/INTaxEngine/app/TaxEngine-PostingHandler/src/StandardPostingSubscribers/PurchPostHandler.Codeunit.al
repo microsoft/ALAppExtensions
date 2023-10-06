@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.PostingHandler;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Posting;
+
 codeunit 20335 "Purch.-Post Handler"
 {
 
@@ -119,7 +132,7 @@ codeunit 20335 "Purch.-Post Handler"
             Currency."Amount Rounding Precision");
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
     local procedure OnBeforePostVendorEntry(
         var GenJnlLine: Record "Gen. Journal Line";

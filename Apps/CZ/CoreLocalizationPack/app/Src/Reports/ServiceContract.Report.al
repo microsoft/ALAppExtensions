@@ -60,7 +60,7 @@ report 31196 "Service Contract CZL"
         }
         dataitem("Service Contract Header"; "Service Contract Header")
         {
-            DataItemTableView = sorting("Contract Type", "Contract No.") WHERE("Contract Type" = CONST(Contract));
+            DataItemTableView = sorting("Contract Type", "Contract No.") where("Contract Type" = const(Contract));
             RequestFilterFields = "Contract No.", "Customer No.";
             column(DocumentLbl; DocumentLbl)
             {
@@ -271,7 +271,7 @@ report 31196 "Service Contract CZL"
                     dataitem("Service Comment Line"; "Service Comment Line")
                     {
                         DataItemLink = "Table Subtype" = field("Contract Type"), "Table Line No." = field("Line No."), "No." = field("Contract No.");
-                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") WHERE("Table Name" = FILTER("Service Contract"));
+                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") where("Table Name" = filter("Service Contract"));
                         column(Date_ServiceCommentLine; Date)
                         {
                         }
@@ -314,7 +314,8 @@ report 31196 "Service Contract CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddress.ServContractSellto(CustAddr, "Service Contract Header");
                 FormatAddress.ServContractShipto(ShipToAddr, "Service Contract Header");
@@ -377,7 +378,7 @@ report 31196 "Service Contract CZL"
 
     var
         Customer: Record Customer;
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
@@ -388,7 +389,6 @@ report 31196 "Service Contract CZL"
         NoOfCopies: Integer;
         NoOfLoops: Integer;
         LogInteraction: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Service Contract';
         PageLbl: Label 'Page';
@@ -409,7 +409,7 @@ report 31196 "Service Contract CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(23) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Service Contract") <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 codeunit 20234 "Tax Attribute Management"
 {
     procedure GetAttributeName(AttributeID: Integer): Text[30];
@@ -25,32 +31,6 @@ codeunit 20234 "Tax Attribute Management"
             Value := AttributeValue.Value;
     end;
 
-#if not CLEAN20
-    [Obsolete('Replaced by GetTaxRateAttributeLookupValue function with TaxTypeCode parameter.', '20.0')]
-    procedure GetTaxRateAttributeLookupValue(AttributeName: Text; var Value: Text): Boolean
-    var
-        TaxRateSetup: Record "Tax Rate Column Setup";
-        OldValue: Text;
-        AttributeID: Integer;
-    begin
-        OldValue := Value;
-        TaxRateSetup.SetRange("Column Name", AttributeName);
-        TaxRateSetup.FindFirst();
-
-        ValidateTaxRateSetup(TaxRateSetup);
-
-        if TaxRateSetup."Linked Attribute ID" <> 0 then
-            AttributeID := TaxRateSetup."Linked Attribute ID";
-
-        if TaxRateSetup."Attribute ID" <> 0 then
-            AttributeID := TaxRateSetup."Attribute ID";
-
-        if AttributeID <> 0 then
-            ManageAttributeLookup(AttributeID, Value);
-
-        exit(OldValue <> Value);
-    end;
-#endif
     procedure GetTaxRateAttributeLookupValue(TaxTypeCode: Code[20]; AttributeName: Text; var Value: Text): Boolean
     var
         TaxRateSetup: Record "Tax Rate Column Setup";

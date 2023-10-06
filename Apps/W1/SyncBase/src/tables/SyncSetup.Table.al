@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.SyncBase;
+
 table 2400 "Sync Setup"
 {
     Caption = 'Sync Setup';

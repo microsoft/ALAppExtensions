@@ -3,9 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 permissionset 89 "Permissions & Licenses - Edit"
 {
-    Assignable = False;
+    Assignable = false;
 
     IncludedPermissionSets = "Permissions & Licenses - Read";
 

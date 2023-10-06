@@ -343,9 +343,9 @@ codeunit 139661 "GP Account Tests"
     var
         GPAccountMigrator: Codeunit "GP Account Migrator";
     begin
-        GPAccountMigrator.OnMigrateGlAccount(GLAccDataMigrationFacade, GPAccount.RecordId());
-        GPAccountMigrator.OnCreateOpeningBalanceTrx(GLAccDataMigrationFacade, GPAccount.RecordId);
-        GPAccountMigrator.OnMigrateAccountTransactions(GLAccDataMigrationFacade, GPAccount.RecordId());
+        GPAccountMigrator.MigrateAccountDetails(GPAccount, GLAccDataMigrationFacade);
+        GPAccountMigrator.CreateBeginningBalance(GPAccount);
+        GPAccountMigrator.GenerateGLTransactionBatches(GPAccount);
     end;
 
     local procedure CreateAccountData(var GPAccount: Record "GP Account")

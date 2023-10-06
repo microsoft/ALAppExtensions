@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Security.AccessControl;
+
+using System.Security.AccessControl;
+using System.TestLibraries.Reflection;
+using System.TestLibraries.Utilities;
+
 codeunit 132439 "Copy Permission Sets Tests"
 {
     // [FEATURE] [Permission Sets] [UT]

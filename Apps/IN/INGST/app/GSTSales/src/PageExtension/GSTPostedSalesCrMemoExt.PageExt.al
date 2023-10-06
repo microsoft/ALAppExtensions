@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.History;
+
+using Microsoft.Finance.GST.Sales;
+
 pageextension 18143 "GST Posted Sales Cr. Memo Ext" extends "Posted Sales Credit Memo"
 {
     layout
@@ -259,6 +267,6 @@ pageextension 18143 "GST Posted Sales Cr. Memo Ext" extends "Posted Sales Credit
         eInvoiceNonGSTTransactionErr: Label 'E-Invoicing is not applicable for Non-GST Transactions.';
         eInvoiceNotApplicableCustomerErr: Label 'E-Invoicing is not applicable for Unregistered, Export and Deemed Export Customers.';
 #if not CLEAN23        
-        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id';
+        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use â€˜E-Comm. Merchant Id';
 #endif
 }

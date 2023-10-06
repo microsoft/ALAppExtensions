@@ -26,7 +26,7 @@ codeunit 139536 "Test First Party Signals"
         SignalEntryTrueErr: Label 'Onboarding Signal Entry should be True after its criteria has been met', Locked = true;
         Counter: Integer;
     begin
-        // [Scenario] After First party onboarding signal entries have been inserted
+        // [Scenario] After First party onboarding signal entries have been inserted, test if those signals are acting as expected
         Initialize();
         RegisterFirstPartySignals.RegisterFirstPartySignals();
 

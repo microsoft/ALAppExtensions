@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 /// <summary>
 /// Holder object for holding for ABS client operations result.
 /// </summary>

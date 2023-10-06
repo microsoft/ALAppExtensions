@@ -2,7 +2,7 @@
     "id":  "87990153-0e35-4e5d-ba61-2e93077d1699",
     "name":  "_Exclude_Review_General_Ledger_Entries",
     "publisher":  "Microsoft",
-    "version":  "22.5.0.0",
+    "version":  "23.0.0.0",
     "brief":  "_Exclude_Review_General_Ledger_Entries",
     "description":  "_Exclude_Review_General_Ledger_Entries",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -17,14 +17,13 @@
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
-    "application":  "22.5.0.0",
+    "platform":  "23.0.0.0",
+    "application":  "23.0.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "runtime":  "11.0",
     "features":  [
                      "NoImplicitWith"
                  ],

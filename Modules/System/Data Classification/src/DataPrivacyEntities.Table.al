@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Privacy;
+
+using System.Reflection;
 
 /// <summary>
 /// Displays a list of data privacy entities.
@@ -10,6 +14,8 @@ table 1180 "Data Privacy Entities"
 {
     Access = Public;
     Caption = 'Data Subjects';
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     fields
     {
@@ -18,12 +24,9 @@ table 1180 "Data Privacy Entities"
             Caption = 'Table No.';
             DataClassification = SystemMetadata;
         }
-#pragma warning disable AL0685
         field(2; "Table Caption"; Text[80])
-#pragma warning restore AL0685
         {
-            CalcFormula = Lookup(AllObjWithCaption."Object Caption" WHERE("Object Type" = CONST(Table),
-                                                                           "Object ID" = FIELD("Table No.")));
+            CalcFormula = lookup("Table Metadata".Caption where(ID = field("Table No.")));
             Caption = 'Table Caption';
             FieldClass = FlowField;
         }
@@ -34,8 +37,8 @@ table 1180 "Data Privacy Entities"
         }
         field(4; "Key Field Name"; Text[30])
         {
-            CalcFormula = Lookup(Field.FieldName WHERE(TableNo = FIELD("Table No."),
-                                                        "No." = FIELD("Key Field No.")));
+            CalcFormula = lookup(Field.FieldName where(TableNo = field("Table No."),
+                                                        "No." = field("Key Field No.")));
             Caption = 'Key Field Name';
             FieldClass = FlowField;
         }
@@ -46,28 +49,32 @@ table 1180 "Data Privacy Entities"
         }
         field(6; Include; Boolean)
         {
+            DataClassification = CustomerContent;
             Caption = 'Include';
         }
         field(7; "Fields"; Integer)
         {
-            CalcFormula = Count(Field WHERE(TableNo = FIELD("Table No."),
-                                             Enabled = CONST(true),
-                                             Class = CONST(Normal)));
+            CalcFormula = count(Field where(TableNo = field("Table No."),
+                                             Enabled = const(true),
+                                             Class = const(Normal)));
             Caption = 'Fields';
             FieldClass = FlowField;
         }
         field(8; Status; Option)
         {
+            DataClassification = CustomerContent;
             Caption = 'Status';
             OptionCaption = 'Review Needed,Reviewed';
             OptionMembers = "Review Needed",Reviewed;
         }
         field(9; Reviewed; Boolean)
         {
+            DataClassification = CustomerContent;
             Caption = 'Reviewed';
         }
         field(10; "Status 2"; Option)
         {
+            DataClassification = CustomerContent;
             Caption = 'Status 2';
             OptionCaption = 'Review Needed,Reviewed';
             OptionMembers = "Review Needed",Reviewed;
@@ -79,14 +86,17 @@ table 1180 "Data Privacy Entities"
         }
         field(12; "Similar Fields Reviewed"; Boolean)
         {
+            DataClassification = CustomerContent;
             Caption = 'Similar Fields Reviewed';
         }
         field(13; "Similar Fields Label"; Text[120])
         {
+            DataClassification = CustomerContent;
             Caption = 'Similar Fields Label';
         }
         field(14; "Default Data Sensitivity"; Option)
         {
+            DataClassification = CustomerContent;
             Caption = 'Default Data Sensitivity';
             OptionCaption = 'Unclassified,Sensitive,Personal,Company Confidential,Normal';
             OptionMembers = Unclassified,Sensitive,Personal,"Company Confidential",Normal;

@@ -1,7 +1,7 @@
 report 11750 "Posted Inventory Shipment CZL"
 {
-    Permissions = TableData "Invt. Shipment Header" = r,
-                  TableData "Invt. Shipment Line" = r;
+    Permissions = tabledata "Invt. Shipment Header" = r,
+                  tabledata "Invt. Shipment Line" = r;
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/PostedInventoryShipment.rdl';
     ApplicationArea = Basic, Suite;
@@ -107,7 +107,8 @@ report 11750 "Posted Inventory Shipment CZL"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 if not IsReportInPreviewMode() then
                     Codeunit.Run(Codeunit::"Posted Invt. Shpt.-Printed CZL", "Invt. Shipment Header");
@@ -127,7 +128,7 @@ report 11750 "Posted Inventory Shipment CZL"
 
     var
         FormatAddress: Codeunit "Format Address";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         CompanyAddr: array[8] of Text[100];
 
     local procedure GetItemDescription(ItemNo: Code[20]) Description: Text[100]

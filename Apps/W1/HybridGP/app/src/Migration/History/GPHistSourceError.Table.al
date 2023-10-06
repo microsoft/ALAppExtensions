@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration.GP.HistoricalData;
+
 table 41005 "GP Hist. Source Error"
 {
     Caption = 'GP Hist. Source Error';

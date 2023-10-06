@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+
 page 20022 "APIV1 - Dimension Lines"
 {
     APIVersion = 'v1.0';
@@ -16,41 +21,41 @@ page 20022 "APIV1 - Dimension Lines"
         {
             repeater(Group)
             {
-                field(parentId; "Parent Id")
+                field(parentId; Rec."Parent Id")
                 {
                     Caption = 'parentId', Locked = true;
                 }
-                field(id; "Dimension Id")
+                field(id; Rec."Dimension Id")
                 {
                     Caption = 'id', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        IF NOT GlobalDimension.GetBySystemId("Dimension Id") THEN
-                            ERROR(DimensionIdDoesNotMatchADimensionErr);
+                        if not GlobalDimension.GetBySystemId(Rec."Dimension Id") then
+                            error(DimensionIdDoesNotMatchADimensionErr);
 
-                        "Dimension Code" := GlobalDimension.Code;
+                        Rec."Dimension Code" := GlobalDimension.Code;
                     end;
                 }
-                field("code"; "Dimension Code")
+                field("code"; Rec."Dimension Code")
                 {
                     Caption = 'code', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        IF GlobalDimension.Code <> '' THEN BEGIN
-                            IF GlobalDimension.Code <> "Dimension Code" THEN
-                                ERROR(DimensionFieldsDontMatchErr);
-                            EXIT;
-                        END;
+                        if GlobalDimension.Code <> '' then begin
+                            if GlobalDimension.Code <> Rec."Dimension Code" then
+                                error(DimensionFieldsDontMatchErr);
+                            exit;
+                        end;
 
-                        IF NOT GlobalDimension.GET("Dimension Code") THEN
-                            ERROR(DimensionCodeDoesNotMatchADimensionErr);
+                        if not GlobalDimension.GET(Rec."Dimension Code") then
+                            error(DimensionCodeDoesNotMatchADimensionErr);
 
-                        "Dimension Id" := GlobalDimension.SystemId;
+                        Rec."Dimension Id" := GlobalDimension.SystemId;
                     end;
                 }
-                field(displayName; "Dimension Name")
+                field(displayName; Rec."Dimension Name")
                 {
                     Caption = 'displayName', Locked = true;
                 }
@@ -61,8 +66,8 @@ page 20022 "APIV1 - Dimension Lines"
 
                     trigger OnValidate()
                     begin
-                        IF NOT GlobalDimensionValue.GetBySystemId(GlobalDimensionValueId) THEN
-                            ERROR(DimensionValueIdDoesNotMatchADimensionValueErr);
+                        if not GlobalDimensionValue.GetBySystemId(GlobalDimensionValueId) then
+                            error(DimensionValueIdDoesNotMatchADimensionValueErr);
 
                         GlobalDimensionValueCode := GlobalDimensionValue.Code;
                     end;
@@ -74,19 +79,19 @@ page 20022 "APIV1 - Dimension Lines"
 
                     trigger OnValidate()
                     begin
-                        IF GlobalDimensionValue.Code <> '' THEN BEGIN
-                            IF GlobalDimensionValue.Code <> GlobalDimensionValueCode THEN
-                                ERROR(DimensionValueFieldsDontMatchErr);
-                            EXIT;
-                        END;
+                        if GlobalDimensionValue.Code <> '' then begin
+                            if GlobalDimensionValue.Code <> GlobalDimensionValueCode then
+                                error(DimensionValueFieldsDontMatchErr);
+                            exit;
+                        end;
 
-                        IF NOT GlobalDimensionValue.GET("Dimension Code", GlobalDimensionValueCode) THEN
-                            ERROR(DimensionValueCodeDoesNotMatchADimensionValueErr);
+                        if not GlobalDimensionValue.GET(Rec."Dimension Code", GlobalDimensionValueCode) then
+                            error(DimensionValueCodeDoesNotMatchADimensionValueErr);
 
                         GlobalDimensionValueId := GlobalDimensionValue.SystemId;
                     end;
                 }
-                field(valueDisplayName; "Dimension Value Name")
+                field(valueDisplayName; Rec."Dimension Value Name")
                 {
                     Caption = 'valueDisplayName', Locked = true;
                 }
@@ -105,19 +110,19 @@ page 20022 "APIV1 - Dimension Lines"
 
     trigger OnDeleteRecord(): Boolean
     begin
-        DELETE(TRUE);
+        Rec.DELETE(true);
         SaveDimensions();
-        EXIT(FALSE);
+        exit(false);
     end;
 
     trigger OnFindRecord(Which: Text): Boolean
     var
         ParentIdFilter: Text;
     begin
-        ParentIdFilter := GETFILTER("Parent Id");
-        IF ParentIdFilter = '' THEN
-            ERROR(ParentIDNotSpecifiedErr);
-        EXIT(LoadLinesFromFilter(ParentIdFilter));
+        ParentIdFilter := Rec.GetFilter("Parent Id");
+        if ParentIdFilter = '' then
+            error(ParentIDNotSpecifiedErr);
+        exit(LoadLinesFromFilter(ParentIdFilter));
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
@@ -125,42 +130,42 @@ page 20022 "APIV1 - Dimension Lines"
         DimensionId: Guid;
         BlankGUID: Guid;
     begin
-        IF "Parent Id" = BlankGUID THEN
-            ERROR(ParentIDRequiredErr);
+        if Rec."Parent Id" = BlankGUID then
+            error(ParentIDRequiredErr);
 
         CheckIfValuesAreProperlyFilled();
         AssignDimensionValueToRecord();
 
-        DimensionId := "Dimension Id";
-        INSERT(TRUE);
+        DimensionId := Rec."Dimension Id";
+        Rec.insert(true);
 
-        LoadLinesFromFilter("Parent Id");
+        LoadLinesFromFilter(Rec."Parent Id");
         SaveDimensions();
 
-        LoadLinesFromFilter("Parent Id");
-        GET("Parent Id", DimensionId);
+        LoadLinesFromFilter(Rec."Parent Id");
+        Rec.GET(Rec."Parent Id", DimensionId);
         SetCalculatedFields();
 
-        EXIT(FALSE);
+        exit(false);
     end;
 
     trigger OnModifyRecord(): Boolean
     var
         DimensionId: Guid;
     begin
-        EVALUATE(DimensionId, GETFILTER("Dimension Id"));
-        IF "Dimension Id" <> DimensionId THEN
-            ERROR(IdAndCodeCannotBeModifiedErr);
+        EVALUATE(DimensionId, Rec.GetFilter("Dimension Id"));
+        if Rec."Dimension Id" <> DimensionId then
+            error(IdAndCodeCannotBeModifiedErr);
 
         AssignDimensionValueToRecord();
-        MODIFY(TRUE);
+        Rec.Modify(true);
 
         SaveDimensions();
-        LoadLinesFromFilter(GETFILTER("Parent Id"));
-        GET("Parent Id", DimensionId);
+        LoadLinesFromFilter(Rec.GetFilter("Parent Id"));
+        Rec.GET(Rec."Parent Id", DimensionId);
         SetCalculatedFields();
 
-        EXIT(FALSE);
+        exit(false);
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -191,16 +196,16 @@ page 20022 "APIV1 - Dimension Lines"
     var
         FilterView: Text;
     begin
-        IF NOT LinesLoaded THEN BEGIN
-            FilterView := GETVIEW();
+        if not LinesLoaded then begin
+            FilterView := Rec.GetView();
             LoadLinesFromId(ParentIdFilter);
-            SETVIEW(FilterView);
-            IF NOT FINDFIRST() THEN
-                EXIT(FALSE);
-            LinesLoaded := TRUE;
-        END;
+            Rec.SETVIEW(FilterView);
+            if not Rec.FINDFIRST() then
+                exit(false);
+            LinesLoaded := true;
+        end;
 
-        EXIT(TRUE);
+        exit(true);
     end;
 
     local procedure LoadLinesFromId(IntegrationId: Text)
@@ -210,21 +215,21 @@ page 20022 "APIV1 - Dimension Lines"
         DimensionSetId: Integer;
     begin
         DimensionSetId := GetSetId(IntegrationId);
-        IF DimensionSetId = 0 THEN
-            EXIT;
+        if DimensionSetId = 0 then
+            exit;
 
-        TempDimensionSetEntry.SETAUTOCALCFIELDS("Dimension Name", "Dimension Value Name");
+        TempDimensionSetEntry.SETAUTOCALCfieldS("Dimension Name", "Dimension Value Name");
         DimensionManagement.GetDimensionSet(TempDimensionSetEntry, DimensionSetId);
 
-        IF NOT TempDimensionSetEntry.FIND('-') THEN
-            EXIT;
+        if not TempDimensionSetEntry.FIND('-') then
+            exit;
 
-        REPEAT
+        repeat
             CLEAR(Rec);
-            TRANSFERFIELDS(TempDimensionSetEntry, TRUE);
-            "Parent Id" := IntegrationId;
-            INSERT(TRUE);
-        UNTIL TempDimensionSetEntry.NEXT() = 0;
+            Rec.TransferFields(TempDimensionSetEntry, true);
+            Rec."Parent Id" := IntegrationId;
+            Rec.insert(true);
+        until TempDimensionSetEntry.NEXT() = 0;
     end;
 
     local procedure GetSetId(IntegrationId: Text): Integer
@@ -244,49 +249,49 @@ page 20022 "APIV1 - Dimension Lines"
         DimensionManagement: Codeunit "DimensionManagement";
         ParentSystemId: Guid;
     begin
-        ParentSystemId := "Parent Id";
+        ParentSystemId := Rec."Parent Id";
 
-        RESET();
-        IF FINDFIRST() THEN
-            REPEAT
-                TempDimensionSetEntry.TRANSFERFIELDS(Rec, TRUE);
+        Rec.RESET();
+        if Rec.FINDFIRST() then
+            repeat
+                TempDimensionSetEntry.TransferFields(Rec, true);
                 TempDimensionSetEntry."Dimension Set ID" := 0;
-                TempDimensionSetEntry.INSERT(TRUE);
-            UNTIL NEXT() = 0;
+                TempDimensionSetEntry.insert(true);
+            until Rec.NEXT() = 0;
 
-        IF GenJournalLine.GetBySystemId(ParentSystemId) THEN BEGIN
+        if GenJournalLine.GetBySystemId(ParentSystemId) then begin
             GenJournalLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
             DimensionManagement.UpdateGlobalDimFromDimSetID(
                 GenJournalLine."Dimension Set ID", GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code");
-            GenJournalLine.MODIFY(TRUE);
-        END ELSE
-            ERROR(RecordDoesntExistErr);
+            GenJournalLine.Modify(true);
+        end else
+            error(RecordDoesntExistErr);
     end;
 
     local procedure CheckIfValuesAreProperlyFilled()
     begin
-        IF "Dimension Code" = '' THEN
-            ERROR(IdOrCodeShouldBeFilledErr);
+        if Rec."Dimension Code" = '' then
+            error(IdOrCodeShouldBeFilledErr);
 
-        IF ISNULLGUID(GlobalDimensionValueId) AND
+        if ISNULLGUID(GlobalDimensionValueId) and
            (GlobalDimensionValueCode = '')
-        THEN
-            ERROR(ValueIdOrValueCodeShouldBeFilledErr);
+        then
+            error(ValueIdOrValueCodeShouldBeFilledErr);
     end;
 
     local procedure AssignDimensionValueToRecord()
     begin
-        IF NOT ISNULLGUID(GlobalDimensionValueId) THEN
-            VALIDATE("Value Id", GlobalDimensionValueId);
+        if not ISNULLGUID(GlobalDimensionValueId) then
+            Rec.Validate("Value Id", GlobalDimensionValueId);
 
-        IF GlobalDimensionValueCode <> '' THEN
-            VALIDATE("Dimension Value Code", GlobalDimensionValueCode);
+        if GlobalDimensionValueCode <> '' then
+            Rec.Validate("Dimension Value Code", GlobalDimensionValueCode);
     end;
 
     local procedure SetCalculatedFields()
     begin
-        GlobalDimensionValueId := "Value Id";
-        GlobalDimensionValueCode := "Dimension Value Code";
+        GlobalDimensionValueId := Rec."Value Id";
+        GlobalDimensionValueCode := Rec."Dimension Value Code";
     end;
 
     local procedure ClearCalculatedFields()
@@ -295,6 +300,7 @@ page 20022 "APIV1 - Dimension Lines"
         CLEAR(GlobalDimensionValueCode);
     end;
 }
+
 
 
 

@@ -3,10 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Integration;
+
 permissionset 97 "Webhook - Edit"
 {
     Access = Public;
-    Assignable = False;
+    Assignable = false;
 
     IncludedPermissionSets = "Webhook - Read";
 

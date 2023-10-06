@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 /// <summary>Types of updates from users in the Office 365.</summary>
 enum 9010 "Azure AD Update Type"
 {

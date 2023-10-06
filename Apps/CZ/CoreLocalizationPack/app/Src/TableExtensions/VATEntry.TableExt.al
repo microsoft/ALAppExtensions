@@ -187,11 +187,22 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
 
     internal procedure IsReplaceVATDateEnabled(): Boolean
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
     begin
         exit(ReplaceVATDateMgtCZL.IsEnabled());
     end;
 #endif
+
+    procedure ToTemporaryCZL(var TempVATEntry: Record "VAT Entry" temporary)
+    begin
+        if FindSet() then
+            repeat
+                TempVATEntry := Rec;
+                TempVATEntry.Insert();
+            until Next() = 0;
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterSetVATStatementLineFiltersCZL(var VATEntry: Record "VAT Entry"; VATStatementLine: Record "VAT Statement Line")

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Manages printers",
     "description":  "Contains functionality for managing printers available for a tenant.",
-    "version":  "22.5.0.0",
+    "version":  "23.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -19,7 +19,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
+    "platform":  "23.0.0.0",
     "target":  "OnPrem",
     "idRanges":  [
                      {

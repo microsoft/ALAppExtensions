@@ -2,12 +2,6 @@ pageextension 11740 "Purchase Credit Memo CZL" extends "Purchase Credit Memo"
 {
     layout
     {
-#if not CLEAN20
-        modify("Vendor Posting Group")
-        {
-            Visible = AllowMultiplePostingGroupsEnabled;
-        }
-#endif
 #if not CLEAN22
         modify("VAT Reporting Date")
         {
@@ -77,13 +71,8 @@ pageextension 11740 "Purchase Credit Memo CZL" extends "Purchase Credit Memo"
             field("Vendor Posting Group CZL"; Rec."Vendor Posting Group")
             {
                 ApplicationArea = Basic, Suite;
-#if not CLEAN20
-                Editable = IsPostingGroupEditableCZL;
-                Visible = not AllowMultiplePostingGroupsEnabled;
-#else
                 Editable = false;
                 Visible = false;
-#endif
                 Importance = Additional;
                 ToolTip = 'Specifies the vendor''s market type to link business transactions to.';
                 ObsoleteState = Pending;
@@ -252,35 +241,16 @@ pageextension 11740 "Purchase Credit Memo CZL" extends "Purchase Credit Memo"
 
     trigger OnOpenPage()
     begin
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
-        if not AllowMultiplePostingGroupsEnabled then begin
-            PurchasesPayablesSetupCZL.GetRecordOnce();
-#pragma warning disable AL0432
-            IsPostingGroupEditableCZL := PurchasesPayablesSetupCZL."Allow Alter Posting Groups CZL";
-#pragma warning restore AL0432
-        end;
-#endif
         VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
     end;
 
     var
-#if not CLEAN20
-        PurchasesPayablesSetupCZL: Record "Purchases & Payables Setup";
-#pragma warning disable AL0432
-        PostingGroupManagement: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 #pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled: Boolean;
-        IsPostingGroupEditableCZL: Boolean;
-#endif
 #endif
 }

@@ -1,4 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Finance.GST.Subcontracting;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+
 page 18475 "Multiple Delivery Challan List"
 {
     ObsoleteState = Pending;
@@ -244,6 +254,6 @@ page 18475 "Multiple Delivery Challan List"
         DtParam: Text[10];
         RemainingQuantity: Boolean;
 
-        UnusedPageLbl: Label 'This Page has been marked as obsolete and will be removed from version 22.0. Instead of this Page use ‘Multi. Delivery Challan List';
+        UnusedPageLbl: Label 'This Page has been marked as obsolete and will be removed from version 22.0. Instead of this Page use â€˜Multi. Delivery Challan List';
 }
 #endif

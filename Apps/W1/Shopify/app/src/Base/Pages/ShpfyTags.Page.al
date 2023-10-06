@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Page Shpfy Tags (ID 30104).
 /// </summary>

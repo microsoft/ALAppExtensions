@@ -1,7 +1,7 @@
 table 31068 "Stockkeeping Unit Template CZL"
 {
     Caption = 'Stockkeeping Unit Template';
-    LookupPageID = "Stockkeeping Unit Templ. CZL";
+    LookupPageId = "Stockkeeping Unit Templ. CZL";
 
     fields
     {

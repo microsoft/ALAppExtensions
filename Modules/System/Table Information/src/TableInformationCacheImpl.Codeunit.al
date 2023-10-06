@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Environment;
+
 codeunit 8700 "Table Information Cache Impl."
 {
     Access = Internal;
@@ -53,7 +57,7 @@ codeunit 8700 "Table Information Cache Impl."
         CompanySizeCache: Record "Company Size Cache";
     begin
         CompanySizeCache.CalcSums("Size (KB)");
-        Exit(CompanySizeCache."Size (KB)");
+        exit(CompanySizeCache."Size (KB)");
     end;
 
     local procedure RefreshCompanySizeCache()

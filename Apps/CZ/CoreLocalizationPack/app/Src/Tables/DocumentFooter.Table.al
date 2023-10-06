@@ -1,7 +1,7 @@
 table 31119 "Document Footer CZL"
 {
     Caption = 'Document Footer';
-    DrillDownPageID = "Document Footers CZL";
+    DrillDownPageId = "Document Footers CZL";
     LookupPageId = "Document Footers CZL";
 
     fields

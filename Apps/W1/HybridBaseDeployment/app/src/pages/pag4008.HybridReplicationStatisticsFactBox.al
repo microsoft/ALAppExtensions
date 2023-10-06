@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Reflection;
+
 page 4008 "Intelligent Cloud Stat Factbox"
 {
     Caption = 'Migration Information';
@@ -71,36 +75,36 @@ page 4008 "Intelligent Cloud Stat Factbox"
                     Caption = 'Run Statistics';
                     ShowCaption = true;
 
-                    field("Tables Successful"; "Tables Successful")
+                    field("Tables Successful"; Rec."Tables Successful")
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Tables Successful';
                         Tooltip = 'Indicates the number of tables that were successful for the selected migration.';
                         Style = Favorable;
-                        StyleExpr = ("Tables Successful" > 0);
+                        StyleExpr = (Rec."Tables Successful" > 0);
 
                         trigger OnDrillDown()
                         var
                             HybridReplicationDetail: Record "Hybrid Replication Detail";
                         begin
-                            HybridReplicationDetail.SetRange("Run ID", "Run ID");
+                            HybridReplicationDetail.SetRange("Run ID", Rec."Run ID");
                             HybridReplicationDetail.SetRange(Status, HybridReplicationDetail.Status::Successful);
                             Page.Run(Page::"Intelligent Cloud Details", HybridReplicationDetail);
                         end;
                     }
-                    field("Tables Failed"; "Tables Failed")
+                    field("Tables Failed"; Rec."Tables Failed")
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Tables Failed';
                         Tooltip = 'Indicates the number of tables that failed for the selected migration.';
                         Style = Unfavorable;
-                        StyleExpr = ("Tables Failed" > 0);
+                        StyleExpr = (Rec."Tables Failed" > 0);
 
                         trigger OnDrillDown()
                         var
                             HybridReplicationDetail: Record "Hybrid Replication Detail";
                         begin
-                            HybridReplicationDetail.SetRange("Run ID", "Run ID");
+                            HybridReplicationDetail.SetRange("Run ID", Rec."Run ID");
                             HybridReplicationDetail.SetRange(Status, HybridReplicationDetail.Status::Failed);
                             Page.Run(Page::"Intelligent Cloud Details", HybridReplicationDetail);
                         end;
@@ -112,37 +116,37 @@ page 4008 "Intelligent Cloud Stat Factbox"
                     Caption = '_';
                     ShowCaption = false;
 
-                    field("Tables Remaining"; "Tables Remaining")
+                    field("Tables Remaining"; Rec."Tables Remaining")
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Tables Remaining';
                         Tooltip = 'Indicates the number of remaining tables to migrate for the selected migration.';
                         Style = Ambiguous;
-                        StyleExpr = ("Tables Remaining" > 0);
+                        StyleExpr = (Rec."Tables Remaining" > 0);
 
                         trigger OnDrillDown()
                         var
                             HybridReplicationDetail: Record "Hybrid Replication Detail";
                         begin
-                            HybridReplicationDetail.SetRange("Run ID", "Run ID");
+                            HybridReplicationDetail.SetRange("Run ID", Rec."Run ID");
                             HybridReplicationDetail.SetFilter(Status, '%1|%2', HybridReplicationDetail.Status::NotStarted, HybridReplicationDetail.Status::InProgress);
                             Page.Run(Page::"Intelligent Cloud Details", HybridReplicationDetail);
                         end;
                     }
 
-                    field("Tables with Warnings"; "Tables with Warnings")
+                    field("Tables with Warnings"; Rec."Tables with Warnings")
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Tables with Warnings';
                         Tooltip = 'Indicates the number of tables that had warnings for the selected migration.';
                         Style = Ambiguous;
-                        StyleExpr = ("Tables with Warnings" > 0);
+                        StyleExpr = (Rec."Tables with Warnings" > 0);
 
                         trigger OnDrillDown()
                         var
                             HybridReplicationDetail: Record "Hybrid Replication Detail";
                         begin
-                            HybridReplicationDetail.SetRange("Run ID", "Run ID");
+                            HybridReplicationDetail.SetRange("Run ID", Rec."Run ID");
                             HybridReplicationDetail.SetRange(Status, HybridReplicationDetail.Status::Warning);
                             Page.Run(Page::"Intelligent Cloud Details", HybridReplicationDetail);
                         end;
@@ -169,7 +173,7 @@ page 4008 "Intelligent Cloud Stat Factbox"
                         Caption = 'Not Initialized Companies';
                         Tooltip = 'Indicates the number of companies that must be initialized before they can be used.';
                         Style = Unfavorable;
-                        StyleExpr = ("Companies Not Initialized" > 0);
+                        StyleExpr = (Rec."Companies Not Initialized" > 0);
 
                         trigger OnDrillDown()
                         begin
@@ -204,7 +208,7 @@ page 4008 "Intelligent Cloud Stat Factbox"
 
         ShowNextScheduled := NextScheduledRun <> 0DT;
 
-        if "Run ID" <> '' then begin
+        if Rec."Run ID" <> '' then begin
             TotalSuccessfulTables := HybridCloudManagement.GetTotalSuccessfulTables();
             TotalTablesNotMigrated := HybridCloudManagement.GetTotalTablesNotMigrated();
             SourceProduct := HybridCloudManagement.GetChosenProductName();
@@ -271,3 +275,4 @@ page 4008 "Intelligent Cloud Stat Factbox"
         ShowNextScheduled: Boolean;
         TablesNotMigratedEnabled: Boolean;
 }
+

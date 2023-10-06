@@ -4,6 +4,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Privacy;
+
+using System.Environment;
+
 page 1568 "Power Automate Privacy Notice"
 {
     Caption = 'Set Up Power Automate';
@@ -138,7 +142,7 @@ page 1568 "Power Automate Privacy Notice"
                 ToolTip = 'Go back to the previous page.';
                 Image = PreviousRecord;
                 InFooterBar = true;
-                Visible = NOT (Step = Step::Finish);
+                Visible = not (Step = Step::Finish);
 
                 trigger OnAction()
                 begin
@@ -153,7 +157,7 @@ page 1568 "Power Automate Privacy Notice"
                 ToolTip = 'Go to the next page.';
                 Image = NextRecord;
                 InFooterBar = true;
-                Visible = NOT (Step = Step::Finish);
+                Visible = not (Step = Step::Finish);
 
                 trigger OnAction()
                 begin

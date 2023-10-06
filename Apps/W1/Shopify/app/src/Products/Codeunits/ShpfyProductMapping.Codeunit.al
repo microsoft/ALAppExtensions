@@ -1,3 +1,9 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Purchases.Vendor;
+
 /// <summary>
 /// Codeunit Shpfy Product Mapping (ID 30181).
 /// </summary>
@@ -24,7 +30,7 @@ codeunit 30181 "Shpfy Product Mapping"
     var
         ShopifyProduct: Record "Shpfy Product";
     begin
-        if ShopifyProduct.FindSet(true, false) then
+        if ShopifyProduct.FindSet(true) then
             repeat
                 FindMapping(ShopifyProduct);
             until ShopifyProduct.Next() = 0;
@@ -39,7 +45,7 @@ codeunit 30181 "Shpfy Product Mapping"
         ShopifyVariant: Record "Shpfy Variant";
     begin
         ShopifyVariant.SetRange("Product Id", ShopifyProduct.Id);
-        if ShopifyVariant.FindSet(true, false) then
+        if ShopifyVariant.FindSet(true) then
             repeat
                 FindMapping(ShopifyProduct, ShopifyVariant);
             until ShopifyVariant.Next() = 0;

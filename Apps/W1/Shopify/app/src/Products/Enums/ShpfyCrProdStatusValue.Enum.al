@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Enum Shpfy Create Product Status Value (ID 30129) implements Interface Shpfy ICreateProductStatusValue.
 /// </summary>

@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Page Shpfy Payment Transactions (ID 30124).
 /// </summary>

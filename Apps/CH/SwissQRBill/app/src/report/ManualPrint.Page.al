@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+
 page 11511 "Swiss QR-Bill Manual Print"
 {
     Caption = 'Create manual QR-Bill';
@@ -40,6 +50,11 @@ page 11511 "Swiss QR-Bill Manual Print"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the language code for printing QR-bill captions.';
+                }
+                field(FormatRegion; "Format Region")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the region format for printing QR-bill.';
                 }
             }
             group("Payment Information")

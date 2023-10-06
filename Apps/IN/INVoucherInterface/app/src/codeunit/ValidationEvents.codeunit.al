@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.VoucherInterface;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Reports;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.AuditCodes;
+
 codeunit 18930 "Validation Events"
 {
     var

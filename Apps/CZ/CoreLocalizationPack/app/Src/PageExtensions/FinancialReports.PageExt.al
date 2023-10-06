@@ -13,7 +13,7 @@ pageextension 11702 "Financial Reports CZL" extends "Financial Reports"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = false;
-                RunObject = Page "Acc. Schedule Extensions CZL";
+                RunObject = page "Acc. Schedule Extensions CZL";
                 ToolTip = 'Specifies acc. schedule extensions page';
             }
             action("File Mapping CZL")
@@ -43,7 +43,7 @@ pageextension 11702 "Financial Reports CZL" extends "Financial Reports"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = false;
-                RunObject = Page "Acc. Sched. Res. Hdr. List CZL";
+                RunObject = page "Acc. Sched. Res. Hdr. List CZL";
                 RunPageLink = "Acc. Schedule Name" = field("Financial Report Row Group");
                 ToolTip = 'Opens acc. schedule res. header list';
             }

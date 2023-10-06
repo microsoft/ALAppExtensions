@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 page 1155 "COHUB Group List"
 {
     PageType = List;

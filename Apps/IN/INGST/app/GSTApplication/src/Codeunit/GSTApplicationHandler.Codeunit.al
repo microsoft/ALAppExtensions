@@ -1,3 +1,34 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Application;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Subcontracting;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Posting;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+
 codeunit 18430 "GST Application Handler"
 {
     var
@@ -433,7 +464,12 @@ codeunit 18430 "GST Application Handler"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         ApplyingVendorLedgerEntry: Record "Vendor Ledger Entry";
         TransactionType: Enum "Detail Ledger Transaction Type";
+        IsHandled: Boolean;
     begin
+        OnBeforePostGSTWithNormalPaymentOffline(GenJournalLine, AmountToApply, IsHandled);
+        if IsHandled then
+            exit;
+
         if not ApplyingVendorLedgerEntry.Get(OldCVLedgerEntryBuffer."Entry No.") then
             exit;
 
@@ -3051,6 +3087,11 @@ codeunit 18430 "GST Application Handler"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePostGSTWithNormalPaymentOnline(var GenJournalLine: Record "Gen. Journal Line"; var AmountToApply: Decimal; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGSTWithNormalPaymentOffline(var GenJournalLine: Record "Gen. Journal Line"; var AmountToApply: Decimal; var IsHandled: Boolean)
     begin
     end;
 }

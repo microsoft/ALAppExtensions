@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.MDM;
+
 table 7234 "Master Data Mgt. Subscriber"
 {
     Caption = 'Master Data Mgt. Subscriber';

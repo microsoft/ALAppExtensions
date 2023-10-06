@@ -1846,8 +1846,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     local procedure GetFileName(DocumentNo: Code[20]; DocumentType: Text; Extension: Code[3]): Text[250]
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
+        RecordVariant: Variant;
     begin
-        exit(ElectronicDocumentFormat.GetAttachmentFileName(DocumentNo, DocumentType, Extension));
+        exit(ElectronicDocumentFormat.GetAttachmentFileName(RecordVariant, DocumentNo, DocumentType, Extension));
     end;
 
     local procedure GetAmountsSalesInvoiceLines(SalesInvHeaderNo: Code[20]; var LineExtensionAmounts: List of [Decimal]; var PriceAmounts: List of [Decimal]; var AllowanceChargeAmounts: List of [Decimal]; var TotalAllowanceChargeAmount: Decimal)
@@ -2082,7 +2083,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         XMLInStream: InStream;
         ZipEntryList: List of [Text];
         ZipEntry: Text;
-        ZipEntryLength: Integer;
         i: Integer;
     begin
         for i := 1 to DocumentNoLst.Count() do // dequeue unused XML files names
@@ -2098,7 +2098,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             i += 1;
             Clear(TempBlob);
             TempBlob.CreateOutStream(ZipEntryOutStream);
-            DataCompression.ExtractEntry(ZipEntry, ZipEntryOutStream, ZipEntryLength);
+            DataCompression.ExtractEntry(ZipEntry, ZipEntryOutStream);
             TempBlob.CreateInStream(XMLInStream);
             LibraryXMLReadOnServer.LoadXMLDocFromInStream(XMLInStream);
             LibraryXMLReadOnServer.VerifyNodeValue(IDTxt, DocumentNoLst.Get(i));

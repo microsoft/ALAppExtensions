@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Apps;
+
 permissionset 9202 "Advanced Settings - View"
 {
     Access = Internal;

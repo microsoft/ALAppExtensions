@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Telemetry;
+using System.Security.AccessControl;
+using System.Security.User;
+using System.Environment;
+using System.Reflection;
+
 codeunit 1993 "Checklist Implementation"
 {
     Access = Internal;

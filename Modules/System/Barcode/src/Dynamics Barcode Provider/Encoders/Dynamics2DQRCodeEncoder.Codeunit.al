@@ -1,7 +1,12 @@
 // ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Text;
+
+using System;
+using System.Utilities;
 
 codeunit 9224 "Dynamics 2D QR-Code Encoder" implements "Barcode Image Encoder 2D"
 {

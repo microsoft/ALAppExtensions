@@ -1,7 +1,7 @@
 report 11751 "Posted Inventory Receipt CZL"
 {
-    Permissions = TableData "Invt. Receipt Header" = r,
-                  TableData "Invt. Receipt Line" = r;
+    Permissions = tabledata "Invt. Receipt Header" = r,
+                  tabledata "Invt. Receipt Line" = r;
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/PostedInventoryReceipt.rdl';
     ApplicationArea = Basic, Suite;
@@ -109,7 +109,8 @@ report 11751 "Posted Inventory Receipt CZL"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMGt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMGt.GetFormatRegionOrDefault("Format Region");
 
                 if not IsReportInPreviewMode() then
                     Codeunit.Run(Codeunit::"Posted Invt. Rcpt.-Printed CZL", "Invt. Receipt Header");
@@ -127,7 +128,7 @@ report 11751 "Posted Inventory Receipt CZL"
 
     var
         FormatAddress: Codeunit "Format Address";
-        Language: Codeunit Language;
+        LanguageMGt: Codeunit Language;
         CompanyAddr: array[8] of Text[100];
 
     local procedure GetItemDescription(ItemNo: Code[20]) Description: Text[100]

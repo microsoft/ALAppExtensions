@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Warehouse.GateEntry;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.History;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Sales.Document;
+using Microsoft.Purchases.History;
+
 table 18604 "Gate Entry Line"
 {
     Caption = 'Gate Entry Line';

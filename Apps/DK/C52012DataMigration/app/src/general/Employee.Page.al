@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1874 "C5 Employee"
 {
     PageType = Card;
@@ -18,25 +20,25 @@ page 1874 "C5 Employee"
             group(General)
             {
 #pragma warning disable AA0218
-                field(Employee; Employee) { ApplicationArea = All; }
-                field(Name; Name) { ApplicationArea = All; }
-                field(Address1; Address1) { ApplicationArea = All; }
-                field(Address2; Address2) { ApplicationArea = All; }
-                field(ZipCity; ZipCity) { ApplicationArea = All; }
-                field(User; User) { ApplicationArea = All; }
-                field(Phone; Phone) { ApplicationArea = All; }
-                field(LocalNumber; LocalNumber) { ApplicationArea = All; }
-                field(Department; Department) { ApplicationArea = All; }
-                field(ImageFile; ImageFile) { ApplicationArea = All; }
-                field(EmployeeType; EmployeeType) { ApplicationArea = All; }
-                field(Email; Email) { ApplicationArea = All; }
-                field(Centre; Centre) { ApplicationArea = All; }
-                field(Purpose; Purpose) { ApplicationArea = All; }
-                field(KrakNumber; KrakNumber) { ApplicationArea = All; }
-                field(Country; Country) { ApplicationArea = All; }
-                field(Currency; Currency) { ApplicationArea = All; }
-                field(Language_; Language_) { ApplicationArea = All; }
-                field(CellPhone; CellPhone) { ApplicationArea = All; }
+                field(Employee; Rec.Employee) { ApplicationArea = All; }
+                field(Name; Rec.Name) { ApplicationArea = All; }
+                field(Address1; Rec.Address1) { ApplicationArea = All; }
+                field(Address2; Rec.Address2) { ApplicationArea = All; }
+                field(ZipCity; Rec.ZipCity) { ApplicationArea = All; }
+                field(User; Rec.User) { ApplicationArea = All; }
+                field(Phone; Rec.Phone) { ApplicationArea = All; }
+                field(LocalNumber; Rec.LocalNumber) { ApplicationArea = All; }
+                field(Department; Rec.Department) { ApplicationArea = All; }
+                field(ImageFile; Rec.ImageFile) { ApplicationArea = All; }
+                field(EmployeeType; Rec.EmployeeType) { ApplicationArea = All; }
+                field(Email; Rec.Email) { ApplicationArea = All; }
+                field(Centre; Rec.Centre) { ApplicationArea = All; }
+                field(Purpose; Rec.Purpose) { ApplicationArea = All; }
+                field(KrakNumber; Rec.KrakNumber) { ApplicationArea = All; }
+                field(Country; Rec.Country) { ApplicationArea = All; }
+                field(Currency; Rec.Currency) { ApplicationArea = All; }
+                field(Language_; Rec.Language_) { ApplicationArea = All; }
+                field(CellPhone; Rec.CellPhone) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

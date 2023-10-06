@@ -1,3 +1,10 @@
+namespace Microsoft.DataMigration;
+
+using System.Apps;
+using System.Reflection;
+using System.Environment.Configuration;
+using System.Utilities;
+
 table 4009 "Migration Table Mapping"
 {
     DataClassification = SystemMetadata;

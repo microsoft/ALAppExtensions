@@ -1,4 +1,7 @@
-#pragma implicitwith disable
+namespace Microsoft.DataMigration;
+
+using System.Integration;
+
 page 4006 "Intelligent Cloud Details"
 {
     Caption = 'Table Migration Status';
@@ -318,7 +321,7 @@ page 4006 "Intelligent Cloud Details"
 
     local procedure UpdateRecordCountStatistics()
     begin
-        // If any tables have "Records Copied" > 0, then we show the field.
+        // if any tables have "Records Copied" > 0, then we show the field.
         if not ShowRecordCounts then begin
             ShowRecordCounts := Rec."Records Copied" > 0;
             exit;

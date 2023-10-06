@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment.Configuration;
+
 page 132610 "Assisted Setup Wizard"
 {
     PageType = NavigatePage;

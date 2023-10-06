@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// Interface that defines methods for linking tables "Feature Key Buffer" and "Feature Key".
 /// The default implementation uses the system table "Feature Key" as a source, 

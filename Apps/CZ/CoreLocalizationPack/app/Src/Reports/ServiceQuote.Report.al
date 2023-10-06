@@ -54,7 +54,7 @@ report 31193 "Service Quote CZL"
         }
         dataitem("Service Header"; "Service Header")
         {
-            DataItemTableView = sorting("Document Type", "No.") WHERE("Document Type" = CONST(Quote));
+            DataItemTableView = sorting("Document Type", "No.") where("Document Type" = const(Quote));
             RequestFilterFields = "No.", "Customer No.";
             column(DocumentLbl; DocumentLbl)
             {
@@ -268,7 +268,7 @@ report 31193 "Service Quote CZL"
                     dataitem("Fault Comment"; "Service Comment Line")
                     {
                         DataItemLink = "Table Subtype" = field("Document Type"), "No." = field("Document No."), "Table Line No." = field("Line No.");
-                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") WHERE("Table Name" = CONST("Service Header"), Type = CONST(Fault));
+                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") where("Table Name" = const("Service Header"), Type = const(Fault));
                         column(FaultCommentsLbl; FaultCommentsLbl)
                         {
                         }
@@ -287,7 +287,7 @@ report 31193 "Service Quote CZL"
                     dataitem("Resolution Comment"; "Service Comment Line")
                     {
                         DataItemLink = "Table Subtype" = field("Document Type"), "No." = field("Document No."), "Table Line No." = field("Line No.");
-                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") WHERE("Table Name" = CONST("Service Header"), Type = CONST(Resolution));
+                        DataItemTableView = sorting("Table Name", "Table Subtype", "No.", Type, "Table Line No.", "Line No.") where("Table Name" = const("Service Header"), Type = const(Resolution));
                         column(ResolutionCommentsLbl; ResolutionCommentsLbl)
                         {
                         }
@@ -422,7 +422,8 @@ report 31193 "Service Quote CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddress.ServiceOrderSellto(CustAddr, "Service Header");
                 FormatAddress.ServiceHeaderShipTo(ShipToAddr, "Service Header");
@@ -489,7 +490,7 @@ report 31193 "Service Quote CZL"
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
@@ -503,7 +504,6 @@ report 31193 "Service Quote CZL"
         Number1: Integer;
         Number2: Integer;
         LogInteraction: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Service Quote';
         PageLbl: Label 'Page';
@@ -532,7 +532,7 @@ report 31193 "Service Quote CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(25) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Service Quote") <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean
