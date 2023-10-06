@@ -42,5 +42,6 @@
     "main"
   ],
   "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json",
-  "PullRequestTrigger": "pull_request"
+  "PullRequestTrigger": "pull_request",
+  "alwaysBuildAllProjects": true
 }
