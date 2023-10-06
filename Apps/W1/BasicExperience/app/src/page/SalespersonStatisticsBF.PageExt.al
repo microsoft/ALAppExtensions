@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Environment.Configuration;
+
+using Microsoft.CRM.Team;
+
 pageextension 20649 "Salesperson Statistics BF" extends "Salesperson Statistics"
 {
     layout

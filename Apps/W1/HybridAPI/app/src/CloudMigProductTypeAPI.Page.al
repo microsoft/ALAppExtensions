@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.API;
+
+using Microsoft.DataMigration;
+
 page 40024 "Cloud Mig Product Type API"
 {
     PageType = API;

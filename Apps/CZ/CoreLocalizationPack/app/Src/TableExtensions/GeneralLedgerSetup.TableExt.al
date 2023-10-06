@@ -11,14 +11,11 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
                 InitVATDateQst: Label 'If you check field %1 you will let system post using %2 different from %3. Field %2 will be initialized from field %3 in all tables. It may take some time and you will not be able to undo this change after posting entries. Do you really want to continue?', Comment = '%1 = fieldcaption of Use VAT Date; %2 = fieldcaption of VAT Date; %3 = fieldcaption of Posting Date';
                 CannotChangeFieldErr: Label 'You cannot change the contents of the %1 field because there are posted ledger entries.', Comment = '%1 = field caption';
                 DisableVATDateQst: Label 'Are you sure you want to disable VAT Date functionality?';
-                VATDateUsageEnabledErr: Label 'The Enabled option allows editing VAT Reporting Date in the VAT Entries which is not in line with Czech functionality. Use the Enabled (Prevent modification) option.';
             begin
 #if not CLEAN22
                 if not ReplaceVATDateMgtCZL.IsEnabled() then
                     exit;
 #endif
-                if "VAT Reporting Date Usage" = "VAT Reporting Date Usage"::Enabled then
-                    Error(VATDateUsageEnabledErr);
                 if ("VAT Reporting Date Usage" <> "VAT Reporting Date Usage"::Disabled) and
                    (xRec."VAT Reporting Date Usage" = xRec."VAT Reporting Date Usage"::Disabled)
                 then
@@ -164,10 +161,12 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
         }
     }
 #if not CLEAN22
+#pragma warning disable AL0432
     var
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-
+#pragma warning restore AL0432
 #endif
+
     procedure InitVATDateCZL()
     var
         VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";

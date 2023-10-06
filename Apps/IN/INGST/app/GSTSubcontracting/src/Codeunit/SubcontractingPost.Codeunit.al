@@ -1,3 +1,23 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Subcontracting;
+
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Posting;
+using Microsoft.Inventory.Tracking;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+
 codeunit 18466 "Subcontracting Post"
 {
     TableNo = "Purchase Line";
@@ -115,10 +135,10 @@ codeunit 18466 "Subcontracting Post"
         ItemJnlLine."Order No." := SubOrderCompList."Production Order No.";
         ItemJnlLine."Order Line No." := SubOrderCompList."Production Order Line No.";
         ItemJnlLine."Prod. Order Comp. Line No." := SubOrderCompList."Line No.";
-        ItemJnlLine."Location Code" := SubOrderCompList."Company Location";
         ItemJnlLine."New Location Code" := SubOrderCompList."Vendor Location";
         ItemJnlLine."Entry Type" := ItemJnlLine."Entry Type"::Transfer;
         ItemJnlLine."Item No." := SubOrderCompList."Item No.";
+        ItemJnlLine.Validate("Location Code", SubOrderCompList."Company Location");
         ItemJnlLine.Description := SubOrderCompList.Description;
         ItemJnlLine."Gen. Prod. Posting Group" := SubOrderCompList."Gen. Prod. Posting Group";
         ItemJnlLine.Quantity := SubOrderCompList."Quantity To Send";

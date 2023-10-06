@@ -2,8 +2,8 @@ table 31090 "Commodity CZL"
 {
     Caption = 'Commodity';
     DataCaptionFields = Code;
-    DrillDownPageID = "Commodities CZL";
-    LookupPageID = "Commodities CZL";
+    DrillDownPageId = "Commodities CZL";
+    LookupPageId = "Commodities CZL";
 
     fields
     {

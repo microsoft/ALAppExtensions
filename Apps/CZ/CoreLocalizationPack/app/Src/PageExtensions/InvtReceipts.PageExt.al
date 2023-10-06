@@ -1,4 +1,4 @@
-pageextension 31174	"Invt. Receipts CZL" extends "Invt. Receipts"
+pageextension 31174 "Invt. Receipts CZL" extends "Invt. Receipts"
 {
     layout
     {
@@ -7,7 +7,7 @@ pageextension 31174	"Invt. Receipts CZL" extends "Invt. Receipts"
             field("Invt. Movement Template CZL"; Rec."Invt. Movement Template CZL")
             {
                 ApplicationArea = Basic, Suite;
-                Tooltip = 'Specifies the template for item movement.';
+                ToolTip = 'Specifies the template for item movement.';
             }
         }
     }

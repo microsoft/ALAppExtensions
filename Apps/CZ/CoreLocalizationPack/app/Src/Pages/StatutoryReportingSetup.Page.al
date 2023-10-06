@@ -125,7 +125,7 @@ page 31108 "Statutory Reporting Setup CZL"
                     }
                 }
             }
-            Group(Signatory)
+            group(Signatory)
             {
                 Caption = 'Signatory';
                 field("Official Code"; Rec."Official Code")
@@ -386,7 +386,7 @@ page 31108 "Statutory Reporting Setup CZL"
             }
             group("VAT Control Report")
             {
-                caption = 'VAT Control Report';
+                Caption = 'VAT Control Report';
                 field("VAT Control Report Xml Format"; Rec."VAT Control Report Xml Format")
                 {
                     ApplicationArea = Basic, Suite;
@@ -439,7 +439,7 @@ page 31108 "Statutory Reporting Setup CZL"
                 field("VIES Declaration Report No."; Rec."VIES Declaration Report No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    LookupPageID = Objects;
+                    LookupPageId = Objects;
                     ToolTip = 'Specifies the object number for VIES declaration report.';
                 }
                 field("VIES Declaration Report Name"; Rec."VIES Declaration Report Name")
@@ -450,7 +450,7 @@ page 31108 "Statutory Reporting Setup CZL"
                 field("VIES Declaration Export No."; Rec."VIES Declaration Export No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    LookupPageID = Objects;
+                    LookupPageId = Objects;
                     ToolTip = 'Specifies the object number for VIES declaration export.';
                 }
                 field("VIES Declaration Export Name"; Rec."VIES Declaration Export Name")
@@ -486,7 +486,6 @@ page 31108 "Statutory Reporting Setup CZL"
     end;
 
     var
-        [InDataSet]
         IndividualCtrlVisible: Boolean;
 
     local procedure UpdateIndividualControl()

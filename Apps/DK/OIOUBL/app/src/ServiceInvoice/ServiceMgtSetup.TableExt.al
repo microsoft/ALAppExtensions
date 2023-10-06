@@ -1,7 +1,8 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Setup;
 
 tableextension 13654 "OIOUBL-Service Mgt. Setup" extends "Service Mgt. Setup"
 {
@@ -32,8 +33,8 @@ tableextension 13654 "OIOUBL-Service Mgt. Setup" extends "Service Mgt. Setup"
                 exit("OIOUBL-Service Invoice Path" <> '');
             "Document Type"::"Credit Memo":
                 exit("OIOUBL-Service Cr. Memo Path" <> '');
-        else
-        exit(TRUE);
+            else
+                exit(TRUE);
         end;
     end;
 

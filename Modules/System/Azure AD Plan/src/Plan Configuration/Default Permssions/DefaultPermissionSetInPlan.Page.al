@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 /// <summary>
 /// List part that holds the default permission sets assigned to a plan.
 /// </summary>
@@ -50,7 +52,7 @@ page 9827 "Default Permission Set In Plan"
                 {
                     ApplicationArea = All;
                     Caption = 'Company';
-                    ToolTip = 'The permission set will be assigned to the first company that a user with this permission set signs in to.';
+                    ToolTip = 'Specifies that the permission set will be assigned to the first company that a user with this permission set signs in to.';
                     Style = AttentionAccent;
                 }
                 field(ExtensionName; Rec."App Name")

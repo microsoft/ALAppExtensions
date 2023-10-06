@@ -60,7 +60,7 @@ report 11714 "Joining G/L Account Adj. CZL"
         }
         dataitem(EntryBuffer; "Integer")
         {
-            DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+            DataItemTableView = sorting(Number) where(Number = filter(1 ..));
             column(EntryBuffer_DocumentNo; TempGLAccountAdjustBufferCZL."Document No.")
             {
             }

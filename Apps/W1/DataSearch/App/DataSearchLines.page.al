@@ -1,9 +1,12 @@
+namespace Microsoft.Foundation.DataSearch;
+
 page 2681 "Data Search lines"
 {
     PageType = ListPart;
     Caption = 'Results';
     SourceTable = "Data Search Result";
     SourceTableTemporary = true;
+    ShowFilter = false;
     InsertAllowed = false;
     DeleteAllowed = false;
 
@@ -39,7 +42,7 @@ page 2681 "Data Search lines"
                 ApplicationArea = All;
                 Caption = 'Show tables to search';
                 ToolTip = 'Opens a page that lists which tables are searched for your role center. If you have permissions, you can change which tables and fields are searched.';
-                Image = AddWatch;
+                Image = SetupList;
 
                 trigger OnAction()
                 begin
@@ -66,7 +69,6 @@ page 2681 "Data Search lines"
     end;
 
     var
-        [InDataSet]
         GetStyleExprTxt: Text;
         MoreRecLbl: Label '%1: Show all results', Comment = '%1 is a table name, e.g. Customer';
         SearchString: Text;

@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 enum 30142 "Shpfy Source Document Type" implements "Shpfy IDocument Source"
 {
     Extensible = true;

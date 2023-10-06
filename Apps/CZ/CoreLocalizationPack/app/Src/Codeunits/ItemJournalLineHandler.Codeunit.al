@@ -99,7 +99,7 @@ codeunit 31078 "Item Journal Line Handler CZL"
         DateOrderItemLedgerEntry: Record "Item Ledger Entry";
         WrongItemEntryApplicationErr: Label 'Wrong Item Ledger Entry Application (Date Order)\\%1 %2 in %3 %7 %4\must not be less then\%1 %5 in %3 %7 %6.', Comment = '%1 = Posting Date FieldCaption, %2 = Outbound Entry Posting Date, %3 = TabeCaption, %4 = Outbound Entry No., %5 = Inbound Entry Posting Date, %6 = Inbound Entry No., %7 = Entry No FieldCaption';
     begin
-        If Quantity >= 0 then
+        if Quantity >= 0 then
             exit;
         InventorySetup.Get();
         if not InventorySetup."Date Order Invt. Change CZL" then

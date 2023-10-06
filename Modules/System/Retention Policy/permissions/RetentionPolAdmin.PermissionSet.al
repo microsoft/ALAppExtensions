@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 3904 "Retention Pol. Admin"
+namespace System.DataAdministration;
+
+permissionset 3904 "Retention Pol. Admin"
 {
     Access = Public;
     Assignable = true;

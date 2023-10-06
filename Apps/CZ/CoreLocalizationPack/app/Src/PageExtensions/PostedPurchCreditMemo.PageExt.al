@@ -2,15 +2,10 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
 {
     layout
     {
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
 #if not CLEAN22
         modify("VAT Reporting Date")
         {
-            Visible = ReplaceVATDateEnabled and VATDateEnabled;
+            Visible = ReplaceVATDateEnabled;
         }
 #endif
         addlast(General)
@@ -23,7 +18,6 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
                 Visible = false;
             }
         }
-#endif
         addafter("Posting Date")
         {
 #if not CLEAN22
@@ -122,8 +116,20 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
         }
         addafter("Invoice Details")
         {
+#if not CLEAN23
+#pragma warning disable AS0011
             group("Foreign Trade")
+#pragma warning restore AS0011
+#else
+            group("Foreign Trade CZL")
+#endif
             {
+                Caption = 'Foreign Trade';
+#if not CLEAN23
+                ObsoleteState = Pending;
+                ObsoleteTag = '23.0';
+                ObsoleteReason = 'The group will be renamed from Foreign Trade to Foreign Trade CZL.';
+#endif
                 field("Language Code CZL"; Rec."Language Code")
                 {
                     ApplicationArea = Basic, Suite;
@@ -310,7 +316,9 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
 
     var
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
 #endif
         VATLCYCorrectionCZLVisible: Boolean;

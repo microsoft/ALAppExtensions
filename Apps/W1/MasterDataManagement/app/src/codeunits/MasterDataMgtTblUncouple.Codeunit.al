@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+
 codeunit 7236 "Master Data Mgt. Tbl. Uncouple"
 {
     TableNo = "Integration Table Mapping";
@@ -8,7 +12,7 @@ codeunit 7236 "Master Data Mgt. Tbl. Uncouple"
         Handled: Boolean;
     begin
         OnBeforeRun(Rec, Handled);
-        If Handled then
+        if Handled then
             exit;
 
         PerformScheduledUncoupling(Rec);
@@ -119,9 +123,13 @@ codeunit 7236 "Master Data Mgt. Tbl. Uncouple"
                         IntegrationTableSynch.Uncouple(LocalRecordRef, IntegrationRecordRef);
                         if MasterDataMgtCoupling.Get(TempMasterDataMgtCoupling."Integration System ID", TempMasterDataMgtCoupling."Local System ID") then
                             MasterDataMgtCoupling.Delete();
-                    end else
+                    end else begin
+                        if MasterDataMgtCoupling.Get(TempMasterDataMgtCoupling."Integration System ID", TempMasterDataMgtCoupling."Local System ID") then
+                            MasterDataMgtCoupling.Delete();
+
                         if MasterDataMgtCoupling.Get(TempMasterDataMgtCoupling."Local System ID", TempMasterDataMgtCoupling."Integration System ID") then
                             MasterDataMgtCoupling.Delete();
+                    end;
                 end;
             until TempMasterDataMgtCoupling.Next() = 0;
     end;

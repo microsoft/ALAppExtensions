@@ -1,9 +1,17 @@
 table 1360 "MS - WorldPay Standard Account"
 {
     Caption = 'WorldPay Payments Standard Account';
+    ReplicateData = false;
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+#if not CLEAN23
     DrillDownPageID = 1360;
     LookupPageID = 1360;
-    ReplicateData = false;
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '26.0';
+#endif
 
     fields
     {
@@ -21,15 +29,16 @@ table 1360 "MS - WorldPay Standard Account"
         }
         field(4; Enabled; Boolean)
         {
-
+#if not CLEAN23
             trigger OnValidate()
             begin
                 VerifyAccountID();
             end;
+#endif
         }
         field(5; "Always Include on Documents"; Boolean)
         {
-
+#if not CLEAN23
             trigger OnValidate()
             var
                 MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account";
@@ -53,6 +62,7 @@ table 1360 "MS - WorldPay Standard Account"
                 IF NOT SalesHeader.IsEmpty() AND NOT HideDialogs THEN
                     MESSAGE(UpdateOpenInvoicesManuallyMsg);
             end;
+#endif
         }
         field(8; "Terms of Service"; Text[250])
         {
@@ -60,11 +70,12 @@ table 1360 "MS - WorldPay Standard Account"
         }
         field(10; "Account ID"; Text[250])
         {
-
+#if not CLEAN23
             trigger OnValidate()
             begin
                 VerifyAccountID();
             end;
+#endif
         }
         field(12; "Target URL"; BLOB)
         {
@@ -85,7 +96,7 @@ table 1360 "MS - WorldPay Standard Account"
     fieldgroups
     {
     }
-
+#if not CLEAN23
     var
         AccountIDCannotBeBlankErr: Label 'You must specify an account ID for this payment service.';
         UpdateOpenInvoicesManuallyMsg: Label 'A link for the WorldPay payment service will be included for new sales documents. To add it to existing sales documents, you must manually select it in the Payment Service field on the sales document.';
@@ -133,5 +144,6 @@ table 1360 "MS - WorldPay Standard Account"
     begin
         HideDialogs := TRUE;
     end;
+#endif
 }
 

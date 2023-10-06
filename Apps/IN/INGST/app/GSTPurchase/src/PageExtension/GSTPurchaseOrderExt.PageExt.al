@@ -1,4 +1,13 @@
-﻿pageextension 18084 "GST Purchase Order Ext" extends "Purchase Order"
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Purchase;
+
+pageextension 18084 "GST Purchase Order Ext" extends "Purchase Order"
 {
     layout
     {
@@ -260,7 +269,7 @@
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Subcontracting Post Line No';
-                    ToolTip = 'Specified subcontracting post line no';
+                    ToolTip = 'Specifies subcontracting post line no';
                 }
             }
         }

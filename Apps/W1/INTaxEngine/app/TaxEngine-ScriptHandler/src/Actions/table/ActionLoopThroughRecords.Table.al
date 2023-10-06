@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.ScriptHandler;
+
+using Microsoft.Finance.TaxEngine.Core;
+using System.Reflection;
+
 table 20175 "Action Loop Through Records"
 {
     Caption = 'Action Loop Through Records';

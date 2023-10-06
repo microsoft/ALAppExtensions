@@ -1,4 +1,12 @@
-﻿pageextension 18945 "Contra Voucher" extends "Contra Voucher"
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Bank.VoucherInterface;
+
+pageextension 18945 "Contra Voucher" extends "Contra Voucher"
 {
     layout
     {

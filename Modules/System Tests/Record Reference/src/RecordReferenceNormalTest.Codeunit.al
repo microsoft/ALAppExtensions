@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Reflection;
+
+using System.Environment.Configuration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 /// <summary>
 /// These test must match the tests in 138707 "Record Reference Interf. Test"
 /// </summary>

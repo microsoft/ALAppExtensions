@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 40027 "Hybrid DA Approval"
 {
     PageType = Card;

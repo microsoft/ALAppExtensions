@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.SyncBase;
+
+using System.Threading;
+using System.Security.User;
+
 codeunit 2400 "Sync Job"
 {
     trigger OnRun()

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 enum 40906 "Hist. Purchase Recv. Doc. Type"
 {
     value(0; "Blank") { Caption = ''; }

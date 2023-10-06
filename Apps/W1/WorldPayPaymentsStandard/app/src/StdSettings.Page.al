@@ -1,3 +1,4 @@
+#if not CLEAN23
 page 1364 "MS - WorldPay Std. Settings"
 {
     Caption = 'WorldPay Email';
@@ -8,6 +9,9 @@ page 1364 "MS - WorldPay Std. Settings"
     PageType = Card;
     ShowFilter = false;
     SourceTable = "MS - WorldPay Standard Account";
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     layout
     {
@@ -117,3 +121,4 @@ page 1364 "MS - WorldPay Std. Settings"
         ThirdPartyNoticeMsg: Label 'You are accessing a third-party website and service. You should review the third-party''''s terms and privacy policy.';
 }
 
+#endif

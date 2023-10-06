@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 /// <summary>
 /// PageExtension Shpfy Posted Sales Invoice (ID 30160) extends Record Posted Sales Invoice.
 /// </summary>

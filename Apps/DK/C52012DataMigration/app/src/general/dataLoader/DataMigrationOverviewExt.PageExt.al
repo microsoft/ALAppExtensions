@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information. 
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration.C5;
+
+using System.Integration;
+
 pageextension 1900 "Data Migration Overview Ext." extends "Data Migration Overview"
 {
     layout

@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 /// <summary>
 /// TableExtension "Shpfy Sales Shipment Line (ID 30107) extends Record Sales Shipment Line.
 /// </summary>

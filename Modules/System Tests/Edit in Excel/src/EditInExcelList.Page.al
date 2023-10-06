@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Test.Integration.Excel;
+
+using System.Integration.Excel;
 page 132525 "Edit in Excel List"
 {
     PageType = List;
@@ -14,7 +22,7 @@ page 132525 "Edit in Excel List"
                 field(Id; Rec.Id)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Record ID';
+                    ToolTip = 'Specifies the Record ID';
                 }
                 field("Use Centralized deployments"; Rec."Use Centralized deployments")
                 {

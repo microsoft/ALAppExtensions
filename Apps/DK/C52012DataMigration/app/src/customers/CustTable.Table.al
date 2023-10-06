@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using Microsoft.Sales.Customer;
+
 table 1860 "C5 CustTable"
 {
     ReplicateData = false;

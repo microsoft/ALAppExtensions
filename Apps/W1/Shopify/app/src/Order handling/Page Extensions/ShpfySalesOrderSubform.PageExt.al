@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+
 /// <summary>
 /// PageExtension Shpfy Sales Order Subform (ID 30117) extends Record Sales Order Subform.
 /// </summary>

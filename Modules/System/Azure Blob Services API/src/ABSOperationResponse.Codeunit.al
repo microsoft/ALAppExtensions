@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 /// <summary>
 /// Holder object for holding for ABS client operations result.
 /// </summary>
@@ -78,7 +80,7 @@ codeunit 9050 "ABS Operation Response"
     end;
 
     [NonDebuggable]
-    internal procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
+    procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
     var
         Headers: HttpHeaders;
         Values: array[100] of Text;

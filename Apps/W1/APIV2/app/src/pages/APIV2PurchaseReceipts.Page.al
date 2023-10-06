@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Purchases.History;
+using Microsoft.Integration.Graph;
+
 page 30064 "APIV2 - Purchase Receipts"
 {
     APIVersion = 'v2.0';
@@ -21,133 +26,133 @@ page 30064 "APIV2 - Purchase Receipts"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(number; "No.")
+                field(number; Rec."No.")
                 {
                     Caption = 'No.';
                     Editable = false;
                 }
-                field(invoiceDate; "Document Date")
+                field(invoiceDate; Rec."Document Date")
                 {
                     Caption = 'Invoice Date';
                 }
-                field(postingDate; "Posting Date")
+                field(postingDate; Rec."Posting Date")
                 {
                     Caption = 'Posting Date';
                 }
-                field(dueDate; "Due Date")
+                field(dueDate; Rec."Due Date")
                 {
                     Caption = 'Due Date';
                 }
-                field(vendorNumber; "Buy-from Vendor No.")
+                field(vendorNumber; Rec."Buy-from Vendor No.")
                 {
                     Caption = 'Vendor No.';
                 }
-                field(vendorName; "Buy-from Vendor Name")
+                field(vendorName; Rec."Buy-from Vendor Name")
                 {
                     Caption = 'Vendor Name';
                     Editable = false;
                 }
-                field(payToName; "Pay-to Name")
+                field(payToName; Rec."Pay-to Name")
                 {
                     Caption = 'Pay-To Name';
                     Editable = false;
                 }
-                field(payToContact; "Pay-to Contact")
+                field(payToContact; Rec."Pay-to Contact")
                 {
                     Caption = 'Pay-To Contact';
                     Editable = false;
                 }
-                field(payToVendorNumber; "Pay-to Vendor No.")
+                field(payToVendorNumber; Rec."Pay-to Vendor No.")
                 {
                     Caption = 'Pay-To Vendor No.';
                 }
-                field(shipToName; "Ship-to Name")
+                field(shipToName; Rec."Ship-to Name")
                 {
                     Caption = 'Ship-To Name';
                 }
-                field(shipToContact; "Ship-to Contact")
+                field(shipToContact; Rec."Ship-to Contact")
                 {
                     Caption = 'Ship-To Contact';
                 }
-                field(buyFromAddressLine1; "Buy-from Address")
+                field(buyFromAddressLine1; Rec."Buy-from Address")
                 {
                     Caption = 'Buy-from Address Line 1';
                 }
-                field(buyFromAddressLine2; "Buy-from Address 2")
+                field(buyFromAddressLine2; Rec."Buy-from Address 2")
                 {
                     Caption = 'Buy-from Address Line 2';
                 }
-                field(buyFromCity; "Buy-from City")
+                field(buyFromCity; Rec."Buy-from City")
                 {
                     Caption = 'Buy-from City';
                 }
-                field(buyFromCountry; "Buy-from Country/Region Code")
+                field(buyFromCountry; Rec."Buy-from Country/Region Code")
                 {
                     Caption = 'Buy-from Country/Region Code';
                 }
-                field(buyFromState; "Buy-from County")
+                field(buyFromState; Rec."Buy-from County")
                 {
                     Caption = 'Buy-from State';
                 }
-                field(buyFromPostCode; "Buy-from Post Code")
+                field(buyFromPostCode; Rec."Buy-from Post Code")
                 {
                     Caption = 'Buy-from Post Code';
                 }
-                field(shipToAddressLine1; "Ship-to Address")
+                field(shipToAddressLine1; Rec."Ship-to Address")
                 {
                     Caption = 'Ship-to Address Line 1';
                 }
-                field(shipToAddressLine2; "Ship-to Address 2")
+                field(shipToAddressLine2; Rec."Ship-to Address 2")
                 {
                     Caption = 'Ship-to Address Line 2';
                 }
-                field(shipToCity; "Ship-to City")
+                field(shipToCity; Rec."Ship-to City")
                 {
                     Caption = 'Ship-to City';
                 }
-                field(shipToCountry; "Ship-to Country/Region Code")
+                field(shipToCountry; Rec."Ship-to Country/Region Code")
                 {
                     Caption = 'Ship-to Country/Region Code';
                 }
-                field(shipToState; "Ship-to County")
+                field(shipToState; Rec."Ship-to County")
                 {
                     Caption = 'Ship-to State';
                 }
-                field(shipToPostCode; "Ship-to Post Code")
+                field(shipToPostCode; Rec."Ship-to Post Code")
                 {
                     Caption = 'Ship-to Post Code';
                 }
-                field(payToAddressLine1; "Pay-to Address")
+                field(payToAddressLine1; Rec."Pay-to Address")
                 {
                     Caption = 'Pay To Address Line 1';
                     Editable = false;
                 }
-                field(payToAddressLine2; "Pay-to Address 2")
+                field(payToAddressLine2; Rec."Pay-to Address 2")
                 {
                     Caption = 'Pay To Address Line 2';
                     Editable = false;
                 }
-                field(payToCity; "Pay-to City")
+                field(payToCity; Rec."Pay-to City")
                 {
                     Caption = 'Pay To City';
                     Editable = false;
                 }
-                field(payToCountry; "Pay-to Country/Region Code")
+                field(payToCountry; Rec."Pay-to Country/Region Code")
                 {
                     Caption = 'Pay To Country/Region Code';
                     Editable = false;
                 }
-                field(payToState; "Pay-to County")
+                field(payToState; Rec."Pay-to County")
                 {
                     Caption = 'Pay To State';
                     Editable = false;
                 }
-                field(payToPostCode; "Pay-to Post Code")
+                field(payToPostCode; Rec."Pay-to Post Code")
                 {
                     Caption = 'Pay To Post Code';
                     Editable = false;
@@ -156,7 +161,7 @@ page 30064 "APIV2 - Purchase Receipts"
                 {
                     Caption = 'Currency Code';
                 }
-                field(orderNumber; "Order No.")
+                field(orderNumber; Rec."Order No.")
                 {
                     Caption = 'Order No.';
                     Editable = false;
@@ -166,9 +171,9 @@ page 30064 "APIV2 - Purchase Receipts"
                     Caption = 'Lines';
                     EntityName = 'purchaseReceiptLine';
                     EntitySetName = 'purchaseReceiptLines';
-                    SubPageLink = "Document Id" = Field(SystemId);
+                    SubPageLink = "Document Id" = field(SystemId);
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }
@@ -177,7 +182,7 @@ page 30064 "APIV2 - Purchase Receipts"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Purchase Receipt");
+                    SubPageLink = "Parent Id" = field(SystemId), "Parent Type" = const("Purchase Receipt");
                 }
             }
         }
@@ -199,7 +204,7 @@ page 30064 "APIV2 - Purchase Receipts"
 
     local procedure SetCalculatedFields()
     begin
-        CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
+        CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, Rec."Currency Code");
     end;
 
 }

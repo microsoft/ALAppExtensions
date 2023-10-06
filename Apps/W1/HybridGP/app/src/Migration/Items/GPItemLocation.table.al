@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4016 "GP Item Location"
 {
     DataClassification = CustomerContent;

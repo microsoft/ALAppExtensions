@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Azure.Identity;
+
 permissionset 160 SECURITY
 {
     Assignable = true;
@@ -11,5 +15,5 @@ permissionset 160 SECURITY
     IncludedPermissionSets = "SECURITY (System)",
                              "Azure AD Plan - Admin",
                              "Security Groups - Admin",
-                             "LOGIN";
+                             "System Application - Basic";
 }

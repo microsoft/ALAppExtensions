@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
+using System.Azure.Identity;
+using System.Environment;
+using System.Reflection;
+using System.Environment.Configuration;
+
 /// <summary>
 /// Implements functionality to get action data for a given page.
 /// </summary>

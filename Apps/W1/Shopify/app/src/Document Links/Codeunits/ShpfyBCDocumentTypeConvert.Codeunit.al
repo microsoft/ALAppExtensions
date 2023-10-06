@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+
 codeunit 30259 "Shpfy BC Document Type Convert"
 {
     var
@@ -6,13 +11,13 @@ codeunit 30259 "Shpfy BC Document Type Convert"
     procedure Convert(SalesDocumentType: enum "Sales Document Type"): enum "Shpfy Document Type";
     begin
         case SalesDocumentType of
-            "Sales Document Type"::Order:
+            SalesDocumentType::Order:
                 exit("Shpfy Document Type"::"Sales Order");
-            "Sales Document Type"::Invoice:
+            SalesDocumentType::Invoice:
                 exit("Shpfy Document Type"::"Sales Invoice");
-            "Sales Document Type"::"Return Order":
+            SalesDocumentType::"Return Order":
                 exit("Shpfy Document Type"::"Sales Return Order");
-            "Sales Document Type"::"Credit Memo":
+            SalesDocumentType::"Credit Memo":
                 exit("Shpfy Document Type"::"Sales Credit Memo");
         end;
         exit("Shpfy Document Type"::" ");
@@ -73,16 +78,18 @@ codeunit 30259 "Shpfy BC Document Type Convert"
     end;
 
     procedure Convert(BCDocumentType: enum "Shpfy Document Type"): enum "Sales Document Type";
+    var
+        DummySalesDocumentType: enum "Sales Document Type";
     begin
         case BCDocumentType of
             "Shpfy Document Type"::"Sales Order":
-                exit("Sales Document Type"::Order);
+                exit(DummySalesDocumentType::Order);
             "Shpfy Document Type"::"Sales Invoice":
-                exit("Sales Document Type"::Invoice);
+                exit(DummySalesDocumentType::Invoice);
             "Shpfy Document Type"::"Sales Return Order":
-                exit("Sales Document Type"::"Return Order");
+                exit(DummySalesDocumentType::"Return Order");
             "Shpfy Document Type"::"Sales Credit Memo":
-                exit("Sales Document Type"::"Credit Memo");
+                exit(DummySalesDocumentType::"Credit Memo");
         end;
         Error(NotSupportedErr);
     end;

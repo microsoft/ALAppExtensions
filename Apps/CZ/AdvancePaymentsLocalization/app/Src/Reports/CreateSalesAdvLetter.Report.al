@@ -170,6 +170,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
         SalesAdvLetterHeaderCZZ."Bill-to County" := SalesHeader."Bill-to County";
         SalesAdvLetterHeaderCZZ."Bill-to Post Code" := SalesHeader."Bill-to Post Code";
         SalesAdvLetterHeaderCZZ."Language Code" := SalesHeader."Language Code";
+        SalesAdvLetterHeaderCZZ."Format Region" := SalesHeader."Format Region";
         SalesAdvLetterHeaderCZZ."Salesperson Code" := SalesHeader."Salesperson Code";
         SalesAdvLetterHeaderCZZ."Shortcut Dimension 1 Code" := SalesHeader."Shortcut Dimension 1 Code";
         SalesAdvLetterHeaderCZZ."Shortcut Dimension 2 Code" := SalesHeader."Shortcut Dimension 2 Code";

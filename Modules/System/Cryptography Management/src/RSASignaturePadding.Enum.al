@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
 /// <summary>
 /// Enum that specifies all of the available padding modes. For more details check .NET RSASignaturePadding Class 
 /// </summary>

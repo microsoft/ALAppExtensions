@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using System.Environment;
+using System.Security.AccessControl;
+
 page 20060 "APIV1 - Aut. User Permission"
 {
     Caption = 'userPermission', Locked = true;
@@ -12,7 +17,7 @@ page 20060 "APIV1 - Aut. User Permission"
         {
             repeater(Group)
             {
-                field(id; "Role ID")
+                field(id; Rec."Role ID")
                 {
                     ApplicationArea = All;
                     Caption = 'id', Locked = true;
@@ -22,43 +27,43 @@ page 20060 "APIV1 - Aut. User Permission"
                     var
                         AggregatePermissionSet: Record "Aggregate Permission Set";
                     begin
-                        AggregatePermissionSet.SetRange("Role ID", "Role ID");
+                        AggregatePermissionSet.SetRange("Role ID", Rec."Role ID");
                         AggregatePermissionSet.FindFirst();
 
                         if AggregatePermissionSet.Count > 1 then
-                            Error(MultipleRoleIDErr, "Role ID");
+                            Error(MultipleRoleIDErr, Rec."Role ID");
 
-                        Scope := AggregatePermissionSet.Scope;
-                        "App ID" := AggregatePermissionSet."App ID";
+                        Rec.Scope := AggregatePermissionSet.Scope;
+                        Rec."App ID" := AggregatePermissionSet."App ID";
                     end;
                 }
-                field(displayName; "Role Name")
+                field(displayName; Rec."Role Name")
                 {
                     ApplicationArea = All;
                     Caption = 'displayName', Locked = true;
                     Editable = false;
                     ToolTip = 'Specifies the name of the security role that has been given to this Windows login in the current database.';
                 }
-                field(company; "Company Name")
+                field(company; Rec."Company Name")
                 {
                     ApplicationArea = All;
                     Caption = 'company', Locked = true;
                     ToolTip = 'Specifies the company name.';
                 }
-                field(appId; "App ID")
+                field(appId; Rec."App ID")
                 {
                     ApplicationArea = All;
                     Caption = 'appId';
                     ToolTip = 'Specifies the app id.';
                 }
-                field(extensionName; "App Name")
+                field(extensionName; Rec."App Name")
                 {
                     ApplicationArea = All;
                     Caption = 'extensionName', Locked = true;
                     Editable = false;
                     ToolTip = 'Specifies the app name.';
                 }
-                field(scope; Scope)
+                field(scope; Rec.Scope)
                 {
                     ApplicationArea = All;
                     Caption = 'scope';
@@ -77,10 +82,10 @@ page 20060 "APIV1 - Aut. User Permission"
         UserSecurityIDFilter: Text;
     begin
         if not LinesLoaded then begin
-            UserSecurityIDFilter := GetFilter("User Security ID");
+            UserSecurityIDFilter := Rec.GetFilter("User Security ID");
             if UserSecurityIDFilter = '' then
                 Error(UserIDNotSpecifiedForLinesErr);
-            if not FindFirst() then
+            if not Rec.FindFirst() then
                 exit(false);
             LinesLoaded := true;
         end;
@@ -99,4 +104,5 @@ page 20060 "APIV1 - Aut. User Permission"
         UserIDNotSpecifiedForLinesErr: Label 'You must specify a User Security ID to access user permissions.';
         LinesLoaded: Boolean;
 }
+
 

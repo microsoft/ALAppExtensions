@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.RoleCenters;
+
 pageextension 20634 "Purch Agent Role Center BF" extends "Purchasing Agent Role Center"
 {
     actions

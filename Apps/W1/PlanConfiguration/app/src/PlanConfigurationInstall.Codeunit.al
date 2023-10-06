@@ -4,6 +4,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Privacy;
+using System.Environment;
+
 /// <summary>
 /// List page that hold the default user groups assigned to a plan.
 /// </summary> 
@@ -11,7 +16,7 @@ codeunit 9039 "Plan Configuration Install"
 {
     Subtype = Install;
     ObsoleteState = Pending;
-    ObsoleteReason = 'The tables involved in the OnInstall code will be removed.';
+    ObsoleteReason = '[220_UserGroups] The tables involved in the OnInstall code will be removed. To learn more, go to https://go.microsoft.com/fwlink/?linkid=2245709.';
     ObsoleteTag = '22.0';
 
     trigger OnInstallAppPerCompany()

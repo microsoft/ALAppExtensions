@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4094 "GP Customer Transactions"
 {
     PageType = List;

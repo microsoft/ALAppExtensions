@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Analysis;
+
 tableextension 2625 StatAccAnalysisView extends "Analysis View"
 {
     fields

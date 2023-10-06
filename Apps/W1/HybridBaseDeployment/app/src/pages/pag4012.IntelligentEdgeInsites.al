@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 4012 "Intelligent Edge Insights"
 {
     PageType = CardPart;

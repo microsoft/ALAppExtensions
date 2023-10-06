@@ -1,3 +1,9 @@
+namespace Microsoft.DataMigration;
+
+using System.Environment;
+using System.Integration;
+using System.Reflection;
+
 table 4002 "Hybrid Replication Detail"
 {
     DataPerCompany = false;

@@ -76,10 +76,10 @@ page 31203 "Acc. Sched. Res. Hdr. List CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Card';
                     Image = EditLines;
-                    RunObject = Page "Acc. Sched. Res. Overview CZL";
-                    RunPageLink = "Result Code" = FIELD("Result Code"),
-                                  "Acc. Schedule Name" = FIELD("Acc. Schedule Name");
-                    ShortCutKey = 'Shift+F7';
+                    RunObject = page "Acc. Sched. Res. Overview CZL";
+                    RunPageLink = "Result Code" = field("Result Code"),
+                                  "Acc. Schedule Name" = field("Acc. Schedule Name");
+                    ShortcutKey = 'Shift+F7';
                     ToolTip = 'The funkction opens the account schedule result card.';
                 }
             }

@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.DataAdministration;
+using System.Upgrade;
+using System.Environment.Configuration;
+using System.Reflection;
+
 #pragma warning disable AA0235
 codeunit 1596 "Email Installer"
 #pragma warning restore AA0235

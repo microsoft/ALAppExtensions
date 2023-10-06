@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
 /// <summary>
 /// A details page to be shown on drill-down of time spent aggregated by application object.
 /// Shows the time spent aggregated per method name.
@@ -17,6 +19,8 @@ page 1924 "Profiling Duration By Method"
     ModifyAllowed = false;
     Editable = false;
     DataCaptionExpression = Rec."Object Type" + ' "' + Rec."Object Name" + '"';
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {
@@ -30,13 +34,13 @@ page 1924 "Profiling Duration By Method"
                 {
                     ApplicationArea = All;
                     Caption = 'Method Name';
-                    ToolTip = 'The name of the method in which the time was spent.';
+                    Tooltip = 'Specifies the name of the method in which the time was spent.';
                 }
                 field("Time Spent"; Rec."Self Time")
                 {
                     ApplicationArea = All;
                     Caption = 'Time Spent';
-                    ToolTip = 'The total time spent inside the method during the performance profiler recording.';
+                    Tooltip = 'Specifies the total time spent inside the method during the performance profiler recording.';
                 }
             }
         }

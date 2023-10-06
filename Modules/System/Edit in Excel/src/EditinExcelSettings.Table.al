@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Excel;
+
 /// <summary>
 /// Contains settings for Edit in Excel.
 /// </summary>
@@ -12,6 +14,8 @@ table 1480 "Edit in Excel Settings"
     Extensible = false;
     DataPerCompany = false;
     ReplicateData = false;
+    InherentEntitlements = RX;
+    InherentPermissions = RX;
 
     fields
     {

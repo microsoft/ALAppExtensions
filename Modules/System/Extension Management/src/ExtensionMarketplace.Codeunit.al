@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Apps;
+
+using System;
+using System.Utilities;
+using System.Azure.KeyVault;
+using System.Environment;
+using System.Environment.Configuration;
+
 /// <summary>
 /// This codeunit is used as a helper for managing interactions between
 /// Business Central and the AppSource marketplace. The marketplace provides a gallery
@@ -231,13 +239,13 @@ codeunit 2501 "Extension Marketplace"
     end;
 
     [TryFunction]
-    PROCEDURE InstallAppsourceExtension(ApplicationID: Text; TelemetryURL: Text);
-    VAR
+    procedure InstallAppsourceExtension(ApplicationID: Text; TelemetryURL: Text);
+    var
         PublishedApplication: Record "Published Application";
         ExtensionInstallation: Page "Extension Installation";
         AppId: GUID;
         PackageID: GUID;
-    BEGIN
+    begin
         AppId := MapMarketplaceIdToAppId(ApplicationID);
         if not IsNullGuid(AppId) then begin
             PublishedApplication.SETFILTER(ID, '%1', AppId);
@@ -287,6 +295,8 @@ codeunit 2501 "Extension Marketplace"
         MySessionSettings: SessionSettings;
         AppId: Guid;
     begin
+        ExtensionInstallationImpl.CheckPermissions();
+
         if not InstallAppsourceExtension(ApplicationID, TelemetryURL) then begin // successful installation returns false
             AppId := MapMarketplaceIdToAppId(ApplicationID);
             if ExtensionInstallationImpl.IsInstalledByAppId(AppId) then begin
@@ -306,6 +316,8 @@ codeunit 2501 "Extension Marketplace"
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         MySessionSettings: SessionSettings;
     begin
+        ExtensionInstallationImpl.CheckPermissions();
+
         if not InstallAppsourceExtension(AppId, TelemetryURL) then // successful installation returns false
             if ExtensionInstallationImpl.IsInstalledByAppId(AppId) then begin
                 SaveExtensionPendingSetup(AppId);
@@ -471,25 +483,25 @@ codeunit 2501 "Extension Marketplace"
         exit(false);
     end;
 
-    PROCEDURE GetMarketplaceEmbeddedUrl(): Text;
-    BEGIN
-        EXIT(AppsourceTxt + EmbedRelativeTxt);
-    END;
+    procedure GetMarketplaceEmbeddedUrl(): Text;
+    begin
+        exit(AppsourceTxt + EmbedRelativeTxt);
+    end;
 
-    PROCEDURE GetMessageType(JObject: DotNet JObject): Text;
-    BEGIN
+    procedure GetMessageType(JObject: DotNet JObject): Text;
+    begin
         // Extracts the 'msgType' property from the
-        EXIT(GetValue(JObject, 'msgType', TRUE));
-    END;
+        exit(GetValue(JObject, 'msgType', true));
+    end;
 
-    PROCEDURE GetApplicationIdFromData(JObject: DotNet JObject): Text;
-    VAR
+    procedure GetApplicationIdFromData(JObject: DotNet JObject): Text;
+    var
         TempObject: DotNet JObject;
-    BEGIN
+    begin
         // Extracts the applicationId property out of the data object return by the SPZA site
-        TempObject := TempObject.Parse(GetValue(JObject, 'data', TRUE));
-        EXIT(GetValue(TempObject, 'applicationId', true));
-    END;
+        TempObject := TempObject.Parse(GetValue(JObject, 'data', true));
+        exit(GetValue(TempObject, 'applicationId', true));
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", InvokeExtensionInstallation, '', false, false)]
     local procedure InvokeExtensionInstallation(AppId: Text; ResponseUrl: Text)

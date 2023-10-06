@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.FADepreciation;
+
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Depreciation;
+
 page 18632 "Fixed Asset Blocks"
 {
     Caption = 'Fixed Asset Blocks';

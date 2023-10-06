@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+
 /// <summary>
 /// TableExtension Shpfy Sales Header (ID 30101) extends Record Sales Header.
 /// </summary>

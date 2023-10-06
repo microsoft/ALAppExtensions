@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.CRM.RoleCenters;
+
 /// <summary>
 /// PageExtension Shpfy Sales and Rel. Mgr. RC (ID 30104) extends Record Sales and Relationship Mgr. RC.
 /// </summary>

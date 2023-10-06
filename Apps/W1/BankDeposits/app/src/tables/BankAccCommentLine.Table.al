@@ -1,11 +1,18 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Statement;
+
 table 1693 "Bank Acc. Comment Line"
 {
     Caption = 'Bank Account Comment Line';
     DrillDownPageID = "Bank Acc. Comment List";
     LookupPageID = "Bank Acc. Comment List";
+    DataClassification = CustomerContent;
 
     fields
-    { 
+    {
         field(1; "Table Name"; Option)
         {
             Caption = 'Table Name';
@@ -21,13 +28,13 @@ table 1693 "Bank Acc. Comment Line"
         field(3; "No."; Code[20])
         {
             Caption = 'No.';
-            TableRelation = IF ("Table Name" = CONST("Bank Rec.")) "Bank Acc. Reconciliation"."Statement No." WHERE("Bank Account No." = FIELD("Bank Account No."))
-            ELSE
-            IF ("Table Name" = CONST("Posted Bank Rec.")) "Bank Account Statement"."Statement No." WHERE("Bank Account No." = FIELD("Bank Account No."))
-            ELSE
-            IF ("Table Name" = CONST("Bank Deposit Header")) "Bank Deposit Header"
-            ELSE
-            IF ("Table Name" = CONST("Posted Bank Deposit Header")) "Posted Bank Deposit Header";
+            TableRelation = if ("Table Name" = const("Bank Rec.")) "Bank Acc. Reconciliation"."Statement No." where("Bank Account No." = field("Bank Account No."))
+            else
+            if ("Table Name" = const("Posted Bank Rec.")) "Bank Account Statement"."Statement No." where("Bank Account No." = field("Bank Account No."))
+            else
+            if ("Table Name" = const("Bank Deposit Header")) "Bank Deposit Header"
+            else
+            if ("Table Name" = const("Posted Bank Deposit Header")) "Posted Bank Deposit Header";
         }
         field(4; "Line No."; Integer)
         {

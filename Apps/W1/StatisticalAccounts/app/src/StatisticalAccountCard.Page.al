@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Dimension;
+
 page 2631 "Statistical Account Card"
 {
     PageType = Card;
@@ -68,6 +72,8 @@ page 2631 "Statistical Account Card"
         {
             group("A&ccount")
             {
+                Caption = 'Account';
+
                 action(Dimensions)
                 {
                     ApplicationArea = Dimensions;

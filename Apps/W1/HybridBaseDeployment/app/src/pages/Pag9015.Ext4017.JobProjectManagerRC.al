@@ -1,6 +1,14 @@
-#if not CLEAN18
+namespace Microsoft.DataMigration;
+
+using Microsoft.Projects.RoleCenters;
+
+#if not CLEAN23
 pageextension 4017 JobProjectManagerRC extends "Job Project Manager RC"
 {
+    ObsoleteReason = 'Intelligent Cloud Insights is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
+
     actions
     {
         addlast(Sections)

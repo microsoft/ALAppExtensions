@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Integration;
+
 page 132617 "Home Items Page Action Test"
 {
     Caption = 'Role Center';
@@ -19,7 +21,7 @@ page 132617 "Home Items Page Action Test"
             action(PageWithViews)
             {
                 ApplicationArea = All;
-                CaptionML = ENU = 'Page with views';
+                Caption = 'Page with views';
                 RunObject = Page "Views Page Action Test";
                 ToolTip = 'Test page with views';
             }
@@ -36,7 +38,7 @@ page 132617 "Home Items Page Action Test"
             action(PageWithViewsInProcesing)
             {
                 ApplicationArea = All;
-                CaptionML = ENU = 'Page with views';
+                Caption = 'Page with views';
                 RunObject = Page "Views Page Action Test";
                 ToolTip = 'Test page with views';
             }

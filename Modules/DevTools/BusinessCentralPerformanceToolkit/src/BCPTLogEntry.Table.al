@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Tooling;
+
+using System.Reflection;
+
 table 149002 "BCPT Log Entry"
 {
     DataClassification = SystemMetadata;
@@ -46,7 +51,7 @@ table 149002 "BCPT Log Entry"
         {
             Caption = 'Codeunit Name';
             FieldClass = FlowField;
-            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = CONST(Codeunit), "Object ID" = field("Codeunit ID")));
+            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Codeunit), "Object ID" = field("Codeunit ID")));
         }
         field(9; "Duration (ms)"; integer)
         {

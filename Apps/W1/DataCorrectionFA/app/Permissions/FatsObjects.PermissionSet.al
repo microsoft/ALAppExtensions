@@ -1,3 +1,5 @@
+namespace Microsoft.FixedAssets.Repair;
+
 permissionset 6097 "FATS - Objects"
 {
     Assignable = false;

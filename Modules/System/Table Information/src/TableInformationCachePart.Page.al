@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
 /// <summary>
 /// The Table Information Cache Part page shows information about database tables.
 /// </summary>
@@ -72,7 +74,7 @@ page 8701 "Table Information Cache Part"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the total amount of space the table occupies in the database (in kilobytes).';
-                    Visible = False;
+                    Visible = false;
                 }
 
                 field("Data Size (KB)"; Rec."Data Size (KB)")
@@ -100,7 +102,7 @@ page 8701 "Table Information Cache Part"
                     ApplicationArea = All;
                     ToolTip = 'Specifies how much space the table occupied in the database 30 days ago (in kilobytes).';
                 }
-                field("Last Period No. of Records"; "Last Period No. of Records")
+                field("Last Period No. of Records"; Rec."Last Period No. of Records")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the number of records in the table 30 days ago.';

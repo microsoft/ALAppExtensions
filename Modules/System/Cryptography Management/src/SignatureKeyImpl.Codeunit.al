@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
+using System;
+using System.Utilities;
+
 codeunit 1473 "Signature Key Impl."
 {
     Access = Internal;

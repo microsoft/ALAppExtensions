@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Environment;
+
 /// <summary>
 /// List page to show all available plan configurations.
 /// </summary>
@@ -101,7 +105,7 @@ page 9061 "Plan Configuration List"
                 Caption = 'Configure';
                 Image = Setup;
                 RunObject = Page "Plan Configuration Card";
-                RunPageLink = "Plan ID" = Field("Plan ID");
+                RunPageLink = "Plan ID" = field("Plan ID");
                 Scope = Repeater;
                 ToolTip = 'Customize license permissions.';
             }

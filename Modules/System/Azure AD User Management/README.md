@@ -1,20 +1,20 @@
-This module provides functionality for managing Azure AD users.
+This module provides functionality for managing Microsoft Entra users.
 
 Use this module to do the following:
-- synchronize the database users with the users from Azure AD - either create new ones, or update the existing ones
-- synchronize a single user with an Azure AD user
+- synchronize the database users with the users from Microsoft Entra - either create new ones, or update the existing ones
+- synchronize a single user with a Microsoft Entra user
 - check if the current user is the tenant admin
 
 # Public Objects
 ## Azure AD User Management (Codeunit 9010)
 
- Exposes functionality to manage Azure AD users.
+ Exposes functionality to manage Microsoft Entra users.
  
 
 ### CreateNewUsersFromAzureAD (Method) <a name="CreateNewUsersFromAzureAD"></a> 
 
- Retrieves all the users from Azure AD. If the users already exist in the database,
- they are updated to match the ones from Azure AD; otherwise new users are inserted in the database.
+ Retrieves all the users from Microsoft Entra. If the users already exist in the database,
+ they are updated to match the ones from Microsoft Entra; otherwise new users are inserted in the database.
  
 
 #### Syntax
@@ -25,7 +25,7 @@ procedure CreateNewUsersFromAzureAD()
 ```
 ### CreateNewUserFromGraphUser (Method) <a name="CreateNewUserFromGraphUser"></a> 
 
- Creates a new user from an Azure AD user.
+ Creates a new user from a Microsoft Entra user.
  
 
 #### Syntax
@@ -37,11 +37,11 @@ procedure CreateNewUserFromGraphUser(GraphUser: DotNet UserInfo)
 #### Parameters
 *GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
-The Azure AD user.
+The Microsoft Entra user.
 
 ### SynchronizeLicensedUserFromDirectory (Method) <a name="SynchronizeLicensedUserFromDirectory"></a> 
 
- Synchronizes a user with the Azure AD user corresponding to the authentication
+ Synchronizes a user with the Microsoft Entra user corresponding to the authentication
  email that is passed as a parameter. If the user record does not exist, it gets created.
  
 
@@ -58,11 +58,11 @@ The user's authentication email.
 #### Return Value
 *[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
-True if there is a user in Azure AD corresponding to the authentication email; otherwise false.
+True if there is a user in Microsoft Entra corresponding to the authentication email; otherwise false.
 ### SynchronizeAllLicensedUsersFromDirectory (Method) <a name="SynchronizeAllLicensedUsersFromDirectory"></a> 
 
- Synchronizes all the users from the database with the ones from Azure AD.
- Azure AD users that do not exist in the database are created.
+ Synchronizes all the users from the database with the ones from Microsoft Entra.
+ Microsoft Entra users that do not exist in the database are created.
  
 
 #### Syntax

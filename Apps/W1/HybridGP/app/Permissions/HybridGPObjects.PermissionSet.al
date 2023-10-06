@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+
 permissionset 4029 "HybridGP - Objects"
 {
     Assignable = false;
@@ -147,5 +151,11 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP PM00204" = X,
                     table "GP Known Countries" = X,
                     page "GP Company Migration Settings" = X,
-                    query "GP Item Aggregate" = X;
+                    query "GP Item Aggregate" = X,
+                    codeunit "GP Migration Error Handler" = X,
+                    page "GP Migration Error Overview" = X,
+                    page "Hybrid GP Errors Overview Fb" = X,
+                    table "GP Migration Error Overview" = X,
+                    table "GP Upgrade Settings" = X,
+                    codeunit "Data Migration Error Logging" = X;
 }

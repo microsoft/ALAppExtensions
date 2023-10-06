@@ -1,3 +1,7 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Finance.RoleCenters;
+
 pageextension 1706 AccReceivableActivitiesExt extends "Acc. Receivable Activities"
 {
     Caption = 'Activities';
@@ -7,9 +11,8 @@ pageextension 1706 AccReceivableActivitiesExt extends "Acc. Receivable Activitie
         {
             cuegroup(BankDeposits)
             {
-                Visible = BankDepositFeatureEnabled;
                 Caption = 'Bank Deposits';
-                field("Bank Deposits to Post"; "Bank Deposits to Post")
+                field("Bank Deposits to Post"; Rec."Bank Deposits to Post")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Bank Deposits to Post';
@@ -19,20 +22,5 @@ pageextension 1706 AccReceivableActivitiesExt extends "Acc. Receivable Activitie
             }
         }
     }
-
-    trigger OnOpenPage()
-#if not CLEAN21
-    var
-        BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
-#endif
-    begin
-        BankDepositFeatureEnabled := true;
-#if not CLEAN21
-        BankDepositFeatureEnabled := BankDepositFeatureMgt.IsEnabled();
-#endif
-    end;
-
-    var
-        BankDepositFeatureEnabled: Boolean;
-
 }
+

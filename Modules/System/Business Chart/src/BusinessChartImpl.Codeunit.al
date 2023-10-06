@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using System;
+using System.Utilities;
+
 codeunit 478 "Business Chart Impl."
 {
     Access = Internal;

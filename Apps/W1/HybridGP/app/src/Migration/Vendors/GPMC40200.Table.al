@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40110 "GP MC40200"
 {
     Description = 'GP Currency Setup';

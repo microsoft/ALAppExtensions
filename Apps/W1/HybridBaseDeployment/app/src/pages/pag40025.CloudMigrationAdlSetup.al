@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using System.Environment;
+using System.Utilities;
+
 page 40025 "Cloud Migration ADL Setup"
 {
 

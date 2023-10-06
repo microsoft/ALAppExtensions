@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 3902 "Retention Policy - Admin"
+namespace System.DataAdministration;
+
+permissionset 3902 "Retention Policy - Admin"
 {
     Access = Public;
     Assignable = false;

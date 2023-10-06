@@ -74,6 +74,12 @@ page 31180 "Purch. Advance Letters CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies status.';
                 }
+                field("Responsibility Center"; Rec."Responsibility Center")
+                {
+                    AccessByPermission = tabledata "Responsibility Center" = R;
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the code of the responsibility center, such as a distribution hub, that is associated with the involved user, company, customer, or vendor.';
+                }
                 field("Amount Including VAT"; Rec."Amount Including VAT")
                 {
                     ApplicationArea = Basic, Suite;
@@ -448,6 +454,11 @@ page 31180 "Purch. Advance Letters CZZ"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        Rec.SetSecurityFilterOnRespCenter();
+    end;
 
     trigger OnAfterGetCurrRecord()
     begin

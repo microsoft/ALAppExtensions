@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
+
+using Microsoft.Finance.TCS.TCSBase;
+using System.Security.AccessControl;
+using System.Security.User;
+
 table 18872 "TCS Challan Register"
 {
     Caption = 'TCS Challan Register';

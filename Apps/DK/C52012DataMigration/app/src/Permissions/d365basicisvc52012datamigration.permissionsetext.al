@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information. 
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration.C5;
+
+using System.Security.AccessControl;
+
 permissionsetextension 25738 "D365 BASIC ISV - C5 2012 Data Migration" extends "D365 BASIC ISV"
 {
     Permissions = tabledata "C5 Centre" = RIMD,

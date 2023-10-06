@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.TestLibraries.Environment.Configuration;
+using System.Security.AccessControl;
+using System.Environment;
+using System.Environment.Configuration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 130045 "System Initialization Test"
 {
     // Tests for the System Initialization codeunit
@@ -204,13 +213,9 @@ codeunit 130045 "System Initialization Test"
         CompanyTriggers: Codeunit "Company Triggers";
     begin
         // [WHEN] Calling OnCompanyOpen once
-#if not CLEAN20
 #pragma warning disable AL0432
-#endif
         CompanyTriggers.OnCompanyOpen();
-#if not CLEAN20
 #pragma warning restore AL0432
-#endif
         Commit(); // Need to commit before calling isolated event OnCompanyOpenCompleted
         CompanyTriggers.OnCompanyOpenCompleted();
     end;

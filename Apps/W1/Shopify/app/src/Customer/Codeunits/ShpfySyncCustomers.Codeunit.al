@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Customer;
+
 /// <summary>
 /// Codeunit Shpfy Sync Customers (ID 30123).
 /// </summary>
@@ -69,7 +73,7 @@ codeunit 30123 "Shpfy Sync Customers"
             end;
         end;
         Clear(TempCustomer);
-        if TempCustomer.FindSet(False, False) then begin
+        if TempCustomer.FindSet(false) then begin
             CustomerImport.SetShop(Shop);
             Repeat
                 CustomerImport.SetCustomer(TempCustomer);

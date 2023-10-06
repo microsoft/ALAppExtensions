@@ -1,6 +1,12 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 table 1451 "MS - Yodlee Bank Acc. Link"
 {
     ReplicateData = false;
+    DataClassification = CustomerContent;
 
     fields
     {
@@ -55,14 +61,14 @@ table 1451 "MS - Yodlee Bank Acc. Link"
         CurrencyCode: Code[10];
     begin
         GeneralLedgerSetup.GET();
-        IF "Currency Code" <> '' THEN
+        if "Currency Code" <> '' then
             CurrencyCode := GeneralLedgerSetup.GetCurrencyCode("Currency Code");
         BankAccount.INIT();
         BankAccount.VALIDATE("Bank Account No.", "Bank Account No.");
         BankAccount.VALIDATE(Name, Name);
         BankAccount.VALIDATE("Currency Code", CurrencyCode);
         BankAccount.VALIDATE(Contact, Contact);
-        BankAccount.INSERT(TRUE);
+        BankAccount.INSERT(true);
     end;
 }
 

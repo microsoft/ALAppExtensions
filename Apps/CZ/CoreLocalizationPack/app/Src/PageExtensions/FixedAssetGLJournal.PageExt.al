@@ -71,7 +71,9 @@ pageextension 31212 "Fixed Asset G/L Journal CZL" extends "Fixed Asset G/L Journ
     var
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
 #endif
         VATDateEnabled: Boolean;

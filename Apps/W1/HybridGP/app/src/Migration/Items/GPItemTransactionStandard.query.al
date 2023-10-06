@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 query 4101 "GP Item Transaction Standard"
 {
     QueryType = Normal;

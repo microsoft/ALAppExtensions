@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Integration;
+
+using System.Environment;
+using System.Environment.Configuration;
+
 page 2718 "Page Summary Settings"
 {
     ApplicationArea = Basic, Suite;
@@ -255,6 +265,7 @@ page 2718 "Page Summary Settings"
                 Caption = 'Try it out';
                 Visible = TryItOutActionVisible;
                 InFooterBar = true;
+                Image = Action;
 
                 trigger OnAction()
                 begin
@@ -352,7 +363,7 @@ page 2718 "Page Summary Settings"
     var
         PageSummaryProviderSettings: Record "Page Summary Settings";
     begin
-        If IsSaaS then begin
+        if IsSaaS then begin
             IntroSaasStepVisible := true;
             NextActionVisible := PageSummaryProviderSettings.ReadPermission() and PageSummaryProviderSettings.WritePermission();
         end else

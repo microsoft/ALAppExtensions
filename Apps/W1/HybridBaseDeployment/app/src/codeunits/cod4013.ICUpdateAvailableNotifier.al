@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using System.Environment.Configuration;
+using System.Integration;
+
 codeunit 4013 "Intelligent Cloud Notifier"
 {
     Permissions = tabledata "My Notifications" = rimd,

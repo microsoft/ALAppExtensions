@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Purchases.Setup;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Telemetry;
+using System.Utilities;
+
 page 10022 "IRS 1096 Setup Wizard"
 {
     Caption = 'IRS 1096 Setup Wizard';
@@ -267,8 +279,11 @@ page 10022 "IRS 1096 Setup Wizard"
     end;
 
     local procedure FinishAction();
+    var
+        GuidedExperience: Codeunit "Guided Experience";
     begin
         SetupFinished := true;
+        GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"IRS 1096 Setup Wizard");
         CurrPage.Close();
     end;
 }

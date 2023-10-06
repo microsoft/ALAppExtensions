@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Purchases.Payables;
+using Microsoft.Utilities;
+using System.Environment.Configuration;
+using System.Media;
+using System.Telemetry;
+using System.Utilities;
+
 codeunit 10016 "IRS 1096 Form Mgt."
 {
     Permissions = TableData "IRS 1096 Form Header" = imd,
@@ -6,12 +19,15 @@ codeunit 10016 "IRS 1096 Form Mgt."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ServDeclFormTok: Label 'Service Declaration', Locked = true;
-        IRS1096FeatureKeyIdTok: Label 'IRS1096Form', Locked = true;
+#if not CLEAN23
         InstallFeatureNotificationMsg: Label 'There is a new IRS 1096 form feature. An administrator can enable it on the Feature Management page.';
         DontShowAgainTxt: Label 'Do not show again';
+#endif
         InstallIRS1096NotificationNameTxt: Label 'IRS 1096 Form - Install feature';
         InstallIRS1096NotificationDescriptionTxt: Label 'This notification is used to let users know about the new IRS 1096 feature . It can be used to open the Feature Management and install the 1096 feature.';
+#if not CLEAN23        
         FeatureNotEnabledMessageTxt: Label 'The %1 page is part of the new IRS 1096 feature, which is not yet enabled in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
+#endif
         NoEntriesToCreateFormsMsg: Label 'No entries have been found by filters specified.';
         FormPerPeriodAlreadyExistsQst: Label 'The form %1 for the period from %2 to %3 already exist. If you want to replace it, use the Replace parameter on the request page. Do you want to stop the creation of forms?', Comment = '%1 - code of the form, %2,%3 - starting and ending dates of the period';
         FormsCreatedMsg: Label 'IRS 1096 forms have been created';
@@ -22,24 +38,9 @@ codeunit 10016 "IRS 1096 Form Mgt."
         NoFormsHaveBeenCreatedMsg: Label 'No IRS 1096 forms have been created';
 
     procedure IsFeatureEnabled() IsEnabled: Boolean
-    var
-        PurchPayablesSetup: Record "Purchases & Payables Setup";
-        FeatureMgtFacade: Codeunit "Feature Management Facade";
     begin
-        IsEnabled := FeatureMgtFacade.IsEnabled(GetIRS1096FormFeatureKeyId()) and PurchPayablesSetup.Get() and (PurchPayablesSetup."IRS 1096 Form No. Series" <> '');
+        IsEnabled := true;
         OnAfterCheckFeatureEnabled(IsEnabled);
-    end;
-
-    internal procedure InstallFeature()
-    var
-        FeatureKey: Record "Feature Key";
-        FeatureMgtFacade: Codeunit "Feature Management Facade";
-    begin
-        if FeatureMgtFacade.IsEnabled(GetIRS1096FormFeatureKeyId()) then begin
-            FeatureKey.Get(GetIRS1096FormFeatureKeyId());
-            FeatureKey.Validate(Enabled, FeatureKey.Enabled::None);
-            FeatureKey.Modify(true);
-        end;
     end;
 
     procedure ReleaseForm(var IRS1096FormHeader: Record "IRS 1096 Form Header")
@@ -145,6 +146,8 @@ codeunit 10016 "IRS 1096 Form Mgt."
         FeatureTelemetry.LogUsage('0000ISC', ServDeclFormTok, 'File created');
     end;
 
+#if not CLEAN23
+    [Obsolete('Not used anymore as the feature is installed by default', '23.0')]
     procedure ShowInstallFeatureNotification()
     var
         MyNotifications: Record "My Notifications";
@@ -161,6 +164,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         Install1096FeatureNotification.AddAction(DontShowAgainTxt, Codeunit::"IRS 1096 Form Mgt.", 'DontShowAgainDisableAutomaticNotificationAction');
         Install1096FeatureNotification.Send();
     end;
+#endif    
 
     procedure DontShowAgainDisableAutomaticNotificationAction(var Notification: Notification)
     var
@@ -170,10 +174,13 @@ codeunit 10016 "IRS 1096 Form Mgt."
             MyNotifications.InsertDefault(GetIRS1096FeatureNotificationId(), InstallIRS1096NotificationNameTxt, InstallIRS1096NotificationDescriptionTxt, false);
     end;
 
+#if not CLEAN23
+    [Obsolete('Not used anymore as the feature is installed by default', '23.0')]
     procedure ShowNotEnabledMessage(PageCaption: Text)
     begin
         Message(FeatureNotEnabledMessageTxt, PageCaption);
     end;
+#endif
 
     procedure ShowRelatedVendorsLedgerEntries(FormNo: Code[20]; FormLineNo: Integer)
     var
@@ -368,28 +375,6 @@ codeunit 10016 "IRS 1096 Form Mgt."
         until TempCreatedIRS1096FormHeader.Next() = 0;
     end;
 
-    local procedure GetIRS1096FormFeatureKeyId(): Text[50]
-    begin
-        exit(IRS1096FeatureKeyIdTok);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', true, true)]
-    local procedure OnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
-    var
-        IRS1096SetupWizard: Page "IRS 1096 Setup Wizard";
-    begin
-        if FeatureKey.ID = GetIRS1096FormFeatureKeyId() then
-            if IRS1096SetupWizard.RunModal() = Action::OK then
-                if not IRS1096SetupWizard.IsSetupFinished() then
-                    Error('');
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"IRS 1099 Form-Box", 'OnOpenPageEvent', '', true, true)]
-    local procedure OnOpenIRS1099FormBoxPage()
-    begin
-        ShowInstallFeatureNotification();
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', true, true)]
     local procedure InsertIntoAssistedSetup()
     var
@@ -399,8 +384,6 @@ codeunit 10016 "IRS 1096 Form Mgt."
     begin
         GuidedExperience.InsertAssistedSetup(AssistedSetupTxt, CopyStr(AssistedSetupTxt, 1, 50), AssistedSetupDescriptionTxt, 5, ObjectType::Page, Page::"IRS 1096 Setup Wizard", AssistedSetupGroup::FinancialReporting,
                                             '', VideoCategory::FinancialReporting, AssistedSetupHelpTxt);
-        if IsFeatureEnabled() then
-            GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"IRS 1096 Setup Wizard");
     end;
 
     [IntegrationEvent(false, false)]

@@ -1,3 +1,20 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Sales.Receivables;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Purchases.Payables;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Analysis;
+using System.Telemetry;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.AuditCodes;
+using System.Utilities;
+
 codeunit 1690 "Bank Deposit-Post"
 {
     Permissions = TableData "Cust. Ledger Entry" = r,
@@ -31,22 +48,22 @@ codeunit 1690 "Bank Deposit-Post"
         OnBeforeBankDepositPost(Rec);
 
         // Check deposit
-        TestField("Posting Date");
-        TestField("Total Deposit Amount");
-        TestField("Document Date");
-        TestField("Bank Account No.");
-        BankAccount.Get("Bank Account No.");
+        Rec.TestField("Posting Date");
+        Rec.TestField("Total Deposit Amount");
+        Rec.TestField("Document Date");
+        Rec.TestField("Bank Account No.");
+        BankAccount.Get(Rec."Bank Account No.");
         BankAccount.TestField(Blocked, false);
-        CalcFields("Total Deposit Lines");
-        if "Total Deposit Lines" <> "Total Deposit Amount" then
-            Error(TotalAmountsMustMatchErr, FieldCaption("Total Deposit Amount"), FieldCaption("Total Deposit Lines"));
+        Rec.CalcFields("Total Deposit Lines");
+        if Rec."Total Deposit Lines" <> Rec."Total Deposit Amount" then
+            Error(TotalAmountsMustMatchErr, Rec.FieldCaption("Total Deposit Amount"), Rec.FieldCaption("Total Deposit Lines"));
 
         OnAfterCheckBankDeposit(Rec);
 
-        if "Currency Code" = '' then
+        if Rec."Currency Code" = '' then
             Currency.InitRoundingPrecision()
         else begin
-            Currency.Get("Currency Code");
+            Currency.Get(Rec."Currency Code");
             Currency.TestField("Amount Rounding Precision");
         end;
 
@@ -56,7 +73,7 @@ codeunit 1690 "Bank Deposit-Post"
         TotalAmountLCY := 0;
         CurrLineNo := 0;
         ProgressDialog.Open(
-          StrSubstNo(PostingDepositTxt, "No.") +
+          StrSubstNo(PostingDepositTxt, Rec."No.") +
           StatusTxt +
           BankDepositLineTxt +
           DividerTxt);
@@ -65,14 +82,14 @@ codeunit 1690 "Bank Deposit-Post"
 
         PostedBankDepositHeader.LockTable();
         PostedBankDepositLine.LockTable();
-        LockTable();
+        Rec.LockTable();
         GenJournalLine.LockTable();
 
         InsertPostedBankDepositHeader(Rec);
 
         GenJournalLine.Reset();
-        GenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
-        GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
+        GenJournalLine.SetRange("Journal Template Name", Rec."Journal Template Name");
+        GenJournalLine.SetRange("Journal Batch Name", Rec."Journal Batch Name");
         if GenJournalLine.Find('-') then
             repeat
                 NextLineNo := NextLineNo + 1;
@@ -81,7 +98,7 @@ codeunit 1690 "Bank Deposit-Post"
                 AssignVATDateIfEmpty(GenJournalLine);
                 InsertPostedBankDepositLine(Rec, GenJournalLine, NextLineNo);
 
-                if not "Post as Lump Sum" then
+                if not Rec."Post as Lump Sum" then
                     AddBalancingAccount(GenJournalLine, Rec)
                 else
                     GenJournalLine."Bal. Account No." := '';
@@ -93,14 +110,14 @@ codeunit 1690 "Bank Deposit-Post"
         // Post to General, and other, Ledgers
         ProgressDialog.Update(4, PostingLinesToLedgersTxt);
         GenJournalLine.Reset();
-        GenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
-        GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
+        GenJournalLine.SetRange("Journal Template Name", Rec."Journal Template Name");
+        GenJournalLine.SetRange("Journal Batch Name", Rec."Journal Batch Name");
         if GenJournalLine.Find('-') then
             repeat
                 CurrLineNo := CurrLineNo + 1;
                 ProgressDialog.Update(2, CurrLineNo);
                 ProgressDialog.Update(3, Round(CurrLineNo / NextLineNo * 10000, 1));
-                if not "Post as Lump Sum" then
+                if not Rec."Post as Lump Sum" then
                     AddBalancingAccount(GenJournalLine, Rec)
                 else begin
                     TotalAmountLCY += GenJournalLine."Amount (LCY)";
@@ -108,20 +125,20 @@ codeunit 1690 "Bank Deposit-Post"
                 end;
                 GenJournalLine."Source Code" := SourceCodeSetup."Bank Deposit";
                 GenJournalLine."Source Type" := GenJournalLine."Source Type"::"Bank Account";
-                GenJournalLine."Source No." := "Bank Account No.";
-                GenJournalLine."Source Currency Code" := "Currency Code";
+                GenJournalLine."Source No." := Rec."Bank Account No.";
+                GenJournalLine."Source Currency Code" := Rec."Currency Code";
                 GenJournalLine."Source Currency Amount" := GenJournalLine.Amount;
                 OnBeforePostGenJournalLine(GenJournalLine, Rec, GenJnlPostLine);
                 GenJnlPostLine.RunWithoutCheck(GenJournalLine);
 
-                PostedBankDepositLine.Get("No.", CurrLineNo);
+                PostedBankDepositLine.Get(Rec."No.", CurrLineNo);
                 case GenJournalLine."Account Type" of
                     GenJournalLine."Account Type"::"G/L Account",
                     GenJournalLine."Account Type"::"Bank Account":
                         begin
                             GLEntry.FindLast();
                             PostedBankDepositLine."Entry No." := GLEntry."Entry No.";
-                            if (not "Post as Lump Sum") and (GenJournalLine.Amount * GLEntry.Amount < 0) then
+                            if (not Rec."Post as Lump Sum") and (GenJournalLine.Amount * GLEntry.Amount < 0) then
                                 PostedBankDepositLine."Entry No." := PostedBankDepositLine."Entry No." - 1;
                         end;
                     GenJournalLine."Account Type"::Customer:
@@ -135,7 +152,7 @@ codeunit 1690 "Bank Deposit-Post"
                             PostedBankDepositLine."Entry No." := VendorLedgerEntry."Entry No.";
                         end;
                 end;
-                if not "Post as Lump Sum" then begin
+                if not Rec."Post as Lump Sum" then begin
                     BankAccountLedgerEntry.FindLast();
                     PostedBankDepositLine."Bank Account Ledger Entry No." := BankAccountLedgerEntry."Entry No.";
                     if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::"Bank Account") and
@@ -148,13 +165,13 @@ codeunit 1690 "Bank Deposit-Post"
             until GenJournalLine.Next() = 0;
 
         ProgressDialog.Update(4, PostingBankEntryTxt);
-        if "Post as Lump Sum" then begin
+        if Rec."Post as Lump Sum" then begin
             PostBalancingEntry(Rec, TotalAmountLCY);
             OnRunOnAfterPostBalancingEntry(GenJournalLine);
 
             BankAccountLedgerEntry.FindLast();
             PostedBankDepositLine.Reset();
-            PostedBankDepositLine.SetRange("Bank Deposit No.", "No.");
+            PostedBankDepositLine.SetRange("Bank Deposit No.", Rec."No.");
             if PostedBankDepositLine.FindSet(true) then
                 repeat
                     PostedBankDepositLine."Bank Account Ledger Entry No." := BankAccountLedgerEntry."Entry No.";
@@ -166,21 +183,21 @@ codeunit 1690 "Bank Deposit-Post"
         DeleteBankComments(Rec);
 
         GenJournalLine.Reset();
-        GenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
-        GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
+        GenJournalLine.SetRange("Journal Template Name", Rec."Journal Template Name");
+        GenJournalLine.SetRange("Journal Batch Name", Rec."Journal Batch Name");
         OnRunOnBeforeGenJournalLineDeleteAll(Rec, PostedBankDepositLine, GenJournalLine);
         GenJournalLine.DeleteAll();
-        GenJournalTemplate.Get("Journal Template Name");
-        GenJournalBatch.Get("Journal Template Name", "Journal Batch Name");
+        GenJournalTemplate.Get(Rec."Journal Template Name");
+        GenJournalBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name");
         if GenJournalTemplate."Increment Batch Name" then
-            if IncStr("Journal Batch Name") <> '' then begin
-                GenJournalBatch.Get("Journal Template Name", "Journal Batch Name");
+            if IncStr(Rec."Journal Batch Name") <> '' then begin
+                GenJournalBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name");
                 GenJournalBatch.Delete();
-                GenJournalBatch.Name := IncStr("Journal Batch Name");
+                GenJournalBatch.Name := IncStr(Rec."Journal Batch Name");
                 if GenJournalBatch.Insert() then;
             end;
 
-        Delete();
+        Rec.Delete();
         Commit();
 
         UpdateAnalysisView.UpdateAll(0, true);
@@ -247,11 +264,9 @@ codeunit 1690 "Bank Deposit-Post"
 
     local procedure AddBalancingAccount(var GenJournalLine: Record "Gen. Journal Line"; BankDepositHeader: Record "Bank Deposit Header")
     begin
-        with GenJournalLine do begin
-            "Bal. Account Type" := "Bal. Account Type"::"Bank Account";
-            "Bal. Account No." := BankDepositHeader."Bank Account No.";
-            "Balance (LCY)" := 0;
-        end;
+        GenJournalLine."Bal. Account Type" := GenJournalLine."Bal. Account Type"::"Bank Account";
+        GenJournalLine."Bal. Account No." := BankDepositHeader."Bank Account No.";
+        GenJournalLine."Balance (LCY)" := 0;
     end;
 
     local procedure CopyBankComments(BankDepositHeader: Record "Bank Deposit Header")
@@ -296,62 +311,58 @@ codeunit 1690 "Bank Deposit-Post"
 
     local procedure InsertPostedBankDepositLine(BankDepositHeader: Record "Bank Deposit Header"; GenJournalLine: Record "Gen. Journal Line"; LineNo: Integer)
     begin
-        with PostedBankDepositLine do begin
-            "Bank Deposit No." := BankDepositHeader."No.";
-            "Line No." := LineNo;
-            "Account Type" := GenJournalLine."Account Type";
-            "Account No." := GenJournalLine."Account No.";
-            "Document Date" := GenJournalLine."Document Date";
-            "Document Type" := GenJournalLine."Document Type";
-            "Document No." := GenJournalLine."Document No.";
-            Description := GenJournalLine.Description;
-            "Currency Code" := GenJournalLine."Currency Code";
-            Amount := -GenJournalLine.Amount;
-            "Posting Group" := GenJournalLine."Posting Group";
-            "Shortcut Dimension 1 Code" := GenJournalLine."Shortcut Dimension 1 Code";
-            "Shortcut Dimension 2 Code" := GenJournalLine."Shortcut Dimension 2 Code";
-            "Dimension Set ID" := GenJournalLine."Dimension Set ID";
-            "Posting Date" := BankDepositHeader."Posting Date";
-            OnBeforePostedBankDepositLineInsert(PostedBankDepositLine, GenJournalLine);
-            Insert();
-        end;
+        PostedBankDepositLine."Bank Deposit No." := BankDepositHeader."No.";
+        PostedBankDepositLine."Line No." := LineNo;
+        PostedBankDepositLine."Account Type" := GenJournalLine."Account Type";
+        PostedBankDepositLine."Account No." := GenJournalLine."Account No.";
+        PostedBankDepositLine."Document Date" := GenJournalLine."Document Date";
+        PostedBankDepositLine."Document Type" := GenJournalLine."Document Type";
+        PostedBankDepositLine."Document No." := GenJournalLine."Document No.";
+        PostedBankDepositLine.Description := GenJournalLine.Description;
+        PostedBankDepositLine."Currency Code" := GenJournalLine."Currency Code";
+        PostedBankDepositLine.Amount := -GenJournalLine.Amount;
+        PostedBankDepositLine."Posting Group" := GenJournalLine."Posting Group";
+        PostedBankDepositLine."Shortcut Dimension 1 Code" := GenJournalLine."Shortcut Dimension 1 Code";
+        PostedBankDepositLine."Shortcut Dimension 2 Code" := GenJournalLine."Shortcut Dimension 2 Code";
+        PostedBankDepositLine."Dimension Set ID" := GenJournalLine."Dimension Set ID";
+        PostedBankDepositLine."Posting Date" := BankDepositHeader."Posting Date";
+        OnBeforePostedBankDepositLineInsert(PostedBankDepositLine, GenJournalLine);
+        PostedBankDepositLine.Insert();
     end;
 
     local procedure PostBalancingEntry(BankDepositHeader: Record "Bank Deposit Header"; TotalAmountLCY: Decimal)
     var
         GenJournalLine: Record "Gen. Journal Line";
     begin
-        with GenJournalLine do begin
-            Init();
-            "Account Type" := "Account Type"::"Bank Account";
-            "Account No." := BankDepositHeader."Bank Account No.";
-            "Posting Date" := BankDepositHeader."Posting Date";
-            "VAT Reporting Date" := GLSetup.GetVATDate(BankDepositHeader."Posting Date", BankDepositHeader."Document Date");
-            "Document No." := BankDepositHeader."No.";
-            "Currency Code" := BankDepositHeader."Currency Code";
-            "Currency Factor" := BankDepositHeader."Currency Factor";
-            "Posting Group" := BankDepositHeader."Bank Acc. Posting Group";
-            "Shortcut Dimension 1 Code" := BankDepositHeader."Shortcut Dimension 1 Code";
-            "Shortcut Dimension 2 Code" := BankDepositHeader."Shortcut Dimension 2 Code";
-            "Dimension Set ID" := BankDepositHeader."Dimension Set ID";
-            "Source Code" := SourceCodeSetup."Bank Deposit";
-            "Reason Code" := BankDepositHeader."Reason Code";
-            "Document Date" := BankDepositHeader."Document Date";
-            "External Document No." := BankDepositHeader."No.";
-            "Source Type" := "Source Type"::"Bank Account";
-            "Source No." := BankDepositHeader."Bank Account No.";
-            "Source Currency Code" := BankDepositHeader."Currency Code";
-            Description := BankDepositHeader."Posting Description";
-            Amount := BankDepositHeader."Total Deposit Amount";
-            "Source Currency Amount" := BankDepositHeader."Total Deposit Amount";
-            "Journal Template Name" := BankDepositHeader."Journal Template Name";
-            "Journal Batch Name" := BankDepositHeader."Journal Batch Name";
-            Validate(Amount);
-            "Amount (LCY)" := -TotalAmountLCY;
-            OnBeforePostBalancingEntry(GenJournalLine, BankDepositHeader, GenJnlPostLine);
-            GenJnlPostLine.RunWithCheck(GenJournalLine);
-            OnAfterPostBalancingEntry(GenJournalLine);
-        end;
+        GenJournalLine.Init();
+        GenJournalLine."Account Type" := GenJournalLine."Account Type"::"Bank Account";
+        GenJournalLine."Account No." := BankDepositHeader."Bank Account No.";
+        GenJournalLine."Posting Date" := BankDepositHeader."Posting Date";
+        GenJournalLine."VAT Reporting Date" := GLSetup.GetVATDate(BankDepositHeader."Posting Date", BankDepositHeader."Document Date");
+        GenJournalLine."Document No." := BankDepositHeader."No.";
+        GenJournalLine."Currency Code" := BankDepositHeader."Currency Code";
+        GenJournalLine."Currency Factor" := BankDepositHeader."Currency Factor";
+        GenJournalLine."Posting Group" := BankDepositHeader."Bank Acc. Posting Group";
+        GenJournalLine."Shortcut Dimension 1 Code" := BankDepositHeader."Shortcut Dimension 1 Code";
+        GenJournalLine."Shortcut Dimension 2 Code" := BankDepositHeader."Shortcut Dimension 2 Code";
+        GenJournalLine."Dimension Set ID" := BankDepositHeader."Dimension Set ID";
+        GenJournalLine."Source Code" := SourceCodeSetup."Bank Deposit";
+        GenJournalLine."Reason Code" := BankDepositHeader."Reason Code";
+        GenJournalLine."Document Date" := BankDepositHeader."Document Date";
+        GenJournalLine."External Document No." := BankDepositHeader."No.";
+        GenJournalLine."Source Type" := GenJournalLine."Source Type"::"Bank Account";
+        GenJournalLine."Source No." := BankDepositHeader."Bank Account No.";
+        GenJournalLine."Source Currency Code" := BankDepositHeader."Currency Code";
+        GenJournalLine.Description := BankDepositHeader."Posting Description";
+        GenJournalLine.Amount := BankDepositHeader."Total Deposit Amount";
+        GenJournalLine."Source Currency Amount" := BankDepositHeader."Total Deposit Amount";
+        GenJournalLine."Journal Template Name" := BankDepositHeader."Journal Template Name";
+        GenJournalLine."Journal Batch Name" := BankDepositHeader."Journal Batch Name";
+        GenJournalLine.Validate(GenJournalLine.Amount);
+        GenJournalLine."Amount (LCY)" := -TotalAmountLCY;
+        OnBeforePostBalancingEntry(GenJournalLine, BankDepositHeader, GenJnlPostLine);
+        GenJnlPostLine.RunWithCheck(GenJournalLine);
+        OnAfterPostBalancingEntry(GenJournalLine);
     end;
 
     local procedure AssignVATDateIfEmpty(var GenJnlLine: Record "Gen. Journal Line")
@@ -421,4 +432,6 @@ codeunit 1690 "Bank Deposit-Post"
     begin
     end;
 }
+
+
 

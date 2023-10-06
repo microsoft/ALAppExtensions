@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Device;
+
 /// <summary>
 /// Exposes the list of available printers.
 /// </summary>
@@ -29,13 +31,13 @@ page 2616 "Printer Management"
             repeater(Printers)
             {
                 ShowCaption = false;
-                field(ID; ID)
+                field(ID; Rec.ID)
                 {
                     ApplicationArea = All;
                     Caption = 'Printer ID';
                     ToolTip = 'Specifies the ID of the printer.';
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     ApplicationArea = All;
                     Caption = 'Description';
@@ -47,14 +49,14 @@ page 2616 "Printer Management"
                     Caption = 'Type';
                     ToolTip = 'Specifies the type of the printer.';
                 }
-                field(Device; Device)
+                field(Device; Rec.Device)
                 {
                     ApplicationArea = All;
                     Visible = false;
                     Caption = 'Device';
                     ToolTip = 'Specifies the printer device.';
                 }
-                field(Driver; Driver)
+                field(Driver; Rec.Driver)
                 {
                     ApplicationArea = All;
                     Visible = false;
@@ -100,7 +102,7 @@ page 2616 "Printer Management"
                 PromotedCategory = Category4;
                 trigger OnAction()
                 begin
-                    PrinterSetupImpl.OpenPrinterSettings(ID);
+                    PrinterSetupImpl.OpenPrinterSettings(Rec.ID);
                     CurrPage.Update();
                 end;
             }
@@ -118,7 +120,7 @@ page 2616 "Printer Management"
                 PromotedCategory = Category4;
                 trigger OnAction()
                 begin
-                    PrinterSetupImpl.SetDefaultPrinterForCurrentUser(ID);
+                    PrinterSetupImpl.SetDefaultPrinterForCurrentUser(Rec.ID);
                 end;
             }
             action(DefaultPrinterForAllUsers)
@@ -135,7 +137,7 @@ page 2616 "Printer Management"
                 Visible = IsPrinterSelectionsPageAvailable;
                 trigger OnAction()
                 begin
-                    PrinterSetupImpl.SetDefaultPrinterForAllUsers(ID);
+                    PrinterSetupImpl.SetDefaultPrinterForAllUsers(Rec.ID);
                 end;
             }
         }

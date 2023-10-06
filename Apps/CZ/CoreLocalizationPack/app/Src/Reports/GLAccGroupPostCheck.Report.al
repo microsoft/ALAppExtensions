@@ -10,7 +10,7 @@ report 11721 "G/L Acc. Group Post. Check CZL"
     {
         dataitem(Date; Date)
         {
-            DataItemTableView = sorting("Period Type", "Period Start") WHERE("Period Type" = CONST(Date));
+            DataItemTableView = sorting("Period Type", "Period Start") where("Period Type" = const(Date));
             column(CompanyName; COMPANYPROPERTY.DisplayName())
             {
             }

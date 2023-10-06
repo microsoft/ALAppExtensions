@@ -891,7 +891,7 @@ codeunit 139678 "GP Checkbook Tests"
         GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade";
         GPAccountMigrator: Codeunit "GP Account Migrator";
     begin
-        GPAccountMigrator.OnMigrateGlAccount(GLAccDataMigrationFacade, GPAccount.RecordId());
-        GPAccountMigrator.OnMigrateAccountTransactions(GLAccDataMigrationFacade, GPAccount.RecordId());
+        GPAccountMigrator.MigrateAccountDetails(GPAccount, GLAccDataMigrationFacade);
+        GPAccountMigrator.GenerateGLTransactionBatches(GPAccount);
     end;
 }

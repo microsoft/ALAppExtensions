@@ -1,3 +1,5 @@
+namespace Microsoft.Foundation.DataSearch;
+
 table 2683 "Data Search Source Temp"
 {
     Caption = 'Data Search Source Temp';

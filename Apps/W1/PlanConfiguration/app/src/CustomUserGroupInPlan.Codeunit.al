@@ -4,6 +4,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Security.AccessControl;
+using System.Telemetry;
+
 codeunit 9059 "Custom User Group In Plan"
 {
     Access = Internal;

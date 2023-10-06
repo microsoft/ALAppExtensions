@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 41003 "GP BM30200"
 {
     DataClassification = CustomerContent;

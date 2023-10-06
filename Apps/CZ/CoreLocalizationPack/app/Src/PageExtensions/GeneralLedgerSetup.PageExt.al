@@ -109,7 +109,9 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
     end;
 
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
 #endif
 }

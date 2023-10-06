@@ -375,6 +375,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
                 begin
                     CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                    CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
 
                     if IsCreditMemo(TempSalesAdvLetterEntry) then
                         DocumentLabel := CrMemoDocumentLbl

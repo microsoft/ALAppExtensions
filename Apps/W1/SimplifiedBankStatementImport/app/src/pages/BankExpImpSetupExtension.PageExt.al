@@ -1,3 +1,7 @@
+namespace Microsoft.Bank.StatementImport;
+
+using Microsoft.Bank.Setup;
+
 pageextension 8851 "Bank Exp. Imp. Setup Extension" extends "Bank Export/Import Setup"
 {
     actions

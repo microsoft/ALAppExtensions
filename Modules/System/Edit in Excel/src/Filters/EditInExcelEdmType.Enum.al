@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Excel;
+
 /// <summary>
 /// This enum specifies the OData Edm type of the fields added to excel.
 /// These should generally reflect those in the $metadata document.

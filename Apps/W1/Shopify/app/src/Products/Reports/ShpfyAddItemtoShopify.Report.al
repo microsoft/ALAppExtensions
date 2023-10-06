@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Report Shpfy Add Item to Shopify (ID 30106).
 /// </summary>

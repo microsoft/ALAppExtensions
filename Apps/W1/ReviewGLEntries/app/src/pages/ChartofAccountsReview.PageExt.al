@@ -1,3 +1,8 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 pageextension 22220 "Chart of Accounts Review" extends "Chart of Accounts"
 {
     actions

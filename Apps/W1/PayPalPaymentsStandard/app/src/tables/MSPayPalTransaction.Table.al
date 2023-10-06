@@ -1,6 +1,9 @@
+namespace Microsoft.Bank.PayPal;
+
 table 1077 "MS - PayPal Transaction"
 {
     ReplicateData = false;
+    DataClassification = CustomerContent;
 
     fields
     {
@@ -92,7 +95,7 @@ table 1077 "MS - PayPal Transaction"
         CALCFIELDS(Details);
         Details.CREATEINSTREAM(InStream);
         InStream.READTEXT(DetailsText);
-        EXIT(DetailsText);
+        exit(DetailsText);
     end;
 }
 

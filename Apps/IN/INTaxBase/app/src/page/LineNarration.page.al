@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
 page 18551 "Line Narration"
 {
     AutoSplitKey = true;
@@ -16,7 +22,7 @@ page 18551 "Line Narration"
                 Editable = false;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Document No.';
-                ToolTip = 'Specifies document number for which the voucher lines will be posted.';
+                ToolTip = 'Specifies the document number for which the voucher lines will be posted.';
             }
             repeater(Control1500000)
             {
@@ -24,7 +30,7 @@ page 18551 "Line Narration"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Narration';
-                    ToolTip = 'Select Narration option to specify the narration of a voucher.';
+                    ToolTip = 'Specifies the narration option of a voucher.';
                 }
             }
         }

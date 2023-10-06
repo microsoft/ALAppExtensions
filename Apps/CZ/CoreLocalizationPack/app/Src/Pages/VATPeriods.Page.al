@@ -59,7 +59,7 @@ page 11769 "VAT Periods CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'VAT Statements';
                 Image = VATStatement;
-                RunObject = Page "VAT Statement";
+                RunObject = page "VAT Statement";
                 ToolTip = 'Show the VAT statements.';
             }
             action("VIES Declarations")
@@ -67,7 +67,7 @@ page 11769 "VAT Periods CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'VIES Declarations';
                 Image = VATExemption;
-                RunObject = Page "VIES Declarations CZL";
+                RunObject = page "VIES Declarations CZL";
                 ToolTip = 'Show the VIES Declarations.';
             }
             action("VAT Control Report")
@@ -75,7 +75,7 @@ page 11769 "VAT Periods CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'VAT Control Report';
                 Image = VATLedger;
-                RunObject = Page "VAT Ctrl. Report List CZL";
+                RunObject = page "VAT Ctrl. Report List CZL";
                 ToolTip = 'Show the VAT Control Reports.';
             }
         }
@@ -90,7 +90,7 @@ page 11769 "VAT Periods CZL"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
-                RunObject = Report "Create VAT Period CZL";
+                RunObject = report "Create VAT Period CZL";
                 ToolTip = 'This batch job automatically creates VAT periods.';
             }
         }
@@ -101,7 +101,7 @@ page 11769 "VAT Periods CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'G/L VAT Reconciliation';
                 Image = PrintReport;
-                RunObject = Report "G/L VAT Reconciliation CZL";
+                RunObject = report "G/L VAT Reconciliation CZL";
                 ToolTip = 'This report compares general ledger entries by filtering data either by the posting date or the VAT date.';
             }
         }

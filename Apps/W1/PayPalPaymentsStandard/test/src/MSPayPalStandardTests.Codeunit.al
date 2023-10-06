@@ -14,6 +14,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryERM: Codeunit "Library - ERM";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryJob: Codeunit "Library - Job";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         MSPayPalStdMockEvents: Codeunit "MS - PayPal Std Mock Events";
         ActiveDirectoryMockEvents: Codeunit "Active Directory Mock Events";
@@ -910,6 +911,49 @@ codeunit 139500 "MS - PayPal Standard Tests"
         VerifyPaymentEvent(OverpaymentTok, SalesInvoiceHeader."No.", ReceivedAmount);
     end;
 
+    [Test]
+    [HandlerFunctions('JobTransferToSalesInvoiceRequestPageHandler,MessageHandlerNew')]
+    procedure VerifyPaymentServiceSetIDInSalesInvoiceCreatedFromJobPlanningLines();
+    var
+        Job: Record job;
+        JobTask: Record "Job Task";
+        SalesHeader: Record "Sales Header";
+        JobPlanningLine: Record "Job Planning Line";
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        JobCreateInvoice: Codeunit "Job Create-Invoice";
+    begin
+        // [SCENARIO 481482] Verify Payment Service is automatically selected when creating a sales invoice from the job planning lines.
+        Initialize();
+
+        // [GIVEN] Create a PayPal Standard Account and enable the setup.
+        CreatePayPalStandardAccount(MSPayPalStandardAccount);
+        MSPayPalStandardAccount.Enabled := true;
+        MSPayPalStandardAccount."Always Include on Documents" := true;
+        MSPayPalStandardAccount.Modify();
+
+        // [GIVEN] Create a Job.
+        LibraryJob.CreateJob(Job);
+
+        // [GIVEN] Create a Job task.
+        LibraryJob.CreateJobTask(Job, JobTask);
+
+        // [GIVEN] Create a Job planning line.
+        LibraryJob.CreateJobPlanningLine(JobPlanningLine."Line Type"::Billable, JobPlanningLine.Type::Resource, JobTask, JobPlanningLine);
+
+        // [GIVEN] Save a transaction.
+        Commit();
+
+        // [WHEN] Create a Sales Invoice.
+        JobCreateInvoice.CreateSalesInvoice(JobPlanningLine, false);
+
+        // [GIVEN] Find a Sales Header.
+        FindSalesHeader(SalesHeader, JobTask."Job No.");
+
+        // [VERIFY] Verify Payment Service is automatically selected when creating a sales invoice from the job planning lines.
+        SalesHeader.SetFilter("Payment Service Set ID", '<>%1', 0);
+        Assert.RecordIsNotEmpty(SalesHeader);
+    end;
+
     local procedure SetupPaymentNotification(var MSPayPalStandardAccount: Record "MS - PayPal Standard Account"; var SalesInvoiceHeader: Record "Sales Invoice Header");
     var
         SalesHeader: Record "Sales Header";
@@ -1123,20 +1167,22 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure SetupReportSelections();
     var
-        CustomReportLayout: Record "Custom Report Layout";
+        ReportLayoutList: Record "Report Layout List";
         ReportSelections: Record "Report Selections";
     begin
         ReportSelections.DELETEALL();
         CreateDefaultReportSelection();
 
-        GetCustomBodyLayout(CustomReportLayout);
+        ReportLayoutList.SetRange("Report ID", GetReportID());
+        ReportLayoutList.SetRange("Layout Format", ReportLayoutList."Layout Format"::Word);
+        ReportLayoutList.FindLast();
 
         ReportSelections.Reset();
         ReportSelections.SetRange(Usage, ReportSelections.Usage::"S.Invoice");
         ReportSelections.FINDFIRST();
         ReportSelections.VALIDATE("Use for Email Attachment", TRUE);
         ReportSelections.VALIDATE("Use for Email Body", TRUE);
-        ReportSelections.VALIDATE("Email Body Layout Code", CustomReportLayout.Code);
+        ReportSelections.VALIDATE("Email Body Layout Name", ReportLayoutList.Name);
         ReportSelections.MODIFY(TRUE);
     end;
 
@@ -1154,14 +1200,6 @@ codeunit 139500 "MS - PayPal Standard Tests"
     local procedure GetReportID(): Integer;
     begin
         EXIT(REPORT::"Standard Sales - Invoice");
-    end;
-
-    local procedure GetCustomBodyLayout(var CustomReportLayout: Record "Custom Report Layout");
-    begin
-        CustomReportLayout.SETRANGE("Report ID", GetReportID());
-        CustomReportLayout.SETRANGE(Type, CustomReportLayout.Type::Word);
-        CustomReportLayout.SETFILTER(Description, '''@*Email Body*''');
-        CustomReportLayout.FINDLAST();
     end;
 
     local procedure CreateSalesInvoice(var SalesHeader: Record "Sales Header"; PaymentMethod: Record "Payment Method");
@@ -1316,6 +1354,22 @@ codeunit 139500 "MS - PayPal Standard Tests"
           'Currency Code was not set correctly');
     end;
 
+    local procedure FindSalesHeader(var SalesHeader: Record "Sales Header"; JobNo: Code[20])
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        FindSalesLine(SalesLine, JobNo);
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+    end;
+
+    local procedure FindSalesLine(var SalesLine: Record "Sales Line"; JobNo: Code[20])
+    begin
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Invoice);
+        SalesLine.SetRange(Type, SalesLine.Type::Resource);
+        SalesLine.SetRange("Job No.", JobNo);
+        SalesLine.FindFirst();
+    end;
+
     [ModalPageHandler]
     procedure AccountSetupPageModalPageHandler(var MSPayPalStandardSetup: TestPage "MS - PayPal Standard Setup");
     var
@@ -1398,6 +1452,12 @@ codeunit 139500 "MS - PayPal Standard Tests"
         Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Message);
     end;
 
+    [MessageHandler]
+    [Scope('OnPrem')]
+    procedure MessageHandlerNew(Message: Text[1024])
+    begin
+    end;
+
     [ModalPageHandler]
     procedure EmailEditorHandler(var EmailEditor: TestPage "Email Editor");
     begin
@@ -1477,6 +1537,13 @@ codeunit 139500 "MS - PayPal Standard Tests"
         SelectPaymentServiceType.FIRST();
         SelectPaymentServiceType.OK().INVOKE();
     END;
+
+    [RequestPageHandler]
+    [Scope('OnPrem')]
+    procedure JobTransferToSalesInvoiceRequestPageHandler(var JobTransfertoSalesInvoice: TestRequestPage "Job Transfer to Sales Invoice")
+    begin
+        JobTransfertoSalesInvoice.OK().Invoke();
+    end;
 
 }
 

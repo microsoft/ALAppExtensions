@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Archive;
+
+using Microsoft.Finance.GST.Base;
+
 tableextension 18150 "GST Sales Line Archive Ext" extends "Sales Line Archive"
 {
     fields

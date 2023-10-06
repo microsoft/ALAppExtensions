@@ -1,15 +1,18 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Email;
+
+using System;
+
 /// <summary>
 /// Functions to be implemented by every SMTP authentication type
 /// </summary>
 interface "SMTP Authentication"
 {
-#if not CLEAN20
-    ObsoleteReason = 'Use SMTP Auth from the SMTP API app.';
-    ObsoleteState = Pending;
-    ObsoleteTag = '20.0';
-#else
     Access = Internal;
-#endif
 
     /// <summary>
     /// Validate SMTP account.

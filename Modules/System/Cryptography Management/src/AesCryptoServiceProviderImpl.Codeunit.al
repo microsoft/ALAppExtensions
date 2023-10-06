@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
 codeunit 1467 "AesCryptoServiceProvider Impl." implements SymmetricAlgorithm
 {
     Access = Internal;

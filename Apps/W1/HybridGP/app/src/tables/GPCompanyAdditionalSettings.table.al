@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+
 table 40105 "GP Company Additional Settings"
 {
     ReplicateData = false;

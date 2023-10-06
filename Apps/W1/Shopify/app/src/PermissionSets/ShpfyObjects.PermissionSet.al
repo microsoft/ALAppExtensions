@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Shpfy - Objects Permissions (ID 30104).
 /// </summary>
@@ -8,6 +10,7 @@ permissionset 30104 "Shpfy - Objects"
     Caption = 'Shopify - Objects', MaxLength = 30;
 
     Permissions =
+        table "Shpfy Bulk Operation" = X,
         table "Shpfy Credit Card Company" = X,
         table "Shpfy Cue" = X,
         table "Shpfy Customer" = X,
@@ -67,6 +70,10 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy Balance Today" = X,
         codeunit "Shpfy Base64" = X,
         codeunit "Shpfy BC Document Type Convert" = X,
+        codeunit "Shpfy Bulk Operation API" = X,
+        codeunit "Shpfy Bulk Operation Mgt." = X,
+        codeunit "Shpfy Bulk UpdateProductImage" = X,
+        codeunit "Shpfy Bulk UpdateProductPrice" = X,
         codeunit "Shpfy Checklist Item List" = X,
         codeunit "Shpfy Communication Events" = X,
         codeunit "Shpfy Communication Mgt." = X,
@@ -96,10 +103,13 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy Gift Cards" = X,
         codeunit "Shpfy GQL AddProductImage" = X,
         codeunit "Shpfy GQL ApiKey" = X,
+        codeunit "Shpfy GQL BulkOperation" = X,
+        codeunit "Shpfy GQL BulkOperations" = X,
+        codeunit "Shpfy GQL BulkOpMutation" = X,
         codeunit "Shpfy GQL CloseOrder" = X,
         codeunit "Shpfy GQL CreateFulfillment" = X,
         codeunit "Shpfy GQL CreateFulfillmentSvc" = X,
-        codeunit "Shpfy GQL CreateImageUploadUrl" = X,
+        codeunit "Shpfy GQL CreateUploadUrl" = X,
         codeunit "Shpfy GQL Customer" = X,
         codeunit "Shpfy GQL CustomerIds" = X,
         codeunit "Shpfy GQL FFOrdersFromOrder" = X,
@@ -229,8 +239,11 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy Update Item" = X,
         codeunit "Shpfy Upgrade Mgt." = X,
         codeunit "Shpfy Variant API" = X,
+        codeunit "Shpfy Webhooks API" = X,
+        codeunit "Shpfy Webhooks Mgt." = X,
         page "Shpfy Activities" = X,
         page "Shpfy Authentication" = X,
+        page "Shpfy Bulk Operations" = X,
         page "Shpfy Connector Guide" = X,
         page "Shpfy Credit Card Companies" = X,
         page "Shpfy Customer Adresses" = X,

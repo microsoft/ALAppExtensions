@@ -1,3 +1,7 @@
+namespace Microsoft.Payroll.Ceridian;
+
+using System.Upgrade;
+
 codeunit 1665 "MS Ceridian Payroll upgrade"
 {
     Subtype = Upgrade;

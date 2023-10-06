@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4100 "Hist. Migration Errors"
 {
     ApplicationArea = All;

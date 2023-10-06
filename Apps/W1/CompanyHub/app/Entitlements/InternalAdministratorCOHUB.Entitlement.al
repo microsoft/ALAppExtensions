@@ -1,3 +1,5 @@
+namespace Mirosoft.Integration.CompanyHub;
+
 entitlement "Internal Administrator COHUB"
 {
     Type = Role;

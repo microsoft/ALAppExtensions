@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4024 "GP Configuration"
 {
     ReplicateData = false;

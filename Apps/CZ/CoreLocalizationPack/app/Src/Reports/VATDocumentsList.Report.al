@@ -271,7 +271,7 @@ report 11756 "VAT Documents List CZL"
         }
         dataitem(Total; "Integer")
         {
-            DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+            DataItemTableView = sorting(Number) where(Number = filter(1 ..));
             column(Total_VAT_Calculation_Type; Format(TempTotVATAmountLine."VAT Calculation Type"))
             {
             }

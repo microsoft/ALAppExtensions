@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41017 "Hist. Payables Documents"
 {
     ApplicationArea = All;

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41013 "Hist. Purchase Recv."
 {
     PageType = Card;

@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.StockTransfer;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Purchases.Vendor;
+
 tableextension 18395 "GST Trans. Receipt Header Ext" extends "Transfer Receipt Header"
 {
     fields

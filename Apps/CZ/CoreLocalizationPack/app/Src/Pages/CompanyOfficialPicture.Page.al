@@ -29,9 +29,6 @@ page 11738 "Company Official Picture CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Take';
                 Image = Camera;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
                 ToolTip = 'Activate the camera on the device.';
                 Visible = CameraAvailable;
 
@@ -126,7 +123,6 @@ page 11738 "Company Official Picture CZL"
         TempBlob: Codeunit "Temp Blob";
         FileManagement: Codeunit "File Management";
         Camera: Codeunit Camera;
-        [InDataSet]
         CameraAvailable: Boolean;
         OverrideImageQst: Label 'The existing picture will be replaced. Do you want to continue?';
         DeleteImageQst: Label 'Are you sure you want to delete the picture?';

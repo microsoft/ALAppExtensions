@@ -1,3 +1,5 @@
+namespace Microsoft.FixedAssets.Repair;
+
 permissionset 6095 "FATS - Read"
 {
     Assignable = false;

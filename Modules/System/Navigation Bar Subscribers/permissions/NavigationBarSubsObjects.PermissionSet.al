@@ -4,6 +4,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 permissionset 1818 "Navigation Bar Subs. - Objects"
 {
     Access = Public;

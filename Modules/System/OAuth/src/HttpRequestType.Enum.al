@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Authentication;
+
 /// <summary>
 /// This enum contains the REST Http Request types.
 /// </summary>

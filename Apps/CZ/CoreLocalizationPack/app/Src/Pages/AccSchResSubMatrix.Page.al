@@ -140,13 +140,9 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
         Matrix_ColumnSet: array[4] of Integer;
         StackCounter: Integer;
         MATRIX_CaptionSet: array[4] of Text[1024];
-        [InDataSet]
         Field1Visible: Boolean;
-        [InDataSet]
         Field2Visible: Boolean;
-        [InDataSet]
         Field3Visible: Boolean;
-        [InDataSet]
         Field4Visible: Boolean;
         MatrixErr: Label 'Matrix column does not exists.';
 

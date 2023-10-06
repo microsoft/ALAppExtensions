@@ -3,10 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// This permission set is required in order to view the status of a feature Key and get the status of the data upgrade
 /// </summary>
-PermissionSet 2612 "Feature Key - View"
+permissionset 2612 "Feature Key - View"
 {
     Access = Internal;
     Assignable = false;

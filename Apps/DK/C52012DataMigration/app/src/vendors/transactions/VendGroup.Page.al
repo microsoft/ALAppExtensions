@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1893 "C5 VendGroup"
 {
     PageType = Card;
@@ -18,16 +20,16 @@ page 1893 "C5 VendGroup"
             group(General)
             {
 #pragma warning disable AA0218
-                field(Group;Group) { ApplicationArea=All; }
-                field(GroupName;GroupName) { ApplicationArea=All; }
-                field(InventoryInflowAcc;InventoryInflowAcc) { ApplicationArea=All; }
-                field(RESERVED1;RESERVED1) { ApplicationArea=All; }
-                field(InvoiceDisc;InvoiceDisc) { ApplicationArea=All; }
-                field(FeeTaxable;FeeTaxable) { ApplicationArea=All; }
-                field(FeeTaxfree;FeeTaxfree) { ApplicationArea=All; }
-                field(GroupAccount;GroupAccount) { ApplicationArea=All; }
-                field(CashPayment;CashPayment) { ApplicationArea=All; }
-                field(LineDisc;LineDisc) { ApplicationArea=All; }                
+                field(Group; Rec.Group) { ApplicationArea = All; }
+                field(GroupName; Rec.GroupName) { ApplicationArea = All; }
+                field(InventoryInflowAcc; Rec.InventoryInflowAcc) { ApplicationArea = All; }
+                field(RESERVED1; Rec.RESERVED1) { ApplicationArea = All; }
+                field(InvoiceDisc; Rec.InvoiceDisc) { ApplicationArea = All; }
+                field(FeeTaxable; Rec.FeeTaxable) { ApplicationArea = All; }
+                field(FeeTaxfree; Rec.FeeTaxfree) { ApplicationArea = All; }
+                field(GroupAccount; Rec.GroupAccount) { ApplicationArea = All; }
+                field(CashPayment; Rec.CashPayment) { ApplicationArea = All; }
+                field(LineDisc; Rec.LineDisc) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

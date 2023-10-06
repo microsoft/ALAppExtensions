@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Telemetry;
+using System.Reflection;
+
 codeunit 9863 "Permission Set Copy Impl."
 {
     Access = Internal;

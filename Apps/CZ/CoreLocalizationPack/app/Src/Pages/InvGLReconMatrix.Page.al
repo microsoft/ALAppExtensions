@@ -68,7 +68,7 @@ page 31197 "Inv. - G/L Recon. Matrix CZL"
                     ApplicationArea = Basic, Suite;
                     CaptionClass = '3,' + MATRIX_CaptionSet[4];
                     Style = Strong;
-                    StyleExpr = TRUE;
+                    StyleExpr = true;
                     Visible = Field4Visible;
                     ToolTip = 'Specifies the Matrix Cell value.';
 
@@ -82,7 +82,7 @@ page 31197 "Inv. - G/L Recon. Matrix CZL"
                     ApplicationArea = Basic, Suite;
                     CaptionClass = '3,' + MATRIX_CaptionSet[5];
                     Style = Strong;
-                    StyleExpr = TRUE;
+                    StyleExpr = true;
                     Visible = Field5Visible;
                     ToolTip = 'Specifies the Matrix Cell value.';
 
@@ -96,7 +96,7 @@ page 31197 "Inv. - G/L Recon. Matrix CZL"
                     ApplicationArea = Basic, Suite;
                     CaptionClass = '3,' + MATRIX_CaptionSet[6];
                     Style = Strong;
-                    StyleExpr = TRUE;
+                    StyleExpr = true;
                     Visible = Field6Visible;
                     ToolTip = 'Specifies the Matrix Cell value.';
 
@@ -110,7 +110,7 @@ page 31197 "Inv. - G/L Recon. Matrix CZL"
                     ApplicationArea = Basic, Suite;
                     CaptionClass = '3,' + MATRIX_CaptionSet[7];
                     Style = Strong;
-                    StyleExpr = TRUE;
+                    StyleExpr = true;
                     Visible = Field7Visible;
                     ToolTip = 'Specifies the Matrix Cell value.';
 
@@ -540,71 +540,38 @@ page 31197 "Inv. - G/L Recon. Matrix CZL"
         MATRIX_CurrentNoOfMatrixColumn: Integer;
         MATRIX_CellData: array[32] of Text[250];
         MATRIX_CaptionSet: array[32] of Text[80];
-        [InDataSet]
         Field1Visible: Boolean;
-        [InDataSet]
         Field2Visible: Boolean;
-        [InDataSet]
         Field3Visible: Boolean;
-        [InDataSet]
         Field4Visible: Boolean;
-        [InDataSet]
         Field5Visible: Boolean;
-        [InDataSet]
         Field6Visible: Boolean;
-        [InDataSet]
         Field7Visible: Boolean;
-        [InDataSet]
         Field8Visible: Boolean;
-        [InDataSet]
         Field9Visible: Boolean;
-        [InDataSet]
         Field10Visible: Boolean;
-        [InDataSet]
         Field11Visible: Boolean;
-        [InDataSet]
         Field12Visible: Boolean;
-        [InDataSet]
         Field13Visible: Boolean;
-        [InDataSet]
         Field14Visible: Boolean;
-        [InDataSet]
         Field15Visible: Boolean;
-        [InDataSet]
         Field16Visible: Boolean;
-        [InDataSet]
         Field17Visible: Boolean;
-        [InDataSet]
         Field18Visible: Boolean;
-        [InDataSet]
         Field19Visible: Boolean;
-        [InDataSet]
         Field20Visible: Boolean;
-        [InDataSet]
         Field21Visible: Boolean;
-        [InDataSet]
         Field22Visible: Boolean;
-        [InDataSet]
         Field23Visible: Boolean;
-        [InDataSet]
         Field24Visible: Boolean;
-        [InDataSet]
         Field25Visible: Boolean;
-        [InDataSet]
         Field26Visible: Boolean;
-        [InDataSet]
         Field27Visible: Boolean;
-        [InDataSet]
         Field28Visible: Boolean;
-        [InDataSet]
         Field29Visible: Boolean;
-        [InDataSet]
         Field30Visible: Boolean;
-        [InDataSet]
         Field31Visible: Boolean;
-        [InDataSet]
         Field32Visible: Boolean;
-        [InDataSet]
         TotalEmphasize: Boolean;
         IncomeStatementTxt: Label 'Income Statement';
         BalanceSheetTxt: Label 'Balance Sheet';

@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.EU3PartyTrade;
+
+using Microsoft.Finance.VAT.Reporting;
+
 pageextension 4882 "EU3 VAT Stat. Prev. Line" extends "VAT Statement Preview Line"
 {
     layout

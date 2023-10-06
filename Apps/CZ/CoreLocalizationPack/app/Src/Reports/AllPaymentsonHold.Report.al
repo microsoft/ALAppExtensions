@@ -30,7 +30,7 @@ report 11704 "All Payments on Hold CZL"
             dataitem(VendorLedgerEntry; "Vendor Ledger Entry")
             {
                 DataItemLink = "Vendor No." = field("No.");
-                DataItemTableView = sorting("Vendor No.", Open, Positive, "Due Date") WHERE(Open = CONST(true), "On Hold" = FILTER(<> ''));
+                DataItemTableView = sorting("Vendor No.", Open, Positive, "Due Date") where(Open = const(true), "On Hold" = filter(<> ''));
 
                 column(VendorLedgerEntry_DueDate; "Due Date")
                 {

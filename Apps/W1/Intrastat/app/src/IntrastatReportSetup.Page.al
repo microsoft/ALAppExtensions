@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using System.Environment.Configuration;
+
 page 4810 "Intrastat Report Setup"
 {
     ApplicationArea = BasicEU, BasicCH, BasicNO;
@@ -23,6 +31,11 @@ page 4810 "Intrastat Report Setup"
                 {
                     ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies that you must include shipments of dispatched items in Intrastat reports.';
+                }
+                field("Include Drop Shipment"; Rec."Include Drop Shipment")
+                {
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
+                    ToolTip = 'Specifies if drop shipment transactions are included in Intrastat reports.';
                 }
                 field("Shipments Based On"; Rec."Shipments Based On")
                 {
@@ -180,6 +193,23 @@ page 4810 "Intrastat Report Setup"
                 PromotedOnly = true;
                 RunObject = Page "Intrastat Report Checklist";
                 ToolTip = 'View and edit fields to be verified by the Intrastat check.';
+            }
+            action(ImportDefaultDataExchangeDef)
+            {
+                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                Caption = 'Create Default Data Exch. Def.';
+                Image = Create;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Create/Restore Default Data Exchange Definition(-s)';
+                trigger OnAction()
+                var
+                    IntrastatReportMgt: Codeunit IntrastatReportManagement;
+                begin
+                    IntrastatReportMgt.ReCreateDefaultDataExchangeDef();
+                end;
             }
         }
     }

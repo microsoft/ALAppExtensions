@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41002 "Hist. Sales Trx. Headers"
 {
     ApplicationArea = All;

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4051 "GP Company Add. Settings List"
 {
     Caption = 'GP Company Additional Settings List';

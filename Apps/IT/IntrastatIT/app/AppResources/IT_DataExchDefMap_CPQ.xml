@@ -130,7 +130,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="12" FieldID="13" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -158,7 +158,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -170,7 +170,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="13" FieldID="38" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -198,7 +198,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>

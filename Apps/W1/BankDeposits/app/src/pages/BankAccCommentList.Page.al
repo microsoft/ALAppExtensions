@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.Deposit;
+
 page 1698 "Bank Acc. Comment List"
 {
     Caption = 'Bank Account Comment List';
@@ -19,7 +21,7 @@ page 1698 "Bank Acc. Comment List"
                     ApplicationArea = Comments;
                     ToolTip = 'Specifies the number of the account, bank account, customer, vendor or item to which the comment applies.';
                 }
-                field(Date; Date)
+                field(Date; Rec.Date)
                 {
                     ApplicationArea = Comments;
                     ToolTip = 'Specifies the date the comment was created.';

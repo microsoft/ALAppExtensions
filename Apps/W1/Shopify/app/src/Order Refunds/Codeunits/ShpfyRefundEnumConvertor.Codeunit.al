@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30231 "Shpfy Refund Enum Convertor"
 {
     SingleInstance = true;

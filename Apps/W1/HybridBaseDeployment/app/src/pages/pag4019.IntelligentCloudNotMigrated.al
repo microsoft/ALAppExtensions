@@ -1,3 +1,6 @@
+namespace Microsoft.DataMigration;
+
+
 page 4019 "Intelligent Cloud Not Migrated"
 {
     Caption = 'Cloud Migration Tables Not Migrated';
@@ -14,12 +17,12 @@ page 4019 "Intelligent Cloud Not Migrated"
         {
             repeater(Group)
             {
-                field("Company Name"; "Company Name")
+                field("Company Name"; Rec."Company Name")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the company name for the table.';
                 }
-                field("Table Name"; "Table Name")
+                field("Table Name"; Rec."Table Name")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the name of the table.';
@@ -28,3 +31,4 @@ page 4019 "Intelligent Cloud Not Migrated"
         }
     }
 }
+

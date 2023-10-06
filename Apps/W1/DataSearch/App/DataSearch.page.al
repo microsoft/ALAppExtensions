@@ -1,12 +1,14 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using System.Telemetry;
+
+#pragma warning disable AS0040 // SourceTable has been removed
 page 2680 "Data Search"
+#pragma warning restore AS0040
 {
     PageType = ListPlus;
     Caption = 'Search in company data [Preview]';
     ApplicationArea = All;
-    UsageCategory = Tasks;
-    SourceTable = "Data Search Source Temp";  // necessary in order to position cursor in search field
-    SourceTableTemporary = true;
-    DeleteAllowed = false;
     AboutTitle = 'About Search in company data';
     AboutText = 'Enter one or more search words in the search field. To see which tables are being searched, select Results | Show tables to search.';
 
@@ -16,14 +18,16 @@ page 2680 "Data Search"
         {
             group(SearchStringgrp)
             {
-                Caption = 'Text to search for (enter at least 3 characters)';
-                field(SearchString; SearchString)
+                ShowCaption = false;
+                field(SearchString; DisplaySearchString)
                 {
-                    ShowCaption = false;
-                    Caption = 'Text to search for';
-                    ToolTip = 'Enter at least three characters to search for.';
+                    Caption = 'Text to search for (enter at least 3 characters)';
+#pragma warning disable AA0219
+                    ToolTip = 'Specify at least three characters to search for.';
+#pragma warning restore AA0219
                     ApplicationArea = All;
-                    Width = 250;
+                    Style = Subordinate;
+                    StyleExpr = SearchInProgress;
 
                     trigger OnValidate()
                     var
@@ -31,7 +35,7 @@ page 2680 "Data Search"
                         SearchStrings: List of [Text];
                         FirstString: Text;
                     begin
-                        SearchString := DelChr(SearchString, '<>', ' ');
+                        SearchString := DelChr(DisplaySearchString, '<>', ' ');
                         if StrLen(DelChr(SearchString, '=', '*')) < 3 then
                             exit;
                         DataSearchInTable.SplitSearchString(SearchString, SearchStrings);
@@ -43,33 +47,43 @@ page 2680 "Data Search"
                     end;
                 }
             }
+            part(LinesPart; "Data Search lines")
+            {
+                ApplicationArea = All;
+            }
             group(lines)
             {
-                Caption = 'Results';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Unnecessary';
+                ObsoleteTag = '23.0';
+                Visible = false;
                 ShowCaption = false;
-                part(LinesPart; "Data Search lines")
-                {
-                    ApplicationArea = All;
-                }
             }
         }
     }
 
     var
-        Notification: Notification;
         SearchString: Text;
+        DisplaySearchString: Text;
+        SearchInProgress: Boolean;
         ActiveSearches: Dictionary of [Integer, Integer];
         QueuedSearches: List of [Integer];
         NoOfParallelTasks: Integer;
         NoTablesDefinedErr: Label 'No tables defined for search.';
-        StatusLbl: Label 'Searching ...';
+        StatusSearchLbl: Label 'Searching for "%1"...', Comment = '%1 can be any text';
         DataSearchStartedTelemetryLbl: Label 'Data Search started', Locked = true;
         TelemetryCategoryLbl: Label 'Data Search', Locked = true;
 
     trigger OnInit()
     begin
-        NoOfParallelTasks := 5;
+        NoOfParallelTasks := 6;
         SearchString := '';
+    end;
+
+    trigger OnOpenPage()
+    begin
+        if SearchString <> '' then
+            LaunchSearch();
     end;
 
     trigger OnClosePage()
@@ -78,12 +92,6 @@ page 2680 "Data Search"
         FeatureUptakeStatus: Enum "Feature Uptake Status";
     begin
         FeatureTelemetry.LogUptake('0000IOJ', TelemetryCategoryLbl, FeatureUptakeStatus::Discovered);
-    end;
-
-    // necessary in order to position cursor in search field
-    trigger OnNewRecord(BelowxRec: Boolean)
-    begin
-        Rec.Description := CopyStr(CurrPage.Caption, 1, MaxStrLen(Rec.Description));
     end;
 
     internal procedure LaunchSearch()
@@ -111,8 +119,9 @@ page 2680 "Data Search"
         DataSearchSetupTable.SetAscending("No. of Hits", false);
         if not DataSearchSetupTable.FindSet() then
             error(NoTablesDefinedErr);
-        Notification.Message := StatusLbl;
-        Notification.Send();
+
+        SearchInProgress := true;
+        DisplaySearchString := StrSubstNo(StatusSearchLbl, SearchString);
         repeat
             QueueSearchInBackground(DataSearchSetupTable."Table/Type ID");
             NoOfTablesToSearch += 1;
@@ -182,13 +191,15 @@ page 2680 "Data Search"
         TableTypeID := ActiveSearches.Get(TaskId);
         ActiveSearches.Remove(TaskId);
         if (ActiveSearches.Count() = 0) and (QueuedSearches.Count() = 0) then
-            Notification.Recall()
+            DisplaySearchString := SearchString
         else
             DeQueueSearchInBackground();
 
         AddResults(TableTypeID, Results);
-        if (ActiveSearches.Count() = 0) and (QueuedSearches.Count() = 0) then
-            CurrPage.Update(true);
+        if (ActiveSearches.Count() = 0) and (QueuedSearches.Count() = 0) then begin
+            SearchInProgress := false;
+            CurrPage.Update(false);
+        end;
     end;
 
     protected procedure AddResults(TableTypeId: Integer; var Results: Dictionary of [Text, Text])

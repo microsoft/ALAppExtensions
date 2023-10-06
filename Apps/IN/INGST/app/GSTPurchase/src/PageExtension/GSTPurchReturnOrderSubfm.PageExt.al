@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.GST.Purchase;
+using Microsoft.Finance.TaxBase;
+
 pageextension 18091 "GST Purch. Return Order Subfm" extends "Purchase Return Order Subform"
 {
     layout
@@ -92,7 +101,7 @@ pageextension 18091 "GST Purch. Return Order Subfm" extends "Purchase Return Ord
             field(Exempted; Rec.Exempted)
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specified whether the return order is exempted form GST or not.';
+                ToolTip = 'Specifies whether the return order is exempted form GST or not.';
 
                 trigger OnValidate()
                 var

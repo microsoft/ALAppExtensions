@@ -1,3 +1,28 @@
+namespace Microsoft.Integration.MDM;
+
+using System.IO;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Sales.Customer;
+using System.Reflection;
+using Microsoft.Purchases.Vendor;
+using Microsoft.CRM.Contact;
+using Microsoft.Foundation.Address;
+using Microsoft.Finance.Currency;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Sales.Setup;
+using Microsoft.CRM.Setup;
+using Microsoft.CRM.Team;
+using Microsoft.Purchases.Setup;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.Dimension;
+using Microsoft.Utilities;
+using System.Threading;
+
 codeunit 7230 "Master Data Mgt. Setup Default"
 {
     Permissions = tabledata "Config. Template Header" = ri,
@@ -1229,7 +1254,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         IntegrationTableMapping.Modify();
     end;
 
-    internal procedure GenerateIntegrationTableMapping(var IntegrationTableMapping: Record "Integration Table Mapping"; FieldNumbers: List of [Integer]; IntegrationTableMappingName: Code[20]; TableID: Integer; ConfigTemplateCode: Code[10]; SynchOnlyCoupledRecords: Boolean; ShouldRecreateJobQueueEntry: Boolean)
+    procedure GenerateIntegrationTableMapping(var IntegrationTableMapping: Record "Integration Table Mapping"; FieldNumbers: List of [Integer]; IntegrationTableMappingName: Code[20]; TableID: Integer; ConfigTemplateCode: Code[10]; SynchOnlyCoupledRecords: Boolean; ShouldRecreateJobQueueEntry: Boolean)
     var
         IntegrationFieldMapping: Record "Integration Field Mapping";
         TableField: Record Field;

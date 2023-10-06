@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Utilities;
+
 codeunit 30203 "Company Details Checklist Item"
 {
     Access = Internal;

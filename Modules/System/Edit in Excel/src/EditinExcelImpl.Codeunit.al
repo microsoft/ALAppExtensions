@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Excel;
+
+using System;
+using System.Integration;
+using System.Environment;
+using System.Azure.Identity;
+using System.Reflection;
+
 codeunit 1482 "Edit in Excel Impl."
 {
     Access = Internal;
@@ -785,7 +793,7 @@ codeunit 1482 "Edit in Excel Impl."
         if StrPos(ODataFilter, '$filter=') = 0 then
 #pragma warning disable AA0217
             ODataFilter := StrSubstNo('%1%2', '$filter=', ODataFilter);
-#pragma warning restore
+#pragma warning restore AA0217
         EditinExcel.OnEditInExcel(ServiceName, ODataFilter, '', Handled);
         if Handled then begin
             Session.LogMessage('0000F7M', EditInExcelHandledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
@@ -800,7 +808,7 @@ codeunit 1482 "Edit in Excel Impl."
         if StrPos(ODataFilter, '$filter=') = 0 then
 #pragma warning disable AA0217
             ODataFilter := StrSubstNo('%1%2', '$filter=', ODataFilter);
-#pragma warning restore
+#pragma warning restore AA0217
         EditinExcel.OnEditInExcel(ServiceName, ODataFilter, '', Handled);
         if Handled then begin
             Session.LogMessage('0000F7M', EditInExcelHandledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
@@ -818,7 +826,7 @@ codeunit 1482 "Edit in Excel Impl."
         if StrPos(ODataFilter, '$filter=') = 0 then
 #pragma warning disable AA0217
             ODataFilter := StrSubstNo('%1%2', '$filter=', ODataFilter);
-#pragma warning restore
+#pragma warning restore AA0217
         EditinExcel.OnEditInExcel(ServiceName, ODataFilter, SearchString, Handled);
         if Handled then begin
             Session.LogMessage('0000F7N', EditInExcelHandledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);

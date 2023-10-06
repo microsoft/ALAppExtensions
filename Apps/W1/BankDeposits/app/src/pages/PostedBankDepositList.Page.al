@@ -1,3 +1,9 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Foundation.Reporting;
+using System.Telemetry;
+
 page 1696 "Posted Bank Deposit List"
 {
     ApplicationArea = Basic, Suite;
@@ -100,9 +106,9 @@ page 1696 "Posted Bank Deposit List"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     RunObject = Page "Bank Acc. Comment Sheet";
-                    RunPageLink = "Bank Account No." = FIELD("Bank Account No."),
-                                  "No." = FIELD("No.");
-                    RunPageView = WHERE("Table Name" = CONST("Posted Bank Deposit Header"));
+                    RunPageLink = "Bank Account No." = field("Bank Account No."),
+                                  "No." = field("No.");
+                    RunPageView = where("Table Name" = const("Posted Bank Deposit Header"));
                     ToolTip = 'View a list of deposit comments.';
                 }
                 action(Undo)
@@ -202,16 +208,8 @@ page 1696 "Posted Bank Deposit List"
     trigger OnInit()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
-#if not CLEAN21
-        FeatureBankDeposits: Codeunit "Feature Bank Deposits";
-#endif
     begin
         FeatureTelemetry.LogUptake('0000IG2', 'Bank Deposit', Enum::"Feature Uptake Status"::Discovered);
-#if not CLEAN21
-        if FeatureBankDeposits.ShouldSeePostedBankDeposits() then
-            exit;
-        FeatureBankDeposits.PromptFeatureBlockingOpen();
-#endif
     end;
 
     var

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Upgrade;
+
 /// <summary>
 /// Adds plans to the Plan table.
 /// </summary>
@@ -30,14 +34,15 @@ codeunit 9056 "Plan Installer"
     begin
         CreatePlan(PlanIds.GetDelegatedAdminPlanId(), 'Delegated Admin agent - Partner', 9022, '7584DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetHelpDeskPlanId(), 'Delegated Helpdesk agent - Partner', 9022, '8884DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('62E90394-69F5-4237-9190-012177145E10', 'Internal Administrator', 9022, '9B84DDCA-27B8-E911-BB26-000D3A2B005C');
+        CreatePlan(PlanIds.GetGlobalAdminPlanId(), 'Internal Administrator', 9022, '9B84DDCA-27B8-E911-BB26-000D3A2B005C'); // Global admin
+        CreatePlan(PlanIds.GetD365AdminPlanId(), 'Dynamics 365 Administrator', 9022, 'F67B9B96-C667-4DD2-B370-FA065A895C9D');
         CreatePlan(PlanIds.GetEssentialISVPlanId(), 'Dynamics 365 Business Central Essential - Embedded', 9022, '2E84DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetTeamMemberPlanId(), 'Dynamics 365 Business Central Team Member', 9028, '5784DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetMicrosoft365PlanId(), 'Microsoft 365', 8999, '57ff2da0-773e-42df-b2af-ffb7a2317929');
         CreatePlan(PlanIds.GetPremiumPlanId(), 'Dynamics 365 Business Central Premium', 9022, '3884DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetBasicFinancialsISVPlanId(), 'D365 Business Central Basic Financials', 9022, '4C84DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetEssentialPlanId(), 'Dynamics 365 Business Central Essential', 9022, '2484DDCA-27B8-E911-BB26-000D3A2B005C');
-        CreatePlan('996DEF3D-B36C-4153-8607-A6FD3C01B89F', 'D365 Business Central Infrastructure', 9022, 'A684DDCA-27B8-E911-BB26-000D3A2B005C');
+        CreatePlan(PlanIds.GetInfrastructurePlanId(), 'D365 Business Central Infrastructure', 9022, 'A684DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetAccountantHubPlanId(), 'Microsoft Dynamics 365 - Accountant Hub', 1151, '6684DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetDevicePlanId(), 'Dynamics 365 Business Central Device - Embedded', 9022, 'AC84DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetTeamMemberISVPlanId(), 'D365 Business Central Team Member - Embedded', 9028, '5E84DDCA-27B8-E911-BB26-000D3A2B005C');

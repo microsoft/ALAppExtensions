@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using Microsoft.Utilities;
+using System.IO;
+
 codeunit 1869 "C5 Unzip"
 {
     TableNo = "Name/Value Buffer";

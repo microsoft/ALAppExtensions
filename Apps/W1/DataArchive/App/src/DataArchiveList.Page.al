@@ -6,6 +6,9 @@
 /// <summary>
 /// Shows the list of data archives. This is the main page for this app.
 /// </summary>
+
+namespace System.DataAdministration;
+
 page 630 "Data Archive List"
 {
     ApplicationArea = All;

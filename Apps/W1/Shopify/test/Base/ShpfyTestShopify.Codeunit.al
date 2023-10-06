@@ -25,4 +25,18 @@ codeunit 139563 "Shpfy Test Shopify"
         // [THEN] The Shop record in the codeunit "Shpfy Communication Mgt." must be equal to the retrieved Shop.
         LibraryAssert.AreEqual(Shop.SystemId, CommunicationMgt.GetShopRecord().SystemId, '');
     end;
+
+    [Test]
+    procedure UnitTestBlockOutOfSupportAPI()
+    var
+        Shop: Record "Shpfy Shop";
+    begin
+        // [SCENARIO] If a version is out of support then the API must be blocked.
+        // [WHEN] The Shop is created.
+        Shop := InitializeTest.CreateShop();
+        CommunicationMgt.SetTestInProgress(false);
+
+        // [THEN] Test connection action should fail when invoked to call Shopify API.
+        asserterror Shop.TestConnection();
+    end;
 }

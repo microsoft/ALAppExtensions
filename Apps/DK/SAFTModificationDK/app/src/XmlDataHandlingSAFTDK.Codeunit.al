@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Enums;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 codeunit 13689 "Xml Data Handling SAF-T DK" implements XmlDataHandlingSAFT
 {
     Access = Internal;
@@ -43,41 +56,41 @@ codeunit 13689 "Xml Data Handling SAF-T DK" implements XmlDataHandlingSAFT
         RemoveNodeAllowed := false;
 
         case AuditFileExportDataType of
-            "Audit File Export Data Type"::GeneralLedgerAccounts:
+            Enum::"Audit File Export Data Type"::GeneralLedgerAccounts:
                 SetNameValueAllowed := true;
-            "Audit File Export Data Type"::Customers:
+            Enum::"Audit File Export Data Type"::Customers:
                 begin
                     AddNextSiblingsAllowed := true;
                     SetNameValueAllowed := true;
                 end;
-            "Audit File Export Data Type"::Suppliers:
+            Enum::"Audit File Export Data Type"::Suppliers:
                 begin
                     AddNextSiblingsAllowed := true;
                     SetNameValueAllowed := true;
                 end;
-            "Audit File Export Data Type"::TaxTable:
+            Enum::"Audit File Export Data Type"::TaxTable:
                 SetNameValueAllowed := true;
-            "Audit File Export Data Type"::Products:
+            Enum::"Audit File Export Data Type"::Products:
                 SetNameValueAllowed := true;
-            "Audit File Export Data Type"::Assets:
+            Enum::"Audit File Export Data Type"::Assets:
                 AddNextSiblingsAllowed := true;
-            "Audit File Export Data Type"::GeneralLedgerEntries:
+            Enum::"Audit File Export Data Type"::GeneralLedgerEntries:
                 AddNextSiblingsAllowed := true;
-            "Audit File Export Data Type"::SalesInvoices:
+            Enum::"Audit File Export Data Type"::SalesInvoices:
                 begin
                     AddNextSiblingsAllowed := true;
                     SetNameValueAllowed := true;
                 end;
-            "Audit File Export Data Type"::PurchaseInvoices:
+            Enum::"Audit File Export Data Type"::PurchaseInvoices:
                 begin
                     AddNextSiblingsAllowed := true;
                     SetNameValueAllowed := true;
                 end;
-            "Audit File Export Data Type"::Payments:
+            Enum::"Audit File Export Data Type"::Payments:
                 AddNextSiblingsAllowed := true;
-            "Audit File Export Data Type"::MovementOfGoods:
+            Enum::"Audit File Export Data Type"::MovementOfGoods:
                 AddNextSiblingsAllowed := true;
-            "Audit File Export Data Type"::AssetTransactions:
+            Enum::"Audit File Export Data Type"::AssetTransactions:
                 AddNextSiblingsAllowed := true;
         end;
     end;
@@ -191,11 +204,11 @@ codeunit 13689 "Xml Data Handling SAF-T DK" implements XmlDataHandlingSAFT
         end;
 
         case PartnerType of
-            "Partner Type"::Company:
+            Enum::"Partner Type"::Company:
                 EntityType := 'Company';
-            "Partner Type"::Person:
+            Enum::"Partner Type"::Person:
                 EntityType := 'Private';
-            "Partner Type"::Government:
+            Enum::"Partner Type"::Government:
                 EntityType := 'Government';
             else
                 EntityType := 'Other';

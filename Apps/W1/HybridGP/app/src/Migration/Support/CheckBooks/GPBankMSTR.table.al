@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40100 "GP Bank MSTR"
 {
     DataClassification = CustomerContent;

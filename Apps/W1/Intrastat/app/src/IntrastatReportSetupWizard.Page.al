@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.NoSeries;
+using System.Environment;
+using System.Telemetry;
+using System.Utilities;
+
 page 4815 "Intrastat Report Setup Wizard"
 {
     ApplicationArea = BasicEU, BasicCH, BasicNO;
@@ -69,6 +81,12 @@ page 4815 "Intrastat Report Setup Wizard"
                     {
                         ApplicationArea = BasicEU, BasicCH, BasicNO;
                         ToolTip = 'Specifies that you must include shipments of dispatched items in Intrastat reports.';
+                        Editable = true;
+                    }
+                    field("Include Drop Shipment"; Rec."Include Drop Shipment")
+                    {
+                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ToolTip = 'Specifies if drop shipment transactions are included in Intrastat reports.';
                         Editable = true;
                     }
                     field("Shipments Based On"; Rec."Shipments Based On")

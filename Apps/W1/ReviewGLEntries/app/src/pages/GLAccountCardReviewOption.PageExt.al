@@ -1,3 +1,8 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using System.Telemetry;
+
 pageextension 22205 "G/L Account Card Review Option" extends "G/L Account Card"
 {
     layout

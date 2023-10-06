@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1906 "C5 CustContact"
 {
     PageType = List;
@@ -17,19 +19,19 @@ page 1906 "C5 CustContact"
             repeater(General)
             {
 #pragma warning disable AA0218
-                field(Account;Account) { ApplicationArea=All; }
-                field(Name;Name) { ApplicationArea=All; }
-                field(Position;Position) { ApplicationArea=All; }
-                field(Address1;Address1) { ApplicationArea=All; }
-                field(Address2;Address2) { ApplicationArea=All; }
-                field(ZipCity;ZipCity) { ApplicationArea=All; }
-                field(Country;Country) { ApplicationArea=All; }
-                field(Email;Email) { ApplicationArea=All; }
-                field(Phone;Phone) { ApplicationArea=All; }
-                field(Fax;Fax) { ApplicationArea=All; }
-                field(LocalNumber;LocalNumber) { ApplicationArea=All; }
-                field(CellPhone;CellPhone) { ApplicationArea=All; }
-                field(PrimaryContact;PrimaryContact) { ApplicationArea=All; }
+                field(Account; Rec.Account) { ApplicationArea = All; }
+                field(Name; Rec.Name) { ApplicationArea = All; }
+                field(Position; Rec.Position) { ApplicationArea = All; }
+                field(Address1; Rec.Address1) { ApplicationArea = All; }
+                field(Address2; Rec.Address2) { ApplicationArea = All; }
+                field(ZipCity; Rec.ZipCity) { ApplicationArea = All; }
+                field(Country; Rec.Country) { ApplicationArea = All; }
+                field(Email; Rec.Email) { ApplicationArea = All; }
+                field(Phone; Rec.Phone) { ApplicationArea = All; }
+                field(Fax; Rec.Fax) { ApplicationArea = All; }
+                field(LocalNumber; Rec.LocalNumber) { ApplicationArea = All; }
+                field(CellPhone; Rec.CellPhone) { ApplicationArea = All; }
+                field(PrimaryContact; Rec.PrimaryContact) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

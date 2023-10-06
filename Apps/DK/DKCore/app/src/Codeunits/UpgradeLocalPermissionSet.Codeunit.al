@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Finance.Core;
+
+using System.Environment.Configuration;
+using System.Security.AccessControl;
+using System.Upgrade;
+
 codeunit 13602 "Upgrade Local Permission Set"
 {
     Subtype = Upgrade;

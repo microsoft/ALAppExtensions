@@ -1,7 +1,13 @@
 // ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Text;
+
+using System;
+using System.Utilities;
+
 /// <summary> 
 /// EAN-13 barcode font implementation from IDAutomation
 /// from: https://www.barcodefaq.com/barcode-properties/symbologies/ean-13/

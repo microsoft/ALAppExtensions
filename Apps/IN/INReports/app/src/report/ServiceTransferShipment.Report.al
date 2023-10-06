@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Reports;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.ServicesTransfer;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
+using System.Utilities;
+
 report 18040 "Service Transfer Shipment"
 {
     DefaultLayout = RDLC;

@@ -1,3 +1,6 @@
+namespace System.Security.AccessControl;
+
+using Microsoft.Finance.Latepayment;
 permissionset 8310 "LatePayment - Edit"
 {
     Assignable = false;

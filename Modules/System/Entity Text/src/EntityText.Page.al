@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Text;
+
 /// <summary>
 /// The fallback edit page shown if the OnEditEntityText is not handled.
 /// Uses the "Entity Text Part" to render the rich text editor.

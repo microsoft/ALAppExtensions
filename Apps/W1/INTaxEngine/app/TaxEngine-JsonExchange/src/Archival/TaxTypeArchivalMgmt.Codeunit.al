@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.JsonExchange;
+
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using System.Reflection;
+
 codeunit 20368 "Tax Type Archival Mgmt."
 {
     procedure ShowConfigurationFile(TaxTypeArchivalLogEntry: Record "Tax Type Archival Log Entry")

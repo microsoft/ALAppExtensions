@@ -77,7 +77,7 @@ report 31058 "VIES Declaration CZL"
                 }
                 dataitem(VIESDeclarationLineCZL; "VIES Declaration Line CZL")
                 {
-                    DataItemLink = "VIES Declaration No." = FIELD("No.");
+                    DataItemLink = "VIES Declaration No." = field("No.");
                     DataItemTableView = sorting("VAT Registration No.");
                     column(TotalValueEU3rdPartyItemSale; TotalValueEU3rdPartyItemSale)
                     {

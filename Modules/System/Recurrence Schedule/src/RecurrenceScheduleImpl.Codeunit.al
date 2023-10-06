@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.DateTime;
+
+using System.Utilities;
+
 codeunit 4691 "Recurrence Schedule Impl."
 {
     Access = Internal;
@@ -106,15 +111,14 @@ codeunit 4691 "Recurrence Schedule Impl."
 
     local procedure AnyWeekDaysSelected(RecurrenceSchedule: Record "Recurrence Schedule"): Boolean
     begin
-        with RecurrenceSchedule do
-            exit(
-              "Recurs on Monday" or
-              "Recurs on Tuesday" or
-              "Recurs on Wednesday" or
-              "Recurs on Thursday" or
-              "Recurs on Friday" or
-              "Recurs on Saturday" or
-              "Recurs on Sunday");
+        exit(
+              RecurrenceSchedule."Recurs on Monday" or
+              RecurrenceSchedule."Recurs on Tuesday" or
+              RecurrenceSchedule."Recurs on Wednesday" or
+              RecurrenceSchedule."Recurs on Thursday" or
+              RecurrenceSchedule."Recurs on Friday" or
+              RecurrenceSchedule."Recurs on Saturday" or
+              RecurrenceSchedule."Recurs on Sunday");
     end;
 
     local procedure GetNextWeekDay(RecurrenceSchedule: Record "Recurrence Schedule"; CurrentWeekDay: Integer): Integer
@@ -122,7 +126,7 @@ codeunit 4691 "Recurrence Schedule Impl."
         if CurrentWeekDay < 0 then
             CurrentWeekDay := 0;
 
-        REPEAT
+        repeat
             case CurrentWeekDay of
                 0:
                     if RecurrenceSchedule."Recurs on Monday" then

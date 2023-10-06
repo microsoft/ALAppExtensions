@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Email;
+
+using System.Email;
+using System.TestLibraries.Email;
+using System.TestLibraries.Integration.Word;
+using System.Integration.Word;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 134696 "Email Editor Validation Tests"
 {
     SubType = Test;
@@ -709,7 +718,7 @@ codeunit 134696 "Email Editor Validation Tests"
     begin
         Choice := 1;
     end;
-
+#pragma warning disable AA0150
     [StrMenuHandler]
     [Scope('OnPrem')]
     procedure ValidateDraftDefaultOptionEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
@@ -723,4 +732,5 @@ codeunit 134696 "Email Editor Validation Tests"
     begin
         Assert.AreEqual(2, Choice, 'The default option is not discard.');
     end;
+#pragma warning restore AA0150
 }

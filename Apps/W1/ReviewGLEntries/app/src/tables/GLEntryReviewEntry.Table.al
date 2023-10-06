@@ -1,3 +1,5 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
 table 22216 "G/L Entry Review Entry"
 {
     fields

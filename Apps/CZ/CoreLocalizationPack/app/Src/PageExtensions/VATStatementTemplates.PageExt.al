@@ -31,7 +31,7 @@ pageextension 11758 "VAT Statement Templates CZL" extends "VAT Statement Templat
                 ApplicationArea = VAT;
                 Caption = 'VAT Attribute Codes';
                 Image = List;
-                RunObject = Page "VAT Attribute Codes CZL";
+                RunObject = page "VAT Attribute Codes CZL";
                 RunPageLink = "VAT Statement Template Name" = field(Name);
                 ToolTip = 'Specifies a set of VAT attributes to use in this VAT Statement Template.';
             }

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1867 "C5 InvenItemGroup"
 {
     PageType = Card;
@@ -18,23 +20,23 @@ page 1867 "C5 InvenItemGroup"
             group(General)
             {
 #pragma warning disable AA0218
-                field(Group;Group) { ApplicationArea=All; }
-                field(GroupName;GroupName) { ApplicationArea=All; }
-                field(SalesAcc;SalesAcc) { ApplicationArea=All; }
-                field(COGSAcc;COGSAcc) { ApplicationArea=All; }
-                field(SalesDiscAcc;SalesDiscAcc) { ApplicationArea=All; }
-                field(InventoryInflowAcc;InventoryInflowAcc) { ApplicationArea=All; }
-                field(InventoryOutflowAcc;InventoryOutflowAcc) { ApplicationArea=All; }
-                field(LossAcc;LossAcc) { ApplicationArea=All; }
-                field(ProfitAcc;ProfitAcc) { ApplicationArea=All; }
-                field(InterimInflowOffset;InterimInflowOffset) { ApplicationArea=All; }
-                field(InterimOutflowOffset;InterimOutflowOffset) { ApplicationArea=All; }
-                field(ProfitMarginPct;ProfitMarginPct) { ApplicationArea=All; }
-                field(InterimInflowAcc;InterimInflowAcc) { ApplicationArea=All; }
-                field(InterimOutflowAcc;InterimOutflowAcc) { ApplicationArea=All; }
-                field(PurchDiscAcc;PurchDiscAcc) { ApplicationArea=All; }
+                field(Group; Rec.Group) { ApplicationArea = All; }
+                field(GroupName; Rec.GroupName) { ApplicationArea = All; }
+                field(SalesAcc; Rec.SalesAcc) { ApplicationArea = All; }
+                field(COGSAcc; Rec.COGSAcc) { ApplicationArea = All; }
+                field(SalesDiscAcc; Rec.SalesDiscAcc) { ApplicationArea = All; }
+                field(InventoryInflowAcc; Rec.InventoryInflowAcc) { ApplicationArea = All; }
+                field(InventoryOutflowAcc; Rec.InventoryOutflowAcc) { ApplicationArea = All; }
+                field(LossAcc; Rec.LossAcc) { ApplicationArea = All; }
+                field(ProfitAcc; Rec.ProfitAcc) { ApplicationArea = All; }
+                field(InterimInflowOffset; Rec.InterimInflowOffset) { ApplicationArea = All; }
+                field(InterimOutflowOffset; Rec.InterimOutflowOffset) { ApplicationArea = All; }
+                field(ProfitMarginPct; Rec.ProfitMarginPct) { ApplicationArea = All; }
+                field(InterimInflowAcc; Rec.InterimInflowAcc) { ApplicationArea = All; }
+                field(InterimOutflowAcc; Rec.InterimOutflowAcc) { ApplicationArea = All; }
+                field(PurchDiscAcc; Rec.PurchDiscAcc) { ApplicationArea = All; }
 #pragma warning restore
             }
         }
-    }    
+    }
 }

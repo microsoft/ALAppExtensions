@@ -4,6 +4,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Security.AccessControl;
+
 permissionsetextension 9048 "Plan Config - System App Basic" extends "System App - Basic"
 {
     IncludedPermissionSets = "Plan Configuration - Read";

@@ -2,6 +2,12 @@
 #pragma warning disable AL0432
 codeunit 31414 "Adj. Exch. Rates handler CZZ"
 {
+    ObsoleteReason = 'No longer used.';
+    ObsoleteState = Pending;
+#pragma warning disable AS0072    
+    ObsoleteTag = '21.0';
+#pragma warning restore AS0072    
+
     [EventSubscriber(ObjectType::Report, Report::"Adjust Exchange Rates CZL", 'OnSkipCustLedgerEntry', '', false, false)]
     local procedure AdjusExchnageRatesCZLOnSkipCustLedgerEntry(CustLedgerEntry: Record "Cust. Ledger Entry"; SkipAdvancePayments: Boolean; var SkipCustLedgerEntry: Boolean)
     begin

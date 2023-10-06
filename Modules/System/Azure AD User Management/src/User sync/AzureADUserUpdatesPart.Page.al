@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 /// <summary>
 /// A list part page to view and remove synchronized user updates.
 /// </summary>
@@ -31,7 +33,7 @@ page 9516 "Azure AD User Updates Part"
                 }
                 field("Authentication Object ID"; Rec."Authentication Object ID")
                 {
-                    ToolTip = 'Specifies the AAD user ID of the user who the update relates to.';
+                    ToolTip = 'Specifies the Microsoft Entra user ID of the user who the update relates to.';
                     ApplicationArea = All;
                     Visible = false;
                 }

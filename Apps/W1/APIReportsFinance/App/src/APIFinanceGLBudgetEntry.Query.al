@@ -1,3 +1,7 @@
+namespace Microsoft.API.FinancialManagement;
+
+using Microsoft.Finance.GeneralLedger.Budget;
+
 query 30305 "API Finance - GL Budget Entry"
 {
     QueryType = API;

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
 /// <summary>
 /// The interface for running performance profiling using sampling.
 /// </summary>
@@ -20,6 +22,15 @@ codeunit 1924 "Sampling Performance Profiler"
     procedure Start()
     begin
         SamplingPerfProfilerImpl.Start();
+    end;
+
+    /// <summary>
+    /// Starts performance profiling.
+    /// </summary>
+    procedure Start(SamplingInterval: Enum "Sampling Interval")
+    var
+    begin
+        SamplingPerfProfilerImpl.Start(SamplingInterval);
     end;
 
     /// <summary>

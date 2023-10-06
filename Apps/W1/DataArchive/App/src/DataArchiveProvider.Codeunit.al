@@ -6,6 +6,15 @@
 /// <summary>
 /// Implements the "Data Archive Provider" and hence the main parts of the archiving functionality
 /// </summary>
+
+namespace System.DataAdministration;
+
+using System.Environment;
+using System.Utilities;
+using System.IO;
+using System.Reflection;
+using Microsoft.Inventory.Item.Picture;
+
 codeunit 605 "Data Archive Provider" implements "Data Archive Provider"
 {
     Access = Internal;

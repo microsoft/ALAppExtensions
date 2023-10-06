@@ -1,9 +1,21 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Sales.Setup;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.Dimension;
+using System.Globalization;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+
 table 1690 "Bank Deposit Header"
 {
     Caption = 'Bank Deposit Header';
     DataCaptionFields = "No.";
     LookupPageID = "Bank Deposit List";
     Permissions = tabledata "Bank Deposit Header" = rm;
+    DataClassification = CustomerContent;
 
     fields
     {
@@ -37,6 +49,7 @@ table 1690 "Bank Deposit Header"
                 Validate("Currency Code", BankAccount."Currency Code");
                 "Bank Acc. Posting Group" := BankAccount."Bank Acc. Posting Group";
                 "Language Code" := BankAccount."Language Code";
+                "Format Region" := BankAccount."Format Region";
 
                 DimensionManagement.AddDimSource(DefaultDimSource, Database::"Bank Account", "Bank Account No.");
                 CreateDim(DefaultDimSource);
@@ -115,7 +128,7 @@ table 1690 "Bank Deposit Header"
         {
             CaptionClass = '1,2,1';
             Caption = 'Shortcut Dimension 1 Code';
-            TableRelation = "Dimension Value".Code WHERE("Global Dimension No." = CONST(1));
+            TableRelation = "Dimension Value".Code where("Global Dimension No." = const(1));
 
             trigger OnValidate()
             begin
@@ -127,7 +140,7 @@ table 1690 "Bank Deposit Header"
         {
             CaptionClass = '1,2,2';
             Caption = 'Shortcut Dimension 2 Code';
-            TableRelation = "Dimension Value".Code WHERE("Global Dimension No." = CONST(2));
+            TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2));
 
             trigger OnValidate()
             begin
@@ -179,13 +192,13 @@ table 1690 "Bank Deposit Header"
         {
             Caption = 'Journal Batch Name';
             Editable = false;
-            TableRelation = "Gen. Journal Batch".Name WHERE("Journal Template Name" = FIELD("Journal Template Name"));
+            TableRelation = "Gen. Journal Batch".Name where("Journal Template Name" = field("Journal Template Name"));
         }
         field(21; Comment; Boolean)
         {
-            CalcFormula = Exist("Bank Acc. Comment Line" WHERE("Table Name" = CONST("Bank Deposit Header"),
-                                                           "Bank Account No." = FIELD("Bank Account No."),
-                                                           "No." = FIELD("No.")));
+            CalcFormula = exist("Bank Acc. Comment Line" where("Table Name" = const("Bank Deposit Header"),
+                                                           "Bank Account No." = field("Bank Account No."),
+                                                           "No." = field("No.")));
             Caption = 'Comment';
             Editable = false;
             FieldClass = FlowField;
@@ -196,8 +209,8 @@ table 1690 "Bank Deposit Header"
         {
             AutoFormatExpression = "Currency Code";
             AutoFormatType = 1;
-            CalcFormula = - Sum("Gen. Journal Line".Amount WHERE("Journal Template Name" = FIELD("Journal Template Name"),
-                                                                 "Journal Batch Name" = FIELD("Journal Batch Name")));
+            CalcFormula = - sum("Gen. Journal Line".Amount where("Journal Template Name" = field("Journal Template Name"),
+                                                                 "Journal Batch Name" = field("Journal Batch Name")));
             Caption = 'Total Deposit Lines';
             Editable = false;
             FieldClass = FlowField;
@@ -205,6 +218,11 @@ table 1690 "Bank Deposit Header"
         field(23; "Post as Lump Sum"; Boolean)
         {
             Caption = 'Post as Lump Sum';
+        }
+        field(24; "Format Region"; Text[80])
+        {
+            Caption = 'Format Region';
+            TableRelation = "Language Selection"."Language Tag";
         }
         field(480; "Dimension Set ID"; Integer)
         {

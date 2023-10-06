@@ -1,3 +1,9 @@
+namespace Microsoft.Finance.Latepayment;
+
+using System.Security.Encryption;
+using System.Threading;
+using System.AI;
+using System.Privacy;
 page 1950 "LP Machine Learning Setup"
 {
     PageType = Card;

@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+
 /// <summary>
 /// TableExtension Shpfy Sales Line (ID 30104) extends Record Sales Line.
 /// </summary>

@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
 permissionset 5282 "SAF-T Objects"
 {
     Access = Public;
@@ -6,7 +12,7 @@ permissionset 5282 "SAF-T Objects"
     Permissions = table "Source Code SAF-T" = X,
                   table "Missing Field SAF-T" = X,
                   page "Data Check SAF-T" = X,
-                  page "SAF-T Setup Wizard" = X,
+                  page "SAF-T Wizard" = X,
                   page "Source Codes SAF-T" = X,
                   page "VAT Posting Setup SAF-T" = X,
                   codeunit "Create Standard Data SAF-T" = X,

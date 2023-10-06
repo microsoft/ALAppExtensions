@@ -723,11 +723,11 @@ codeunit 131107 "Library - Application Area DK"
             'US':
                 ApplicationAreaSetup.Validate("Basic US", true);
             else begin
-                    IsHandled := false;
-                    OnCreateBasicCountrySetupForCurrentCompany(ApplicationAreaSetup, CountryCode, IsHandled);
-                    if not IsHandled then
-                        Error(AppAreaNotSupportedErr, CountryCode);
-                end;
+                IsHandled := false;
+                OnCreateBasicCountrySetupForCurrentCompany(ApplicationAreaSetup, CountryCode, IsHandled);
+                if not IsHandled then
+                    Error(AppAreaNotSupportedErr, CountryCode);
+            end;
         end;
 
         ApplicationAreaSetup.Insert(true);
@@ -867,7 +867,6 @@ codeunit 131107 "Library - Application Area DK"
         ApplicationAreaSetup.TestField(Dimensions, Value);
         ApplicationAreaSetup.TestField("Order Promising", Value);
         ApplicationAreaSetup.TestField(Reservation, Value);
-        ApplicationAreaSetup.TestField(XBRL, Value);
         ApplicationAreaSetup.TestField(ADCS, Value);
         ApplicationAreaSetup.TestField(Planning, Value);
         ApplicationAreaSetup.TestField(Comments, Value);

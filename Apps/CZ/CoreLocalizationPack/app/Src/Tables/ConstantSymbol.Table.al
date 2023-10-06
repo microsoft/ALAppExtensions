@@ -1,7 +1,7 @@
 table 11712 "Constant Symbol CZL"
 {
     Caption = 'Constant Symbol';
-    LookupPageID = "Constant Symbols CZL";
+    LookupPageId = "Constant Symbols CZL";
 
     fields
     {
@@ -10,12 +10,12 @@ table 11712 "Constant Symbol CZL"
             Caption = 'Code';
             CharAllowed = '09';
             NotBlank = true;
-            DataClassification = CustomerContent;            
+            DataClassification = CustomerContent;
         }
         field(2; Description; Text[100])
         {
             Caption = 'Description';
-            DataClassification = CustomerContent;            
+            DataClassification = CustomerContent;
         }
     }
 

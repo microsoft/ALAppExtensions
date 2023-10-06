@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Distribution;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Inventory.Location;
+using System.Security.AccessControl;
+
 table 18207 "Posted GST Distribution Header"
 {
     Caption = 'Posted GST Distribution Header';

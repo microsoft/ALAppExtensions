@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using Microsoft.Utilities;
+
 codeunit 1863 "C5 Schema Reader"
 {
     var

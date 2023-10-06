@@ -4,6 +4,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.IO;
+
 permissionset 421 "Data Compression - Objects"
 {
     Assignable = false;

@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Apps;
+
+using System.Apps;
+using System.TestLibraries.Environment;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 133101 "Data Out Of Geo. App Test"
 {
     Subtype = Test;

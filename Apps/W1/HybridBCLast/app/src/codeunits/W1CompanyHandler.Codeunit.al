@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.DataMigration;
+using System.Environment;
+
 codeunit 4029 "W1 Company Handler"
 {
     Description = 'This codeunit manages the company data transformation and loading.';

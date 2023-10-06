@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
 page 1451 "MS - Yodlee Account Linking"
 {
     Caption = ' ';
@@ -58,11 +60,11 @@ page 1451 "MS - Yodlee Account Linking"
         Data: Text;
         ErrorText: Text;
     begin
-        IF NOT MSYodleeServiceMgt.GetFastlinkDataForLinking(SearchKeyword, Data, ErrorText) THEN BEGIN
+        if not MSYodleeServiceMgt.GetFastlinkDataForLinking(SearchKeyword, Data, ErrorText) then begin
             MESSAGE(ErrorText);
             CurrPage.CLOSE();
-            EXIT;
-        END;
+            exit;
+        end;
 
         CurrPage.WebPageViewer.Navigate(MSYodleeServiceMgt.GetYodleeFastlinkUrl(), 'POST', Data);
     end;

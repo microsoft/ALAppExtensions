@@ -16,7 +16,7 @@ report 31004 "Adjust Exchange Rates CZL"
     {
         dataitem(Currency; Currency)
         {
-            DataItemTableView = SORTING(Code);
+            DataItemTableView = sorting(Code);
             RequestFilterFields = "Code";
             column(CompanyNameHdr; COMPANYPROPERTY.DisplayName())
             {
@@ -38,8 +38,8 @@ report 31004 "Adjust Exchange Rates CZL"
             }
             dataitem("Bank Account"; "Bank Account")
             {
-                DataItemLink = "Currency Code" = FIELD(Code);
-                DataItemTableView = SORTING("Bank Acc. Posting Group");
+                DataItemLink = "Currency Code" = field(Code);
+                DataItemTableView = sorting("Bank Acc. Posting Group");
                 RequestFilterHeading = 'Bank Account and Cash Desk';
                 RequestFilterFields = "No.";
                 column(BankAccNo_Fld; "No.")
@@ -78,7 +78,7 @@ report 31004 "Adjust Exchange Rates CZL"
                 }
                 dataitem(BankAccountGroupTotal; "Integer")
                 {
-                    DataItemTableView = SORTING(Number);
+                    DataItemTableView = sorting(Number);
                     MaxIteration = 1;
 
                     trigger OnAfterGetRecord()
@@ -260,11 +260,11 @@ report 31004 "Adjust Exchange Rates CZL"
         }
         dataitem(Customer; Customer)
         {
-            DataItemTableView = SORTING("No.");
+            DataItemTableView = sorting("No.");
             RequestFilterFields = "No.";
             dataitem(CustomerLedgerEntryLoop; "Integer")
             {
-                DataItemTableView = SORTING(Number);
+                DataItemTableView = sorting(Number);
                 column(CLEDocumentType_Fld; CopyStr(Format(CustLedgerEntry."Document Type"), 1, 2))
                 {
                 }
@@ -308,7 +308,7 @@ report 31004 "Adjust Exchange Rates CZL"
                 }
                 dataitem("Detailed Cust. Ledg. Entry"; "Detailed Cust. Ledg. Entry")
                 {
-                    DataItemTableView = SORTING("Cust. Ledger Entry No.", "Posting Date");
+                    DataItemTableView = sorting("Cust. Ledger Entry No.", "Posting Date");
 
                     trigger OnAfterGetRecord()
                     begin
@@ -446,11 +446,11 @@ report 31004 "Adjust Exchange Rates CZL"
         }
         dataitem(Vendor; Vendor)
         {
-            DataItemTableView = SORTING("No.");
+            DataItemTableView = sorting("No.");
             RequestFilterFields = "No.";
             dataitem(VendorLedgerEntryLoop; "Integer")
             {
-                DataItemTableView = SORTING(Number);
+                DataItemTableView = sorting(Number);
                 column(VLEDocumentType_Fld; CopyStr(Format(VendorLedgerEntry."Document Type"), 1, 2))
                 {
                 }
@@ -494,7 +494,7 @@ report 31004 "Adjust Exchange Rates CZL"
                 }
                 dataitem("Detailed Vendor Ledg. Entry"; "Detailed Vendor Ledg. Entry")
                 {
-                    DataItemTableView = SORTING("Vendor Ledger Entry No.", "Posting Date");
+                    DataItemTableView = sorting("Vendor Ledger Entry No.", "Posting Date");
 
                     trigger OnAfterGetRecord()
                     begin
@@ -632,7 +632,7 @@ report 31004 "Adjust Exchange Rates CZL"
         }
         dataitem("VAT Posting Setup"; "VAT Posting Setup")
         {
-            DataItemTableView = SORTING("VAT Bus. Posting Group", "VAT Prod. Posting Group");
+            DataItemTableView = sorting("VAT Bus. Posting Group", "VAT Prod. Posting Group");
 
             trigger OnAfterGetRecord()
             begin
@@ -734,7 +734,7 @@ report 31004 "Adjust Exchange Rates CZL"
         }
         dataitem("G/L Account"; "G/L Account")
         {
-            DataItemTableView = SORTING("No.") WHERE("Exchange Rate Adjustment" = FILTER("Adjust Amount" .. "Adjust Additional-Currency Amount"));
+            DataItemTableView = sorting("No.") where("Exchange Rate Adjustment" = filter("Adjust Amount" .. "Adjust Additional-Currency Amount"));
 
             trigger OnAfterGetRecord()
             begin
@@ -984,16 +984,16 @@ report 31004 "Adjust Exchange Rates CZL"
         begin
             OnBeforeOpenPage(AdjCust, AdjVend, AdjBank, AdjGLAcc, PostingDocNo);
 
-            if PostingDescription = '' then
+            if PostingDescription = '' then begin
                 PostingDescription := ExchRateAdjTxt;
+                if not SummarizeEntries then
+                    PostingDescription := ExchangeRateAdjmtTxt;
+            end;
             if not (AdjCust or AdjVend or AdjBank or AdjGLAcc) then begin
                 AdjCust := true;
                 AdjVend := true;
                 AdjBank := true;
             end;
-
-            if not SummarizeEntries then
-                PostingDescription := ExchangeRateAdjmtTxt;
         end;
 
         trigger OnClosePage()
@@ -2586,7 +2586,7 @@ report 31004 "Adjust Exchange Rates CZL"
             exit(GenJournalLineHandlerCZL.GetPayablesAccNo(VendorLedgerEntry));
     end;
 
-    [IntegrationEvent(TRUE, false)]
+    [IntegrationEvent(true, false)]
     local procedure OnBeforeOnInitReport(var IsHandled: Boolean)
     begin
     end;

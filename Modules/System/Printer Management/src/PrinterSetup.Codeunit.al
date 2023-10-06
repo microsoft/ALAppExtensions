@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Device;
+
 /// <summary>
 /// Exposes functionality to manage printer settings.
 /// </summary>

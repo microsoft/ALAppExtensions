@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 codeunit 8944 "Email Address Lookup Impl"
 {
     Access = Internal;

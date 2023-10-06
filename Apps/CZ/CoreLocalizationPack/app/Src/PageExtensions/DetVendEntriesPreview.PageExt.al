@@ -11,11 +11,7 @@ pageextension 31035 "Det. Vend. Entries Preview CZL" extends "Detailed Vend. Ent
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the vendor''s market type to link business transactions made for the vendor with the appropriate account in the general ledger.';
-#if not CLEAN20
-                Visible = not AllowMultiplePostingGroupsEnabled;
-#else
                 Visible = false;
-#endif
                 ObsoleteState = Pending;
                 ObsoleteTag = '22.0';
                 ObsoleteReason = 'Replaced by "Posting Group" field.';
@@ -25,23 +21,7 @@ pageextension 31035 "Det. Vend. Entries Preview CZL" extends "Detailed Vend. Ent
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the customer''s market type to link business transactions to.';
-#if not CLEAN20
-                Visible = AllowMultiplePostingGroupsEnabled;
-#endif
             }
         }
     }
-#if not CLEAN20
-
-    trigger OnOpenPage()
-    begin
-        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
-    end;
-
-    var
-#pragma warning disable AL0432
-        PostingGroupManagement: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-        AllowMultiplePostingGroupsEnabled: Boolean;
-#endif
 }

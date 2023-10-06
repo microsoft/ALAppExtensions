@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 41000 "GP 1099 Migration Log"
 {
     ApplicationArea = All;

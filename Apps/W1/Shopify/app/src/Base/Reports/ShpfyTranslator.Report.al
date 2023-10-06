@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Globalization;
+
 report 30111 "Shpfy Translator"
 {
     Caption = 'Shopify Translator';

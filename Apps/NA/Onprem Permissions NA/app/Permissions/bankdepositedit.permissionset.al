@@ -21,7 +21,6 @@ permissionset 27001 "BANKDEPOSIT-EDIT"
                   tabledata "Currency Exchange Rate" = R,
                   tabledata "Default Dimension" = RIMD,
                   tabledata "Default Dimension Priority" = R,
-                  tabledata "Deposit Header" = RIMD,
                   tabledata "G/L Account" = R,
                   tabledata "Gen. Business Posting Group" = R,
                   tabledata "Gen. Jnl. Allocation" = RIMD,

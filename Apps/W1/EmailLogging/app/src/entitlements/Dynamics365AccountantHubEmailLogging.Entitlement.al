@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 entitlement "Dynamics 365 - Accountant Hub Email Logging"
 {
     Type = PerUserServicePlan;

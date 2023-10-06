@@ -352,6 +352,7 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                 trigger OnAfterGetRecord()
                 begin
                     CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                    CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
 
                     if IsCreditMemo(TempPurchAdvLetterEntry) then
                         DocumentLabel := CrMemoDocumentLbl

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 codeunit 40019 "Handle Fix Data Failure"
 {
     TableNo = "Replication Run Completed Arg";

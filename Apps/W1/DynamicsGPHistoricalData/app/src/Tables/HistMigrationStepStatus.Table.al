@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 table 40910 "Hist. Migration Step Status"
 {
     DataClassification = SystemMetadata;

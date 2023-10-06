@@ -43,7 +43,7 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
             Error(ParamFormatErr);
     end;
 
-    procedure GetRequestPageOptionXmlElement(OptionName: Text; ParametersXmlDoc: XmlDocument): XMLElement
+    procedure GetRequestPageOptionXmlElement(OptionName: Text; ParametersXmlDoc: XmlDocument): XmlElement
     var
         FoundXmlNodeList: XmlNodeList;
         FoundXmlNode: XmlNode;

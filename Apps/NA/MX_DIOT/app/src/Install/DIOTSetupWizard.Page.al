@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using System.Telemetry;
+using System.Utilities;
+
 page 27032 "DIOT Setup Wizard"
 {
     Caption = 'DIOT Setup Guide';

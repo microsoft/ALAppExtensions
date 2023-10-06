@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 /// <summary>
 /// PageExtension Shpfy Post. Sales Shipment (ID 30108) extends Record Posted Sales Shipment.
 /// </summary>

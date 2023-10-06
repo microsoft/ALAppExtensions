@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.AuditCodes;
+using System.Telemetry;
+
 tableextension 10826 "Audit File Export Header FEC" extends "Audit File Export Header"
 {
     fields
@@ -42,6 +52,17 @@ tableextension 10826 "Audit File Export Header FEC" extends "Audit File Export H
         {
             DataClassification = SystemMetadata;
             Editable = false;
+        }
+        field(10830; "Use Transaction No."; Boolean)
+        {
+            ObsoleteReason = 'The transaction number will be used as the progressive number by default. This field is no longer needed.';
+#if CLEAN23
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
+#endif
         }
     }
 

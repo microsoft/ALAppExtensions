@@ -81,7 +81,7 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
                 ApplicationArea = Suite;
                 Caption = 'Reconcile';
                 Image = Reconcile;
-                ShortCutKey = 'Ctrl+F11';
+                ShortcutKey = 'Ctrl+F11';
                 ToolTip = 'Opens reconciliation page.';
 
                 trigger OnAction()
@@ -103,7 +103,9 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
 
     var
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
 #endif

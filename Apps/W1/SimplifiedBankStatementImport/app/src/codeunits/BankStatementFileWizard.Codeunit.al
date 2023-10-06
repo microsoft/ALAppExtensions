@@ -1,3 +1,11 @@
+namespace Microsoft.Bank.StatementImport;
+
+using System.Utilities;
+using System.IO;
+using System.Environment.Configuration;
+using System.Globalization;
+using System.Media;
+
 codeunit 8850 "Bank Statement File Wizard"
 {
     var

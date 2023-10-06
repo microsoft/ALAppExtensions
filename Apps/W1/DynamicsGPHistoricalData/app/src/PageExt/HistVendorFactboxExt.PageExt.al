@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
+using Microsoft.Purchases.Payables;
+
 pageextension 41022 "Hist. Vendor Factbox Ext." extends "Vendor Hist. Buy-from FactBox"
 {
     layout

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.Security.AccessControl;
+
 permissionsetextension 32369 "D365 BUS PREMIUM - Standard Audit File - Tax Localization for Norway" extends "D365 BUS PREMIUM"
 {
     Permissions = tabledata "SAF-T Export File" = RIMD,

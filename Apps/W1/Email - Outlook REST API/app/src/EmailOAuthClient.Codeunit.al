@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Environment;
+using System.Security.Authentication;
+using System.Azure.Identity;
+using System.Utilities;
+
 codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
 {
     /// <summary>

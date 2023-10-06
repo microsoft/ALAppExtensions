@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>This page shows all registered setups.</summary>
 page 1991 "App Setup List"
 {
@@ -94,7 +96,7 @@ page 1991 "App Setup List"
         GuidedExperience.OnRegisterManualSetup();
         GuidedExperienceImpl.GetContentForAllSetups(Rec);
 
-        SetCurrentKey("Guided Experience Type");
+        Rec.SetCurrentKey("Guided Experience Type");
 
         if Rec.Count() = 0 then begin
             Message(SetupNotDefinedErr);
@@ -155,11 +157,11 @@ page 1991 "App Setup List"
     end;
 
     var
-        [InDataSet]
         StatusStyleTxt: Text;
         SetupNotDefinedErr: Label 'This app doesn''t require set-up.';
         CaptionTok: Label 'Setups for %1', Comment = '%1 = App Name';
         RunInitialSetupQst: Label 'Do you want to run the initial setup?';
         FirstRun: Boolean;
 }
+
 

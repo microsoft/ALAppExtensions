@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40111 "GP SY06000"
 {
     Description = 'GP Address Electronic Funds Transfer Master';

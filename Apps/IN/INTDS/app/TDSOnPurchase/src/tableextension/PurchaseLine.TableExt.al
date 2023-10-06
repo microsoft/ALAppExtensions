@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TDS.TDSBase;
+using System.Utilities;
+
 tableextension 18716 "Purchase Line" extends "Purchase Line"
 {
     fields
@@ -183,7 +194,7 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
                 if not ((((PreviousTransactionValue.Amount <> 0) and (CurrentTransactionValue.Amount <> 0))
                 and (PreviousTransactionValue.Percent = CurrentTransactionValue.Percent))) or
                 ((PreviousTransactionValue.Amount = 0) and (CurrentTransactionValue.Amount = 0))
-                then begin
+               then begin
                     CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
                     if PreviousTransactionValue.Amount = 0 then
                         PreviousTransactionValue := GetComponentValue(PurchaseLine);

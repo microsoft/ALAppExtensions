@@ -180,10 +180,8 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     ToolTip = 'Post payment VAT.';
 
                     trigger OnAction()
-                    var
-                        SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
                     begin
-                        SalesAdvLetterManagement.PostAdvancePaymentVAT(Rec, 0D, false);
+                        SalesPostAdvanceLetter.PostPaymentVAT(Rec, false);
                     end;
                 }
                 action(PostAndSendPaymentVAT)
@@ -202,6 +200,19 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                         SalesAdvLetterManagement.PostAndSendAdvancePaymentVAT(Rec);
                     end;
                 }
+                action(PostPaymentVATPreview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Payment VAT Preview';
+                    Enabled = ("Entry Type" = "Entry Type"::Payment) and (not IsClosed) and (not Cancelled);
+                    Image = ViewPostedOrder;
+                    ToolTip = 'Review the result of the posting lines before the actual posting.';
+
+                    trigger OnAction()
+                    begin
+                        SalesPostAdvanceLetter.PostPaymentVAT(Rec, true);
+                    end;
+                }
                 action(PostPaymentVATUsage)
                 {
                     ApplicationArea = Basic, Suite;
@@ -211,10 +222,21 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     ToolTip = 'Post payment VAT usage.';
 
                     trigger OnAction()
-                    var
-                        SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
                     begin
-                        SalesAdvLetterManagement.PostAdvancePaymentUsageVAT(Rec);
+                        SalesPostAdvanceLetter.PostPaymentUsageVAT(Rec, false);
+                    end;
+                }
+                action(PostPaymentVATUsagePreview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Payment VAT Usage Preview';
+                    Enabled = ("Entry Type" = "Entry Type"::Usage) and (not IsClosed) and (not Cancelled);
+                    Image = ViewPostedOrder;
+                    ToolTip = 'Review the result of the posting lines before the actual posting.';
+
+                    trigger OnAction()
+                    begin
+                        SalesPostAdvanceLetter.PostPaymentUsageVAT(Rec, true);
                     end;
                 }
                 action(PostCreditMemoVAT)
@@ -226,10 +248,21 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     ToolTip = 'Post credit memo VAT.';
 
                     trigger OnAction()
-                    var
-                        SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
                     begin
-                        SalesAdvLetterManagement.PostAdvanceCreditMemoVAT(Rec);
+                        SalesPostAdvanceLetter.PostCreditMemoVAT(Rec, false);
+                    end;
+                }
+                action(PostCreditMemoVATPreview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Credit Memo VAT Preview';
+                    Enabled = ("Entry Type" = "Entry Type"::"VAT Payment") and (not IsClosed) and (not Cancelled);
+                    Image = ViewPostedOrder;
+                    ToolTip = 'Review the result of the posting lines before the actual posting.';
+
+                    trigger OnAction()
+                    begin
+                        SalesPostAdvanceLetter.PostCreditMemoVAT(Rec, true);
                     end;
                 }
             }
@@ -340,6 +373,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
 
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesPostAdvanceLetter: Codeunit "Sales Post Advance Letter CZZ";
         IsClosed: Boolean;
 
     trigger OnAfterGetRecord()

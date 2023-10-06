@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Security.Authentication;
+
 /// <summary>
 /// Page Shpfy Authentication (ID 30135).
 /// </summary>

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4096 "GP Vendor"
 {
     PageType = Card;

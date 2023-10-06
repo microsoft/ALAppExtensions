@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.Purchases.Vendor.RemittanceAdvice;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Reporting;
+
 pageextension 4022 SendPmtJnlRemitAdvice extends "Payment Journal"
 {
     layout
@@ -39,14 +44,14 @@ pageextension 4022 SendPmtJnlRemitAdvice extends "Payment Journal"
         DummyReportSelections: Record "Report Selections";
         DummyReportSelectionsInteger: Integer;
     begin
-        IF NOT GenJournalLine.FindSet() THEN
-            EXIT;
+        if not GenJournalLine.FindSet() then
+            exit;
 
         DummyReportSelections.Usage := DummyReportSelections.Usage::"V.Remittance";
         DummyReportSelectionsInteger := DummyReportSelections.Usage.AsInteger();
 
         DocumentSendingProfile.SendVendorRecords(
-            DummyReportSelectionsInteger, GenJournalLine, RemittanceAdviceTxt, "Account No.", "Document No.",
+            DummyReportSelectionsInteger, GenJournalLine, RemittanceAdviceTxt, Rec."Account No.", Rec."Document No.",
             GenJournalLine.FIELDNO("Account No."), GenJournalLine.FIELDNO("Document No."));
     end;
 

@@ -114,6 +114,12 @@ page 31277 "Posted Compensation Card CZC"
                     ToolTip = 'Specifies the language to be used on printouts for this document.';
                     Importance = Additional;
                 }
+                field("Format Region"; Rec."Format Region")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the region format to be used on printouts for this document.';
+                    Importance = Additional;
+                }
             }
             part(PostedCompensationLines; "Posted Compensation Subf. CZC")
             {

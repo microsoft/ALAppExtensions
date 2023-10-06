@@ -1,3 +1,11 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Sales.Customer;
+using Microsoft.Integration.Entity;
+using Microsoft.Sales.History;
+using Microsoft.Integration.Graph;
+
 page 30055 "APIV2 - Customer Payments"
 {
     APIVersion = 'v2.0';
@@ -18,12 +26,12 @@ page 30055 "APIV2 - Customer Payments"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(journalId; "Journal Batch Id")
+                field(journalId; Rec."Journal Batch Id")
                 {
                     Caption = 'Journal Id';
 
@@ -33,7 +41,7 @@ page 30055 "APIV2 - Customer Payments"
                             Error(CannotEditJournalIdErr);
                     end;
                 }
-                field(journalDisplayName; "Journal Batch Name")
+                field(journalDisplayName; Rec."Journal Batch Name")
                 {
                     Caption = 'Journal Display Name';
 
@@ -43,28 +51,28 @@ page 30055 "APIV2 - Customer Payments"
                             Error(CannotEditBatchNameErr);
                     end;
                 }
-                field(lineNumber; "Line No.")
+                field(lineNumber; Rec."Line No.")
                 {
                     Caption = 'Line No.';
                 }
-                field(customerId; "Customer Id")
+                field(customerId; Rec."Customer Id")
                 {
                     Caption = 'Customer Id';
 
                     trigger OnValidate()
                     begin
-                        if "Customer Id" = BlankGUID then begin
-                            "Account No." := '';
+                        if Rec."Customer Id" = BlankGUID then begin
+                            Rec."Account No." := '';
                             exit;
                         end;
 
-                        if not Customer.GetBySystemId("Customer Id") then
+                        if not Customer.GetBySystemId(Rec."Customer Id") then
                             Error(CustomerIdDoesNotMatchACustomerErr);
 
-                        "Account No." := Customer."No.";
+                        Rec."Account No." := Customer."No.";
                     end;
                 }
-                field(customerNumber; "Account No.")
+                field(customerNumber; Rec."Account No.")
                 {
                     Caption = 'Customer No.';
                     TableRelation = Customer;
@@ -72,35 +80,35 @@ page 30055 "APIV2 - Customer Payments"
                     trigger OnValidate()
                     begin
                         if Customer."No." <> '' then begin
-                            if Customer."No." <> "Account No." then
+                            if Customer."No." <> Rec."Account No." then
                                 Error(CustomerValuesDontMatchErr);
                             exit;
                         end;
 
-                        if "Account No." = '' then begin
-                            "Customer Id" := BlankGUID;
+                        if Rec."Account No." = '' then begin
+                            Rec."Customer Id" := BlankGUID;
                             exit;
                         end;
 
-                        if not Customer.Get("Account No.") then
+                        if not Customer.Get(Rec."Account No.") then
                             Error(CustomerNumberDoesNotMatchACustomerErr);
 
-                        "Customer Id" := Customer.SystemId;
+                        Rec."Customer Id" := Customer.SystemId;
                     end;
                 }
-                field(postingDate; "Posting Date")
+                field(postingDate; Rec."Posting Date")
                 {
                     Caption = 'Posting Date';
                 }
-                field(documentNumber; "Document No.")
+                field(documentNumber; Rec."Document No.")
                 {
                     Caption = 'Document No.';
                 }
-                field(externalDocumentNumber; "External Document No.")
+                field(externalDocumentNumber; Rec."External Document No.")
                 {
                     Caption = 'External Document No.';
                 }
-                field(amount; Amount)
+                field(amount; Rec.Amount)
                 {
                     Caption = 'Amount';
                 }
@@ -112,8 +120,8 @@ page 30055 "APIV2 - Customer Payments"
                     var
                         SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
                     begin
-                        "Applies-to Invoice Id" := AppliesToInvoiceIdText;
-                        if "Applies-to Invoice Id" = BlankGUID then begin
+                        Rec."Applies-to Invoice Id" := AppliesToInvoiceIdText;
+                        if Rec."Applies-to Invoice Id" = BlankGUID then begin
                             AppliesToInvoiceNumberText := '';
                             exit;
                         end;
@@ -124,11 +132,11 @@ page 30055 "APIV2 - Customer Payments"
 
                         AppliesToInvoiceNumberText := SalesInvoiceHeader."No.";
 
-                        if "Account No." = '' then
+                        if Rec."Account No." = '' then
                             if SalesInvoiceHeader."Bill-to Customer No." <> '' then
-                                "Account No." := SalesInvoiceHeader."Bill-to Customer No."
+                                Rec."Account No." := SalesInvoiceHeader."Bill-to Customer No."
                             else
-                                "Account No." := SalesInvoiceHeader."Sell-to Customer No.";
+                                Rec."Account No." := SalesInvoiceHeader."Sell-to Customer No.";
                     end;
                 }
                 field(appliesToInvoiceNumber; AppliesToInvoiceNumberText)
@@ -140,7 +148,7 @@ page 30055 "APIV2 - Customer Payments"
                         SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
                         BlankGUID: Guid;
                     begin
-                        "Applies-to Doc. No." := AppliesToInvoiceNumberText;
+                        Rec."Applies-to Doc. No." := AppliesToInvoiceNumberText;
 
                         if SalesInvoiceHeader."No." <> '' then begin
                             if SalesInvoiceHeader."No." <> AppliesToInvoiceNumberText then
@@ -150,24 +158,24 @@ page 30055 "APIV2 - Customer Payments"
 
                         if SalesInvoiceHeader.Get(AppliesToInvoiceNumberText) then begin
                             AppliesToInvoiceIdText := SalesInvoiceAggregator.GetSalesInvoiceHeaderId(SalesInvoiceHeader);
-                            if "Account No." = '' then
+                            if Rec."Account No." = '' then
                                 if SalesInvoiceHeader."Bill-to Customer No." <> '' then
-                                    "Account No." := SalesInvoiceHeader."Bill-to Customer No."
+                                    Rec."Account No." := SalesInvoiceHeader."Bill-to Customer No."
                                 else
-                                    "Account No." := SalesInvoiceHeader."Sell-to Customer No.";
+                                    Rec."Account No." := SalesInvoiceHeader."Sell-to Customer No.";
                         end else
                             AppliesToInvoiceIdText := BlankGUID;
                     end;
                 }
-                field(description; Description)
+                field(description; Rec.Description)
                 {
                     Caption = 'Description';
                 }
-                field(comment; Comment)
+                field(comment; Rec.Comment)
                 {
                     Caption = 'Comment';
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                     Editable = false;
@@ -177,7 +185,7 @@ page 30055 "APIV2 - Customer Payments"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Journal Line");
+                    SubPageLink = "Parent Id" = field(SystemId), "Parent Type" = const("Journal Line");
                 }
             }
         }
@@ -206,7 +214,7 @@ page 30055 "APIV2 - Customer Payments"
         JournalBatchId: Guid;
         JournalBatchIdFilter: Text;
     begin
-        if IsNullGuid("Journal Batch Id") then begin
+        if IsNullGuid(Rec."Journal Batch Id") then begin
             JournalBatchIdFilter := Rec.GetFilter("Journal Batch Id");
             if JournalBatchIdFilter = '' then
                 Error(FiltersNotSpecifiedErr);
@@ -215,10 +223,10 @@ page 30055 "APIV2 - Customer Payments"
             JournalBatchIdFilter := Rec.GetFilter("Journal Batch Id");
             if (JournalBatchIdFilter <> '') then begin
                 JournalBatchId := JournalBatchIdFilter;
-                if (JournalBatchId <> "Journal Batch Id") then
+                if (JournalBatchId <> Rec."Journal Batch Id") then
                     Error(JournalBatchIdNameNotMatchErr)
             end else
-                JournalBatchId := "Journal Batch Id";
+                JournalBatchId := Rec."Journal Batch Id";
         end;
 
         ProcessAppliesToInvoiceNumberAndId();
@@ -244,14 +252,14 @@ page 30055 "APIV2 - Customer Payments"
     begin
         ProcessAppliesToInvoiceNumberAndId();
 
-        GenJournalLine.GetBySystemId(SystemId);
+        GenJournalLine.GetBySystemId(Rec.SystemId);
 
-        if "Line No." = GenJournalLine."Line No." then
-            Modify(true)
+        if Rec."Line No." = GenJournalLine."Line No." then
+            Rec.Modify(true)
         else begin
             GenJournalLine.TransferFields(Rec, false);
-            GenJournalLine.Rename("Journal Template Name", "Journal Batch Name", "Line No.");
-            TransferFields(GenJournalLine, true);
+            GenJournalLine.Rename(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Line No.");
+            Rec.TransferFields(GenJournalLine, true);
         end;
 
         SetCalculatedFields();
@@ -263,9 +271,9 @@ page 30055 "APIV2 - Customer Payments"
     begin
         ClearCalculatedFields();
 
-        "Document Type" := "Document Type"::Payment;
-        "Account Type" := "Account Type"::Customer;
-        "Applies-to Doc. Type" := "Applies-to Doc. Type"::Invoice;
+        Rec."Document Type" := Rec."Document Type"::Payment;
+        Rec."Account Type" := Rec."Account Type"::Customer;
+        Rec."Applies-to Doc. Type" := Rec."Applies-to Doc. Type"::Invoice;
     end;
 
     trigger OnOpenPage()
@@ -295,13 +303,13 @@ page 30055 "APIV2 - Customer Payments"
     local procedure TransferGeneratedFieldsFromInitializeLine(var GenJournalLine: Record "Gen. Journal Line")
     begin
         if GenJournalLine."Document No." = '' then
-            GenJournalLine."Document No." := "Document No.";
+            GenJournalLine."Document No." := Rec."Document No.";
     end;
 
     local procedure SetCalculatedFields()
     begin
-        AppliesToInvoiceNumberText := "Applies-to Doc. No.";
-        AppliesToInvoiceIdText := "Applies-to Invoice Id";
+        AppliesToInvoiceNumberText := Rec."Applies-to Doc. No.";
+        AppliesToInvoiceIdText := Rec."Applies-to Invoice Id";
     end;
 
     local procedure ClearCalculatedFields()
@@ -313,14 +321,14 @@ page 30055 "APIV2 - Customer Payments"
     local procedure ProcessAppliesToInvoiceNumberAndId()
     begin
         if AppliesToInvoiceNumberText <> '' then
-            "Applies-to Doc. No." := AppliesToInvoiceNumberText;
-        "Applies-to Invoice Id" := AppliesToInvoiceIdText;
+            Rec."Applies-to Doc. No." := AppliesToInvoiceNumberText;
+        Rec."Applies-to Invoice Id" := AppliesToInvoiceIdText;
     end;
 
     local procedure CheckFilters()
     begin
-        if (GetFilter("Journal Batch Id") = '') and
-           (GetFilter(SystemId) = '')
+        if (Rec.GetFilter("Journal Batch Id") = '') and
+           (Rec.GetFilter(SystemId) = '')
         then
             Error(FiltersNotSpecifiedErr);
     end;

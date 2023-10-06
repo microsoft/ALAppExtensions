@@ -1,3 +1,9 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
+using Microsoft.Finance.GeneralLedger.Ledger;
+using System.Telemetry;
+using Microsoft.Finance.GeneralLedger.Account;
+
 page 22207 "Review G/L Entries"
 {
     Caption = 'Review G/L Entries';
@@ -6,7 +12,8 @@ page 22207 "Review G/L Entries"
     InsertAllowed = false;
     ApplicationArea = Basic, Suite;
     PageType = List;
-    Permissions = tabledata "G/L Entry" = rimd;
+    Permissions = tabledata "G/L Entry" = rimd,
+                  tabledata "G/L Entry Review Setup" = ri;
     SourceTableView = sorting("G/L Account No.", "Posting Date")
                       order(descending);
     SourceTable = "G/L Entry";
@@ -163,9 +170,10 @@ page 22207 "Review G/L Entries"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Set selected as reviewed';
+                    Enabled = ReviewPolicy <> "G/L Account Review Policy"::None;
                     Image = SelectLineToApply;
                     ShortCutKey = 'Ctrl+Alt+Q';
-                    ToolTip = 'For selected G/L Entries, field Reviewer is set to the current user, field Review Status is set to Reviewed, field Reviewed On is set to current date, field Review Id is to a number which all the marked entries share';
+                    ToolTip = 'This action can only be selected when the G/L Account''s Review Policy is either "Review Allowed or "Review Allowed and Match Balance". For selected G/L Entries, field Reviewer is set to the current user, field Review Status is set to Reviewed, field Reviewed On is set to current date, field Review Id is to a number which all the marked entries share';
                     AboutTitle = 'About review and unreview entries';
                     AboutText = 'Set selected as reviewed updates the fields related to reviews and marks the entry as reviewed, set selected as not reviewed clears these fields';
                     trigger OnAction()
@@ -177,9 +185,10 @@ page 22207 "Review G/L Entries"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Set selected as not reviewed';
+                    Enabled = ReviewPolicy <> "G/L Account Review Policy"::None;
                     Image = SelectLineToApply;
                     ShortCutKey = 'Ctrl+Alt+W';
-                    ToolTip = 'For selected G/L Entries, field Reviewer is set to blank, field Review Status is set to Not Reviewed, field Reviewed On is set to blank, field Review Id is to blank';
+                    ToolTip = 'This action can only be selected when the G/L Account''s Review Policy is either "Review Allowed or "Review Allowed and Match Balance". For selected G/L Entries, field Reviewer is set to blank, field Review Status is set to Not Reviewed, field Reviewed On is set to blank, field Review Id is to blank';
 
                     trigger OnAction()
                     begin

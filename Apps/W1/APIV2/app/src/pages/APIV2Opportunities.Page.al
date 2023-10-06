@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.CRM.Opportunity;
+using Microsoft.Inventory.Item;
+
 page 30070 "APIV2 - Opportunities"
 {
     APIVersion = 'v2.0';
@@ -17,114 +22,114 @@ page 30070 "APIV2 - Opportunities"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(number; "No.")
+                field(number; Rec."No.")
                 {
                     Caption = 'No.';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("No."));
+                        RegisterFieldSet(Rec.FieldNo("No."));
                     end;
                 }
-                field(contactNumber; "Contact No.")
+                field(contactNumber; Rec."Contact No.")
                 {
                     Caption = 'Contact No.';
 
                     trigger OnValidate()
                     begin
-                        if (Rec.Status = Status::Won) or (Rec.Status = Status::Lost) then
+                        if (Rec.Status = Rec.Status::Won) or (Rec.Status = Rec.Status::Lost) then
                             Error(ContactNoCannotBeChangedWonLostErr);
 
-                        RegisterFieldSet(FieldNo("Contact No."));
+                        RegisterFieldSet(Rec.FieldNo("Contact No."));
                     end;
                 }
-                field(contactName; "Contact Name")
+                field(contactName; Rec."Contact Name")
                 {
                     Caption = 'Contact Name';
                     Editable = false;
                 }
-                field(contactCompanyName; "Contact Company Name")
+                field(contactCompanyName; Rec."Contact Company Name")
                 {
                     Caption = 'Contact Company Name';
                     Editable = false;
                 }
-                field(salespersonCode; "Salesperson Code")
+                field(salespersonCode; Rec."Salesperson Code")
                 {
                     Caption = 'Salesperson Code';
 
                     trigger OnValidate()
                     begin
-                        if (Rec.Status = Status::Won) or (Rec.Status = Status::Lost) then
+                        if (Rec.Status = Rec.Status::Won) or (Rec.Status = Rec.Status::Lost) then
                             Error(SalespersonCodeCannotBeChangedErr);
 
-                        RegisterFieldSet(FieldNo("Salesperson Code"));
+                        RegisterFieldSet(Rec.FieldNo("Salesperson Code"));
                     end;
                 }
-                field(description; Description)
+                field(description; Rec.Description)
                 {
                     Caption = 'Description';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo(Description));
+                        RegisterFieldSet(Rec.FieldNo(Description));
                     end;
                 }
-                field(status; Status)
+                field(status; Rec.Status)
                 {
                     Caption = 'Status';
                     Editable = false;
                 }
-                field(closed; Closed)
+                field(closed; Rec.Closed)
                 {
                     Caption = 'Closed';
                     Editable = false;
                 }
-                field(creationDate; "Creation Date")
+                field(creationDate; Rec."Creation Date")
                 {
                     Caption = 'Creation Date';
                     Editable = false;
                 }
-                field(dateClosed; "Date Closed")
+                field(dateClosed; Rec."Date Closed")
                 {
                     Caption = 'Date Closed';
                     Editable = false;
                 }
-                field(calculatedCurrentValue; "Calcd. Current Value (LCY)")
+                field(calculatedCurrentValue; Rec."Calcd. Current Value (LCY)")
                 {
                     Caption = 'Calculated Current Value (LCY)';
                     Editable = false;
                 }
-                field(chancesOfSuccessPrc; "Chances of Success %")
+                field(chancesOfSuccessPrc; Rec."Chances of Success %")
                 {
                     Caption = 'Chances of Success %';
                     Editable = false;
                 }
-                field(completedPrc; "Completed %")
+                field(completedPrc; Rec."Completed %")
                 {
                     Caption = 'Completed %';
                     Editable = false;
                 }
-                field(estimatedClosingDate; "Estimated Closing Date")
+                field(estimatedClosingDate; Rec."Estimated Closing Date")
                 {
                     Caption = 'Estimated Closing Date';
                     Editable = false;
                 }
-                field(estimatedValue; "Estimated Value (LCY)")
+                field(estimatedValue; Rec."Estimated Value (LCY)")
                 {
                     Caption = 'Estimated Value (LCY)';
                     Editable = false;
                 }
-                field(systemCreatedAt; SystemCreatedAt)
+                field(systemCreatedAt; Rec.SystemCreatedAt)
                 {
                     Caption = 'Creation Date';
                     Editable = false;
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                     Editable = false;

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Reflection;
+
 /// <summary>
 /// List page that contains all available roles.
 /// </summary>
@@ -25,13 +29,13 @@ page 9212 Roles
         {
             repeater(Group)
             {
-                field(CaptionField; Caption)
+                field(CaptionField; Rec.Caption)
                 {
                     Caption = 'Display Name';
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the organizational role.';
                 }
-                field(AppNameField; "App Name")
+                field(AppNameField; Rec."App Name")
                 {
                     Caption = 'Source';
                     ApplicationArea = All;
@@ -44,8 +48,8 @@ page 9212 Roles
 
     trigger OnOpenPage()
     begin
-       if Rec.IsEmpty() then
-           Initialize();
+        if Rec.IsEmpty() then
+            Initialize();
     end;
 
     /// <summary>
@@ -58,4 +62,5 @@ page 9212 Roles
         UserSettingsImpl.PopulateProfiles(Rec);
     end;
 }
+
 

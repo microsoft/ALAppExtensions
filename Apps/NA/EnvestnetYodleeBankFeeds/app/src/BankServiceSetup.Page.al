@@ -1,3 +1,12 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using System.Environment;
+using Microsoft.Foundation.Company;
+using System.Telemetry;
+using Microsoft.Bank.BankAccount;
+using System.Security.Encryption;
+using Microsoft.Utilities;
+
 page 1450 "MS - Yodlee Bank Service Setup"
 {
     Caption = 'Envestnet Yodlee Bank Feeds Service Setup';
@@ -33,8 +42,8 @@ page 1450 "MS - Yodlee Bank Service Setup"
 
                         trigger OnValidate();
                         begin
-                            SaveCobrandEnvironmentName("Cobrand Environment Name", CobrandEnvName);
-                            PreconfiguredCredentials := HasDefaultCredentials();
+                            Rec.SaveCobrandEnvironmentName(Rec."Cobrand Environment Name", CobrandEnvName);
+                            PreconfiguredCredentials := Rec.HasDefaultCredentials();
                         end;
                     }
                     field(CobrandName; CobrandLogin)
@@ -48,8 +57,8 @@ page 1450 "MS - Yodlee Bank Service Setup"
 
                         trigger OnValidate();
                         begin
-                            SaveCobrandName("Cobrand Name", CobrandLogin);
-                            PreconfiguredCredentials := HasDefaultCredentials();
+                            Rec.SaveCobrandName(Rec."Cobrand Name", CobrandLogin);
+                            PreconfiguredCredentials := Rec.HasDefaultCredentials();
                         end;
                     }
                     field(CobrandPwd; CobrandPassword)
@@ -63,8 +72,8 @@ page 1450 "MS - Yodlee Bank Service Setup"
 
                         trigger OnValidate();
                         begin
-                            SaveCobrandPassword("Cobrand Password", CobrandPassword);
-                            PreconfiguredCredentials := HasDefaultCredentials();
+                            Rec.SaveCobrandPassword(Rec."Cobrand Password", CobrandPassword);
+                            PreconfiguredCredentials := Rec.HasDefaultCredentials();
                         end;
                     }
                     field(DefaultCredentials; PreconfiguredCredentials)
@@ -78,7 +87,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
                 group(Consumer)
                 {
                     Caption = 'Consumer';
-                    field("Consumer Name"; "Consumer Name")
+                    field("Consumer Name"; Rec."Consumer Name")
                     {
                         ApplicationArea = Basic, Suite;
                         Editable = ConsumerEditable;
@@ -99,11 +108,11 @@ page 1450 "MS - Yodlee Bank Service Setup"
 
                             trigger OnValidate();
                             begin
-                                SaveConsumerPassword("Consumer Password", ConsumerPassword);
+                                Rec.SaveConsumerPassword(Rec."Consumer Password", ConsumerPassword);
                             end;
                         }
                     }
-                    field("User Profile Email Address"; "User Profile Email Address")
+                    field("User Profile Email Address"; Rec."User Profile Email Address")
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Consumer Email Address';
@@ -115,13 +124,13 @@ page 1450 "MS - Yodlee Bank Service Setup"
                 }
                 group(Enabling)
                 {
-                    field("Log Web Requests"; "Log Web Requests")
+                    field("Log Web Requests"; Rec."Log Web Requests")
                     {
                         ApplicationArea = Basic, Suite;
                         Importance = Additional;
                         ToolTip = 'Specifies if web request responses should be logged to the Activity Log table. This is normally only required for troubleshooting.';
                     }
-                    field("Accept Terms of Use"; "Accept Terms of Use")
+                    field("Accept Terms of Use"; Rec."Accept Terms of Use")
                     {
                         ApplicationArea = Basic, Suite;
                         Editable = EditableByNotEnabled;
@@ -131,20 +140,20 @@ page 1450 "MS - Yodlee Bank Service Setup"
                         var
                             TempMSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup" temporary;
                         begin
-                            IF "Accept Terms of Use" THEN BEGIN
+                            if Rec."Accept Terms of Use" then begin
                                 TempMSYodleeBankServiceSetup.COPY(Rec);
-                                TempMSYodleeBankServiceSetup."Accept Terms of Use" := FALSE;
+                                TempMSYodleeBankServiceSetup."Accept Terms of Use" := false;
                                 TempMSYodleeBankServiceSetup.INSERT();
 
                                 PAGE.RUNMODAL(PAGE::"MS - Yodlee Terms of use", TempMSYodleeBankServiceSetup);
 
                                 TempMSYodleeBankServiceSetup.GET();
-                                IF NOT TempMSYodleeBankServiceSetup."Accept Terms of Use" THEN
+                                if not TempMSYodleeBankServiceSetup."Accept Terms of Use" then
                                     ERROR('');
-                            END;
+                            end;
                         end;
                     }
-                    field(Enabled; Enabled)
+                    field(Enabled; Rec.Enabled)
                     {
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies if the service should be enabled.';
@@ -158,7 +167,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
                     {
                         ApplicationArea = Basic, Suite;
                         Editable = false;
-                        Enabled = NOT EditableByNotEnabled;
+                        Enabled = not EditableByNotEnabled;
                         ShowCaption = false;
                         ToolTip = 'Specifies that the service must be disabled to make changes.';
 
@@ -173,7 +182,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
             {
                 Caption = 'Service';
                 Visible = AdvancedView;
-                field("Service URL"; "Service URL")
+                field("Service URL"; Rec."Service URL")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
@@ -185,14 +194,14 @@ page 1450 "MS - Yodlee Bank Service Setup"
                         UpdateMaskedValues();
                     end;
                 }
-                field("Bank Acc. Linking URL"; "Bank Acc. Linking URL")
+                field("Bank Acc. Linking URL"; Rec."Bank Acc. Linking URL")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the URL of the Envestnet Yodlee Bank Account Linking page.';
                 }
-                field("Bank Feed Import Format"; "Bank Feed Import Format")
+                field("Bank Feed Import Format"; Rec."Bank Feed Import Format")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
@@ -220,21 +229,21 @@ page 1450 "MS - Yodlee Bank Service Setup"
                 var
                     MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
                 begin
-                    SetValuesToDefault();
-                    SetDefaultBankStatementImportCode();
+                    Rec.SetValuesToDefault();
+                    Rec.SetDefaultBankStatementImportCode();
 
-                    IF NOT ISNULLGUID("Cobrand Name") THEN
-                        MSYodleeBankServiceSetup.DeleteFromIsolatedStorage("Cobrand Name");
+                    if not ISNULLGUID(Rec."Cobrand Name") then
+                        MSYodleeBankServiceSetup.DeleteFromIsolatedStorage(Rec."Cobrand Name");
 
-                    IF NOT ISNULLGUID("Cobrand Password") THEN
-                        MSYodleeBankServiceSetup.DeleteFromIsolatedStorage("Cobrand Password");
+                    if not ISNULLGUID(Rec."Cobrand Password") then
+                        MSYodleeBankServiceSetup.DeleteFromIsolatedStorage(Rec."Cobrand Password");
 
-                    CLEAR("Cobrand Name");
-                    CLEAR("Cobrand Password");
-                    MODIFY(TRUE);
+                    CLEAR(Rec."Cobrand Name");
+                    CLEAR(Rec."Cobrand Password");
+                    Rec.MODIFY(true);
 
-                    AdvancedViewOnOpen := NOT HasDefaultCredentials();
-                    AdvancedView := NOT HasDefaultCredentials();
+                    AdvancedViewOnOpen := not Rec.HasDefaultCredentials();
+                    AdvancedView := not Rec.HasDefaultCredentials();
 
                     CurrPage.UPDATE();
                 end;
@@ -254,7 +263,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
                     MSYodleeBankSession: Record "MS - Yodlee Bank Session";
                 begin
                     MSYodleeBankSession.ResetSessionTokens();
-                    CheckSetup();
+                    Rec.CheckSetup();
                 end;
             }
             action(ResetTokens)
@@ -283,24 +292,24 @@ page 1450 "MS - Yodlee Bank Service Setup"
                     MSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link";
                     MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
                 begin
-                    if CONFIRM(RemoveConsumerOnDeleteQst, TRUE) then begin
+                    if CONFIRM(RemoveConsumerOnDeleteQst, true) then begin
                         if MSYodleeServiceMgt.UnregisterConsumer() then
                             exit
                         else begin
-                            DeletePassword("Cobrand Name");
-                            DeletePassword("Cobrand Password");
-                            DeletePassword("Consumer Password");
-                            DeleteSessionTokens();
+                            Rec.DeletePassword(Rec."Cobrand Name");
+                            Rec.DeletePassword(Rec."Cobrand Password");
+                            Rec.DeletePassword(Rec."Consumer Password");
+                            Rec.DeleteSessionTokens();
 
-                            GET();
-                            clear("Consumer Password");
-                            clear("Consumer Name");
-                            clear("Cobrand Name");
-                            clear("Cobrand Password");
-                            MODIFY(TRUE);
+                            Rec.GET();
+                            clear(Rec."Consumer Password");
+                            clear(Rec."Consumer Name");
+                            clear(Rec."Cobrand Name");
+                            clear(Rec."Cobrand Password");
+                            Rec.MODIFY(true);
                             Session.LogMessage('0000DXV', UserRemovedWithoutUnregisteringTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-                            MSYodleeBankAccLink.DELETEALL(TRUE);
-                            Enabled := false;
+                            MSYodleeBankAccLink.DELETEALL(true);
+                            Rec.Enabled := false;
                             ValidateEnabled();
                         end;
                     end else
@@ -311,14 +320,14 @@ page 1450 "MS - Yodlee Bank Service Setup"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Show Advanced Settings';
-                Enabled = NOT AdvancedView;
+                Enabled = not AdvancedView;
                 Image = ViewDetails;
                 ToolTip = 'Show all of the setup fields for the Envestnet Yodlee service.';
-                Visible = NOT AdvancedViewOnOpen;
+                Visible = not AdvancedViewOnOpen;
 
                 trigger OnAction();
                 begin
-                    AdvancedView := NOT AdvancedView;
+                    AdvancedView := not AdvancedView;
                 end;
             }
 
@@ -381,8 +390,8 @@ page 1450 "MS - Yodlee Bank Service Setup"
                         MSYodleeDataExchangeDef: Record "MS - Yodlee Data Exchange Def";
                     begin
                         MSYodleeDataExchangeDef.ResetDataExchToDefault();
-                        ResetDefaultBankStatementImportFormat();
-                        MODIFY();
+                        Rec.ResetDefaultBankStatementImportFormat();
+                        Rec.MODIFY();
                         CurrPage.UPDATE();
                     end;
                 }
@@ -409,7 +418,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
 
     trigger OnAfterGetCurrRecord();
     begin
-        EditableByNotEnabled := NOT Enabled;
+        EditableByNotEnabled := not Rec.Enabled;
         UpdateBasedOnEnable();
         UpdateMaskedValues();
     end;
@@ -421,18 +430,18 @@ page 1450 "MS - Yodlee Bank Service Setup"
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         FeatureTelemetry.LogUptake('0000GY3', 'Yodlee', Enum::"Feature Uptake Status"::Discovered);
-        RESET();
-        IF NOT GET() THEN BEGIN
-            INIT();
-            SetValuesToDefault();
-            INSERT(TRUE);
-        END;
+        Rec.RESET();
+        if not Rec.GET() then begin
+            Rec.INIT();
+            Rec.SetValuesToDefault();
+            Rec.INSERT(true);
+        end;
         UpdateBasedOnEnable();
 
-        AdvancedViewOnOpen := NOT HasDefaultCredentials();
-        AdvancedView := NOT HasDefaultCredentials();
-        ConsumerEditable := AdvancedView AND EditableByNotEnabled;
-        UserProfileEmaiLAddressIsVisible := (NOT EnvironmentInformation.IsSaaS()) OR CompanyInformationMgt.IsDemoCompany();
+        AdvancedViewOnOpen := not Rec.HasDefaultCredentials();
+        AdvancedView := not Rec.HasDefaultCredentials();
+        ConsumerEditable := AdvancedView and EditableByNotEnabled;
+        UserProfileEmaiLAddressIsVisible := (not EnvironmentInformation.IsSaaS()) or CompanyInformationMgt.IsDemoCompany();
     end;
 
     var
@@ -456,47 +465,47 @@ page 1450 "MS - Yodlee Bank Service Setup"
 
     local procedure UpdateBasedOnEnable();
     begin
-        EditableByNotEnabled := NOT Enabled;
-        ConsumerEditable := AdvancedView AND EditableByNotEnabled;
+        EditableByNotEnabled := not Rec.Enabled;
+        ConsumerEditable := AdvancedView and EditableByNotEnabled;
         ShowServiceEnableWarning := '';
-        IF CurrPage.EDITABLE() AND Enabled THEN
+        if CurrPage.EDITABLE() and Rec.Enabled then
             ShowServiceEnableWarning := EnabledWarningTok;
     end;
 
     local procedure UpdateMaskedValues();
     begin
-        IF HasPassword("Consumer Password") THEN
+        if Rec.HasPassword(Rec."Consumer Password") then
             ConsumerPassword := '*************'
-        ELSE
+        else
             ConsumerPassword := '';
 
-        IF HasCobrandPassword("Cobrand Password") THEN
+        if Rec.HasCobrandPassword(Rec."Cobrand Password") then
             CobrandPassword := '*************'
-        ELSE
+        else
             CobrandPassword := '';
 
-        IF HasCobrandName("Cobrand Name") THEN
+        if Rec.HasCobrandName(Rec."Cobrand Name") then
             CobrandLogin := '*************'
-        ELSE
+        else
             CobrandLogin := '';
 
-        IF HasCobrandEnvironmentName("Cobrand Environment Name") THEN
+        if Rec.HasCobrandEnvironmentName(Rec."Cobrand Environment Name") then
             CobrandEnvName := '*************'
-        ELSE
+        else
             CobrandEnvName := '';
 
-        PreconfiguredCredentials := HasDefaultCredentials();
+        PreconfiguredCredentials := Rec.HasDefaultCredentials();
     end;
 
     local procedure DrilldownCode();
     begin
-        IF NOT Enabled THEN
-            EXIT;
+        if not Rec.Enabled then
+            exit;
 
-        IF CONFIRM(DisableEnableQst, TRUE) THEN BEGIN
-            VALIDATE(Enabled, FALSE);
+        if CONFIRM(DisableEnableQst, true) then begin
+            Rec.VALIDATE(Enabled, false);
             ValidateEnabled();
-        END;
+        end;
     end;
 
     local procedure ValidateEnabled();
@@ -505,30 +514,30 @@ page 1450 "MS - Yodlee Bank Service Setup"
         MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
         EmptyGuid: Guid;
     begin
-        IF MSYodleeBankSession.GET() THEN BEGIN
+        if MSYodleeBankSession.GET() then begin
             MSYodleeBankSession."Cob. Token Last Date Updated" := 0DT;
             MSYodleeBankSession."Cons. Token Last Date Updated" := 0DT;
             CLEAR(MSYodleeBankSession."Cobrand Session Token");
             CLEAR(MSYodleeBankSession."Consumer Session Token");
-            MSYodleeBankSession.MODIFY(TRUE);
-        END;
+            MSYodleeBankSession.MODIFY(true);
+        end;
 
-        IF (NOT Enabled) AND ("Consumer Name" <> '') AND HasPassword("Consumer Password") THEN
-            IF CONFIRM(RemoveConsumerOnDisableQst, TRUE) THEN BEGIN
+        if (not Rec.Enabled) and (Rec."Consumer Name" <> '') and Rec.HasPassword(Rec."Consumer Password") then
+            if CONFIRM(RemoveConsumerOnDisableQst, true) then begin
                 CurrPage.SAVERECORD(); // GET on this Rec is performed on UnregisterConsumer
-                MSYodleeServiceMgt.SetDisableRethrowException(TRUE);
+                MSYodleeServiceMgt.SetDisableRethrowException(true);
                 MSYodleeServiceMgt.UnregisterConsumer();
-                GET();
-            END ELSE
+                Rec.GET();
+            end else
                 ERROR(''); // rollback & prevent disable
 
-        IF NOT Enabled THEN begin
+        if not Rec.Enabled then begin
             MSYodleeServiceMgt.UnlinkAllBankAccounts();
-            if not HasPassword("Consumer Password") THEN begin
-                "Consumer Name" := '';
-                if IsolatedStorage.Delete("Consumer Password", DataScope::Company) then;
-                "Consumer Password" := EmptyGuid;
-                Modify();
+            if not Rec.HasPassword(Rec."Consumer Password") then begin
+                Rec."Consumer Name" := '';
+                if IsolatedStorage.Delete(Rec."Consumer Password", DataScope::Company) then;
+                Rec."Consumer Password" := EmptyGuid;
+                Rec.Modify();
             end;
         end;
         UpdateBasedOnEnable();
@@ -536,4 +545,6 @@ page 1450 "MS - Yodlee Bank Service Setup"
         CurrPage.UPDATE();
     end;
 }
+
+#pragma implicitwith restore
 

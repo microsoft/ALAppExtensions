@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.CRM.Outlook;
+using Microsoft.DataMigration.GP.HistoricalData;
+
 codeunit 40900 "GP Populate Hist. Tables"
 {
     var

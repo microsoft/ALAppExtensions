@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using System.Integration;
+
 page 1903 "C5 LedTable List"
 {
     PageType = List;
@@ -26,33 +30,33 @@ page 1903 "C5 LedTable List"
                     Caption = 'Error Message';
                     Enabled = false;
                 }
-                field(Account; Account) { ApplicationArea = All; }
-                field(AccountName; AccountName) { ApplicationArea = All; }
-                field(AccountType; AccountType) { ApplicationArea = All; }
-                field(Code; Code) { ApplicationArea = All; }
-                field(DCproposal; DCproposal) { ApplicationArea = All; }
-                field(Department; Department) { ApplicationArea = All; }
-                field(MandDepartment; MandDepartment) { ApplicationArea = All; }
-                field(OffsetAccount; OffsetAccount) { ApplicationArea = All; }
-                field(Access; Access) { ApplicationArea = All; }
-                field(TotalFromAccount; TotalFromAccount) { ApplicationArea = All; }
-                field(Vat; Vat) { ApplicationArea = All; }
-                field(BalanceCur; BalanceCur) { ApplicationArea = All; }
-                field(Currency; Currency) { ApplicationArea = All; }
-                field(CostType; CostType) { ApplicationArea = All; }
-                field(Counterunit; Counterunit) { ApplicationArea = All; }
-                field(BalanceMST; BalanceMST) { ApplicationArea = All; }
-                field(CompanyGroupAcc; CompanyGroupAcc) { ApplicationArea = All; }
-                field(ExchAdjust; ExchAdjust) { ApplicationArea = All; }
-                field(Balance02; Balance02) { ApplicationArea = All; }
-                field(EDIIndex; EDIIndex) { ApplicationArea = All; }
-                field(Centre; Centre) { ApplicationArea = All; }
-                field(MandCentre; MandCentre) { ApplicationArea = All; }
-                field(Purpose; Purpose) { ApplicationArea = All; }
-                field(MandPurpose; MandPurpose) { ApplicationArea = All; }
-                field(VatBlocked; VatBlocked) { ApplicationArea = All; }
-                field(OpeningAccount; OpeningAccount) { ApplicationArea = All; }
-                field(DEL_UserLock; DEL_UserLock) { ApplicationArea = All; }
+                field(Account; Rec.Account) { ApplicationArea = All; }
+                field(AccountName; Rec.AccountName) { ApplicationArea = All; }
+                field(AccountType; Rec.AccountType) { ApplicationArea = All; }
+                field(Code; Rec.Code) { ApplicationArea = All; }
+                field(DCproposal; Rec.DCproposal) { ApplicationArea = All; }
+                field(Department; Rec.Department) { ApplicationArea = All; }
+                field(MandDepartment; Rec.MandDepartment) { ApplicationArea = All; }
+                field(OffsetAccount; Rec.OffsetAccount) { ApplicationArea = All; }
+                field(Access; Rec.Access) { ApplicationArea = All; }
+                field(TotalFromAccount; Rec.TotalFromAccount) { ApplicationArea = All; }
+                field(Vat; Rec.Vat) { ApplicationArea = All; }
+                field(BalanceCur; Rec.BalanceCur) { ApplicationArea = All; }
+                field(Currency; Rec.Currency) { ApplicationArea = All; }
+                field(CostType; Rec.CostType) { ApplicationArea = All; }
+                field(Counterunit; Rec.Counterunit) { ApplicationArea = All; }
+                field(BalanceMST; Rec.BalanceMST) { ApplicationArea = All; }
+                field(CompanyGroupAcc; Rec.CompanyGroupAcc) { ApplicationArea = All; }
+                field(ExchAdjust; Rec.ExchAdjust) { ApplicationArea = All; }
+                field(Balance02; Rec.Balance02) { ApplicationArea = All; }
+                field(EDIIndex; Rec.EDIIndex) { ApplicationArea = All; }
+                field(Centre; Rec.Centre) { ApplicationArea = All; }
+                field(MandCentre; Rec.MandCentre) { ApplicationArea = All; }
+                field(Purpose; Rec.Purpose) { ApplicationArea = All; }
+                field(MandPurpose; Rec.MandPurpose) { ApplicationArea = All; }
+                field(VatBlocked; Rec.VatBlocked) { ApplicationArea = All; }
+                field(OpeningAccount; Rec.OpeningAccount) { ApplicationArea = All; }
+                field(DEL_UserLock; Rec.DEL_UserLock) { ApplicationArea = All; }
 #pragma warning restore
             }
         }
@@ -66,7 +70,7 @@ page 1903 "C5 LedTable List"
     var
         DataMigrationError: Record "Data Migration Error";
     begin
-        DataMigrationError.GetErrorMessage(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), RecordId(), MigrationErrorText);
+        DataMigrationError.GetErrorMessage(C5MigrDashboardMgt.GetC5MigrationTypeTxt(), Rec.RecordId(), MigrationErrorText);
     end;
 
 }

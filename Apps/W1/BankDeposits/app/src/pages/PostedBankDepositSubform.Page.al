@@ -1,12 +1,10 @@
+namespace Microsoft.Bank.Deposit;
 page 1697 "Posted Bank Deposit Subform"
 {
     AutoSplitKey = true;
     Caption = 'Posted Bank Deposit Subform';
     Editable = false;
     PageType = ListPart;
-#pragma warning disable AL0729
-    PromotedActionCategories = 'New,Process,Report,Line,Functions';
-#pragma warning restore
     SourceTable = "Posted Bank Deposit Line";
     Permissions = tabledata "Posted Bank Deposit Header" = r,
                   tabledata "Posted Bank Deposit Line" = r;

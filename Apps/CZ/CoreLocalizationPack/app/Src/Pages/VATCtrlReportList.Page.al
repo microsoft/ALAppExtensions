@@ -2,7 +2,7 @@ page 31109 "VAT Ctrl. Report List CZL"
 {
     ApplicationArea = VAT;
     Caption = 'VAT Control Reports';
-    CardPageID = "VAT Ctrl. Report Card CZL";
+    CardPageId = "VAT Ctrl. Report Card CZL";
     Editable = false;
     PageType = List;
     SourceTable = "VAT Ctrl. Report Header CZL";
@@ -76,7 +76,7 @@ page 31109 "VAT Ctrl. Report List CZL"
                     Promoted = true;
                     PromotedCategory = Process;
                     PromotedOnly = true;
-                    ShortCutKey = 'F7';
+                    ShortcutKey = 'F7';
                     ToolTip = 'View the statistics on the selected VAT Control Report.';
 
                     trigger OnAction()
@@ -113,7 +113,7 @@ page 31109 "VAT Ctrl. Report List CZL"
                     PromotedCategory = Process;
                     PromotedOnly = true;
                     PromotedIsBig = true;
-                    ShortCutKey = 'Ctrl+F9';
+                    ShortcutKey = 'Ctrl+F9';
                     ToolTip = 'Release VAT Control Report.';
 
                     trigger OnAction()
@@ -223,7 +223,7 @@ page 31109 "VAT Ctrl. Report List CZL"
                 Caption = 'Show Lines';
                 Image = AllLines;
                 ToolTip = 'Shows related VAT Control Report lines.';
-                RunObject = Page "VAT Ctrl. Report Lines CZL";
+                RunObject = page "VAT Ctrl. Report Lines CZL";
                 RunPageLink = "VAT Ctrl. Report No." = field("No.");
             }
             action(DocAttach)

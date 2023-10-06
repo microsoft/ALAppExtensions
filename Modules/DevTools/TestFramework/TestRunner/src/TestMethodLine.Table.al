@@ -3,8 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestTools.TestRunner;
+
+using System.Reflection;
+
 table 130450 "Test Method Line"
 {
+    DataClassification = CustomerContent;
     ReplicateData = false;
     Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
 
@@ -34,8 +39,8 @@ table 130450 "Test Method Line"
         field(4; "Test Codeunit"; Integer)
         {
             Editable = false;
-            TableRelation = IF ("Line Type" = CONST(Codeunit)) AllObjWithCaption."Object ID" WHERE("Object Type" = CONST(Codeunit),
-                                                                                                  "Object Subtype" = CONST('Test'));
+            TableRelation = if ("Line Type" = const(Codeunit)) AllObjWithCaption."Object ID" where("Object Type" = const(Codeunit),
+                                                                                                  "Object Subtype" = const('Test'));
 
             trigger OnValidate()
             var
@@ -103,23 +108,23 @@ table 130450 "Test Method Line"
         }
         field(50; "Error Message Preview"; Text[2048])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = CustomerContent;
         }
         field(51; "Error Code"; Text[30])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = CustomerContent;
         }
         field(52; "Error Message"; BLOB)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = CustomerContent;
         }
         field(53; "Error Call Stack"; BLOB)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = CustomerContent;
         }
         field(55; "Skip Logging Results"; Boolean)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = CustomerContent;
         }
     }
 

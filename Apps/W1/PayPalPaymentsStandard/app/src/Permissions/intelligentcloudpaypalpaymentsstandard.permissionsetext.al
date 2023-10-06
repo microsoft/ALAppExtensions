@@ -1,3 +1,7 @@
+namespace Microsoft.Bank.PayPal;
+
+using System.Security.AccessControl;
+
 permissionsetextension 45614 "INTELLIGENT CLOUD - PayPal Payments Standard" extends "INTELLIGENT CLOUD"
 {
     Permissions = tabledata "MS - PayPal Standard Account" = R,

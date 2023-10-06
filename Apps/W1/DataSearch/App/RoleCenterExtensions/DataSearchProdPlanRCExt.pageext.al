@@ -1,11 +1,16 @@
 pageextension 2682 "Data Search Prod. Plan. RC Ext" extends "Production Planner Role Center"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by direct access from the Tell Me search.';
+    ObsoleteTag = '23.0';
     actions
     {
         addafter("Navi&gate")
         {
             action(DataSearch)
             {
+                Visible = false;
+                Enabled = false;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Search in data';
                 Ellipsis = true;

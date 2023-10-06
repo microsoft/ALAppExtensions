@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Page Shpfy Log Entries (ID 30119).
 /// </summary>
@@ -46,20 +48,49 @@ page 30119 "Shpfy Log Entries"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the URL with the data requested from.';
                 }
+#if not CLEAN23
                 field(Method; Rec.Method)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the used method.';
+                    Visible = false;
+                    ObsoleteReason = 'Removed from this page.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '23.0';
                 }
                 field(StatusCode; Rec."Status Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the HTTP result status of the entry in the log.';
+                    Visible = false;
+                    ObsoleteReason = 'Removed from this page.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '23.0';
                 }
                 field(StatusDescription; Rec."Status Description")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the description of the HTTP result status of the entry in the log.';
+                    Visible = false;
+                    ObsoleteReason = 'Removed from this page.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '23.0';
+                }
+#endif
+                field(RequestPreview; Rec."Request Preview")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the request preview.';
+                }
+                field(ResponsePreview; Rec."Response Preview")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the response preview.';
+                }
+                field(HasError; Rec."Has Error")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if the request has errors.';
                 }
             }
         }

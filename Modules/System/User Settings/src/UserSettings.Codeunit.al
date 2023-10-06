@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Environment;
+using System.Reflection;
+
 /// <summary>
 /// Provides basic functionality for user settings. 
 /// </summary>
@@ -119,52 +124,4 @@ codeunit 9176 "User Settings"
     procedure OnCompanyChange(NewCompanyName: Text; var IsSetupInProgress: Boolean)
     begin
     end;
-
-#if not CLEAN19
-    /// <summary>
-    /// Integration event that fires every time the Role Center is changed.
-    /// </summary>
-    /// <param name="NewAllProfile">The All Profile Record that holds the new profile.</param>
-    [Obsolete('Use "OnUpdateUserSettings" event instead.', '19.0')]
-    [IntegrationEvent(false, false)]
-    procedure OnUserRoleCenterChange(NewAllProfile: Record "All Profile")
-    begin
-    end;
-
-    /// <summary>
-    /// Integration event that fires every time the settings page closes.
-    /// </summary>
-    /// <param name="NewLanguageID">The Language ID selected.</param>
-    /// <param name="NewLocaleID">The Locale ID selected.</param>
-    /// <param name="NewTimeZoneID">The Time Zone selected.</param>
-    /// <param name="NewCompany">The company selected.</param>
-    /// <param name="NewAllProfile">The All Profile Record that holds the new profile.</param>
-    [Obsolete('Use "OnUpdateUserSettings" event instead.', '19.0')]
-    [IntegrationEvent(false, false)]
-    procedure OnAfterQueryClosePage(NewLanguageID: Integer; NewLocaleID: Integer; NewTimeZoneID: Text[180]; NewCompany: Text; NewAllProfile: Record "All Profile")
-    begin
-    end;
-
-    /// <summary>
-    /// Integration event that fires every time the Language changes.
-    /// </summary>
-    /// <param name="OldLanguageId">The old Language ID.</param>
-    /// <param name="NewLanguageId">The new Language ID selected.</param>
-    [Obsolete('Use "OnUpdateUserSettings" event instead.', '19.0')]
-    [IntegrationEvent(false, false)]
-    procedure OnBeforeLanguageChange(OldLanguageId: Integer; NewLanguageId: Integer)
-    begin
-    end;
-
-    /// <summary>
-    /// Integration event that fires every time the work date changes.
-    /// </summary>
-    /// <param name="OldWorkdate">The old work date.</param>
-    /// <param name="NewWorkdate">The new work date selected.</param>
-    [Obsolete('Use "OnUpdateUserSettings" event instead.', '19.0')]
-    [IntegrationEvent(false, false)]
-    procedure OnBeforeWorkdateChange(OldWorkdate: Date; NewWorkdate: Date)
-    begin
-    end;
-#endif
 }

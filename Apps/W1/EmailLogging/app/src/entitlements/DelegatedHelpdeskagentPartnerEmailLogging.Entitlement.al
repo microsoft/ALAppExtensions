@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 entitlement "Delegated Helpdesk agent - Partner Email Logging"
 {
     Type = Role;

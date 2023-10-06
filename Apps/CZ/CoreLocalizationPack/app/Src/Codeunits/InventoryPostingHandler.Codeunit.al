@@ -1,7 +1,13 @@
 codeunit 31073 "Inventory Posting Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnSetAccNoOnBeforeCheckAccNo', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure EnhancedPostingAccountsOnSetAccNoOnBeforeCheckAccNo(var InvtPostBuf: Record "Invt. Posting Buffer"; InvtPostingSetup: Record "Inventory Posting Setup"; GenPostingSetup: Record "General Posting Setup"; CalledFromItemPosting: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         case InvtPostBuf."Account Type" of
             InvtPostBuf."Account Type"::"AccConsumption CZL":
@@ -69,7 +75,13 @@ codeunit 31073 "Inventory Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferOutputPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif    
     local procedure InitInvtPostBufOnBeforeBufferOutputPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; ExpCostToPost: Decimal; ExpCostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         InventorySetup.Get();
         if InventorySetup."Post Exp.Cost Conv.As Corr.CZL" then
@@ -116,7 +128,13 @@ codeunit 31073 "Inventory Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferSalesPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure InitInvtPostBufOnBeforeBufferSalesPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         InventorySetup.Get();
         if InventorySetup."Post Exp.Cost Conv.As Corr.CZL" then
@@ -136,7 +154,13 @@ codeunit 31073 "Inventory Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferConsumpPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure InitInvtPostBufOnBeforeBufferConsumpPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer" temporary; CostToPost: Decimal; CostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         case ValueEntry."Entry Type" of
             ValueEntry."Entry Type"::"Direct Cost":
@@ -167,7 +191,13 @@ codeunit 31073 "Inventory Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferPurchPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure InitInvtPostBufOnBeforeBufferPurchPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         case ValueEntry."Entry Type" of
             ValueEntry."Entry Type"::Rounding:
@@ -183,7 +213,13 @@ codeunit 31073 "Inventory Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferAsmOutputPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure InitInvtPostBufOnBeforeBufferAsmOutputPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; var CostToPost: Decimal; var CostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         case ValueEntry."Entry Type" of
             ValueEntry."Entry Type"::Rounding:
@@ -199,7 +235,13 @@ codeunit 31073 "Inventory Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferAsmConsumpPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure InitInvtPostBufOnBeforeBufferAsmConsumpPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; var CostToPost: Decimal; var CostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         case ValueEntry."Entry Type" of
             ValueEntry."Entry Type"::Rounding:
@@ -215,7 +257,13 @@ codeunit 31073 "Inventory Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferAdjmtPosting', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure InitInvtPostBufOnBeforeBufferAdjmtPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; var IsHandled: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         case ValueEntry."Entry Type" of
             ValueEntry."Entry Type"::Rounding:
@@ -243,9 +291,21 @@ codeunit 31073 "Inventory Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnAfterInitTempInvtPostBuf', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure SetGLCorrectionOnAfterInitTempInvtPostBuf(var TempInvtPostBuf: array[20] of Record "Invt. Posting Buffer"; ValueEntry: Record "Value Entry"; PostBufDimNo: Integer)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
         TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL" := ValueEntry."G/L Correction CZL";
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
 
         if ValueEntry."Expected Cost" then
             exit;
@@ -261,13 +321,31 @@ codeunit 31073 "Inventory Posting Handler CZL"
            (ValueEntry."Entry Type" in [ValueEntry."Entry Type"::"Direct Cost", ValueEntry."Entry Type"::Revaluation])
         then
             if ValueEntry."Cost Amount (Expected)" <> 0 then
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
                 TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL" := not TempInvtPostBuf[PostBufDimNo]."G/L Correction CZL";
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnPostInvtPostBufProcessGlobalInvtPostBufOnAfterSetDesc', '', false, false)]
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     local procedure GetCorrectionOnPostInvtPostBufProcessGlobalInvtPostBufOnAfterSetDesc(var GenJournalLine: Record "Gen. Journal Line"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer")
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
         GenJournalLine.Correction := GlobalInvtPostBuf."G/L Correction CZL";
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnAfterBufferGLItemLedgRelation', '', false, false)]
@@ -277,8 +355,14 @@ codeunit 31073 "Inventory Posting Handler CZL"
             TempGLItemLedgRelation.Delete();
     end;
 
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     [EventSubscriber(ObjectType::Table, Database::"Invt. Posting Buffer", 'OnUseInvtPostSetup', '', false, false)]
     local procedure AccountTypesOnUseInvtPostSetup(var InvtPostingBuffer: Record "Invt. Posting Buffer"; var UseInventoryPostingSetup: Boolean)
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     begin
         if InvtPostingBuffer."Account Type" in
           [InvtPostingBuffer."Account Type"::"AccConsumption CZL",

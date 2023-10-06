@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DateTime;
+
+using System;
+
 codeunit 8721 "Time Zone Impl."
 {
     Access = Internal;

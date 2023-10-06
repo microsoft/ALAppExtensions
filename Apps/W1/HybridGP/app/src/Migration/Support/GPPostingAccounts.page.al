@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4026 "GP Posting Accounts"
 {
     PageType = Card;

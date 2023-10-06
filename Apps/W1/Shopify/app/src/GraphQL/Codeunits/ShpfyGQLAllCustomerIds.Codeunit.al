@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30241 "Shpfy GQL AllCustomerIds" implements "Shpfy IGraphQL"
 {
     Access = Internal;

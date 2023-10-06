@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.Security.AccessControl;
+
 permissionsetextension 17471 "INTELLIGENT CLOUD - Standard Audit File - Tax Localization for Norway" extends "INTELLIGENT CLOUD"
 {
     Permissions = tabledata "SAF-T Export File" = RIMD,

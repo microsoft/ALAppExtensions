@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment;
+using System.Environment.Configuration;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 132589 "Advanced Settings Test"
 {
     EventSubscriberInstance = Manual;

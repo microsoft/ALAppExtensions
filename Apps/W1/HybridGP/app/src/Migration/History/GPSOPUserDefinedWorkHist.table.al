@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4079 "GPSOPUserDefinedWorkHist"
 {
     DataClassification = CustomerContent;

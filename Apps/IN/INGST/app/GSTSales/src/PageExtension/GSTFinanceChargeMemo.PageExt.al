@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.FinanceCharge;
+
+using Microsoft.Finance.GST.Sales;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 pageextension 18167 "GST Finance Charge Memo" extends "Finance Charge Memo"
 {
     layout

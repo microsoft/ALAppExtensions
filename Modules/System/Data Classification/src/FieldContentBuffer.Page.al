@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Privacy;
 
 /// <summary>
 /// Displays a list of field content buffers.
@@ -17,6 +19,8 @@ page 1753 "Field Content Buffer"
     PageType = List;
     SourceTable = "Field Content Buffer";
     ContextSensitiveHelpPage = 'admin-classifying-data-sensitivity';
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {
@@ -24,7 +28,7 @@ page 1753 "Field Content Buffer"
         {
             repeater(Group)
             {
-                field(Value; Value)
+                field(Value; Rec.Value)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the field value.';
@@ -37,4 +41,5 @@ page 1753 "Field Content Buffer"
     {
     }
 }
+
 

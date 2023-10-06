@@ -19,7 +19,7 @@ Use "SharePoint Authorization module".
         SharePointAuth: Codeunit "SharePoint Auth.";
         SharePointAuthorization: Interface "SharePoint Authorization";
     begin
-        SharePointAuthorization := SharePointAuth.CreateAuthorizationCode('<AadTenantId>', '<ClientId>', '<ClientSecret>', '<Scope>');
+        SharePointAuthorization := SharePointAuth.CreateAuthorizationCode('<MicrosoftEntraTenantId>', '<ClientId>', '<ClientSecret>', '<Scope>');
 ```
 
 # SharePoint API
@@ -215,6 +215,16 @@ Downloads specified file to the client.
         SharePointFile: Record "SharePoint File";
     begin
         SPClient.DownloadFileContent(SharePointFile.OdataId, SharePointFile.Name); 
+```
+
+### Update Metadata for a list item (including a file)
+Updates specific metadata field for list item.
+In order to update metadata of a file it needs to be accessed as list item.
+```
+    var
+        SharePointFile: Record "SharePoint File";
+    begin
+        SharePointClient.UpdateListItemMetaDataField('Maintenance', 10, 'SP.Data.MaintenanceItem', 'WorkOrderNo', 'TEST0001'); 
 ```
 
 ## Error handling

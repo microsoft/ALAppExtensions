@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.Finance.RoleCenters;
+
 tableextension 4007 "Hybrid Finance Cue" extends "Finance Cue"
 {
     fields

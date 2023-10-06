@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 41102 "GP 1099 Migration Log"
 {
     Caption = 'GP 1099 Migration Log';

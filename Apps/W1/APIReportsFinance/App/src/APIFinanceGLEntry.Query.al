@@ -1,3 +1,7 @@
+namespace Microsoft.API.FinancialManagement;
+
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 query 30300 "API Finance - GL Entry"
 {
     QueryType = API;

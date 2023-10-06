@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Reflection;
+using System.Environment.Configuration;
+using System.Environment;
+using System.Media;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 132605 "Checklist Banner Test"
 {
     Subtype = Test;

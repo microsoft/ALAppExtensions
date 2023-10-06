@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.RoleCenters;
+
+using Microsoft.Bank.VoucherInterface;
+using Microsoft.Finance.TaxBase;
+
 pageextension 18947 "Business Manager Role VI" extends "Business Manager Role Center"
 {
     actions
@@ -49,7 +58,7 @@ pageextension 18947 "Business Manager Role VI" extends "Business Manager Role Ce
                 action("Journal Voucher")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Register transactions which are affecting neither the cash account nor the bank account are termed as Journal Vouchers.';
+                    ToolTip = 'Register transactions which are affecting neither the cash account nor the bank account are termed as Journal Vouchers.';
                     Caption = 'Journal Voucher';
                     Promoted = false;
                     Image = EditList;

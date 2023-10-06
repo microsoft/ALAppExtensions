@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using System.Environment;
+using System.Security.AccessControl;
+
 page 30081 "APIV2 - Aut. Sec. Gr. Members"
 {
     APIGroup = 'automation';

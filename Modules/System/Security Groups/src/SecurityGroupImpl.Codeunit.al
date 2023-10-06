@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System;
+using System.Telemetry;
+using System.Azure.Identity;
+
 codeunit 9871 "Security Group Impl."
 {
     Access = Internal;
@@ -13,28 +19,30 @@ codeunit 9871 "Security Group Impl."
                   tabledata "Security Group" = rimd;
 
     var
+        AzureAdGraph: Codeunit "Azure AD Graph";
+        EntraGroups: Dictionary of [Text, Text];
+        AreAllEntraGroupsFetched: Boolean;
         InvalidWindowsGroupErr: Label 'The group ID %1 does not correspond to a valid Windows group.', Comment = '%1 = Windows group ID';
-        InvalidAadGroupErr: Label 'The group ID %1 does not correspond to a valid AAD group.', Comment = '%1 = AAD security group ID';
-        GroupAlreadyExistsErr: Label 'The group %1 already exists.', Comment = '%1 = AAD group ID / Windows group name / group code';
+        InvalidEntraGroupErr: Label 'The group ID %1 does not correspond to a valid Microsoft Entra group.', Comment = '%1 = Microsoft Entra security group ID';
+        InvalidGroupNameErr: Label 'The group %1 could not be found.', Comment = '%1 = group name';
+        GroupAlreadyExistsErr: Label 'The group %1 already exists.', Comment = '%1 = Microsoft Entra group ID / Windows group name / group code';
         WindowsAccountNotAllowedErr: Label 'The group %1 is not allowed.', Comment = '%1 = Windows group name';
-        CouldNotFindWindowsGroupErr: Label 'Could not find Windows Group.';
+        CouldNotFindGroupErr: Label 'Could not find %1 group.', Comment = '%1 = Active Directory / Microsoft Entra';
         NoPermissionsErr: Label 'You do not have permissions to create security groups. Ask your system administrator to give you Insert, Modify and Delete permissions for the Security Group table.';
-        GroupNotFoundTxt: Label 'The group %1 could not be found in %2. The permission sets assigned to it will not have any effect.', Comment = '%1 = group code; %2 = Active Directory / Azure Active Directory';
-        GroupsNotFoundTxt: Label 'The groups %1 could not be found in %2. The permission sets assigned to them will not have any effect.', Comment = '%1 = comma separated list of group codes; %2 = Active Directory / Azure Active Directory';
+        GroupNotFoundTxt: Label 'The group %1 could not be found in %2. The permission sets assigned to it will not have any effect.', Comment = '%1 = group code; %2 = Active Directory / Microsoft Entra';
+        GroupsNotFoundTxt: Label 'The groups %1 could not be found in %2. The permission sets assigned to them will not have any effect.', Comment = '%1 = comma separated list of group codes; %2 = Active Directory / Microsoft Entra';
         SecurityGroupsTok: Label 'Security Groups', Locked = true;
         AdTxt: Label 'Active Directory', Locked = true;
-        AadTxt: Label 'Azure Active Directory', Locked = true;
+        EntraTxt: Label 'Microsoft Entra', Locked = true;
         SecurityGroupAddedLbl: Label 'A security group with ID %1 has been added. Automatically created user with security ID: %2.', Locked = true;
         NotificationIdLbl: Label 'e78ecb57-f560-4788-b9c7-e5a477467d65', Locked = true;
-        AadGroups: Dictionary of [Text, Text];
-        AreAadGroupsInitialized: Boolean;
 
     procedure ValidateGroupId(GroupId: Text)
     begin
         if IsWindowsAuthentication() then
             ValidateWindowsGroup(GroupId)
         else
-            ValidateAadGroup(GroupId);
+            ValidateEntraGroup(GroupId);
     end;
 
     procedure Create(GroupCode: Code[20]; GroupId: Text)
@@ -44,6 +52,7 @@ codeunit 9871 "Security Group Impl."
         FeatureTelemetry: Codeunit "Feature Telemetry";
         NavUserAccountHelper: DotNet NavUserAccountHelper;
         Handled: Boolean;
+        EntraGroupName: Text[250];
     begin
         // CreateUserFromAAdGroupObjectId will commit the changes to the User table, so we need to
         // make sure there will not be a permission error when inserting a security group record.
@@ -64,11 +73,12 @@ codeunit 9871 "Security Group Impl."
 
             SecurityGroup."Group User SID" := SecurityGroupUser."User Security ID";
         end else begin
-            ValidateAadGroup(GroupId);
+            ValidateEntraGroup(GroupId);
+            TryGetNameById(GroupId, EntraGroupName);
 
-            OnBeforeCreateAadGroupUserInSaaS(SecurityGroup, GroupId, AadGroups.Get(GroupId), Handled);
+            OnBeforeCreateAadGroupUserInSaaS(SecurityGroup, GroupId, EntraGroupName, Handled);
             if not Handled then
-                SecurityGroup."Group User SID" := NavUserAccountHelper.CreateUserFromAAdGroupObjectId(GroupId, AadGroups.Get(GroupId));
+                SecurityGroup."Group User SID" := NavUserAccountHelper.CreateUserFromAAdGroupObjectId(GroupId, EntraGroupName);
         end;
 
         SecurityGroup.Code := GroupCode;
@@ -185,10 +195,11 @@ codeunit 9871 "Security Group Impl."
 
     procedure GetAvailableGroups(var SecurityGroupBuffer: Record "Security Group Buffer")
     var
+        User: Record User;
         UserProperty: Record "User Property";
         DummySecurityGroup: Record "Security Group";
         LocalSecurityGroupBuffer: Record "Security Group Buffer";
-        AadGroupId: Text;
+        EntraGroupId: Text;
         NavUserAccountHelper: DotNet NavUserAccountHelper;
         LocalWindowsGroupName: Text;
     begin
@@ -203,21 +214,23 @@ codeunit 9871 "Security Group Impl."
         if IsWindowsAuthentication() then
             foreach LocalWindowsGroupName in NavUserAccountHelper.GetLocalWindowsGroups() do begin
                 SecurityGroupBuffer."Group ID" := CopyStr(SID(LocalWindowsGroupName), 1, MaxStrLen(SecurityGroupBuffer."Group ID"));
-                if not GetDisallowedWindowsGroupIds().Contains(SecurityGroupBuffer."Group ID") then begin
-                    SecurityGroupBuffer.Code := CopyStr(CreateGuid(), 1, MaxStrLen(SecurityGroupBuffer.Code));
-                    SecurityGroupBuffer."Group Name" := CopyStr(LocalWindowsGroupName, 1, MaxStrLen(SecurityGroupBuffer."Group Name"));
-                    SecurityGroupBuffer.Insert();
-                end;
+                User.SetRange("Windows Security ID", SecurityGroupBuffer."Group ID");
+                if User.IsEmpty() then
+                    if not GetDisallowedWindowsGroupIds().Contains(SecurityGroupBuffer."Group ID") then begin
+                        SecurityGroupBuffer.Code := CopyStr(CreateGuid(), 1, MaxStrLen(SecurityGroupBuffer.Code));
+                        SecurityGroupBuffer."Group Name" := CopyStr(LocalWindowsGroupName, 1, MaxStrLen(SecurityGroupBuffer."Group Name"));
+                        SecurityGroupBuffer.Insert();
+                    end;
             end
         else begin
-            InitializeAadGroups();
+            FetchAllEntraGroups();
 
-            foreach AadGroupId in AadGroups.Keys do begin
-                UserProperty.SetRange("Authentication Object ID", AadGroupId);
+            foreach EntraGroupId in EntraGroups.Keys do begin
+                UserProperty.SetRange("Authentication Object ID", EntraGroupId);
                 if UserProperty.IsEmpty() then begin
                     SecurityGroupBuffer.Code := CopyStr(CreateGuid(), 1, MaxStrLen(SecurityGroupBuffer.Code));
-                    SecurityGroupBuffer."Group ID" := CopyStr(AadGroupId, 1, MaxStrLen(SecurityGroupBuffer."Group ID"));
-                    SecurityGroupBuffer."Group Name" := CopyStr(AadGroups.Get(AadGroupId), 1, MaxStrLen(SecurityGroupBuffer."Group Name"));
+                    SecurityGroupBuffer."Group ID" := CopyStr(EntraGroupId, 1, MaxStrLen(SecurityGroupBuffer."Group ID"));
+                    SecurityGroupBuffer."Group Name" := CopyStr(EntraGroups.Get(EntraGroupId), 1, MaxStrLen(SecurityGroupBuffer."Group Name"));
                     SecurityGroupBuffer.Insert();
                 end;
             end;
@@ -281,7 +294,7 @@ codeunit 9871 "Security Group Impl."
                 if not TryGetWindowsGroupMembers(SecurityGroup.Code, SecurityGroup."Windows Group ID", SecurityGroupMemberBuffer) then
                     SkippedSecurityGroups.Add(SecurityGroup.Code);
             end else
-                if not TryGetAadGroupMembers(SecurityGroup.Code, SecurityGroup."AAD Group ID", SecurityGroupMemberBuffer) then
+                if not TryGetEntraGroupMembers(SecurityGroup.Code, SecurityGroup."AAD Group ID", SecurityGroupMemberBuffer) then
                     SkippedSecurityGroups.Add(SecurityGroup.Code);
         until SecurityGroup.Next() = 0;
 
@@ -311,17 +324,24 @@ codeunit 9871 "Security Group Impl."
     procedure TryGetNameById(GroupId: Text; var GroupName: Text[250])
     var
         NavUserAccountHelper: DotNet NavUserAccountHelper;
-        GroupNameReturnedValue: Text[250];
+        GroupNameReturnedValue: Text;
     begin
         if IsWindowsAuthentication() then begin
             GroupNameReturnedValue := NavUserAccountHelper.UserName(GroupId);
             if GroupNameReturnedValue <> GroupId then
-                GroupName := GroupNameReturnedValue
+                GroupName := CopyStr(GroupNameReturnedValue, 1, MaxStrLen(GroupName))
             else
-                Error(CouldNotFindWindowsGroupErr);
+                Error(CouldNotFindGroupErr, AdTxt);
         end else begin
-            InitializeAadGroups();
-            GroupName := CopyStr(AadGroups.Get(GroupId), 1, MaxStrLen(GroupName));
+            if not EntraGroups.ContainsKey(GroupId) then begin
+                GroupNameReturnedValue := AzureAdGraph.GetGroupName(GroupId);
+                if GroupNameReturnedValue <> '' then
+                    EntraGroups.Add(GroupId, GroupNameReturnedValue)
+                else
+                    Error(CouldNotFindGroupErr, EntraTxt);
+            end;
+
+            GroupName := CopyStr(EntraGroups.Get(GroupId), 1, MaxStrLen(GroupName))
         end;
     end;
 
@@ -342,36 +362,41 @@ codeunit 9871 "Security Group Impl."
 
     procedure GetIdByName(GroupName: Text): Text
     var
-        AadGroupId: Text;
+        GroupId: Text;
     begin
-        if IsWindowsAuthentication() then
-            exit(SID(GroupName));
-
-        // AAD security group names are not unique, return the first one
-        InitializeAadGroups();
-        foreach AadGroupId in AadGroups.Keys() do
-            if UpperCase(AadGroups.Get(AadGroupId)) = UpperCase(GroupName) then
-                exit(AadGroupId);
-
-        exit('');
+        if TryGetIdByName(GroupName, GroupId) then
+            exit(GroupId)
+        else
+            Error(InvalidGroupNameErr, GroupName);
     end;
 
     [TryFunction]
-    local procedure TryGetAadGroupMembers(SecurityGroupCode: Code[20]; AadGroupId: Text; var SecurityGroupMemberBuffer: Record "Security Group Member Buffer")
+    procedure TryGetIdByName(GroupName: Text; var GroupId: Text)
+    begin
+        if IsWindowsAuthentication() then
+            GroupId := SID(GroupName)
+        else begin
+            // Microsoft Entra security group names are not unique, return the first one
+            GroupId := AzureAdGraph.GetFirstGroupIdWithName(GroupName);
+            EntraGroups.Add(GroupId, GroupName);
+        end;
+    end;
+
+    [TryFunction]
+    local procedure TryGetEntraGroupMembers(SecurityGroupCode: Code[20]; EntraGroupId: Text; var SecurityGroupMemberBuffer: Record "Security Group Member Buffer")
     var
         UserProperty: Record "User Property";
-        AzureAdGraph: Codeunit "Azure AD Graph";
-        GraphUserInfoPage: Dotnet UserInfoPage;
-        GraphUserInfo: DotNet UserInfo;
+        UserIdsPage: Dotnet UserIdsPage;
+        UserEntraObjectId: Text;
     begin
-        AzureADGraph.GetMembersPageForGroupId(AadGroupId, 50, GraphUserInfoPage);
+        AzureADGraph.GetMemberIdsPageForGroupId(EntraGroupId, 500, UserIdsPage);
 
-        if IsNull(GraphUserInfoPage) then
+        if IsNull(UserIdsPage) then
             exit;
 
         repeat
-            foreach GraphUserInfo in GraphUserInfoPage.CurrentPage() do begin
-                UserProperty.SetRange("Authentication Object ID", GraphUserInfo.ObjectId);
+            foreach UserEntraObjectId in UserIdsPage.CurrentPage() do begin
+                UserProperty.SetRange("Authentication Object ID", UserEntraObjectId);
                 if UserProperty.FindFirst() then begin
                     SecurityGroupMemberBuffer."Security Group Code" := SecurityGroupCode;
                     SecurityGroupMemberBuffer."User Security ID" := UserProperty."User Security ID";
@@ -379,7 +404,7 @@ codeunit 9871 "Security Group Impl."
                     SecurityGroupMemberBuffer.Insert();
                 end;
             end;
-        until (not GraphUserInfoPage.GetNextMembersPageForGroupId(AadGroupId));
+        until (not UserIdsPage.GetNextMemberIdsPageForGroupId(EntraGroupId));
     end;
 
     local procedure ValidateWindowsGroup(WindowsGroupId: Text)
@@ -416,28 +441,27 @@ codeunit 9871 "Security Group Impl."
         exit(DisallowedGroups);
     end;
 
-    local procedure ValidateAadGroup(AadGroupObjectId: Text)
+    local procedure ValidateEntraGroup(EntraGroupObjectId: Text)
     var
         OtherUserProperty: Record "User Property";
+        DummyGroupName: Text[250];
     begin
-        InitializeAadGroups();
-        if not AadGroups.ContainsKey(AadGroupObjectId) then
-            Error(InvalidAadGroupErr, AadGroupObjectId);
+        if not TryGetNameById(EntraGroupObjectId, DummyGroupName) then
+            Error(InvalidEntraGroupErr, EntraGroupObjectId);
 
-        OtherUserProperty.SetRange("Authentication Object ID", AadGroupObjectId);
+        OtherUserProperty.SetRange("Authentication Object ID", EntraGroupObjectId);
         if not OtherUserProperty.IsEmpty() then
-            Error(GroupAlreadyExistsErr, AadGroupObjectId);
+            Error(GroupAlreadyExistsErr, EntraGroupObjectId);
     end;
 
-    local procedure InitializeAadGroups()
-    var
-        AzureADGraph: Codeunit "Azure AD Graph";
+    local procedure FetchAllEntraGroups()
     begin
         // Fetching the groups can take a long time, so caching the results in a dictionary
-        if AreAadGroupsInitialized then
+        if AreAllEntraGroupsFetched then
             exit;
-        AadGroups := AzureADGraph.GetGroups();
-        AreAadGroupsInitialized := true;
+
+        EntraGroups := AzureADGraph.GetGroups();
+        AreAllEntraGroupsFetched := true;
     end;
 
     procedure IsWindowsAuthentication(): Boolean
@@ -495,12 +519,12 @@ codeunit 9871 "Security Group Impl."
             if IsWindowsAuthentication() then
                 MissingGroupsNotification.Message(StrSubstNo(GroupNotFoundTxt, MissingGroupCodes, AdTxt))
             else
-                MissingGroupsNotification.Message(StrSubstNo(GroupNotFoundTxt, MissingGroupCodes, AadTxt));
+                MissingGroupsNotification.Message(StrSubstNo(GroupNotFoundTxt, MissingGroupCodes, EntraTxt));
         end else
             if IsWindowsAuthentication() then
                 MissingGroupsNotification.Message(StrSubstNo(GroupsNotFoundTxt, MissingGroupCodes, AdTxt))
             else
-                MissingGroupsNotification.Message(StrSubstNo(GroupsNotFoundTxt, MissingGroupCodes, AadTxt));
+                MissingGroupsNotification.Message(StrSubstNo(GroupsNotFoundTxt, MissingGroupCodes, EntraTxt));
 
         MissingGroupsNotification.Id := NotificationIdLbl;
         MissingGroupsNotification.Scope := NotificationScope::LocalScope;

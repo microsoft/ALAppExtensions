@@ -307,6 +307,7 @@ page 31165 "Posted Cash Document CZP"
                 }
             }
 #if not CLEAN22
+#pragma warning disable AS0072
             group(Category_Report)
             {
                 Caption = 'Report';
@@ -317,11 +318,18 @@ page 31165 "Posted Cash Document CZP"
 
                 actionref(PrinttoAttachmentPromoted; PrintToAttachment)
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
                 actionref(PrintPromoted; "&Print")
                 {
+                    ObsoleteTag = '22.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This group has been removed.';
                 }
             }
+#pragma warning restore AS0072
 #endif
             group(Category_Category8)
             {

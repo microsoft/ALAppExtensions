@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
+using System.Security.Authentication;
+
 /// <summary>
 /// Holder for the optional Azure Blob Storage HTTP headers and URL parameters.
 /// </summary>
@@ -264,6 +268,28 @@ codeunit 9047 "ABS Optional Parameters"
         SetRequestHeader('x-ms-proposed-lease-id', "Value");
     end;
 
+    /// <summary>
+    /// Sets the value for 'x-ms-upn' HttpHeader for a request.
+    /// Version 2020-06-12 and later.
+    /// Valid for accounts with hierarchical namespace enabled.
+    /// If the user identity values that are returned in the x-ms-owner are true, they're transformed from Azure Active Directory object IDs to user principal names.
+    /// If the values are false, they're returned as Azure Active Directory object IDs. The default value is false.
+    /// Note that group and application object IDs are not translated, because they don't have unique friendly names.
+    /// </summary>
+    /// <param name="Value">Boolean value specifying the HttpHeader value</param>
+    procedure ReturnUserPrincipalName(Value: Boolean)
+    var
+        ValueText: Text;
+    begin
+        // Set as text, because otherwise it might give different formatted values based on language locale
+        if Value then
+            ValueText := 'true'
+        else
+            ValueText := 'false';
+
+        SetRequestHeader('x-ms-upn', ValueText);
+    end;
+
     local procedure SetRequestHeader(Header: Text; HeaderValue: Text)
     begin
         RequestHeaders.Remove(Header);
@@ -365,6 +391,16 @@ codeunit 9047 "ABS Optional Parameters"
     procedure BlockId("Value": Text)
     begin
         SetParameter('blockid', "Value");
+    end;
+
+    /// <summary>
+    /// Specifies one or more datasets to include in the response.
+    /// </summary>
+    /// see: https://learn.microsoft.com/en-us/rest/api/storageservices/list-blobs?tabs=azure-ad#uri-parameters
+    /// <param name="Value">The dataset(s) to include in text</param>
+    procedure Include("Value": Text)
+    begin
+        SetParameter('include', "Value");
     end;
 
     local procedure SetParameter(Header: Text; HeaderValue: Text)

@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Purchases.Vendor;
+using Microsoft.Purchases.Payables;
+
 query 30001 "APIV2 - Vendor Purchases"
 {
     APIVersion = 'v2.0';

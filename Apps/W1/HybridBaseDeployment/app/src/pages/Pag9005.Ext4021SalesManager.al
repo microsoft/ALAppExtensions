@@ -1,6 +1,14 @@
-#if not CLEAN18
+namespace Microsoft.DataMigration;
+
+using Microsoft.Sales.RoleCenters;
+
+#if not CLEAN23
 pageextension 4021 SalesManagerRC extends "Sales Manager Role Center"
 {
+    ObsoleteReason = 'Intelligent Cloud Insights is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
+
     actions
     {
         addlast(Sections)

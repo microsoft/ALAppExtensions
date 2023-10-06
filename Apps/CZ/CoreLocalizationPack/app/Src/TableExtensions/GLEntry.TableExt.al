@@ -21,7 +21,9 @@ tableextension 11719 "G/L Entry CZL" extends "G/L Entry"
 
     internal procedure IsReplaceVATDateEnabled(): Boolean
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
     begin
         exit(ReplaceVATDateMgtCZL.IsEnabled());
     end;

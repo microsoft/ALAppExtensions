@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+
 query 20000 "APIV1 - Customer Sales"
 {
     APIVersion = 'v1.0';
@@ -26,7 +31,7 @@ query 20000 "APIV1 - Customer Sales"
             {
                 DataItemLink = "Customer No." = QueryElement1."No.";
                 SqlJoinType = LeftOuterJoin;
-                DataItemTableFilter = "Document Type" = FILTER(Invoice | "Credit Memo");
+                DataItemTableFilter = "Document Type" = filter(Invoice | "Credit Memo");
                 column(totalSalesAmount; "Sales (LCY)")
                 {
                     Caption = 'TotalSalesAmount', Locked = true;

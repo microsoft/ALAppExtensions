@@ -64,34 +64,6 @@ page 2752 "Add Universal Printers Wizard"
                             Hyperlink(UniversalPrintUrlTxt);
                         end;
                     }
-#if not CLEAN20
-                    field(Privacy; PrivacyLbl)
-                    {
-                        ObsoleteReason = 'Field is no longer used due to privacy notice above.';
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '20.0';
-                        Visible = false;
-                        ApplicationArea = All;
-                        Editable = false;
-                        ShowCaption = false;
-                        Caption = 'Click here to understand how the data is handled.';
-                        ToolTip = 'Opens a privacy help article.';
-                        trigger OnDrillDown()
-                        begin
-                            Hyperlink(PrivacyUrlTxt);
-                        end;
-                    }
-                    label(EmptySpace1)
-                    {
-                        ObsoleteReason = 'Empty space no longer needed.';
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '20.0';
-                        Visible = false;
-                        ApplicationArea = All;
-                        ShowCaption = false;
-                        Caption = '';
-                    }
-#endif
                 }
                 group("Para0.2")
                 {
@@ -489,10 +461,6 @@ page 2752 "Add Universal Printers Wizard"
         LearnMoreSignupTxt: Label 'Learn more and sign up!';
         LearnMoreAzureAppTxt: Label 'Learn more about registering an Azure AD application';
         AzureAppLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2150045', Locked = true;
-#if not CLEAN20
-        PrivacyLbl: Label 'Learn more about how the data is handled.';
-        PrivacyUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=724009', Locked = true;
-#endif
         LearnMoreUniversalPrintPortalTxt: Label 'Universal Print portal';
         PrivacyStatementTxt: Label 'Learn more about our Privacy Statement.';
 }

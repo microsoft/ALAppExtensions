@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41007 "Hist. Sales Trx."
 {
     PageType = Card;

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Functions;
+
+using System.Security.Authentication;
+
 /// <summary>
 /// Provides functionality for connecting to Azure functions.
 /// </summary>

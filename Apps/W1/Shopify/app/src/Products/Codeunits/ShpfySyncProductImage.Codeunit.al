@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Codeunit Shpfy Sync Product Image (ID 30184).
 /// </summary>
@@ -28,6 +32,12 @@ codeunit 30184 "Shpfy Sync Product Image"
     local procedure ExportImages()
     var
         ShopifyProduct: Record "Shpfy Product";
+        ProductAPI: Codeunit "Shpfy Product API";
+        BulkOperationMgt: Codeunit "Shpfy Bulk Operation Mgt.";
+        BulkOperationType: Enum "Shpfy Bulk Operation Type";
+        BulkOperationInput: TextBuilder;
+        ParametersList: List of [Dictionary of [Text, Text]];
+        Parameters: Dictionary of [Text, Text];
     begin
         ShopifyProduct.SetRange("Shop Code", Shop.Code);
         if ProductFilter <> '' then
@@ -37,6 +47,13 @@ codeunit 30184 "Shpfy Sync Product Image"
                 Commit();
                 if ProductImageExport.Run(ShopifyProduct) then;
             until ShopifyProduct.Next() = 0;
+        BulkOperationInput := ProductImageExport.GetBulkOperationInput();
+        if BulkOperationInput.Length > 0 then
+            if not BulkOperationMgt.SendBulkMutation(Shop, BulkOperationType::UpdateProductImage, BulkOperationInput.ToText()) then begin
+                ParametersList := ProductImageExport.GetParametersList();
+                foreach Parameters in ParametersList do
+                    ProductAPI.UpdateProductImage(Parameters);
+            end;
     end;
 
     /// <summary> 

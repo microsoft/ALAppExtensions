@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Projects.Resources.Resource;
+
+using Microsoft.Service.Reports;
+
 tableextension 5018 "Serv. Decl. Resource" extends Resource
 {
     fields

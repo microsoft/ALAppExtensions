@@ -1,7 +1,12 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.IO;
+
+using System;
+using System.Utilities;
 
 codeunit 421 "Data Compression Impl."
 {
@@ -108,11 +113,34 @@ codeunit 421 "Data Compression Impl."
         end;
     end;
 
+    procedure IsZip(InputInStream: InStream): Boolean
+    var
+        OriginalStream: DotNet Stream;
+        Header: array[4] of Byte;
+        HeaderIsValid: Boolean;
+    begin
+        if (InputInStream.Length < 4) then exit(false);
+
+        OriginalStream := InputInStream;
+        InputInStream.Read(Header[1]);
+        InputInStream.Read(Header[2]);
+        InputInStream.Read(Header[3]);
+        InputInStream.Read(Header[4]);
+        // check against ZIP magic header defined as P K 0x03 0x04
+        HeaderIsValid := (Header[1] = 'P') and (Header[2] = 'K') and (Header[3] = 3) and (Header[4] = 4);
+
+        OriginalStream.Position := 0;
+        InputInStream := OriginalStream;
+        exit(HeaderIsValid);
+    end;
+
     procedure IsGZip(InputInStream: InStream): Boolean
     var
         OriginalStream: DotNet Stream;
         ID: array[2] of Byte;
     begin
+        if (InputInStream.Length < 2) then exit(false);
+
         OriginalStream := InputInStream;
         InputInStream.Read(ID[1]);
         InputInStream.Read(ID[2]);
@@ -149,6 +177,17 @@ codeunit 421 "Data Compression Impl."
         ZipArchiveEntryStream.CopyTo(OutputOutStream);
         EntryLength := ZipArchiveEntry.Length();
         ZipArchiveEntryStream.Close();
+    end;
+
+    procedure ExtractEntry(EntryName: Text; var TempBlob: Codeunit "Temp Blob"): Integer
+    var
+        os: OutStream;
+        EntryLength: Integer;
+    begin
+        Clear(TempBlob);
+        TempBlob.CreateOutStream(os);
+        ExtractEntry(EntryName, os, EntryLength);
+        exit(EntryLength);
     end;
 
     procedure AddEntry(InStreamToAdd: InStream; PathInArchive: Text)

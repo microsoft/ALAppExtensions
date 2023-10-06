@@ -1,3 +1,11 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Integration.Graph;
+
 page 30049 "APIV2 - JournalLines"
 {
     APIVersion = 'v2.0';
@@ -18,12 +26,12 @@ page 30049 "APIV2 - JournalLines"
             repeater(Control2)
             {
                 ShowCaption = false;
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(journalId; "Journal Batch Id")
+                field(journalId; Rec."Journal Batch Id")
                 {
                     Caption = 'Journal Id';
                 }
@@ -36,71 +44,71 @@ page 30049 "APIV2 - JournalLines"
                         Error(CannotEditBatchNameErr);
                     end;
                 }
-                field(lineNumber; "Line No.")
+                field(lineNumber; Rec."Line No.")
                 {
                     Caption = 'Line No.';
                 }
-                field(accountType; "Account Type")
+                field(accountType; Rec."Account Type")
                 {
                     Caption = 'Account Type';
                 }
-                field(accountId; "Account Id")
+                field(accountId; Rec."Account Id")
                 {
                     Caption = 'Account Id';
 
                     trigger OnValidate()
                     begin
-                        if "Account Id" = BlankGUID then begin
-                            "Account No." := '';
+                        if Rec."Account Id" = BlankGUID then begin
+                            Rec."Account No." := '';
                             exit;
                         end;
-                        if "Account Type" = "Account Type"::"G/L Account" then begin
-                            if not GLAccount.GetBySystemId("Account Id") then
+                        if Rec."Account Type" = Rec."Account Type"::"G/L Account" then begin
+                            if not GLAccount.GetBySystemId(Rec."Account Id") then
                                 Error(AccountIdDoesNotMatchAnAccountErr);
-                            "Account No." := GLAccount."No.";
+                            Rec."Account No." := GLAccount."No.";
                         end;
-                        if "Account Type" = "Account Type"::"Bank Account" then
-                            if BankAccount.GetBySystemId("Account Id") then
-                                "Account No." := BankAccount."No."
+                        if Rec."Account Type" = Rec."Account Type"::"Bank Account" then
+                            if BankAccount.GetBySystemId(Rec."Account Id") then
+                                Rec."Account No." := BankAccount."No."
                             else
                                 Error(AccountIdDoesNotMatchAnAccountErr);
                     end;
                 }
-                field(accountNumber; "Account No.")
+                field(accountNumber; Rec."Account No.")
                 {
                     Caption = 'Account No.';
 
                     trigger OnValidate()
                     begin
-                        case "Account Type" of
-                            "Account Type"::"G/L Account":
+                        case Rec."Account Type" of
+                            Rec."Account Type"::"G/L Account":
                                 UpdateAccountIdForGLAccount();
-                            "Account Type"::"Bank Account":
+                            Rec."Account Type"::"Bank Account":
                                 UpdateAccountIdForBankAccount();
                         end;
                     end;
                 }
-                field(postingDate; "Posting Date")
+                field(postingDate; Rec."Posting Date")
                 {
                     Caption = 'Posting Date';
                 }
-                field(documentNumber; "Document No.")
+                field(documentNumber; Rec."Document No.")
                 {
                     Caption = 'Document No.';
                 }
-                field(externalDocumentNumber; "External Document No.")
+                field(externalDocumentNumber; Rec."External Document No.")
                 {
                     Caption = 'External Document No.';
                 }
-                field(amount; Amount)
+                field(amount; Rec.Amount)
                 {
                     Caption = 'Amount';
                 }
-                field(description; Description)
+                field(description; Rec.Description)
                 {
                     Caption = 'Description';
                 }
-                field(comment; Comment)
+                field(comment; Rec.Comment)
                 {
                     Caption = 'Comment';
                 }
@@ -119,41 +127,41 @@ page 30049 "APIV2 - JournalLines"
                     end;
                 }
 
-                field(balanceAccountType; "Bal. Account Type")
+                field(balanceAccountType; Rec."Bal. Account Type")
                 {
                     Caption = 'Balance Account Type';
                 }
-                field(balancingAccountId; "Balance Account Id")
+                field(balancingAccountId; Rec."Balance Account Id")
                 {
                     Caption = 'Balancing Account Id';
 
                     trigger OnValidate()
                     begin
-                        if "Balance Account Id" = BlankGUID then begin
-                            "Bal. Account No." := '';
+                        if Rec."Balance Account Id" = BlankGUID then begin
+                            Rec."Bal. Account No." := '';
                             exit;
                         end;
-                        case "Bal. Account Type" of
-                            "Bal. Account Type"::"G/L Account":
+                        case Rec."Bal. Account Type" of
+                            Rec."Bal. Account Type"::"G/L Account":
                                 begin
-                                    if not GLAccount.GetBySystemId("Balance Account Id") then
+                                    if not GLAccount.GetBySystemId(Rec."Balance Account Id") then
                                         Error(BalAccountIdDoesNotMatchAnAccountErr);
-                                    "Bal. Account No." := GLAccount."No.";
+                                    Rec."Bal. Account No." := GLAccount."No.";
                                 end;
-                            "Bal. Account Type"::"Bank Account":
+                            Rec."Bal. Account Type"::"Bank Account":
                                 begin
-                                    if not BankAccount.GetBySystemId("Balance Account Id") then
+                                    if not BankAccount.GetBySystemId(Rec."Balance Account Id") then
                                         Error(BalAccountIdDoesNotMatchAnAccountErr);
-                                    "Bal. Account No." := BankAccount."No.";
+                                    Rec."Bal. Account No." := BankAccount."No.";
                                 end;
                         end;
                     end;
                 }
-                field(balancingAccountNumber; "Bal. Account No.")
+                field(balancingAccountNumber; Rec."Bal. Account No.")
                 {
                     Caption = 'Balancing Account No.';
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                     Editable = false;
@@ -163,14 +171,14 @@ page 30049 "APIV2 - JournalLines"
                     Caption = 'Attachments';
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Journal);
+                    SubPageLink = "Document Id" = field(SystemId), "Document Type" = const(Journal);
                 }
                 part(dimensionSetLines; "APIV2 - Dimension Set Lines")
                 {
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Journal Line");
+                    SubPageLink = "Parent Id" = field(SystemId), "Parent Type" = const("Journal Line");
                 }
             }
         }
@@ -223,17 +231,17 @@ page 30049 "APIV2 - JournalLines"
     var
         GenJournalLine: Record "Gen. Journal Line";
     begin
-        GenJournalLine.GetBySystemId(SystemId);
+        GenJournalLine.GetBySystemId(Rec.SystemId);
 
         if Rec."Journal Batch Id" <> GenJournalLine."Journal Batch Id" then
             Error(CannotEditBatchIdErr);
 
-        if "Line No." = GenJournalLine."Line No." then
-            Modify(true)
+        if Rec."Line No." = GenJournalLine."Line No." then
+            Rec.Modify(true)
         else begin
             GenJournalLine.TransferFields(Rec, false);
-            GenJournalLine.Rename("Journal Template Name", "Journal Batch Name", "Line No.");
-            TransferFields(GenJournalLine, true);
+            GenJournalLine.Rename(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Line No.");
+            Rec.TransferFields(GenJournalLine, true);
         end;
 
         SetCalculatedFields();
@@ -245,8 +253,8 @@ page 30049 "APIV2 - JournalLines"
     begin
         ClearCalculatedFields();
 
-        "Document Type" := "Document Type"::" ";
-        "Account Type" := "Account Type"::"G/L Account";
+        Rec."Document Type" := Rec."Document Type"::" ";
+        Rec."Account Type" := Rec."Account Type"::"G/L Account";
     end;
 
     trigger OnOpenPage()
@@ -276,11 +284,11 @@ page 30049 "APIV2 - JournalLines"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
-        GlobalJournalDisplayNameTxt := "Journal Batch Name";
+        GlobalJournalDisplayNameTxt := Rec."Journal Batch Name";
         if GeneralLedgerSetup.UseVat() then
-            TaxCode := "VAT Prod. Posting Group"
+            TaxCode := Rec."VAT Prod. Posting Group"
         else
-            TaxCode := "Tax Group Code";
+            TaxCode := Rec."Tax Group Code";
     end;
 
     local procedure ClearCalculatedFields()
@@ -291,8 +299,8 @@ page 30049 "APIV2 - JournalLines"
 
     local procedure CheckFilters()
     begin
-        if (GetFilter("Journal Batch Id") = '') and
-           (GetFilter(SystemId) = '')
+        if (Rec.GetFilter("Journal Batch Id") = '') and
+           (Rec.GetFilter(SystemId) = '')
         then
             Error(FiltersNotSpecifiedErr);
     end;
@@ -300,39 +308,38 @@ page 30049 "APIV2 - JournalLines"
     local procedure UpdateAccountIdForGLAccount();
     begin
         if GLAccount."No." <> '' then begin
-            if GLAccount."No." <> "Account No." then
+            if GLAccount."No." <> Rec."Account No." then
                 Error(AccountValuesDontMatchErr);
             exit;
         end;
 
-        if "Account No." = '' then begin
-            "Account Id" := BlankGUID;
+        if Rec."Account No." = '' then begin
+            Rec."Account Id" := BlankGUID;
             exit;
         end;
 
-        if not GLAccount.Get("Account No.") then
+        if not GLAccount.Get(Rec."Account No.") then
             Error(AccountNumberDoesNotMatchAnAccountErr);
 
-        "Account Id" := GLAccount.SystemId;
+        Rec."Account Id" := GLAccount.SystemId;
     end;
 
     local procedure UpdateAccountIdForBankAccount();
     begin
         if BankAccount."No." <> '' then begin
-            if BankAccount."No." <> "Account No." then
+            if BankAccount."No." <> Rec."Account No." then
                 Error(AccountValuesDontMatchErr);
             exit;
         end;
 
-        if "Account No." = '' then begin
-            "Account Id" := BlankGUID;
+        if Rec."Account No." = '' then begin
+            Rec."Account Id" := BlankGUID;
             exit;
         end;
 
-        if not BankAccount.Get("Account No.") then
+        if not BankAccount.Get(Rec."Account No.") then
             Error(AccountNumberDoesNotMatchAnAccountErr);
 
-        "Account Id" := BankAccount.SystemId;
+        Rec."Account Id" := BankAccount.SystemId;
     end;
 }
-

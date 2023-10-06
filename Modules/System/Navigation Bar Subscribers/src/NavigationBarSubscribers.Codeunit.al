@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>Collection of the default subscribers to system events and corresponding overridable integration events.</summary>
 codeunit 154 "Navigation Bar Subscribers"
 {

@@ -15,7 +15,7 @@ codeunit 31105 "VAT Control Report DPHKH1 CZL" implements "VAT Control Report Ex
     var
         ExportVATCtrlDialogCZL: Report "Export VAT Ctrl. Dialog CZL";
         VATStmtXMLExportHelperCZL: Codeunit "VAT Stmt XML Export Helper CZL";
-        VATControlReportDPHKH1CZL: XMLport "VAT Control Report DPHKH1 CZL";
+        VATControlReportDPHKH1CZL: XmlPort "VAT Control Report DPHKH1 CZL";
         VATControlReportOutStream: OutStream;
         XmlParams: Text;
     begin

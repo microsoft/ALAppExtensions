@@ -2,8 +2,8 @@ table 31106 "VAT Ctrl. Report Header CZL"
 {
     Caption = 'VAT Control Report Header';
     DataCaptionFields = "No.", Description;
-    DrillDownPageID = "VAT Ctrl. Report List CZL";
-    LookupPageID = "VAT Ctrl. Report List CZL";
+    DrillDownPageId = "VAT Ctrl. Report List CZL";
+    LookupPageId = "VAT Ctrl. Report List CZL";
 
     fields
     {

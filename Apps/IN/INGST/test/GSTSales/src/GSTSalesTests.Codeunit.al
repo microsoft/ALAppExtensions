@@ -37,6 +37,7 @@ codeunit 18196 "GST Sales Tests"
         VerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
         SuccessMsg: Label 'GST Payment Lines Posted Successfully.', Locked = true;
         NotPostedErr: Label 'The entries were not posted.', locked = true;
+        NoOfLinesErr: Label 'The No. Of Lines in Detailed GST Ledger Entry Is Not Equal to Detailed GST Ledger Entry Info.', Locked = true;
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
         ReverseDocumentNoLbl: Label 'ReverseDocumentNo';
         PriceInclusiveOfTaxLbl: Label 'WithPIT';
@@ -3682,6 +3683,74 @@ codeunit 18196 "GST Sales Tests"
         VerifySalesDocumentCreated(JobPlanningLine, SalesHeader."Document Type"::Invoice, SalesHeader);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure VerifyNoOfLinesInDGLEInfoFromDetailedGSTLedgerEntryOnBasisOfDocumentNo()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine, SalesLine2 : Record "Sales Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+        DetailedGSTLedgerEntryCount, DetailedGSTLedgerEntryInfoCount : Integer;
+    begin
+        // [Scenario] No. of line in Document in Detailed GST Ledger Entry must be Equal to No. Of Line For same document in Detailed GST Ledger Entry Info.
+        // [GIVEN] Create Sales Document with 2 lines.
+        CreateGSTSetup(GSTCustomeType::Registered, GSTGroupType::Goods, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, '2');
+
+        // [WHEN] Post Sales Document 
+        PostedDocumentNo := CreateAndPostSalesDocumentWithMultipleLine(SalesHeader, SalesLine, SalesLine2, LineType::Item, DocumentType::Order);
+
+        //[THEN] Verify No. Of Line IN Detailed GST Ledger Entry and Detailed GST Ledger Entry Info.
+        CountDetailedGstLedgerEntryLines(DetailedGSTLedgerEntryCount, DetailedGSTLedgerEntryInfoCount, PostedDocumentNo);
+        Assert.AreEqual(DetailedGSTLedgerEntryCount, DetailedGSTLedgerEntryInfoCount, NoOfLinesErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure VerifyExemptNonGSTSalesInvoice()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [Scenario] To verify the exempted Non-GST supplies sales invoice amount
+        // [GIVEN] Create Sales Document
+        CreateGSTSetup(GSTCustomeType::Registered, GSTGroupType::Goods, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Post Sales Document 
+        PostedDocumentNo := CreateAndPostSalesDocumentWithNonGSTSupplies(SalesHeader, SalesLine, LineType::Item, DocumentType::Invoice);
+
+        //[THEN] Verify G/L Entries
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 2);
+    end;
+
+    local procedure CountDetailedGstLedgerEntryLines(var DetailedGSTLedgerEntryCount: Integer; var DetailedGSTLedgerEntryInfoCount: Integer; PostedDocumentNo: code[20])
+    var
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
+    begin
+
+        DetailedGSTLedgerEntry.SetRange("Document Type", DetailedGSTLedgerEntry."Document Type"::Invoice);
+        DetailedGSTLedgerEntry.SetRange("Document No.", PostedDocumentNo);
+        DetailedGSTLedgerEntry.FindSet();
+        DetailedGSTLedgerEntryCount := DetailedGSTLedgerEntry.Count;
+        repeat
+            if DetailedGSTLedgerEntryInfo.Get(DetailedGSTLedgerEntry."Entry No.") then
+                DetailedGSTLedgerEntryInfoCount += 1;
+        until DetailedGSTLedgerEntry.Next() = 0;
+    end;
+
     local procedure TransferJobPlanningLine(var JobPlanningLine: Record "Job Planning Line"; Fraction: Decimal; Credit: Boolean)
     var
         Location: Record Location;
@@ -3723,7 +3792,7 @@ codeunit 18196 "GST Sales Tests"
             var SalesHeader: Record "Sales Header";
             var SalesLine: Record "Sales Line";
             LineType: Enum "Sales Line Type";
-            DocumentType: Enum "Sales Document Type"): Code[20];
+                          DocumentType: Enum "Sales Document Type"): Code[20];
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         CustomerNo: Code[20];
@@ -3871,8 +3940,8 @@ codeunit 18196 "GST Sales Tests"
     local procedure UpdateCustomerSetupWithGST(
         CustomerNo: Code[20];
         GSTCustomerType: Enum "GST Customer Type";
-        StateCode: Code[10];
-        PANNo: Code[20])
+                             StateCode: Code[10];
+                             PANNo: Code[20])
     var
         Customer: Record Customer;
         State: Record State;
@@ -3895,8 +3964,8 @@ codeunit 18196 "GST Sales Tests"
 
     local procedure CreateGSTSetup(
         GSTCustomerType: Enum "GST Customer Type";
-        GSTGroupType: Enum "GST Group Type";
-        IntraState: Boolean)
+                             GSTGroupType: Enum "GST Group Type";
+                             IntraState: Boolean)
     var
         GSTGroup: Record "GST Group";
         HSNSAC: Record "HSN/SAC";
@@ -3969,7 +4038,7 @@ codeunit 18196 "GST Sales Tests"
         var SalesHeader: Record "Sales Header";
         var SalesLine: Record "Sales Line";
         LineType: Enum "Sales Line Type";
-        DocumentType: Enum "Sales Document Type"): Code[20]
+                      DocumentType: Enum "Sales Document Type"): Code[20]
     var
         CustomerNo: Code[20];
         LocationCode: Code[10];
@@ -4060,7 +4129,7 @@ codeunit 18196 "GST Sales Tests"
         var SalesHeader: Record "Sales Header";
         var SalesLine: Record "Sales Line";
         LineType: Enum "Sales Line Type";
-        DocumentType: Enum "Sales Document Type"): Code[20];
+                      DocumentType: Enum "Sales Document Type"): Code[20];
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         CustomerNo: Code[20];
@@ -4082,11 +4151,39 @@ codeunit 18196 "GST Sales Tests"
         exit(PostedDocumentNo);
     end;
 
+    local procedure CreateAndPostSalesDocumentWithMultipleLine(
+        var SalesHeader: Record "Sales Header";
+        var SalesLine: Record "Sales Line";
+        var SalesLine2: Record "Sales Line";
+        LineType: Enum "Sales Line Type";
+                      DocumentType: Enum "Sales Document Type"): Code[20];
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        CustomerNo: Code[20];
+        LocationCode: Code[10];
+        PostedDocumentNo: Code[20];
+    begin
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Generate E-Inv. on Sales Post" = false then begin
+            GeneralLedgerSetup."Generate E-Inv. on Sales Post" := true;
+            GeneralLedgerSetup.Modify();
+        end;
+
+        CustomerNo := Storage.Get(CustomerNoLbl);
+        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
+        CreateSalesHeaderWithGST(SalesHeader, CustomerNo, DocumentType, LocationCode);
+        CreateSalesLineWithGST(SalesHeader, SalesLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
+        CreateSalesLineWithGST(SalesHeader, SalesLine2, LineType, LibraryRandom.RandDecInRange(2, 12, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Storage.Set(PostedDocumentNoLbl, PostedDocumentNo);
+        exit(PostedDocumentNo);
+    end;
+
     local procedure CreateAndPostSalesDocumentWithNegativeAndPostiveUnitPrice(
         var SalesHeader: Record "Sales Header";
         var SalesLine: Record "Sales Line";
         LineType: Enum "Sales Line Type";
-        DocumentType: Enum "Sales Document Type"): Code[20];
+                      DocumentType: Enum "Sales Document Type"): Code[20];
     var
         CustomerNo: Code[20];
         LocationCode: Code[10];
@@ -4105,7 +4202,7 @@ codeunit 18196 "GST Sales Tests"
         var SalesHeader: Record "Sales Header";
         var SalesLine: Record "Sales Line";
         LineType: Enum "Sales Line Type";
-        DocumentType: Enum "Sales Document Type"): Code[20];
+                      DocumentType: Enum "Sales Document Type"): Code[20];
     var
         CustomerNo: Code[20];
         LocationCode: Code[10];
@@ -4126,7 +4223,7 @@ codeunit 18196 "GST Sales Tests"
         var SalesHeader: Record "Sales Header";
         CustomerNo: Code[20];
         DocumentType: Enum "Sales Document Type";
-        LocationCode: Code[10])
+                          LocationCode: Code[10])
     var
         WithoutPaymentofDuty: Boolean;
         POS: Boolean;
@@ -4154,9 +4251,9 @@ codeunit 18196 "GST Sales Tests"
         var SalesHeader: Record "Sales Header";
         var SalesLine: Record "Sales Line";
         LineType: Enum "Sales Line Type";
-        Quantity: Decimal;
-        Exempted: Boolean;
-        LineDiscount: Boolean)
+                      Quantity: Decimal;
+                      Exempted: Boolean;
+                      LineDiscount: Boolean)
     var
         VATPostingSetup: Record "VAT Posting Setup";
         LineTypeNo: Code[20];
@@ -4205,9 +4302,9 @@ codeunit 18196 "GST Sales Tests"
             var SalesHeader: Record "Sales Header";
             var SalesLine: Record "Sales Line";
             LineType: Enum "Sales Line Type";
-            Quantity: Decimal;
-            Exempted: Boolean;
-            LineDiscount: Boolean)
+                          Quantity: Decimal;
+                          Exempted: Boolean;
+                          LineDiscount: Boolean)
     var
         VATPostingSetup: Record "VAT Posting Setup";
         LineTypeNo: Code[20];
@@ -4433,6 +4530,33 @@ codeunit 18196 "GST Sales Tests"
         CustLedgerEntry.FindFirst();
 
         Assert.AreEqual(true, CustLedgerEntry.Open, StrSubstNo(VerifyErr, CustLedgerEntry.FieldName(Open), CustLedgerEntry.TableCaption));
+    end;
+
+    local procedure CreateAndPostSalesDocumentWithNonGSTSupplies(
+        var SalesHeader: Record "Sales Header";
+        var SalesLine: Record "Sales Line";
+        LineType: Enum "Sales Line Type";
+        DocumentType: Enum "Sales Document Type"): Code[20];
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        CustomerNo: Code[20];
+        LocationCode: Code[10];
+        PostedDocumentNo: Code[20];
+    begin
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Generate E-Inv. on Sales Post" = false then begin
+            GeneralLedgerSetup."Generate E-Inv. on Sales Post" := true;
+            GeneralLedgerSetup.Modify();
+        end;
+
+        CustomerNo := Storage.Get(CustomerNoLbl);
+        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
+        CreateSalesHeaderWithGST(SalesHeader, CustomerNo, DocumentType, LocationCode);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, LineType, '', LibraryRandom.RandDecInRange(2, 10, 0));
+        LibraryGST.CreateGeneralPostingSetup(SalesHeader."Gen. Bus. Posting Group", SalesLine."Gen. Prod. Posting Group");
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Storage.Set(PostedDocumentNoLbl, PostedDocumentNo);
+        exit(PostedDocumentNo);
     end;
 
     [PageHandler]

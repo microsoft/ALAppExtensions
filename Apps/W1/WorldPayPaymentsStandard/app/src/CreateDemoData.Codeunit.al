@@ -1,6 +1,10 @@
+#if not CLEAN23
 codeunit 1362 "MS - WorldPay Create Demo Data"
 {
     Subtype = Install;
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     trigger OnInstallAppPerCompany()
     begin
@@ -100,3 +104,4 @@ codeunit 1362 "MS - WorldPay Create Demo Data"
     end;
 }
 
+#endif

@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Security.User;
+
+using System.Security.AccessControl;
 
 /// <summary>
 /// Provides basic functionality to open a search page and validate user information. 
@@ -45,7 +49,7 @@ codeunit 9843 "User Selection"
     end;
 
     /// <summary>
-    /// Sets Filter on the given User Record to exclude the system user and ADD Group users.
+    /// Sets Filter on the given User Record to exclude the system user and Microsoft Entra group users.
     /// </summary>
     /// <param name="User">The User Record to return.</param>
     procedure FilterSystemUserAndAADGroupUsers(var User: Record User)
@@ -56,7 +60,7 @@ codeunit 9843 "User Selection"
     end;
 
     /// <summary>
-    /// Sets Filter on the given User Record to exclude the system user, ADD Group users and Windows Group users.
+    /// Sets Filter on the given User Record to exclude the system user, Microsoft Entra group users and Windows Group users.
     /// </summary>
     /// <param name="User">The User Record to return.</param>
     procedure FilterSystemUserAndGroupUsers(var User: Record User)

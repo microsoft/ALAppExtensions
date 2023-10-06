@@ -1,3 +1,5 @@
+namespace Microsoft.API.V1;
+
 entitlement "Delegated Admin agent - Partner APIV1"
 {
     Type = Role;

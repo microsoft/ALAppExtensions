@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 pageextension 41103 "GP Migration Configuration Ext" extends "GP Migration Configuration"
 {
     layout

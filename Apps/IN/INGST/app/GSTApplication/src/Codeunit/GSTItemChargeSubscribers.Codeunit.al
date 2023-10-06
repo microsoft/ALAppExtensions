@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Application;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Payments;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Tracking;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+
 codeunit 18438 "GST Item Charge Subscribers"
 {
     var
@@ -67,7 +81,28 @@ codeunit 18438 "GST Item Charge Subscribers"
         GSTAmountLoaded: Decimal;
     begin
         GSTAmountLoaded := GetItemChargeGSTAmount(PurchaseLine);
+        if TempItemChargeAssgntPurch."Document Type" in [TempItemChargeAssgntPurch."Document Type"::"Credit Memo", TempItemChargeAssgntPurch."Document Type"::"Return Order"] then
+            GSTAmountLoaded := -1 * GSTAmountLoaded;
+
+        if (TempItemChargeAssgntPurch."Document Type" = Enum::"Purchase Document Type"::Invoice) and
+            (TempItemChargeAssgntPurch."Applies-to Doc. Type" = Enum::"Purchase Applies-to Document Type"::"Sales Shipment") then
+            GSTAmountLoaded := -1 * GSTAmountLoaded;
+
         GSTApplicationSessionMgt.SetGSTAmountLoaded(GSTAmountLoaded * TempItemChargeAssgntPurch."Qty. to Assign");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemChargePerTransferOnBeforePostItemJnlLine', '', false, false)]
+    local procedure PurchPostOnPostItemChargePerTransferOnBeforePostItemJnlLine(
+        var PurchLine: Record "Purchase Line";
+        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)")
+    var
+        GSTAmountLoaded: Decimal;
+    begin
+        GSTAmountLoaded := GetItemChargeGSTAmount(PurchLine);
+        if ItemChargeAssignmentPurch."Document Type" in [ItemChargeAssignmentPurch."Document Type"::"Credit Memo", ItemChargeAssignmentPurch."Document Type"::"Return Order"] then
+            GSTAmountLoaded := -1 * GSTAmountLoaded;
+
+        GSTApplicationSessionMgt.SetGSTAmountLoaded(GSTAmountLoaded * ItemChargeAssignmentPurch."Qty. to Assign");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnAfterPrepareItemJnlLine', '', false, false)]

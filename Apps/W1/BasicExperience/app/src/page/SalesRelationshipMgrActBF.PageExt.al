@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Environment.Configuration;
+
+using Microsoft.CRM.RoleCenters;
+
 
 pageextension 20653 "Sales&Relationship Mgr Act BF" extends "Sales & Relationship Mgr. Act."
 {

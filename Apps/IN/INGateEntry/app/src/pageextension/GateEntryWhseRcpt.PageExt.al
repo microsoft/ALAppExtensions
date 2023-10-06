@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Warehouse.Document;
+
+using Microsoft.Warehouse.GateEntry;
+
 pageextension 18607 "Gate Entry Whse Rcpt" extends "Whse. Receipt Subform"
 {
     actions

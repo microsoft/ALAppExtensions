@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Customer;
+
 codeunit 30239 "Shpfy County From Json Name" implements "Shpfy ICounty From Json"
 {
     Access = Internal;

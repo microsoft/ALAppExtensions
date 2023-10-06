@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.StockTransfer;
+using Microsoft.Inventory.Ledger;
+
 codeunit 18321 "GST Adj. Journal Subscribers"
 {
     local procedure UpdateGSTTrackingEntryFromPurchase(ValueEntry: Record "Value Entry")

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.API.V2;
+
 // This permission set should always be internal
 permissionset 2147 "D365 Automation APIV2"
 {
@@ -19,9 +21,11 @@ permissionset 2147 "D365 Automation APIV2"
                   page "APIV2 - Aut. Profiles" = X,
                   page "APIV2 - Aut. Scheduled Jobs" = X,
 #if not CLEAN22
+#pragma warning disable AL0432
                   page "APIV2 - Aut. User Gr. Members" = X,
                   page "APIV2 - Aut. User Group Perm." = X,
                   page "APIV2 - Aut. User Groups" = X,
+#pragma warning restore AL0432
 #endif
                   page "APIV2 - Aut. User Permissions" = X,
                   page "APIV2 - Aut. Users" = X;

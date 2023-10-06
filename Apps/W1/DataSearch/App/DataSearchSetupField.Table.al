@@ -1,3 +1,7 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using System.Reflection;
+
 table 2682 "Data Search Setup (Field)"
 {
     Caption = 'Search Setup (Field)';
@@ -9,29 +13,32 @@ table 2682 "Data Search Setup (Field)"
         {
             Caption = 'Table No.';
             TableRelation = "Data Search Setup (Table)";
+            DataClassification = SystemMetadata;
         }
         field(2; "Field No."; Integer)
         {
             Caption = 'Field No.';
-            TableRelation = Field."No." WHERE(TableNo = FIELD("Table No."));
+            TableRelation = field."No." where(TableNo = field("Table No."));
+            DataClassification = SystemMetadata;
         }
         field(3; "Field Caption"; Text[100])
         {
-            CalcFormula = Lookup(Field."Field Caption" WHERE(TableNo = FIELD("Table No."),
-                                                              "No." = FIELD("Field No.")));
+            CalcFormula = lookup(field."Field Caption" where(TableNo = field("Table No."),
+                                                              "No." = field("Field No.")));
             Caption = 'Field Caption';
-            FieldClass = FlowField;
+            FieldClass = Flowfield;
         }
         field(4; "Enable Search"; Boolean)
         {
             Caption = 'Enable Search';
+            DataClassification = SystemMetadata;
         }
         field(9; "Table Caption"; Text[250])
         {
-            CalcFormula = Lookup(AllObjWithCaption."Object Caption" WHERE("Object Type" = CONST(Table),
-                                                                           "Object ID" = FIELD("Table No.")));
+            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Table),
+                                                                           "Object ID" = field("Table No.")));
             Caption = 'Table Caption';
-            FieldClass = FlowField;
+            FieldClass = Flowfield;
         }
     }
 

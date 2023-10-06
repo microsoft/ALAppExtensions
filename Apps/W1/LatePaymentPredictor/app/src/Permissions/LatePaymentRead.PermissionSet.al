@@ -1,3 +1,6 @@
+namespace System.Security.AccessControl;
+
+using Microsoft.Finance.Latepayment;
 permissionset 8312 "LatePayment - Read"
 {
     Assignable = false;

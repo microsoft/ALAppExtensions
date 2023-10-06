@@ -1,3 +1,18 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.DataMigration;
+using Microsoft.Integration.D365Sales;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Integration.Dataverse;
+using Microsoft.Upgrade;
+using System.Upgrade;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Setup;
+using Microsoft.Pricing.Calculation;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.FinancialReports;
+
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.

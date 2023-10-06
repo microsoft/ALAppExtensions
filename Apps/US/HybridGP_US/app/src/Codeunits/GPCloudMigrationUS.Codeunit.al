@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+
 codeunit 42004 "GP Cloud Migration US"
 {
     [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Data Migration Mgt.", 'OnAfterMigrationFinished', '', false, false)]

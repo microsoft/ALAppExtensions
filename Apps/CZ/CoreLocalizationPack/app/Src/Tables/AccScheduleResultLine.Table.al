@@ -29,11 +29,11 @@ table 31111 "Acc. Schedule Result Line CZL"
         {
             Caption = 'Totaling';
             DataClassification = CustomerContent;
-            TableRelation = if ("Totaling Type" = Const("Posting Accounts")) "G/L Account"
+            TableRelation = if ("Totaling Type" = const("Posting Accounts")) "G/L Account"
             else
-            if ("Totaling Type" = Const("Total Accounts")) "G/L Account"
+            if ("Totaling Type" = const("Total Accounts")) "G/L Account"
             else
-            if ("Totaling Type" = Const("Custom CZL")) "Acc. Schedule Extension CZL";
+            if ("Totaling Type" = const("Custom CZL")) "Acc. Schedule Extension CZL";
             ValidateTableRelation = false;
         }
         field(6; "Totaling Type"; Enum "Acc. Schedule Line Totaling Type")

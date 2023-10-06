@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 pageextension 30119 "Shpfy Item Card" extends "Item Card"
 {
     actions

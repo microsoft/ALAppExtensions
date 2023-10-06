@@ -1,19 +1,23 @@
-Codeunit 38500 "External Events Helper"
+namespace Microsoft.Integration.ExternalEvents;
+
+using System.Environment;
+
+codeunit 38500 "External Events Helper"
 {
     procedure CreateLink(url: Text; Id: Guid): Text[250]
     var
         Link: Text[250];
     begin
         Link := GetBaseUrl() + StrSubstNo(url, GetCompanyId(), TrimGuid(Id));
-        Exit(Link);
+        exit(Link);
     end;
 
-    local procedure GetBaseUrl(): text
+    local procedure GetBaseUrl(): Text
     begin
-        exit(GetUrl(CLIENTTYPE::Api));
+        exit(GetUrl(ClientType::Api));
     end;
 
-    Local procedure GetCompanyId(): text
+    local procedure GetCompanyId(): Text
     var
         Company: Record Company;
     begin
@@ -21,7 +25,7 @@ Codeunit 38500 "External Events Helper"
         exit(TrimGuid(Company.SystemId));
     end;
 
-    Local procedure TrimGuid(Id: Guid): Text
+    local procedure TrimGuid(Id: Guid): Text
     begin
         exit(DelChr(Format(Id), '<>', '{}'));
     end;

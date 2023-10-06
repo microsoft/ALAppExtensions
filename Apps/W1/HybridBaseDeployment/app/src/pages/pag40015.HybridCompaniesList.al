@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 40015 "Hybrid Companies List"
 {
     PageType = List;

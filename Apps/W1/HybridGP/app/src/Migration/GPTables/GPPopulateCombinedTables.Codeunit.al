@@ -1,3 +1,10 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.CRM.Outlook;
+using Microsoft.Inventory.Item;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.DataMigration;
+
 codeunit 40125 "GP Populate Combined Tables"
 {
     internal procedure PopulateAllMappedTables()
@@ -642,14 +649,14 @@ codeunit 40125 "GP Populate Combined Tables"
 #pragma warning disable AA0139
             GPItem.ShortName := GPIV00101Inventory.ITEMNMBR.TrimEnd();
 #pragma warning restore AA0139     
-            CASE GPIV00101Inventory.ITEMTYPE of
+            case GPIV00101Inventory.ITEMTYPE of
                 1, 2:
                     GPItem.ItemType := 0;
                 4, 5, 6:
                     GPItem.ItemType := 1;
             end;
 
-            CASE GPIV00101Inventory.VCTNMTHD of
+            case GPIV00101Inventory.VCTNMTHD of
                 1:
                     GPItem.CostingMethod := Format(0);
                 2:
@@ -670,7 +677,7 @@ codeunit 40125 "GP Populate Combined Tables"
             GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
             GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
 #pragma warning restore AA0139  
-            CASE GPIV00101Inventory.ITMTRKOP of
+            case GPIV00101Inventory.ITMTRKOP of
                 2:
                     GPItem.ItemTrackingCode := ItemTrackingCodeSERIALLbl;
                 3:

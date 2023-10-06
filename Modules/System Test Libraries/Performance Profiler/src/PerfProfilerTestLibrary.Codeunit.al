@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Tooling;
+
+using System.Tooling;
+using System.Utilities;
+
 /// <summary>
 /// Exposes methods from "Profiling Data Processor" and "Profiling Chart Helper" codeunits
 /// </summary>
@@ -78,57 +83,57 @@ codeunit 135104 "Perf. Profiler Test Library"
     /// Gets aggregate self time of profiling nodes using the provided aggregation type.
     /// </summary>
     /// <param name="AggregatedProfilingNode">The resulting aggregation.</param>
-    /// <param name="ProfilingAggregationType">The value of what to aggregate self time by.</param>
-    procedure GetSelfTimeAggregate(var AggregatedProfilingNode: Record "Profiling Node"; ProfilingAggregationType: Enum "Profiling Aggregation Type")
+    /// <param name="TestProfilingAggregationType">The value of what to aggregate self time by.</param>
+    procedure GetSelfTimeAggregate(var AggregatedProfilingNode: Record "Profiling Node"; TestProfilingAggregationType: Enum "Test Prof. Aggregation Type")
     begin
-        ProfilingDataProcessor.GetSelfTimeAggregate(AggregatedProfilingNode, ProfilingAggregationType);
+        ProfilingDataProcessor.GetSelfTimeAggregate(AggregatedProfilingNode, GetAggregationType(TestProfilingAggregationType));
     end;
 
     /// <summary>
     /// Gets aggregate self time of profiling nodes using the provided aggregation type.
     /// </summary>
     /// <param name="AggregatedProfilingNode">The resulting aggregation.</param>
-    /// <param name="ProfilingAggregationType">The value of what to aggregate self time by.</param>
+    /// <param name="TestProfilingAggregationType">The value of what to aggregate self time by.</param>
     /// <param name="FilterText">The table view to indicate which profiling nodes should be included in aggregation.</param>
-    procedure GetSelfTimeAggregate(var AggregatedProfilingNode: Record "Profiling Node"; ProfilingAggregationType: Enum "Profiling Aggregation Type"; FilterText: text)
+    procedure GetSelfTimeAggregate(var AggregatedProfilingNode: Record "Profiling Node"; TestProfilingAggregationType: Enum "Test Prof. Aggregation Type"; FilterText: text)
     begin
-        ProfilingDataProcessor.GetSelfTimeAggregate(AggregatedProfilingNode, ProfilingAggregationType, FilterText);
+        ProfilingDataProcessor.GetSelfTimeAggregate(AggregatedProfilingNode, GetAggregationType(TestProfilingAggregationType), FilterText);
     end;
 
     /// <summary>
     /// Gets aggregate full time of profiling nodes using the provided aggregation type.
     /// </summary>
     /// <param name="AggregatedProfilingNode">The resulting aggregation.</param>
-    /// <param name="ProfilingAggregationType">The value of what to aggregate full time by.</param>
-    procedure GetFullTimeAggregate(var AggregatedProfilingNode: Record "Profiling Node"; ProfilingAggregationType: Enum "Profiling Aggregation Type")
+    /// <param name="TestProfilingAggregationType">The value of what to aggregate full time by.</param>
+    procedure GetFullTimeAggregate(var AggregatedProfilingNode: Record "Profiling Node"; TestProfilingAggregationType: Enum "Test Prof. Aggregation Type")
     begin
-        ProfilingDataProcessor.GetFullTimeAggregate(AggregatedProfilingNode, ProfilingAggregationType);
+        ProfilingDataProcessor.GetFullTimeAggregate(AggregatedProfilingNode, GetAggregationType(TestProfilingAggregationType));
     end;
 
     /// <summary>
     /// Constructs and returns a unique string (with respect to aggregation type) from the provided profiling node.
     /// </summary>
     /// <param name="ProfilingNode">The node from which to construct a unique identifier.</param>
-    /// <param name="ProfilingAggregationType">The aggregation type.</param>
+    /// <param name="TestProfilingAggregationType">The aggregation type.</param>
     /// <returns>A unique (per aggregation type) string from the provided profiling node.</returns>
-    procedure GetUniqueIdentifierByAggregationType(ProfilingNode: Record "Profiling Node"; ProfilingAggregationType: Enum "Profiling Aggregation Type"): Text
+    procedure GetUniqueIdentifierByAggregationType(ProfilingNode: Record "Profiling Node"; TestProfilingAggregationType: Enum "Test Prof. Aggregation Type"): Text
     begin
-        exit(ProfilingDataProcessor.GetUniqueIdentifierByAggregationType(ProfilingNode, ProfilingAggregationType));
+        exit(ProfilingDataProcessor.GetUniqueIdentifierByAggregationType(ProfilingNode, GetAggregationType(TestProfilingAggregationType)));
     end;
 
     /// <summary>
     /// Gets the dictionary with aggregation type identifiers as keys, and aggregated self time / full time as values.
     /// </summary>
-    /// <param name="ProfilingAggregationType">The aggregation type.</param>
+    /// <param name="TestProfilingAggregationType">The aggregation type.</param>
     /// <param name="AggregateBySelfTime">True if aggregation should be performed over self time, false indicates that the aggregation should be made over full time.</param>
     /// <param name="ChartLabels">The labels for the chart.</param>
     /// <param name="ChartValues">The measure values associated with the labels.</param>
     /// <remarks>ProfilingDataProcessor must be initialized for this method to work.</remarks>
-    procedure GetChartData(ProfilingAggregationType: Enum "Profiling Aggregation Type"; AggregateBySelfTime: Boolean; ChartLabels: List of [Text]; ChartValues: List of [Integer])
+    procedure GetChartData(TestProfilingAggregationType: Enum "Test Prof. Aggregation Type"; AggregateBySelfTime: Boolean; ChartLabels: List of [Text]; ChartValues: List of [Integer])
     var
         ProfilingChartHelper: Codeunit "Profiling Chart Helper";
     begin
-        ProfilingChartHelper.GetChartData(ProfilingAggregationType, AggregateBySelfTime, ChartLabels, ChartValues);
+        ProfilingChartHelper.GetChartData(GetAggregationType(TestProfilingAggregationType), AggregateBySelfTime, ChartLabels, ChartValues);
     end;
 
     /// <summary>
@@ -226,6 +231,11 @@ codeunit 135104 "Perf. Profiler Test Library"
         until FirstProfilingNodes.Next() = 0;
 
         exit(true)
+    end;
+
+    local procedure GetAggregationType(TestProfilingAggregationType: Enum "Test Prof. Aggregation Type"): Enum "Profiling Aggregation Type"
+    begin
+        exit(Enum::"Profiling Aggregation Type".FromInteger(TestProfilingAggregationType.AsInteger()));
     end;
 
 }
