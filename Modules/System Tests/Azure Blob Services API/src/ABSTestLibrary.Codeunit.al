@@ -156,6 +156,137 @@ codeunit 132921 "ABS Test Library"
         exit(Document);
     end;
 
+    procedure GetServiceResponseBlobWithHierarchicalName(): Text;
+    var
+        Builder: TextBuilder;
+    begin
+        Builder.Append('<?xml version="1.0" encoding="utf-8"?>');
+        Builder.Append('<EnumerationResults ContainerName="https://myaccount.blob.core.windows.net/mycontainer">');
+        Builder.Append('<Blobs>');
+        Builder.Append('<Blob>');
+        Builder.Append('<Name>rootdir/filename.txt</Name>');
+        Builder.Append('<Url>https://myaccount.blob.core.windows.net/mycontainer/rootdir/filename.txt</Url>');
+        Builder.Append('<Properties>');
+        Builder.Append('<Last-Modified>Sat, 23 Sep 2023 21:32:55 GMT</Last-Modified>');
+        Builder.Append('<Etag>0x8DBBC7CA6253661</Etag>');
+        Builder.Append('<Content-Length>1</Content-Length>');
+        Builder.Append('<Content-Type>text/plain</Content-Type>');
+        Builder.Append('<Content-Encoding />');
+        Builder.Append('<Content-Language />');
+        Builder.Append('<Content-MD5>dpT0pmMW5TyM3Z2ZVL1hHQ==</Content-MD5>');
+        Builder.Append('<Cache-Control />');
+        Builder.Append('<BlobType>BlockBlob</BlobType>');
+        Builder.Append('<LeaseStatus>unlocked</LeaseStatus>');
+        Builder.Append('</Properties>');
+        Builder.Append('</Blob>');
+        Builder.Append('</Blobs>');
+        Builder.Append('<NextMarker />');
+        Builder.Append('</EnumerationResults>');
+
+        exit(Builder.ToText());
+    end;
+
+    procedure GetServiceResponseHierarchicalNamespace(): Text;
+    var
+        Builder: TextBuilder;
+    begin
+        Builder.Append('<?xml version="1.0" encoding="utf-8"?>');
+        Builder.Append('<EnumerationResults ServiceEndpoint="https://myaccount.blob.core.windows.net/" ContainerName="mycontainer">');
+        Builder.Append('<Blobs>');
+        Builder.Append('<Blob>');
+        Builder.Append('<Name>rootdir</Name>');
+        Builder.Append('<Properties>');
+        Builder.Append('<Creation-Time>Sat, 23 Sep 2023 21:04:18 GMT</Creation-Time>');
+        Builder.Append('<Last-Modified>Sat, 23 Sep 2023 21:04:18 GMT</Last-Modified>');
+        Builder.Append('<Etag>0x8DBBC78A6E95AF7</Etag>');
+        Builder.Append('<ResourceType>directory</ResourceType>');
+        Builder.Append('<Content-Length>0</Content-Length>');
+        Builder.Append('<Content-Type>application/octet-stream</Content-Type>');
+        Builder.Append('<Content-Encoding />');
+        Builder.Append('<Content-Language />');
+        Builder.Append('<Content-CRC64>AAAAAAAAAAA=</Content-CRC64>');
+        Builder.Append('<Content-MD5 />');
+        Builder.Append('<Cache-Control />');
+        Builder.Append('<Content-Disposition />');
+        Builder.Append('<BlobType>BlockBlob</BlobType>');
+        Builder.Append('<AccessTier>Hot</AccessTier>');
+        Builder.Append('<AccessTierInferred>true</AccessTierInferred>');
+        Builder.Append('<LeaseStatus>unlocked</LeaseStatus>');
+        Builder.Append('<LeaseState>available</LeaseState>');
+        Builder.Append('<ServerEncrypted>true</ServerEncrypted>');
+        Builder.Append('</Properties>');
+        Builder.Append('<OrMetadata />');
+        Builder.Append('</Blob>');
+        Builder.Append('<Blob>');
+        Builder.Append('<Name>rootdir/subdirectory</Name>');
+        Builder.Append('<Properties>');
+        Builder.Append('<Creation-Time>Tue, 26 Sep 2023 21:47:48 GMT</Creation-Time>');
+        Builder.Append('<Last-Modified>Tue, 26 Sep 2023 21:47:48 GMT</Last-Modified>');
+        Builder.Append('<Etag>0x8DBBEDA39F9C41D</Etag>');
+        Builder.Append('<ResourceType>directory</ResourceType>');
+        Builder.Append('<Content-Length>0</Content-Length>');
+        Builder.Append('<Content-Type>application/octet-stream</Content-Type>');
+        Builder.Append('<Content-Encoding />');
+        Builder.Append('<Content-Language />');
+        Builder.Append('<Content-CRC64>AAAAAAAAAAA=</Content-CRC64>');
+        Builder.Append('<Content-MD5 />');
+        Builder.Append('<Cache-Control />');
+        Builder.Append('<Content-Disposition />');
+        Builder.Append('<BlobType>BlockBlob</BlobType>');
+        Builder.Append('<AccessTier>Hot</AccessTier>');
+        Builder.Append('<AccessTierInferred>true</AccessTierInferred>');
+        Builder.Append('<LeaseStatus>unlocked</LeaseStatus>');
+        Builder.Append('<LeaseState>available</LeaseState>');
+        Builder.Append('<ServerEncrypted>true</ServerEncrypted>');
+        Builder.Append('</Properties>');
+        Builder.Append('<OrMetadata />');
+        Builder.Append('</Blob>');
+        Builder.Append('<Blob>');
+        Builder.Append('<Name>rootdir/subdirectory/filename.txt</Name>');
+        Builder.Append('<Properties>');
+        Builder.Append('<Creation-Time>Wed, 27 Sep 2023 20:24:18 GMT</Creation-Time>');
+        Builder.Append('<Last-Modified>Wed, 27 Sep 2023 20:24:18 GMT</Last-Modified>');
+        Builder.Append('<Etag>0x8DBBF97BA4A9839</Etag>');
+        Builder.Append('<ResourceType>file</ResourceType>');
+        Builder.Append('<Content-Length>1</Content-Length>');
+        Builder.Append('<Content-Type>text/plain</Content-Type>');
+        Builder.Append('<Content-Encoding />');
+        Builder.Append('<Content-Language />');
+        Builder.Append('<Content-CRC64 />');
+        Builder.Append('<Content-MD5>dpT0pmMW5TyM3Z2ZVL1hHQ==</Content-MD5>');
+        Builder.Append('<Cache-Control />');
+        Builder.Append('<Content-Disposition />');
+        Builder.Append('<BlobType>BlockBlob</BlobType>');
+        Builder.Append('<AccessTier>Hot</AccessTier>');
+        Builder.Append('<AccessTierInferred>true</AccessTierInferred>');
+        Builder.Append('<LeaseStatus>unlocked</LeaseStatus>');
+        Builder.Append('<LeaseState>available</LeaseState>');
+        Builder.Append('<ServerEncrypted>true</ServerEncrypted>');
+        Builder.Append('</Properties>');
+        Builder.Append('<OrMetadata />');
+        Builder.Append('</Blob>');
+        Builder.Append('</Blobs>');
+        Builder.Append('<NextMarker />');
+        Builder.Append('</EnumerationResults>');
+
+        exit(Builder.ToText());
+    end;
+
+    procedure GetSampleResponseRootDirName(): Text
+    begin
+        exit('rootdir');
+    end;
+
+    procedure GetSampleResponseSubdirName(): Text
+    begin
+        exit('subdirectory');
+    end;
+
+    procedure GetSampleResponseFileName(): Text
+    begin
+        exit('filename.txt');
+    end;
+
     local procedure GetNewLineCharacter(): Text
     var
         LF: Char;

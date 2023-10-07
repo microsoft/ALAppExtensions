@@ -25,15 +25,19 @@ codeunit 9054 "ABS Container Content Helper"
         Node.SelectSingleNode('.//Properties', PropertiesNode);
         ChildNodes := PropertiesNode.AsXmlElement().GetChildNodes();
 
-        AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes, EntryNo);
+        AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes, EntryNo, GetBlobResourceType(Node));
     end;
 
     [NonDebuggable]
-    procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList; var EntryNo: Integer)
+    procedure AddNewEntry(
+        var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList; var EntryNo: Integer; ResourceType: Enum "ABS Blob Resource Type")
     var
         OutStream: OutStream;
     begin
-        AddParentEntries(NameFromXml, ABSContainerContent, EntryNo);
+        if ResourceType = ResourceType::Directory then
+            ParentEntryFullNameList.Add(NameFromXml)
+        else
+            AddParentEntries(NameFromXml, ABSContainerContent, EntryNo);
 
         ABSContainerContent.Init();
         ABSContainerContent.Level := GetLevel(NameFromXml);
@@ -197,6 +201,22 @@ codeunit 9054 "ABS Container Content Helper"
         InStream.Read(XmlAsText);
         XmlDocument.ReadFrom(XmlAsText, Document);
         Node := Document.AsXmlNode();
+    end;
+
+    local procedure GetBlobResourceType(BlobXmlNode: XmlNode): Enum "ABS Blob Resource Type"
+    var
+        ResourceTypeNode: XmlNode;
+    begin
+        if not BlobXmlNode.SelectSingleNode('.//ResourceType', ResourceTypeNode) then
+            exit(Enum::"ABS Blob Resource Type"::File);
+
+        case ResourceTypeNode.AsXmlElement().InnerText().ToLower() of
+            Format(Enum::"ABS Blob Resource Type"::File).ToLower():
+                exit(Enum::"ABS Blob Resource Type"::File);
+
+            Format(Enum::"ABS Blob Resource Type"::Directory).ToLower():
+                exit(Enum::"ABS Blob Resource Type"::Directory)
+        end;
     end;
 
     var
