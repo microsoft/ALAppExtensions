@@ -68,7 +68,7 @@ codeunit 9155 "Microsoft Graph Diagnostics" implements "HTTP Diagnostics"
     end;
 
     [NonDebuggable]
-    internal procedure SetParameters(NewIsSuccesss: Boolean; NewHttpStatusCode: Integer; NewResponseReasonPhrase: Text; NewRetryAfter: Integer; NewErrorMessage: Text)
+    procedure SetParameters(NewIsSuccesss: Boolean; NewHttpStatusCode: Integer; NewResponseReasonPhrase: Text; NewRetryAfter: Integer; NewErrorMessage: Text)
     begin
         SuccessStatusCode := NewIsSuccesss;
         HttpStatusCode := NewHttpStatusCode;

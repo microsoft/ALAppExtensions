@@ -44,7 +44,6 @@ codeunit 9132 "MgGraph Client Credentials" implements "Microsoft Graph Authoriza
     [NonDebuggable]
     local procedure GetToken(): Text
     var
-        [NonDebuggable]
         AccessToken: Text;
         ErrorText: Text;
     begin
