@@ -6,15 +6,17 @@
 /// <summary>
 /// Exposes functionality to query Microsoft Graph Api
 /// </summary>
-codeunit 9150 "Microsoft Graph Client"
+codeunit 9350 "Microsoft Graph Client"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         [NonDebuggable]
         MicrosoftGraphClientImpl: Codeunit "Microsoft Graph Client Impl.";
-        IHttpClient: Interface IHttpClient;
         HttpClientSet: Boolean;
+        IHttpClient: Interface IHttpClient;
 
     /// <summary>
     /// Initializes Microsoft Graph client.

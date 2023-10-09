@@ -6,9 +6,11 @@
 /// <summary>
 /// Holder for the optional Microsoft Graph HTTP headers and URL parameters.
 /// </summary>
-codeunit 9157 "Mg Optional Parameters"
+codeunit 9357 "Mg Optional Parameters"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     #region Headers
 

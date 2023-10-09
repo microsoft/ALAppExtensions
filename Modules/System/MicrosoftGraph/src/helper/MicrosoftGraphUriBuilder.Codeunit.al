@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9152 "Microsoft Graph Uri Builder"
+codeunit 9352 "Microsoft Graph Uri Builder"
 {
     Access = Internal;
     InherentEntitlements = X;

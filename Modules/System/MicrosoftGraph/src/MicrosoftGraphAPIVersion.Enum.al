@@ -7,7 +7,7 @@
 /// Defines the available API versions for Microsoft Graph API.
 /// See: https://learn.microsoft.com/en-us/graph/versioning-and-support#versions
 /// </summary>
-enum 9150 "Microsoft Graph API Version"
+enum 9350 "Microsoft Graph API Version"
 {
     Access = Public;
     Extensible = false;

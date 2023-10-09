@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9151 "Microsoft Graph Client Impl."
+codeunit 9351 "Microsoft Graph Client Impl."
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -14,8 +14,8 @@ codeunit 9151 "Microsoft Graph Client Impl."
         MgOperationResponse: Codeunit "Mg Operation Response";
         MicrosoftGraphRequestHelper: Codeunit "Microsoft Graph Request Helper";
         MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version";
-        MicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization";
         IHttpClient: Interface IHttpClient;
+        MicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization";
 
 
     procedure Initialize(NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; NewMicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization"; NewIHttpClient: Interface IHttpClient)

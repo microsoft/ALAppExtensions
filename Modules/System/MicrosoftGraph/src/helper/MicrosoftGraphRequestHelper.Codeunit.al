@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9154 "Microsoft Graph Request Helper"
+codeunit 9354 "Microsoft Graph Request Helper"
 {
     Access = Internal;
     InherentEntitlements = X;

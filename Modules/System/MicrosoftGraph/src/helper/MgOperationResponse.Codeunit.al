@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9156 "Mg Operation Response"
+codeunit 9356 "Mg Operation Response"
 {
     Access = Internal;
     InherentEntitlements = X;

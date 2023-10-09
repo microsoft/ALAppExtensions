@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9153 "Microsoft Graph Http Content"
+codeunit 9353 "Microsoft Graph Http Content"
 {
     Access = Internal;
     InherentEntitlements = X;
