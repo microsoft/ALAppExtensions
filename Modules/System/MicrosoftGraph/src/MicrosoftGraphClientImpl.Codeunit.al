@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9131 "Microsoft Graph Client Impl."
+codeunit 9151 "Microsoft Graph Client Impl."
 {
     Access = Internal;
 
@@ -28,9 +28,16 @@ codeunit 9131 "Microsoft Graph Client Impl."
 
     procedure Get(RelativeUriToResource: Text; var FileInStream: InStream): Boolean
     var
+        MgOptionalParameters: Codeunit "Mg Optional Parameters";
+    begin
+        exit(Get(RelativeUriToResource, MgOptionalParameters, FileInStream));
+    end;
+
+    procedure Get(RelativeUriToResource: Text; MgOptionalParameters: Codeunit "Mg Optional Parameters"; var FileInStream: InStream): Boolean
+    var
         MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder";
     begin
-        MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource);
+        MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetParameters());
         MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
         MgOperationResponse := MicrosoftGraphRequestHelper.Get(MicrosoftGraphUriBuilder);
         if not MgOperationResponse.GetResultAsStream(FileInStream) then

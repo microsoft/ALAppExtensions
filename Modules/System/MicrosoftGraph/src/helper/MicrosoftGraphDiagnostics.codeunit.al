@@ -6,7 +6,7 @@
 /// <summary>
 /// Stores detailed information about failed api call
 /// </summary>
-codeunit 9139 "Microsoft Graph Diagnostics" implements "HTTP Diagnostics"
+codeunit 9155 "Microsoft Graph Diagnostics" implements "HTTP Diagnostics"
 {
     Access = Internal;
 

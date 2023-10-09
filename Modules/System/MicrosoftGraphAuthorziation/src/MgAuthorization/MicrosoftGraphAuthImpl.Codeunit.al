@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9136 "Microsoft Graph Auth. - Impl."
+codeunit 9131 "Microsoft Graph Auth. - Impl."
 {
     Access = Internal;
 

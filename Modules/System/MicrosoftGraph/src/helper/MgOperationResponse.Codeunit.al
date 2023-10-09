@@ -3,9 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9138 "Mg Operation Response"
+codeunit 9156 "Mg Operation Response"
 {
     Access = Internal;
+
+    var
+        MicrosoftGraphDiagnostics: Codeunit "Microsoft Graph Diagnostics";
+        TempBlobContent: Codeunit "Temp Blob";
+        HttpHeaders: HttpHeaders;
 
     [NonDebuggable]
     [TryFunction]
@@ -89,9 +94,4 @@ codeunit 9138 "Mg Operation Response"
     begin
         exit(MicrosoftGraphDiagnostics);
     end;
-
-    var
-        MicrosoftGraphDiagnostics: Codeunit "Microsoft Graph Diagnostics";
-        TempBlobContent: Codeunit "Temp Blob";
-        HttpHeaders: HttpHeaders;
 }

@@ -6,7 +6,7 @@
 /// <summary>
 /// Exposes functionality to query Microsoft Graph Api
 /// </summary>
-codeunit 9130 "Microsoft Graph Client"
+codeunit 9150 "Microsoft Graph Client"
 {
     Access = Public;
 
@@ -37,12 +37,24 @@ codeunit 9130 "Microsoft Graph Client"
     /// <summary>
     /// Get any request to the microsoft graph API
     /// </summary>
-    /// <param name="RelativeUriToResource">A relativ uri including the resource segment and query parameters</param>
+    /// <param name="RelativeUriToResource">A relativ uri including the resource segments</param>
     /// <param name="FileInStream">The InStream that will be populated with the file content.</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
     procedure Get(RelativeUriToResource: Text; var FileInStream: InStream): Boolean
     begin
         exit(MicrosoftGraphClientImpl.Get(RelativeUriToResource, FileInStream));
+    end;
+
+    /// <summary>
+    /// Get any request to the microsoft graph API
+    /// </summary>
+    /// <param name="RelativeUriToResource">A relativ uri including the resource segment</param>
+    /// <param name="MgOptionalParameters">A wrapper for optional header and query parameters</param>
+    /// <param name="FileInStream">The InStream that will be populated with the file content.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure Get(RelativeUriToResource: Text; MgOptionalParameters: Codeunit "Mg Optional Parameters"; var FileInStream: InStream): Boolean
+    begin
+        exit(MicrosoftGraphClientImpl.Get(RelativeUriToResource, MgOptionalParameters, FileInStream));
     end;
 
     /// <summary>

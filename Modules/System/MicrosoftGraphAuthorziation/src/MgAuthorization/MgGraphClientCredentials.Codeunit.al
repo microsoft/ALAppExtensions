@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9137 "MgGraph Client Credentials" implements "Microsoft Graph Authorization"
+codeunit 9132 "MgGraph Client Credentials" implements "Microsoft Graph Authorization"
 {
     Access = Internal;
 

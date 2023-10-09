@@ -1,4 +1,13 @@
-enum 9130 "Microsoft Graph API Version"
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Defines the available API versions for Microsoft Graph API.
+/// See: https://learn.microsoft.com/en-us/graph/versioning-and-support#versions
+/// </summary>
+enum 9150 "Microsoft Graph API Version"
 {
     Access = Public;
     Extensible = false;
