@@ -12,33 +12,34 @@ codeunit 9352 "Microsoft Graph Uri Builder"
     var
         Uri: Codeunit Uri;
         MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version";
-        BaseUriLbl: Label 'https://graph.microsoft.com/%1/', Comment = '%1 = Graph API Version', Locked = true;
+        MicrosoftGraphDefaultBaseUrlTxt: Label 'https://graph.microsoft.com', Locked = true;
 
 
-    procedure Initialize(NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; RelativeUriToResource: Text)
+    procedure Initialize(MicrosoftGraphBaseUrl: Text; NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; RelativeUriToResource: Text)
     var
         QueryParameters: Dictionary of [Text, Text];
     begin
-        Initialize(NewMicrosoftGraphAPIVersion, RelativeUriToResource, QueryParameters);
+        Initialize(MicrosoftGraphBaseUrl, NewMicrosoftGraphAPIVersion, RelativeUriToResource, QueryParameters);
     end;
 
-    procedure Initialize(NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; RelativeUriToResource: Text; QueryParameters: Dictionary of [Text, Text])
+    procedure Initialize(MicrosoftGraphBaseUrl: Text; NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; RelativeUriToResource: Text; QueryParameters: Dictionary of [Text, Text])
     var
         UriBuilder: Codeunit "Uri Builder";
         BaseUri: Text;
         CombinedUri: Text;
         QueryParameterKey: Text;
     begin
+        if MicrosoftGraphBaseUrl = '' then
+            MicrosoftGraphBaseUrl := MicrosoftGraphDefaultBaseUrlTxt;
         MicrosoftGraphAPIVersion := NewMicrosoftGraphAPIVersion;
 
-        BaseUri := StrSubstNo(BaseUriLbl, Format(MicrosoftGraphAPIVersion));
+        BaseUri := CombineUri(MicrosoftGraphBaseUrl, Format(MicrosoftGraphAPIVersion));
         CombinedUri := CombineUri(BaseUri, RelativeUriToResource);
         Uri.Init(CombinedUri);
         UriBuilder.Init(Uri.GetAbsoluteUri());
         foreach QueryParameterKey in QueryParameters.Keys() do
             UriBuilder.AddQueryParameter(QueryParameterKey, QueryParameters.Get(QueryParameterKey));
     end;
-
 
     procedure GetUri(): Text
     begin

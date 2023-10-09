@@ -33,6 +33,17 @@ codeunit 9350 "Microsoft Graph Client"
     end;
 
     /// <summary>
+    /// The base URL to use when constructing the final request URI.
+    /// If not set, the base URL is https://graph.microsoft.com . 
+    /// </summary>
+    /// <param name="BaseUrl">A valid URL string</param>
+    procedure SetBaseUrl(BaseUrl: Text)
+    begin
+        MicrosoftGraphClientImpl.SetBaseUrl(BaseUrl);
+    end;
+
+
+    /// <summary>
     /// Returns detailed information on last API call.
     /// </summary>
     /// <returns>Codeunit holding http resonse status, reason phrase, headers and possible error information for tha last API call</returns>
