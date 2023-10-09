@@ -3,9 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
 /// <summary>
 /// Provides functionality to work with file accounts.
 /// </summary>
+
 codeunit 70000 "File Account"
 {
     Access = Public;

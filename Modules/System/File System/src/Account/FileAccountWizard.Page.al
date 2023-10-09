@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
+using System.Apps;
+using System.Environment;
+using System.Telemetry;
+
 /// <summary>
 /// Step by step guide for adding a new file account in Business Central
 /// </summary>

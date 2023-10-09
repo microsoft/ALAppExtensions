@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
 /// <summary>
 /// Holds the mapping between file account and scenarios.
 /// One scenarios is mapped to one file account.

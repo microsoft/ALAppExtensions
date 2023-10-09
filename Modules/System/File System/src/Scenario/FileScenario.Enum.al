@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
 /// <summary>
 /// File scenarios.
 /// Used to decouple file accounts from sending files.

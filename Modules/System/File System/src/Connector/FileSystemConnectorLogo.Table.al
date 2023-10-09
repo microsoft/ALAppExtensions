@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
 table 70002 "File System Connector Logo"
 {
     DataClassification = SystemMetadata;

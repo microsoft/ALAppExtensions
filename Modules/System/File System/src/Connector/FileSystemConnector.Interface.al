@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
 /// <summary>
 /// An File System Connector interface used to creating file accounts and handle external files.
 /// </summary>

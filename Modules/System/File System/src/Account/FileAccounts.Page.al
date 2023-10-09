@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
+using System.Telemetry;
+
 /// <summary>
 /// Lists all of the registered file accounts
 /// </summary>

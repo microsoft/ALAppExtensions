@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
+using System.Utilities;
+using System.Azure.Storage;
+
 codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
 {
     Access = Internal;

@@ -27,8 +27,8 @@
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
-    "application": "22.0.0.0",
+    "platform":  "23.0.0.0",
+    "application": "23.0.0.0",
     "idRanges":  [
                      {
                          "from":  70000,
@@ -36,6 +36,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "runtime": "11.0",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520"
 }

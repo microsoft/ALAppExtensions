@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
+Using System.Environment;
+
 /// <summary>
 /// Displays an account that is being registered via the Blob Storage connector.
 /// </summary>

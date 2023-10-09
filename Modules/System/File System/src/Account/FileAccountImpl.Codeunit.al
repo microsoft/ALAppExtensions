@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.FileSystem;
+
+using System.Utilities;
+using System.Text;
+
 codeunit 70001 "File Account Impl."
 {
     Access = Internal;

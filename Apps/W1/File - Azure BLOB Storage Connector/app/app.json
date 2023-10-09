@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Enable all users to use a Azure Blob Storage to save files from Business Central.",
     "description":  "This app enables all users to store files in the smae azure blob storage in Business Central.",
-    "version":  "22.1.0.0",
+    "version":  "23.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2134520",
@@ -25,7 +25,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
+    "platform":  "23.0.0.0",
     "idRanges":  [
                      {
                          "from":  80100,
@@ -42,6 +42,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-                               "runtime": "11.0",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520"
 }
