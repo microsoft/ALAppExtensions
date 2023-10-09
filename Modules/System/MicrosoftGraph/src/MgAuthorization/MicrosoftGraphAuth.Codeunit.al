@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Provides functionality for creating means for authorizing HTTP requests made to SharePoint REST API.
+/// Provides functionality for creating means for authorizing HTTP requests made to Microsoft Graph API.
 /// </summary>
 codeunit 9135 "Microsoft Graph Auth."
 {

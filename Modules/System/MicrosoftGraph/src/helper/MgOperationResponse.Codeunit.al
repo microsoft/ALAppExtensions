@@ -34,7 +34,7 @@ codeunit 9138 "Mg Operation Response"
         HttpResponseMessage.Content().ReadAs(ContentInStream);
         CopyStream(ContentOutStream, ContentInStream);
         HttpHeaders := HttpResponseMessage.Headers();
-        SharepointDiagnostics.SetParameters(HttpResponseMessage.IsSuccessStatusCode, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase, GetRetryAfterHeaderValue(), GetErrorDescription());
+        MicrosoftGraphDiagnostics.SetParameters(HttpResponseMessage.IsSuccessStatusCode, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase, GetRetryAfterHeaderValue(), GetErrorDescription());
     end;
 
     [NonDebuggable]
@@ -45,7 +45,7 @@ codeunit 9138 "Mg Operation Response"
         TempBlobContent.CreateOutStream(ContentOutStream);
         ContentOutStream.WriteText(ResponseContent);
         HttpHeaders := ResponseHttpHeaders;
-        SharepointDiagnostics.SetParameters(ResponseIsSuccessStatusCode, ResponseHttpStatusCode, ResponseReasonPhrase, GetRetryAfterHeaderValue(), GetErrorDescription());
+        MicrosoftGraphDiagnostics.SetParameters(ResponseIsSuccessStatusCode, ResponseHttpStatusCode, ResponseReasonPhrase, GetRetryAfterHeaderValue(), GetErrorDescription());
     end;
 
     [NonDebuggable]
@@ -87,11 +87,11 @@ codeunit 9138 "Mg Operation Response"
     [NonDebuggable]
     internal procedure GetDiagnostics(): Interface "HTTP Diagnostics"
     begin
-        exit(SharepointDiagnostics);
+        exit(MicrosoftGraphDiagnostics);
     end;
 
     var
-        SharepointDiagnostics: Codeunit "SharePoint Diagnostics";
+        MicrosoftGraphDiagnostics: Codeunit "Microsoft Graph Diagnostics";
         TempBlobContent: Codeunit "Temp Blob";
         HttpHeaders: HttpHeaders;
 }

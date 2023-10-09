@@ -104,7 +104,7 @@ codeunit 9134 "Microsoft Graph Request Helper"
     end;
 
     [InternalEvent(false, true)]
-    local procedure OnBeforeSendRequest(HttpRequestMessage: HttpRequestMessage; var SharePointOperationResponse: Codeunit "Mg Operation Response"; var IsHandled: Boolean; Method: Text)
+    local procedure OnBeforeSendRequest(HttpRequestMessage: HttpRequestMessage; var MgOperationResponse: Codeunit "Mg Operation Response"; var IsHandled: Boolean; Method: Text)
     begin
 
     end;
