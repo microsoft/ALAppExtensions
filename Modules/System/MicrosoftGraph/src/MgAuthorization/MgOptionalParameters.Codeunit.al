@@ -42,17 +42,17 @@ codeunit 9157 "Mg Optional Parameters"
     /// <param name="MicrosftGraphConflictBehavior">Enum "MicrosftGraph ConflictBehavior" value specifying the HttpHeader value</param>
     procedure SetMicrosftGraphConflictBehavior(MicrosftGraphConflictBehavior: Enum "MicrosftGraph ConflictBehavior")
     begin
-        SetParameter('@microsoft.graph.conflictBehavior', Format(MicrosftGraphConflictBehavior));
+        SetQueryParameter('@microsoft.graph.conflictBehavior', Format(MicrosftGraphConflictBehavior));
     end;
 
 
-    local procedure SetParameter(Header: Text; HeaderValue: Text)
+    local procedure SetQueryParameter(Header: Text; HeaderValue: Text)
     begin
         QueryParameters.Remove(Header);
         QueryParameters.Add(Header, HeaderValue);
     end;
 
-    internal procedure GetParameters(): Dictionary of [Text, Text]
+    internal procedure GetQueryParameters(): Dictionary of [Text, Text]
     begin
         exit(QueryParameters);
     end;

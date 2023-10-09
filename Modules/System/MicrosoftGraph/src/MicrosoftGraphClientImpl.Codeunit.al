@@ -37,13 +37,29 @@ codeunit 9151 "Microsoft Graph Client Impl."
     var
         MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder";
     begin
-        MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetParameters());
+        MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetQueryParameters());
         MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
-        MgOperationResponse := MicrosoftGraphRequestHelper.Get(MicrosoftGraphUriBuilder);
-        if not MgOperationResponse.GetResultAsStream(FileInStream) then
+        MgOperationResponse := MicrosoftGraphRequestHelper.Get(MicrosoftGraphUriBuilder, MgOptionalParameters);
+        if not MgOperationResponse.TryGetResultAsStream(FileInStream) then
             exit(false);
         exit(MgOperationResponse.GetDiagnostics().IsSuccessStatusCode());
     end;
+
+    procedure Post(RelativeUriToResource: Text; MgOptionalParameters: Codeunit "Mg Optional Parameters"; var RequestContentInStream: InStream; var FileInStream: InStream): Boolean
+    var
+        MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content";
+        MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder";
+    begin
+        MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetQueryParameters());
+        MicrosoftGraphHttpContent.FromFileInStream(RequestContentInStream);
+        MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
+        MgOperationResponse := MicrosoftGraphRequestHelper.Post(MicrosoftGraphUriBuilder, MgOptionalParameters, MicrosoftGraphHttpContent);
+        if not MgOperationResponse.TryGetResultAsStream(FileInStream) then
+            exit(false);
+        exit(MgOperationResponse.GetDiagnostics().IsSuccessStatusCode());
+    end;
+
+
 
     procedure Delete(RelativeUriToResource: Text): Boolean
     var
@@ -51,7 +67,7 @@ codeunit 9151 "Microsoft Graph Client Impl."
     begin
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource);
         MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
-        MgOperationResponse := MicrosoftGraphRequestHelper.Get(MicrosoftGraphUriBuilder);
+        MgOperationResponse := MicrosoftGraphRequestHelper.Delete(MicrosoftGraphUriBuilder);
         exit(MgOperationResponse.GetDiagnostics().IsSuccessStatusCode());
     end;
 

@@ -14,7 +14,7 @@ codeunit 9156 "Mg Operation Response"
 
     [NonDebuggable]
     [TryFunction]
-    internal procedure GetResultAsText(var Result: Text);
+    internal procedure TryGetResultAsText(var Result: Text);
     var
         ResultInStream: InStream;
     begin
@@ -24,7 +24,7 @@ codeunit 9156 "Mg Operation Response"
 
     [NonDebuggable]
     [TryFunction]
-    internal procedure GetResultAsStream(var ResultInStream: InStream)
+    internal procedure TryGetResultAsStream(var ResultInStream: InStream)
     begin
         TempBlobContent.CreateInStream(ResultInStream);
     end;
@@ -82,7 +82,7 @@ codeunit 9156 "Mg Operation Response"
         JToken: JsonToken;
         Result: Text;
     begin
-        GetResultAsText(Result);
+        TryGetResultAsText(Result);
         if Result <> '' then
             if JObject.ReadFrom(Result) then
                 if JObject.Get('error_description', JToken) then

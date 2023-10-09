@@ -18,21 +18,21 @@ codeunit 9154 "Microsoft Graph Request Helper"
         Authorization := Auth;
     end;
 
-    procedure Get(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder") OperationResponse: Codeunit "Mg Operation Response"
+    procedure Get(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"; MgOptionalParameters: Codeunit "Mg Optional Parameters") OperationResponse: Codeunit "Mg Operation Response"
     begin
-        OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::GET, MicrosoftGraphUriBuilder));
+        OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::GET, MicrosoftGraphUriBuilder, MgOptionalParameters));
     end;
 
-    procedure Post(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder") OperationResponse: Codeunit "Mg Operation Response"
+    procedure Post(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"; MgOptionalParameters: Codeunit "Mg Optional Parameters") OperationResponse: Codeunit "Mg Operation Response"
     var
         MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content";
     begin
-        OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::POST, MicrosoftGraphUriBuilder, MicrosoftGraphHttpContent));
+        OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::POST, MicrosoftGraphUriBuilder, MgOptionalParameters, MicrosoftGraphHttpContent));
     end;
 
-    procedure Post(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"; MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content") OperationResponse: Codeunit "Mg Operation Response"
+    procedure Post(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"; MgOptionalParameters: Codeunit "Mg Optional Parameters"; MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content") OperationResponse: Codeunit "Mg Operation Response"
     begin
-        OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::POST, MicrosoftGraphUriBuilder, MicrosoftGraphHttpContent));
+        OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::POST, MicrosoftGraphUriBuilder, MgOptionalParameters, MicrosoftGraphHttpContent));
     end;
 
     procedure Delete(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder") OperationResponse: Codeunit "Mg Operation Response"
@@ -40,30 +40,40 @@ codeunit 9154 "Microsoft Graph Request Helper"
         OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::DELETE, MicrosoftGraphUriBuilder));
     end;
 
-    [NonDebuggable]
-    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder") RequestMessage: HttpRequestMessage
+    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"): HttpRequestMessage
     var
-        Headers: HttpHeaders;
+        MgOptionalParameters: Codeunit "Mg Optional Parameters";
     begin
-        RequestMessage.Method(Format(HttpRequestType));
-        RequestMessage.SetRequestUri(MicrosoftGraphUriBuilder.GetUri());
-        RequestMessage.GetHeaders(Headers);
-        Headers.Add('Accept', 'application/json');
-        Headers.Add('User-Agent', GetUserAgentString());
+        exit(PrepareRequestMsg(HttpRequestType, MicrosoftGraphUriBuilder, MgOptionalParameters));
+    end;
+
+    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"; MgOptionalParameters: Codeunit "Mg Optional Parameters"): HttpRequestMessage
+    var
+        MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content";
+    begin
+        exit(PrepareRequestMsg(HttpRequestType, MicrosoftGraphUriBuilder, MgOptionalParameters, MicrosoftGraphHttpContent));
     end;
 
     [NonDebuggable]
-    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"; MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content") RequestMessage: HttpRequestMessage
+    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"; MgOptionalParameters: Codeunit "Mg Optional Parameters"; MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content") RequestMessage: HttpRequestMessage
     var
+        RequestHeaders: Dictionary of [Text, Text];
         HttpContent: HttpContent;
         Headers: HttpHeaders;
+        RequestHeaderName: Text;
     begin
         RequestMessage.Method(Format(HttpRequestType));
         RequestMessage.SetRequestUri(MicrosoftGraphUriBuilder.GetUri());
 
         RequestMessage.GetHeaders(Headers);
-        Headers.Add('Accept', 'application/json;odata=verbose');
+        Headers.Add('Accept', 'application/json');
         Headers.Add('User-Agent', GetUserAgentString());
+        RequestHeaders := MgOptionalParameters.GetRequestHeaders();
+        foreach RequestHeaderName in RequestHeaders.Keys() do begin
+            if Headers.Contains(RequestHeaderName) then
+                Headers.Remove(RequestHeaderName);
+            Headers.Add(RequestHeaderName, RequestHeaders.Get(RequestHeaderName));
+        end;
 
         if MicrosoftGraphHttpContent.GetContentLength() > 0 then begin
             HttpContent := MicrosoftGraphHttpContent.GetContent();
@@ -74,8 +84,6 @@ codeunit 9154 "Microsoft Graph Request Helper"
 
             if MicrosoftGraphHttpContent.GetContentType() <> '' then
                 Headers.Add('Content-Type', MicrosoftGraphHttpContent.GetContentType());
-
-            // Headers.Add('X-RequestDigest', MicrosoftGraphHttpContent.GetRequestDigest());
             RequestMessage.Content(HttpContent);
         end;
     end;

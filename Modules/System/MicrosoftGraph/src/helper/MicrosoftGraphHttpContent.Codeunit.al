@@ -11,7 +11,6 @@ codeunit 9153 "Microsoft Graph Http Content"
         HttpContent: HttpContent;
         ContentLength: Integer;
         ContentType: Text;
-        RequestDigest: Text;
 
     procedure FromFileInStream(var FileInStream: Instream)
     begin
@@ -19,11 +18,11 @@ codeunit 9153 "Microsoft Graph Http Content"
         ContentLength := GetContentLength(FileInStream);
     end;
 
-    procedure FromJson(Object: JsonObject)
+    procedure FromJson(NewJsonObject: JsonObject)
     var
         RequestText: Text;
     begin
-        Object.WriteTo(RequestText);
+        NewJsonObject.WriteTo(RequestText);
         HttpContent.WriteFrom(RequestText);
 
         ContentLength := StrLen(RequestText);
@@ -43,16 +42,6 @@ codeunit 9153 "Microsoft Graph Http Content"
     procedure GetContentType(): Text
     begin
         exit(ContentType);
-    end;
-
-    procedure SetRequestDigest(RequestDigestValue: Text)
-    begin
-        RequestDigest := RequestDigestValue;
-    end;
-
-    procedure GetRequestDigest(): Text;
-    begin
-        exit(RequestDigest);
     end;
 
     local procedure GetContentLength(var SourceInStream: InStream) Length: Integer

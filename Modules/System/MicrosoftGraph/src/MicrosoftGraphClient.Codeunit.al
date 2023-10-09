@@ -38,11 +38,11 @@ codeunit 9150 "Microsoft Graph Client"
     /// Get any request to the microsoft graph API
     /// </summary>
     /// <param name="RelativeUriToResource">A relativ uri including the resource segments</param>
-    /// <param name="FileInStream">The InStream that will be populated with the file content.</param>
+    /// <param name="ResponseInStream">The InStream that will be populated with the file content.</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
-    procedure Get(RelativeUriToResource: Text; var FileInStream: InStream): Boolean
+    procedure Get(RelativeUriToResource: Text; var ResponseInStream: InStream): Boolean
     begin
-        exit(MicrosoftGraphClientImpl.Get(RelativeUriToResource, FileInStream));
+        exit(MicrosoftGraphClientImpl.Get(RelativeUriToResource, ResponseInStream));
     end;
 
     /// <summary>
@@ -50,11 +50,24 @@ codeunit 9150 "Microsoft Graph Client"
     /// </summary>
     /// <param name="RelativeUriToResource">A relativ uri including the resource segment</param>
     /// <param name="MgOptionalParameters">A wrapper for optional header and query parameters</param>
-    /// <param name="FileInStream">The InStream that will be populated with the file content.</param>
+    /// <param name="ResponseInStream">The InStream that will be populated with the file content.</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
-    procedure Get(RelativeUriToResource: Text; MgOptionalParameters: Codeunit "Mg Optional Parameters"; var FileInStream: InStream): Boolean
+    procedure Get(RelativeUriToResource: Text; MgOptionalParameters: Codeunit "Mg Optional Parameters"; var ResponseInStream: InStream): Boolean
     begin
-        exit(MicrosoftGraphClientImpl.Get(RelativeUriToResource, MgOptionalParameters, FileInStream));
+        exit(MicrosoftGraphClientImpl.Get(RelativeUriToResource, MgOptionalParameters, ResponseInStream));
+    end;
+
+    /// <summary>
+    /// Post any request to the microsoft graph API
+    /// </summary>
+    /// <param name="RelativeUriToResource">A relativ uri including the resource segment</param>
+    /// <param name="MgOptionalParameters">A wrapper for optional header and query parameters</param>
+    /// <param name="RequestContentInStream">The InStream that will be populated with the response message content.</param>
+    /// <param name="ResponseInStream">The InStream that will be populated with the response message content.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure Post(RelativeUriToResource: Text; MgOptionalParameters: Codeunit "Mg Optional Parameters"; var RequestContentInStream: InStream; var ResponseInStream: InStream): Boolean
+    begin
+        exit(MicrosoftGraphClientImpl.Post(RelativeUriToResource, MgOptionalParameters, RequestContentInStream, ResponseInStream));
     end;
 
     /// <summary>
