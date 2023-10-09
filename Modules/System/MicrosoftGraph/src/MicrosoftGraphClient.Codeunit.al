@@ -48,8 +48,8 @@ codeunit 9350 "Microsoft Graph Client"
     /// <summary>
     /// Returns detailed information on last API call.
     /// </summary>
-    /// <returns>Codeunit holding http resonse status, reason phrase, headers and possible error information for tha last API call</returns>
     /// <remarks>If any GET,PATCH,POST,DELTE request results in an error, then the HTTP Diagnostics is not initialized.</remarks>
+    /// <returns>Codeunit holding http resonse status, reason phrase, headers and possible error information for tha last API call</returns>
     procedure GetDiagnostics(): Interface "HTTP Diagnostics"
     begin
         exit(MicrosoftGraphClientImpl.GetDiagnostics());
