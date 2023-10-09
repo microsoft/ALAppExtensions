@@ -59,7 +59,7 @@ page 30098 "APIV2 - Fixed Assets"
                 {
                     Caption = 'Under Maintenance';
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }

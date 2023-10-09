@@ -26,11 +26,11 @@ page 30097 "APIV2 - FA Locations"
                 {
                     Caption = 'Code';
                 }
-                field(name; Rec.Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'Name';
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }
