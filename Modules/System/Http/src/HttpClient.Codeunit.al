@@ -8,24 +8,43 @@ codeunit 9160 HttpClient implements IHttpClient
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    [TryFunction]
-    local procedure TrySend(RequestMessage: HttpRequestMessage; var ResponseMessage: Interface IHttpResponseMessage);
     var
-        HttpResponseMessage: Codeunit HttpResponseMessage;
-        Client: HttpClient;
-        HttpResponse: HttpResponseMessage;
-    begin
-        Client.Send(RequestMessage, HttpResponse);
-        HttpResponseMessage.Initialize(HttpResponse);
-        ResponseMessage := HttpResponseMessage;
-    end;
 
-    procedure Send(RequestMessage: HttpRequestMessage; var ResponseMessage: Interface IHttpResponseMessage) Result: Boolean;
+        _httpClient: HttpClient;
+
+    procedure Send(HttpRequestMessage: HttpRequestMessage; var IHttpResponseMessage: Interface IHttpResponseMessage) Result: Boolean;
     var
-        HttpResponse: Codeunit HttpResponseMessage;
+        HttpResponseMessageWrapper: Codeunit HttpResponseMessage;
+        HttpResponseMessage: HttpResponseMessage;
     begin
         ClearLastError();
-        ResponseMessage := HttpResponse;
-        exit(TrySend(RequestMessage, ResponseMessage));
+        Result := _httpClient.Send(HttpRequestMessage, HttpResponseMessage);
+        HttpResponseMessageWrapper.Initialize(HttpResponseMessage);
+        IHttpResponseMessage := HttpResponseMessageWrapper;
+    end;
+
+    procedure AddCertificate(Certificate: Text)
+    begin
+        _httpClient.AddCertificate(Certificate);
+    end;
+
+    procedure AddCertificate(Certificate: Text; Password: Text)
+    begin
+        _httpClient.AddCertificate(Certificate, Password);
+    end;
+
+    procedure GetBaseAddress(): Text
+    begin
+        exit(_httpClient.GetBaseAddress());
+    end;
+
+    procedure DefaultRequestHeaders(): HttpHeaders
+    begin
+        exit(_httpClient.DefaultRequestHeaders());
+    end;
+
+    procedure Clear()
+    begin
+        _httpClient.Clear();
     end;
 }

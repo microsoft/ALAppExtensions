@@ -14,5 +14,15 @@ interface IHttpClient
     /// When test doubles implement this interface, they can both set up and access a request message, but they
     /// can not set up a fake response message. That's why a wrapper is provided for it.
     /// </summary>
-    procedure Send(RequestMessage: HttpRequestMessage; var ResponseMessage: Interface IHttpResponseMessage): Boolean;
+    procedure Send(HttpRequestMessage: HttpRequestMessage; var IHttpResponseMessage: Interface IHttpResponseMessage): Boolean
+
+    procedure AddCertificate(Certificate: Text)
+
+    procedure AddCertificate(Certificate: Text; Password: Text)
+
+    procedure GetBaseAddress(): Text
+
+    procedure DefaultRequestHeaders(): HttpHeaders
+
+    procedure Clear()
 }

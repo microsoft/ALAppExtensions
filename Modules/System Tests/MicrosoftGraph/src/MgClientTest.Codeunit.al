@@ -52,4 +52,84 @@ codeunit 135140 "Mg Client Test"
         LibraryAssert.AreEqual(HttpRequestMessage.GetRequestUri(), 'https://graph.microsoft.com/v1.0/groups', 'Incorrect Request URI.');
     end;
 
+    [Test]
+    procedure ResponseBodyTest()
+    var
+        MgAuthSpy: Codeunit "Mg Auth. Spy";
+        MicrosoftGraphClient: Codeunit "Microsoft Graph Client";
+        MockHttpClient: Codeunit "Mock HttpClient";
+        MockHttpResponseMessage: Codeunit "Mock HttpResponseMessage";
+        TempBlob: Codeunit "Temp Blob";
+        ResponseInStream: InStream;
+        ResponseJsonObject: JsonObject;
+        DisplayNameJsonToken: JsonToken;
+    begin
+        MockHttpResponseMessage.InitializeSuccess(200, GetGroupsResponse());
+        MockHttpClient.SetResponse(MockHttpResponseMessage);
+        MicrosoftGraphClient.SetHttpClient(MockHttpClient);
+        MicrosoftGraphClient.Initialize(Enum::"Microsoft Graph API Version"::"v1.0", MgAuthSpy);
+        ResponseInStream := TempBlob.CreateInStream();
+
+        // [WHEN] When Get Method is called  
+        MicrosoftGraphClient.Get('groups', ResponseInStream);
+
+        // [THEN] Verify response is correct
+        ResponseJsonObject.ReadFrom(ResponseInStream);
+        ResponseJsonObject.SelectToken('$.value[:1].displayName', DisplayNameJsonToken);
+        LibraryAssert.AreEqual('HR Taskforce (ÄÖÜßäöü)', DisplayNameJsonToken.AsValue().AsText(), 'Incorrect Displayname.');
+    end;
+
+    local procedure GetGroupsResponse(): Text
+    var
+        StringBuilder: TextBuilder;
+    begin
+        StringBuilder.Append('{');
+        StringBuilder.Append('    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#groups",');
+        StringBuilder.Append('    "value": [');
+        StringBuilder.Append('        {');
+        StringBuilder.Append('            "id": "02bd9fd6-8f93-4758-87c3-1fb73740a315",');
+        StringBuilder.Append('            "deletedDateTime": null,');
+        StringBuilder.Append('            "classification": null,');
+        StringBuilder.Append('            "createdDateTime": "2017-07-31T18:56:16Z",');
+        StringBuilder.Append('            "creationOptions": [');
+        StringBuilder.Append('                "ExchangeProvisioningFlags:481"');
+        StringBuilder.Append('            ],');
+        StringBuilder.Append('            "description": "Welcome to the HR Taskforce team.",');
+        StringBuilder.Append('            "displayName": "HR Taskforce (ÄÖÜßäöü)",');
+        StringBuilder.Append('            "expirationDateTime": null,');
+        StringBuilder.Append('            "groupTypes": [');
+        StringBuilder.Append('                "Unified"');
+        StringBuilder.Append('            ],');
+        StringBuilder.Append('            "isAssignableToRole": null,');
+        StringBuilder.Append('            "mail": "HRTaskforce@M365x214355.onmicrosoft.com",');
+        StringBuilder.Append('            "mailEnabled": true,');
+        StringBuilder.Append('            "mailNickname": "HRTaskforce",');
+        StringBuilder.Append('            "membershipRule": null,');
+        StringBuilder.Append('            "membershipRuleProcessingState": null,');
+        StringBuilder.Append('            "onPremisesDomainName": null,');
+        StringBuilder.Append('            "onPremisesLastSyncDateTime": null,');
+        StringBuilder.Append('            "onPremisesNetBiosName": null,');
+        StringBuilder.Append('            "onPremisesSamAccountName": null,');
+        StringBuilder.Append('            "onPremisesSecurityIdentifier": null,');
+        StringBuilder.Append('            "onPremisesSyncEnabled": null,');
+        StringBuilder.Append('            "preferredDataLocation": null,');
+        StringBuilder.Append('            "preferredLanguage": null,');
+        StringBuilder.Append('            "proxyAddresses": [],');
+        StringBuilder.Append('            "renewedDateTime": "2023-01-31T00:00:00Z",');
+        StringBuilder.Append('            "resourceBehaviorOptions": [],');
+        StringBuilder.Append('            "resourceProvisioningOptions": [');
+        StringBuilder.Append('                "Team"');
+        StringBuilder.Append('            ],');
+        StringBuilder.Append('            "securityEnabled": false,');
+        StringBuilder.Append('            "securityIdentifier": "S-1-12-1-45981654-1196986259-3072312199-363020343",');
+        StringBuilder.Append('            "theme": null,');
+        StringBuilder.Append('            "visibility": "Private",');
+        StringBuilder.Append('            "onPremisesProvisioningErrors": [],');
+        StringBuilder.Append('            "serviceProvisioningErrors": []');
+        StringBuilder.Append('        }');
+        StringBuilder.Append('    ]');
+        StringBuilder.Append('}');
+        exit(StringBuilder.ToText());
+    end;
+
 }

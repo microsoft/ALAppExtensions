@@ -8,6 +8,7 @@ codeunit 135142 "Mock HttpClient" implements IHttpClient
         _responseMessageSet: Boolean;
         _httpRequestMessage: HttpRequestMessage;
         _httpResponseMessage: Interface IHttpResponseMessage;
+        NotImplementedErr: Label 'Not implemented for mocking.';
         _sendError: Text;
 
     procedure ExpectSendToFailWithError(SendError: Text)
@@ -26,13 +27,13 @@ codeunit 135142 "Mock HttpClient" implements IHttpClient
         OutHttpRequestMessage := _httpRequestMessage;
     end;
 
-    procedure Send(RequestMessage: HttpRequestMessage; var ResponseMessage: Interface IHttpResponseMessage): Boolean;
+    procedure Send(HttpRequestMessage: HttpRequestMessage; var IHttpResponseMessage: Interface IHttpResponseMessage): Boolean;
     var
-        HttpResponse: Codeunit "Dummy - HttpResponseMessage";
+        DummyHttpResponseMessage: Codeunit "Dummy - HttpResponseMessage";
     begin
         ClearLastError();
-        ResponseMessage := HttpResponse;
-        exit(TrySend(RequestMessage, ResponseMessage));
+        IHttpResponseMessage := DummyHttpResponseMessage;
+        exit(TrySend(HttpRequestMessage, IHttpResponseMessage));
     end;
 
     [TryFunction]
@@ -44,5 +45,31 @@ codeunit 135142 "Mock HttpClient" implements IHttpClient
 
         if _responseMessageSet then
             ResponseMessage := _httpResponseMessage;
+    end;
+
+
+    procedure AddCertificate(Certificate: Text)
+    begin
+        Error(NotImplementedErr);
+    end;
+
+    procedure AddCertificate(Certificate: Text; Password: Text)
+    begin
+        Error(NotImplementedErr);
+    end;
+
+    procedure GetBaseAddress(): Text
+    begin
+        Error(NotImplementedErr);
+    end;
+
+    procedure DefaultRequestHeaders(): HttpHeaders
+    begin
+        Error(NotImplementedErr);
+    end;
+
+    procedure Clear()
+    begin
+        ClearAll();
     end;
 }
